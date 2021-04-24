@@ -287,6 +287,11 @@ export default {
       return ret
     }
   },
+  filters: {
+    dig: function (object, path) {
+      return path.reduce((xs, x) => (xs && xs[x] ? xs[x] : null), object);
+    }
+  },
   watch: {
     features () {
       this.$emit('setFeatures', this.features)

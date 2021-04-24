@@ -48,6 +48,28 @@ export default {
   props: {
     headways: { type: Array, default () { return [] } }
   },
+  filters: {
+    formatHeadway: function (hw, tod) {
+      if (!hw) {
+        return "";
+      }
+      if (!tod) {
+        tod = "morning";
+      }
+      const amin = hw[`headway_seconds_${tod}_min`];
+      const amid = hw[`headway_seconds_${tod}_mid`];
+      const amax = hw[`headway_seconds_${tod}_max`];
+      if (amin && amax) {
+        if (Math.abs(amax - amin) / amax > 0.2) {
+          return `${Math.ceil(amin / 60)} - ${Math.ceil(amax / 60)}`;
+        }
+      }
+      if (amid) {
+        return `${Math.ceil(amid / 60)}`;
+      }
+      return "";
+    }
+  },
   computed: {
     hws () {
       const hwlookup = {

@@ -41,7 +41,7 @@
           <div v-show="Object.keys(agencyFeatures).length == 0">
             <strong>Use your mouse cursor</strong> to highlight routes and see their names here. <strong>Click</strong> to select for more details.
           </div>
-          <route-select :link="link" :agency-features="agencyFeatures" :collapse="true" />
+          <tl-route-select :link="link" :agency-features="agencyFeatures" :collapse="true" />
         </div>
       </div>
     </div>
@@ -61,7 +61,7 @@
             <button type="button" class="delete" @click="props.close" />
           </header>
           <section class="modal-card-body">
-            <route-select :agency-features="agencyFeatures" :link="link" :link-version="linkVersion" />
+            <tl-route-select :agency-features="agencyFeatures" :link="link" :link-version="linkVersion" />
           </section>
         </div>
       </template>

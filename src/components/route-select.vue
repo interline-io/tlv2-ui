@@ -11,7 +11,7 @@
             v-if="link"
             :to="{name: 'routes-onestop_id', params:{onestop_id:route.onestop_id || 'search' }, query:( (linkVersion || !route.onestop_id) ? {feed_onestop_id:route.feed_onestop_id,feed_version_sha1:route.feed_version_sha1,route_id:route.route_id} : {})}"
           >
-            <route-icon
+            <tl-route-icon
               :key="route.id"
               :route-type="route.route_type"
               :route-short-name="route.route_short_name"
@@ -19,7 +19,7 @@
             />
           </nuxt-link>
           <template v-else>
-            <route-icon
+            <tl-route-icon
               :key="route.id"
               :route-type="route.route_type"
               :route-short-name="route.route_short_name"

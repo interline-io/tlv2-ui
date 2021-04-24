@@ -12,6 +12,12 @@ export default {
       }
     }
   },
+  props: {
+    onestopId: {type:String, default:null},
+    feedVersionSha1: {type:String,default:null},
+    feedOnestopId: {type:String,default:null},
+    entityId: {type:String,default:null}
+  },
   data () {
     return {
       entities: [],
@@ -53,9 +59,6 @@ export default {
     },
     entityIds () {
       return this.entities.map((s) => { return s.id })
-    },
-    onestopId () {
-      return this.$route.params.onestop_id
     },
     fvids () {
       return this.agencies.map((s) => { return s.feed_version_id })

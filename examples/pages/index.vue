@@ -2,12 +2,7 @@
   <div>
     <tl-tlnav />
     <div style="padding:40px">
-      <div>
-        <strong>Routes for {{ sha1 }}:</strong>
-      </div>
-      <tl-route-viewer :feed-version-sha1="sha1" :limit="4" />
-
-      <tl-feed-version-map-viewer :feedVersionSha1="sha1" />
+      <tl-pages-route onestop-id="r-9q9n-1t" />
     </div>
 
     <tl-tlfooter />
