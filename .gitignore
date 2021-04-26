@@ -21,3 +21,7 @@ yarn-error.log*
 *.sw?
 
 .nuxt
+
+# Storybook
+.nuxt-storybook
+storybook-static
