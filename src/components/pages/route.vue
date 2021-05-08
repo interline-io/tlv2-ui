@@ -392,6 +392,7 @@ export default {
   },
   apollo: {
     entities: {
+      client: 'transitland',
       query: q,
       skip () {
         return this.checkSearchSkip(this.$route.query.route_id)

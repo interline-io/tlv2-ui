@@ -32,6 +32,7 @@ export default {
   },
   apollo: {
     routes: {
+      client: 'transitland',
       query: q,
       variables () {
         return {

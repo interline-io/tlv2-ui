@@ -54,6 +54,7 @@ query ($limit: Int!, $agency_ids: [Int!], $route_ids: [Int!], $feed_version_sha1
 export default {
   apollo: {
     routes: {
+      client: 'transitland',
       query: q,
       error (e) { this.error = e },
       variables () {

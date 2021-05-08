@@ -182,6 +182,7 @@ export default {
   mixins: [TableViewerMixin],
   apollo: {
     entities: {
+      client: 'transitland',
       query: q,
       variables () {
         return {

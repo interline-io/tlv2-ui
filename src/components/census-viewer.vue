@@ -180,6 +180,7 @@ export default {
   },
   apollo: {
     routes: {
+      client: 'transitland',
       query: q,
       variables () {
         const q = {

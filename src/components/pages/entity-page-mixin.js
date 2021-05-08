@@ -4,6 +4,7 @@ export default {
       this.error = e
     },
     $query: {
+      client: 'transitland',
       update (data) {
         if (data.entities.length === 0) {
           return this.setError({ statusCode: 404 })

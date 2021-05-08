@@ -292,13 +292,17 @@ export default {
   mixins: [EntityPageMixin, Filters],
   apollo: {
     entities: {
+      client: 'transitland',
       query: q,
       variables () {
         return {
-          feed_version_sha1: "e07738918bd9a53638061dafd14949b8adeea44d"
+          feed_version_sha1: this.feedVersionSha1
         }
       }
     }
+  },
+  props: {
+    feedVersionSha1: {type: String, default: null}
   },
   data () {
     return {
@@ -338,7 +342,8 @@ export default {
       }
     },
     textDescription () {
-      return `An archived GTFS feed version for ${this.operatororAgencyNames} from the feed with a Onestop ID of ${this.$route.params.feed} first fetched at ${this.entity.fetched_at} by Transitland. This feed version contains ${this.rowCount['agency.txt'] ? this.rowCount['agency.txt'].toLocaleString() : '-'} agencies, ${this.rowCount['routes.txt'] ? this.rowCount['routes.txt'].toLocaleString() : '-'} routes, and ${this.rowCount['stops.txt'] ? this.rowCount['stops.txt'].toLocaleString() : '-'} stops. The SHA1 hash of the contents is ${this.$route.params.version}`
+      return ''
+      // return `An archived GTFS feed version for ${this.operatororAgencyNames} from the feed with a Onestop ID of ${this.$route.params.feed} first fetched at ${this.entity.fetched_at} by Transitland. This feed version contains ${this.rowCount['agency.txt'] ? this.rowCount['agency.txt'].toLocaleString() : '-'} agencies, ${this.rowCount['routes.txt'] ? this.rowCount['routes.txt'].toLocaleString() : '-'} routes, and ${this.rowCount['stops.txt'] ? this.rowCount['stops.txt'].toLocaleString() : '-'} stops. The SHA1 hash of the contents is ${this.$route.params.version}`
     }
   },
   methods: {

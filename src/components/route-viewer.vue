@@ -142,6 +142,7 @@ export default {
   },
   apollo: {
     entities: {
+      client: 'transitland',
       query: q,
       variables () {
         return {

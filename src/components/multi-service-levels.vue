@@ -220,6 +220,7 @@ export default {
   },
   apollo: {
     feed_versions: {
+      client: 'transitland',
       query: q,
       skip () { return this.useFeedVersions.length > 0 },
       variables () {
@@ -234,6 +235,7 @@ export default {
       error (e) { this.error = e }
     },
     feed_version_routes: {
+      client: 'transitland',
       query: q2,
       variables () {
         return { feed_version_ids: this.fvids }
