@@ -149,6 +149,7 @@
 </template>
 
 <script>
+import Filters from './filters'
 import { parseISO, format, add, isBefore } from 'date-fns'
 import gql from 'graphql-tag'
 
@@ -195,6 +196,7 @@ query($feed_version_ids:[Int!], $start_date: Time, $end_date: Time) {
 `
 
 export default {
+  mixins: [Filters],
   props: {
     showFilters: { type: Boolean, default: true },
     showGroupInfo: { type: Boolean, default: true },
