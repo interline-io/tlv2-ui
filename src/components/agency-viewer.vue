@@ -4,7 +4,7 @@
       {{ error }}
     </b-message>
     <div v-else>
-      <search-bar v-model="search" placeholder="Filter Agencies" />
+      <tl-search-bar v-model="search" placeholder="Filter Agencies" />
       <b-table
         :loading="$apollo.loading"
         :data="entityPage"

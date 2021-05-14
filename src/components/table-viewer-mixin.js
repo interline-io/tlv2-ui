@@ -4,7 +4,7 @@ export default {
       hasMore: false,
       prevAfter: null,
       search: null,
-      limit: 4,
+      limit: 100,
       entities: [],
       error: null
     }

@@ -2,25 +2,27 @@
   <div class="container">
     <span v-if="$apollo.loading" class="is-loading" />
     <div v-else-if="entity">
+      <slot name="nav">
       <nav class="breadcrumb">
-        <ul>
-          <li>
-            <nuxt-link :to="{name:'feeds'}">
-              Source Feeds
-            </nuxt-link>
-          </li>
-          <li>
-            <nuxt-link :to="{name: 'feeds-feed', params:{feed:$route.params.feed}}">
-              {{ $route.params.feed }}
-            </nuxt-link>
-          </li>
-          <li>
-            <nuxt-link :to="{name: 'feeds-feed-versions-version', params:{feed:$route.params.feed, version:$route.params.version}}">
-              {{ $route.params.version | shortenName(8) }}
-            </nuxt-link>
-          </li>
-        </ul>
+      <ul>
+        <li>
+          <nuxt-link :to="{name:'feeds'}">
+            Source Feeds
+          </nuxt-link>
+        </li>
+        <li>
+          <nuxt-link :to="{name: 'feeds-feed', params:{feed:$route.params.feed}}">
+            {{ $route.params.feed }}
+          </nuxt-link>
+        </li>
+        <li>
+          <nuxt-link :to="{name: 'feeds-feed-versions-version', params:{feed:$route.params.feed, version:$route.params.version}}">
+            {{ $route.params.version | shortenName(8) }}
+          </nuxt-link>
+        </li>
+      </ul>
       </nav>
+      </slot>
       <h1 class="title">
         Feed {{ $route.params.feed }}: version fetched {{ entity.fetched_at | formatDate }} ({{ entity.fetched_at | fromNow }})
       </h1>
@@ -242,7 +244,6 @@
 <script>
 import gql from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
-import Filters from '../filters'
 
 const q = gql`
 query ($feed_version_sha1: String!) {
@@ -289,7 +290,7 @@ query ($feed_version_sha1: String!) {
 `
 
 export default {
-  mixins: [EntityPageMixin, Filters],
+  mixins: [EntityPageMixin],
   apollo: {
     entities: {
       client: 'transitland',

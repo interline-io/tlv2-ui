@@ -1,15 +1,29 @@
 <template>
   <div class="container">
+    <slot name="nav">
+      <nav class="breadcrumb">
+      <ul>
+        <li>
+          <nuxt-link :to="{name:'feeds'}">
+            Source Feeds
+          </nuxt-link>
+        </li>
+      </ul>
+      </nav>
+    </slot>
+
     <h1 class="title">
-      Transitland Source Feeds
+      Source Feeds
     </h1>
 
-    <div class="content">
-      <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
-      <p>Transitland aggregates data from thousands of public GTFS, GTFS Realtime, GBFS, and MSD feeds. Use the following table to search through Transitland's feed records. Or switch to browsing <nuxt-link :to="{name:'operators'}">Transitland operators</nuxt-link>, which group together related feeds for a richer experience.</p>
-      <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
-      <p>Transitland's registry of feeds for viewing and editing in the <nuxt-link to="/documentation/atlas">Transitland Atlas</nuxt-link> repository on GitHub. <a href="/documentation/atlas#how-to-contribute-or-edit-a-feed">We welcome contributions!</a></p>
-    </div>
+    <slot name="description">
+      <div class="content">
+        <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
+        <p>Transitland aggregates data from thousands of public GTFS, GTFS Realtime, GBFS, and MSD feeds. Use the following table to search through Transitland's feed records. Or switch to browsing <nuxt-link :to="{name:'operators'}">Transitland operators</nuxt-link>, which group together related feeds for a richer experience.</p>
+        <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
+        <p>Transitland's registry of feeds for viewing and editing in the <nuxt-link to="/documentation/atlas">Transitland Atlas</nuxt-link> repository on GitHub. <a href="/documentation/atlas#how-to-contribute-or-edit-a-feed">We welcome contributions!</a></p>
+      </div>
+    </slot>
 
     <div>
       <b-message v-if="error" class="is-danger">
@@ -19,7 +33,7 @@
       <b-field grouped group-multiline>
         <b-field label="Search by feed name">
           <div style="width:300px">
-            <search-bar v-model="search" />
+            <tl-search-bar v-model="search" />
           </div>
         </b-field>
 
@@ -123,19 +137,22 @@
       </b-table>
       <show-more v-if="entities.length === limit || hasMore" :limit="entities.length" @click="showAll" />
     </div>
+    <template slot="add-feed">
     <div style="margin-top:40px">
-      <b-message type="is-info">
-        <div>
-          Know a public feed that's missing from Transitland? <a href="/documentation/atlas#how-to-contribute-or-edit-a-feed" class="button" style="float:right">Add a feed to Transitland Atlas</a>
-        </div>
-      </b-message>
-    </div>
+        <b-message type="is-info">
+          <div>
+            Know a public feed that's missing from Transitland? <a href="/documentation/atlas#how-to-contribute-or-edit-a-feed" class="button" style="float:right">Add a feed to Transitland Atlas</a>
+          </div>
+        </b-message>
+      </div>
+    </template>
   </div>
 </template>
 
 <script>
 import gql from 'graphql-tag'
 import TableViewerMixin from '../table-viewer-mixin'
+import Filters from '../filters'
 
 const q = gql`
 query($specs: [String!], $after: Int, $limit:Int, $search: String, $fetch_error: Boolean, $import_status: ImportStatus) {
@@ -179,7 +196,7 @@ const nullString = function (v) {
 }
 
 export default {
-  mixins: [TableViewerMixin],
+  mixins: [TableViewerMixin, Filters],
   apollo: {
     entities: {
       client: 'transitland',

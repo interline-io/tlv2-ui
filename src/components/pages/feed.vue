@@ -2,27 +2,32 @@
   <div class="container">
     <span v-if="$apollo.loading" class="is-loading" />
     <div v-else-if="entity">
+      <slot name="nav">
       <nav class="breadcrumb">
-        <ul>
-          <li>
-            <nuxt-link :to="{name:'feeds'}">
-              Source Feeds
-            </nuxt-link>
-          </li>
-          <li>
-            <nuxt-link :to="{name: 'feeds-feed', params:{feed:$route.params.feed}}">
-              {{ $route.params.feed }}
-            </nuxt-link>
-          </li>
-        </ul>
+      <ul>
+        <li>
+          <nuxt-link :to="{name:'feeds'}">
+            Source Feeds
+          </nuxt-link>
+        </li>
+        <li>
+          <nuxt-link :to="{name: 'feeds-feed', params:{feed:$route.params.feed}}">
+            {{ $route.params.feed }}
+          </nuxt-link>
+        </li>
+      </ul>
       </nav>
+      </slot>
+
       <h1 class="title">
         Feed details: {{ onestopId }}
       </h1>
-
-      <p class="content">
-        {{ textDescription }}
-      </p>
+    
+      <slot name="description">
+        <p class="content">
+          {{ textDescription }}
+        </p>
+      </slot>
 
       <div class="columns">
         <div class="column is-three-quarters">
@@ -176,15 +181,19 @@
             </tr>
           </table>
         </div>
-        <div class="column is-one-quarter">
-          <b-message type="is-info" title="Edit" :closable="false">
-            <p>
-              You can update the URLs associated with this Feed record and other metadata in the <a href="/documentation/atlas">Transitland Atlas</a> repository. We welcome edits and additions.
-            </p>
-            <a class="button is-primary" :href="editLink" target="_blank"><b-icon icon="pencil" size="is-small" /> &nbsp; Edit Feed Record</a>
-          </b-message>
-        </div>
+        <slot name="edit-feed">
+          <div class="column is-one-quarter">
+            <b-message type="is-info" title="Edit" :closable="false">
+              <p>
+                You can update the URLs associated with this Feed record and other metadata in the <a href="/documentation/atlas">Transitland Atlas</a> repository. We welcome edits and additions.
+              </p>
+              <a class="button is-primary" :href="editLink" target="_blank"><b-icon icon="pencil" size="is-small" /> &nbsp; Edit Feed Record</a>
+            </b-message>
+          </div>
+        </slot>
       </div>
+      
+      <div v-if="showOperators">
       <hr>
       <h4 class="title is-4">
         Operator(s) Associated with this Feed
@@ -259,12 +268,13 @@
           </div>
         </b-tab-item>
       </b-tabs>
+      </div>
 
       <hr>
 
       <div v-if="entity.spec == 'gtfs'">
         <h4 class="title is-4">
-          Feed Versions Archived by Transitland
+          Archived Feed Versions
         </h4>
 
         <b-tabs v-model="activeTab" type="is-boxed" :animated="false" @input="setTab">
@@ -340,13 +350,12 @@
 
           <b-tab-item label="Service Levels">
             <div v-if="activeTab === 1">
-              <client-only placeholder="Service">
-                <multi-service-levels :max-weeks="52" :week-agg="true" :fvids="entity.feed_versions.map((s)=>{return s.id}).slice(0,20)" />
-              </client-only>
+              <tl-multi-service-levels :max-weeks="52" :week-agg="true" :fvids="entity.feed_versions.map((s)=>{return s.id}).slice(0,20)" />
             </div>
           </b-tab-item>
         </b-tabs>
       </div>
+      <slot name="add-feed-version"></slot>
     </div>
   </div>
 </template>
@@ -460,7 +469,9 @@ export default {
       }
     }
   },
-
+  props: {
+    showOperators: {type:Boolean, default:false}
+  },
   computed: {
     newLink () {
       return ''

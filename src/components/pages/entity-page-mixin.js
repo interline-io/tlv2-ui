@@ -1,3 +1,5 @@
+import Filters from '../filters'
+
 export default {
   apollo: {
     $error (e) {
@@ -19,6 +21,7 @@ export default {
     feedOnestopId: {type:String,default:null},
     entityId: {type:String,default:null}
   },
+  mixins: [ Filters ],
   data () {
     return {
       entities: [],

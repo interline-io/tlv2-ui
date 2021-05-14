@@ -2,6 +2,7 @@
   <div class="container">
     <span v-if="$apollo.loading" class="is-loading" />
     <div v-else-if="entity">
+      <slot name="nav">
       <nav class="breadcrumb">
         <ul>
           <li>
@@ -37,6 +38,8 @@
           </li>
         </ul>
       </nav>
+      </slot>
+      
       <h1 v-for="ent of routeNames" :key="ent.id" class="title">
         {{ ent.agency.agency_name }} <br>
         <tl-route-icon
@@ -395,7 +398,7 @@ export default {
       client: 'transitland',
       query: q,
       skip () {
-        return this.checkSearchSkip(this.$route.query.route_id)
+        return this.checkSearchSkip(this.entityId)
       },
       variables () {
         return {
