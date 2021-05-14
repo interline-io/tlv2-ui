@@ -1,6 +1,6 @@
 <template>
-  <div class="container">
-    <span v-if="$apollo.loading" class="is-loading" />
+  <div>
+    <div v-if="$apollo.loading" class="is-loading" />
     <div v-else-if="entity">
       <slot name="nav">
       <nav class="breadcrumb">
