@@ -95,7 +95,7 @@
               </td>
             </tr>
 
-            <tr v-if="entity.spec == 'gtfs' && entity.feed_state.last_fetch_error">
+            <tr v-if="entity.spec == 'gtfs' && entity.feed_state && entity.feed_state.last_fetch_error">
               <td>
                 <b-tooltip dashed label="Error message from last fetch attempt">
                   Fetch Error

@@ -97,26 +97,29 @@
           <td>SHA1</td>
           <td><code>{{ entity.sha1 }}</code></td>
         </tr>
-        <tr>
-          <td>Status</td>
-          <td v-if="!fvi">
-            Not imported
-          </td>
-          <td v-else-if="fvi.success">
-            Imported successfully
-          </td>
-          <td v-else-if="fvi.in_progress">
-            Import in progress
-          </td>
-          <td v-else-if="!fvi.success">
-            <b-message class="is-danger" has-icon>
-              {{ fvi.exception_log }}
-            </b-message>
-          </td>
-        </tr>
       </table>
 
+      <slot name="import">
+        <b-message v-if="!fvi" class="is-info" has-icon icon="information" :closeable="false">
+          This feed version is not currently imported into the database.
+            <span class="button is-primary is-pulled-right" @click="importFeedVersion">
+              Import feed version
+            </span>
+        </b-message>
+        <b-message v-else-if="fvi.success" class="is-success" has-icon icon="check" :closeable="false">
+          This feed version was successfully imported into the database.
+        </b-message>
+        <b-message v-else-if="fvi.in_progress" class="is-info" has-icon icon="clock" :closeable="false">
+          Import in progress! Please be patient.
+        </b-message>
+        <b-message v-else-if="!fvi.success" has-icon icon="alert" :closeable="false" class="is-danger">
+          Import Error: {{ fvi.exception_log }}
+        </b-message>
+
+      </slot>
+
       <!-- TODO: check license info to make sure redistribution is allowed -->
+      <slot name="download">
         <b-message class="block" type="is-info" has-icon icon="information" :closable="false">
           <div class="columns">
             <div class="column is-8">
@@ -131,6 +134,8 @@
             </div>
           </div>
         </b-message>
+      </slot>
+
 
       <b-tabs v-model="activeTab" type="is-boxed" :animated="false" @input="setTab">
         <b-tab-item label="Files">
@@ -207,6 +212,14 @@
 <script>
 import gql from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
+
+const importQuery = gql`
+mutation ($sha1: String!) { 
+  Import(sha1: $sha1) { 
+    success
+  } 
+}
+`
 
 const q = gql`
 query ($feed_version_sha1: String!) {
@@ -311,6 +324,22 @@ export default {
     }
   },
   methods: {
+    importFeedVersion() {
+      this.$apollo
+        .mutate({
+          client: 'transitland',
+          mutation: importQuery,
+          variables: {
+            sha1: this.entity.sha1
+          },
+          update: (store, { data: {  } }) => {
+            alert("Import Success!")
+            this.$apollo.queries.entities.refetch()
+          }
+        }).catch((error) => {
+          this.setError(500, error)
+        })
+    },
     mergedCount (fvi) {
       const m = {}
       if (!fvi) { return m }

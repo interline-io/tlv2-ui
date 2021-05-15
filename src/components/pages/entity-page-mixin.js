@@ -9,7 +9,7 @@ export default {
       client: 'transitland',
       update (data) {
         if (data.entities.length === 0) {
-          return this.setError({ statusCode: 404 })
+          return this.setError(404)
         }
         return data.entities
       }
@@ -28,6 +28,7 @@ export default {
       activeTab: 0,
       childLabel: null,
       error: null,
+      errorMessage: null,
       tabIndex: {}
     }
   },
@@ -88,13 +89,13 @@ export default {
       const fosid = this.$route.query.feed_onestop_id || ''
       const eid = entityId || ''
       if (this.$route.params.onestop_id === 'search' && (fosid.length === 0 || eid.length === 0)) {
-        this.setError({ statusCode: 404 })
+        this.setError(404)
         return true
       }
       return false
     },
-    setError (e) {
-      this.$nuxt.error({ statusCode: 404, message: 'Not found' })
+    setError (statusCode, message) {
+      this.$nuxt.error({ statusCode: statusCode, message: message })
     },
     setTab (value) {
       const tab = this.tabIndex[value]
