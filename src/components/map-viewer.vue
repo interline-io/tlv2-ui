@@ -20,7 +20,7 @@
               custom
               paddingless
             >
-              <div class="modal-card" style="width:400px;">
+              <div class="modal-card map-options">
                 <section class="modal-card-body">
                   <div class="field">
                     <b-checkbox v-model="showGeneratedShadow">
@@ -37,7 +37,7 @@
             </b-dropdown-item>
           </b-dropdown>
         </div>
-        <div style="padding-left:10px">
+        <div class="map-info">
           <div v-show="Object.keys(agencyFeatures).length == 0">
             <strong>Use your mouse cursor</strong> to highlight routes and see their names here. <strong>Click</strong> to select for more details.
           </div>
@@ -53,7 +53,7 @@
       full-screen
     >
       <template #default="props">
-        <div v-if="isComponentModalActive" class="modal-card" style="width: auto">
+        <div v-if="isComponentModalActive" class="modal-card">
           <header class="modal-card-head">
             <p class="modal-card-title">
               Select Route
@@ -439,8 +439,15 @@ export default {
 }
 
 .map-options {
+  width: 400px;
   border-bottom:solid 1px #ccc;
   margin-bottom:20px;
+}
+
+.map-info {
+  width: 400px;
+  padding-left:10px;
+  padding-top:10px;
 }
 
 </style>

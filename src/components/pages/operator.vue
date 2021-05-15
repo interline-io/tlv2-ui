@@ -19,9 +19,11 @@
         {{ operatorName }}
       </h1>
 
-      <p class="content">
-        {{ textDescription }}
-      </p>
+      <slot name="description">
+        <div class="content">
+          {{ textDescription }}
+        </div>
+      </slot>
 
       <!-- Warnings for freshness and viewing a specific version -->
       <b-message v-if="dataFreshness > 365" type="is-warning" has-icon>
@@ -45,7 +47,7 @@
       <!-- Main content -->
       <div class="columns">
         <div class="column is-three-quarters">
-          <table class="property-list">
+          <table class="table is-borderless">
             <tr>
               <td>
                 <b-tooltip dashed label="A globally unique identifier for this operator">

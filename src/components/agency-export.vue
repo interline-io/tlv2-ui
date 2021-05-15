@@ -12,8 +12,6 @@
       />
     </client-only>
 
-    <br>
-
     <data-export
       :agency-ids="agencyIds"
       :route-features="routeFeatures"

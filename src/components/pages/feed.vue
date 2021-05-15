@@ -20,18 +20,18 @@
       </slot>
 
       <h1 class="title">
-        Feed details: {{ onestopId }}
+        Feed {{ onestopId }}
       </h1>
     
       <slot name="description">
-        <p class="content">
+        <p>
           {{ textDescription }}
         </p>
       </slot>
 
       <div class="columns">
         <div class="column is-three-quarters">
-          <table class="property-list">
+          <table class="table is-borderless">
             <tr>
               <td>
                 <b-tooltip dashed label="A globally unique identifier for this feed">
@@ -102,7 +102,6 @@
                 </b-tooltip>
               </td>
               <td>
-                Failed
                 <b-message class="is-danger" has-icon>
                   {{ entity.feed_state.last_fetch_error }}
                 </b-message>
@@ -229,43 +228,41 @@
               Operator documentation
             </nuxt-link> for more information on this process.
           </b-message>
-          <div class="content">
-            <table class="table is-shaded">
-              <thead>
-                <tr>
-                  <th>Association type</th>
-                  <th>Operator Name</th>
-                  <th>Operator Onestop ID</th>
-                  <th>GTFS Agency ID in Source Feed</th>
-                  <th>Matched Agency</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(match,i) of entity.associated_operators" :key="i">
-                  <td>
-                    <span v-if="match.operator_id">Associated Feed</span>
-                    <span v-else-if="entity.feed_namespace_id === match.onestop_id">Feed Namespace</span>
-                    <span v-else>Generated</span>
-                  </td>
-                  <td>
-                    {{ match.operator_name }}
-                  </td>
-                  <td>
-                    <nuxt-link :to="{name:'operators-onestop_id', params:{onestop_id:match.onestop_id}}">
-                      {{ match.onestop_id }}
-                    </nuxt-link>
-                  </td>
-                  <td><span v-if="match.agency">{{ match.agency.agency_id }}</span></td>
-                  <td>
-                    <span v-if="match.agency">
-                      <b-icon icon="check" />
-                      {{ match.agency.agency_name }}
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <table class="table is-shaded is-fullwidth">
+            <thead>
+              <tr>
+                <th>Association type</th>
+                <th>Operator Name</th>
+                <th>Operator Onestop ID</th>
+                <th>GTFS Agency ID in Source Feed</th>
+                <th>Matched Agency</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(match,i) of entity.associated_operators" :key="i">
+                <td>
+                  <span v-if="match.operator_id">Associated Feed</span>
+                  <span v-else-if="entity.feed_namespace_id === match.onestop_id">Feed Namespace</span>
+                  <span v-else>Generated</span>
+                </td>
+                <td>
+                  {{ match.operator_name }}
+                </td>
+                <td>
+                  <nuxt-link :to="{name:'operators-onestop_id', params:{onestop_id:match.onestop_id}}">
+                    {{ match.onestop_id }}
+                  </nuxt-link>
+                </td>
+                <td><span v-if="match.agency">{{ match.agency.agency_id }}</span></td>
+                <td>
+                  <span v-if="match.agency">
+                    <b-icon icon="check" />
+                    {{ match.agency.agency_name }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </b-tab-item>
       </b-tabs>
       </div>
@@ -346,6 +343,8 @@
                 <a :href="`https://demo.transit.land/api/v2/rest/feed_versions/${props.row.sha1}/download`" target="_blank"><b-icon icon="download" title="Download this feed version" /></a>
               </b-table-column>
             </b-table>
+
+            <slot name="add-feed-version"></slot>
           </b-tab-item>
 
           <b-tab-item label="Service Levels">
@@ -355,7 +354,6 @@
           </b-tab-item>
         </b-tabs>
       </div>
-      <slot name="add-feed-version"></slot>
     </div>
   </div>
 </template>

@@ -1,68 +1,64 @@
 <template>
   <div>
-    <div>
-      <b-field grouped>
-        <b-field label="Stop Buffer Radius (m)" expanded style="margin-right:50px">
-          <b-slider
-            v-model="radius"
-            size="is-medium"
-            :min="0"
-            :max="2000"
-            :step="100"
-            ticks
-            lazy
-          >
-            <template v-for="val in [400,1000,2000]">
-              <b-slider-tick :key="val" :value="val">
-                {{ val }}
-              </b-slider-tick>
-            </template>
-          </b-slider>
-        </b-field>
-
-        <b-field label="Summary Level" expanded>
-          <b-select v-model="layer">
-            <option v-for="(v,k) of layerInfo" :key="k" :value="k">
-              {{ v.name }}
-            </option>
-          </b-select>
-        </b-field>
-
-        <b-field label="Show on Map" expanded>
-          <b-dropdown
-            v-model="showOnMap"
-            multiple
-            aria-role="list"
-          >
-            <button slot="trigger" class="button" type="button">
-              <span>
-                {{ showOnMap.map((s)=>{return titleize(s)}).join(", ") }}
-              </span>
-              <b-icon icon="menu-down" />
-            </button>
-
-            <b-dropdown-item value="buffer" aria-role="listitem">
-              <span>Stop Buffer</span>
-            </b-dropdown-item>
-
-            <b-dropdown-item value="hull" aria-role="listitem">
-              <span>Stop Hull</span>
-            </b-dropdown-item>
-
-            <b-dropdown-item value="census" aria-role="listitem">
-              <span>Census Geographies</span>
-            </b-dropdown-item>
-          </b-dropdown>
-        </b-field>
+    <b-field grouped expanded class="block">
+      <b-field label="Stop Buffer Radius (m)" expanded class="pr-6">
+        <b-slider
+          v-model="radius"
+          size="is-medium"
+          :min="0"
+          :max="2000"
+          :step="100"
+          ticks
+          lazy
+        >
+          <template v-for="val in [400,1000,2000]">
+            <b-slider-tick :key="val" :value="val">
+              {{ val }}
+            </b-slider-tick>
+          </template>
+        </b-slider>
       </b-field>
-    </div>
 
-    <br>
+      <b-field label="Summary Level" expanded>
+        <b-select v-model="layer">
+          <option v-for="(v,k) of layerInfo" :key="k" :value="k">
+            {{ v.name }}
+          </option>
+        </b-select>
+      </b-field>
+
+      <b-field label="Show on Map" expanded>
+        <b-dropdown
+          v-model="showOnMap"
+          multiple
+          aria-role="list"
+        >
+          <button slot="trigger" class="button" type="button">
+            <span>
+              {{ showOnMap.map((s)=>{return titleize(s)}).join(", ") }}
+            </span>
+            <b-icon icon="menu-down" />
+          </button>
+
+          <b-dropdown-item value="buffer" aria-role="listitem">
+            <span>Stop Buffer</span>
+          </b-dropdown-item>
+
+          <b-dropdown-item value="hull" aria-role="listitem">
+            <span>Stop Hull</span>
+          </b-dropdown-item>
+
+          <b-dropdown-item value="census" aria-role="listitem">
+            <span>Census Geographies</span>
+          </b-dropdown-item>
+        </b-dropdown>
+      </b-field>
+    </b-field>
 
     <div v-if="$apollo.loading">
       Loading...
     </div>
-    <div v-else>
+    <div v-else class="block">
       <b-field grouped>
         <b-field label="Download GeoJSON">
           <tl-geojson-downloader v-if="routeFeatures.length > 0" :features="routeFeatures" label="Routes" :filename="routeName" />
@@ -73,8 +69,6 @@
         </b-field>
       </b-field>
     </div>
-
-    <br>
 
     <tl-buffer-viewer :route-ids="routeIds" :agency-ids="agencyIds" :radius="radius" @setBufferFeatures="bufferFeatures = $event" @setHullFeatures="hullFeatures = $event" />
     <tl-census-viewer :route-ids="routeIds" :agency-ids="agencyIds" :radius="radius" :layer="layer" @setFeatures="censusFeatures = $event" />

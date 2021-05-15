@@ -1,10 +1,7 @@
 <template>
   <div>
     <tl-tlnav />
-    <div style="padding:40px">
-      <tl-pages-route onestop-id="r-9q9n-1t" />
-    </div>
-
+    <tl-pages-route onestop-id="r-9q9n-1t" />
     <tl-tlfooter />
   </div>
 </template>

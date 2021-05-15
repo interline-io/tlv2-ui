@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div v-if="showFilters">
-      <b-field grouped>
+    <div v-if="showFilters" class="block">
+      <b-field grouped expanded>
         <b-field v-if="showRouteSelect" label="Select routes">
           <b-taginput
             v-model="selectedRoutes"
@@ -82,7 +82,7 @@
         </b-field>
       </b-field>
     </div>
-    <br>
+
 
     <div class="clearfix">
       <div v-if="!weekAgg" class="col daylabel">

@@ -1,6 +1,6 @@
 <template>
-  <div class="content">
-    <table>
+  <div>
+    <table class="table is-fullwidth">
       <thead>
         <tr>
           <th />

@@ -32,7 +32,7 @@
 
       <b-field grouped group-multiline>
         <b-field label="Search by feed name">
-          <div style="width:300px">
+          <div>
             <tl-search-bar v-model="search" />
           </div>
         </b-field>
@@ -138,10 +138,10 @@
       <show-more v-if="entities.length === limit || hasMore" :limit="entities.length" @click="showAll" />
     </div>
     <template slot="add-feed">
-    <div style="margin-top:40px">
+    <div>
         <b-message type="is-info">
           <div>
-            Know a public feed that's missing from Transitland? <a href="/documentation/atlas#how-to-contribute-or-edit-a-feed" class="button" style="float:right">Add a feed to Transitland Atlas</a>
+            Know a public feed that's missing from Transitland? <a href="/documentation/atlas#how-to-contribute-or-edit-a-feed" class="button is-pulled-right">Add a feed to Transitland Atlas</a>
           </div>
         </b-message>
       </div>

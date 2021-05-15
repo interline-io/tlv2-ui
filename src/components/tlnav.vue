@@ -102,9 +102,3 @@ a {
   display: flex;
 }
 </style>
-
-<style>
-.navbar-end {
-  flex-grow: 2;
-}
-</style>

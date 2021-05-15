@@ -4,18 +4,16 @@
       Loading...
     </div>
     <div v-else-if="geographies.length === 0">
-      <br>
       <b-notification type="is-light" has-icon icon="information" :closable="false">
         Demographic information not found for this route or is unavailable for this region. Currently, only information from the <a href="https://www.census.gov/programs-surveys/acs/news/data-releases/2018.html" target="_blank">US Census Bureau American Community Survey</a> is available.
       </b-notification>
     </div>
     <div v-else>
-      <br>
       <h5 class="title is-5">
         Census results for {{ layerInfo[layer].plural.toLowerCase() }} within {{ radius }}m of a stop.
       </h5>
 
-      <table class="content table" style="width:100%">
+      <table class="table">
         <thead>
           <tr>
             <th />
@@ -46,7 +44,7 @@
         </tbody>
       </table>
 
-      <table class="content table" style="width:100%">
+      <table class="table">
         <thead>
           <tr>
             <th>
@@ -61,7 +59,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr style="border-bottom:solid 2px #ccc">
+          <tr class="census-total">
             <td>Total workers</td>
             <td>{{ tableSums | dig(['B08141','1']) | thousands }}</td>
             <td>{{ tablePcts | dig(['B08141','1']) | pct }}</td>
@@ -112,7 +110,7 @@
           </tr>
         </tbody>
       </table>
-      <br>
+
       <b-notification type="is-light" :closable="false">
         <a href="https://www.census.gov/programs-surveys/acs/news/data-releases/2018.html" target="_blank">US Census Bureau American Community Survey, 2018, 5 year</a>. This feature is in beta release; please verify values before using. You can provide feedback or suggestions for additional data tables using the contact information at the bottom of the page.
       </b-notification>
@@ -300,3 +298,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.census-total {
+  border-bottom:solid 2px #ccc
+}
+</style>

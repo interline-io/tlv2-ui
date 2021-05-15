@@ -96,9 +96,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.autocomplete .control .is-expanded input {
-  flex-grow: 10;
-}
-</style>

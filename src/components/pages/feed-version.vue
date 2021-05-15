@@ -26,9 +26,11 @@
       <h1 class="title">
         Feed {{ $route.params.feed }}: version fetched {{ entity.fetched_at | formatDate }} ({{ entity.fetched_at | fromNow }})
       </h1>
-      <p class="content">
-        {{ textDescription }}
-      </p>
+      <slot name="description">
+        <p class="block">
+          {{ textDescription }}
+        </p>
+      </slot>
       <nav class="level">
         <div class="level-item has-text-centered">
           <div>
@@ -82,7 +84,7 @@
         </div>
       </nav>
 
-      <table class="property-list">
+      <table class="table is-borderless">
         <tr>
           <td>Fetched</td>
           <td>{{ entity.fetched_at | formatDate }} ({{ entity.fetched_at | fromNow }})</td>
@@ -107,7 +109,6 @@
             Import in progress
           </td>
           <td v-else-if="!fvi.success">
-            Failed
             <b-message class="is-danger" has-icon>
               {{ fvi.exception_log }}
             </b-message>
@@ -116,8 +117,7 @@
       </table>
 
       <!-- TODO: check license info to make sure redistribution is allowed -->
-      <div style="margin-top:40px">
-        <b-message type="is-info" has-icon icon="information" :closable="false">
+        <b-message class="block" type="is-info" has-icon icon="information" :closable="false">
           <div class="columns">
             <div class="column is-8">
               <p>
@@ -131,45 +131,10 @@
             </div>
           </div>
         </b-message>
-      </div>
 
       <b-tabs v-model="activeTab" type="is-boxed" :animated="false" @input="setTab">
         <b-tab-item label="Files">
-          <div class="content">
-            <table class="table is-striped">
-              <thead>
-                <tr>
-                  <th>Filename</th>
-                  <th>Rows</th>
-                  <th>Size</th>
-                  <th>SHA1</th>
-                  <th>CSV</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="f of entity.files" :key="f.name">
-                  <td>{{ f.name }}</td>
-                  <td>{{ f.rows }}</td>
-                  <td>{{ f.size | prettyBytes }}</td>
-                  <td>{{ f.sha1 | shortenName(8) }}</td>
-                  <td>
-                    <b-tooltip v-if="f.csv_like" dashed>
-                      <template v-slot:content>
-                        <div>Columns</div>
-                        <ul>
-                          <li v-for="i of f.header.split(',')" :key="i">
-                            {{ i }}
-                          </li>
-                        </ul>
-                      </template>
-                      Yes
-                    </b-tooltip>
-                    <span v-else>No</span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <tl-file-info-viewer :files="entity.files" />
         </b-tab-item>
 
         <b-tab-item label="Service levels">
@@ -206,35 +171,33 @@
         </b-tab-item>
 
         <b-tab-item v-if="imported" label="Import log">
-          <div class="content">
-            <table class="table is-striped">
-              <thead>
-                <tr>
-                  <th>Filename</th>
-                  <th>Rows</th>
-                  <th>Imported</th>
-                  <th> / </th>
-                  <th>Errors</th>
-                  <th>Reference errors</th>
-                  <th>Filtered</th>
-                  <th>Unmarked</th>
-                  <th>Warnings</th>
-                </tr>
-              </thead><tbody>
-                <tr v-for="(v,fn) of mergedCount(entity.feed_version_gtfs_import)" :key="fn">
-                  <td>{{ fn }}</td>
-                  <td>{{ rowCount[fn] }}</td>
-                  <td>{{ v.count }}</td>
-                  <td />
-                  <td>{{ v.skip_error }}</td>
-                  <td>{{ v.skip_reference }}</td>
-                  <td>{{ v.skip_marked }}</td>
-                  <td>{{ v.skip_filter }} </td>
-                  <td>{{ v.warnings }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <table class="table is-striped is-fullwidth">
+            <thead>
+              <tr>
+                <th>Filename</th>
+                <th>Rows</th>
+                <th>Imported</th>
+                <th> / </th>
+                <th>Errors</th>
+                <th>Reference errors</th>
+                <th>Filtered</th>
+                <th>Unmarked</th>
+                <th>Warnings</th>
+              </tr>
+            </thead><tbody>
+              <tr v-for="(v,fn) of mergedCount(entity.feed_version_gtfs_import)" :key="fn">
+                <td>{{ fn }}</td>
+                <td>{{ rowCount[fn] }}</td>
+                <td>{{ v.count }}</td>
+                <td />
+                <td>{{ v.skip_error }}</td>
+                <td>{{ v.skip_reference }}</td>
+                <td>{{ v.skip_marked }}</td>
+                <td>{{ v.skip_filter }} </td>
+                <td>{{ v.warnings }}</td>
+              </tr>
+            </tbody>
+          </table>
         </b-tab-item>
       </b-tabs>
     </div>

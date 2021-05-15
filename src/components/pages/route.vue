@@ -51,6 +51,7 @@
       </h1>
 
       <!-- Warnings for freshness and viewing a specific version -->
+      <div class="block">
       <b-message v-if="dataFreshness > 365" type="is-warning" has-icon>
         The GTFS feeds associated with this page were fetched
         {{ dataFreshness }} days ago; use caution or check if newer data is
@@ -91,11 +92,12 @@
           to return to the main view.
         </template>
       </b-message>
+      </div>
 
       <!-- Main content -->
       <div class="columns">
         <div class="column is-two-thirds">
-          <table class="property-list mb-4">
+          <table class="table is-borderless">
             <tr>
               <td>
                 <b-tooltip
@@ -168,7 +170,7 @@
               </td>
             </tr>
           </table>
-          <b-message class="is-info">
+          <b-message class="is-info block">
             <p>
               Learn more about the contents of <code>routes.txt</code> on
               <a
@@ -185,7 +187,7 @@
           >
             <b-tab-item label="Summary">
               <tl-headway-viewer :headways="entity.headways" />
-              <div class="clearfix">
+              <div class="block">
                 {{ entity.entity_desc }}
               </div>
             </b-tab-item>
@@ -278,7 +280,7 @@
             </b-tab-item>
           </b-tabs>
         </div>
-        <div class="column is-one-third" style="width: 400px">
+        <div class="column is-one-third">
           <client-only>
             <tl-feed-version-map-viewer
               :route-ids="entityIds"
