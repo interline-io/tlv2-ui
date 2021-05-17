@@ -2,6 +2,7 @@
     "name": "tlv2-ui",
     "version": "0.0.1",
     "repository": "https://github.com/interline-io/tlv2-ui",
+    "license": "SEE LICENSE IN LICENSE.md",
     "files": [
         "src",
         "nuxt"
