@@ -86,6 +86,42 @@
 
       <table class="table is-borderless">
         <tr>
+          <td>Name</td>
+          <td>
+            <template v-if="showEdit">
+              <b-input v-model="entity.name" size="is-small" />
+            </template>
+            <template v-else-if="entity.name">
+                {{ entity.name }}
+            </template>
+            <template v-else>
+              <em>No name provided</em>
+            </template>
+          </td>
+        </tr>
+        <tr>
+          <td>Description</td>
+          <td>
+            <template v-if="showEdit">
+              <b-input v-model="entity.description" size="is-small" />
+            </template>
+            <template v-else-if="entity.description">
+                {{ entity.description }}
+            </template>
+            <template v-else>
+              <em>No description provided</em>
+            </template>
+          </td>
+        </tr>      
+        <tr v-if="entity.created_by">
+          <td>Created by</td>
+          <td>{{ entity.created_by }}</td>
+        </tr>
+        <tr v-if="entity.updated_by">
+          <td>Last updated by</td>
+          <td>{{ entity.updated_by }}</td>
+        </tr>
+        <tr>
           <td>Fetched</td>
           <td>{{ entity.fetched_at | formatDate }} ({{ entity.fetched_at | fromNow }})</td>
         </tr>
@@ -99,12 +135,33 @@
         </tr>
       </table>
 
+      <slot name="edit">
+        <div v-if="canEdit" class="=clearfix block pb-4">
+          &nbsp;
+          <div class="is-pulled-right">
+          <div v-if="showEdit">
+            <span class="button is-primary" @click="saveEntity">Save</span>
+          </div>
+          <div v-else>
+            <span class="button is-primary has-addons" @click="showEdit = true"><b-icon icon="pencil" /> <span>Edit</span></span>
+          </div>
+          </div>
+        </div>
+      </slot>
+
       <slot name="import">
         <b-message v-if="!fvi" class="is-info" has-icon icon="information" :closeable="false">
           This feed version is not currently imported into the database.
-            <span class="button is-primary is-pulled-right" @click="importFeedVersion">
+            <template v-if="importLoading">
+              <span class="button is-primary is-pulled-right" :disabled="true">
+                Importing...
+              </span>
+            </template>
+            <template v-else>
+              <span class="button is-primary is-pulled-right" @click="importFeedVersion">
               Import feed version
-            </span>
+              </span>
+            </template>
         </b-message>
         <b-message v-else-if="fvi.success" class="is-success" has-icon icon="check" :closeable="false">
           This feed version was successfully imported into the database.
@@ -115,7 +172,6 @@
         <b-message v-else-if="!fvi.success" has-icon icon="alert" :closeable="false" class="is-danger">
           Import Error: {{ fvi.exception_log }}
         </b-message>
-
       </slot>
 
       <!-- TODO: check license info to make sure redistribution is allowed -->
@@ -215,9 +271,19 @@ import EntityPageMixin from './entity-page-mixin'
 
 const importQuery = gql`
 mutation ($sha1: String!) { 
-  Import(sha1: $sha1) { 
+  import_feed_version(sha1: $sha1) { 
     success
   } 
+}
+`
+
+const saveFeedVersionMutation = gql`
+mutation($id:Int!, $set:FeedVersionSetInput!) {
+  update_feed_version(id:$id, set:$set) {
+    id
+    name
+    description
+  }
 }
 `
 
@@ -230,6 +296,10 @@ query ($feed_version_sha1: String!) {
     latest_calendar_date
     url
     fetched_at
+    name
+    description
+    created_by
+    updated_by
     files {
       name
       rows
@@ -279,10 +349,13 @@ export default {
     }
   },
   props: {
+    canEdit: {type:Boolean, default: false},
     feedVersionSha1: {type: String, default: null}
   },
   data () {
     return {
+      showEdit: false,
+      importLoading: false,
       features: [],
       tabIndex: {
         0: 'files',
@@ -324,7 +397,28 @@ export default {
     }
   },
   methods: {
+    saveEntity() {
+      this.$apollo
+        .mutate({
+          client: 'transitland',
+          mutation: saveFeedVersionMutation,
+          variables: {
+            id: this.entity.id,
+            set: {
+              name: this.entity.name,
+              description: this.entity.description
+            }
+          },
+          update: (store, { data: {  } }) => {
+            this.showEdit = false
+            this.$apollo.queries.entities.refetch()
+          }
+        }).catch((error) => {
+          this.setError(500, error)
+        })
+    },
     importFeedVersion() {
+      this.importLoading = true
       this.$apollo
         .mutate({
           client: 'transitland',
@@ -333,7 +427,7 @@ export default {
             sha1: this.entity.sha1
           },
           update: (store, { data: {  } }) => {
-            alert("Import Success!")
+            this.importLoading = false            
             this.$apollo.queries.entities.refetch()
           }
         }).catch((error) => {
