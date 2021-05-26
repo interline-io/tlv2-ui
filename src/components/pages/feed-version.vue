@@ -279,7 +279,7 @@ mutation ($sha1: String!) {
 
 const saveFeedVersionMutation = gql`
 mutation($id:Int!, $set:FeedVersionSetInput!) {
-  update_feed_version(id:$id, set:$set) {
+  feed_version_update(id:$id, set:$set) {
     id
     name
     description
