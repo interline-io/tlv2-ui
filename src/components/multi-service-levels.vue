@@ -154,7 +154,7 @@ import { parseISO, format, add, isBefore } from 'date-fns'
 import gql from 'graphql-tag'
 
 const q = gql`
-query ($feed_version_ids: [Int!], $route_ids: [String!], $start_date: Time, $end_date: Time) {
+query ($feed_version_ids: [Int!], $route_ids: [String!], $start_date: Date, $end_date: Date) {
   feed_versions(limit: 20, ids: $feed_version_ids) {
     id
     sha1
@@ -183,7 +183,7 @@ query ($feed_version_ids: [Int!], $route_ids: [String!], $start_date: Time, $end
 `
 
 const q2 = gql`
-query($feed_version_ids:[Int!], $start_date: Time, $end_date: Time) {
+query($feed_version_ids:[Int!], $start_date: Date, $end_date: Date) {
   feed_version_routes: feed_versions(limit: 20, ids: $feed_version_ids) {
     service_levels(limit: 1000, where: {distinct_on: "route_id", all_routes: true, start_date:$start_date, end_date:$end_date}) {
       id
