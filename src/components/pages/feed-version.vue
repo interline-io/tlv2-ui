@@ -252,7 +252,7 @@
 </template>
 
 <script>
-import { gql } from 'graphql-tag'
+import gql from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
 
 const importQuery = gql`

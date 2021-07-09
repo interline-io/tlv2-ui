@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { gql } from 'graphql-tag'
+import gql from 'graphql-tag'
 
 const q = gql`
 query ($route_ids: [Int!], $radius: Float!) {

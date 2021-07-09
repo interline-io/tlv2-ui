@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { gql } from 'graphql-tag'
+import gql from 'graphql-tag'
 
 const q = gql`
 query ($limit: Int!, $agency_ids: [Int!], $route_ids: [Int!], $feed_version_sha1: String, $include_stops: Boolean! = false) {

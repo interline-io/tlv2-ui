@@ -97,7 +97,7 @@
 </template>
 
 <script>
-import { gql } from 'graphql-tag'
+import gql from 'graphql-tag'
 import Filters from '../filters'
 import EntityPageMixin from './entity-page-mixin'
 

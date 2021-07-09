@@ -151,7 +151,7 @@
 
 <script>
 import { parseISO, format, add, isBefore } from 'date-fns'
-import { gql } from 'graphql-tag'
+import gql from 'graphql-tag'
 import Filters from './filters'
 
 const q = gql`
