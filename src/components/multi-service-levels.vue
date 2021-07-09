@@ -467,7 +467,7 @@ const months = {
 
 <style scoped>
 .col {
-    width: 20px;
+    width: 16px;
     float: left;
     padding-bottom:1px;
 }
@@ -475,8 +475,8 @@ const months = {
 .cell {
     position: relative;
     display:block;
-    width:20px;
-    height:20px;
+    width:16px;
+    height:16px;
     border:solid 1px #fff;
 }
 
