@@ -1,10 +1,12 @@
 export default {
+  props: { 
+    limit: {type: Number, default: 100}
+  },
   data () {
     return {
       hasMore: false,
       prevAfter: null,
       search: null,
-      limit: 100,
       entities: [],
       error: null
     }

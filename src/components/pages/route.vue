@@ -52,11 +52,13 @@
 
       <!-- Warnings for freshness and viewing a specific version -->
       <div class="block">
+
       <b-message v-if="dataFreshness > 365" type="is-warning" has-icon>
         The GTFS feeds associated with this page were fetched
         {{ dataFreshness }} days ago; use caution or check if newer data is
         available.
       </b-message>
+
       <b-message v-if="linkVersion" type="is-warning" has-icon>
         You are viewing a single GTFS Route entity defined in source feed
         <nuxt-link
@@ -97,7 +99,7 @@
       <!-- Main content -->
       <div class="columns">
         <div class="column is-two-thirds">
-          <table class="table is-borderless">
+          <table class="table is-borderless property-list">
             <tr>
               <td>
                 <b-tooltip

@@ -2,7 +2,7 @@
   <div>
     <div v-if="$apollo.loading" class="is-loading" />
     <div v-else-if="entity">
-      <slot name="nav">
+      <slot name="nav" v-bind:entity="entity">
       <nav class="breadcrumb">
       <ul>
         <li>
@@ -20,10 +20,10 @@
       </slot>
 
       <h1 class="title">
-        Feed {{ onestopId }}
+        Feed details: {{ onestopId }}
       </h1>
     
-      <slot name="description">
+      <slot name="description" v-bind:entity="entity">
         <p>
           {{ textDescription }}
         </p>
@@ -31,7 +31,7 @@
 
       <div class="columns">
         <div class="column is-three-quarters">
-          <table class="table is-borderless">
+          <table class="table is-borderless property-list">
             <tr>
               <td>
                 <b-tooltip dashed label="A globally unique identifier for this feed">
@@ -180,18 +180,10 @@
             </tr>
           </table>
         </div>
-        <slot name="edit-feed">
-          <div class="column is-one-quarter">
-            <b-message type="is-info" title="Edit" :closable="false">
-              <p>
-                You can update the URLs associated with this Feed record and other metadata in the <a href="/documentation/atlas">Transitland Atlas</a> repository. We welcome edits and additions.
-              </p>
-              <a class="button is-primary" :href="editLink" target="_blank"><b-icon icon="pencil" size="is-small" /> &nbsp; Edit Feed Record</a>
-            </b-message>
-          </div>
-        </slot>
+        <slot name="edit-feed" v-bind:entity="entity"></slot>
       </div>
       
+      <!-- TODO: Operators component -->
       <div v-if="showOperators">
       <hr>
       <h4 class="title is-4">
@@ -344,7 +336,7 @@
               </b-table-column>
             </b-table>
 
-            <slot name="add-feed-version"></slot>
+            <slot name="add-feed-version" v-bind:entity="entity"></slot>
           </b-tab-item>
 
           <b-tab-item label="Service Levels">
@@ -474,9 +466,7 @@ export default {
     newLink () {
       return ''
     },
-    editLink () {
-      return `https://github.com/transitland/transitland-atlas/edit/master/feeds/${this.entity.file}`
-    },
+
     displayLicense () {
       if (this.entity) {
         return isEmpty(this.entity.license)
@@ -495,7 +485,7 @@ export default {
     },
     textDescription () {
       const operatorDescription = this.entity.associated_operators ? ` describing ${this.entity.associated_operators[0].operator_name} and` : ''
-      return `${this.onestopId} is a ${this.entity.spec.toUpperCase()} feed${operatorDescription} aggregated by the Transitland open data platform`
+      return `${this.onestopId} is a ${this.entity.spec.toUpperCase()} feed ${operatorDescription}.`
     }
   },
   head () {

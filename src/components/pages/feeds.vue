@@ -1,29 +1,13 @@
 <template>
   <div>
-    <slot name="nav">
-      <nav class="breadcrumb">
-      <ul>
-        <li>
-          <nuxt-link :to="{name:'feeds'}">
-            Source Feeds
-          </nuxt-link>
-        </li>
-      </ul>
-      </nav>
+
+    <slot name="nav"></slot>
+
+    <slot name="title">
+        <h1 class="title">Feeds</h1>
     </slot>
 
-    <h1 class="title">
-      Source Feeds
-    </h1>
-
-    <slot name="description">
-      <div class="content">
-        <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
-        <p>Transitland aggregates data from thousands of public GTFS, GTFS Realtime, GBFS, and MSD feeds. Use the following table to search through Transitland's feed records. Or switch to browsing <nuxt-link :to="{name:'operators'}">Transitland operators</nuxt-link>, which group together related feeds for a richer experience.</p>
-        <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
-        <p>Transitland's registry of feeds for viewing and editing in the <nuxt-link to="/documentation/atlas">Transitland Atlas</nuxt-link> repository on GitHub. <a href="/documentation/atlas#how-to-contribute-or-edit-a-feed">We welcome contributions!</a></p>
-      </div>
-    </slot>
+    <slot name="description"></slot>
 
     <div>
       <b-message v-if="error" class="is-danger">
@@ -135,17 +119,11 @@
           </b-tooltip>
         </b-table-column> -->
       </b-table>
-      <show-more v-if="entities.length === limit || hasMore" :limit="entities.length" @click="showAll" />
+      <tl-show-more v-if="entities.length === limit || hasMore" :limit="entities.length" @click="showAll" />
     </div>
-    <template slot="add-feed">
-    <div>
-        <b-message type="is-info">
-          <div>
-            Know a public feed that's missing from Transitland? <a href="/documentation/atlas#how-to-contribute-or-edit-a-feed" class="button is-pulled-right">Add a feed to Transitland Atlas</a>
-          </div>
-        </b-message>
-      </div>
-    </template>
+
+    <slot name="add-feed"></slot>
+
   </div>
 </template>
 

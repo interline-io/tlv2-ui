@@ -47,7 +47,7 @@
       <!-- Main content -->
       <div class="columns">
         <div class="column is-three-quarters">
-          <table class="table is-borderless">
+          <table class="table is-borderless property-list">
             <tr>
               <td>
                 <b-tooltip dashed label="A globally unique identifier for this operator">
