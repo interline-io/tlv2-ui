@@ -1,13 +1,14 @@
 <template>
   <div>
-
-    <slot name="nav"></slot>
+    <slot name="nav" />
 
     <slot name="title">
-        <h1 class="title">Feeds</h1>
+      <h1 class="title">
+        Feeds
+      </h1>
     </slot>
 
-    <slot name="description"></slot>
+    <slot name="description" />
 
     <div>
       <b-message v-if="error" class="is-danger">
@@ -122,8 +123,7 @@
       <tl-show-more v-if="entities.length === limit || hasMore" :limit="entities.length" @click="showAll" />
     </div>
 
-    <slot name="add-feed"></slot>
-
+    <slot name="add-feed" />
   </div>
 </template>
 
@@ -205,6 +205,14 @@ export default {
       importStatus: this.$route.query.import_status
     }
   },
+  head () {
+    return {
+      title: 'Source Feeds: GTFS, GTFS Realtime, GBFS',
+      meta: [
+        { hid: 'description', name: 'description', content: 'GTFS, GTFS Realtime, and GBFS source feeds cataloged by the Transitland platform.' }
+      ]
+    }
+  },
   computed: {
     feedPage () {
       return this.entityPage.map((feed) => {
@@ -237,14 +245,6 @@ export default {
     },
     feedSpecs (v) {
       this.$router.replace({ name: 'feeds', query: { ...this.$route.query, feed_specs: v } })
-    }
-  },
-  head () {
-    return {
-      title: 'Source Feeds: GTFS, GTFS Realtime, GBFS',
-      meta: [
-        { hid: 'description', name: 'description', content: 'GTFS, GTFS Realtime, and GBFS source feeds cataloged by the Transitland platform.' }
-      ]
     }
   }
 }

@@ -83,7 +83,6 @@
       </b-field>
     </div>
 
-
     <div class="clearfix">
       <div v-if="!weekAgg" class="col daylabel">
         <span class="cell month">&nbsp;</span>
@@ -149,9 +148,9 @@
 </template>
 
 <script>
-import Filters from './filters'
 import { parseISO, format, add, isBefore } from 'date-fns'
 import gql from 'graphql-tag'
+import Filters from './filters'
 
 const q = gql`
 query ($feed_version_ids: [Int!], $route_ids: [String!], $start_date: Date, $end_date: Date) {

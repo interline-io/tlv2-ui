@@ -16,12 +16,12 @@ export default {
     }
   },
   props: {
-    onestopId: {type:String, default:null},
-    feedVersionSha1: {type:String,default:null},
-    feedOnestopId: {type:String,default:null},
-    entityId: {type:String,default:null}
+    onestopId: { type: String, default: null },
+    feedVersionSha1: { type: String, default: null },
+    feedOnestopId: { type: String, default: null },
+    entityId: { type: String, default: null }
   },
-  mixins: [ Filters ],
+  mixins: [Filters],
   data () {
     return {
       entities: [],
@@ -95,7 +95,7 @@ export default {
       return false
     },
     setError (statusCode, message) {
-      this.$nuxt.error({ statusCode: statusCode, message: message })
+      this.$nuxt.error({ statusCode, message })
     },
     setTab (value) {
       const tab = this.tabIndex[value]

@@ -155,6 +155,11 @@ const tableNames = [
 ]
 
 export default {
+  filters: {
+    dig (object, path) {
+      return path.reduce((xs, x) => (xs && xs[x] ? xs[x] : null), object)
+    }
+  },
   props: {
     layer: { type: String, default: 'tract' },
     radius: { type: Number, default: 400 },
@@ -284,11 +289,6 @@ export default {
         })
       }
       return ret
-    }
-  },
-  filters: {
-    dig: function (object, path) {
-      return path.reduce((xs, x) => (xs && xs[x] ? xs[x] : null), object);
     }
   },
   watch: {

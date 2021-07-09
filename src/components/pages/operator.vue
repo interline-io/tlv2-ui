@@ -314,12 +314,20 @@ export default {
       skip () { return this.checkSearchSkip(this.$route.query.agency_id) }, // skip if search and no agency_id
       variables () {
         return {
-          onestop_id: this.onestopId,
+          onestop_id: this.onestopId
           // feed_onestop_id: this.$route.query.feed_onestop_id,
           // agency_id: this.$route.query.agency_id,
           // active_null: false // this.linkVersion ? null : false // currently only active is supported for operators
         }
       }
+    }
+  },
+  head () {
+    return {
+      title: `${this.operatorName} • Operator details`,
+      meta: [
+        { hid: 'description', name: 'description', content: this.textDescription }
+      ]
     }
   },
   computed: {
@@ -444,14 +452,6 @@ export default {
         .map(l => [l.adm0name, l.adm1name, l.name].filter(Boolean).join(', '))
         .join('; ')
       return `${this.operatorName} is an operator listed on the Transitland open data platform. Transitland sources data for this operator from ${this.uniqueFeedSourcesNumber} GTFS ${this.uniqueFeedSourcesNumber > 1 ? 'feeds' : 'feed'}. ${this.operatorName} provides transit services in the following locations: ${locations}.`
-    }
-  },
-  head () {
-    return {
-      title: `${this.operatorName} • Operator details`,
-      meta: [
-        { hid: 'description', name: 'description', content: this.textDescription }
-      ]
     }
   }
 }

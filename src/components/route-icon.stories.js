@@ -2,8 +2,8 @@ export default {
   title: 'tl-route-icon',
   argTypes: {
     routeType: {
-      control: {type:'radio', options: [0,1,2,3]},
-      defaultValue: 1,
+      control: { type: 'radio', options: [0, 1, 2, 3] },
+      defaultValue: 1
     },
     routeShortName: {
       control: 'text',

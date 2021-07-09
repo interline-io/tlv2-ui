@@ -1,13 +1,14 @@
 <template>
   <div class="container">
-    <slot name="nav"></slot>
+    <slot name="nav" />
 
     <slot name="title">
-        <h1 class="title">Operators</h1>
+      <h1 class="title">
+        Operators
+      </h1>
     </slot>
 
-    <slot name="description">
-    </slot>
+    <slot name="description" />
 
     <div>
       <b-field grouped>
@@ -90,7 +91,7 @@
       <tl-show-more v-if="entities.length === limit || hasMore" :limit="entities.length" @click="showAll" />
     </div>
 
-    <slot name="add-operator"></slot>
+    <slot name="add-operator" />
   </div>
 </template>
 
@@ -143,6 +144,14 @@ export default {
       }
     }
   },
+  head () {
+    return {
+      title: 'Browse all Operators',
+      meta: [
+        { hid: 'description', name: 'description', content: 'Transitland uses operators to group together source feeds and other relevant data.' }
+      ]
+    }
+  },
   computed: {
     entityPageFlat () {
       return this.entityPage.map((s) => {
@@ -170,14 +179,6 @@ export default {
       q[a] = b
       this.$router.push({ name: 'operators', query: q })
       this.page = 1
-    }
-  },
-  head () {
-    return {
-      title: 'Browse all Operators',
-      meta: [
-        { hid: 'description', name: 'description', content: 'Transitland uses operators to group together source feeds and other relevant data.' }
-      ]
     }
   }
 }

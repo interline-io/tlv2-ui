@@ -174,6 +174,16 @@ export default {
       }
     }
   },
+  head () {
+    if (this.entity) {
+      return {
+        title: this.entity.stop_name,
+        meta: [
+          { hid: 'description', name: 'description', content: `${this.entity.stop_name} is a stop ` }
+        ]
+      }
+    }
+  },
   computed: {
     stopFeatures () {
       const ret = []
@@ -265,16 +275,6 @@ export default {
         children: Array.from(children.values())
       }
       return ent
-    }
-  },
-  head () {
-    if (this.entity) {
-      return {
-        title: this.entity.stop_name,
-        meta: [
-          { hid: 'description', name: 'description', content: `${this.entity.stop_name} is a stop ` }
-        ]
-      }
     }
   }
 }

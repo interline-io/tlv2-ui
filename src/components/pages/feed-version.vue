@@ -2,7 +2,7 @@
   <div>
     <div v-if="$apollo.loading" class="is-loading" />
     <div v-else-if="entity">
-      <slot name="nav" v-bind:entity="entity">
+      <slot name="nav" :entity="entity">
         <nav class="breadcrumb">
           <ul>
             <li>
@@ -27,10 +27,10 @@
       <h1 class="title">
         Feed {{ $route.params.feed }}: version fetched {{ entity.fetched_at | formatDate }} ({{ entity.fetched_at | fromNow }})
       </h1>
-      
-      <slot name="description" v-bind:entity="entity">
+
+      <slot name="description" :entity="entity">
         <p>
-          {{ textDescription}}<br><br>
+          {{ textDescription }}<br><br>
         </p>
       </slot>
 
@@ -95,7 +95,7 @@
               <b-input v-model="entity.name" size="is-small" />
             </template>
             <template v-else-if="entity.name">
-                {{ entity.name }}
+              {{ entity.name }}
             </template>
             <template v-else>
               <em>No name provided</em>
@@ -109,13 +109,13 @@
               <b-input v-model="entity.description" size="is-small" />
             </template>
             <template v-else-if="entity.description">
-                {{ entity.description }}
+              {{ entity.description }}
             </template>
             <template v-else>
               <em>No description provided</em>
             </template>
           </td>
-        </tr>      
+        </tr>
         <tr v-if="entity.created_by">
           <td>Created by</td>
           <td>{{ entity.created_by }}</td>
@@ -138,33 +138,33 @@
         </tr>
       </table>
 
-      <slot name="edit" v-bind:entity="entity">
+      <slot name="edit" :entity="entity">
         <div v-if="canEdit" class="=clearfix block pb-4">
           &nbsp;
           <div class="is-pulled-right">
-          <div v-if="showEdit">
-            <span class="button is-primary" @click="saveEntity">Save</span>
-          </div>
-          <div v-else>
-            <span class="button is-primary has-addons" @click="showEdit = true"><b-icon icon="pencil" /> <span>Edit</span></span>
-          </div>
+            <div v-if="showEdit">
+              <span class="button is-primary" @click="saveEntity">Save</span>
+            </div>
+            <div v-else>
+              <span class="button is-primary has-addons" @click="showEdit = true"><b-icon icon="pencil" /> <span>Edit</span></span>
+            </div>
           </div>
         </div>
       </slot>
 
-      <slot name="import" v-bind:entity="entity">
+      <slot name="import" :entity="entity">
         <b-message v-if="!fvi" class="is-info" has-icon icon="information" :closeable="false">
           This feed version is not currently imported into the database.
-            <template v-if="importLoading">
-              <span class="button is-primary is-pulled-right" :disabled="true">
-                Importing...
-              </span>
-            </template>
-            <template v-else>
-              <span class="button is-primary is-pulled-right" @click="importFeedVersion">
+          <template v-if="importLoading">
+            <span class="button is-primary is-pulled-right" :disabled="true">
+              Importing...
+            </span>
+          </template>
+          <template v-else>
+            <span class="button is-primary is-pulled-right" @click="importFeedVersion">
               Import feed version
-              </span>
-            </template>
+            </span>
+          </template>
         </b-message>
         <b-message v-else-if="fvi.success" class="is-success" has-icon icon="check" :closeable="false">
           This feed version was successfully imported into the database.
@@ -177,8 +177,7 @@
         </b-message>
       </slot>
 
-
-      <slot name="download" v-bind:entity="entity">      </slot>
+      <slot name="download" :entity="entity" />
 
       <b-tabs v-model="activeTab" type="is-boxed" :animated="false" @input="setTab">
         <b-tab-item label="Files">
@@ -336,8 +335,8 @@ export default {
     }
   },
   props: {
-    canEdit: {type:Boolean, default: false},
-    feedVersionSha1: {type: String, default: null}
+    canEdit: { type: Boolean, default: false },
+    feedVersionSha1: { type: String, default: null }
   },
   data () {
     return {
@@ -368,7 +367,7 @@ export default {
       title: `${this.$route.params.feed} • ${this.$route.params.version} • Feed version`,
       meta
     }
-  },  
+  },
   computed: {
     imported () {
       return this.fvi && this.fvi.success
@@ -397,7 +396,7 @@ export default {
     }
   },
   methods: {
-    saveEntity() {
+    saveEntity () {
       this.$apollo
         .mutate({
           client: 'transitland',
@@ -409,7 +408,7 @@ export default {
               description: this.entity.description
             }
           },
-          update: (store, { data: {  } }) => {
+          update: (store, { data: { } }) => {
             this.showEdit = false
             this.$apollo.queries.entities.refetch()
           }
@@ -417,7 +416,7 @@ export default {
           this.setError(500, error)
         })
     },
-    importFeedVersion() {
+    importFeedVersion () {
       this.importLoading = true
       this.$apollo
         .mutate({
@@ -426,8 +425,8 @@ export default {
           variables: {
             sha1: this.entity.sha1
           },
-          update: (store, { data: {  } }) => {
-            this.importLoading = false            
+          update: (store, { data: { } }) => {
+            this.importLoading = false
             this.$apollo.queries.entities.refetch()
           }
         }).catch((error) => {

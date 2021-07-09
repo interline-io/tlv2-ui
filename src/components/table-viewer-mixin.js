@@ -1,6 +1,6 @@
 export default {
-  props: { 
-    limit: {type: Number, default: 100}
+  props: {
+    limit: { type: Number, default: 100 }
   },
   data () {
     return {
