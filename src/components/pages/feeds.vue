@@ -194,6 +194,7 @@ export default {
   data () {
     let spec = this.$route.query.feed_specs
     if (Array.isArray(spec)) {
+      // ok
     } else if (spec) {
       spec = [spec]
     } else {

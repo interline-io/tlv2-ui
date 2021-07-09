@@ -32,6 +32,7 @@
           </b-taginput>
         </b-field>
 
+        <!--
         <b-field label="Aggregate">
           <b-select v-model="weekAgg">
             <option :value="true">
@@ -42,6 +43,7 @@
             </option>
           </b-select>
         </b-field>
+        -->
 
         <b-field label="Service relative to">
           <b-select v-model="maxAggMode">

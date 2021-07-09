@@ -408,7 +408,7 @@ export default {
               description: this.entity.description
             }
           },
-          update: (store, { data: { } }) => {
+          update: (store, { data }) => {
             this.showEdit = false
             this.$apollo.queries.entities.refetch()
           }
@@ -425,7 +425,7 @@ export default {
           variables: {
             sha1: this.entity.sha1
           },
-          update: (store, { data: { } }) => {
+          update: (store, { data }) => {
             this.importLoading = false
             this.$apollo.queries.entities.refetch()
           }
