@@ -25,7 +25,7 @@
             </b-tag>
           </b-field>
           <div v-else style="width:100%">
-            <search-bar v-model="search" placeholder="e.g. Bay Area Rapid Transit" />
+            <tl-search-bar v-model="search" placeholder="e.g. Bay Area Rapid Transit" />
           </div>
 
           <b-dropdown class="is-pulled-right" append-to-body aria-role="menu" trap-focus>
@@ -96,7 +96,7 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 import TableViewerMixin from '../table-viewer-mixin'
 
 const q = gql`

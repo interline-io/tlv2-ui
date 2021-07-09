@@ -1,5 +1,5 @@
 import debounce from 'lodash/debounce'
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 
 const q = gql`
 query ($search: String!) {

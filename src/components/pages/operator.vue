@@ -233,7 +233,7 @@
           </b-tab-item>
 
           <b-tab-item label="Stops">
-            <stop-viewer v-if="activeTab === 2" :agency-ids="agencyIds" />
+            <tl-stop-viewer v-if="activeTab === 2" :agency-ids="agencyIds" />
           </b-tab-item>
 
           <b-tab-item v-if="advancedMode" label="Export">
@@ -251,7 +251,7 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
 
 const q = gql`

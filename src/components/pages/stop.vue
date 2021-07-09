@@ -49,7 +49,7 @@
                 <nuxt-link
                   :to="{name:'routes-onestop_id', params:{onestop_id:rs.route.onestop_id}}"
                 >
-                  <route-icon :route-type="rs.route.route_type" :route-short-name="rs.route.route_short_name" :route-long-name="rs.route.route_long_name" :route-link="rs.route.route_url" />
+                  <tl-route-icon :route-type="rs.route.route_type" :route-short-name="rs.route.route_short_name" :route-long-name="rs.route.route_long_name" :route-link="rs.route.route_url" />
                 </nuxt-link>
               </div>
             </b-tab-item>
@@ -80,7 +80,7 @@
           </b-tabs>
         </div>
         <div class="column is-one-third" style="width:400px;position:relative">
-          <map-viewer
+          <tl-map-viewer
             :stop-features="stopFeatures"
             :route-features="routeFeatures"
             :features="features"
@@ -97,7 +97,8 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
+import Filters from '../filters'
 import EntityPageMixin from './entity-page-mixin'
 
 const q = gql`
@@ -159,7 +160,7 @@ query ($onestop_id: String, $stop_id: String, $feed_onestop_id: String, $feed_ve
 `
 
 export default {
-  mixins: [EntityPageMixin],
+  mixins: [EntityPageMixin, Filters],
   apollo: {
     entities: {
       query: q,

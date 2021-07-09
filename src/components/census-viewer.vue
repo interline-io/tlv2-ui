@@ -119,7 +119,8 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
+import Filters from './filters'
 
 const dig = (path, object) => path.reduce((xs, x) => (xs && xs[x]) ? xs[x] : null, object)
 
@@ -160,6 +161,7 @@ export default {
       return path.reduce((xs, x) => (xs && xs[x] ? xs[x] : null), object)
     }
   },
+  mixins: [Filters],
   props: {
     layer: { type: String, default: 'tract' },
     radius: { type: Number, default: 400 },
