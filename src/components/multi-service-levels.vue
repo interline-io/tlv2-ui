@@ -32,6 +32,7 @@
           </b-taginput>
         </b-field>
 
+        <!--
         <b-field label="Aggregate">
           <b-select v-model="weekAgg">
             <option :value="true">
@@ -42,6 +43,7 @@
             </option>
           </b-select>
         </b-field>
+        -->
 
         <b-field label="Service relative to">
           <b-select v-model="maxAggMode">
@@ -82,7 +84,6 @@
         </b-field>
       </b-field>
     </div>
-
 
     <div class="clearfix">
       <div v-if="!weekAgg" class="col daylabel">
@@ -149,9 +150,9 @@
 </template>
 
 <script>
-import Filters from './filters'
 import { parseISO, format, add, isBefore } from 'date-fns'
 import gql from 'graphql-tag'
+import Filters from './filters'
 
 const q = gql`
 query ($feed_version_ids: [Int!], $route_ids: [String!], $start_date: Date, $end_date: Date) {
@@ -466,7 +467,7 @@ const months = {
 
 <style scoped>
 .col {
-    width: 20px;
+    width: 16px;
     float: left;
     padding-bottom:1px;
 }
@@ -474,8 +475,8 @@ const months = {
 .cell {
     position: relative;
     display:block;
-    width:20px;
-    height:20px;
+    width:16px;
+    height:16px;
     border:solid 1px #fff;
 }
 

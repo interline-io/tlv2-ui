@@ -47,10 +47,11 @@
 <script>
 import gql from 'graphql-tag'
 import TableViewerMixin from './table-viewer-mixin'
+import Filters from './filters'
 
 const q = gql`
 query ($feed_version_sha1: String, $agency_ids: [Int!], $limit: Int, $after: Int, $search: String) {
-  entities: stops(after: $after, limit: $limit, where: {feed_onestop_id:"f-9q9-actransit", agency_ids: $agency_ids, feed_version_sha1: $feed_version_sha1, search: $search}) {
+  entities: stops(after: $after, limit: $limit, where: {agency_ids: $agency_ids, feed_version_sha1: $feed_version_sha1, search: $search}) {
     id
     feed_onestop_id
     feed_version_sha1
@@ -74,7 +75,7 @@ query ($feed_version_sha1: String, $agency_ids: [Int!], $limit: Int, $after: Int
 `
 
 export default {
-  mixins: [TableViewerMixin],
+  mixins: [TableViewerMixin, Filters],
   props: {
     showRoutes: { type: Boolean, default: true },
     showAgencies: { type: Boolean, default: false },

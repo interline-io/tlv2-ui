@@ -3,43 +3,43 @@
     <div v-if="$apollo.loading" class="is-loading" />
     <div v-else-if="entity">
       <slot name="nav">
-      <nav class="breadcrumb">
-        <ul>
-          <li>
-            <nuxt-link :to="{ name: 'operators' }">
-              Operators
-            </nuxt-link>
-          </li>
-          <li>
-            <!-- TODO: this is not ideal... it links only to the auto-generated onestop_id, and not the resolved, cached tl_mv_active_agencies lookup. -->
-            <nuxt-link
-              :to="{
-                name: 'operators-onestop_id',
-                params: { onestop_id: entity.agency.onestop_id },
-              }"
-            >
-              {{ entity.agency.agency_name }}
-            </nuxt-link>
-          </li>
-          <li>
-            <nuxt-link
-              :to="{
-                name: 'routes-onestop_id',
-                params: { onestop_id: onestopId },
-              }"
-            >
-              {{ entity.route_short_name }}
-              <template
-                v-if="entity.route_short_name != entity.route_long_name"
+        <nav class="breadcrumb">
+          <ul>
+            <li>
+              <nuxt-link :to="{ name: 'operators' }">
+                Operators
+              </nuxt-link>
+            </li>
+            <li>
+              <!-- TODO: this is not ideal... it links only to the auto-generated onestop_id, and not the resolved, cached tl_mv_active_agencies lookup. -->
+              <nuxt-link
+                :to="{
+                  name: 'operators-onestop_id',
+                  params: { onestop_id: entity.agency.onestop_id },
+                }"
               >
-                {{ entity.route_long_name }}
-              </template>
-            </nuxt-link>
-          </li>
-        </ul>
-      </nav>
+                {{ entity.agency.agency_name }}
+              </nuxt-link>
+            </li>
+            <li>
+              <nuxt-link
+                :to="{
+                  name: 'routes-onestop_id',
+                  params: { onestop_id: onestopId },
+                }"
+              >
+                {{ entity.route_short_name }}
+                <template
+                  v-if="entity.route_short_name != entity.route_long_name"
+                >
+                  {{ entity.route_long_name }}
+                </template>
+              </nuxt-link>
+            </li>
+          </ul>
+        </nav>
       </slot>
-      
+
       <h1 v-for="ent of routeNames" :key="ent.id" class="title">
         {{ ent.agency.agency_name }} <br>
         <tl-route-icon
@@ -52,52 +52,53 @@
 
       <!-- Warnings for freshness and viewing a specific version -->
       <div class="block">
-      <b-message v-if="dataFreshness > 365" type="is-warning" has-icon>
-        The GTFS feeds associated with this page were fetched
-        {{ dataFreshness }} days ago; use caution or check if newer data is
-        available.
-      </b-message>
-      <b-message v-if="linkVersion" type="is-warning" has-icon>
-        You are viewing a single GTFS Route entity defined in source feed
-        <nuxt-link
-          :to="{
-            name: 'feeds-feed',
-            params: { feed: feedOnestopId },
-          }"
-        >
-          {{ feedOnestopId | shortenName }}
-        </nuxt-link>
-        version
-        <nuxt-link
-          :to="{
-            name: 'feeds-feed-versions-version',
-            params: {
-              feed: feedOnestopId,
-              version: feedVersionSha1,
-            },
-          }"
-        >
-          {{ feedVersionSha1 | shortenName(8) }}
-        </nuxt-link>.<br>
-        <template v-if="!search">
-          Click
+        <b-message v-if="dataFreshness > 365" type="is-warning" has-icon>
+          The GTFS feeds associated with this page were fetched
+          {{ dataFreshness }} days ago; use caution or check if newer data is
+          available.
+        </b-message>
+
+        <b-message v-if="linkVersion" type="is-warning" has-icon>
+          You are viewing a single GTFS Route entity defined in source feed
           <nuxt-link
             :to="{
-              name: 'routes-onestop_id',
-              params: { onestop_id: onestopId },
+              name: 'feeds-feed',
+              params: { feed: feedOnestopId },
             }"
           >
-            here
+            {{ feedOnestopId | shortenName }}
           </nuxt-link>
-          to return to the main view.
-        </template>
-      </b-message>
+          version
+          <nuxt-link
+            :to="{
+              name: 'feeds-feed-versions-version',
+              params: {
+                feed: feedOnestopId,
+                version: feedVersionSha1,
+              },
+            }"
+          >
+            {{ feedVersionSha1 | shortenName(8) }}
+          </nuxt-link>.<br>
+          <template v-if="!search">
+            Click
+            <nuxt-link
+              :to="{
+                name: 'routes-onestop_id',
+                params: { onestop_id: onestopId },
+              }"
+            >
+              here
+            </nuxt-link>
+            to return to the main view.
+          </template>
+        </b-message>
       </div>
 
       <!-- Main content -->
       <div class="columns">
         <div class="column is-two-thirds">
-          <table class="table is-borderless">
+          <table class="table is-borderless property-list">
             <tr>
               <td>
                 <b-tooltip
@@ -298,8 +299,8 @@
 
 <script>
 import gql from 'graphql-tag'
-import EntityPageMixin from './entity-page-mixin'
 import Filters from '../filters'
+import EntityPageMixin from './entity-page-mixin'
 
 const q = gql`
   query(
@@ -412,6 +413,85 @@ export default {
       }
     }
   },
+  head () {
+    if (this.entity) {
+      return {
+        title: this.staticTitle,
+        meta: [
+          {
+            hid: 'description',
+            name: 'description',
+            content: this.staticDescription
+          },
+          {
+            hid: 'twitter:card',
+            name: 'twitter:card',
+            content: 'summary'
+          },
+          {
+            hid: 'twitter:site',
+            name: 'twitter:site',
+            content: '@transitland'
+          },
+          {
+            hid: 'twitter:title',
+            name: 'twitter:title',
+            content: this.staticTitle
+          },
+          {
+            hid: 'twitter:description',
+            name: 'twitter:description',
+            content: this.staticDescription
+          },
+          {
+            hid: 'twitter:image',
+            name: 'twitter:image',
+            content: this.staticImage
+          },
+          {
+            hid: 'twitter:image:alt',
+            name: 'twitter:image:alt',
+            content: this.staticTitle
+          },
+          {
+            hid: 'og:title',
+            property: 'og:title',
+            content: this.staticTitle
+          },
+          {
+            hid: 'og:description',
+            property: 'og:description',
+            content: this.staticDescription
+          },
+          {
+            hid: 'og:image',
+            property: 'og:image',
+            content: this.staticImage
+          },
+          {
+            hid: 'og:image:alt',
+            property: 'og:image:alt',
+            content: this.staticTitle
+          },
+          {
+            hid: 'og:image:type',
+            property: 'og:image:type',
+            content: 'image/png'
+          },
+          {
+            hid: 'og:image:width',
+            property: 'og:image:width',
+            content: '800'
+          },
+          {
+            hid: 'og:image:height',
+            property: 'og:image:height',
+            content: '600'
+          }
+        ]
+      }
+    }
+  },
   computed: {
     // routeFeatures and stopFeatures are calculated from the main
     // graphql response so we don't need to copy in and rely on the response from the map
@@ -500,85 +580,6 @@ export default {
     },
     staticDescription () {
       return `${this.routeName} is a ${this.routeType} route available for browsing and analyzing on the Transitland platform.`
-    }
-  },
-  head () {
-    if (this.entity) {
-      return {
-        title: this.staticTitle,
-        meta: [
-          {
-            hid: 'description',
-            name: 'description',
-            content: this.staticDescription
-          },
-          {
-            hid: 'twitter:card',
-            name: 'twitter:card',
-            content: 'summary'
-          },
-          {
-            hid: 'twitter:site',
-            name: 'twitter:site',
-            content: '@transitland'
-          },
-          {
-            hid: 'twitter:title',
-            name: 'twitter:title',
-            content: this.staticTitle
-          },
-          {
-            hid: 'twitter:description',
-            name: 'twitter:description',
-            content: this.staticDescription
-          },
-          {
-            hid: 'twitter:image',
-            name: 'twitter:image',
-            content: this.staticImage
-          },
-          {
-            hid: 'twitter:image:alt',
-            name: 'twitter:image:alt',
-            content: this.staticTitle
-          },
-          {
-            hid: 'og:title',
-            property: 'og:title',
-            content: this.staticTitle
-          },
-          {
-            hid: 'og:description',
-            property: 'og:description',
-            content: this.staticDescription
-          },
-          {
-            hid: 'og:image',
-            property: 'og:image',
-            content: this.staticImage
-          },
-          {
-            hid: 'og:image:alt',
-            property: 'og:image:alt',
-            content: this.staticTitle
-          },
-          {
-            hid: 'og:image:type',
-            property: 'og:image:type',
-            content: 'image/png'
-          },
-          {
-            hid: 'og:image:width',
-            property: 'og:image:width',
-            content: '800'
-          },
-          {
-            hid: 'og:image:height',
-            property: 'og:image:height',
-            content: '600'
-          }
-        ]
-      }
     }
   }
 }

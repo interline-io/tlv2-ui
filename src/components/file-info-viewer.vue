@@ -18,7 +18,7 @@
           <td>{{ f.sha1 | shortenName(8) }}</td>
           <td>
             <b-tooltip v-if="f.csv_like" dashed>
-              <template v-slot:content>
+              <template #content>
                 <div>Columns</div>
                 <ul>
                   <li v-for="i of f.header.split(',')" :key="i">

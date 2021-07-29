@@ -2,35 +2,38 @@
   <div>
     <div v-if="$apollo.loading" class="is-loading" />
     <div v-else-if="entity">
-      <slot name="nav">
-      <nav class="breadcrumb">
-      <ul>
-        <li>
-          <nuxt-link :to="{name:'feeds'}">
-            Source Feeds
-          </nuxt-link>
-        </li>
-        <li>
-          <nuxt-link :to="{name: 'feeds-feed', params:{feed:$route.params.feed}}">
-            {{ $route.params.feed }}
-          </nuxt-link>
-        </li>
-        <li>
-          <nuxt-link :to="{name: 'feeds-feed-versions-version', params:{feed:$route.params.feed, version:$route.params.version}}">
-            {{ $route.params.version | shortenName(8) }}
-          </nuxt-link>
-        </li>
-      </ul>
-      </nav>
+      <slot name="nav" :entity="entity">
+        <nav class="breadcrumb">
+          <ul>
+            <li>
+              <nuxt-link :to="{name:'feeds'}">
+                Source Feeds
+              </nuxt-link>
+            </li>
+            <li>
+              <nuxt-link :to="{name: 'feeds-feed', params:{feed:$route.params.feed}}">
+                {{ $route.params.feed }}
+              </nuxt-link>
+            </li>
+            <li>
+              <nuxt-link :to="{name: 'feeds-feed-versions-version', params:{feed:$route.params.feed, version:$route.params.version}}">
+                {{ $route.params.version | shortenName(8) }}
+              </nuxt-link>
+            </li>
+          </ul>
+        </nav>
       </slot>
+
       <h1 class="title">
         Feed {{ $route.params.feed }}: version fetched {{ entity.fetched_at | formatDate }} ({{ entity.fetched_at | fromNow }})
       </h1>
-      <slot name="description">
-        <p class="block">
-          {{ textDescription }}
+
+      <slot name="description" :entity="entity">
+        <p>
+          {{ textDescription }}<br><br>
         </p>
       </slot>
+
       <nav class="level">
         <div class="level-item has-text-centered">
           <div>
@@ -84,7 +87,7 @@
         </div>
       </nav>
 
-      <table class="table is-borderless">
+      <table class="table is-borderless property-list">
         <tr>
           <td>Name</td>
           <td>
@@ -92,27 +95,27 @@
               <b-input v-model="entity.name" size="is-small" />
             </template>
             <template v-else-if="entity.name">
-                {{ entity.name }}
+              {{ entity.name }}
             </template>
             <template v-else>
               <em>No name provided</em>
             </template>
           </td>
         </tr>
-        <tr>
+        <tr v-if="entity.description">
           <td>Description</td>
           <td>
             <template v-if="showEdit">
               <b-input v-model="entity.description" size="is-small" />
             </template>
             <template v-else-if="entity.description">
-                {{ entity.description }}
+              {{ entity.description }}
             </template>
             <template v-else>
               <em>No description provided</em>
             </template>
           </td>
-        </tr>      
+        </tr>
         <tr v-if="entity.created_by">
           <td>Created by</td>
           <td>{{ entity.created_by }}</td>
@@ -135,33 +138,33 @@
         </tr>
       </table>
 
-      <slot name="edit">
+      <slot name="edit" :entity="entity">
         <div v-if="canEdit" class="=clearfix block pb-4">
           &nbsp;
           <div class="is-pulled-right">
-          <div v-if="showEdit">
-            <span class="button is-primary" @click="saveEntity">Save</span>
-          </div>
-          <div v-else>
-            <span class="button is-primary has-addons" @click="showEdit = true"><b-icon icon="pencil" /> <span>Edit</span></span>
-          </div>
+            <div v-if="showEdit">
+              <span class="button is-primary" @click="saveEntity">Save</span>
+            </div>
+            <div v-else>
+              <span class="button is-primary has-addons" @click="showEdit = true"><b-icon icon="pencil" /> <span>Edit</span></span>
+            </div>
           </div>
         </div>
       </slot>
 
-      <slot name="import">
+      <slot name="import" :entity="entity">
         <b-message v-if="!fvi" class="is-info" has-icon icon="information" :closeable="false">
           This feed version is not currently imported into the database.
-            <template v-if="importLoading">
-              <span class="button is-primary is-pulled-right" :disabled="true">
-                Importing...
-              </span>
-            </template>
-            <template v-else>
-              <span class="button is-primary is-pulled-right" @click="importFeedVersion">
+          <template v-if="importLoading">
+            <span class="button is-primary is-pulled-right" :disabled="true">
+              Importing...
+            </span>
+          </template>
+          <template v-else>
+            <span class="button is-primary is-pulled-right" @click="importFeedVersion">
               Import feed version
-              </span>
-            </template>
+            </span>
+          </template>
         </b-message>
         <b-message v-else-if="fvi.success" class="is-success" has-icon icon="check" :closeable="false">
           This feed version was successfully imported into the database.
@@ -174,24 +177,7 @@
         </b-message>
       </slot>
 
-      <!-- TODO: check license info to make sure redistribution is allowed -->
-      <slot name="download">
-        <b-message class="block" type="is-info" has-icon icon="information" :closable="false">
-          <div class="columns">
-            <div class="column is-8">
-              <p>
-                Want to download a copy of this feed version to process with your own software?
-              </p>
-            </div>
-            <div class="column is-4 has-text-right">
-              <a :href="`https://demo.transit.land/api/v2/rest/feed_versions/${entity.sha1}/download`" target="_blank" class="button is-primary has-addons">
-                <b-icon icon="download" title="Download" /> <span>Download</span>
-              </a>
-            </div>
-          </div>
-        </b-message>
-      </slot>
-
+      <slot name="download" :entity="entity" />
 
       <b-tabs v-model="activeTab" type="is-boxed" :animated="false" @input="setTab">
         <b-tab-item label="Files">
@@ -349,8 +335,8 @@ export default {
     }
   },
   props: {
-    canEdit: {type:Boolean, default: false},
-    feedVersionSha1: {type: String, default: null}
+    canEdit: { type: Boolean, default: false },
+    feedVersionSha1: { type: String, default: null }
   },
   data () {
     return {
@@ -366,6 +352,20 @@ export default {
         5: 'stops',
         6: 'import'
       }
+    }
+  },
+  head () {
+    const meta = []
+    if (this.entity) {
+      meta.push({
+        hid: 'description',
+        name: 'description',
+        content: this.textDescription
+      })
+    }
+    return {
+      title: `${this.$route.params.feed} • ${this.$route.params.version} • Feed version`,
+      meta
     }
   },
   computed: {
@@ -392,12 +392,11 @@ export default {
       }
     },
     textDescription () {
-      return ''
-      // return `An archived GTFS feed version for ${this.operatororAgencyNames} from the feed with a Onestop ID of ${this.$route.params.feed} first fetched at ${this.entity.fetched_at} by Transitland. This feed version contains ${this.rowCount['agency.txt'] ? this.rowCount['agency.txt'].toLocaleString() : '-'} agencies, ${this.rowCount['routes.txt'] ? this.rowCount['routes.txt'].toLocaleString() : '-'} routes, and ${this.rowCount['stops.txt'] ? this.rowCount['stops.txt'].toLocaleString() : '-'} stops. The SHA1 hash of the contents is ${this.$route.params.version}`
+      return `An archived GTFS feed version for ${this.operatororAgencyNames} from the feed with a Onestop ID of ${this.$route.params.feed} first fetched at ${this.entity.fetched_at}. This feed version contains ${this.rowCount['agency.txt'] ? this.rowCount['agency.txt'].toLocaleString() : '-'} agencies, ${this.rowCount['routes.txt'] ? this.rowCount['routes.txt'].toLocaleString() : '-'} routes, and ${this.rowCount['stops.txt'] ? this.rowCount['stops.txt'].toLocaleString() : '-'} stops.`
     }
   },
   methods: {
-    saveEntity() {
+    saveEntity () {
       this.$apollo
         .mutate({
           client: 'transitland',
@@ -409,7 +408,7 @@ export default {
               description: this.entity.description
             }
           },
-          update: (store, { data: {  } }) => {
+          update: (store, { data }) => {
             this.showEdit = false
             this.$apollo.queries.entities.refetch()
           }
@@ -417,7 +416,7 @@ export default {
           this.setError(500, error)
         })
     },
-    importFeedVersion() {
+    importFeedVersion () {
       this.importLoading = true
       this.$apollo
         .mutate({
@@ -426,8 +425,8 @@ export default {
           variables: {
             sha1: this.entity.sha1
           },
-          update: (store, { data: {  } }) => {
-            this.importLoading = false            
+          update: (store, { data }) => {
+            this.importLoading = false
             this.$apollo.queries.entities.refetch()
           }
         }).catch((error) => {

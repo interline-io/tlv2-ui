@@ -2,28 +2,28 @@
   <div>
     <div v-if="$apollo.loading" class="is-loading" />
     <div v-else-if="entity">
-      <slot name="nav">
-      <nav class="breadcrumb">
-      <ul>
-        <li>
-          <nuxt-link :to="{name:'feeds'}">
-            Source Feeds
-          </nuxt-link>
-        </li>
-        <li>
-          <nuxt-link :to="{name: 'feeds-feed', params:{feed:$route.params.feed}}">
-            {{ $route.params.feed }}
-          </nuxt-link>
-        </li>
-      </ul>
-      </nav>
+      <slot name="nav" :entity="entity">
+        <nav class="breadcrumb">
+          <ul>
+            <li>
+              <nuxt-link :to="{name:'feeds'}">
+                Source Feeds
+              </nuxt-link>
+            </li>
+            <li>
+              <nuxt-link :to="{name: 'feeds-feed', params:{feed:$route.params.feed}}">
+                {{ $route.params.feed }}
+              </nuxt-link>
+            </li>
+          </ul>
+        </nav>
       </slot>
 
       <h1 class="title">
-        Feed {{ onestopId }}
+        Feed details: {{ onestopId }}
       </h1>
-    
-      <slot name="description">
+
+      <slot name="description" :entity="entity">
         <p>
           {{ textDescription }}
         </p>
@@ -31,7 +31,7 @@
 
       <div class="columns">
         <div class="column is-three-quarters">
-          <table class="table is-borderless">
+          <table class="table is-borderless property-list">
             <tr>
               <td>
                 <b-tooltip dashed label="A globally unique identifier for this feed">
@@ -180,91 +180,83 @@
             </tr>
           </table>
         </div>
-        <slot name="edit-feed">
-          <div class="column is-one-quarter">
-            <b-message type="is-info" title="Edit" :closable="false">
-              <p>
-                You can update the URLs associated with this Feed record and other metadata in the <a href="/documentation/atlas">Transitland Atlas</a> repository. We welcome edits and additions.
-              </p>
-              <a class="button is-primary" :href="editLink" target="_blank"><b-icon icon="pencil" size="is-small" /> &nbsp; Edit Feed Record</a>
-            </b-message>
-          </div>
-        </slot>
+        <slot name="edit-feed" :entity="entity" />
       </div>
-      
+
+      <!-- TODO: Operators component -->
       <div v-if="showOperators">
-      <hr>
-      <h4 class="title is-4">
-        Operator(s) Associated with this Feed
-      </h4>
-      <b-tabs type="is-boxed" :animated="false">
-        <b-tab-item label="Operators">
-          <b-message
-            v-for="(match,i) of entity.associated_operators"
-            :key="i"
-            type="is-success"
-            has-icon
-            icon="information"
-            :closable="false"
-          >
-            <div class="columns">
-              <div class="column is-8">
-                <p>
-                  This feed is associated with the operator record with Onestop ID of
-                  <code>{{ match.onestop_id }}</code> See this operator for more metadata related to this feed and to explore routes, stops, and other data imported from this feed.
-                </p>
-              </div>
-              <div class="column is-4 has-text-right">
-                <nuxt-link class="button is-primary" :to="{name:'operators-onestop_id', params:{onestop_id:match.onestop_id}}">
-                  View Operator Record
-                </nuxt-link>
-              </div>
-            </div>
-          </b-message>
-        </b-tab-item>
-        <b-tab-item label="Operators (Advanced View)">
-          <b-message type="is-light" has-icon icon="information" :closable="false">
-            This feed contributes data to the following Operators. These associations are based on the references defined in each Operator's Atlas record. Additionally, GTFS Agencies that do not have defined references to any Operator record are assigned an automatically generated Onestop ID. Please see the <nuxt-link :to="{name:'documentation'}">
-              Operator documentation
-            </nuxt-link> for more information on this process.
-          </b-message>
-          <table class="table is-shaded is-fullwidth">
-            <thead>
-              <tr>
-                <th>Association type</th>
-                <th>Operator Name</th>
-                <th>Operator Onestop ID</th>
-                <th>GTFS Agency ID in Source Feed</th>
-                <th>Matched Agency</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(match,i) of entity.associated_operators" :key="i">
-                <td>
-                  <span v-if="match.operator_id">Associated Feed</span>
-                  <span v-else-if="entity.feed_namespace_id === match.onestop_id">Feed Namespace</span>
-                  <span v-else>Generated</span>
-                </td>
-                <td>
-                  {{ match.operator_name }}
-                </td>
-                <td>
-                  <nuxt-link :to="{name:'operators-onestop_id', params:{onestop_id:match.onestop_id}}">
-                    {{ match.onestop_id }}
+        <hr>
+        <h4 class="title is-4">
+          Operator(s) Associated with this Feed
+        </h4>
+        <b-tabs type="is-boxed" :animated="false">
+          <b-tab-item label="Operators">
+            <b-message
+              v-for="(match,i) of entity.associated_operators"
+              :key="i"
+              type="is-success"
+              has-icon
+              icon="information"
+              :closable="false"
+            >
+              <div class="columns">
+                <div class="column is-8">
+                  <p>
+                    This feed is associated with the operator record with Onestop ID of
+                    <code>{{ match.onestop_id }}</code> See this operator for more metadata related to this feed and to explore routes, stops, and other data imported from this feed.
+                  </p>
+                </div>
+                <div class="column is-4 has-text-right">
+                  <nuxt-link class="button is-primary" :to="{name:'operators-onestop_id', params:{onestop_id:match.onestop_id}}">
+                    View Operator Record
                   </nuxt-link>
-                </td>
-                <td><span v-if="match.agency">{{ match.agency.agency_id }}</span></td>
-                <td>
-                  <span v-if="match.agency">
-                    <b-icon icon="check" />
-                    {{ match.agency.agency_name }}
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </b-tab-item>
-      </b-tabs>
+                </div>
+              </div>
+            </b-message>
+          </b-tab-item>
+          <b-tab-item label="Operators (Advanced View)">
+            <b-message type="is-light" has-icon icon="information" :closable="false">
+              This feed contributes data to the following Operators. These associations are based on the references defined in each Operator's Atlas record. Additionally, GTFS Agencies that do not have defined references to any Operator record are assigned an automatically generated Onestop ID. Please see the <nuxt-link :to="{name:'documentation'}">
+                Operator documentation
+              </nuxt-link> for more information on this process.
+            </b-message>
+            <table class="table is-shaded is-fullwidth">
+              <thead>
+                <tr>
+                  <th>Association type</th>
+                  <th>Operator Name</th>
+                  <th>Operator Onestop ID</th>
+                  <th>GTFS Agency ID in Source Feed</th>
+                  <th>Matched Agency</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(match,i) of entity.associated_operators" :key="i">
+                  <td>
+                    <span v-if="match.operator_id">Associated Feed</span>
+                    <span v-else-if="entity.feed_namespace_id === match.onestop_id">Feed Namespace</span>
+                    <span v-else>Generated</span>
+                  </td>
+                  <td>
+                    {{ match.operator_name }}
+                  </td>
+                  <td>
+                    <nuxt-link :to="{name:'operators-onestop_id', params:{onestop_id:match.onestop_id}}">
+                      {{ match.onestop_id }}
+                    </nuxt-link>
+                  </td>
+                  <td><span v-if="match.agency">{{ match.agency.agency_id }}</span></td>
+                  <td>
+                    <span v-if="match.agency">
+                      <b-icon icon="check" />
+                      {{ match.agency.agency_name }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </b-tab-item>
+        </b-tabs>
       </div>
 
       <hr>
@@ -344,7 +336,7 @@
               </b-table-column>
             </b-table>
 
-            <slot name="add-feed-version"></slot>
+            <slot name="add-feed-version" :entity="entity" />
           </b-tab-item>
 
           <b-tab-item label="Service Levels">
@@ -458,6 +450,9 @@ export default {
       }
     }
   },
+  props: {
+    showOperators: { type: Boolean, default: false }
+  },
   data () {
     return {
       error: 'ok',
@@ -467,16 +462,25 @@ export default {
       }
     }
   },
-  props: {
-    showOperators: {type:Boolean, default:false}
+  head () {
+    const meta = []
+    if (this.entity) {
+      meta.push({
+        hid: 'description',
+        name: 'description',
+        content: this.textDescription
+      })
+    }
+    return {
+      title: `${this.onestopId} • Feed details`,
+      meta
+    }
   },
   computed: {
     newLink () {
       return ''
     },
-    editLink () {
-      return `https://github.com/transitland/transitland-atlas/edit/master/feeds/${this.entity.file}`
-    },
+
     displayLicense () {
       if (this.entity) {
         return isEmpty(this.entity.license)
@@ -495,21 +499,7 @@ export default {
     },
     textDescription () {
       const operatorDescription = this.entity.associated_operators ? ` describing ${this.entity.associated_operators[0].operator_name} and` : ''
-      return `${this.onestopId} is a ${this.entity.spec.toUpperCase()} feed${operatorDescription} aggregated by the Transitland open data platform`
-    }
-  },
-  head () {
-    const meta = []
-    if (this.entity) {
-      meta.push({
-        hid: 'description',
-        name: 'description',
-        content: this.textDescription
-      })
-    }
-    return {
-      title: `${this.onestopId} • Feed details`,
-      meta
+      return `${this.onestopId} is a ${this.entity.spec.toUpperCase()} feed ${operatorDescription}.`
     }
   }
 }

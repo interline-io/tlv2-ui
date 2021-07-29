@@ -24,7 +24,12 @@
 <script>
 export default {
   props: {
-    agencyIds: { type: Array, default () { return [] } }
+    agencyIds: {
+      type: Array,
+      default () {
+        return []
+      }
+    }
   },
   data () {
     return {
