@@ -23,11 +23,7 @@
         Feed details: {{ onestopId }}
       </h1>
 
-      <slot name="description" :entity="entity">
-        <p>
-          {{ textDescription }}
-        </p>
-      </slot>
+      <slot name="description" :entity="entity" />
 
       <div class="columns">
         <div class="column is-three-quarters">
@@ -124,6 +120,7 @@
                 </ul>
               </td>
             </tr>
+
             <tr v-if="displayLicense">
               <td>License</td>
               <td>
@@ -158,22 +155,7 @@
                 </ul>
               </td>
             </tr>
-            <tr v-if="displayAuthorization">
-              <td>Authorization</td>
-              <td>
-                <ul>
-                  <li v-if="entity.authorization.info_url">
-                    Info URL: {{ entity.authorization.info_url }}
-                  </li>
-                  <li v-if="entity.authorization.type">
-                    Type: {{ entity.authorization.type }}
-                  </li>
-                  <li v-if="entity.authorization.param_name">
-                    Parameter name: {{ entity.authorization.param_name }}
-                  </li>
-                </ul>
-              </td>
-            </tr>
+
             <tr v-if="entity.languages">
               <td>Languages</td>
               <td>{{ entity.languages }}</td>
@@ -191,8 +173,9 @@
         </h4>
         <b-tabs type="is-boxed" :animated="false">
           <b-tab-item label="Operators">
+            <b-message v-if="!entity.associated_operators || (entity.associated_operators && entity.associated_operators.length === 0)">There are no operators associated with this feed.</b-message>
             <b-message
-              v-for="(match,i) of entity.associated_operators"
+              v-for="(operator,i) of entity.associated_operators"
               :key="i"
               type="is-success"
               has-icon
@@ -203,58 +186,16 @@
                 <div class="column is-8">
                   <p>
                     This feed is associated with the operator record with Onestop ID of
-                    <code>{{ match.onestop_id }}</code> See this operator for more metadata related to this feed and to explore routes, stops, and other data imported from this feed.
+                    <code>{{ operator.onestop_id }}</code> See this operator for more metadata related to this feed and to explore routes, stops, and other data imported from this feed.
                   </p>
                 </div>
                 <div class="column is-4 has-text-right">
-                  <nuxt-link class="button is-primary" :to="{name:'operators-onestop_id', params:{onestop_id:match.onestop_id}}">
+                  <nuxt-link class="button is-primary" :to="{name:'operators-onestop_id', params:{onestop_id:operator.onestop_id}}">
                     View Operator Record
                   </nuxt-link>
                 </div>
               </div>
             </b-message>
-          </b-tab-item>
-          <b-tab-item label="Operators (Advanced View)">
-            <b-message type="is-light" has-icon icon="information" :closable="false">
-              This feed contributes data to the following Operators. These associations are based on the references defined in each Operator's Atlas record. Additionally, GTFS Agencies that do not have defined references to any Operator record are assigned an automatically generated Onestop ID. Please see the <nuxt-link :to="{name:'documentation'}">
-                Operator documentation
-              </nuxt-link> for more information on this process.
-            </b-message>
-            <table class="table is-shaded is-fullwidth">
-              <thead>
-                <tr>
-                  <th>Association type</th>
-                  <th>Operator Name</th>
-                  <th>Operator Onestop ID</th>
-                  <th>GTFS Agency ID in Source Feed</th>
-                  <th>Matched Agency</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(match,i) of entity.associated_operators" :key="i">
-                  <td>
-                    <span v-if="match.operator_id">Associated Feed</span>
-                    <span v-else-if="entity.feed_namespace_id === match.onestop_id">Feed Namespace</span>
-                    <span v-else>Generated</span>
-                  </td>
-                  <td>
-                    {{ match.operator_name }}
-                  </td>
-                  <td>
-                    <nuxt-link :to="{name:'operators-onestop_id', params:{onestop_id:match.onestop_id}}">
-                      {{ match.onestop_id }}
-                    </nuxt-link>
-                  </td>
-                  <td><span v-if="match.agency">{{ match.agency.agency_id }}</span></td>
-                  <td>
-                    <span v-if="match.agency">
-                      <b-icon icon="check" />
-                      {{ match.agency.agency_name }}
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
           </b-tab-item>
         </b-tabs>
       </div>
@@ -387,13 +328,11 @@ query($feed_onestop_id: String) {
       realtime_trip_updates
       realtime_vehicle_positions
     }
-    # other_ids
-    # associated_feeds
     associated_operators {
       onestop_id
-      operator_id
-      operator_name
-      agency {
+      name
+      short_name
+      agencies {
         agency_id
         agency_name
       }
@@ -480,7 +419,6 @@ export default {
     newLink () {
       return ''
     },
-
     displayLicense () {
       if (this.entity) {
         return isEmpty(this.entity.license)
@@ -498,7 +436,7 @@ export default {
       return false
     },
     textDescription () {
-      const operatorDescription = this.entity.associated_operators ? ` describing ${this.entity.associated_operators[0].operator_name} and` : ''
+      const operatorDescription = this.entity.associated_operators ? ` describing ${this.entity.associated_operators[0].name}` : ''
       return `${this.onestopId} is a ${this.entity.spec.toUpperCase()} feed ${operatorDescription}.`
     }
   }

@@ -371,13 +371,6 @@ const q = gql`
   }
 `
 
-// # operator {
-// #   agency_id
-// #   operator_name
-// #   agency_name
-// #   operator_onestop_id
-// # }
-
 export default {
   mixins: [EntityPageMixin, Filters],
   data () {

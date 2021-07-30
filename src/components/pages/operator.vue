@@ -18,12 +18,13 @@
       <h1 class="title">
         {{ operatorName }}
       </h1>
-
+      
       <slot name="description">
         <div class="content">
           {{ textDescription }}
         </div>
       </slot>
+      
 
       <!-- Warnings for freshness and viewing a specific version -->
       <b-message v-if="dataFreshness > 365" type="is-warning" has-icon>
@@ -79,19 +80,19 @@
               <td>
                 <ul>
                   <li v-for="location of locations" :key="location.name">
-                    <nuxt-link :to="{name:'operators', query:{adm0name:location.adm0name}}">
-                      {{ location.adm0name }}
+                    <nuxt-link :to="{name:'operators', query:{adm0_name:location.adm0_name}}">
+                      {{ location.adm0_name }}
                     </nuxt-link>
-                    <template v-if="location.adm1name">
+                    <template v-if="location.adm1_name">
                       /
                       <nuxt-link :to="{name:'operators', query:{adm1name:location.adm1name}}">
-                        {{ location.adm1name }}
+                        {{ location.adm1_name }}
                       </nuxt-link>
                     </template>
-                    <template v-if="location.name">
+                    <template v-if="location.city_name">
                       /
-                      <nuxt-link :to="{name:'operators', query:{city_name:location.name}}">
-                        {{ location.name }}
+                      <nuxt-link :to="{name:'operators', query:{city_name:location.city_name}}">
+                        {{ location.city_name }}
                       </nuxt-link>
                     </template>
                   </li>
@@ -110,7 +111,7 @@
                 </ul>
               </td>
             </tr>
-            <tr v-if="entity && entity.operator_tags && Object.keys(entity.operator_tags).length > 0">
+            <tr v-if="entity && entity.tags && Object.keys(entity.tags).length > 0">
               <td>
                 <b-tooltip dashed multiline label="Links between Transitland and other catalogs and data sources on the Internet">
                   ID Crosswalk
@@ -118,14 +119,14 @@
               </td>
               <td>
                 <ul>
-                  <li v-if="entity.operator_tags.us_ntd_id">
-                    US National Transit Database (NTD) ID: <code>{{ entity.operator_tags.us_ntd_id }}</code> <a target="_blank" href="https://www.transit.dot.gov/ntd/"><b-icon icon="link" title="US National Transit Database website" /></a>
+                  <li v-if="entity.tags.us_ntd_id">
+                    US National Transit Database (NTD) ID: <code>{{ entity.tags.us_ntd_id }}</code> <a target="_blank" href="https://www.transit.dot.gov/ntd/"><b-icon icon="link" title="US National Transit Database website" /></a>
                   </li>
-                  <li v-if="entity.operator_tags.omd_provider_id">
-                    OpenMobilityData Provider ID: <code>{{ entity.operator_tags.omd_provider_id }}</code> <a target="_blank" :href="`https://openmobilitydata.org/p/${entity.operator_tags.omd_provider_id}`"><b-icon icon="link" title="OpenMobilityData provider page" /></a>
+                  <li v-if="entity.tags.omd_provider_id">
+                    OpenMobilityData Provider ID: <code>{{ entity.tags.omd_provider_id }}</code> <a target="_blank" :href="`https://openmobilitydata.org/p/${entity.tags.omd_provider_id}`"><b-icon icon="link" title="OpenMobilityData provider page" /></a>
                   </li>
-                  <li v-if="entity.operator_tags.wikidata_id">
-                    Wikidata Entity ID: <code>{{ entity.operator_tags.wikidata_id }}</code> <a target="_blank" :href="`https://www.wikidata.org/wiki/${entity.operator_tags.wikidata_id}`"><b-icon icon="link" title="Wikidata entity query page" /></a>
+                  <li v-if="entity.tags.wikidata_id">
+                    Wikidata Entity ID: <code>{{ entity.tags.wikidata_id }}</code> <a target="_blank" :href="`https://www.wikidata.org/wiki/${entity.tags.wikidata_id}`"><b-icon icon="link" title="Wikidata entity query page" /></a>
                   </li>
                 </ul>
               </td>
@@ -175,6 +176,7 @@
             </div>
           </b-message>
         </b-tab-item>
+
         <b-tab-item label="Source Feeds (Advanced View)">
           <b-message type="is-light" has-icon icon="information" :closable="false">
             This operator includes data from the references listed below. These references are defined in the Operator's Atlas record, and describe the GTFS Agencies that provide the routes, stops, schedules, and other information for this operator. If a reference to an agency cannot be resolved, this will be noted. Please see the <nuxt-link :to="{name:'documentation'}">
@@ -196,9 +198,6 @@
                   {{ props.row.target_feed }}
                 </nuxt-link>
               </b-table-column>
-              <b-table-column v-slot="props" field="agency" label="Source Agency ID">
-                {{ props.row.target_id }}
-              </b-table-column>
               <b-table-column v-slot="props" field="agency" label="Matched Agency">
                 <template v-if="props.row.target_match">
                   <b-icon icon="check" />
@@ -214,7 +213,9 @@
           </div>
         </b-tab-item>
       </b-tabs>
+
       <hr>
+
       <!-- anchors for when users click between tabs -->
       <div v-if="agencyIds.length > 0">
         <a v-for="[, value] of Object.entries(tabIndex)" :key="value" :name="value" />
@@ -256,19 +257,16 @@ import EntityPageMixin from './entity-page-mixin'
 
 const q = gql`
 query ($onestop_id: String, $feed_onestop_id: String) {
-  entities: operators(limit: 10, where: {feed_onestop_id: $feed_onestop_id, onestop_id: $onestop_id}) {    
+  entities: operators(limit: 10, where: {feed_onestop_id: $feed_onestop_id, onestop_id: $onestop_id, merged: true}) {
+    id
     onestop_id
-    agency_name
-    operator_name
-    city_name
-    adm1name
-    adm0name
-    operator_id
-    operator_name
-    operator_short_name
-    operator_tags
-    operator_associated_feeds
-    agency {
+    generated
+    file
+    name
+    short_name
+    tags
+    associated_feeds
+    agencies {
       id
       feed_version_sha1
       feed_onestop_id
@@ -286,9 +284,9 @@ query ($onestop_id: String, $feed_onestop_id: String) {
         }
       }
       places(where: {min_rank: 0.2}) {
-        name
-        adm0name
-        adm1name
+        city_name
+        adm0_name
+        adm1_name
       }
     }
   }
@@ -311,13 +309,10 @@ export default {
     entities: {
       client: 'transitland',
       query: q,
-      skip () { return this.checkSearchSkip(this.$route.query.agency_id) }, // skip if search and no agency_id
+      // skip () { return this.checkSearchSkip(this.$route.query.agency_id) }, // skip if search and no agency_id
       variables () {
         return {
           onestop_id: this.onestopId
-          // feed_onestop_id: this.$route.query.feed_onestop_id,
-          // agency_id: this.$route.query.agency_id,
-          // active_null: false // this.linkVersion ? null : false // currently only active is supported for operators
         }
       }
     }
@@ -345,31 +340,24 @@ export default {
       return Math.max(...daysAgo)
     },
     editLink () {
-      return `https://github.com/transitland/transitland-atlas/edit/master/operators/${this.onestopId}.json`
+      return `https://github.com/transitland/transitland-atlas/edit/master/feeds/${this.entity.file}`
     },
     newLink () {
-      return `https://github.com/transitland/transitland-atlas/new/master/operators?filename=${this.onestopId}.json`
+      return `https://github.com/transitland/transitland-atlas/new/master/feeds?filename=${this.onestopId}.json`
     },
     locations () {
       const ret = new Map()
       for (const ent of this.agencies) {
         if (!ent) { continue }
         for (const p of ent.places || []) {
-          const key = `{p.adm0name} / ${p.adm1name} - ${p.name}`
+          const key = `${p.adm0_name} / ${p.adm1_name} - ${p.city_name}`
           ret.set(key, p)
         }
       }
-      return Array.from(ret.values()).sort()
+      return Array.from(ret.values()).sort(function (a, b) { return a.rank - b.rank })
     },
-
     agencies () {
-      const rs = new Map()
-      for (const ent of this.entities || []) {
-        if (ent.agency) {
-          rs.set(ent.agency.id, ent.agency)
-        }
-      }
-      return Array.from(rs.values())
+      return (this.entity || {}).agencies || []
     },
     agencyIds () {
       return this.agencies.map((s) => { return s.id }).filter((s) => { return s })
@@ -381,14 +369,11 @@ export default {
       return [...new Set(this.agencies.map((s) => { return s.agency_url }))]
     },
     generatedOperator () {
-      for (const ent of this.entities || []) {
-        if (ent.operator_id) { return false }
-      }
-      return true // return !this.entity.operator_id
+      return this.entity && this.entity.generated
     },
     operatorName () {
-      if (this.entity && this.entity.operator_name) {
-        return this.entity.operator_name || this.entity.operator_short_name
+      if (this.entity && this.entity.name) {
+        return this.entity.name || this.entity.short_name
       } else if (this.agencies && this.agencies.length > 0) {
         return this.agencies[0].agency_name
       } else {
@@ -397,40 +382,24 @@ export default {
     },
     sources () {
       const ret = []
-      const amap = new Map()
-      if (this.generatedOperator) {
-        for (const ent of this.agencies) {
-          ret.push({
-            target_type: 'Generated',
-            target_feed: ent.feed_onestop_id,
-            target_match: ent
-          })
-        }
+      const matchedFeeds = {}
+      if (!this.entity) { 
+        return ret
       }
-      for (const ent of this.agencies) {
-        const key = `${ent.feed_onestop_id}:${ent.agency_id}`
-        amap.set(key, ent)
-        if (ent.feed_version && ent.feed_version.feed && ent.feed_version.feed.feed_namespace_id === this.onestopId) {
-          ret.push({
-            target_type: 'Feed Namespace',
-            target_feed: ent.feed_onestop_id,
-            target_match: ent
-          })
-        }
+      for (const agency of this.agencies) {
+        ret.push({
+          target_type: 'Associated Feed',
+          target_feed: agency.feed_version.feed.onestop_id,
+          target_match: agency
+        })
+        matchedFeeds[agency.feed_version.feed.onestop_id] = true
       }
-      for (const ent of this.entities || []) {
-        // check if the json column value is an array
-        const af = ent.operator_associated_feeds || []
-        if (!Array.isArray(af)) {
-          continue
-        }
-        for (const a of af) {
-          const key = `${a.feed_onestop_id}:${a.gtfs_agency_id}`
+      for (const oif of this.entity.associated_feeds) {
+        const fid = oif.feed_onestop_id
+        if (!matchedFeeds[fid]) {
           ret.push({
             target_type: 'Associated Feed',
-            target_feed: a.feed_onestop_id,
-            target_id: a.gtfs_agency_id,
-            target_match: amap.get(key)
+            target_feed: fid
           })
         }
       }
@@ -449,7 +418,7 @@ export default {
     },
     textDescription () {
       const locations = this.locations
-        .map(l => [l.adm0name, l.adm1name, l.name].filter(Boolean).join(', '))
+        .map(l => [l.adm0_name, l.adm1_name, l.city_name].filter(Boolean).join(', '))
         .join('; ')
       return `${this.operatorName} is an operator listed on the Transitland open data platform. Transitland sources data for this operator from ${this.uniqueFeedSourcesNumber} GTFS ${this.uniqueFeedSourcesNumber > 1 ? 'feeds' : 'feed'}. ${this.operatorName} provides transit services in the following locations: ${locations}.`
     }

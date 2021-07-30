@@ -313,8 +313,8 @@ query ($feed_version_sha1: String!) {
     }
     feed {
       associated_operators {
-        operator_name
-        operator_onestop_id
+        name
+        onestop_id
       }
     }
   }
@@ -382,17 +382,15 @@ export default {
       }
       return ret
     },
-    operatororAgencyNames () {
-      if (this.entity && this.entity.feed && this.entity.feed.associated_operators[0].operator_name) {
-        return this.entity.feed.associated_operators[0].operator_name
-      } else if (this.entity && this.entity.agencies) {
+    operatorOrAgencyNames () {
+     if (this.entity && this.entity.agencies) {
         return this.entity.agencies.map(a => a.agency_name).join(', ')
       } else {
         return null
       }
     },
     textDescription () {
-      return `An archived GTFS feed version for ${this.operatororAgencyNames} from the feed with a Onestop ID of ${this.$route.params.feed} first fetched at ${this.entity.fetched_at}. This feed version contains ${this.rowCount['agency.txt'] ? this.rowCount['agency.txt'].toLocaleString() : '-'} agencies, ${this.rowCount['routes.txt'] ? this.rowCount['routes.txt'].toLocaleString() : '-'} routes, and ${this.rowCount['stops.txt'] ? this.rowCount['stops.txt'].toLocaleString() : '-'} stops.`
+      return `An archived GTFS feed version for ${this.operatorOrAgencyNames} from the feed with a Onestop ID of ${this.$route.params.feed} first fetched at ${this.entity.fetched_at}. This feed version contains ${this.rowCount['agency.txt'] ? this.rowCount['agency.txt'].toLocaleString() : '-'} agencies, ${this.rowCount['routes.txt'] ? this.rowCount['routes.txt'].toLocaleString() : '-'} routes, and ${this.rowCount['stops.txt'] ? this.rowCount['stops.txt'].toLocaleString() : '-'} stops.`
     }
   },
   methods: {

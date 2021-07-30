@@ -13,7 +13,7 @@
     <div>
       <b-field grouped>
         <b-field label="Search by operator name or location" expanded>
-          <b-field v-if="$route.query.name || $route.query.city_name || $route.query.adm1name || $route.query.adm0name" expanded>
+          <b-field v-if="$route.query.search" expanded>
             <b-tag
               size="is-medium"
               attached
@@ -21,7 +21,7 @@
               aria-close-label="Close tag"
               @close="clearQuery"
             >
-              {{ $route.query.name || $route.query.city_name || $route.query.adm1name || $route.query.adm0name }}
+              {{ $route.query.search }}
             </b-tag>
           </b-field>
           <div v-else style="width:100%">
@@ -79,12 +79,12 @@
         <b-table-column v-slot="props" field="city_name" label="City" :width="200">
           {{ props.row.city_name }}
         </b-table-column>
-        <b-table-column v-slot="props" field="adm1name" label="State/Province" :width="200">
-          {{ props.row.adm1name }}
+        <b-table-column v-slot="props" field="adm1_name" label="State/Province" :width="200">
+          {{ props.row.adm1_name }}
         </b-table-column>
-        <b-table-column v-slot="props" field="adm0name" label="Country" :width="260">
-          <b-tooltip :label="props.row.other_places.filter((s)=>{return s.name}).map((s)=>{return s.name}).join(', ')" dashed>
-            {{ props.row.adm0name }}
+        <b-table-column v-slot="props" field="adm0_name" label="Country" :width="260">
+          <b-tooltip :label="props.row.other_places.filter((s)=>{return s.city_name}).map((s)=>{return s.city_name}).join(', ')" dashed>
+            {{ props.row.adm0_name }}
           </b-tooltip>
         </b-table-column>
       </b-table>
@@ -103,19 +103,15 @@ const q = gql`
 query ($limit: Int, $after: Int, $search: String, $merged: Boolean) {
   entities: operators(after: $after, limit: $limit, where: {search: $search, merged:$merged}) {
     id
-    agency_name
-    operator_name
-    operator_short_name
     onestop_id
-    city_name
-    adm1name
-    adm0name
-    places_cache
-    agency {
+    name
+    short_name
+    agencies {
       places(where:{min_rank:0.2}) {
-        name
-        adm0name
-        adm1name
+        city_name
+        adm0_name
+        adm1_name
+        rank
       }
     }
   }
@@ -127,7 +123,7 @@ export default {
   data () {
     return {
       search: '',
-      merged: false,
+      merged: true,
       unmatched: true
     }
   },
@@ -155,18 +151,26 @@ export default {
   computed: {
     entityPageFlat () {
       return this.entityPage.map((s) => {
-        return {
-          name: (this.merged ? s.operator_name : s.agency_name) || s.agency_name || s.operator_name,
-          short_name: s.operator_short_name,
-          agency: s.agency,
-          operator: s.operator,
-          best_place: [], // s.agency.places.length > 0 ? s.agency.places[0] : {},
-          other_places: (s.agency || {}).places || [],
-          onestop_id: s.onestop_id,
-          city_name: s.city_name,
-          adm1name: s.adm1name,
-          adm0name: s.adm0name
+        const entity = {
+          name: s.name,
+          short_name: s.short_name,
+          agencies: s.agencies,
+          onestop_id: s.onestop_id
         }
+        let places = []
+        for (const a of s.agencies || []) {
+          for (const p of a.places || []) {
+            places.push(p)
+          }
+        }
+        places = places.sort(function (a, b) { return a.rank - b.rank })
+        if (places.length > 0) {
+          entity.adm0_name = places[0].adm0_name
+          entity.adm1_name = places[0].adm1_name
+          entity.city_name = places[0].city_name
+        }
+        entity.other_places = places
+        return entity
       })
     }
   },
