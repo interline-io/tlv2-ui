@@ -10,11 +10,9 @@ query ($search: String!) {
         search_rank
     }
     operators(limit: 10, where:{search:$search, merged: true}) {
-        agency_id
-        agency_name
         onestop_id
-        feed_onestop_id
-        feed_version_sha1
+        name
+        short_name
         search_rank
     }
     routes(limit: 10, where:{search:$search}) {
@@ -100,7 +98,7 @@ export default {
               route: 'operators-operator',
               entity: i,
               type: 'Operator',
-              name: i.agency_name,
+              name: i.name || i.short_name,
               rank: (1 + i.search_rank) * 100,
               link: { name: 'operators-onestop_id', params: { onestop_id: i.onestop_id } }
             })
