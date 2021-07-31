@@ -15,6 +15,7 @@
           </li>
         </ul>
       </nav>
+
       <h1 class="title">
         {{ operatorName }}
       </h1>
@@ -25,7 +26,6 @@
         </div>
       </slot>
       
-
       <!-- Warnings for freshness and viewing a specific version -->
       <b-message v-if="dataFreshness > 365" type="is-warning" has-icon>
         The GTFS feeds associated with this page were fetched {{ dataFreshness }} days ago; use caution or check if newer data is available.
@@ -133,17 +133,11 @@
             </tr>
           </table>
         </div>
+        
         <div class="column is-one-quarter is-full-height">
-          <b-message type="is-info" :closable="false" title="Edit">
-            <p>
-              The metadata associated with this operator record can be edited in the <a href="https://github.com/transitland/transitland-atlas">Transitland Atlas</a> repository. We welcome edits and additions.
-            </p>
-            <div class="control">
-              <a v-if="!generatedOperator" class="button is-primary" :href="editLink" target="_blank"><b-icon icon="pencil" size="is-small" /> &nbsp; Edit Operator Record</a>
-              <a v-else class="button is-primary" :href="newLink" target="_blank"><b-icon icon="pencil" size="is-small" /> &nbsp; Create Operator Record</a>
-            </div>
-          </b-message>
+          <slot name="edit-operator" :entity="entity" />
         </div>
+
       </div>
 
       <hr>
@@ -338,12 +332,6 @@ export default {
       } catch {
       }
       return Math.max(...daysAgo)
-    },
-    editLink () {
-      return `https://github.com/transitland/transitland-atlas/edit/master/feeds/${this.entity.file}`
-    },
-    newLink () {
-      return `https://github.com/transitland/transitland-atlas/new/master/feeds?filename=${this.onestopId}.json`
     },
     locations () {
       const ret = new Map()

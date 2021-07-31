@@ -162,7 +162,9 @@
             </tr>
           </table>
         </div>
+
         <slot name="edit-feed" :entity="entity" />
+
       </div>
 
       <!-- TODO: Operators component -->
