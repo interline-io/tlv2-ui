@@ -394,13 +394,15 @@ export default {
         })
         matchedFeeds[agency.feed_version.feed.onestop_id] = true
       }
-      for (const oif of this.entity.associated_feeds) {
-        const fid = oif.feed_onestop_id
-        if (!matchedFeeds[fid]) {
-          ret.push({
-            target_type: 'Associated Feed',
-            target_feed: fid
-          })
+      if (this.entity) {
+        for (const oif of this.entity.associated_feeds || []) {
+          const fid = oif.feed_onestop_id
+          if (!matchedFeeds[fid]) {
+            ret.push({
+              target_type: 'Associated Feed',
+              target_feed: fid
+            })
+          }
         }
       }
       if (ret.length === 0) {
