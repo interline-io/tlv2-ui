@@ -360,7 +360,9 @@ export default {
       return this.entity && this.entity.generated
     },
     operatorName () {
-      if (this.entity && this.entity.name) {
+      if (this.entity && this.entity.name && this.entity.short_name) {
+        return `${this.entity.name} (${this.entity.short_name})`
+      } else if (this.entity && this.entity.name || this.entity.short_name) {
         return this.entity.name || this.entity.short_name
       } else if (this.agencies && this.agencies.length > 0) {
         return this.agencies[0].agency_name
