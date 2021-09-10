@@ -219,16 +219,16 @@
         <b-tabs v-model="activeTab" type="is-boxed" :animated="false" @input="setTab">
           <b-tab-item label="Map">
             <client-only placeholder="Map">
-              <tl-feed-version-map-viewer v-if="activeTab === 0" :agency-ids="agencyIds" :overlay="true" :link-version="linkVersion" />
+              <tl-feed-version-map-viewer v-if="activeTab === 0" :operatorOnestopId="onestopId" :overlay="true" :link-version="linkVersion" />
             </client-only>
           </b-tab-item>
 
           <b-tab-item label="Routes">
-            <tl-route-viewer v-if="activeTab === 1" :agency-ids="agencyIds" :show-agency="true" />
+            <tl-route-viewer v-if="activeTab === 1" :operatorOnestopId="onestopId" :show-agency="true" />
           </b-tab-item>
 
           <b-tab-item label="Stops">
-            <tl-stop-viewer v-if="activeTab === 2" :agency-ids="agencyIds" />
+            <tl-stop-viewer v-if="activeTab === 2" :served-by-onestop-ids="[onestopId]" />
           </b-tab-item>
 
           <b-tab-item v-if="advancedMode" label="Export">
