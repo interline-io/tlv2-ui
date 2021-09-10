@@ -8,7 +8,6 @@
         "nuxt"
     ],
     "scripts": {
-        "postinstall": "yarn link && yarn link tlv2-ui",
         "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
         "dev": "yarn nuxt dev"
     },
@@ -17,7 +16,7 @@
         "@nuxtjs/eslint-config": "^6.0.1",
         "date-fns": "^2.21.1",
         "eslint-plugin-nuxt": "^2.0.0",
-        "mapbox-gl": "=1.12.0",
+        "maplibre-gl": ">=1.14.0",
         "nuxt-buefy": "^0.4.8",
         "sanitize-filename": "^1.6.3"
     },

@@ -50,8 +50,8 @@ import TableViewerMixin from './table-viewer-mixin'
 import Filters from './filters'
 
 const q = gql`
-query ($feed_version_sha1: String, $agency_ids: [Int!], $limit: Int, $after: Int, $search: String) {
-  entities: stops(after: $after, limit: $limit, where: {agency_ids: $agency_ids, feed_version_sha1: $feed_version_sha1, search: $search}) {
+query ($feed_version_sha1: String, $served_by_onestop_ids: [String!], $limit: Int, $after: Int, $search: String) {
+  entities: stops(after: $after, limit: $limit, where: {served_by_onestop_ids: $served_by_onestop_ids, feed_version_sha1: $feed_version_sha1, search: $search}) {
     id
     feed_onestop_id
     feed_version_sha1
@@ -80,7 +80,7 @@ export default {
     showRoutes: { type: Boolean, default: true },
     showAgencies: { type: Boolean, default: false },
     feedVersionSha1: { type: String, default: null },
-    agencyIds: { type: Array, default () { return [] } },
+    servedByOnestopIds: { type: Array, default () { return [] } },
     linkVersion: { type: Boolean, default: false }
   },
   data () {
@@ -98,7 +98,7 @@ export default {
           search: this.search,
           limit: this.limit,
           feed_version_sha1: this.feedVersionSha1,
-          agency_ids: this.agencyIds
+          served_by_onestop_ids: this.servedByOnestopIds
         }
       },
       error (e) { this.error = e }

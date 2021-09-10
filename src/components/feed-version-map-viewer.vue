@@ -19,8 +19,8 @@
 import gql from 'graphql-tag'
 
 const q = gql`
-query ($limit: Int!, $agency_ids: [Int!], $route_ids: [Int!], $feed_version_sha1: String, $include_stops: Boolean! = false) {
-  routes(limit: $limit, ids: $route_ids, where: {agency_ids: $agency_ids, feed_version_sha1: $feed_version_sha1}) {
+query ($limit: Int!, $operator_onestop_id: String, $route_ids: [Int!], $feed_version_sha1: String, $include_stops: Boolean! = false) {
+  routes(limit: $limit, ids: $route_ids, where: {operator_onestop_id: $operator_onestop_id, feed_version_sha1: $feed_version_sha1}) {
     id
     onestop_id
     feed_onestop_id
@@ -62,7 +62,7 @@ export default {
           include_stops: this.includeStops,
           feed_version_sha1: this.feedVersionSha1,
           route_ids: this.routeIds,
-          agency_ids: this.agencyIds,
+          operator_onestop_id: this.operatorOnestopId,
           limit: 10000
         }
       }
@@ -74,7 +74,7 @@ export default {
     overlay: { type: Boolean, default: false },
     fvids: { type: Array, default: null },
     routeIds: { type: Array, default: null },
-    agencyIds: { type: Array, default: null },
+    operatorOnestopId: { type: String, default: null },
     linkVersion: { type: Boolean, default: false },
     features: { type: Array, default () { return [] } }
   },

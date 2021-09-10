@@ -70,8 +70,8 @@
 </template>
 
 <script>
+import maplibre from 'maplibre-gl'
 import mapLayers from './map-layers.js'
-const mapboxgl = require('mapbox-gl/dist/mapbox-gl.js')
 
 export default {
   props: {
@@ -179,8 +179,8 @@ export default {
       if (this.zoom) {
         opts.zoom = this.zoom
       }
-      this.map = new mapboxgl.Map(opts)
-      this.map.addControl(new mapboxgl.FullscreenControl())
+      this.map = new maplibre.Map(opts)
+      this.map.addControl(new maplibre.FullscreenControl())
       this.map.on('load', () => {
         this.createSources()
         this.createLayers()
@@ -376,7 +376,7 @@ export default {
       if (this.autoFit && coords.length > 0) {
         const bounds = coords.reduce(function (bounds, coord) {
           return bounds.extend(coord)
-        }, new mapboxgl.LngLatBounds(coords[0], coords[0]))
+        }, new maplibre.LngLatBounds(coords[0], coords[0]))
         this.map.fitBounds(bounds, {
           duration: 0,
           padding: 20
