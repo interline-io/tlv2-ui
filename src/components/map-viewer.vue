@@ -39,7 +39,7 @@
         </div>
         <div class="map-info">
           <div v-show="Object.keys(agencyFeatures).length == 0">
-            <strong>Use your mouse cursor</strong> to highlight routes and see their names here. <strong>Click</strong> to select for more details.
+            <strong>Use your cursor</strong> to highlight routes and see their names here. <strong>Click</strong> for more details.
           </div>
           <tl-route-select :link="link" :agency-features="agencyFeatures" :collapse="true" />
         </div>
@@ -159,7 +159,7 @@ export default {
               type: 'raster',
               tiles: ['https://0.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{scale}.png'],
               tileSize: 256,
-              attribution: 'Transitland | Interline | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>'
+              attribution: '<a href="https://www.transit.land/terms">Transitland</a> | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>'
             }
           },
           layers: [
@@ -416,7 +416,9 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scss>
+@import 'maplibre-gl/dist/maplibre-gl';
+
 .short {
   height: 600px;
 }
@@ -427,25 +429,22 @@ export default {
 
 .map-agencies {
   user-select:none;
-  position:absolute;
+  position: absolute !important;
   margin:0px;
   padding:10px;
   top:10px;
   left:10px;
   background:#ffffff;
   width:400px;
-  overflow-x:hidden;
   opacity:0.5;
 }
 
 .map-options {
-  width: 400px;
   border-bottom:solid 1px #ccc;
   margin-bottom:20px;
 }
 
 .map-info {
-  width: 400px;
   padding-left:10px;
   padding-top:10px;
 }
