@@ -22,7 +22,7 @@
       
       <slot name="description">
         <div class="content">
-          {{ textDescription }}
+          {{ staticDescription }}
         </div>
       </slot>
       
@@ -313,9 +313,17 @@ export default {
   },
   head () {
     return {
-      title: `${this.operatorName} • Operator details`,
+      title: this.staticTitle,
       meta: [
-        { hid: 'description', name: 'description', content: this.textDescription }
+        { hid: 'description', name: 'description', content: this.staticDescription },
+        { hid: 'twitter:card', name: 'twitter:card', content: 'summary' },
+        { hid: 'twitter:site', name: 'twitter:site', content: '@transitland' },
+        { hid: 'twitter:title', name: 'twitter:title', content: this.staticTitle },
+        { hid: 'twitter:image', name: 'twitter:image', content: 'https://www.transit.land/images/transitland-logo-square-with-whitebackground-smaller.png' },
+        { hid: 'twitter:image:alt', name: 'twitter:image:alt', content: 'Transitland' },
+        { hid: 'twitter:description', name: 'twitter:description', content: this.staticDescription },
+        { hid: 'og:title', property: 'og:title', content: this.staticTitle },
+        { hid: 'og:description', property: 'og:description', content: this.staticDescription }
       ]
     }
   },
@@ -408,7 +416,10 @@ export default {
     uniqueFeedSourcesNumber () {
       return this.uniqueFeedSourcesOnestopIds.size
     },
-    textDescription () {
+    staticTitle () {
+      return `${this.operatorName} • Operator details`
+    },
+    staticDescription () {
       const locations = this.locations
         .map(l => [l.adm0_name, l.adm1_name, l.city_name].filter(Boolean).join(', '))
         .join('; ')

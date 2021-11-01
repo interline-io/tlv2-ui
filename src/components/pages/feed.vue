@@ -404,17 +404,19 @@ export default {
     }
   },
   head () {
-    const meta = []
-    if (this.entity) {
-      meta.push({
-        hid: 'description',
-        name: 'description',
-        content: this.textDescription
-      })
-    }
     return {
-      title: `${this.onestopId} • Feed details`,
-      meta
+      title: this.staticTitle,
+      meta: [
+        { hid: 'description', name: 'description', content: this.staticDescription },
+        { hid: 'twitter:card', name: 'twitter:card', content: 'summary' },
+        { hid: 'twitter:site', name: 'twitter:site', content: '@transitland' },
+        { hid: 'twitter:title', name: 'twitter:title', content: this.staticTitle },
+        { hid: 'twitter:image', name: 'twitter:image', content: 'https://www.transit.land/images/transitland-logo-square-with-whitebackground-smaller.png' },
+        { hid: 'twitter:image:alt', name: 'twitter:image:alt', content: 'Transitland' },
+        { hid: 'twitter:description', name: 'twitter:description', content: this.staticDescription },
+        { hid: 'og:title', property: 'og:title', content: this.staticTitle },
+        { hid: 'og:description', property: 'og:description', content: this.staticDescription }
+      ]
     }
   },
   computed: {
@@ -437,7 +439,10 @@ export default {
       if (this.entity) { return isEmpty(this.entity.urls) }
       return false
     },
-    textDescription () {
+    staticTitle () {
+      return `${this.onestopId} • Feed details`
+    },
+    staticDescription () {
       const operatorDescription = this.entity.associated_operators ? ` describing ${this.entity.associated_operators[0].name}` : ''
       return `${this.onestopId} is a ${this.entity.spec.toUpperCase()} feed ${operatorDescription}.`
     }
