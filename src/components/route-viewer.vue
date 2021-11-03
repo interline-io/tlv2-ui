@@ -104,26 +104,13 @@ query($after: Int, $limit: Int, $feed_version_sha1: String, $operator_onestop_id
       agency_name
     }
     geometries {
-      direction_id
       generated
     }
-    headway_seconds_weekday_morning
     headways {
-      # selected_stop_id
-      # service_date
+      service_date
       dow_category
-      headway_seconds_morning_min
-      headway_seconds_midday_min
-      headway_seconds_afternoon_min
-      headway_seconds_night_min
-      headway_seconds_morning_mid
-      headway_seconds_midday_mid
-      headway_seconds_afternoon_mid
-      headway_seconds_night_mid
-      headway_seconds_morning_max
-      headway_seconds_midday_max
-      headway_seconds_afternoon_max
-      headway_seconds_night_max
+      departures
+      headway_secs
     }
   }
 }

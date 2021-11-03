@@ -350,18 +350,6 @@ const q = gql`
         service_date
         direction_id
         headway_secs
-        headway_seconds_morning_min
-        headway_seconds_midday_min
-        headway_seconds_afternoon_min
-        headway_seconds_night_min
-        headway_seconds_morning_mid
-        headway_seconds_midday_mid
-        headway_seconds_afternoon_mid
-        headway_seconds_night_mid
-        headway_seconds_morning_max
-        headway_seconds_midday_max
-        headway_seconds_afternoon_max
-        headway_seconds_night_max
       }
       feed_version {
         id
