@@ -350,6 +350,7 @@ const q = gql`
         service_date
         direction_id
         headway_secs
+        departures
       }
       feed_version {
         id
