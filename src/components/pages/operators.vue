@@ -176,6 +176,7 @@ export default {
   },
   methods: {
     clearQuery () {
+      this.search = ''
       this.$router.push({ name: 'operators', query: { } })
     },
     onAutocomplete (a, b) {
