@@ -122,7 +122,7 @@ export default {
   mixins: [TableViewerMixin],
   data () {
     return {
-      search: '',
+      search: this.$route.query.search,
       merged: true,
       unmatched: true
     }
