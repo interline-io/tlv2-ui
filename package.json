@@ -14,10 +14,10 @@
     "dependencies": {
         "@nuxtjs/apollo": "^4.0.1-rc.5",
         "@nuxtjs/eslint-config": "^6.0.1",
-        "date-fns": "^2.21.1",
+        "date-fns": "^2.26.0",
         "eslint-plugin-nuxt": "^2.0.0",
         "maplibre-gl": ">=1.14.0",
-        "nuxt-buefy": "^0.4.8",
+        "nuxt-buefy": "^0.4.13",
         "sanitize-filename": "^1.6.3"
     },
     "devDependencies": {
