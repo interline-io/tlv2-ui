@@ -28,36 +28,34 @@
             <tl-search-bar v-model="search" placeholder="e.g. Bay Area Rapid Transit" />
           </div>
 
-          <b-dropdown class="is-pulled-right" append-to-body aria-role="menu" trap-focus>
-            <a
-              slot="trigger"
-              class="navbar-item"
-              role="button"
-            >
-              <span>Options</span>
-              <b-icon icon="menu-down" />
-            </a>
+          <b-dropdown
+            position="is-bottom-left"
+            append-to-body
+            aria-role="menu"
+            trap-focus
+          >
+            <template #trigger="{ active }">
+              <b-button
+                label="Options"
+                type="is-primary"
+                :icon-right="active ? 'menu-up' : 'menu-down'"
+              />
+            </template>
 
             <b-dropdown-item
               aria-role="menu-item"
-              :focusable="false"
               custom
-              paddingless
             >
-              <div class="modal-card" style="width:400px;">
-                <section class="modal-card-body">
-                  <div class="field">
-                    <b-checkbox v-model="merged">
-                      Group agencies by operator
-                    </b-checkbox>
-                  </div>
+              <div class="field">
+                <b-checkbox v-model="merged">
+                  Group agencies by operator
+                </b-checkbox>
+              </div>
 
-                  <div class="field">
-                    <b-checkbox v-model="unmatched">
-                      Show operators without agency matches
-                    </b-checkbox>
-                  </div>
-                </section>
+              <div class="field">
+                <b-checkbox v-model="unmatched">
+                  Show operators without agency matches
+                </b-checkbox>
               </div>
             </b-dropdown-item>
           </b-dropdown>
