@@ -122,7 +122,7 @@
           </b-tooltip>
         </b-table-column>
 
-        <b-table-column v-if="tagUnstableUrl" v-slot="props" field="tags" label="Tags">
+        <b-table-column v-slot="props" :visible="tagUnstableUrl" field="tags" label="Tags">
           <pre>{{ props.row.tags }}</pre>
         </b-table-column>
 
