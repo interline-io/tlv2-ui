@@ -123,7 +123,7 @@
         </b-table-column>
 
         <b-table-column v-slot="props" :visible="tagUnstableUrl" field="tags" label="Tags">
-          <pre>{{ props.row.tags }}</pre>
+          <pre class="tags">{{ props.row.tags }}</pre>
         </b-table-column>
 
         <!-- <b-table-column v-slot="props" field="last_import_fail" label="Errors">
@@ -278,3 +278,10 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+pre.tags {
+  padding: 1px;
+  font-size: 0.8em;
+}
+</style>
