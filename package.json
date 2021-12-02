@@ -12,6 +12,7 @@
         "dev": "yarn nuxt dev"
     },
     "dependencies": {
+        "@mapbox/mapbox-gl-draw": "^1.3.0",
         "@nuxtjs/apollo": "^4.0.1-rc.5",
         "@nuxtjs/eslint-config": "^6.0.1",
         "date-fns": "^2.26.0",
