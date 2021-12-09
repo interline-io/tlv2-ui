@@ -107,7 +107,6 @@ query($after: Int, $limit: Int, $feed_version_sha1: String, $operator_onestop_id
       direction_id
       generated
     }
-    headway_seconds_weekday_morning
     headways {
       # selected_stop_id
       # service_date

@@ -33,7 +33,6 @@ query ($limit: Int!, $operator_onestop_id: String, $route_ids: [Int!], $feed_ver
     route_type
     route_url
     geometry
-    headway_seconds_weekday_morning
     route_stops @include(if: $include_stops) {
       stop {
         id
@@ -96,7 +95,7 @@ export default {
           const fcopy = Object.assign({}, feature, {
             geometry_length: -1,
             route_color: routeColor,
-            headway_secs: feature.headway_seconds_weekday_morning ? feature.headway_seconds_weekday_morning : -1,
+            headway_secs: -1,
             agency_name: feature.agency ? feature.agency.agency_name : null
           })
           delete fcopy.geometry
