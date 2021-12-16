@@ -59,11 +59,6 @@ export default {
           title: 'Documentation',
           icon: 'lightbulb',
           to: { name: 'documentation' }
-        },
-        {
-          title: 'News & Updates',
-          icon: 'lightbulb',
-          to: { name: 'news' }
         }
       ]
     }
@@ -84,7 +79,7 @@ a {
   color: #000;
 }
 .logo-image {
-    /* background: url('~assets/transitland_logo.svg'); */
+    background: url('~assets/transitland_logo.svg');
     background-size: contain;
     background-repeat: no-repeat;
     margin-left:20px;

@@ -1,0 +1,10 @@
+<template>
+  <div>
+    <tl-pages-operator
+      :onestop-id="$route.params.onestop_id"
+      :feed-onestop-id="$route.query.feed_onestop_id"
+      :entity-id="$route.query.agency_id"
+      :feed-version-sha1="$route.query.feed_version_sha1"
+    />
+  </div>
+</template>
