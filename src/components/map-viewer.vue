@@ -39,9 +39,9 @@
         </div>
         <div class="map-info">
           <div v-show="Object.keys(agencyFeatures).length == 0">
-            <strong>Use your cursor</strong> to highlight routes and see their names here. <strong>Click</strong> for more details.
+            <strong>Use your cursor</strong> to highlight routes and stops to see more info. <strong>Click</strong> for more details.
           </div>
-          <tl-route-select :link="link" :agency-features="agencyFeatures" :collapse="true" />
+          <tl-route-stop-select :link="link" :agency-features="agencyFeatures" :collapse="true" />
         </div>
       </div>
     </div>
@@ -100,7 +100,8 @@ export default {
   data () {
     return {
       map: null,
-      hovering: [],
+      hoveringRoutes: [],
+      hoveringStops: [],
       agencyFeatures: {},
       isComponentModalActive: false,
       showGeneratedShadow: this.showGenerated,
@@ -388,29 +389,65 @@ export default {
     },
     mapMouseMove (e) {
       const map = this.map
-      const features = map.queryRenderedFeatures(e.point, { layers: ['route-active'] })
-      map.getCanvas().style.cursor = 'pointer'
-      for (const k of this.hovering) {
+      const agencyFeatures = {}
+
+      const stops = map.queryRenderedFeatures(e.point, { layers: ['stops'] })
+      for (const k of this.hoveringStops) {
+        map.setFeatureState(
+          { source: 'stops', id: k, sourceLayer: this.stopTiles ? this.stopTiles.id : null },
+          { hover: false }
+        )
+      }
+      const hoveringStops = []
+      for (const v of stops) {
+        hoveringStops.push(v.id)
+        map.setFeatureState({ source: 'stops', id: v.id, sourceLayer: this.stopTiles ? this.stopTiles.id : null }, { hover: true })
+
+        const agencyId = v.properties.agency_name
+        const stopId = v.properties.stop_id
+        if (agencyFeatures[agencyId] == null) {
+          agencyFeatures[agencyId] = {
+            stops: {},
+            routes: {}
+          }
+        }
+        agencyFeatures[agencyId].stops[stopId] = v.properties
+      }
+      this.hoveringStops = hoveringStops
+
+      const routes = map.queryRenderedFeatures(e.point, { layers: ['route-active'] })
+      for (const k of this.hoveringRoutes) {
         map.setFeatureState(
           { source: 'routes', id: k, sourceLayer: this.routeTiles ? this.routeTiles.id : null },
           { hover: false }
         )
       }
-      this.hovering = []
-      for (const v of features) {
-        this.hovering.push(v.id)
+      const hoveringRoutes = []
+      for (const v of routes) {
+        hoveringRoutes.push(v.id)
+        console.log(v)
         map.setFeatureState({ source: 'routes', id: v.id, sourceLayer: this.routeTiles ? this.routeTiles.id : null }, { hover: true })
-      }
-      const agencyFeatures = {}
-      for (const v of features) {
+
         const agencyId = v.properties.agency_name
         const routeId = v.properties.route_id
         if (agencyFeatures[agencyId] == null) {
-          agencyFeatures[agencyId] = {}
+          agencyFeatures[agencyId] = {
+            stops: {},
+            routes: {}
+          }
         }
-        agencyFeatures[agencyId][routeId] = v.properties
+        agencyFeatures[agencyId].routes[routeId] = v.properties
       }
+      this.hoveringRoutes = hoveringRoutes
+
       this.agencyFeatures = agencyFeatures
+
+      // mouse cursor
+      if (hoveringRoutes.length > 0 || hoveringStops.length > 0) {
+        map.getCanvas().style.cursor = 'pointer'
+      } else {
+        map.getCanvas().style.cursor = ''
+      }
     }
   }
 }
