@@ -6,7 +6,7 @@ export default {
     prefix: 'tl'
   }],
   server: {
-    port: 3000, // default: 3000
+    port: 3000,
     host: '0.0.0.0', // default: localhost,
     timing: false
   },
@@ -20,19 +20,14 @@ export default {
     tileEndpoint: process.env.TILE_ENDPOINT || 'https://transit.land/api/v2/tiles',
     tileApikey: process.env.TILE_APIKEY || ''
   },
-  /*
-    ** Nuxt.js dev-modules
-    */
   buildModules: [
     '@nuxt/components'
   ],
-  /*
-    ** Nuxt.js modules
-    */
+  css: [
+    '~/assets/main.css'
+  ],
   modules: [
-    // Doc: https://buefy.github.io/#/documentation
     'nuxt-buefy',
-    // https://github.com/nuxt-community/apollo-module
     '@nuxtjs/apollo'
   ],
   /* APOLLO */

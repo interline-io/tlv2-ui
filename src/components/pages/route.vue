@@ -124,12 +124,6 @@
               </td>
             </tr>
             <tr>
-              <td>GTFS ID</td>
-              <td>
-                {{ entity.route_id }}
-              </td>
-            </tr>
-            <tr>
               <td>Name (Short)</td>
               <td>
                 {{ entity.route_short_name }}
@@ -168,6 +162,12 @@
                 ><b-icon
                   icon="link"
                 /></a>
+              </td>
+            </tr>
+            <tr>
+              <td>GTFS ID</td>
+              <td>
+                {{ entity.route_id }}
               </td>
             </tr>
           </table>
