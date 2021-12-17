@@ -53,6 +53,14 @@
           </b-select>
         </b-field>
 
+        <b-field label="Filter by tag">
+          <div class="pt-2">
+            <b-checkbox v-model="tagUnstableUrl" native-value="true" class="is-medium">
+              Unstable URL
+            </b-checkbox>
+          </div>
+        </b-field>
+
         <b-field label="Filter by data format" class="pl-3">
           <div class="pt-2">
             <b-checkbox v-model="feedSpecs" native-value="gtfs" class="is-medium">
@@ -114,6 +122,10 @@
           </b-tooltip>
         </b-table-column>
 
+        <b-table-column v-slot="props" :visible="tagUnstableUrl" field="tags" label="Tags">
+          <pre class="tags">{{ props.row.tags }}</pre>
+        </b-table-column>
+
         <!-- <b-table-column v-slot="props" field="last_import_fail" label="Errors">
           <b-tooltip :label="props.row.last_import_fail">
             <b-icon v-if="props.row.last_import_fail" icon="alert" />
@@ -133,11 +145,12 @@ import TableViewerMixin from '../table-viewer-mixin'
 import Filters from '../filters'
 
 const q = gql`
-query($specs: [String!], $after: Int, $limit:Int, $search: String, $fetch_error: Boolean, $import_status: ImportStatus) {
-  entities: feeds(after: $after, limit:$limit, where: {search: $search, spec: $specs, fetch_error: $fetch_error, import_status: $import_status}) {
+query($specs: [String!], $after: Int, $limit:Int, $search: String, $fetch_error: Boolean, $import_status: ImportStatus, $tags: Tags) {
+  entities: feeds(after: $after, limit:$limit, where: {search: $search, spec: $specs, fetch_error: $fetch_error, import_status: $import_status, tags: $tags}) {
     id
     onestop_id
     spec
+    tags
     feed_state {
       id
       feed_version {
@@ -185,7 +198,8 @@ export default {
           limit: this.limit,
           specs: this.feedSpecs,
           fetch_error: nullBool(this.fetchError),
-          import_status: nullString(this.importStatus)
+          import_status: nullString(this.importStatus),
+          tags: this.tagVariable
         }
       },
       error (e) { this.error = e }
@@ -203,7 +217,8 @@ export default {
     return {
       feedSpecs: spec,
       fetchError: this.$route.query.fetch_error,
-      importStatus: this.$route.query.import_status
+      importStatus: this.$route.query.import_status,
+      tagUnstableUrl: this.$route.query.tag_unstable_url || false
     }
   },
   head () {
@@ -232,9 +247,19 @@ export default {
           last_fetch_error: feedState.last_fetch_error,
           last_successful_fetch_at: feedState.last_successful_fetch_at,
           last_successful_import_at: currentImport.created_at,
-          last_import_fail: lastImportFail
+          last_import_fail: lastImportFail,
+          tags: feed.tags
         }
       })
+    },
+    tagVariable () {
+      if (this.tagUnstableUrl) {
+        return {
+          unstable_url: 'true'
+        }
+      } else {
+        return {}
+      }
     }
   },
   watch: {
@@ -246,7 +271,17 @@ export default {
     },
     feedSpecs (v) {
       this.$router.replace({ name: 'feeds', query: { ...this.$route.query, feed_specs: v } })
+    },
+    tagUnstableUrl (v) {
+      this.$router.replace({ name: 'feeds', query: { ...this.$route.query, tag_unstable_url: v ? true : null } })
     }
   }
 }
 </script>
+
+<style scoped>
+pre.tags {
+  padding: 1px;
+  font-size: 0.8em;
+}
+</style>
