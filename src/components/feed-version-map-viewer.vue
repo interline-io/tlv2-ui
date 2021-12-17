@@ -98,8 +98,8 @@ export default {
             routeColor = '#' + routeColor
           }
           const headwaySorted = (feature.headways || [])
-            .filter((s)=>{return s.dow_category === 1})
-            .sort((a,b)=>{return a.direction_id < b.direction_id})
+            .filter((s) => { return s.dow_category === 1 })
+            .sort((a, b) => { return a.direction_id < b.direction_id })
           const fcopy = Object.assign({}, feature, {
             geometry_length: -1,
             route_color: routeColor,
