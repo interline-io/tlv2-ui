@@ -1,8 +1,6 @@
 <template>
   <div>
-    <!-- <div v-for="headway of headways" :key="headway.id">
-      {{ headway}}
-    </div> -->
+    <div v-if="hws.found">
     <table class="table is-fullwidth">
       <thead>
         <tr>
@@ -43,6 +41,10 @@
         </tr>
       </tbody>
     </table>
+    </div>
+    <div v-else>
+      No headways information available.
+    </div>
   </div>
 </template>
 
@@ -130,11 +132,15 @@ export default {
         6: 'saturday',
         7: 'sunday'
       }
-      const ret = { weekday: {}, saturday: {}, sunday: {} }
+      const ret = { weekday: {}, saturday: {}, sunday: {}, found: false }
       // sort by direction_id desc, so direction_id = 0 will be preferred
       const headwaysSorted = (this.headways || []).sort((a,b)=>{return b.direction_id - a.direction_id})
+      console.log('headwaysSorted:', headwaysSorted)
       for (const headway of headwaysSorted) {
-        const deps = headway.departures.map((s)=>{return parseHMS(s)})
+        const deps = (headway.departures || []).map((s)=>{return parseHMS(s)})
+        if (deps.length > 1) {
+          ret.found = true
+        }
         const hwMorning = departureFilter(deps, 6*3600, 10*3600)
         hwMorning.sort()
         const hwMidday = departureFilter(deps, 10*3600, 16*3600)
