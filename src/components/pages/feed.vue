@@ -420,9 +420,6 @@ export default {
     }
   },
   computed: {
-    newLink () {
-      return ''
-    },
     displayLicense () {
       if (this.entity) {
         return isEmpty(this.entity.license)
@@ -443,8 +440,11 @@ export default {
       return `${this.onestopId} • Feed details`
     },
     staticDescription () {
-      const operatorDescription = this.entity.associated_operators ? ` describing ${this.entity.associated_operators[0].name}` : ''
-      return `${this.onestopId} is a ${this.entity.spec.toUpperCase()} feed ${operatorDescription}.`
+      if (this.entity) {
+        const operatorDescription = (this.entity && this.entity.associated_operators) ? ` describing ${this.entity.associated_operators[0].name}` : ''
+        return `${this.onestopId} is a ${this.entity.spec.toUpperCase()} feed ${operatorDescription}.`
+      }
+      return ""
     }
   }
 }
