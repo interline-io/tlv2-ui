@@ -1,14 +1,16 @@
 <script>
 import { formatDistanceToNow, parseISO, format } from 'date-fns'
 
-export default {
-  filters: {
-    fromNow (comparisonDate) {
-      return formatDistanceToNow(parseISO(comparisonDate + 'Z'), {
-        addSuffix: true
-      }).replace('about ', '')
-    },
-    formatHMS (value) {
+function parseHMS(value) {  
+      const a = (value || "").split(":").map((s)=>{return parseInt(s)})
+      console.log("value:", value, a)
+      if (a.length != 3) {
+        return null
+      }
+      return a[0] * 3600 + a[1] * 60 + a[2]
+}
+
+function formatHMS(value) {
       value = value % (24 * 3600)
       let h = Math.floor(value / 3600)
       let m = Math.floor((value % 3600) / 60)
@@ -29,6 +31,24 @@ export default {
         s = '0' + s
       }
       return `${h}:${m} ${ampm}`
+}
+
+
+export default {
+  filters: {
+    fromNow (comparisonDate) {
+      return formatDistanceToNow(parseISO(comparisonDate + 'Z'), {
+        addSuffix: true
+      }).replace('about ', '')
+    },
+    reformatHMS(value) {
+      return formatHMS(parseHMS(value))
+    },
+    parseHMS(value) {
+      return parseHMS(value)
+    },
+    formatHMS (value) {
+      return formatHMS(value)
     },
     shortenName (value, len) {
       if (!value) {
