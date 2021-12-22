@@ -1,0 +1,52 @@
+table.property-list td, table.property-list th {
+    padding:5px;
+}
+table.property-list td:first-child {
+    padding-right:20px;
+    font-weight:bold;
+    text-align:right;
+    width:200px;
+}
+.datepicker .dropdown-content {
+    box-shadow:none !important;
+}
+.route-icon {
+    margin-top:10px;
+    margin-bottom:10px;
+    padding-left:32px;
+    position:relative;
+}
+.route-icon .route-icon-short-name {
+    padding:6px;
+    display:inline-block;
+    border:solid 1px #666;
+    border-radius:6px;
+    white-space:nowrap;
+}
+.route-icon .route-icon-long-name {
+    padding:6px;
+    display:inline-block;
+    white-space:nowrap;
+}
+.route-icon .route-icon-icon {
+    display:block;
+    position:absolute;
+    top:6px;
+    left:0px;
+}
+.clearfix:after {
+    clear: both;
+    content: "";
+    display: table;
+}
+.entity-search {
+    margin-bottom:10px;
+}
+.table.is-borderless
+  td,
+  th {
+    border: 0 }
+.b-tabs .tab-content {
+  padding-left:0px;
+  padding-right:0px;
+}

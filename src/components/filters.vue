@@ -8,6 +8,13 @@ export default {
         addSuffix: true
       }).replace('about ', '')
     },
+    parseHMS(value) {
+      const a = (value || "").split(":").map(parseInt)
+      if (a.length != 3) {
+        return null
+      }
+      return a[0] * 3600 + a[1] * 60 + a[2]
+    },
     formatHMS (value) {
       value = value % (24 * 3600)
       let h = Math.floor(value / 3600)

@@ -33,6 +33,11 @@ query ($limit: Int!, $operator_onestop_id: String, $route_ids: [Int!], $feed_ver
     route_type
     route_url
     geometry
+    # headways {
+    #   dow_category
+    #   direction_id
+    #   headway_secs
+    # }
     route_stops @include(if: $include_stops) {
       stop {
         id
@@ -92,10 +97,13 @@ export default {
           if (routeColor && routeColor.substr(0, 1) !== '#') {
             routeColor = '#' + routeColor
           }
+          const headwaySorted = (feature.headways || [])
+            .filter((s) => { return s.dow_category === 1 })
+            .sort((a, b) => { return a.direction_id < b.direction_id })
           const fcopy = Object.assign({}, feature, {
             geometry_length: -1,
             route_color: routeColor,
-            headway_secs: -1,
+            headway_secs: headwaySorted.length > 0 ? headwaySorted[0].headway_secs : -1,
             agency_name: feature.agency ? feature.agency.agency_name : null
           })
           delete fcopy.geometry
