@@ -85,7 +85,7 @@
 </template>
 
 <script>
-import Filters from '~/../src/components/filters.vue'
+import Filters from './../filters'
 import haversine from 'haversine'
 import gql from 'graphql-tag'
 
