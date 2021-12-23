@@ -166,7 +166,10 @@
             </span>
           </template>
         </b-message>
-        <b-message v-else-if="fvi.success" class="is-success" has-icon icon="check" :closeable="false">
+        <b-message v-else-if="fvi.schedule_removed" class="is-success" has-icon icon="check" :closeable="false">
+          Agencies, stops, and routes are available for this feed version. Schedule data is not available.
+        </b-message>
+        <b-message v-else-if="fvi.success" class="is-success" has-icon icon="check-all" :closeable="false">
           This feed version was successfully imported into the database.
         </b-message>
         <b-message v-else-if="fvi.in_progress" class="is-info" has-icon icon="clock" :closeable="false">
@@ -299,6 +302,7 @@ query ($feed_version_sha1: String!) {
       exception_log
       in_progress
       success
+      schedule_removed
       # generated_count
       # interpolated_stop_time_count
       skip_entity_error_count
@@ -383,7 +387,7 @@ export default {
       return ret
     },
     operatorOrAgencyNames () {
-     if (this.entity && this.entity.agencies) {
+      if (this.entity && this.entity.agencies) {
         return this.entity.agencies.map(a => a.agency_name).join(', ')
       } else {
         return null

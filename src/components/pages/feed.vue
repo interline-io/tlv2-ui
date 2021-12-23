@@ -164,7 +164,6 @@
         </div>
 
         <slot name="edit-feed" :entity="entity" />
-
       </div>
 
       <!-- TODO: Operators component -->
@@ -175,7 +174,9 @@
         </h4>
         <b-tabs type="is-boxed" :animated="false">
           <b-tab-item label="Operators">
-            <b-message v-if="!entity.associated_operators || (entity.associated_operators && entity.associated_operators.length === 0)">There are no operators associated with this feed.</b-message>
+            <b-message v-if="!entity.associated_operators || (entity.associated_operators && entity.associated_operators.length === 0)">
+              There are no operators associated with this feed.
+            </b-message>
             <b-message
               v-for="(operator,i) of entity.associated_operators"
               :key="i"
@@ -256,8 +257,21 @@
               </b-table-column>
               <b-table-column v-slot="props" field="feed_version_gtfs_import" label="Imported">
                 <template v-if="props.row.feed_version_gtfs_import">
-                  <b-icon v-if="props.row.feed_version_gtfs_import.success" icon="check" />
-                  <b-icon v-else-if="props.row.feed_version_gtfs_import.in_progress" icon="clock" />
+                  <b-tooltip
+                    v-if="props.row.feed_version_gtfs_import.schedule_removed"
+                    label="Agencies, stops, and routes available"
+                  >
+                    <b-icon icon="check" />
+                  </b-tooltip>
+                  <b-tooltip
+                    v-else-if="props.row.feed_version_gtfs_import.success"
+                    label="Successfully imported"
+                  >
+                    <b-icon icon="check-all" />
+                  </b-tooltip>
+                  <b-tooltip v-else-if="props.row.feed_version_gtfs_import.in_progress">
+                    <b-icon icon="clock" />
+                  </b-tooltip>
                   <b-tooltip
                     v-else-if="props.row.feed_version_gtfs_import.success == false"
                     :label="props.row.feed_version_gtfs_import.exception_log"
@@ -351,6 +365,7 @@ query($feed_onestop_id: String) {
         success
         in_progress
         exception_log
+        schedule_removed
         # created_at
       }
     }
@@ -444,7 +459,7 @@ export default {
         const operatorDescription = (this.entity && this.entity.associated_operators) ? ` describing ${this.entity.associated_operators[0].name}` : ''
         return `${this.onestopId} is a ${this.entity.spec.toUpperCase()} feed ${operatorDescription}.`
       }
-      return ""
+      return ''
     }
   }
 }
