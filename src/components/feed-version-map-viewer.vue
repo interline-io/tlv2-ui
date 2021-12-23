@@ -11,6 +11,9 @@
       :stop-features="stopFeatures"
       :overlay="overlay"
       :link-version="linkVersion"
+      :center="center.length > 0 ? center : null"
+      :auto-fit="center.length > 0 ? false : true"
+      :zoom="zoom ? zoom : null"
     />
   </div>
 </template>
@@ -80,7 +83,9 @@ export default {
     routeIds: { type: Array, default: null },
     operatorOnestopId: { type: String, default: null },
     linkVersion: { type: Boolean, default: false },
-    features: { type: Array, default () { return [] } }
+    features: { type: Array, default () { return [] } },
+    center: { type: Array, default () { return [] } },
+    zoom: { type: Number, default: null }
   },
   data () {
     return {
