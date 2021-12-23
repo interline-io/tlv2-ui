@@ -21,6 +21,7 @@ export default {
     tileApikey: process.env.TILE_APIKEY || ''
   },
   buildModules: [
+    '@nuxtjs/eslint-module',
     '@nuxt/components'
   ],
   css: [
@@ -28,8 +29,15 @@ export default {
   ],
   modules: [
     'nuxt-buefy',
-    '@nuxtjs/apollo'
+    '@nuxtjs/apollo',
+    'vue-geolocation-api/nuxt'
   ],
+  geolocation: {
+    watch: true,
+    options: {
+      enableHighAccuracy: true
+    }
+  },
   /* APOLLO */
   apollo: {
     clientConfigs: {
