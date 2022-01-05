@@ -173,7 +173,7 @@ export default {
           ]
         }
       }
-      if (this.center) {
+      if (this.center && this.center.length > 0) {
         opts.center = this.center
       }
       if (this.zoom) {
