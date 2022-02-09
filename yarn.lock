@@ -228,7 +228,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/eslint-parser@npm:^7.12.16, @babel/eslint-parser@npm:^7.14.7":
+"@babel/eslint-parser@npm:^7.12.16":
   version: 7.14.7
   resolution: "@babel/eslint-parser@npm:7.14.7"
   dependencies:
@@ -239,6 +239,20 @@ __metadata:
     "@babel/core": ">=7.11.0"
     eslint: ">=7.5.0"
   checksum: d6bfe209f22af8e17e8b1bc7c598bfa9eaab15b89aeab686840ed22d1177f3bb68817a0c01d1e1be778c13bf9ecd07543f8b2bd93ae5fb65f9d9a955a40dd851
+  languageName: node
+  linkType: hard
+
+"@babel/eslint-parser@npm:^7.17.0":
+  version: 7.17.0
+  resolution: "@babel/eslint-parser@npm:7.17.0"
+  dependencies:
+    eslint-scope: ^5.1.1
+    eslint-visitor-keys: ^2.1.0
+    semver: ^6.3.0
+  peerDependencies:
+    "@babel/core": ">=7.11.0"
+    eslint: ^7.5.0 || ^8.0.0
+  checksum: 1cedd9998dd89f779bbc5496531e3ef1b43d6f4fb7209ed5088938292b81287302cb47c0923ce074e84e83aa41b236b09bfecacdf20770f4cbfade2de9519c10
   languageName: node
   linkType: hard
 
@@ -5261,14 +5275,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"buefy@npm:^0.9.13":
-  version: 0.9.13
-  resolution: "buefy@npm:0.9.13"
+"buefy@npm:^0.9.14":
+  version: 0.9.14
+  resolution: "buefy@npm:0.9.14"
   dependencies:
     bulma: 0.9.3
   peerDependencies:
     vue: ^2.6.11
-  checksum: 435f7e505468e631818abbfc0bb890ceed0111057a2e7905c494990eaa98ecde25e7001d4a23d79db320521ca030f489342ca2bc3733b4d13ca0027b0455e0bc
+  checksum: 4f79a91649035b5e2b6818a0faba9432a7c556bba30f4052773724245cf951fdcf841a2b118796e8dadbadb5ef987eabd358a0aa15086f95069315d41aca7529
   languageName: node
   linkType: hard
 
@@ -6753,10 +6767,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:^2.26.0":
-  version: 2.26.0
-  resolution: "date-fns@npm:2.26.0"
-  checksum: 49ad59bc788134a6552ef4e4af0d18792001c1ca0070d543de4f36aba5761058b6e6a57b8ca51dd3b0f07f3bd55376b8bc69602bd7940648ba3869c5253c6ae8
+"date-fns@npm:^2.28.0":
+  version: 2.28.0
+  resolution: "date-fns@npm:2.28.0"
+  checksum: a0516b2e4f99b8bffc6cc5193349f185f195398385bdcaf07f17c2c4a24473c99d933eb0018be4142a86a6d46cb0b06be6440ad874f15e795acbedd6fd727a1f
   languageName: node
   linkType: hard
 
@@ -7625,7 +7639,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-vue@npm:^7.12.1, eslint-plugin-vue@npm:^7.9.0":
+"eslint-plugin-vue@npm:^7.20.0, eslint-plugin-vue@npm:^7.9.0":
   version: 7.20.0
   resolution: "eslint-plugin-vue@npm:7.20.0"
   dependencies:
@@ -7725,7 +7739,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^7.29.0":
+"eslint@npm:^7.32.0":
   version: 7.32.0
   resolution: "eslint@npm:7.32.0"
   dependencies:
@@ -11947,16 +11961,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nuxt-buefy@npm:^0.4.13":
-  version: 0.4.13
-  resolution: "nuxt-buefy@npm:0.4.13"
+"nuxt-buefy@npm:^0.4.14":
+  version: 0.4.14
+  resolution: "nuxt-buefy@npm:0.4.14"
   dependencies:
-    buefy: ^0.9.13
-  checksum: 15412b62188497a7ac8404bdfba84659c09a13e1d12f5a88250b44734767750d73cdcd781afc6594f2756cd31bc4ddf2664c709c5029389cbe08e54fea9290b1
+    buefy: ^0.9.14
+  checksum: 7675587fe65f7196002dbb8a68000711bcf00a96156ffc2be50c4acb7f1a995efcbef67e4a259ba4255e3efd2841a12d65bd407ae1c86d6089acb78766ba6a16
   languageName: node
   linkType: hard
 
-"nuxt@npm:^2.15.7":
+"nuxt@npm:^2.15.8":
   version: 2.15.8
   resolution: "nuxt@npm:2.15.8"
   dependencies:
@@ -15692,20 +15706,20 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "tlv2-ui@workspace:."
   dependencies:
-    "@babel/eslint-parser": ^7.14.7
+    "@babel/eslint-parser": ^7.17.0
     "@babel/polyfill": ^7.12.1
     "@nuxtjs/apollo": ^4.0.1-rc.5
     "@nuxtjs/eslint-config": ^6.0.1
     "@nuxtjs/eslint-module": ^3.0.2
     "@nuxtjs/style-resources": ^1.2.1
-    date-fns: ^2.26.0
-    eslint: ^7.29.0
+    date-fns: ^2.28.0
+    eslint: ^7.32.0
     eslint-plugin-nuxt: ^2.0.0
-    eslint-plugin-vue: ^7.12.1
+    eslint-plugin-vue: ^7.20.0
     haversine: ^1.1.1
     maplibre-gl: ">=1.14.0"
-    nuxt: ^2.15.7
-    nuxt-buefy: ^0.4.13
+    nuxt: ^2.15.8
+    nuxt-buefy: ^0.4.14
     sanitize-filename: ^1.6.3
     vue-geolocation-api: ^0.1.21
   languageName: unknown

@@ -13,22 +13,22 @@
     },
     "dependencies": {
         "@nuxtjs/apollo": "^4.0.1-rc.5",
-        "date-fns": "^2.26.0",
+        "date-fns": "^2.28.0",
         "maplibre-gl": ">=1.14.0",
         "sanitize-filename": "^1.6.3"
     },
     "devDependencies": {
-        "@babel/eslint-parser": "^7.14.7",
+        "@babel/eslint-parser": "^7.17.0",
         "@babel/polyfill": "^7.12.1",
         "@nuxtjs/eslint-config": "^6.0.1",
         "@nuxtjs/eslint-module": "^3.0.2",
         "@nuxtjs/style-resources": "^1.2.1",
-        "eslint": "^7.29.0",
+        "eslint": "^7.32.0",
         "eslint-plugin-nuxt": "^2.0.0",
-        "eslint-plugin-vue": "^7.12.1",
+        "eslint-plugin-vue": "^7.20.0",
         "haversine": "^1.1.1",
-        "nuxt": "^2.15.7",
-        "nuxt-buefy": "^0.4.13",
+        "nuxt": "^2.15.8",
+        "nuxt-buefy": "^0.4.14",
         "vue-geolocation-api": "^0.1.21"
     },
     "packageManager": "yarn@3.1.0"
