@@ -19,13 +19,13 @@
       <h1 class="title">
         {{ operatorName }}
       </h1>
-      
+
       <slot name="description">
         <div class="content">
           {{ staticDescription }}
         </div>
       </slot>
-      
+
       <!-- Warnings for freshness and viewing a specific version -->
       <b-message v-if="dataFreshness > 365" type="is-warning" has-icon>
         The GTFS feeds associated with this page were fetched {{ dataFreshness }} days ago; use caution or check if newer data is available.
@@ -80,18 +80,18 @@
               <td>
                 <ul>
                   <li v-for="location of locations" :key="location.name">
-                    <nuxt-link :to="{name:'operators', query:{search:location.adm0_name}}">
+                    <nuxt-link :to="{name:'operators', query:{adm0_name:location.adm0_name}}">
                       {{ location.adm0_name }}
                     </nuxt-link>
                     <template v-if="location.adm1_name">
                       /
-                      <nuxt-link :to="{name:'operators', query:{search:location.adm1_name}}">
+                      <nuxt-link :to="{name:'operators', query:{adm1_name:location.adm1_name, adm0_name:location.adm0_name}}">
                         {{ location.adm1_name }}
                       </nuxt-link>
                     </template>
                     <template v-if="location.city_name">
                       /
-                      <nuxt-link :to="{name:'operators', query:{search:location.city_name}}">
+                      <nuxt-link :to="{name:'operators', query:{city_name:location.city_name, adm1_name:location.adm1_name, adm0_name:location.adm0_name}}">
                         {{ location.city_name }}
                       </nuxt-link>
                     </template>
@@ -133,11 +133,10 @@
             </tr>
           </table>
         </div>
-        
+
         <div class="column is-one-quarter is-full-height">
           <slot name="edit-operator" :entity="entity" />
         </div>
-
       </div>
 
       <hr>
@@ -219,12 +218,12 @@
         <b-tabs v-model="activeTab" type="is-boxed" :animated="false" @input="setTab">
           <b-tab-item label="Map">
             <client-only placeholder="Map">
-              <tl-feed-version-map-viewer v-if="activeTab === 0" :operatorOnestopId="onestopId" :overlay="true" :link-version="linkVersion" />
+              <tl-feed-version-map-viewer v-if="activeTab === 0" :operator-onestop-id="onestopId" :overlay="true" :link-version="linkVersion" />
             </client-only>
           </b-tab-item>
 
           <b-tab-item label="Routes">
-            <tl-route-viewer v-if="activeTab === 1" :operatorOnestopId="onestopId" :show-agency="true" />
+            <tl-route-viewer v-if="activeTab === 1" :operator-onestop-id="onestopId" :show-agency="true" />
           </b-tab-item>
 
           <b-tab-item label="Stops">
@@ -381,7 +380,7 @@ export default {
     sources () {
       const ret = []
       const matchedFeeds = {}
-      if (!this.entity) { 
+      if (!this.entity) {
         return ret
       }
       for (const agency of this.agencies) {

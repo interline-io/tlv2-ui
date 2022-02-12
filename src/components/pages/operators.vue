@@ -12,8 +12,19 @@
 
     <div>
       <b-field grouped>
-        <b-field label="Search by operator name or location" expanded>
-          <b-field v-if="$route.query.search" expanded>
+        <b-field :label="filteringByOperatorLocation ? 'Filter by operator location' : 'Search by operator name or location'" expanded>
+          <b-field v-if="filteringByOperatorLocation" expanded>
+            <b-tag
+              size="is-medium"
+              attached
+              closable
+              aria-close-label="Close tag"
+              @close="clearQuery"
+            >
+              {{ [$route.query.adm0_name, $route.query.adm1_name, $route.query.city_name].filter(n => n).join(' / ') }}
+            </b-tag>
+          </b-field>
+          <b-field v-else-if="$route.query.search" expanded>
             <b-tag
               size="is-medium"
               attached
@@ -24,7 +35,7 @@
               {{ $route.query.search }}
             </b-tag>
           </b-field>
-          <div v-else style="width:100%">
+          <div v-else style="width: 100%;">
             <tl-search-bar v-model="search" placeholder="e.g. Bay Area Rapid Transit" />
           </div>
 
@@ -70,7 +81,7 @@
         <!-- TODO: fix sorting -->
         <b-table-column v-slot="props" field="name" label="Operator Name (Short Name)">
           <nuxt-link :to="{name: 'operators-onestop_id', params: {onestop_id: props.row.onestop_id}}">
-            {{ props.row.name }}
+            <strong>{{ props.row.name }}</strong>
           </nuxt-link>
           <span v-if="props.row.short_name">({{ props.row.short_name }})</span>
         </b-table-column>
@@ -98,8 +109,8 @@ import gql from 'graphql-tag'
 import TableViewerMixin from '../table-viewer-mixin'
 
 const q = gql`
-query ($limit: Int, $after: Int, $search: String, $merged: Boolean) {
-  entities: operators(after: $after, limit: $limit, where: {search: $search, merged:$merged}) {
+query ($limit: Int, $after: Int, $search: String, $merged: Boolean, $adm0_name: String, $adm1_name: String, $city_name: String) {
+  entities: operators(after: $after, limit: $limit, where: {search: $search, merged: $merged, adm0_name: $adm0_name, adm1_name: $adm1_name, city_name: $city_name}) {
     id
     onestop_id
     name
@@ -121,6 +132,9 @@ export default {
   data () {
     return {
       search: this.$route.query.search,
+      adm0_name: this.$route.query.adm0_name,
+      adm1_name: this.$route.query.adm1_name,
+      city_name: this.$route.query.city_name,
       merged: true,
       unmatched: true
     }
@@ -132,6 +146,9 @@ export default {
       variables () {
         return {
           search: this.search,
+          adm0_name: this.adm0_name,
+          adm1_name: this.adm1_name,
+          city_name: this.city_name,
           merged: this.merged,
           limit: this.limit
         }
@@ -147,6 +164,9 @@ export default {
     }
   },
   computed: {
+    filteringByOperatorLocation () {
+      return (this.$route.query.adm0_name || this.$route.query.adm1_name || this.$route.query.city_name)
+    },
     entityPageFlat () {
       return this.entityPage.map((s) => {
         const entity = {
@@ -175,6 +195,9 @@ export default {
   methods: {
     clearQuery () {
       this.search = ''
+      this.adm0_name = null
+      this.adm1_name = null
+      this.city_name = null
       this.$router.push({ name: 'operators', query: { } })
     },
     onAutocomplete (a, b) {
