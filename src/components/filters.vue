@@ -1,38 +1,36 @@
 <script>
 import { formatDistanceToNow, parseISO, format } from 'date-fns'
 
-function parseHMS(value) {  
-      const a = (value || "").split(":").map((s)=>{return parseInt(s)})
-      console.log("value:", value, a)
-      if (a.length != 3) {
-        return null
-      }
-      return a[0] * 3600 + a[1] * 60 + a[2]
+function parseHMS (value) {
+  const a = (value || '').split(':').map((s) => { return parseInt(s) })
+  if (a.length !== 3) {
+    return null
+  }
+  return a[0] * 3600 + a[1] * 60 + a[2]
 }
 
-function formatHMS(value) {
-      value = value % (24 * 3600)
-      let h = Math.floor(value / 3600)
-      let m = Math.floor((value % 3600) / 60)
-      let s = Math.floor((value % 3600) % 60)
-      let ampm = 'am'
-      if (h === 0) {
-        h = h + 12
-      } else if (h === 12) {
-        ampm = 'pm'
-      } else if (h > 12) {
-        h -= 12
-        ampm = 'pm'
-      }
-      if (m < 10) {
-        m = '0' + m
-      }
-      if (s < 10) {
-        s = '0' + s
-      }
-      return `${h}:${m} ${ampm}`
+function formatHMS (value) {
+  value = value % (24 * 3600)
+  let h = Math.floor(value / 3600)
+  let m = Math.floor((value % 3600) / 60)
+  let s = Math.floor((value % 3600) % 60)
+  let ampm = 'am'
+  if (h === 0) {
+    h = h + 12
+  } else if (h === 12) {
+    ampm = 'pm'
+  } else if (h > 12) {
+    h -= 12
+    ampm = 'pm'
+  }
+  if (m < 10) {
+    m = '0' + m
+  }
+  if (s < 10) {
+    s = '0' + s
+  }
+  return `${h}:${m} ${ampm}`
 }
-
 
 export default {
   filters: {
@@ -41,10 +39,10 @@ export default {
         addSuffix: true
       }).replace('about ', '')
     },
-    reformatHMS(value) {
+    reformatHMS (value) {
       return formatHMS(parseHMS(value))
     },
-    parseHMS(value) {
+    parseHMS (value) {
       return parseHMS(value)
     },
     formatHMS (value) {

@@ -47,12 +47,32 @@
 
           <div v-for="ss of filteredStopsGroupRoutes" :key="ss.stop.id">
             <h3 class="title">
-              {{ ss.stop.stop_name }} {{ ss.stop.onestop_id }} {{ ss.stop.id }}
-              <span class="tag">{{ haversine(currentPoint, ss.stop.geometry).toFixed(0) }}m</span>
-              <span class="tag">{{ ss.stop.stop_code }}</span>
+              <b-icon icon="pin" />
+              {{ ss.stop.stop_name }}
             </h3>
-            <div v-for="sr of ss.routes" :key="sr.id" class="clearfix">
-              <span class="is-pulled-left">
+            <b-field v-if="debug" grouped group-multiline>
+              <div class="control">
+                <b-taglist attached>
+                  <b-tag type="is-dark">
+                    distance
+                  </b-tag>
+                  <b-tag>
+                    {{ haversine(currentPoint, ss.stop.geometry).toFixed(0) }}m
+                  </b-tag>
+                </b-taglist>
+              </div>
+              <div class="control">
+                <b-taglist v-if="ss.stop.stop_code" attached>
+                  <b-tag type="is-dark">
+                    stop code
+                  </b-tag>
+                  <b-tag>{{ ss.stop.stop_code }}</b-tag>
+                </b-taglist>
+              </div>
+            </b-field>
+
+            <div v-for="sr of ss.routes" :key="sr.id" class="is-clearfix">
+              <div class="is-pulled-left">
                 <nuxt-link
                   :to="{name:'routes-onestop_id', params:{onestop_id:sr.route.onestop_id}}"
                 >
@@ -64,17 +84,38 @@
                     :route-link="sr.route.route_url"
                   />
                 </nuxt-link>
-                <!-- <span class="tag trip-headsign">{{ sr.route.onestop_id }}</span> -->
-                <span class="tag">{{ sr.trip_headsign }}</span>
-              </span>
-              <span class="departure-times is-pulled-right">
-                <span v-for="st of sr.departures" :key="st.trip.id" class="departure">
-                  {{ st.departure_time | reformatHMS }}
-                </span>
-              </span>
+              </div>
+              <div class="is-pulled-right">
+                <b-field grouped group-multiline style="padding-top:20px">
+                  <b-taglist v-if="sr.trip_headsign" attached>
+                    <b-tag type="is-dark">
+                      to:
+                    </b-tag>
+                    <b-tag>
+                      {{ sr.trip_headsign }}
+                    </b-tag>
+                  </b-taglist>&nbsp;
+                  <b-tag v-for="st of sr.departures.slice(0,3)" :key="st.trip.id">
+                    <template v-if="st.departure.estimated">
+                      {{ st.departure.estimated | reformatHMS }} <b-icon type="is-danger" size="is-small" icon="wifi" />
+                    </template><template v-else>
+                      {{ st.departure.scheduled | reformatHMS }}
+                    </template>
+                  </b-tag>
+                </b-field>
+              </div>
             </div>
+            <hr>
           </div>
           <br><br>
+          <div v-if="debug">
+            <b-message>
+              Stops: <br>{{ stopOnestopIds }}
+            </b-message>
+            <b-message>
+              Routes: <br>{{ routeOnestopIds }}
+            </b-message>
+          </div>
         </div>
       </div>
     </div>
@@ -110,7 +151,7 @@ query($search: String!) {
 `
 
 const query = gql`
-query( $where: StopFilter,  $timezone: String, $nextSeconds: Int) {
+query( $where: StopFilter, $timezone: String!, $nextSeconds: Int!) {
   # $serviceDate: Date, $startTime: Int, $endTime: Int, 
   stops(where: $where) {
     id
@@ -126,7 +167,23 @@ query( $where: StopFilter,  $timezone: String, $nextSeconds: Int) {
       }
     ) {
       arrival_time
+      arrival {
+        delay
+        estimated
+        estimated_utc
+        scheduled
+        stop_timezone
+        uncertainty
+      }
       departure_time
+      departure {
+        delay
+        estimated
+        estimated_utc
+        scheduled
+        stop_timezone
+        uncertainty
+      }
       trip {
         id
         trip_id
@@ -147,8 +204,10 @@ query( $where: StopFilter,  $timezone: String, $nextSeconds: Int) {
 }
 `
 
-const COORDS = [-73.99278044700623, 40.750231790306195]
-// const COORDS = [-122.27159857749938, 37.80365531892627]
+// const COORDS = [-71.324620, 42.615878]
+// const COORDS = [-87.636559, 41.878857]
+// const COORDS = [-73.99278044700623, 40.750231790306195]
+const COORDS = [-122.27159857749938, 37.80365531892627]
 // const COORDS = [-73.989066, 40.752997]
 // const COORDS = [-122.2374379634857, 37.77057904551523]
 
@@ -161,11 +220,12 @@ export default {
       stops: [],
       minSearchLength: 4,
       timezone: 'America/Los_Angeles',
-      debug: false,
+      debug: true,
       useGeolocation: false,
       radius: 500,
       defaultCoords: COORDS,
-      coords: null
+      coords: null,
+      showStopInfo: false
     }
   },
   computed: {
@@ -208,8 +268,24 @@ export default {
       }
       return Array.from(rmap.keys())
     },
+    routeOnestopIds () {
+      if (this.filteredStops.length === 0) {
+        return []
+      }
+      const rmap = new Map()
+      for (const stop of this.filteredStops) {
+        for (const st of stop.stop_times) {
+          rmap.set(st.trip.route.onestop_id, true)
+        }
+      }
+      return Array.from(rmap.keys())
+    },
     stopIds () {
       const rmap = new Set(this.filteredStops.map((s) => { return s.id }))
+      return Array.from(rmap)
+    },
+    stopOnestopIds () {
+      const rmap = new Set(this.filteredStops.map((s) => { return s.onestop_id }))
       return Array.from(rmap)
     },
     filteredStopsGroupRoutes () {
@@ -217,7 +293,19 @@ export default {
       const ret = []
       for (const stop of this.filteredStops) {
         const rmap = {}
-        for (const st of stop.stop_times) {
+        // sort stop times
+        const sortedSt = stop.stop_times.sort((a, b) => {
+          const aa = a.departure.estimated || a.departure.scheduled
+          const bb = b.departure.estimated || b.departure.scheduled
+          if (aa > bb) {
+            return 1
+          }
+          if (aa < bb) {
+            return -1
+          }
+          return 0
+        })
+        for (const st of sortedSt) {
           const r = st.trip.route
           const hs = st.trip.trip_headsign
           const key = `${r.id}:${hs}`
@@ -292,16 +380,8 @@ export default {
 </script>
 
 <style scoped>
-.departure-times {
-    padding-top:20px;
-    font-weight:bold;
-}
-.departure {
-    border-right:solid 2px #ccc;
-    margin:0px;
-    padding:0px;
-    padding-right:10px;
-    margin-right:10px;
+.tag {
+  margin-right:5px;
 }
 h3 {
     font-size:18pt;
