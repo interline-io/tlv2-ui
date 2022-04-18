@@ -5310,14 +5310,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"buefy@npm:^0.9.19":
-  version: 0.9.19
-  resolution: "buefy@npm:0.9.19"
+"buefy@npm:^0.9.20":
+  version: 0.9.20
+  resolution: "buefy@npm:0.9.20"
   dependencies:
     bulma: 0.9.3
   peerDependencies:
     vue: ^2.6.11
-  checksum: 6a002cb0fa3963a45302953e632273544b276bf781fa6f263c9da90bd07e1cbd720dd2b06b34c30e2e3e17684d9421bc5db1fe95a0808401de32fdd83cb7b64e
+  checksum: c1e8babc63cdf6ae905a8772dfe5e21e5d64209bda61c7e46c24171e94884e7e9590d06dd679f5b06ef6d4cc7bff0ab51a2a429eedef0607e747fc22c7e45fdf
   languageName: node
   linkType: hard
 
@@ -12008,12 +12008,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nuxt-buefy@npm:^0.4.21":
-  version: 0.4.21
-  resolution: "nuxt-buefy@npm:0.4.21"
+"nuxt-buefy@npm:^0.4.22":
+  version: 0.4.22
+  resolution: "nuxt-buefy@npm:0.4.22"
   dependencies:
-    buefy: ^0.9.19
-  checksum: ff0d4e373536d36a8a7b141490e5983f2bcb38a7eacb77362cf964b0cd956a27c6f54e25783b39253638245c97bb356d360bc6d31d020e3fd8d3c43a6dd1ce0d
+    buefy: ^0.9.20
+  checksum: c9604103ee629e907c53e88b4fd77bb6e9bbec07fdfcb2fa5a3102471bdcb767229a760bdcf3dce8681fb5db4624fa09b030146dd7722c5ee5e9edf37671c84d
   languageName: node
   linkType: hard
 
@@ -15764,7 +15764,7 @@ __metadata:
     haversine: ^1.1.1
     maplibre-gl: ">=1.14.0"
     nuxt: ^2.15.8
-    nuxt-buefy: ^0.4.21
+    nuxt-buefy: ^0.4.22
     sanitize-filename: ^1.6.3
     vue-geolocation-api: ^0.1.21
   languageName: unknown
