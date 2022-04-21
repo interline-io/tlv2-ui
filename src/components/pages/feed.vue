@@ -149,8 +149,8 @@
                   <li v-if="entity.license.attribution_text">
                     Required attribution text: {{ entity.license.attribution_text }}
                   </li>
-                  <li v-if="entity.license.attribution_instructions">
-                    Attribution instructions: {{ entity.license.attribution_instructions }}
+                  <li v-if="entity.license.attribution_instructions" class="content">
+                    Attribution instructions: <blockquote>{{ entity.license.attribution_instructions }}</blockquote>
                   </li>
                 </ul>
               </td>
