@@ -25,14 +25,8 @@
       </slot>
 
       <h1 class="title">
-        Feed {{ $route.params.feed }}: version fetched {{ entity.fetched_at | formatDate }} ({{ entity.fetched_at | fromNow }})
+        GTFS feed: {{ operatorOrAgencyNames }} version fetched {{ entity.fetched_at | formatDate }} ({{ entity.fetched_at | fromNow }})
       </h1>
-
-      <slot name="description" :entity="entity">
-        <p>
-          {{ textDescription }}<br><br>
-        </p>
-      </slot>
 
       <nav class="level">
         <div class="level-item has-text-centered">
@@ -89,6 +83,10 @@
 
       <table class="table is-borderless property-list">
         <tr>
+          <td>Feed Onestop ID</td>
+          <td><code>{{ entity.feed.onestop_id }}</code></td>
+        </tr>
+        <tr>
           <td>Name</td>
           <td>
             <template v-if="showEdit">
@@ -130,7 +128,7 @@
         </tr>
         <tr>
           <td>URL</td>
-          <td>{{ entity.url }}</td>
+          <td><code>{{ entity.url }}</code></td>
         </tr>
         <tr>
           <td>SHA1</td>
@@ -259,10 +257,10 @@ import gql from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
 
 const importQuery = gql`
-mutation ($sha1: String!) { 
-  import_feed_version(sha1: $sha1) { 
+mutation ($sha1: String!) {
+  import_feed_version(sha1: $sha1) {
     success
-  } 
+  }
 }
 `
 
@@ -316,6 +314,7 @@ query ($feed_version_sha1: String!) {
       agency_name
     }
     feed {
+      onestop_id
       associated_operators {
         name
         onestop_id

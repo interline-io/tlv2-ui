@@ -55,7 +55,7 @@
                   Onestop ID
                 </b-tooltip>
               </td>
-              <td>{{ onestopId }}</td>
+              <td><code>{{ onestopId }}</code></td>
             </tr>
             <tr>
               <td>
@@ -106,7 +106,7 @@
               <td>
                 <ul>
                   <li v-for="k of agencyURLs" :key="k">
-                    {{ k }}
+                    <code>{{ k }}</code>
                   </li>
                 </ul>
               </td>

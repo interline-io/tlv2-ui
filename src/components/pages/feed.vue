@@ -20,7 +20,7 @@
       </slot>
 
       <h1 class="title">
-        Feed details: {{ onestopId }}
+        {{ entity.spec.toUpperCase() }} feed: {{ operatorNames.join(', ') }}
       </h1>
 
       <slot name="description" :entity="entity" />
@@ -35,7 +35,7 @@
                 </b-tooltip>
               </td>
               <td>
-                {{ onestopId }}
+                <code>{{ onestopId }}</code>
               </td>
             </tr>
             <tr>
@@ -115,7 +115,7 @@
                     Parameter Name: {{ entity.authorization.param_name }}
                   </li>
                   <li v-if="entity.authorization.info_url">
-                    Info URL: {{ entity.authorization.info_url }}
+                    Info URL: <code>{{ entity.authorization.info_url }}</code>
                   </li>
                 </ul>
               </td>
@@ -435,6 +435,15 @@ export default {
     }
   },
   computed: {
+    operatorNames () {
+      return this.entity.associated_operators.map(o => {
+        if (o.short_name) {
+          return `${o.name} (${o.short_name})`
+        } else {
+          return o.name
+        }
+      })
+    },
     displayLicense () {
       if (this.entity) {
         return isEmpty(this.entity.license)
@@ -452,7 +461,7 @@ export default {
       return false
     },
     staticTitle () {
-      return `${this.onestopId} • Feed details`
+      return `${this.entity?.associated_operators[0]?.name} • ${this.entity?.spec.toUpperCase()} feed details: ${this.onestopId}`
     },
     staticDescription () {
       if (this.entity) {
