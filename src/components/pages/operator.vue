@@ -147,7 +147,7 @@
       <b-tabs type="is-boxed" :animated="false">
         <b-tab-item label="Source Feeds">
           <b-message
-            v-for="feedOnestopId in uniqueFeedSourcesOnestopIds"
+            v-for="feedSpec, feedOnestopId in uniqueFeedSourcesOnestopIds"
             :key="feedOnestopId"
             type="is-success"
             has-icon
@@ -157,7 +157,7 @@
             <div class="columns">
               <div class="column is-8">
                 <p>
-                  This operator includes data from the feed record with Onestop ID of
+                  This operator includes data from the <strong>{{ feedSpec }}</strong> feed record with Onestop ID of
                   <code>{{ feedOnestopId }}</code> See the feed record for Transitland's archive of fetched versions, as well as URLs for accessing the feed. <!-- TODO: show different text depending upon feed.spec = GTFS, GTFS-RT, or GBFS -->
                 </p>
               </div>
@@ -172,7 +172,7 @@
 
         <b-tab-item label="Source Feeds (Advanced View)">
           <b-message type="is-light" has-icon icon="information" :closable="false">
-            This operator includes data from the references listed below. These references are defined in the Operator's Atlas record, and describe the GTFS Agencies that provide the routes, stops, schedules, and other information for this operator. If a reference to an agency cannot be resolved, this will be noted. Please see the <nuxt-link :to="{name:'documentation'}">
+            This operator includes data from the references listed below. These references are defined in the operator's Atlas record, and describe the GTFS agencies that provide the routes, stops, schedules, and other information for this operator. If a reference to an agency cannot be resolved, this will be noted. Please see the <nuxt-link :to="{name:'documentation'}">
               Operator documentation
             </nuxt-link> for more information on this process.
           </b-message>
@@ -182,21 +182,23 @@
               :striped="true"
               sort-icon="menu-up"
             >
-              <b-table-column v-slot="props" field="agency" label="Association type">
+              <b-table-column v-slot="props" label="Association type">
                 {{ props.row.target_type }}
               </b-table-column>
-              <!-- TODO: add a column for feed spec -->
-              <b-table-column v-slot="props" field="agency" label="Source Feed">
+              <b-table-column v-slot="props" label="Source Feed Onestop ID">
                 <nuxt-link :to="{name:'feeds-feed', params:{feed:props.row.target_feed}}">
                   {{ props.row.target_feed }}
                 </nuxt-link>
               </b-table-column>
-              <b-table-column v-slot="props" field="agency" label="Matched Agency">
+              <b-table-column v-slot="props" label="Feed Spec">
+                {{ props.row.target_feed_spec }}
+              </b-table-column>
+              <b-table-column v-slot="props" field="agency" label="Matched GTFS Agency">
                 <template v-if="props.row.target_match">
                   <b-icon icon="check" />
                   {{ props.row.target_match.agency_name }}
                 </template>
-                <template v-else>
+                <template v-else-if="props.row.feed_spec == 'gtfs'">
                   <b-tooltip dashed label="The active version of this source feed does not contain a matching agency">
                     <b-icon icon="alert" />
                   </b-tooltip>
@@ -258,7 +260,10 @@ query ($onestop_id: String, $feed_onestop_id: String) {
     name
     short_name
     tags
-    associated_feeds
+    feeds {
+      onestop_id
+      spec
+    }
     agencies {
       id
       feed_version_sha1
@@ -273,7 +278,7 @@ query ($onestop_id: String, $feed_onestop_id: String) {
         feed {
           id
           onestop_id
-          feed_namespace_id
+          spec
         }
       }
       places(where: {min_rank: 0.2}) {
@@ -387,17 +392,19 @@ export default {
         ret.push({
           target_type: 'Associated Feed',
           target_feed: agency.feed_version.feed.onestop_id,
+          target_feed_spec: agency.feed_version.feed.spec.toUpperCase(),
           target_match: agency
         })
         matchedFeeds[agency.feed_version.feed.onestop_id] = true
       }
       if (this.entity) {
-        for (const oif of this.entity.associated_feeds || []) {
-          const fid = oif.feed_onestop_id
+        for (const oif of this.entity.feeds || []) {
+          const fid = oif.onestop_id
           if (!matchedFeeds[fid]) {
             ret.push({
               target_type: 'Associated Feed',
-              target_feed: fid
+              target_feed: fid,
+              target_feed_spec: oif.spec.toUpperCase()
             })
           }
         }
@@ -410,10 +417,14 @@ export default {
       return ret
     },
     uniqueFeedSourcesOnestopIds () {
-      return new Set(this.sources.map(s => s.target_feed))
+      const onestopIdsToSpec = {}
+      this.sources.forEach((s) => {
+        onestopIdsToSpec[s.target_feed] = s.target_feed_spec.toUpperCase()
+      })
+      return onestopIdsToSpec
     },
     uniqueFeedSourcesNumber () {
-      return this.uniqueFeedSourcesOnestopIds.size
+      return Object.keys(this.uniqueFeedSourcesOnestopIds).size
     },
     staticTitle () {
       return `${this.operatorName} • Operator details`
