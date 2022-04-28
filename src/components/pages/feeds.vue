@@ -151,6 +151,10 @@ query($specs: [String!], $after: Int, $limit:Int, $search: String, $fetch_error:
     onestop_id
     spec
     tags
+    feed_fetches(limit:1) {
+      fetch_error
+      fetched_at
+    }
     feed_state {
       id
       feed_version {
@@ -162,8 +166,6 @@ query($specs: [String!], $after: Int, $limit:Int, $search: String, $fetch_error:
           created_at
         }
       }
-      last_fetch_error
-      last_fetched_at
       last_successful_fetch_at
     }
   }
@@ -232,6 +234,10 @@ export default {
   computed: {
     feedPage () {
       return this.entityPage.map((feed) => {
+        let lastFetch = { fetched_at: null, fetch_error: null }
+        if (feed.feed_fetches && feed.feed_fetches.length > 0) {
+          lastFetch = feed.feed_fetches[0]
+        }
         const feedState = feed.feed_state || {}
         const currentFeedVersion = feedState.feed_version || {}
         const currentImport = (currentFeedVersion && currentFeedVersion.feed_version_gtfs_import) || {}
@@ -243,8 +249,8 @@ export default {
         return {
           onestop_id: feed.onestop_id,
           spec: feed.spec,
-          last_fetched_at: feedState.last_fetched_at,
-          last_fetch_error: feedState.last_fetch_error,
+          last_fetched_at: lastFetch.fetched_at,
+          last_fetch_error: lastFetch.fetch_error,
           last_successful_fetch_at: feedState.last_successful_fetch_at,
           last_successful_import_at: currentImport.created_at,
           last_import_fail: lastImportFail,
