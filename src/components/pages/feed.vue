@@ -319,7 +319,6 @@ query($feed_onestop_id: String) {
     languages
     spec
     file
-    feed_namespace_id
     authorization {
       type
       info_url
