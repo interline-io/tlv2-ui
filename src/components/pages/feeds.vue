@@ -104,7 +104,7 @@
         </b-table-column>
 
         <b-table-column v-slot="props" field="last_successful_import_at" label="Last Imported">
-          <span v-if="props.row.spec === 'gtfs'">
+          <span v-if="props.row.spec === 'GTFS'">
             <template v-if="props.row.last_import">
               {{ props.row.last_import.created_at | fromNow }}
             </template>
@@ -137,7 +137,7 @@ import TableViewerMixin from '../table-viewer-mixin'
 import Filters from '../filters'
 
 const q = gql`
-query($specs: [String!], $after: Int, $limit:Int, $search: String, $fetch_error: Boolean, $import_status: ImportStatus, $tags: Tags) {
+query($specs: [FeedSpecTypes!], $after: Int, $limit:Int, $search: String, $fetch_error: Boolean, $import_status: ImportStatus, $tags: Tags) {
   entities: feeds(after: $after, limit:$limit, where: {search: $search, spec: $specs, fetch_error: $fetch_error, import_status: $import_status, tags: $tags}) {
     id
     onestop_id
@@ -243,6 +243,8 @@ export default {
           feed.feed_state.feed_version.feed_version_gtfs_import
             ? feed.feed_state.feed_version.feed_version_gtfs_import
             : null)
+        console.log(fvi)
+
         return {
           onestop_id: feed.onestop_id,
           spec: feed.spec,
