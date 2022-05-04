@@ -198,7 +198,7 @@
                   <b-icon icon="check" />
                   {{ props.row.target_match.agency_name }}
                 </template>
-                <template v-else-if="props.row.feed_spec == 'gtfs'">
+                <template v-else-if="props.row.feed_spec == 'GTFS'">
                   <b-tooltip dashed label="The active version of this source feed does not contain a matching agency">
                     <b-icon icon="alert" />
                   </b-tooltip>

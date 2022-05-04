@@ -205,7 +205,7 @@
 
       <hr>
 
-      <div v-if="entity.spec == 'gtfs'">
+      <div v-if="entity.spec == 'GTFS'">
         <h4 class="title is-4">
           Archived Feed Versions
         </h4>

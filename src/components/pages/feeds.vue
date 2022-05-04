@@ -41,13 +41,13 @@
             <option value="">
               All
             </option>
-            <option value="success">
+            <option value="SUCCESS">
               Success
             </option>
-            <option value="error">
+            <option value="ERROR">
               Error
             </option>
-            <option value="in_progress">
+            <option value="IN_PROGRESS">
               In progress
             </option>
           </b-select>
@@ -63,16 +63,16 @@
 
         <b-field label="Filter by data format" class="pl-3">
           <div class="pt-2">
-            <b-checkbox v-model="feedSpecs" native-value="gtfs" class="is-medium">
+            <b-checkbox v-model="feedSpecs" native-value="GTFS" class="is-medium">
               <abbr title="General Transit Feed Specification">GTFS</abbr>
             </b-checkbox>
-            <b-checkbox v-model="feedSpecs" native-value="gtfs-rt" class="is-medium">
+            <b-checkbox v-model="feedSpecs" native-value="GTFS_RT" class="is-medium">
               <abbr title="GTFS Realtime">GTFS-RT</abbr>
             </b-checkbox>
-            <b-checkbox v-model="feedSpecs" native-value="gbfs" class="is-medium">
+            <b-checkbox v-model="feedSpecs" native-value="GBFS" class="is-medium">
               <abbr title="General Bikeshare Feed Specification">GBFS</abbr>
             </b-checkbox>
-            <b-checkbox v-model="feedSpecs" native-value="mds" class="is-medium">
+            <b-checkbox v-model="feedSpecs" native-value="MDS" class="is-medium">
               <abbr title="Mobility Data Specification">MDS</abbr>
             </b-checkbox>
           </div>
@@ -104,7 +104,7 @@
         </b-table-column>
 
         <b-table-column v-slot="props" field="last_successful_import_at" label="Last Imported">
-          <span v-if="props.row.spec === 'gtfs'">
+          <span v-if="props.row.spec === 'GTFS'">
             <template v-if="props.row.last_import">
               {{ props.row.last_import.created_at | fromNow }}
             </template>
@@ -137,7 +137,7 @@ import TableViewerMixin from '../table-viewer-mixin'
 import Filters from '../filters'
 
 const q = gql`
-query($specs: [String!], $after: Int, $limit:Int, $search: String, $fetch_error: Boolean, $import_status: ImportStatus, $tags: Tags) {
+query($specs: [FeedSpecTypes!], $after: Int, $limit:Int, $search: String, $fetch_error: Boolean, $import_status: ImportStatus, $tags: Tags) {
   entities: feeds(after: $after, limit:$limit, where: {search: $search, spec: $specs, fetch_error: $fetch_error, import_status: $import_status, tags: $tags}) {
     id
     onestop_id
@@ -217,7 +217,7 @@ export default {
     } else if (spec) {
       spec = [spec]
     } else {
-      spec = ['gtfs', 'gtfs-rt', 'gbfs', 'mds']
+      spec = ['GTFS', 'GTFS_RT', 'GBFS', 'MDS']
     }
     return {
       feedSpecs: spec,
@@ -243,6 +243,8 @@ export default {
           feed.feed_state.feed_version.feed_version_gtfs_import
             ? feed.feed_state.feed_version.feed_version_gtfs_import
             : null)
+        console.log(fvi)
+
         return {
           onestop_id: feed.onestop_id,
           spec: feed.spec,
