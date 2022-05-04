@@ -94,21 +94,19 @@
           {{ props.row.spec.toUpperCase() }}
         </b-table-column>
 
-        <b-table-column v-slot="props" field="last_successful_fetch_at" label="Last Fetched">
-          <span v-if="props.row.spec === 'gtfs'">
-            <template v-if="props.row.last_successful_fetch_at">
-              {{ props.row.last_successful_fetch_at | fromNow }}
-            </template>
-            <template v-else>
-              Never
-            </template>
-          </span>
+        <b-table-column v-slot="props" field="last_successful_fetch" label="Last Fetched">
+          <template v-if="props.row.last_successful_fetch && props.row.last_successful_fetch.fetched_at ">
+            {{ props.row.last_successful_fetch.fetched_at | fromNow }}
+          </template>
+          <template v-else>
+            Unknown
+          </template>
         </b-table-column>
 
         <b-table-column v-slot="props" field="last_successful_import_at" label="Last Imported">
           <span v-if="props.row.spec === 'gtfs'">
-            <template v-if="props.row.last_successful_import_at">
-              {{ props.row.last_successful_import_at | fromNow }}
+            <template v-if="props.row.last_import">
+              {{ props.row.last_import.created_at | fromNow }}
             </template>
             <template v-else>
               Never
@@ -116,8 +114,8 @@
           </span>
         </b-table-column>
 
-        <b-table-column v-slot="props" field="last_fetch_error" label="Fetch Errors">
-          <b-tooltip v-if="props.row.last_fetch_error" :label="props.row.last_fetch_error" multilined>
+        <b-table-column v-slot="props" field="last_fetch" label="Fetch Errors">
+          <b-tooltip v-if="props.row.last_fetch && props.row.last_fetch.fetch_error" :label="props.row.last_fetch.fetch_error" multilined>
             <b-icon icon="alert" />
           </b-tooltip>
         </b-table-column>
@@ -125,12 +123,6 @@
         <b-table-column v-slot="props" :visible="tagUnstableUrl" field="tags" label="Tags">
           <pre class="tags">{{ props.row.tags }}</pre>
         </b-table-column>
-
-        <!-- <b-table-column v-slot="props" field="last_import_fail" label="Errors">
-          <b-tooltip :label="props.row.last_import_fail">
-            <b-icon v-if="props.row.last_import_fail" icon="alert" />
-          </b-tooltip>
-        </b-table-column> -->
       </b-table>
       <tl-show-more v-if="entities.length === limit || hasMore" :limit="entities.length" @click="showAll" />
     </div>
@@ -151,8 +143,17 @@ query($specs: [String!], $after: Int, $limit:Int, $search: String, $fetch_error:
     onestop_id
     spec
     tags
+    last_fetch: feed_fetches(limit:1) {
+      fetch_error
+      fetched_at
+    }
+    last_successful_fetch: feed_fetches(limit:1, where:{success:true}) {
+      fetch_error
+      fetched_at
+    }
     feed_state {
       id
+      last_successful_fetch_at # backwards compat
       feed_version {
         id
         fetched_at
@@ -162,9 +163,6 @@ query($specs: [String!], $after: Int, $limit:Int, $search: String, $fetch_error:
           created_at
         }
       }
-      last_fetch_error
-      last_fetched_at
-      last_successful_fetch_at
     }
   }
 }
@@ -184,6 +182,13 @@ const nullString = function (v) {
     return null
   }
   return v
+}
+
+function first (v) {
+  if (v && v.length > 0) {
+    return v[0]
+  }
+  return null
 }
 
 export default {
@@ -232,23 +237,20 @@ export default {
   computed: {
     feedPage () {
       return this.entityPage.map((feed) => {
-        const feedState = feed.feed_state || {}
-        const currentFeedVersion = feedState.feed_version || {}
-        const currentImport = (currentFeedVersion && currentFeedVersion.feed_version_gtfs_import) || {}
-        const lastFailedFeedVersion = ((feed.import_errors || [{}])[0]) || {}
-        let lastImportFail = null
-        if (lastFailedFeedVersion.id > (currentFeedVersion.id || 0)) {
-          lastImportFail = lastFailedFeedVersion.feed_version_gtfs_import.exception_log
-        }
+        const fvi = (
+          feed.feed_state &&
+          feed.feed_state.feed_version &&
+          feed.feed_state.feed_version.feed_version_gtfs_import
+            ? feed.feed_state.feed_version.feed_version_gtfs_import
+            : null)
         return {
           onestop_id: feed.onestop_id,
           spec: feed.spec,
-          last_fetched_at: feedState.last_fetched_at,
-          last_fetch_error: feedState.last_fetch_error,
-          last_successful_fetch_at: feedState.last_successful_fetch_at,
-          last_successful_import_at: currentImport.created_at,
-          last_import_fail: lastImportFail,
-          tags: feed.tags
+          last_fetch: first(feed.last_fetch),
+          last_successful_fetch:
+            first(feed.last_successful_fetch) || (feed.feed_state ? { fetched_at: feed.feed_state.last_successful_fetch_at } : null),
+          tags: feed.tags,
+          last_import: fvi
         }
       })
     },
