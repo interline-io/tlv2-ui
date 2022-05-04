@@ -75,15 +75,15 @@
               </td>
             </tr>
 
-            <tr v-if="entity.spec == 'gtfs'">
+            <tr>
               <td>
                 <b-tooltip dashed label="Last time a fetch successfully returned valid GTFS data">
                   Last Fetch
                 </b-tooltip>
               </td>
               <td>
-                <template v-if="entity.feed_state && entity.feed_state.last_successful_fetch_at">
-                  {{ entity.feed_state.last_successful_fetch_at | formatDate }} ({{ entity.feed_state.last_successful_fetch_at | fromNow }})
+                <template v-if="lastSuccessfulFetch && lastSuccessfulFetch.fetched_at">
+                  {{ lastSuccessfulFetch.fetched_at | formatDate }} ({{ lastSuccessfulFetch.fetched_at | fromNow }})
                 </template>
                 <template v-else>
                   Unknown
@@ -91,7 +91,7 @@
               </td>
             </tr>
 
-            <tr v-if="entity.spec == 'gtfs' && entity.feed_state && entity.feed_state.last_fetch_error">
+            <tr v-if="lastFetch && lastFetch.fetch_error">
               <td>
                 <b-tooltip dashed label="Error message from last fetch attempt">
                   Fetch Error
@@ -99,7 +99,7 @@
               </td>
               <td>
                 <b-message class="is-danger" has-icon>
-                  {{ entity.feed_state.last_fetch_error }}
+                  {{ lastFetch.fetch_error }}
                 </b-message>
               </td>
             </tr>
@@ -368,11 +368,17 @@ query($feed_onestop_id: String) {
         # created_at
       }
     }
+    last_fetch: feed_fetches(limit:1) {
+      fetch_error
+      fetched_at
+    }
+    last_successful_fetch: feed_fetches(limit:1, where:{success:true}) {
+      fetch_error
+      fetched_at
+    }
     feed_state {
       id
-      last_fetch_error
-      last_fetched_at
-      last_successful_fetch_at
+      last_successful_fetch_at # backwards compat
       feed_version {
         sha1
         id
@@ -390,6 +396,13 @@ function isEmpty (obj) {
     }
   }
   return false
+}
+
+function first (v) {
+  if (v && v.length > 0) {
+    return v[0]
+  }
+  return null
 }
 
 export default {
@@ -434,8 +447,15 @@ export default {
     }
   },
   computed: {
+    lastFetch () {
+      return first(this.entity.last_fetch)
+    },
+    lastSuccessfulFetch () {
+      const feed = this.entity
+      return first(feed.last_successful_fetch) || (feed.feed_state ? { fetched_at: feed.feed_state.last_successful_fetch_at } : null)
+    },
     operatorNames () {
-      return this.entity.associated_operators.map(o => {
+      return this.entity.associated_operators.map((o) => {
         if (o.short_name) {
           return `${o.name} (${o.short_name})`
         } else {
