@@ -155,18 +155,24 @@ export default {
         style: {
           version: 8,
           sources: {
-            'raster-tiles': {
+            'raster-tiles-base': {
               type: 'raster',
-              tiles: ['https://0.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{scale}.png'],
+              tiles: ['https://0.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{scale}.png'],
+              tileSize: 256,
+              attribution: '<a href="https://www.transit.land/terms">Transitland</a> | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>'
+            },
+            'raster-tiles-labels': {
+              type: 'raster',
+              tiles: ['https://0.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{scale}.png'],
               tileSize: 256,
               attribution: '<a href="https://www.transit.land/terms">Transitland</a> | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>'
             }
           },
           layers: [
             {
-              id: 'simple-tiles',
+              id: 'simple-tiles-base',
               type: 'raster',
-              source: 'raster-tiles',
+              source: 'raster-tiles-base',
               minzoom: 0,
               maxzoom: 22
             }
@@ -346,6 +352,14 @@ export default {
         }
         this.map.addLayer(layer)
       }
+      // add labels last
+      this.map.addLayer({
+        id: 'simple-tiles-labels',
+        type: 'raster',
+        source: 'raster-tiles-labels',
+        minzoom: 0,
+        maxzoom: 22
+      })
       // Set initial show generated geometry
       this.updateFilters()
     },
