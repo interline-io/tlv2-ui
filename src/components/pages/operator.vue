@@ -423,17 +423,23 @@ export default {
       })
       return onestopIdsToSpec
     },
-    uniqueFeedSourcesNumber () {
-      return Object.keys(this.uniqueFeedSourcesOnestopIds).size
+    feedCounts () {
+      return Object.keys(this.uniqueFeedSourcesOnestopIds).length
     },
     staticTitle () {
       return `${this.operatorName} • Operator details`
     },
     staticDescription () {
+      const gtfsCount = this.sources.filter(s => s.target_feed_spec === 'GTFS').length
+      const gtfsRtCount = this.sources.filter(s => s.target_feed_spec === 'GTFS_RT').length
+      let feedCounts = `${gtfsCount} GTFS feed${gtfsCount > 1 ? 's' : ''}`
+      if (gtfsRtCount > 0) {
+        feedCounts += ` and ${gtfsRtCount} GTFS Realtime feed${gtfsRtCount > 1 ? 's' : ''}`
+      }
       const locations = this.locations
         .map(l => [l.adm0_name, l.adm1_name, l.city_name].filter(Boolean).join(', '))
         .join('; ')
-      return `${this.operatorName} is an operator listed on the Transitland open data platform. Transitland sources data for this operator from ${this.uniqueFeedSourcesNumber} GTFS ${this.uniqueFeedSourcesNumber > 1 ? 'feeds' : 'feed'}. ${this.operatorName} provides transit services in the following locations: ${locations}.`
+      return `${this.operatorName} is an operator listed on the Transitland open data platform. Transitland sources data for this operator from ${feedCounts}. ${this.operatorName} provides transit services in the following locations: ${locations}.`
     }
   }
 }

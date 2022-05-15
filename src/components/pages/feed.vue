@@ -23,7 +23,11 @@
         {{ entity.spec.toUpperCase() }} feed: {{ operatorNames.join(', ') }}
       </h1>
 
-      <slot name="description" :entity="entity" />
+      <slot name="description">
+        <div class="content">
+          {{ staticDescription }}
+        </div>
+      </slot>
 
       <div class="columns">
         <div class="column is-three-quarters">
@@ -484,8 +488,17 @@ export default {
     },
     staticDescription () {
       if (this.entity) {
-        const operatorDescription = (this.entity && this.entity.associated_operators) ? ` describing ${this.entity.associated_operators[0].name}` : ''
-        return `${this.onestopId} is a ${this.entity.spec.toUpperCase()} feed ${operatorDescription}.`
+        const operatorDescription = (this.entity && this.entity.associated_operators) ? ` with data for ${this.entity.associated_operators[0].name}` : ''
+        const fvCount = this.entity.feed_versions.length
+        let description = `This is a ${this.entity.spec.toUpperCase()} feed ${operatorDescription} with the Onestop ID of ${this.onestopId}.`
+        if (fvCount === 1000) {
+          description += ` Transitland has archived over 1,000 versions of this feed,
+          which are available to query by API and to download.`
+        } else if (fvCount > 0) {
+          description += ` Transitland has archived ${fvCount} versions of this feed,
+          which are available to query by API and to download.`
+        }
+        return description
       }
       return ''
     }
