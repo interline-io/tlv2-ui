@@ -459,7 +459,7 @@ export default {
       return first(feed.last_successful_fetch) || (feed.feed_state ? { fetched_at: feed.feed_state.last_successful_fetch_at } : null)
     },
     operatorNames () {
-      return this.entity.associated_operators.map((o) => {
+      return (this.entity.associated_operators || []).map((o) => {
         if (o.short_name) {
           return `${o.name} (${o.short_name})`
         } else {
@@ -484,7 +484,14 @@ export default {
       return false
     },
     staticTitle () {
-      return `${this.entity?.associated_operators[0]?.name} • ${this.entity?.spec.toUpperCase()} feed details: ${this.onestopId}`
+      let title = `feed details: ${this.onestopId}`
+      if (this.entity) {
+        title = this.entity.spec.toUpperCase() + ' ' + title
+        if (this.entity.associated_operators) {
+          title = `${this.entity.associated_operators[0].name} • ` + title
+        }
+      }
+      return title
     },
     staticDescription () {
       if (this.entity) {
