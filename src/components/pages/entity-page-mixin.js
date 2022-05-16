@@ -66,7 +66,7 @@ export default {
       return this.entities.map((s) => { return s.id })
     },
     fvids () {
-      return this.agencies.map((s) => { return s.feed_version_id })
+      return (this.agencies || []).map((s) => { return s.feed_version_id })
     }
   },
   watch: {
