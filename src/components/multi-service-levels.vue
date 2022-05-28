@@ -34,7 +34,7 @@
         </b-field>
 
         <!-- label is zero width joiner -->
-        <b-field label="‍">
+        <b-field label=".">
           <span v-if="maxWeeks && displayWeeks.length >= maxWeeks" class="tag">Note: only {{ maxWeeks }} weeks are displayed</span>
         </b-field>
       </b-field>
