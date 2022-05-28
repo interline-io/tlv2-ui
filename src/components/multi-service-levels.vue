@@ -34,7 +34,7 @@
         </b-field>
 
         <!-- label is zero width joiner -->
-        <b-field label=".">
+        <b-field label="‍">
           <span v-if="maxWeeks && displayWeeks.length >= maxWeeks" class="tag">Note: only {{ maxWeeks }} weeks are displayed</span>
         </b-field>
       </b-field>
@@ -88,7 +88,6 @@
                 Fetched {{ cell.fetched_at | formatDate }}
               </nuxt-link>
             </template>
-            <template v-else />
           </span>
           <span v-if="!weekAgg" class="cell break">&nbsp;</span>
         </div>
