@@ -75,6 +75,7 @@ import mapLayers from './map-layers.js'
 
 export default {
   props: {
+    enableScrollZoom: { type: Boolean, default: false },
     showOptions: { type: Boolean, default: false },
     showGenerated: { type: Boolean, default: true },
     showLongGenerated: { type: Boolean, default: true },
@@ -187,6 +188,10 @@ export default {
       }
       this.map = new maplibre.Map(opts)
       this.map.addControl(new maplibre.FullscreenControl())
+      if (!this.enableScrollZoom) {
+        this.map.scrollZoom.disable()
+        this.map.addControl(new maplibre.NavigationControl())
+      }
       this.map.on('load', () => {
         this.createSources()
         this.createLayers()

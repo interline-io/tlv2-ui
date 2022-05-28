@@ -2,6 +2,7 @@
   <div style="position:relative">
     <client-only>
       <tl-map-viewer
+        :enable-scroll-zoom="true"
         :show-generated="true"
         :show-long-generated="false"
         :route-tiles="routeTiles"

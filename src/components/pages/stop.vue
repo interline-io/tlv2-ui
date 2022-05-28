@@ -54,6 +54,10 @@
               </div>
             </b-tab-item>
 
+            <b-tab-item v-if="entity.id" label="Departures">
+              <tl-stop-departures :stop-ids="entityIds" />
+            </b-tab-item>
+
             <!-- Data sources -->
             <b-tab-item label="Sources">
               <b-table
@@ -246,6 +250,9 @@ export default {
       }
       return ret
     },
+    entityIds () {
+      return this.entities.map((s) => { return s.id })
+    },
     entity () {
       if (this.entities.length === 0) {
         return null
@@ -269,6 +276,7 @@ export default {
         }
       }
       const ent = {
+        id: b.id,
         feed_version: b.feed_version,
         stop_name: b.stop_name,
         geometry: b.geometry,

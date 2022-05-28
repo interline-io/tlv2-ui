@@ -86,7 +86,7 @@
           <td>Feed Onestop ID</td>
           <td><code>{{ entity.feed.onestop_id }}</code></td>
         </tr>
-        <tr>
+        <tr v-if="entity.name || canEdit">
           <td>Name</td>
           <td>
             <template v-if="showEdit">
@@ -188,7 +188,7 @@
         <b-tab-item label="Service levels">
           <template v-if="activeTab === 1">
             <client-only placeholder="Service levels">
-              <tl-multi-service-levels :fvids="[entity.id]" :week-agg="false" />
+              <tl-multi-service-levels :show-group-info="false" :show-service-relative="false" :fvids="[entity.id]" :week-agg="false" />
             </client-only>
           </template>
         </b-tab-item>
@@ -288,6 +288,7 @@ query ($feed_version_sha1: String!) {
     created_by
     updated_by
     files {
+      id
       name
       rows
       size
@@ -311,9 +312,11 @@ query ($feed_version_sha1: String!) {
       entity_count
     }
     agencies {
+      id
       agency_name
     }
     feed {
+      id
       onestop_id
       associated_operators {
         name

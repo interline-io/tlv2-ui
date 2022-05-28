@@ -2,50 +2,7 @@
   <div>
     <div v-if="showFilters" class="block">
       <b-field grouped expanded>
-        <b-field v-if="showRouteSelect" label="Select routes">
-          <b-taginput
-            v-model="selectedRoutes"
-            :data="route_fvsls"
-            ellipsis
-            autocomplete
-            :open-on-focus="true"
-            field="route_id"
-            icon="label"
-            placeholder="Select routes"
-            @typing="routeFilter = $event"
-          >
-            <template slot-scope="props">
-              <strong>{{ props.option.route_short_name }}</strong>: {{ props.option.route_long_name }}
-            </template>
-            <template slot="selected" slot-scope="props">
-              <b-tag
-                v-for="(tag, index) in props.tags"
-                :key="index"
-                :tabstop="false"
-                ellipsis
-                closable
-                @close="removeSelectedRoute(index, $event)"
-              >
-                {{ tag.route_short_name || tag.route_long_name || tag.route_id }}
-              </b-tag>
-            </template>
-          </b-taginput>
-        </b-field>
-
-        <!--
-        <b-field label="Aggregate">
-          <b-select v-model="weekAgg">
-            <option :value="true">
-              Week
-            </option>
-            <option :value="false">
-              Day
-            </option>
-          </b-select>
-        </b-field>
-        -->
-
-        <b-field label="Service relative to">
+        <b-field v-if="showServiceRelative" label="Service relative to">
           <b-select v-model="maxAggMode">
             <option value="all">
               All cells
@@ -78,8 +35,6 @@
 
         <!-- label is zero width joiner -->
         <b-field label="‍">
-          <!-- TODO: replace route picker with real search -->
-          <span v-if="route_fvsls.length >= 1000" class="tag">Note: only the first 1,000 routes are shown</span>
           <span v-if="maxWeeks && displayWeeks.length >= maxWeeks" class="tag">Note: only {{ maxWeeks }} weeks are displayed</span>
         </b-field>
       </b-field>
@@ -109,9 +64,6 @@
                 Week of
               </template>
               {{ formatDay(col.key, j) }}<br>
-              <template v-if="selectedRoutes.length > 0">
-                {{ cell.route_short_name }} {{ cell.route_long_name }}<br>
-              </template>
               Feed: {{ cell.feed_onestop_id | shortenName(16) }} ({{ cell.feed_version_sha1 | shortenName(6) }})<br>
               Fetched: {{ cell.fetched_at | formatDate }}<br>
               {{ Math.ceil(dayval / 3600) }} service hours <br>
@@ -131,16 +83,12 @@
         <span class="cell month">&nbsp;</span>
         <div v-for="(cell,i) of colGroups.rowinfo" :key="i">
           <span v-for="(dow,j) of daysOfWeek" :key="j" class="cell rowlabel">
-            <template v-if="i>0" />
-            <template v-else-if="!showGroupInfo">.</template>
-            <template v-else-if="cell.route_id">
-              {{ cell.route_short_name }}: {{ cell.route_long_name }}
-            </template>
-            <template v-else>
+            <template v-if="showGroupInfo">.
               <nuxt-link :to="{name:'feeds-feed-versions-version', hash: '#service', params:{feed: cell.feed_onestop_id, version: cell.feed_version_sha1}}">
                 Fetched {{ cell.fetched_at | formatDate }}
               </nuxt-link>
             </template>
+            <template v-else />
           </span>
           <span v-if="!weekAgg" class="cell break">&nbsp;</span>
         </div>
@@ -155,7 +103,7 @@ import gql from 'graphql-tag'
 import Filters from './filters'
 
 const q = gql`
-query ($feed_version_ids: [Int!], $route_ids: [String!], $start_date: Date, $end_date: Date) {
+query ($feed_version_ids: [Int!], $start_date: Date, $end_date: Date) {
   feed_versions(limit: 20, ids: $feed_version_ids) {
     id
     sha1
@@ -165,10 +113,7 @@ query ($feed_version_ids: [Int!], $route_ids: [String!], $start_date: Date, $end
       id
       onestop_id
     }
-    service_levels(limit: 1000, where: {route_ids: $route_ids, start_date:$start_date, end_date:$end_date}) {
-      route_id
-      route_short_name
-      route_long_name
+    service_levels(limit: 1000, where: {start_date:$start_date, end_date:$end_date}) {
       start_date
       end_date
       monday
@@ -183,26 +128,13 @@ query ($feed_version_ids: [Int!], $route_ids: [String!], $start_date: Date, $end
 }
 `
 
-const q2 = gql`
-query($feed_version_ids:[Int!], $start_date: Date, $end_date: Date) {
-  feed_version_routes: feed_versions(limit: 20, ids: $feed_version_ids) {
-    service_levels(limit: 1000, where: {distinct_on: "route_id", all_routes: true, start_date:$start_date, end_date:$end_date}) {
-      id
-      route_id
-      route_short_name
-      route_long_name
-    }
-  }
-}
-`
-
 export default {
   mixins: [Filters],
   props: {
     showFilters: { type: Boolean, default: true },
+    showServiceRelative: { type: Boolean, default: true },
     showGroupInfo: { type: Boolean, default: true },
     showDateSelector: { type: Boolean, default: true },
-    showRouteSelect: { type: Boolean, default: true },
     fvids: { type: Array, default () { return [] } },
     maxWeeks: { type: Number, default () { return null } },
     weekAgg: { type: Boolean, default () { return true } },
@@ -212,9 +144,6 @@ export default {
     return {
       dowNames,
       feed_versions: this.useFeedVersions,
-      feed_version_routes: [],
-      selectedRoutes: [],
-      routeFilter: '',
       fvAgg: false,
       maxAggMode: 'all',
       startDate: null,
@@ -227,23 +156,13 @@ export default {
       query: q,
       skip () { return this.useFeedVersions.length > 0 },
       variables () {
-        const rids = this.selectedRoutes.map((s) => { return s.route_id })
         return {
           feed_version_ids: this.fvids,
-          route_ids: rids.length > 0 ? rids : null,
           start_date: this.startDate,
           end_date: this.endDate
         }
       },
       error (e) { this.error = e }
-    },
-    feed_version_routes: {
-      client: 'transitland',
-      query: q2,
-      variables () {
-        return { feed_version_ids: this.fvids }
-      },
-      skip () { return this.fvids.length > 1 }
     }
   },
   computed: {
@@ -255,22 +174,6 @@ export default {
         }
       }
       return a
-    },
-    route_fvsls () {
-      const ret = []
-      for (const fv of this.feed_version_routes) {
-        for (const rt of fv.service_levels) {
-          ret.push(rt)
-        }
-      }
-      return ret
-    },
-    filteredRoutes () {
-      return this.route_fvsls.filter((s) => {
-        return `${s.route_id} ${s.route_short_name} ${s.route_long_name}`
-          .toLowerCase()
-          .includes(this.routeFilter.toLowerCase())
-      })
     },
     displayStartDate: {
       get () {
@@ -325,14 +228,11 @@ export default {
       // Order by feed_version_id
       for (const fvsl of this.fvsls) {
         // Expand
-        const key = `${fvsl.feed_version_sha1}-${fvsl.route_id}`
+        const key = `${fvsl.feed_version_sha1}-${fvsl.id}`
         let group = groups.get(key)
         if (!group) {
           rowinfo.push({
             key,
-            route_id: fvsl.route_id,
-            route_short_name: fvsl.route_short_name,
-            route_long_name: fvsl.route_long_name,
             feed_version_id: fvsl.feed_version_id,
             feed_version_sha1: fvsl.feed_version_sha1,
             feed_onestop_id: fvsl.feed_onestop_id,
@@ -407,12 +307,6 @@ export default {
     }
   },
   methods: {
-    selectAllRoutes () {
-      this.selectedRoutes = this.route_fvsls.slice(0).filter((s) => { return s.route_id })
-    },
-    removeSelectedRoute (index, event) {
-      this.selectedRoutes.splice(index, 1)
-    },
     formatDay (start, offset) {
       const d = parseISO(start.substr(0, 10))
       return format(add(d, { days: offset }), 'PPPP')
