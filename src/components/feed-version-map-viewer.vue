@@ -6,6 +6,7 @@
     <span v-else-if="$apollo.loading" class="is-loading">Loading</span>
     <tl-map-viewer
       v-else
+      :enable-scroll-zoom="enableScrollZoom"
       :features="features"
       :route-features="routeFeatures"
       :stop-features="stopFeatures"
@@ -85,7 +86,8 @@ export default {
     linkVersion: { type: Boolean, default: false },
     features: { type: Array, default () { return [] } },
     center: { type: Array, default () { return [] } },
-    zoom: { type: Number, default: null }
+    zoom: { type: Number, default: null },
+    enableScrollZoom: { type: Boolean, default: false }
   },
   data () {
     return {
