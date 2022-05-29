@@ -64,7 +64,9 @@ query ($feed_version_sha1: String, $served_by_onestop_ids: [String!], $limit: In
     location_type
     wheelchair_boarding
     route_stops {
+      id
       route {
+        id
         route_id
         route_short_name
         route_long_name
