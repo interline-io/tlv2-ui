@@ -204,6 +204,10 @@ export default {
       const ret = []
       let featid = 1
       for (const rs of this.entity.route_stops) {
+        let routeColor = rs.route.route_color
+        if (routeColor && routeColor.substr(0, 1) !== '#') {
+          routeColor = '#' + routeColor
+        }
         featid++
         ret.push(
           {
@@ -216,7 +220,7 @@ export default {
               generated: false,
               geometry_length: -1,
               headway_secs: 60,
-              route_color: rs.route.route_color,
+              route_color: routeColor,
               route_long_name: rs.route.route_long_name,
               route_short_name: rs.route.route_short_name,
               route_type: rs.route.route_type,

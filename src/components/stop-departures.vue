@@ -28,7 +28,7 @@
       </div>
 
       <div v-for="ss of filteredStopsGroupRoutes" :key="ss.stop.id">
-        <div v-for="sr of ss.routes" :key="sr.id" class="is-clearfix">
+        <div v-for="sr of ss.routes" :key="`${sr.id}:${sr.trip_headsign}`" class="is-clearfix">
           <div class="is-pulled-left">
             <nuxt-link
               :to="{name:'routes-onestop_id', params:{onestop_id:sr.route.onestop_id}}"

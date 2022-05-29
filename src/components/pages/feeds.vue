@@ -153,7 +153,6 @@ query($specs: [FeedSpecTypes!], $after: Int, $limit:Int, $search: String, $fetch
     }
     feed_state {
       id
-      last_successful_fetch_at # backwards compat
       feed_version {
         id
         fetched_at
@@ -243,14 +242,12 @@ export default {
           feed.feed_state.feed_version.feed_version_gtfs_import
             ? feed.feed_state.feed_version.feed_version_gtfs_import
             : null)
-        console.log(fvi)
-
         return {
           onestop_id: feed.onestop_id,
           spec: feed.spec,
           last_fetch: first(feed.last_fetch),
           last_successful_fetch:
-            first(feed.last_successful_fetch) || (feed.feed_state ? { fetched_at: feed.feed_state.last_successful_fetch_at } : null),
+            first(feed.last_successful_fetch),
           tags: feed.tags,
           last_import: fvi
         }
