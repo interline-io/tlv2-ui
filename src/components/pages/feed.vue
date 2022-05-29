@@ -378,7 +378,6 @@ query($feed_onestop_id: String) {
     }
     feed_state {
       id
-      last_successful_fetch_at # backwards compat
       feed_version {
         sha1
         id
@@ -452,7 +451,7 @@ export default {
     },
     lastSuccessfulFetch () {
       const feed = this.entity
-      return first(feed.last_successful_fetch) || (feed.feed_state ? { fetched_at: feed.feed_state.last_successful_fetch_at } : null)
+      return feed.last_successful_fetch
     },
     operatorNames () {
       return (this.entity.associated_operators || []).map((o) => {
