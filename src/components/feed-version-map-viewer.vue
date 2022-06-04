@@ -36,12 +36,18 @@ query ($limit: Int!, $operator_onestop_id: String, $route_ids: [Int!], $feed_ver
     route_short_name
     route_type
     route_url
-    geometry
-    # headways {
-    #   dow_category
-    #   direction_id
-    #   headway_secs
-    # }
+    geometries {
+      geometry
+      combined_geometry
+      generated
+      length
+      max_segment_length
+    }
+    headways {
+      dow_category
+      direction_id
+      headway_secs
+    }
     route_stops @include(if: $include_stops) {
       stop {
         id
@@ -99,29 +105,33 @@ export default {
     routeFeatures () {
       const features = []
       for (const feature of this.routes) {
-        if (feature.geometry) {
-          let routeColor = feature.route_color
-          if (routeColor && routeColor.substr(0, 1) !== '#') {
-            routeColor = '#' + routeColor
-          }
-          const headwaySorted = (feature.headways || [])
-            .filter((s) => { return s.dow_category === 1 })
-            .sort((a, b) => { return a.direction_id < b.direction_id })
-          const fcopy = Object.assign({}, feature, {
-            geometry_length: -1,
-            route_color: routeColor,
-            headway_secs: headwaySorted.length > 0 ? headwaySorted[0].headway_secs : -1,
-            agency_name: feature.agency ? feature.agency.agency_name : null
-          })
-          delete fcopy.geometry
-          delete fcopy.__typename
-          features.push({
-            id: feature.id,
-            type: 'Feature',
-            properties: fcopy,
-            geometry: feature.geometry
-          })
+        if (!feature.geometries || feature.geometries.length === 0) {
+          continue
         }
+        const geom = feature.geometries[0]
+        let routeColor = feature.route_color
+        if (routeColor && routeColor.substr(0, 1) !== '#') {
+          routeColor = '#' + routeColor
+        }
+        const headwaySorted = (feature.headways || [])
+          .filter((s) => { return s.dow_category === 1 })
+          .sort((a, b) => { return a.direction_id < b.direction_id })
+        const fcopy = Object.assign({}, feature, {
+          geometry_length: geom.length || -1,
+          generated: geom.generated,
+          max_segment_length: geom.max_segment_length,
+          route_color: routeColor,
+          headway_secs: (headwaySorted.length > 0 ? headwaySorted[0].headway_secs : null) || -1,
+          agency_name: feature.agency ? feature.agency.agency_name : null
+        })
+        delete fcopy.geometry
+        delete fcopy.__typename
+        features.push({
+          id: feature.id,
+          type: 'Feature',
+          properties: fcopy,
+          geometry: geom.combined_geometry
+        })
       }
       return features
     },

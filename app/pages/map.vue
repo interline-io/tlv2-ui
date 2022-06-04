@@ -4,7 +4,7 @@
       <tl-map-viewer
         :enable-scroll-zoom="true"
         :show-generated="true"
-        :show-long-generated="false"
+        :show-problematic-geometries="false"
         :route-tiles="routeTiles"
         :stop-tiles="stopTiles"
         :overlay="true"

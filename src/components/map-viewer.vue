@@ -24,12 +24,12 @@
                 <section class="modal-card-body">
                   <div class="field">
                     <b-checkbox v-model="showGeneratedShadow">
-                      Show stop-to-stop geometries under 20km
+                      Show stop-to-stop geometries
                     </b-checkbox>
                   </div>
                   <div class="field">
-                    <b-checkbox v-model="showLongGeneratedShadow">
-                      Show stop-to-stop geometries over 20km
+                    <b-checkbox v-model="showProblematicGeometriesShadow">
+                      Show problematic geometries
                     </b-checkbox>
                   </div>
                 </section>
@@ -77,8 +77,8 @@ export default {
   props: {
     enableScrollZoom: { type: Boolean, default: false },
     showOptions: { type: Boolean, default: false },
+    showProblematicGeometries: { type: Boolean, default: true },
     showGenerated: { type: Boolean, default: true },
-    showLongGenerated: { type: Boolean, default: true },
     mapClass: { type: String, default: 'short' },
     routeTiles: { type: Object, default () { return null } },
     stopTiles: { type: Object, default () { return null } },
@@ -105,14 +105,14 @@ export default {
       agencyFeatures: {},
       isComponentModalActive: false,
       showGeneratedShadow: this.showGenerated,
-      showLongGeneratedShadow: this.showLongGenerated
+      showProblematicGeometriesShadow: this.showProblematicGeometries
     }
   },
   watch: {
-    showGeneratedShadow (v) {
+    showProblematicGeometriesShadow (v) {
       this.updateFilters()
     },
-    showLongGeneratedShadow (v) {
+    showGeneratedShadow (v) {
       this.updateFilters()
     },
     features (v) {
@@ -221,14 +221,14 @@ export default {
         if (f.length === 0) {
           f.push('all')
         }
-        f.push(['<', 'geometry_length', 5000 * 1000])
-        // Hide generated geometries > 50km
-        if (!this.showLongGeneratedShadow) {
-          f.push(['any', ['==', 'generated', false], ['<', 'geometry_length', 20 * 1000]])
+        // Hide geometries with long max segment lengths
+        if (!this.showProblematicGeometriesShadow) {
+          f.push(['any', ['==', 'generated', true], ['<', 'geometry_max_segment_length', 50 * 1000]])
+          f.push(['any', ['==', 'generated', false], ['<', 'geometry_max_segment_length', 5 * 1000]])
         }
         // Hide generated geometries
         if (!this.showGeneratedShadow) {
-          f.push(['any', ['==', 'generated', false], ['>', 'geometry_length', 20 * 1000]])
+          f.push(['==', 'generated', false])
         }
         if (f.length > 1) {
           this.map.setFilter(v.name, f)
@@ -417,6 +417,7 @@ export default {
       }
       this.hovering = []
       for (const v of features) {
+        // console.log(v)
         this.hovering.push(v.id)
         map.setFeatureState({ source: 'routes', id: v.id, sourceLayer: this.routeTiles ? this.routeTiles.id : null }, { hover: true })
       }
