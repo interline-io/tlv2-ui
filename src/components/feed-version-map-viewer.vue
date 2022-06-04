@@ -132,7 +132,6 @@ export default {
           properties: fcopy,
           geometry: geom.combined_geometry
         })
-        console.log(fcopy)
       }
       return features
     },
