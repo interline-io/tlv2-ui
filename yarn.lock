@@ -2348,14 +2348,14 @@ __metadata:
   linkType: hard
 
 "@mapbox/geojson-rewind@npm:^0.5.0":
-  version: 0.5.1
-  resolution: "@mapbox/geojson-rewind@npm:0.5.1"
+  version: 0.5.2
+  resolution: "@mapbox/geojson-rewind@npm:0.5.2"
   dependencies:
     get-stream: ^6.0.1
-    minimist: ^1.2.5
+    minimist: ^1.2.6
   bin:
     geojson-rewind: geojson-rewind
-  checksum: 9bdd428e4420ea818bbd7a0ac14ada05eb09e506a64a84d85246c41f82d0249d747069dc9cf27d0f080d41e6fe7525bd31ae099b04e4bfc5e86680a499fb04b6
+  checksum: 721470ab5e8912d69aef06fa4db891bade8b028d6708a35a982b1dfec0f40eb4ba05a749258867f5844cf4e776e53866813bf9c97e3289054b21cbf7840d3608
   languageName: node
   linkType: hard
 
@@ -5577,14 +5577,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"buefy@npm:^0.9.20":
-  version: 0.9.20
-  resolution: "buefy@npm:0.9.20"
+"buefy@npm:^0.9.21":
+  version: 0.9.21
+  resolution: "buefy@npm:0.9.21"
   dependencies:
     bulma: 0.9.3
   peerDependencies:
     vue: ^2.6.11
-  checksum: c1e8babc63cdf6ae905a8772dfe5e21e5d64209bda61c7e46c24171e94884e7e9590d06dd679f5b06ef6d4cc7bff0ab51a2a429eedef0607e747fc22c7e45fdf
+  checksum: 08ed6d56a888ccf12a1e60195f527335dea8efd219c318a809e7a3c9eeef9c2e531ba0a2b54a51b26d736676258b7e8d6182a931567a1743e6b40bec5780d436
   languageName: node
   linkType: hard
 
@@ -11468,9 +11468,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"maplibre-gl@npm:>=1.14.0":
-  version: 1.15.2
-  resolution: "maplibre-gl@npm:1.15.2"
+"maplibre-gl@npm:^1.15.3":
+  version: 1.15.3
+  resolution: "maplibre-gl@npm:1.15.3"
   dependencies:
     "@mapbox/geojson-rewind": ^0.5.0
     "@mapbox/geojson-types": ^1.0.2
@@ -11486,7 +11486,7 @@ __metadata:
     geojson-vt: ^3.2.1
     gl-matrix: ^3.2.1
     grid-index: ^1.1.0
-    minimist: ^1.2.5
+    minimist: ^1.2.6
     murmurhash-js: ^1.0.0
     pbf: ^3.2.1
     potpack: ^1.0.1
@@ -11495,7 +11495,7 @@ __metadata:
     supercluster: ^7.1.0
     tinyqueue: ^2.0.3
     vt-pbf: ^3.1.1
-  checksum: 13e65117c9313ce2b2d71855a3d357a55100852e8b87a5ee452479a5eeb40e76c58cd4f2cd635a87f4b759f6e7661b2a0e8fedf22e0e6d90f169cc9b3fa2c02a
+  checksum: 8a171e074e7bf02982b7efbbbb8637ab510592e66509f4e0e0746ae34ebc761ca7d1ab43ff2941eb70c71a8c05eed32bfa6d68962a6e99bd0864a758f0f52d81
   languageName: node
   linkType: hard
 
@@ -11781,7 +11781,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimist@npm:^1.2.0, minimist@npm:^1.2.5":
+"minimist@npm:^1.2.0, minimist@npm:^1.2.5, minimist@npm:^1.2.6":
   version: 1.2.6
   resolution: "minimist@npm:1.2.6"
   checksum: d15428cd1e11eb14e1233bcfb88ae07ed7a147de251441d61158619dfb32c4d7e9061d09cab4825fdee18ecd6fce323228c8c47b5ba7cd20af378ca4048fb3fb
@@ -11905,13 +11905,13 @@ __metadata:
   linkType: hard
 
 "mkdirp@npm:^0.5.0, mkdirp@npm:^0.5.1, mkdirp@npm:^0.5.3, mkdirp@npm:~0.5.1":
-  version: 0.5.5
-  resolution: "mkdirp@npm:0.5.5"
+  version: 0.5.6
+  resolution: "mkdirp@npm:0.5.6"
   dependencies:
-    minimist: ^1.2.5
+    minimist: ^1.2.6
   bin:
     mkdirp: bin/cmd.js
-  checksum: 3bce20ea525f9477befe458ab85284b0b66c8dc3812f94155af07c827175948cdd8114852ac6c6d82009b13c1048c37f6d98743eb019651ee25c39acc8aabe7d
+  checksum: 0c91b721bb12c3f9af4b77ebf73604baf350e64d80df91754dc509491ae93bf238581e59c7188360cec7cb62fc4100959245a42cfe01834efedc5e9d068376c2
   languageName: node
   linkType: hard
 
@@ -12371,12 +12371,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nuxt-buefy@npm:^0.4.22":
-  version: 0.4.22
-  resolution: "nuxt-buefy@npm:0.4.22"
+"nuxt-buefy@npm:^0.4.23":
+  version: 0.4.23
+  resolution: "nuxt-buefy@npm:0.4.23"
   dependencies:
-    buefy: ^0.9.20
-  checksum: c9604103ee629e907c53e88b4fd77bb6e9bbec07fdfcb2fa5a3102471bdcb767229a760bdcf3dce8681fb5db4624fa09b030146dd7722c5ee5e9edf37671c84d
+    buefy: ^0.9.21
+  checksum: db5a61d9e42deb6d006fd89f1ad57d5070644dc6951b80697035334c765acac4ba2e899b81b304d780f9d0ebf97e4fd0bfc663baf660d92ff8b96b772c099649
   languageName: node
   linkType: hard
 
@@ -16117,9 +16117,9 @@ __metadata:
     eslint-plugin-nuxt: ^2.0.0
     eslint-plugin-vue: ^7.20.0
     haversine: ^1.1.1
-    maplibre-gl: ">=1.14.0"
+    maplibre-gl: ^1.15.3
     nuxt: ^2.15.8
-    nuxt-buefy: ^0.4.22
+    nuxt-buefy: ^0.4.23
     sanitize-filename: ^1.6.3
     vue-geolocation-api: ^0.1.21
   languageName: unknown
@@ -16315,14 +16315,14 @@ __metadata:
   linkType: hard
 
 "tsconfig-paths@npm:^3.11.0":
-  version: 3.12.0
-  resolution: "tsconfig-paths@npm:3.12.0"
+  version: 3.14.1
+  resolution: "tsconfig-paths@npm:3.14.1"
   dependencies:
     "@types/json5": ^0.0.29
     json5: ^1.0.1
-    minimist: ^1.2.0
+    minimist: ^1.2.6
     strip-bom: ^3.0.0
-  checksum: 4999ec6cd1c7cc06750a460dbc0d39fe3595a4308cb5f1d0d0a8283009cf9c0a30d5a156508c28fe3a47760508af5263ab288fc23d71e9762779674257a95d3b
+  checksum: 8afa01c673ebb4782ba53d3a12df97fa837ce524f8ad38ee4e2b2fd57f5ac79abc21c574e9e9eb014d93efe7fe8214001b96233b5c6ea75bd1ea82afe17a4c6d
   languageName: node
   linkType: hard
 
