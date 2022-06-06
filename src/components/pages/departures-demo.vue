@@ -1,121 +1,108 @@
 <template>
-  <div>
-    <div v-if="stops.length >0">
-      <div class="columns">
-        <div class="column">
-          <tl-feed-version-map-viewer
-            :route-ids="routeIds"
-            :include-stops="true"
-            :zoom="15"
-            :auto-fit="false"
-            :center="currentCoords"
-            :overlay="true"
-          />
-        </div>
-        <div class="column">
-          <h1 class="title">
-            Departures
-          </h1>
-          <section>
-            <b-field grouped label="Location">
-              <b-autocomplete
-                expanded
-                placeholder="Search stops. Example: 55657"
-                :data="stopSearch"
-                max-height="600px"
-                :clearable="true"
-                icon="magnify"
-                @typing="typing"
-                @select="option => coords = option.geometry.coordinates"
-              >
-                <template slot-scope="props">
-                  {{ props.option.stop_name }}
-                  <div v-for="rs of props.option.route_stops" :key="rs.route.id" class="clearfix tag">
-                    {{ rs.route.agency.agency_name }} :{{ rs.route.route_short_name }}
-                  </div>
-                </template>
-              </b-autocomplete>
-              <div>
-                <span v-if="!useGeolocation" class="button" @click="useGeolocation = true"><b-icon icon="crosshairs" /></span>
-                <span v-if="useGeolocation && $geolocation.loading" class="button"><b-icon icon="loading" /></span>
-                <span v-else-if="useGeolocation && !$geolocation.loading" class="button"><b-icon icon="crosshairs-gps" /></span>
-              </div>
-            </b-field>
-          </section>
-
-          <br>
-
-          <div v-for="ss of filteredStopsGroupRoutes" :key="ss.stop.id">
-            <h3 class="title">
-              <b-icon icon="pin" />
-              {{ ss.stop.stop_name }}
-            </h3>
-            <b-field v-if="debug" grouped group-multiline>
-              <div class="control">
-                <b-taglist attached>
-                  <b-tag type="is-dark">
-                    distance
-                  </b-tag>
-                  <b-tag>
-                    {{ haversine(currentPoint, ss.stop.geometry).toFixed(0) }}m
-                  </b-tag>
-                </b-taglist>
-              </div>
-              <div class="control">
-                <b-taglist v-if="ss.stop.stop_code" attached>
-                  <b-tag type="is-dark">
-                    stop code
-                  </b-tag>
-                  <b-tag>{{ ss.stop.stop_code }}</b-tag>
-                </b-taglist>
-              </div>
-            </b-field>
-
-            <div v-for="sr of ss.routes" :key="sr.id" class="is-clearfix">
-              <div class="is-pulled-left">
-                <nuxt-link
-                  :to="{name:'routes-onestop_id', params:{onestop_id:sr.route.onestop_id}}"
-                >
-                  <tl-route-icon
-                    :key="sr.route.id"
-                    :route-type="sr.route.route_type"
-                    :route-short-name="sr.route.route_short_name"
-                    :route-long-name="sr.route.route_long_name"
-                    :route-link="sr.route.route_url"
-                  />
-                </nuxt-link>
-              </div>
-              <div class="is-pulled-right">
-                <b-field grouped group-multiline style="padding-top:20px">
-                  <b-taglist v-if="sr.trip_headsign" attached>
-                    <b-tag type="is-dark">
-                      to:
-                    </b-tag>
-                    <b-tag>
-                      {{ sr.trip_headsign }}
-                    </b-tag>
-                  </b-taglist>&nbsp;
-                  <b-tag v-for="st of sr.departures.slice(0,3)" :key="st.trip.id">
-                    <template v-if="st.departure.estimated">
-                      {{ st.departure.estimated | reformatHMS }} <b-icon type="is-danger" size="is-small" icon="wifi" />
-                    </template><template v-else>
-                      {{ st.departure.scheduled | reformatHMS }}
-                    </template>
-                  </b-tag>
-                </b-field>
-              </div>
+  <div style="position:relative">
+    <div>
+      <tl-feed-version-map-viewer
+        :route-ids="routeIds"
+        :include-stops="true"
+        :zoom="15"
+        :auto-fit="false"
+        :center="currentCoords"
+        :overlay="false"
+      />
+      <div class="departure-panel">
+        <section>
+          <b-field grouped>
+            <b-autocomplete
+              expanded
+              placeholder="Search stops. Example: 55657"
+              :data="stopSearch"
+              max-height="600px"
+              :clearable="true"
+              icon="magnify"
+              @typing="typing"
+              @select="option => coords = option.geometry.coordinates"
+            >
+              <template slot-scope="props">
+                {{ props.option.stop_name }}
+                <div v-for="rs of props.option.route_stops" :key="rs.route.id" class="clearfix tag">
+                  {{ rs.route.agency.agency_name }} :{{ rs.route.route_short_name }}
+                </div>
+              </template>
+            </b-autocomplete>
+            <div>
+              <span v-if="!useGeolocation" class="button" @click="useGeolocation = true"><b-icon icon="crosshairs" /></span>
+              <span v-if="useGeolocation && $geolocation.loading" class="button"><b-icon icon="loading" /></span>
+              <span v-else-if="useGeolocation && !$geolocation.loading" class="button"><b-icon icon="crosshairs-gps" /></span>
             </div>
-            <hr>
+          </b-field>
+        </section>
+
+        <br>
+
+        <div v-for="ss of filteredStopsGroupRoutes" :key="ss.stop.id">
+          <h3 v-if="!collapseStops" class="title">
+            <b-icon icon="pin" />
+            {{ ss.stop.stop_name }}
+          </h3>
+          <b-field v-if="debug" grouped group-multiline>
+            <div class="control">
+              <b-taglist attached>
+                <b-tag type="is-dark">
+                  distance
+                </b-tag>
+                <b-tag>
+                  {{ haversine(currentPoint, ss.stop.geometry).toFixed(0) }}m
+                </b-tag>
+              </b-taglist>
+            </div>
+            <div class="control">
+              <b-taglist v-if="ss.stop.stop_code" attached>
+                <b-tag type="is-dark">
+                  stop code
+                </b-tag>
+                <b-tag>{{ ss.stop.stop_code }}</b-tag>
+              </b-taglist>
+            </div>
+          </b-field>
+
+          <div v-for="sr of ss.routes" :key="sr.id" class="is-clearfix">
+            <div
+              class="is-pulled-left"
+            >
+              <nuxt-link
+                :to="{name:'routes-onestop_id', params:{onestop_id:sr.route.onestop_id}}"
+              >
+                <tl-route-icon
+                  :key="sr.route.id"
+                  :route-type="sr.route.route_type"
+                  :route-short-name="sr.route.route_short_name"
+                  :route-long-name="sr.trip_headsign || sr.route.route_long_name"
+                  :route-link="sr.route.route_url"
+                />
+              </nuxt-link>
+            </div>
+            <div class="is-pulled-right">
+              <b-field grouped group-multiline style="padding-top:20px">
+                <b-tag v-for="st of sr.departures.slice(0,3)" :key="st.trip.id">
+                  <template v-if="st.departure.estimated">
+                    {{ st.departure.estimated | reformatHMS }} <b-icon type="is-danger" size="is-small" icon="wifi" />
+                  </template><template v-else>
+                    {{ st.departure.scheduled | reformatHMS }}
+                  </template>
+                </b-tag>
+              </b-field>
+            </div>
           </div>
-          <br><br>
-          <div v-if="debug">
-            <b-message>
-              Stops: <br>{{ stopOnestopIds }}
-            </b-message>
-            <b-message>
-              Routes: <br>{{ routeOnestopIds }}
-            </b-message>
-          </div>
+          <hr>
+        </div>
+        <br><br>
+        <div v-if="debug">
+          <b-message>
+            Stops: <br>{{ stopOnestopIds }}
+          </b-message>
+          <b-message>
+            Routes: <br>{{ routeOnestopIds }}
+          </b-message>
         </div>
       </div>
     </div>
@@ -151,7 +138,7 @@ query($search: String!) {
 `
 
 const query = gql`
-query( $where: StopFilter, $timezone: String!, $nextSeconds: Int!) {
+query( $where: StopFilter, $nextSeconds: Int!) {
   # $serviceDate: Date, $startTime: Int, $endTime: Int, 
   stops(where: $where) {
     id
@@ -162,7 +149,6 @@ query( $where: StopFilter, $timezone: String!, $nextSeconds: Int!) {
     geometry
     stop_times(
       where: {
-        timezone: $timezone
         next: $nextSeconds
       }
     ) {
@@ -213,19 +199,20 @@ const COORDS = [-122.27159857749938, 37.80365531892627]
 
 export default {
   mixins: [Filters],
+  layout: 'map',
   data () {
     return {
       search: '',
       stopSearch: [],
       stops: [],
       minSearchLength: 4,
-      timezone: 'America/Los_Angeles',
-      debug: true,
+      debug: false,
       useGeolocation: false,
       radius: 500,
       defaultCoords: COORDS,
       coords: null,
-      showStopInfo: false
+      showStopInfo: false,
+      collapseStops: true
     }
   },
   computed: {
@@ -291,7 +278,16 @@ export default {
     filteredStopsGroupRoutes () {
       const tripKeys = new Set()
       const ret = []
+      // group stops
+      const stopGroups = {}
       for (const stop of this.filteredStops) {
+        console.log(stop.stop_name)
+        const key = this.collapseStops ? '' : stop.id
+        const g = stopGroups[key] || { id: stop.id, stop_name: stop.stop_name, stop_id: stop.stop_id, stop_times: [] }
+        g.stop_times = g.stop_times.concat(stop.stop_times)
+        stopGroups[key] = g
+      }
+      for (const stop of Object.values(stopGroups)) {
         const rmap = {}
         // sort stop times
         const sortedSt = stop.stop_times.sort((a, b) => {
@@ -380,6 +376,15 @@ export default {
 </script>
 
 <style scoped>
+.departure-panel {
+  position: absolute;
+  left:10px;
+  top:10px;
+  background:#ffffff;
+  width:600px;
+  opacity:0.8;
+
+}
 .tag {
   margin-right:5px;
 }
@@ -387,5 +392,11 @@ h3 {
     font-size:18pt;
     margin:0px;
     margin-top:10px;
+}
+.route-icon {
+  width:300px;
+  white-space:nowrap;
+  overflow:hidden;
+  -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1) 90%, rgba(0,0,0,0));
 }
 </style>
