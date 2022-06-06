@@ -38,7 +38,10 @@
           </b-dropdown>
         </div>
         <div class="map-info">
-          <div v-show="Object.keys(agencyFeatures).length == 0">
+          <div v-if="mapCurrentZoom < 8 && routeFeatures.length == 0 && stopFeatures.length == 0 /*  only relevant for MVT tiles*/">
+            <strong>Zoom in</strong> to select routes.
+          </div>
+          <div v-else-if="Object.keys(agencyFeatures).length == 0">
             <strong>Use your cursor</strong> to highlight routes and see their names here. <strong>Click</strong> for more details.
           </div>
           <tl-route-select :link="link" :agency-features="agencyFeatures" :collapse="true" />
@@ -101,6 +104,7 @@ export default {
   data () {
     return {
       map: null,
+      mapCurrentZoom: null,
       hovering: [],
       agencyFeatures: {},
       isComponentModalActive: false,
@@ -188,9 +192,9 @@ export default {
       }
       this.map = new maplibre.Map(opts)
       this.map.addControl(new maplibre.FullscreenControl())
+      this.map.addControl(new maplibre.NavigationControl())
       if (!this.enableScrollZoom) {
         this.map.scrollZoom.disable()
-        this.map.addControl(new maplibre.NavigationControl())
       }
       this.map.on('load', () => {
         this.createSources()
@@ -199,6 +203,7 @@ export default {
         this.fitFeatures()
         this.map.on('mousemove', this.mapMouseMove)
         this.map.on('click', 'route-active', this.mapClick)
+        this.map.on('zoom', this.mapZoom)
         this.map.resize()
       })
     },
@@ -405,6 +410,9 @@ export default {
     },
     mapClick (e) {
       this.isComponentModalActive = true
+    },
+    mapZoom (e) {
+      this.mapCurrentZoom = this.map.getZoom()
     },
     mapMouseMove (e) {
       const map = this.map
