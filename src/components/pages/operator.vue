@@ -157,7 +157,7 @@
             <div class="columns">
               <div class="column is-8">
                 <p>
-                  This operator includes data from the <strong>{{ feedSpec }}</strong> feed record with Onestop ID of
+                  This operator includes data from the <strong>{{ feedSpec.replace('_', '-') }}</strong> feed record with Onestop ID of
                   <code>{{ feedOnestopId }}</code> See the feed record for Transitland's archive of fetched versions, as well as URLs for accessing the feed. <!-- TODO: show different text depending upon feed.spec = GTFS, GTFS-RT, or GBFS -->
                 </p>
               </div>
