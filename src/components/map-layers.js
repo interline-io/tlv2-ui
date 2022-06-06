@@ -59,7 +59,7 @@ const routeLayers = [
   },
   {
     name: 'route-rail',
-    filter: ['all', ['==', 'route_type', 2]],
+    filter: ['all', ['<=', 'route_type', 2]],
     paint: { 'line-width': 3.0, 'line-color': '#666' }
   },
   // BUS LOW AND UNKNOWN
