@@ -2048,15 +2048,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/merge@npm:8.2.10":
-  version: 8.2.10
-  resolution: "@graphql-tools/merge@npm:8.2.10"
+"@graphql-tools/merge@npm:8.2.13":
+  version: 8.2.13
+  resolution: "@graphql-tools/merge@npm:8.2.13"
   dependencies:
-    "@graphql-tools/utils": 8.6.9
-    tslib: ~2.3.0
+    "@graphql-tools/utils": 8.6.12
+    tslib: ~2.4.0
   peerDependencies:
-    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: 7059d9f68cfb9b7c04d6024f528e5638fab165e681b3307877a6bad0fc461686595d19375350875bb5f4f7572b21d10272a1e4b08a8af5b6a67950a4a950012b
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
+  checksum: 00afcf2e9b278c7a571cc19e656ae20ad68720a5995b6546672ecd19ae3c84bf8bb6d08f21403a56540d82a402223e029009b72105de7c586eb936fc35b5fd54
   languageName: node
   linkType: hard
 
@@ -2099,29 +2099,29 @@ __metadata:
   linkType: hard
 
 "@graphql-tools/relay-operation-optimizer@npm:^6.2.4":
-  version: 6.4.9
-  resolution: "@graphql-tools/relay-operation-optimizer@npm:6.4.9"
+  version: 6.4.12
+  resolution: "@graphql-tools/relay-operation-optimizer@npm:6.4.12"
   dependencies:
-    "@graphql-tools/utils": 8.6.9
+    "@graphql-tools/utils": 8.6.12
     relay-compiler: 12.0.0
-    tslib: ~2.3.0
+    tslib: ~2.4.0
   peerDependencies:
-    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: 7115891ee8725e3a9b919400c1f60fea1fe2226bc80560634a628cfb660ccaade704512ccc52919fbf258b5300560e4c5c4891205dbef924a5753dac19d022f4
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
+  checksum: e348581f66d69c8e251b0b8ba4bad4564cf5492b388e00bd5d4eb79100098098807fc8b683fe5c9dbb1c995bfc422c43b138e2b496965668a05c46ef45dd2816
   languageName: node
   linkType: hard
 
 "@graphql-tools/resolvers-composition@npm:^6.2.4":
-  version: 6.4.9
-  resolution: "@graphql-tools/resolvers-composition@npm:6.4.9"
+  version: 6.4.12
+  resolution: "@graphql-tools/resolvers-composition@npm:6.4.12"
   dependencies:
-    "@graphql-tools/utils": 8.6.9
+    "@graphql-tools/utils": 8.6.12
     lodash: 4.17.21
     micromatch: ^4.0.4
-    tslib: ~2.3.0
+    tslib: ~2.4.0
   peerDependencies:
-    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: 8880c737e080b5e5f711eb1befc7913a5dd42c56ec11bd9d0209c2ffb922343cec536459f94113e4f982293e50df3d5efdd23bf12521b9cb1f54c0d19e960f84
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
+  checksum: b8da5e5c5d45e0dedbcb7a5cbf98b89387065b998dad8e44ff238ac3b2fd1922a14fdf7961261f2d79463295730b39759b52c9d3598c912b4b281f2bfd68eb83
   languageName: node
   linkType: hard
 
@@ -2151,16 +2151,16 @@ __metadata:
   linkType: hard
 
 "@graphql-tools/schema@npm:^8.0.2":
-  version: 8.3.10
-  resolution: "@graphql-tools/schema@npm:8.3.10"
+  version: 8.3.13
+  resolution: "@graphql-tools/schema@npm:8.3.13"
   dependencies:
-    "@graphql-tools/merge": 8.2.10
-    "@graphql-tools/utils": 8.6.9
-    tslib: ~2.3.0
+    "@graphql-tools/merge": 8.2.13
+    "@graphql-tools/utils": 8.6.12
+    tslib: ~2.4.0
     value-or-promise: 1.0.11
   peerDependencies:
-    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: 8b225f4ae87d3f1d8d9772df605a27dfde069a2372f2af0a1459859c4310c5fef8243c1276c1959e316420f1584d739b9f52c55dd230d2ad177cde1019155b81
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
+  checksum: 13d3da3b08f9c94ce99243950e89e73169c399b93dc0d85f03fd1e36d274f41031525b6ffae479ccfe121e9d376923c3602d8d10799e79ca192002484c6a8cee
   languageName: node
   linkType: hard
 
@@ -2219,6 +2219,17 @@ __metadata:
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0
   checksum: c26a7fb4ceb1e845f6f8a4dfbf8f5c014f71a346ccff2568ae49eaf4234d1a3eb754ccf528385754b47dcf63c204b7ad815b96d32c5ba3745a916a2667ad0b13
+  languageName: node
+  linkType: hard
+
+"@graphql-tools/utils@npm:8.6.12":
+  version: 8.6.12
+  resolution: "@graphql-tools/utils@npm:8.6.12"
+  dependencies:
+    tslib: ~2.4.0
+  peerDependencies:
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
+  checksum: 01a560870c7661e353cf0c7a61f2e515d4aa2def415ba8274ec37874e5fc7c21c84a663c0c3d37505975ca06391819b591cf423ddda5449579860d9f70e0d6ce
   languageName: node
   linkType: hard
 
@@ -4702,8 +4713,8 @@ __metadata:
   linkType: hard
 
 "apollo-server-core@npm:^2.25.2":
-  version: 2.25.2
-  resolution: "apollo-server-core@npm:2.25.2"
+  version: 2.25.4
+  resolution: "apollo-server-core@npm:2.25.4"
   dependencies:
     "@apollographql/apollo-tools": ^0.5.0
     "@apollographql/graphql-playground-html": 1.6.27
@@ -4732,7 +4743,7 @@ __metadata:
     uuid: ^8.0.0
   peerDependencies:
     graphql: ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0
-  checksum: 9470fd40eb084e3b62f891b5776238e6a9476253bb3626f9fc8eb60f384babc56d48b6109f0059dcc79253350fe43b45617b6a13ca0ea7c7261ec7b51469713f
+  checksum: 673dacbca12501c660ff8491010928a77e6d504b346750acefe0f999ae767fc67a68102207c0c350880aa9b14b1152241078419cd19e90e737479458f6952e18
   languageName: node
   linkType: hard
 
@@ -16333,7 +16344,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2, tslib@npm:^2.3.1":
+"tslib@npm:^2, tslib@npm:^2.3.1, tslib@npm:~2.4.0":
   version: 2.4.0
   resolution: "tslib@npm:2.4.0"
   checksum: 8c4aa6a3c5a754bf76aefc38026134180c053b7bd2f81338cb5e5ebf96fefa0f417bff221592bf801077f5bf990562f6264fecbc42cd3309b33872cb6fc3b113
@@ -17076,24 +17087,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vue-eslint-parser@npm:^7.1.1, vue-eslint-parser@npm:^7.8.0":
-  version: 7.8.0
-  resolution: "vue-eslint-parser@npm:7.8.0"
-  dependencies:
-    debug: ^4.1.1
-    eslint-scope: ^5.1.1
-    eslint-visitor-keys: ^1.1.0
-    espree: ^6.2.1
-    esquery: ^1.4.0
-    lodash: ^4.17.21
-    semver: ^6.3.0
-  peerDependencies:
-    eslint: ">=5.0.0"
-  checksum: 70c92d67e14e58372857d980226617644fb762976a31e73bc8ee06162d46755b5a8a69d6c59d075282ba49b27725eaf68d5f3b13b5e45a308505c4e2c0d6fc88
-  languageName: node
-  linkType: hard
-
-"vue-eslint-parser@npm:^7.10.0":
+"vue-eslint-parser@npm:^7.1.1, vue-eslint-parser@npm:^7.10.0, vue-eslint-parser@npm:^7.8.0":
   version: 7.11.0
   resolution: "vue-eslint-parser@npm:7.11.0"
   dependencies:
@@ -17164,9 +17158,9 @@ __metadata:
   linkType: hard
 
 "vue-router@npm:^3.5.1":
-  version: 3.5.2
-  resolution: "vue-router@npm:3.5.2"
-  checksum: 342049e7cb0e4974879c57f9ecce342c180a1abce8df71137f902b201faa18d0a65c44936cbd4e9d62d5770d8f95395d73a5e05efa255475817f350bf7a094d1
+  version: 3.5.4
+  resolution: "vue-router@npm:3.5.4"
+  checksum: 0975860dc849e99935c2bf8dae8e1e2db036736c4d45d6aef2e6c8a111122f0ecbc0aa9a3d434982530d831eadde1c06cf27ca6e2b6a6c21b82f5fd2f25e028c
   languageName: node
   linkType: hard
 
