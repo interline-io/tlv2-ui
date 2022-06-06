@@ -332,6 +332,7 @@ export default {
             'line-cap': 'round',
             'line-join': 'round'
           },
+          minzoom: v.minzoom || 0,
           paint: v.paint
         }
         if (this.routeTiles) {
@@ -417,7 +418,6 @@ export default {
       }
       this.hovering = []
       for (const v of features) {
-        // console.log(v)
         this.hovering.push(v.id)
         map.setFeatureState({ source: 'routes', id: v.id, sourceLayer: this.routeTiles ? this.routeTiles.id : null }, { hover: true })
       }
