@@ -100,7 +100,9 @@ export default {
     setTab (value) {
       const tab = this.tabIndex[value]
       if (tab) {
-        this.$router.replace({ hash: '#' + tab, query: this.$route.query })
+        // set window.location.hash directly; this.$router.push causes reload
+        // this.$router.push({ hash: '#' + tab })
+        window.location.hash = tab
       }
     }
   }

@@ -30,7 +30,8 @@ export default {
   modules: [
     'nuxt-buefy',
     '@nuxtjs/apollo',
-    'vue-geolocation-api/nuxt'
+    'vue-geolocation-api/nuxt',
+    'nuxt-material-design-icons-iconfont'
   ],
   geolocation: {
     watch: true,
