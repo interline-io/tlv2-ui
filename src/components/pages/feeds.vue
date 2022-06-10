@@ -244,7 +244,6 @@ export default {
   computed: {
     feedPage () {
       return this.entityPage.map((feed) => {
-        console.log(feed.last_successful_import)
         const lastImport = first(feed.last_successful_import)
         return {
           onestop_id: feed.onestop_id,
