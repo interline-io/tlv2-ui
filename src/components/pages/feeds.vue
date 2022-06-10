@@ -106,7 +106,7 @@
         <b-table-column v-slot="props" field="last_successful_import_at" label="Last Imported">
           <span v-if="props.row.spec === 'GTFS'">
             <template v-if="props.row.last_import">
-              {{ props.row.last_import.created_at | fromNow }}
+              {{ props.row.last_import.fetched_at | fromNow }}
             </template>
             <template v-else>
               Never
@@ -150,6 +150,14 @@ query($specs: [FeedSpecTypes!], $after: Int, $limit:Int, $search: String, $fetch
     last_successful_fetch: feed_fetches(limit:1, where:{success:true}) {
       fetch_error
       fetched_at
+    }
+    last_successful_import: feed_versions(limit:1, where:{import_status:SUCCESS}) {
+      id
+      fetched_at
+      feed_version_gtfs_import {
+        id
+        created_at
+      }
     }
     feed_state {
       id
@@ -236,12 +244,7 @@ export default {
   computed: {
     feedPage () {
       return this.entityPage.map((feed) => {
-        const fvi = (
-          feed.feed_state &&
-          feed.feed_state.feed_version &&
-          feed.feed_state.feed_version.feed_version_gtfs_import
-            ? feed.feed_state.feed_version.feed_version_gtfs_import
-            : null)
+        const lastImport = first(feed.last_successful_import)
         return {
           onestop_id: feed.onestop_id,
           spec: feed.spec,
@@ -249,7 +252,7 @@ export default {
           last_successful_fetch:
             first(feed.last_successful_fetch),
           tags: feed.tags,
-          last_import: fvi
+          last_import: lastImport || null
         }
       })
     },
