@@ -22,6 +22,8 @@ yarn-error.log*
 
 .nuxt
 
+.eslintcache
+
 # Storybook
 .nuxt-storybook
 storybook-static
