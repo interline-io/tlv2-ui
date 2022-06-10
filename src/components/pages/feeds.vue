@@ -151,7 +151,7 @@ query($specs: [FeedSpecTypes!], $after: Int, $limit:Int, $search: String, $fetch
       fetch_error
       fetched_at
     }
-    last_successful_import: feed_versions(limit:1, where:{imported:true}) {
+    last_successful_import: feed_versions(limit:1, where:{import_status:SUCCESS}) {
       id
       fetched_at
       feed_version_gtfs_import {
