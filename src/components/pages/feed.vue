@@ -20,7 +20,7 @@
       </slot>
 
       <h1 class="title">
-        {{ entity.spec.toUpperCase() }} feed: {{ operatorNames.join(', ') }}
+        {{ entity.spec.toUpperCase() }} feed: {{ operatorNames }}
       </h1>
 
       <slot name="description">
@@ -316,6 +316,7 @@ query($feed_onestop_id: String) {
   entities: feeds(where: {onestop_id: $feed_onestop_id}, limit: 1) {
     id
     onestop_id
+    name
     languages
     spec
     file
@@ -414,6 +415,14 @@ export default {
         return {
           feed_onestop_id: this.onestopId
         }
+      },
+      update (data) {
+        // overrides the update method in EntityPageMixin
+        if (data.entities.length === 0) {
+          return this.setError(404)
+        }
+        this.$emit('entitiesLoaded', data.entities)
+        return data.entities
       }
     }
   },
@@ -454,13 +463,21 @@ export default {
       return feed.last_successful_fetch
     },
     operatorNames () {
-      return (this.entity.associated_operators || []).map((o) => {
+      let operatorNames = null
+      const names = (this.entity.associated_operators || []).map((o) => {
         if (o.short_name) {
           return `${o.name} (${o.short_name})`
         } else {
           return o.name
         }
       })
+      if (names.length > 3) {
+        operatorNames = `${names.slice(0, 3).join(', ')} and ${names.length - 3} additional operators`
+      } else if (names.length > 0 && names.length <= 3) {
+        operatorNames = names.slice(0, 3).join(', ')
+      }
+      this.$emit('operatorNamesUpdated', operatorNames)
+      return operatorNames
     },
     displayLicense () {
       if (this.entity) {
@@ -483,14 +500,14 @@ export default {
       if (this.entity) {
         title = this.entity.spec.toUpperCase() + ' ' + title
         if (this.entity.associated_operators) {
-          title = `${this.entity.associated_operators[0].name} • ` + title
+          title = `${this.operatorNames} • ` + title
         }
       }
       return title
     },
     staticDescription () {
       if (this.entity) {
-        const operatorDescription = (this.entity && this.entity.associated_operators) ? ` with data for ${this.entity.associated_operators[0].name}` : ''
+        const operatorDescription = (this.entity && this.entity.associated_operators) ? ` with data for ${this.entity.name || this.operatorNames}` : ''
         const fvCount = this.entity.feed_versions.length
         let description = `This is a ${this.entity.spec.toUpperCase()} feed ${operatorDescription} with the Onestop ID of ${this.onestopId}.`
         if (fvCount === 1000) {
@@ -500,6 +517,7 @@ export default {
           description += ` Transitland has archived ${fvCount} versions of this feed,
           which are available to query by API and to download.`
         }
+        this.$emit('staticDescriptionUpdated', description)
         return description
       }
       return ''
