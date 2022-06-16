@@ -222,6 +222,8 @@
               :paginated="true"
               :pagination-simple="true"
               sort-icon="menu-up"
+              detailed
+              :show-detail-icon="false"
             >
               <b-table-column
                 v-slot="props"
@@ -294,10 +296,20 @@
               <b-table-column v-slot="props" label="Download">
                 <template v-if="entity.license.redistribution_allowed !== 'no' && props.index == 0">
                   <a :href="`https://demo.transit.land/api/v2/rest/feed_versions/${props.row.sha1}/download`" target="_blank">
-                    <b-icon icon="download" title="Download" />
+                    <b-icon icon="download" title="Download latest feed version" />
+                  </a>
+                </template>
+                <template v-else-if="entity.license.redistribution_allowed !== 'no'">
+                  <a @click="props.toggleDetails(props.row)">
+                    <b-icon icon="download" type="is-success" title="Download through Transitland Professional API" />
                   </a>
                 </template>
               </b-table-column>
+              <template #detail="props">
+                <p>Want to download a copy of this feed version to process with your own software? Users with <a href="https://www.interline.io/transitland/apis-for-developers/#api-pricing--sign-up" target="_blank">professional or enterprise tier plans</a> can use the v2 REST API to download any feed version:</p>
+                <pre>GET https://transit.land/api/v2/rest/feed_versions/{{ props.row.sha1 }}/download?apikey=your-api-key</pre>
+                <p>Learn more in the <a href="/documentation/rest-api/feed_versions#downloading-source-gtfs" target="_blank">documentation</a>.</p>
+              </template>
             </b-table>
 
             <slot name="add-feed-version" :entity="entity" />
