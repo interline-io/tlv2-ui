@@ -296,12 +296,12 @@
               <b-table-column v-slot="props" label="Download">
                 <template v-if="entity.license.redistribution_allowed !== 'no' && props.index == 0">
                   <a :href="`https://demo.transit.land/api/v2/rest/feed_versions/${props.row.sha1}/download`" target="_blank">
-                    <b-icon icon="download" title="Download latest feed version" />
+                    <b-icon icon="download" type="is-success" title="Download latest feed version" />
                   </a>
                 </template>
                 <template v-else-if="entity.license.redistribution_allowed !== 'no'">
                   <a @click="props.toggleDetails(props.row)">
-                    <b-icon icon="download" type="is-success" title="Download through Transitland Professional API" />
+                    <b-icon icon="download" title="Download through Transitland Professional API" />
                   </a>
                 </template>
               </b-table-column>
