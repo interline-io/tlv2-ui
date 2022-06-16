@@ -147,8 +147,8 @@
                   <li v-if="entity.license.create_derived_product">
                     Creating derived products allowed: {{ entity.license.create_derived_product | capitalize }}
                   </li>
-                  <li v-if="entity.license.redistribute">
-                    Redistribution allowed: {{ entity.license.redistribute | capitalize }}
+                  <li v-if="entity.license.redistribution_allowed">
+                    Redistribution allowed: {{ entity.license.redistribution_allowed | capitalize }}
                   </li>
                   <li v-if="entity.license.attribution_text">
                     Required attribution text: {{ entity.license.attribution_text }}
@@ -290,6 +290,13 @@
                   v-if="entity.feed_state && entity.feed_state.feed_version && entity.feed_state.feed_version.id === props.row.id"
                   icon="check"
                 />
+              </b-table-column>
+              <b-table-column v-slot="props" label="Download">
+                <template v-if="entity.license.redistribution_allowed !== 'no' && props.index == 0">
+                  <a :href="`https://demo.transit.land/api/v2/rest/feed_versions/${props.row.sha1}/download`" target="_blank">
+                    <b-icon icon="download" title="Download" />
+                  </a>
+                </template>
               </b-table-column>
             </b-table>
 
