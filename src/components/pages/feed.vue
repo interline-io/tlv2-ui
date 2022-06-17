@@ -293,7 +293,7 @@
                   icon="check"
                 />
               </b-table-column>
-              <b-table-column v-slot="props" label="Download">
+              <b-table-column v-if="showDownloadColumn" v-slot="props" label="Download">
                 <template v-if="entity.license.redistribution_allowed !== 'no' && props.index == 0">
                   <a :href="`https://demo.transit.land/api/v2/rest/feed_versions/${props.row.sha1}/download`" target="_blank">
                     <b-icon icon="download" type="is-success" title="Download latest feed version" />
@@ -305,7 +305,7 @@
                   </a>
                 </template>
               </b-table-column>
-              <template #detail="props">
+              <template v-if="showDownloadColumn" #detail="props">
                 <p>Want to download a copy of this feed version to process with your own software? Users with <a href="https://www.interline.io/transitland/apis-for-developers/#api-pricing--sign-up" target="_blank">professional or enterprise tier plans</a> can use the v2 REST API to download any feed version:</p>
                 <pre>GET https://transit.land/api/v2/rest/feed_versions/{{ props.row.sha1 }}/download?apikey=your-api-key</pre>
                 <p>Learn more in the <a href="/documentation/rest-api/feed_versions#downloading-source-gtfs" target="_blank">documentation</a>.</p>
@@ -446,6 +446,7 @@ export default {
     }
   },
   props: {
+    showDownloadColumn: { type: Boolean, default: false },
     showOperators: { type: Boolean, default: false }
   },
   data () {
