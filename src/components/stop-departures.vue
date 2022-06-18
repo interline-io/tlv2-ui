@@ -1,9 +1,15 @@
 <template>
   <div>
-    <div v-if="$apollo.loading">
+    <div v-if="$apollo.loading && stops.length === 0">
+      <!-- "double buffer" -->
       <h6 class="title is-6">
         Loading
       </h6>
+    </div>
+    <div v-else-if="error">
+      <b-notification type="is-danger" style="margin:10px" :closable="false" :has-icon="true">
+        {{ error }}
+      </b-notification>
     </div>
     <div v-else-if="!searchCoords && stopIds.length === 0">
       <h6 class="title is-6">
@@ -34,6 +40,10 @@
               Radius
             </p>
           </b-field>
+
+          <b-checkbox v-if="showAutoRefresh" v-model="autoRefresh" size="is-small">
+            Auto-refresh
+          </b-checkbox>
 
           <b-checkbox v-if="showFallbackSelector" v-model="useServiceWindow" size="is-small">
             Fallback service day
@@ -84,6 +94,9 @@
           </div>
         </div>
       </div>
+    </div>
+    <div v-if="lastFetched" :key="lastFetchedDisplayKey" class="last-fetched">
+      Last checked: {{ lastFetched | fromNowDate }}
     </div>
   </div>
 </template>
@@ -159,21 +172,13 @@ export default {
     showDateSelector: { type: Boolean, default () { return false } },
     showRadiusSelector: { type: Boolean, default () { return false } },
     showFallbackSelector: { type: Boolean, default () { return false } },
+    showAutoRefresh: { type: Boolean, default () { return false } },
+    showLastFetched: { type: Boolean, default () { return false } },
+    autoRefreshInterval: { type: Number, default () { return 60 } },
     stopIds: { type: Array, default () { return [] } }
   },
-  data () {
-    return {
-      useServiceWindow: false,
-      displayStartDate: null,
-      allowedRadius: [0, 50, 100, 150, 200, 500],
-      routesPerAgencyShadow: this.routesPerAgency,
-      stops: [],
-      debug: false,
-      radius: 100
-    }
-  },
   apollo: {
-    stops: {
+    departureQuery: {
       query,
       skip () { return !this.searchCoords && this.stopIds.length === 0 },
       variables () {
@@ -186,7 +191,31 @@ export default {
         if (this.stopIds.length > 0) { q.stopIds = this.stopIds }
         if (this.searchCoords) { q.where = { near: { lon: this.searchCoords[0], lat: this.searchCoords[1], radius: this.radius } } }
         return q
+      },
+      update (data) {
+        this.resetTimer()
+        this.stops = data.stops
+        this.lastFetched = new Date()
+      },
+      error (e) {
+        this.error = e
       }
+    }
+  },
+  data () {
+    return {
+      timer: null,
+      error: null,
+      lastFetched: null,
+      lastFetchedDisplayKey: 0, // force redraw
+      autoRefresh: true,
+      useServiceWindow: false,
+      displayStartDate: null,
+      allowedRadius: [0, 50, 100, 150, 200, 500, 1000],
+      routesPerAgencyShadow: this.routesPerAgency,
+      stops: [],
+      debug: false,
+      radius: 100
     }
   },
   computed: {
@@ -310,7 +339,35 @@ export default {
       return ret
     }
   },
+  watch: {
+    autoRefresh (v) {
+      // Helper to restart interval
+      if (v) {
+        this.refetch()
+      }
+    }
+  },
+  mounted () {
+    // Force redraw
+    setInterval(() => {
+      this.lastFetchedDisplayKey += 1
+    }, 1000)
+  },
   methods: {
+    startTimer () {
+      this.timer = setInterval(() => {
+        if (this.autoRefresh) {
+          this.refetch()
+        }
+      }, this.autoRefreshInterval * 1000)
+    },
+    resetTimer () {
+      window.clearInterval(this.timer)
+      this.startTimer()
+    },
+    refetch () {
+      this.$apollo.queries.departureQuery.refetch()
+    },
     expandRoutesPerAgency () {
       this.routesPerAgencyShadow = 1000
     },
@@ -347,4 +404,8 @@ export default {
   -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1) 90%, rgba(0,0,0,0));
 }
 
+.last-fetched {
+  padding-top:10px;
+  font-size:0.75rem;
+}
 </style>
