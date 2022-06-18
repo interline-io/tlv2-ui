@@ -41,7 +41,7 @@ const routeLayers = [
     minzoom: 8,
     paint: {
       'line-color': colors.active,
-      'line-width': 8,
+      'line-width': 12,
       'line-opacity': [
         'case',
         ['boolean', ['feature-state', 'hover'], false],

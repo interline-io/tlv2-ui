@@ -34,7 +34,7 @@ export default {
     'nuxt-material-design-icons-iconfont'
   ],
   geolocation: {
-    watch: true,
+    watch: false,
     options: {
       enableHighAccuracy: true
     }
