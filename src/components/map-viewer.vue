@@ -1,75 +1,5 @@
 <template>
-  <div>
-    <div id="mapelem" ref="mapelem" :class="mapClass" />
-    <div v-if="overlay" class="is-hidden-mobile">
-      <div class="map-agencies notification">
-        <div v-if="showOptions" class="map-options">
-          <b-dropdown position="is-bottom-right" append-to-body aria-role="menu" trap-focus>
-            <span
-              slot="trigger"
-              class="navbar-item"
-              role="button"
-            >
-              <span>Options</span>
-              <b-icon icon="menu-down" />
-            </span>
-
-            <b-dropdown-item
-              aria-role="menu-item"
-              :focusable="false"
-              custom
-              paddingless
-            >
-              <div class="modal-card map-options">
-                <section class="modal-card-body">
-                  <div class="field">
-                    <b-checkbox v-model="showGeneratedShadow">
-                      Show stop-to-stop geometries
-                    </b-checkbox>
-                  </div>
-                  <div class="field">
-                    <b-checkbox v-model="showProblematicGeometriesShadow">
-                      Show problematic geometries
-                    </b-checkbox>
-                  </div>
-                </section>
-              </div>
-            </b-dropdown-item>
-          </b-dropdown>
-        </div>
-        <div class="map-info">
-          <div v-if="mapCurrentZoom < 8 && routeFeatures.length == 0 && stopFeatures.length == 0 /*  only relevant for MVT tiles*/">
-            <strong>Zoom in</strong> to select routes.
-          </div>
-          <div v-else-if="Object.keys(agencyFeatures).length == 0">
-            <strong>Use your cursor</strong> to highlight routes and see their names here. <strong>Click</strong> for more details.
-          </div>
-          <tl-route-select :link="link" :agency-features="agencyFeatures" :collapse="true" />
-        </div>
-      </div>
-    </div>
-
-    <b-modal
-      v-if="overlay && link"
-      :active.sync="isComponentModalActive"
-      has-modal-card
-      full-screen
-    >
-      <template #default="props">
-        <div v-if="isComponentModalActive" class="modal-card">
-          <header class="modal-card-head">
-            <p class="modal-card-title">
-              Select Route
-            </p>
-            <button type="button" class="delete" @click="props.close" />
-          </header>
-          <section class="modal-card-body">
-            <tl-route-select :agency-features="agencyFeatures" :link="link" :link-version="linkVersion" />
-          </section>
-        </div>
-      </template>
-    </b-modal>
-  </div>
+  <div id="mapelem" ref="mapelem" :class="mapClass" />
 </template>
 
 <script>
@@ -78,23 +8,20 @@ import mapLayers from './map-layers.js'
 
 export default {
   props: {
+    markerCoords: { type: Array, default () { return [] } },
     enableScrollZoom: { type: Boolean, default: false },
-    showOptions: { type: Boolean, default: false },
     showProblematicGeometries: { type: Boolean, default: true },
-    showGenerated: { type: Boolean, default: true },
+    showGeneratedGeometries: { type: Boolean, default: true },
     mapClass: { type: String, default: 'short' },
     routeTiles: { type: Object, default () { return null } },
     stopTiles: { type: Object, default () { return null } },
     stopFeatures: { type: Array, default () { return [] } },
     routeFeatures: { type: Array, default () { return [] } },
     interactive: { type: Boolean, default: true },
-    overlay: { type: Boolean, default: false },
     autoFit: { type: Boolean, default: true },
     center: { type: Array, default () { return null } },
     circleRadius: { type: Number, default: 1 },
     circleColor: { type: String, default: '#f03b20' },
-    link: { type: Boolean, default: true },
-    linkVersion: { type: Boolean, default: false },
     zoom: { type: Number, default: 4 },
     hash: { type: Boolean, default: false },
     features: {
@@ -104,27 +31,34 @@ export default {
   data () {
     return {
       map: null,
-      mapCurrentZoom: null,
-      hovering: [],
-      agencyFeatures: {},
-      isComponentModalActive: false,
-      showGeneratedShadow: this.showGenerated,
-      showProblematicGeometriesShadow: this.showProblematicGeometries
+      marker: null,
+      hovering: []
     }
   },
   watch: {
-    showProblematicGeometriesShadow (v) {
+    showProblematicGeometries (v) {
       this.updateFilters()
     },
-    showGeneratedShadow (v) {
+    showGeneratedGeometries (v) {
       this.updateFilters()
     },
     features (v) {
-      if (v) {
-        this.$nextTick(() => {
-          this.updateFeatures()
-        })
-      }
+      this.nextTickUpdateFeatures(v)
+    },
+    stopFeatures (v) {
+      this.nextTickUpdateFeatures(v)
+    },
+    routeFeatures (v) {
+      this.nextTickUpdateFeatures(v)
+    },
+    center () {
+      this.map.jumpTo({ center: this.center, zoom: this.zoom })
+    },
+    zoom () {
+      this.map.jumpTo({ center: this.center, zoom: this.zoom })
+    },
+    markerCoords (v) {
+      this.drawMarker(v)
     }
   },
   mounted () {
@@ -133,6 +67,13 @@ export default {
     }
   },
   methods: {
+    nextTickUpdateFeatures (v) {
+      if (v) {
+        this.$nextTick(() => {
+          this.updateFeatures()
+        })
+      }
+    },
     saveImage () {
       const canvas = this.map.getCanvas() // .toDataURL('image/png')
       const fileName = 'image'
@@ -144,6 +85,9 @@ export default {
       })
     },
     initMap () {
+      if (this.map) {
+        return
+      }
       const opts = {
         hash: this.hash,
         interactive: this.interactive,
@@ -190,19 +134,21 @@ export default {
       if (this.zoom) {
         opts.zoom = this.zoom
       }
+
       this.map = new maplibre.Map(opts)
       this.map.addControl(new maplibre.FullscreenControl())
       this.map.addControl(new maplibre.NavigationControl())
       if (!this.enableScrollZoom) {
         this.map.scrollZoom.disable()
       }
+      this.drawMarker(this.markerCoords)
       this.map.on('load', () => {
         this.createSources()
         this.createLayers()
         this.updateFeatures()
         this.fitFeatures()
         this.map.on('mousemove', this.mapMouseMove)
-        this.map.on('click', 'route-active', this.mapClick)
+        this.map.on('click', this.mapClick)
         this.map.on('zoom', this.mapZoom)
         this.map.resize()
       })
@@ -219,6 +165,9 @@ export default {
       this.map.getSource('polygons').setData({ type: 'FeatureCollection', features: polygons })
       this.map.getSource('lines').setData({ type: 'FeatureCollection', features: lines })
       this.map.getSource('points').setData({ type: 'FeatureCollection', features: points })
+      // this.map.getSource('stops').setData({ type: 'FeatureCollection', features: this.stopFeatures })
+      // this.map.getSource('routes').setData({ type: 'FeatureCollection', features: this.routeFeatures })
+      this.fitFeatures()
     },
     updateFilters () {
       for (const v of mapLayers.routeLayers) {
@@ -227,12 +176,12 @@ export default {
           f.push('all')
         }
         // Hide geometries with long max segment lengths
-        if (!this.showProblematicGeometriesShadow) {
+        if (!this.showProblematicGeometries) {
           f.push(['any', ['==', 'generated', true], ['<', 'geometry_max_segment_length', 50 * 1000]])
           f.push(['any', ['==', 'generated', false], ['<', 'geometry_max_segment_length', 5 * 1000]])
         }
         // Hide generated geometries
-        if (!this.showGeneratedShadow) {
+        if (!this.showGeneratedGeometries) {
           f.push(['==', 'generated', false])
         }
         if (f.length > 1) {
@@ -374,6 +323,20 @@ export default {
       // Set initial show generated geometry
       this.updateFilters()
     },
+    drawMarker (coords) {
+      if (!coords || coords.length === 0 || coords[0] === 0) {
+        if (this.marker) {
+          this.marker.remove()
+          this.marker = null
+        }
+        return
+      }
+      if (!this.marker) {
+        this.marker = new maplibre.Marker().setLngLat(coords).addTo(this.map)
+      } else {
+        this.marker.setLngLat(coords)
+      }
+    },
     fitFeatures () {
       const coords = []
       for (const f of [...this.features, ...this.routeFeatures, ...this.stopFeatures]) {
@@ -404,15 +367,16 @@ export default {
         }, new maplibre.LngLatBounds(coords[0], coords[0]))
         this.map.fitBounds(bounds, {
           duration: 0,
-          padding: 20
+          padding: 20,
+          maxZoom: 16
         })
       }
     },
     mapClick (e) {
-      this.isComponentModalActive = true
+      this.$emit('mapClick', e)
     },
     mapZoom (e) {
-      this.mapCurrentZoom = this.map.getZoom()
+      this.$emit('setZoom', this.map.getZoom())
     },
     mapMouseMove (e) {
       const map = this.map
@@ -438,7 +402,7 @@ export default {
         }
         agencyFeatures[agencyId][routeId] = v.properties
       }
-      this.agencyFeatures = agencyFeatures
+      this.$emit('setAgencyFeatures', agencyFeatures)
     }
   }
 }
@@ -446,35 +410,10 @@ export default {
 
 <style scss>
 @import 'maplibre-gl/dist/maplibre-gl';
-
 .short {
   height: 600px;
 }
-
 .tall {
   height: calc(100vh - 60px);
 }
-
-.map-agencies {
-  user-select:none;
-  position: absolute !important;
-  margin:0px;
-  padding:10px;
-  top:10px;
-  left:10px;
-  background:#ffffff;
-  width:400px;
-  opacity:0.5;
-}
-
-.map-options {
-  border-bottom:solid 1px #ccc;
-  margin-bottom:20px;
-}
-
-.map-info {
-  padding-left:10px;
-  padding-top:10px;
-}
-
 </style>

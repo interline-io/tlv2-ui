@@ -1,21 +1,34 @@
 <template>
-  <div>
+  <div style="position:relative">
     <b-message v-if="error" class="is-danger">
       {{ error }}
     </b-message>
-    <span v-else-if="$apollo.loading" class="is-loading">Loading</span>
-    <tl-map-viewer
-      v-else
-      :enable-scroll-zoom="enableScrollZoom"
-      :features="features"
-      :route-features="routeFeatures"
-      :stop-features="stopFeatures"
-      :overlay="overlay"
-      :link-version="linkVersion"
-      :center="center.length > 0 ? center : null"
-      :auto-fit="center.length > 0 ? false : true"
-      :zoom="zoom ? zoom : null"
-    />
+    <div v-else-if="$apollo.loading" class="is-loading">
+      Loading
+    </div>
+    <div v-else>
+      <tl-map-viewer
+        :enable-scroll-zoom="enableScrollZoom"
+        :features="features"
+        :route-features="routeFeatures"
+        :stop-features="stopFeatures"
+        :center="center"
+        :auto-fit="true"
+        :zoom="zoom ? zoom : null"
+        @setAgencyFeatures="agencyFeatures = $event"
+        @mapClick="mapClick"
+        @setZoom="currentZoom = $event"
+      />
+      <div v-if="overlay" class="map-panel">
+        <tl-map-route-list
+          :current-zoom="currentZoom"
+          :link-version="linkVersion"
+          :agency-features="agencyFeatures"
+          :is-component-modal-active="isComponentModalActive"
+          @close="isComponentModalActive = false"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -98,7 +111,10 @@ export default {
   data () {
     return {
       routes: [],
-      error: null
+      error: null,
+      isComponentModalActive: false,
+      agencyFeatures: {},
+      currentZoom: 0
     }
   },
   computed: {
@@ -159,6 +175,13 @@ export default {
     },
     stopFeatures (v) {
       this.$emit('setSopFeatures', v)
+    }
+  },
+  methods: {
+    mapClick (e) {
+      if (Object.keys(this.agencyFeatures).length > 0) {
+        this.isComponentModalActive = true
+      }
     }
   }
 }

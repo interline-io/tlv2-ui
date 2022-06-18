@@ -1,52 +1,120 @@
-table.property-list td, table.property-list th {
-    padding:5px;
+table.property-list td,
+table.property-list th {
+    padding: 5px;
 }
+
 table.property-list td:first-child {
-    padding-right:20px;
-    font-weight:bold;
-    text-align:right;
-    width:200px;
+    padding-right: 20px;
+    font-weight: bold;
+    text-align: right;
+    width: 200px;
 }
+
 .datepicker .dropdown-content {
-    box-shadow:none !important;
+    box-shadow: none !important;
 }
+
 .route-icon {
-    margin-top:10px;
-    margin-bottom:10px;
-    padding-left:32px;
-    position:relative;
+    white-space: nowrap;
+    overflow: hidden;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding-left: 32px;
+    position: relative;
 }
+
 .route-icon .route-icon-short-name {
-    padding:6px;
-    display:inline-block;
-    border:solid 1px #666;
-    border-radius:6px;
-    white-space:nowrap;
+    padding: 6px;
+    display: inline-block;
+    border: solid 1px #666;
+    border-radius: 6px;
+    white-space: nowrap;
 }
+
 .route-icon .route-icon-long-name {
-    padding:6px;
-    display:inline-block;
-    white-space:nowrap;
+    padding: 6px;
+    display: inline-block;
+    white-space: nowrap;
 }
+
 .route-icon .route-icon-icon {
-    display:block;
-    position:absolute;
-    top:6px;
-    left:0px;
+    display: block;
+    position: absolute;
+    top: 6px;
+    left: 0px;
 }
-.clearfix:after {
-    clear: both;
-    content: "";
-    display: table;
-}
+
 .entity-search {
-    margin-bottom:10px;
+    margin-bottom: 10px;
 }
-.table.is-borderless
-  td,
-  th {
-    border: 0 }
+
+.table.is-borderless td,
+th {
+    border: 0
+}
+
+.is-6 {
+    margin: 0px !important;
+    padding: 0px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.button-like {
+    padding-bottom: 0.5em;
+    padding-top: 0.5em;
+}
+
+.button-like-small {
+    font-size: 0.75rem;
+    padding-bottom: 0.5em;
+    padding-top: 0.5em;
+}
+
 .b-tabs .tab-content {
-  padding-left:0px;
-  padding-right:0px;
+    margin: 0px;
+    padding: 0px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.map-panel {
+    background-color: white;
+    user-select: none;
+    position: absolute !important;
+    margin: 0px;
+    padding: 10px;
+    top: 10px;
+    left: 10px;
+    width: 565px;
+}
+
+.map-panel-tabs {
+    background: none;
+}
+
+.map-panel-tabs li[role=tab] a {
+    margin-right: 5px;
+}
+
+.map-panel-tabs li[role=tab] a {
+    background-color: rgba(235, 235, 235, 0.9) !important;
+}
+
+.map-panel-tabs li[role=tab].is-active a {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.map-panel-tabs .tab-content {
+    background-color: rgba(255, 255, 255, 0.9);
+    margin: 0px;
+    padding-left: 10px;
+    padding-right: 10px;
+    max-height:80vh;
+    overflow-y:auto;
+}
+
+.map-panel .dropdown-content{
+    position: fixed;
+    max-width:80%;
 }
