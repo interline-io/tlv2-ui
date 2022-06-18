@@ -150,6 +150,7 @@ export default {
         this.map.on('mousemove', this.mapMouseMove)
         this.map.on('click', this.mapClick)
         this.map.on('zoom', this.mapZoom)
+        this.map.on('moveend', this.mapMove)
         this.map.resize()
       })
     },
@@ -377,6 +378,9 @@ export default {
     },
     mapZoom (e) {
       this.$emit('setZoom', this.map.getZoom())
+    },
+    mapMove (e) {
+      this.$emit('mapMove', { zoom: this.map.getZoom(), bbox: this.map.getBounds().toArray() })
     },
     mapMouseMove (e) {
       const map = this.map

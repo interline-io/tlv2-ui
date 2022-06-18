@@ -3,7 +3,7 @@
     <b-field grouped>
       <b-autocomplete
         expanded
-        placeholder="Search stops. Example: 55657"
+        placeholder="Search stops. Example: Penn Station"
         :data="stopSearch"
         max-height="800px"
         max-width="600px"
@@ -32,13 +32,12 @@
 import { gql } from 'graphql-tag'
 
 const stopSearchQuery = gql`
-query($search: String!) {
-  stops(limit: 100, where:{search:$search}) {
+query($where: StopFilter!) {
+  stops(limit: 10, where:$where) {
     id
     geometry
     onestop_id
     stop_name
-    stop_code
     route_stops {
       route {
         id
@@ -56,27 +55,80 @@ query($search: String!) {
 
 export default {
   apollo: {
-    stopSearchQuery: {
+    boundedStopsQuery: {
+      query: stopSearchQuery,
+      skip () {
+        return this.search.length < this.minSearchLength || !this.bboxPolygon || this.zoom < 8
+      },
+      variables () {
+        return {
+          where: {
+            search: this.search,
+            within: this.bboxPolygon
+          }
+        }
+      },
+      update (data) {
+        this.boundedStops = data.stops
+      }
+    },
+    unboundedStopsQuery: {
       query: stopSearchQuery,
       skip () {
         return this.search.length < this.minSearchLength
       },
       variables () {
         return {
-          search: this.search
+          where: {
+            search: this.search
+          }
         }
       },
       update (data) {
-        this.stopSearch = data.stops
+        this.unboundedStops = data.stops
       }
     }
+  },
+  props: {
+    bbox: { type: Array, default () { return null } },
+    zoom: { type: Number, default () { return 0 } }
   },
   data () {
     return {
       search: '',
       minSearchLength: 4,
       useGeolocation: false,
-      stopSearch: []
+      unboundedStops: [],
+      boundedStops: []
+    }
+  },
+  computed: {
+    stopSearch () {
+      const boundedIds = {}
+      const ret = []
+      for (const stop of this.boundedStops) {
+        boundedIds[stop.id] = true
+        ret.push(stop)
+      }
+      for (const stop of this.unboundedStops) {
+        if (!boundedIds[stop.id]) {
+          ret.push(stop)
+        }
+      }
+      return ret
+    },
+    bboxPolygon () {
+      if (!this.bbox) { return null }
+      const sw = this.bbox[0]
+      const ne = this.bbox[1]
+      const coords = [[
+        [sw[0], sw[1]],
+        [ne[0], sw[1]],
+        [ne[0], ne[1]],
+        [sw[0], ne[1]],
+        [sw[0], sw[1]]
+      ]]
+      return { type: 'Polygon', coordinates: coords }
     }
   },
   watch: {
