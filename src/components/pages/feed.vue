@@ -20,7 +20,7 @@
       </slot>
 
       <h1 class="title">
-        {{ entity.spec.toUpperCase() }} feed: {{ operatorNames.join(', ') }}
+        {{ entity.spec.toUpperCase() }} feed: {{ operatorNames }}
       </h1>
 
       <slot name="description">
@@ -147,8 +147,8 @@
                   <li v-if="entity.license.create_derived_product">
                     Creating derived products allowed: {{ entity.license.create_derived_product | capitalize }}
                   </li>
-                  <li v-if="entity.license.redistribute">
-                    Redistribution allowed: {{ entity.license.redistribute | capitalize }}
+                  <li v-if="entity.license.redistribution_allowed">
+                    Redistribution allowed: {{ entity.license.redistribution_allowed | capitalize }}
                   </li>
                   <li v-if="entity.license.attribution_text">
                     Required attribution text: {{ entity.license.attribution_text }}
@@ -222,6 +222,8 @@
               :paginated="true"
               :pagination-simple="true"
               sort-icon="menu-up"
+              detailed
+              :show-detail-icon="false"
             >
               <b-table-column
                 v-slot="props"
@@ -291,6 +293,23 @@
                   icon="check"
                 />
               </b-table-column>
+              <b-table-column v-if="showDownloadColumn" v-slot="props" label="Download">
+                <template v-if="entity.license.redistribution_allowed !== 'no' && props.index == 0">
+                  <a :href="`https://demo.transit.land/api/v2/rest/feed_versions/${props.row.sha1}/download`" target="_blank">
+                    <b-icon icon="download" type="is-success" title="Download latest feed version" />
+                  </a>
+                </template>
+                <template v-else-if="entity.license.redistribution_allowed !== 'no'">
+                  <a @click="props.toggleDetails(props.row)">
+                    <b-icon icon="download" title="Download through Transitland Professional API" />
+                  </a>
+                </template>
+              </b-table-column>
+              <template v-if="showDownloadColumn" #detail="props">
+                <p>Want to download a copy of this feed version to process with your own software? Users with <a href="https://www.interline.io/transitland/apis-for-developers/#api-pricing--sign-up" target="_blank">professional or enterprise tier plans</a> can use the v2 REST API to download any feed version:</p>
+                <pre>GET https://transit.land/api/v2/rest/feed_versions/{{ props.row.sha1 }}/download?apikey=your-api-key</pre>
+                <p>Learn more in the <a href="/documentation/rest-api/feed_versions#downloading-source-gtfs" target="_blank">documentation</a>.</p>
+              </template>
             </b-table>
 
             <slot name="add-feed-version" :entity="entity" />
@@ -316,6 +335,7 @@ query($feed_onestop_id: String) {
   entities: feeds(where: {onestop_id: $feed_onestop_id}, limit: 1) {
     id
     onestop_id
+    name
     languages
     spec
     file
@@ -414,10 +434,19 @@ export default {
         return {
           feed_onestop_id: this.onestopId
         }
+      },
+      update (data) {
+        // overrides the update method in EntityPageMixin
+        if (data.entities.length === 0) {
+          return this.setError(404)
+        }
+        this.$emit('entitiesLoaded', data.entities)
+        return data.entities
       }
     }
   },
   props: {
+    showDownloadColumn: { type: Boolean, default: false },
     showOperators: { type: Boolean, default: false }
   },
   data () {
@@ -454,13 +483,21 @@ export default {
       return feed.last_successful_fetch
     },
     operatorNames () {
-      return (this.entity.associated_operators || []).map((o) => {
+      let operatorNames = null
+      const names = (this.entity.associated_operators || []).map((o) => {
         if (o.short_name) {
           return `${o.name} (${o.short_name})`
         } else {
           return o.name
         }
       })
+      if (names.length > 3) {
+        operatorNames = `${names.slice(0, 3).join(', ')} and ${names.length - 3} additional operators`
+      } else if (names.length > 0 && names.length <= 3) {
+        operatorNames = names.slice(0, 3).join(', ')
+      }
+      this.$emit('operatorNamesUpdated', operatorNames)
+      return operatorNames
     },
     displayLicense () {
       if (this.entity) {
@@ -483,14 +520,14 @@ export default {
       if (this.entity) {
         title = this.entity.spec.toUpperCase() + ' ' + title
         if (this.entity.associated_operators) {
-          title = `${this.entity.associated_operators[0].name} • ` + title
+          title = `${this.operatorNames} • ` + title
         }
       }
       return title
     },
     staticDescription () {
       if (this.entity) {
-        const operatorDescription = (this.entity && this.entity.associated_operators) ? ` with data for ${this.entity.associated_operators[0].name}` : ''
+        const operatorDescription = (this.entity && this.entity.associated_operators) ? ` with data for ${this.entity.name || this.operatorNames}` : ''
         const fvCount = this.entity.feed_versions.length
         let description = `This is a ${this.entity.spec.toUpperCase()} feed ${operatorDescription} with the Onestop ID of ${this.onestopId}.`
         if (fvCount === 1000) {
@@ -500,6 +537,7 @@ export default {
           description += ` Transitland has archived ${fvCount} versions of this feed,
           which are available to query by API and to download.`
         }
+        this.$emit('staticDescriptionUpdated', description)
         return description
       }
       return ''
