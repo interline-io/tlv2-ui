@@ -390,7 +390,13 @@ export default {
     },
     operatorOrAgencyNames () {
       if (this.entity && this.entity.agencies) {
-        return this.entity.agencies.map(a => a.agency_name).join(', ')
+        let names = this.entity.agencies.map(a => a.agency_name)
+        if (names.length > 3) {
+          names = `${names.slice(0, 3).join(', ')} and ${names.length - 3} additional operators`
+        } else if (names.length > 0 && names.length <= 3) {
+          names = names.slice(0, 3).join(', ')
+        }
+        return names
       } else {
         return null
       }
