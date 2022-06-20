@@ -36,6 +36,7 @@
           />
           <tl-stop-departures
             v-if="activeTab === 1"
+            :show-auto-refresh="true"
             :show-fallback-selector="true"
             :show-radius-selector="true"
             :search-coords="searchCoords"

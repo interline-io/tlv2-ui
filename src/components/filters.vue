@@ -34,6 +34,11 @@ function formatHMS (value) {
 
 export default {
   filters: {
+    fromNowDate (comparisonDate) {
+      return formatDistanceToNow(comparisonDate, {
+        addSuffix: true
+      }).replace('about ', '')
+    },
     fromNow (comparisonDate) {
       return formatDistanceToNow(parseISO(comparisonDate + 'Z'), {
         addSuffix: true
