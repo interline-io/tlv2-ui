@@ -70,6 +70,7 @@
               >
                 <tl-route-icon
                   :key="'icon'+sr.route.id"
+                  :name-icon="(sr.direction_id === 0 ? 'arrow-left' : 'arrow-right')"
                   :route-type="sr.route.route_type"
                   :route-short-name="sr.route.route_short_name"
                   :route-long-name="sr.trip_headsign || sr.route.route_long_name"
@@ -77,13 +78,13 @@
                 />
               </nuxt-link>
             </div>
-            <div class="is-pulled-right route-icon-departures">
-              <b-field grouped group-multiline>
+            <div class="route-icon-departures">
+              <b-field grouped>
                 <b-tag v-for="st of sr.departures.slice(0,3)" :key="st.trip.id">
                   <template v-if="st.departure.estimated">
-                    {{ st.departure.estimated | reformatHMS }} <b-icon type="is-success" size="is-small" icon="wifi" />
+                    {{ st.departure.estimated | reformatHMS }} &nbsp;<b-icon type="is-success" size="is-small" icon="wifi" />
                   </template><template v-else>
-                    {{ st.departure.scheduled | reformatHMS }}
+                    {{ st.departure.scheduled | reformatHMS }} &nbsp;<b-icon type="is-success" size="is-small" icon="blank" />
                   </template>
                 </b-tag>
               </b-field>
@@ -141,6 +142,7 @@ query( $stopIds: [Int!], $where: StopFilter, $stwhere: StopTimeFilter, $includeG
         id
         trip_id
         trip_headsign
+        direction_id
         route {
             id
             onestop_id
@@ -278,6 +280,9 @@ export default {
       })
     },
     filteredStopsGroupRoutes () {
+      const makeRouteKey = function (d) {
+        return `${d.trip.direction_id}:${d.trip.route.route_short_name}:${d.trip.route.route_long_name}:${d.trip.trip_headsign}`
+      }
       // group routes by agency
       const agencyGroups = {}
       const seenRoutes = {}
@@ -285,19 +290,27 @@ export default {
         for (const d of stop.departures) {
           d.stop = stop
           const agencyKey = d.trip.route.agency.agency_name // d.trip.route.agency.id
-          const routeKey = `${d.trip.route.route_short_name}:${d.trip.route.route_long_name}:${d.trip.trip_headsign}`
+          const routeKey = makeRouteKey(d)
           if (seenRoutes[routeKey]) {
             continue
           }
-          const a = agencyGroups[agencyKey] || { agency: d.trip.route.agency, routes: {} }
-          const r = a.routes[routeKey] || { route: d.trip.route, trip_headsign: d.trip.trip_headsign, id: routeKey, departures: [] }
+          const a = agencyGroups[agencyKey] || {
+            agency: d.trip.route.agency,
+            routes: {}
+          }
+          const r = a.routes[routeKey] || {
+            route: d.trip.route,
+            trip_headsign: d.trip.trip_headsign,
+            direction_id: d.trip.direction_id,
+            id: routeKey,
+            departures: []
+          }
           r.departures.push(d)
           a.routes[routeKey] = r
           agencyGroups[agencyKey] = a
         }
         for (const d of stop.departures) {
-          const routeKey = `${d.trip.route.route_short_name}:${d.trip.route.route_long_name}:${d.trip.trip_headsign}`
-          seenRoutes[routeKey] = true
+          seenRoutes[makeRouteKey(d)] = true
         }
       }
       const ret = []
@@ -345,6 +358,9 @@ export default {
       if (v) {
         this.refetch()
       }
+    },
+    searchCoords (v) {
+      this.stops = []
     }
   },
   mounted () {
@@ -390,16 +406,27 @@ export default {
   padding-top:10px
 }
 
-.tag {
-  margin-right:5px;
-}
 .route-icon-departures {
+  text-align:left;
+  display:inline-block;
   margin:0px;
   padding:0px;
-  width: 260px;
-  padding-top:14px;
+  padding-top:5px;
+  white-space: nowrap;
 }
+
+.route-icon-departures .tag {
+  margin-right:5px;
+  width:80px;
+}
+
+.route-icon-departures .tag .icon {
+  display:inline-block;
+  width:20px;
+}
+
 .route-icon-fade-out {
+  display:inline-block;
   width:250px;
   -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1) 90%, rgba(0,0,0,0));
 }

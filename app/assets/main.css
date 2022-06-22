@@ -17,32 +17,51 @@ table.property-list td:first-child {
 .route-icon {
     white-space: nowrap;
     overflow: hidden;
-    margin-top: 5px;
-    margin-bottom: 5px;
-    padding-left: 32px;
-    position: relative;
+    padding:0px;
+    margin:0px;
+    margin-bottom:10px;
+    /* background:red; */
 }
 
 .route-icon .route-icon-short-name {
-    padding: 6px;
-    display: inline-block;
-    border: solid 1px #666;
-    border-radius: 6px;
+    display:inline-block;
+    padding-top:4px;
+    padding-bottom:4px;
+    padding-left:8px;
+    padding-right:8px;
+    margin:0px;
+    margin-right:4px;
+    outline:solid 1px #ccc;
+    outline-offset: -1px;
+    border-radius: 5px;
     white-space: nowrap;
+    /* background:#efefef; */
 }
 
 .route-icon .route-icon-long-name {
-    padding: 6px;
-    display: inline-block;
+    display:inline-block;
+    margin:0px;
+    padding:0px;
     white-space: nowrap;
+    /* background:blue; */
 }
 
 .route-icon .route-icon-icon {
-    display: block;
-    position: absolute;
-    top: 6px;
-    left: 0px;
+    display:inline-block;
+    width:26px;
+    text-align:center;
+    position:relative;
+    top:3px;
+    /* background:green; */
 }
+
+.route-icon .route-name-icon {
+    display:inline-block;
+    position:relative;
+    top:3px;
+    /* background:green; */
+}
+
 
 .entity-search {
     margin-bottom: 10px;
