@@ -358,6 +358,9 @@ export default {
       if (v) {
         this.refetch()
       }
+    },
+    searchCoords (v) {
+      this.stops = []
     }
   },
   mounted () {
