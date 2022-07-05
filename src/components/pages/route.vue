@@ -250,7 +250,7 @@
             </b-tab-item>
 
             <b-tab-item label="Export">
-              <client-only>
+              <client-only placeholder="Export">
                 <tl-data-export
                   v-if="activeTab === 2"
                   :route-name="routeName"
