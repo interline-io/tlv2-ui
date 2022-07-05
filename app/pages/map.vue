@@ -1,5 +1,9 @@
 <template>
-  <div><tl-pages-map> /></tl-pages-map></div>
+  <div>
+    <client-only placeholder="Map">
+      <tl-pages-map />
+    </client-only>
+  </div>
 </template>
 
 <script>

@@ -55,7 +55,9 @@
             </b-tab-item>
 
             <b-tab-item v-if="entity.id" label="Departures">
-              <tl-stop-departures :show-fallback-selector="true" :stop-ids="entityIds" />
+              <client-only placeholder="Departures">
+                <tl-stop-departures :show-fallback-selector="true" :stop-ids="entityIds" />
+              </client-only>
             </b-tab-item>
 
             <!-- Data sources -->

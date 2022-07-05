@@ -234,7 +234,9 @@
 
           <b-tab-item v-if="advancedMode" label="Export">
             <template v-if="activeTab === 3 && agencyIds.length === 1">
-              <agency-export :agency-ids="agencyIds" />
+              <client-only>
+                <agency-export :agency-ids="agencyIds" />
+              </client-only>
             </template>
             <template v-else>
               Currently this feature is only available when a single agency is returned for this query.
