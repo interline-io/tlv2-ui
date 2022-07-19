@@ -306,7 +306,7 @@
                 </template>
               </b-table-column>
               <template v-if="showDownloadColumn" #detail="props">
-                <p>Want to download a copy of this feed version to process with your own software? Users with <a href="https://www.interline.io/transitland/apis-for-developers/#api-pricing--sign-up" target="_blank">professional or enterprise tier plans</a> can use the v2 REST API to download any feed version:</p>
+                <p>Want to download a copy of this feed version to process with your own software? Registered users with <a href="https://www.interline.io/transitland/plans-pricing/" target="_blank">Hobbyist/Academic, Professional, and Enterprise plans</a> can use the v2 REST API to download historical feed versions:</p>
                 <pre>GET https://transit.land/api/v2/rest/feed_versions/{{ props.row.sha1 }}/download?apikey=your-api-key</pre>
                 <p>Learn more in the <a href="/documentation/rest-api/feed_versions#downloading-source-gtfs" target="_blank">documentation</a>.</p>
               </template>
