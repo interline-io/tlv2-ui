@@ -165,7 +165,7 @@
               <td>{{ entity.languages }}</td>
             </tr>
 
-            <tr v-if="spec == 'GTFS'">
+            <tr v-if="entity.spec == 'GTFS'">
               <td>
                 <b-tooltip dashed multilined label="Information provided by the feed producer inside a feed_info.txt file">
                   Feed Info
