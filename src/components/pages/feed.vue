@@ -20,7 +20,7 @@
       </slot>
 
       <h1 class="title">
-        {{ entity.spec.toUpperCase() }} feed: {{ operatorNames }}
+        {{ feedSpec }} feed: {{ operatorNames }}
       </h1>
 
       <slot name="description">
@@ -48,7 +48,7 @@
                   Format
                 </b-tooltip>
               </td>
-              <td>{{ entity.spec.toUpperCase() }}</td>
+              <td>{{ feedSpec }}</td>
             </tr>
 
             <tr v-if="displayUrls">
@@ -504,6 +504,9 @@ export default {
     }
   },
   computed: {
+    feedSpec () {
+      return this.entity?.spec?.toUpperCase()?.replace('_', '-')
+    },
     mostRecentFeedInfo () {
       return this.entity?.feed_versions[0]?.feed_infos[0]
     },
@@ -550,7 +553,7 @@ export default {
     staticTitle () {
       let title = `feed details: ${this.onestopId}`
       if (this.entity) {
-        title = this.entity.spec.toUpperCase() + ' ' + title
+        title = this.feedSpec + ' ' + title
         if (this.entity.associated_operators) {
           title = `${this.operatorNames} • ` + title
         }
@@ -561,7 +564,7 @@ export default {
       if (this.entity) {
         const operatorDescription = (this.entity && this.entity.associated_operators) ? ` with data for ${this.entity.name || this.operatorNames}` : ''
         const fvCount = this.entity.feed_versions.length
-        let description = `This is a ${this.entity.spec.toUpperCase()} feed ${operatorDescription} with the Onestop ID of ${this.onestopId}.`
+        let description = `This is a ${this.feedSpec} feed ${operatorDescription} with the Onestop ID of ${this.onestopId}.`
         if (fvCount === 1000) {
           description += ` Transitland has archived over 1,000 versions of this feed,
           which are available to query by API and to download.`
