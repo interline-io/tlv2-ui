@@ -2,7 +2,11 @@
   <div>
     <div v-if="$apollo.loading">
       Loading...
-    </div><div v-else>
+    </div>
+    <div v-else-if="processedPatterns.length === 0">
+      No trip patterns were found for this direction; try checking the other direction.
+    </div>
+    <div v-else>
       <b-select v-model="selectedPattern" placeholder="Select a trip pattern">
         <option v-for="pattern of processedPatterns" :key="pattern.stop_pattern_id" :value="pattern.stop_pattern_id">
           Headsign: "{{ pattern.trip.trip_headsign }}" --
@@ -11,7 +15,7 @@
         </option>
       </b-select>
       <br>
-      <ul class="stop-list">
+      <ul v-if="activePattern" class="stop-list">
         <li v-for="(st) of activePattern.stop_times" :key="st.stop_sequence">
           <p>
             {{ st.stop.stop_name }}
@@ -131,43 +135,43 @@ export default {
     }
   },
   computed: {
-    alignments () {
-      const stops = {}
-      const parents = {}
-      const children = {}
-      for (const pat of this.patterns) {
-        const count = pat.count
-        const sts = pat.trips[0].stop_times
-        for (const st of sts) {
-          stops[st.stop.id] = st.stop
-        }
-        for (let i = 0; i < sts.length - 2; i++) {
-          const pid = sts[i].stop.id
-          const sid = sts[i + 1].stop.id
-          children[pid] = (children[pid] || {})
-          children[sid] = (children[sid] || {})
-          children[pid][sid] = (children[pid][sid] || 0) + count
-          parents[pid] = (parents[pid] || {})
-          parents[sid] = (parents[sid] || {})
-          parents[sid][pid] = (parents[sid][pid] || 0) + count
-        }
-      }
-      // Attach roots to 0
-      children[0] = {}
-      let i = 0
-      for (const [k, v] of Object.entries(parents)) {
-        if (Object.keys(v).length === 0) {
-          children[0][k] = i
-          i += 1
-        }
-      }
-      return {
-        children
-      }
-    },
+    // alignments () {
+    //   const stops = {}
+    //   const parents = {}
+    //   const children = {}
+    //   for (const pat of this.patterns) {
+    //     const count = pat.count
+    //     const sts = pat.trips[0].stop_times
+    //     for (const st of sts) {
+    //       stops[st.stop.id] = st.stop
+    //     }
+    //     for (let i = 0; i < sts.length - 2; i++) {
+    //       const pid = sts[i].stop.id
+    //       const sid = sts[i + 1].stop.id
+    //       children[pid] = (children[pid] || {})
+    //       children[sid] = (children[sid] || {})
+    //       children[pid][sid] = (children[pid][sid] || 0) + count
+    //       parents[pid] = (parents[pid] || {})
+    //       parents[sid] = (parents[sid] || {})
+    //       parents[sid][pid] = (parents[sid][pid] || 0) + count
+    //     }
+    //   }
+    //   // Attach roots to 0
+    //   children[0] = {}
+    //   let i = 0
+    //   for (const [k, v] of Object.entries(parents)) {
+    //     if (Object.keys(v).length === 0) {
+    //       children[0][k] = i
+    //       i += 1
+    //     }
+    //   }
+    //   return {
+    //     children
+    //   }
+    // },
     patterns () {
       let pats = this.routes.length > 0 ? this.routes[0].patterns : []
-      pats = pats.filter((s) => { return s.trips && s.trips.length > 0 && s.direction_id === this.directionId })
+      pats = pats.filter((s) => { return s.trips && s.trips.length > 0 && s.trips[0].stop_times && s.trips[0].stop_times.length > 0 && s.direction_id === this.directionId })
       return pats
     },
     activePattern () {
@@ -176,7 +180,10 @@ export default {
           return pat
         }
       }
-      return this.processedPatterns[0]
+      if (this.processedPatterns.length > 0) {
+        return this.processedPatterns[0]
+      }
+      return null
     },
     processedPatterns () {
       let totalTrips = 0
@@ -187,6 +194,9 @@ export default {
       for (const pat of this.patterns) {
         // Exclude patterns with less than 1% of trips
         if (pat.count / totalTrips <= 0.01) {
+          continue
+        }
+        if (!pat.trips || pat.trips.length === 0 || !pat.trips[0].stop_times) {
           continue
         }
         const pt = pat.trips[0]

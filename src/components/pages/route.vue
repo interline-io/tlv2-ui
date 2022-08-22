@@ -263,11 +263,11 @@
             </b-tab-item>
 
             <b-tab-item label="Inbound Trips">
-              <tl-rsp-viewer :route-id="entity.id" :direction-id="0" />
+              <tl-rsp-viewer v-if="activeTab === 3" :route-id="entity.id" :direction-id="0" />
             </b-tab-item>
 
             <b-tab-item label="Outbound Trips">
-              <tl-rsp-viewer :route-id="entity.id" :direction-id="1" />
+              <tl-rsp-viewer v-if="activeTab === 4" :route-id="entity.id" :direction-id="1" />
             </b-tab-item>
 
             <b-tab-item :label="childLabel">
