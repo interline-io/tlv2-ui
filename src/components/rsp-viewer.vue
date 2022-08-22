@@ -3,21 +3,44 @@
     <div v-if="$apollo.loading">
       Loading...
     </div><div v-else>
-      <b-tabs type="is-toggle">
-        <b-tab-item v-for="pattern of patterns" :key="pattern.stop_pattern_id" :label="`${pattern.trips[0].trip_headsign} (${pattern.count} trips)`">
-          <ul>
-            <li v-for="st of pattern.trips[0].stop_times" :key="st.stop_sequence">
-              <p>{{ st.stop.stop_name }}</p>
-              <b-taglist>
-                <b-tag v-for="rs of nearbyRouteStops(st.stop)" :key="rs.id" type="is-light" size="is-small">
-                  <b-icon v-if="rs.distance > 50" icon="walk" size="is-small" />
-                  {{ rs.route_long_name }}
-                </b-tag>
-              </b-taglist>
-            </li>
-          </ul>
-        </b-tab-item>
-      </b-tabs>
+      <b-select v-model="selectedPattern" placeholder="Select a trip pattern">
+        <option v-for="pattern of processedPatterns" :key="pattern.stop_pattern_id" :value="pattern.stop_pattern_id">
+          Headsign: "{{ pattern.trip.trip_headsign }}" --
+          From: "{{ pattern.stop_times[0].stop.stop_name }}" To: "{{ pattern.stop_times[pattern.stop_times.length-1].stop.stop_name }}"
+          ({{ pattern.count }} trips)
+        </option>
+      </b-select>
+      <br>
+      <ul class="stop-list">
+        <li v-for="(st) of activePattern.stop_times" :key="st.stop_sequence">
+          <p>
+            {{ st.stop.stop_name }}
+            <br>
+          </p>
+          <div
+            v-for="(rss,agency) of st.stop.routes"
+            :key="agency"
+            class="route-link"
+          >
+            <h6 class="title is-6">
+              {{ agency }}
+            </h6>
+            <div v-for="rs of rss" :key="rs.id">
+              <nuxt-link
+                :to="{name:'routes-onestop_id', params:{onestop_id:rs.onestop_id}}"
+              >
+                <tl-route-icon
+
+                  :agency-name="rs.agency_name"
+                  :route-short-name="rs.route_short_name"
+                  :route-type="rs.route_type"
+                  :route-long-name="rs.route_long_name"
+                />
+              </nuxt-link>
+            </div>
+          </div>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
@@ -32,6 +55,7 @@ query ($route_id: Int!) {
     route_id
     route_short_name
     route_long_name
+    onestop_id
     patterns {
       direction_id
       stop_pattern_id
@@ -60,6 +84,8 @@ query ($route_id: Int!) {
                   route_id
                   route_short_name
                   route_long_name
+                  route_type
+                  onestop_id
                   agency {
                     id
                     agency_id
@@ -89,7 +115,8 @@ export default {
   },
   data () {
     return {
-      routes: []
+      routes: [],
+      selectedPattern: null
     }
   },
   apollo: {
@@ -142,14 +169,68 @@ export default {
       let pats = this.routes.length > 0 ? this.routes[0].patterns : []
       pats = pats.filter((s) => { return s.trips && s.trips.length > 0 && s.direction_id === this.directionId })
       return pats
+    },
+    activePattern () {
+      for (const pat of this.processedPatterns) {
+        if (pat.stop_pattern_id === this.selectedPattern) {
+          return pat
+        }
+      }
+      return this.processedPatterns[0]
+    },
+    processedPatterns () {
+      let totalTrips = 0
+      for (const pat of this.patterns) {
+        totalTrips += pat.count
+      }
+      const ret = []
+      for (const pat of this.patterns) {
+        // Exclude patterns with less than 1% of trips
+        if (pat.count / totalTrips <= 0.01) {
+          continue
+        }
+        const pt = pat.trips[0]
+        const p = {
+          stop_pattern_id: pat.stop_pattern_id,
+          count: pat.count,
+          trip: {
+            trip_headsign: pt.trip_headsign
+          },
+          stop_times: []
+        }
+        for (const st of pt.stop_times) {
+          const nearbyRoutes = this.nearbyRouteStops(st.stop)
+          const routesByAgency = {}
+          for (const rs of nearbyRoutes) {
+            const a = routesByAgency[rs.agency_name] || []
+            a.push(rs)
+            routesByAgency[rs.agency_name] = a
+          }
+          p.stop_times.push({
+            stop: {
+              id: st.stop.id,
+              stop_id: st.stop.stop_id,
+              stop_name: st.stop.stop_name,
+              routes: routesByAgency
+            }
+          })
+        }
+        ret.push(p)
+      }
+      return ret
     }
   },
   methods: {
+    firstOrLast (idx, v) {
+      if (idx === 0 || idx === v.length - 1) {
+        return true
+      }
+      return false
+    },
     nearbyRouteStops (stop) {
       const rids = new Set()
       if (this.routes && this.routes.length > 0) {
         const thisRouteKey = `${this.routes[0].route_short_name}${this.routes[0].route_long_name}`
-        console.log('thisroutekey:', thisRouteKey)
         rids.add(thisRouteKey)
       }
       const ret = []
@@ -167,8 +248,12 @@ export default {
           ret.push({
             distance: stopDist,
             id: rs.route.id,
+            onestop_id: rs.route.onestop_id,
             route_short_name: rs.route.route_short_name,
-            route_long_name: rs.route.route_long_name
+            route_long_name: rs.route.route_long_name,
+            route_type: rs.route.route_type,
+            agency_id: rs.route.agency.agency_id,
+            agency_name: rs.route.agency.agency_name
           })
         }
       }
@@ -193,5 +278,34 @@ function hsin (fromPoint, toPoint) {
 <style scoped>
 .connecting-routes {
     padding-left:20px;
+}
+.stop-list p {
+  padding-left:40px;
+}
+.stop-list li .route-link {
+  margin-top:5px;
+  margin-left:40px;
+}
+.stop-list li {
+  margin:0px;
+  padding:10px;
+}
+.stop-list li {
+  background-image: url( '~assets/route-middle-1.svg' ) ;
+  background-repeat: no-repeat;
+  background-size:20px 4000px;
+  background-position:0px -20px;
+}
+.stop-list li:first-child {
+  background-image: url( '~assets/route-start.svg' ) ;
+  background-repeat: no-repeat;
+  background-size:20px 4000px;
+  background-position:0px 10px;
+}
+.stop-list li:last-child {
+  background-image: url( '~assets/route-end.svg' ) ;
+  background-repeat: no-repeat;
+  background-size:20px 100px;
+  background-position:0px -18px;
 }
 </style>
