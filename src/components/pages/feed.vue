@@ -164,6 +164,24 @@
               <td>Languages</td>
               <td>{{ entity.languages }}</td>
             </tr>
+
+            <tr v-if="spec == 'GTFS'">
+              <td>
+                <b-tooltip dashed multilined label="Information provided by the feed producer inside a feed_info.txt file">
+                  Feed Info
+                </b-tooltip>
+              </td>
+              <td v-if="mostRecentFeedInfo">
+                <ul>
+                  <li v-for="(value, key) in filterFeedInfo(mostRecentFeedInfo)" :key="key">
+                    {{ key }}: {{ value }}
+                  </li>
+                </ul>
+              </td>
+              <td v-else>
+                <em>No <code>feed_info.txt</code> file included in the most recent feed version.</em>
+              </td>
+            </tr>
           </table>
         </div>
 
@@ -387,6 +405,17 @@ query($feed_onestop_id: String) {
         schedule_removed
         # created_at
       }
+      feed_infos {
+        feed_publisher_name
+        feed_publisher_url
+        feed_lang
+        default_lang
+        feed_version
+        feed_start_date
+        feed_end_date
+        feed_contact_email
+        feed_contact_url
+      }
     }
     last_fetch: feed_fetches(limit:1) {
       fetch_error
@@ -475,6 +504,9 @@ export default {
     }
   },
   computed: {
+    mostRecentFeedInfo () {
+      return this.entity?.feed_versions[0]?.feed_infos[0]
+    },
     lastFetch () {
       return first(this.entity.last_fetch)
     },
@@ -541,6 +573,12 @@ export default {
         return description
       }
       return ''
+    }
+  },
+  methods: {
+    filterFeedInfo (fi) {
+      delete fi.__typename
+      return Object.fromEntries(Object.entries(fi).filter(([_, v]) => v != null))
     }
   }
 }
