@@ -61,21 +61,6 @@ export default {
         case 12:
           return 'train'
       }
-      // if (this.routeType === 0) {
-      //   return 'tram'
-      // } else if (this.routeType === 1) {
-      //   return 'subway'
-      // } else if (this.routeType === 2) {
-      //   return 'train'
-      // } else if (this.routeType === 3) {
-      //   return 'bus'
-      // } else if (this.routeType === 4) {
-      //   return 'ferry'
-      // } else if (this.routeType === 6) {
-      //   return 'gondola'
-      // } else if (this.routeType === 6) {
-      //   return 'gondola'
-      // }
       return ''
     }
   }
