@@ -297,7 +297,7 @@ export default {
     nearbyRouteStops (stop) {
       const rids = new Set()
       for (const route of this.routes) {
-        rids.add(route.id)
+        rids.add(route.onestop_id)
       }
       const ret = []
       for (const ns of (stop.nearby_stops || [])) {
