@@ -4,11 +4,19 @@
       <table class="table is-fullwidth">
         <thead>
           <tr>
-            <th />
-            <th>Morning<br><span class="tag is-small is-centered">6-10am</span></th>
-            <th>Midday<br><span class="tag is-small is-centered">10am-4pm</span></th>
-            <th>Afternoon<br><span class="tag is-small is-centered">4-8pm</span></th>
-            <th>Night<br><span class="tag is-small is-centered">8pm-6am</span></th>
+            <th>Headways</th>
+            <th v-if="showMorning">
+              <span class="is-centered">7-9am</span>
+            </th>
+            <th v-if="showMidday">
+              <span class="is-centered">9am-4pm</span>
+            </th>
+            <th v-if="showAfternoon">
+              <span class="is-centered">4-6pm</span>
+            </th>
+            <th v-if="showNight">
+              <span class="is-centered">6pm-7am</span>
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -16,28 +24,52 @@
             <td>
               Weekday
             </td>
-            <td>{{ hws.weekday | formatHeadway('morning') }}</td>
-            <td>{{ hws.weekday | formatHeadway('midday') }}</td>
-            <td>{{ hws.weekday | formatHeadway('afternoon') }}</td>
-            <td>{{ hws.weekday | formatHeadway('night') }}</td>
+            <td v-if="showMorning">
+              {{ hws.weekday | formatHeadway('morning') }}
+            </td>
+            <td v-if="showMidday">
+              {{ hws.weekday | formatHeadway('midday') }}
+            </td>
+            <td v-if="showAfternoon">
+              {{ hws.weekday | formatHeadway('afternoon') }}
+            </td>
+            <td v-if="showNight">
+              {{ hws.weekday | formatHeadway('night') }}
+            </td>
           </tr>
           <tr>
             <td>
               Saturday
             </td>
-            <td>{{ hws.saturday | formatHeadway('morning') }}</td>
-            <td>{{ hws.saturday | formatHeadway('midday') }}</td>
-            <td>{{ hws.saturday | formatHeadway('afternoon') }}</td>
-            <td>{{ hws.saturday | formatHeadway('night') }}</td>
+            <td v-if="showMorning">
+              {{ hws.saturday | formatHeadway('morning') }}
+            </td>
+            <td v-if="showMidday">
+              {{ hws.saturday | formatHeadway('midday') }}
+            </td>
+            <td v-if="showAfternoon">
+              {{ hws.saturday | formatHeadway('afternoon') }}
+            </td>
+            <td v-if="showNight">
+              {{ hws.saturday | formatHeadway('night') }}
+            </td>
           </tr>
           <tr>
             <td>
               Sunday
             </td>
-            <td>{{ hws.sunday | formatHeadway('morning') }}</td>
-            <td>{{ hws.sunday | formatHeadway('midday') }}</td>
-            <td>{{ hws.sunday | formatHeadway('afternoon') }}</td>
-            <td>{{ hws.sunday | formatHeadway('night') }}</td>
+            <td v-if="showMorning">
+              {{ hws.sunday | formatHeadway('morning') }}
+            </td>
+            <td v-if="showMidday">
+              {{ hws.sunday | formatHeadway('midday') }}
+            </td>
+            <td v-if="showAfternoon">
+              {{ hws.sunday | formatHeadway('afternoon') }}
+            </td>
+            <td v-if="showNight">
+              {{ hws.sunday | formatHeadway('night') }}
+            </td>
           </tr>
         </tbody>
       </table>
@@ -81,10 +113,10 @@ function departureFilter (values, vmin, vmax) {
 
 function formatDuration (seconds) {
   if (seconds > 3600) {
-    return `${Math.ceil(seconds / 3600)}h${Math.ceil(seconds % 3600 / 60)}m`
+    return `${Math.ceil(seconds / 3600)}h ${Math.ceil(seconds % 3600 / 60)} min`
   }
   if (seconds > 0) {
-    return `${Math.ceil(seconds / 60)}m`
+    return `${Math.ceil(seconds / 60)} min`
   }
   return '-'
 }
@@ -122,7 +154,11 @@ export default {
     }
   },
   props: {
-    headways: { type: Array, default () { return [] } }
+    headways: { type: Array, default () { return [] } },
+    showMorning: { type: Boolean, default: true },
+    showMidday: { type: Boolean, default: true },
+    showAfternoon: { type: Boolean, default: true },
+    showNight: { type: Boolean, default: true }
   },
   computed: {
     hws () {
@@ -140,14 +176,14 @@ export default {
         if (deps.length > 1) {
           ret.found = true
         }
-        const hwMorning = departureFilter(deps, 6 * 3600, 10 * 3600)
+        const hwMorning = departureFilter(deps, 7 * 3600, 9 * 3600)
         hwMorning.sort()
-        const hwMidday = departureFilter(deps, 10 * 3600, 16 * 3600)
+        const hwMidday = departureFilter(deps, 9 * 3600, 16 * 3600)
         hwMidday.sort()
-        const hwAfternoon = departureFilter(deps, 16 * 3600, 20 * 3600)
+        const hwAfternoon = departureFilter(deps, 16 * 3600, 18 * 3600)
         hwAfternoon.sort()
-        let hwNight = departureFilter(deps, 0, 6 * 3600)
-        hwNight = hwNight.concat(departureFilter(deps, 20 * 3600, 100 * 3600))
+        let hwNight = departureFilter(deps, 0, 7 * 3600)
+        hwNight = hwNight.concat(departureFilter(deps, 18 * 3600, 100 * 3600))
         hwNight.sort()
         const hw = {
           morning: hwMorning,

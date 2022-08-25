@@ -180,6 +180,7 @@
               >gtfs.org</a>.
             </p>
           </b-message>
+
           <b-tabs
             v-model="activeTab"
             type="is-boxed"
@@ -281,6 +282,8 @@
               :features="activeTab === 3 ? features : []"
             />
           </client-only>
+          <br>
+          <tl-headway-viewer :headways="entity.headways" :show-afternoon="false" :show-night="false" />
         </div>
       </div>
     </div>
