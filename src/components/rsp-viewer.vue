@@ -5,20 +5,19 @@
         <b-select
           v-model="selectedPattern"
           placeholder="Select a trip pattern"
-          class="trip-select"
+          class="trip-select mr-4"
           expanded
         >
           <option v-for="pattern of processedPatterns" :key="pattern.stop_pattern_id" :value="pattern.stop_pattern_id">
             {{ pattern.desc }}
           </option>
         </b-select>
-          &nbsp;&nbsp;
-      </b-field>
-      <b-field label="Show transfers" class="pr-6">
         <b-checkbox
           v-model="showTransfers"
           class="adjust-checkbox"
-        />
+        >
+          Show transfers
+        </b-checkbox>
       </b-field>
       <b-field v-if="showTransferRadius" label="Transfer search radius (m)" expanded>
         <b-slider
@@ -384,7 +383,6 @@ function hsin (fromPoint, toPoint) {
   margin-bottom:10px;
 }
 .adjust-checkbox {
-  margin-top:10px;
 }
 .trip-select {
   min-width:400px;
@@ -392,9 +390,5 @@ function hsin (fromPoint, toPoint) {
 }
 .radius-select {
   width:200px;
-}
-.controls-group {
-  margin-bottom:0px;
-  padding-bottom:0px;
 }
 </style>
