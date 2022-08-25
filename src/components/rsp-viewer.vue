@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-field grouped expanded>
+    <b-field grouped expanded class="controls-group">
       <b-field label="Trip pattern" class="pr-3">
         <b-select
           v-model="selectedPattern"
@@ -360,7 +360,7 @@ function hsin (fromPoint, toPoint) {
   background-image: url( '~assets/route-middle-1.svg' ) ;
   background-repeat: no-repeat;
   background-size:20px 4000px;
-  background-position:0px -20px;
+  background-position:0px -18px;
 }
 .stop-list li:first-child {
   background-image: url( '~assets/route-start.svg' ) ;
@@ -392,5 +392,9 @@ function hsin (fromPoint, toPoint) {
 }
 .radius-select {
   width:200px;
+}
+.controls-group {
+  margin-bottom:0px;
+  padding-bottom:0px;
 }
 </style>

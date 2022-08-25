@@ -99,7 +99,7 @@
       <div class="columns">
         <div class="column is-two-thirds">
           <table class="table is-borderless property-list">
-            <tr>
+            <tr v-if="entity.onestop_id">
               <td>
                 <b-tooltip
                   dashed
@@ -110,7 +110,7 @@
               </td>
               <td>{{ entity.onestop_id }}</td>
             </tr>
-            <tr>
+            <tr v-if="entity.agency">
               <td>Operated by</td>
               <td>
                 <nuxt-link
@@ -123,13 +123,13 @@
                 </nuxt-link>
               </td>
             </tr>
-            <tr>
+            <tr v-if="entity.route_short_name">
               <td>Name (Short)</td>
               <td>
                 {{ entity.route_short_name }}
               </td>
             </tr>
-            <tr>
+            <tr v-if="entity.route_long_name">
               <td>Name (Long)</td>
               <td>
                 {{ entity.route_long_name }}
@@ -146,7 +146,7 @@
                 </b-tooltip>
               </td>
             </tr>
-            <tr>
+            <tr v-if="entity.route_url">
               <td>URL</td>
               <td>
                 {{ entity.route_url }}
@@ -361,10 +361,9 @@ export default {
       selectDate: null,
       tabIndex: {
         0: 'summary',
-        1: 'sources',
-        2: 'export',
-        3: 'inbound-trips',
-        4: 'outbound-trips'
+        1: 'headways',
+        2: 'sources',
+        3: 'export'
       }
     }
   },
