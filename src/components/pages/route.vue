@@ -99,7 +99,7 @@
       <div class="columns">
         <div class="column is-two-thirds">
           <table class="table is-borderless property-list">
-            <tr>
+            <tr v-if="entity.onestop_id">
               <td>
                 <b-tooltip
                   dashed
@@ -110,7 +110,7 @@
               </td>
               <td>{{ entity.onestop_id }}</td>
             </tr>
-            <tr>
+            <tr v-if="entity.agency">
               <td>Operated by</td>
               <td>
                 <nuxt-link
@@ -123,22 +123,16 @@
                 </nuxt-link>
               </td>
             </tr>
-            <tr>
+            <tr v-if="entity.route_short_name">
               <td>Name (Short)</td>
               <td>
                 {{ entity.route_short_name }}
               </td>
             </tr>
-            <tr>
+            <tr v-if="entity.route_long_name">
               <td>Name (Long)</td>
               <td>
                 {{ entity.route_long_name }}
-              </td>
-            </tr>
-            <tr>
-              <td>Description</td>
-              <td>
-                {{ entity.route_desc }}
               </td>
             </tr>
             <tr>
@@ -152,7 +146,7 @@
                 </b-tooltip>
               </td>
             </tr>
-            <tr>
+            <tr v-if="entity.route_url">
               <td>URL</td>
               <td>
                 {{ entity.route_url }}
@@ -168,6 +162,12 @@
               <td>GTFS ID</td>
               <td>
                 {{ entity.route_id }}
+              </td>
+            </tr>
+            <tr v-if="entity.entity_desc">
+              <td>Description</td>
+              <td>
+                {{ entity.entity_desc }}
               </td>
             </tr>
           </table>
@@ -186,11 +186,11 @@
             :animated="false"
             @input="setTab"
           >
-            <b-tab-item label="Summary">
+            <b-tab-item label="Connections">
+              <tl-rsp-viewer v-if="activeTab === 0" :route-ids="entityIds" />
+            </b-tab-item>
+            <b-tab-item label="Headways">
               <tl-headway-viewer :headways="entity.headways" />
-              <div class="block">
-                {{ entity.entity_desc }}
-              </div>
             </b-tab-item>
 
             <!-- Data sources -->
@@ -252,7 +252,7 @@
             <b-tab-item label="Export">
               <client-only placeholder="Export">
                 <tl-data-export
-                  v-if="activeTab === 2"
+                  v-if="activeTab === 3"
                   :route-name="routeName"
                   :route-features="routeFeatures"
                   :stop-features="stopFeatures"
@@ -260,16 +260,6 @@
                   @setFeatures="features = $event"
                 />
               </client-only>
-            </b-tab-item>
-
-            <b-tab-item label="Inbound Trips">
-              Coming soon
-              <!-- <route-trips-viewer v-if="activeTab === 2" :service-date="serviceDate" :route-id="entity.id" :feed-version-id="entity.feed_version_id" :direction-id="0" /> -->
-            </b-tab-item>
-
-            <b-tab-item label="Outbound Trips">
-              Coming soon
-              <!-- <route-trips-viewer v-if="activeTab === 3" :service-date="serviceDate" :route-id="entity.id" :feed-version-id="entity.feed_version_id" :direction-id="1" /> -->
             </b-tab-item>
 
             <b-tab-item :label="childLabel">
@@ -288,7 +278,7 @@
               :overlay="false"
               :include-stops="true"
               :link-version="linkVersion"
-              :features="activeTab === 2 ? features : []"
+              :features="activeTab === 3 ? features : []"
             />
           </client-only>
         </div>
@@ -371,10 +361,9 @@ export default {
       selectDate: null,
       tabIndex: {
         0: 'summary',
-        1: 'sources',
-        2: 'export',
-        3: 'inbound-trips',
-        4: 'outbound-trips'
+        1: 'headways',
+        2: 'sources',
+        3: 'export'
       }
     }
   },
@@ -518,10 +507,10 @@ export default {
     routeNames () {
       const rs = new Map()
       for (const ent of this.entities) {
-        const key = `${ent.agency.agency_name}-${ent.route_id}-${ent.route_short_name}-${ent.route_long_name}-${ent.route_type}`
+        const key = `${ent.agency.agency_name}-${ent.route_short_name}-${ent.route_long_name}-${ent.route_type}`
         rs.set(key, ent)
       }
-      return Array.from(rs.values())
+      return Array.from(rs.values()).slice(0, 4)
     },
     routeType () {
       if (this.entity) {
