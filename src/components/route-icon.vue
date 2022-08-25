@@ -39,17 +39,43 @@ export default {
   },
   computed: {
     routeTypeIcon () {
-      if (this.routeType === 0) {
-        return 'tram'
-      } else if (this.routeType === 1) {
-        return 'subway'
-      } else if (this.routeType === 2) {
-        return 'train'
-      } else if (this.routeType === 3) {
-        return 'bus'
-      } else if (this.routeType === 4) {
-        return 'ferry'
+      switch (this.routeType) {
+        case 0:
+          return 'tram'
+        case 1:
+          return 'subway'
+        case 2:
+          return 'train'
+        case 3:
+          return 'bus'
+        case 4:
+          return 'ferry'
+        case 5:
+          return 'tram'
+        case 6:
+          return 'gondola'
+        case 7:
+          return 'tram'
+        case 11:
+          return 'tram'
+        case 12:
+          return 'train'
       }
+      // if (this.routeType === 0) {
+      //   return 'tram'
+      // } else if (this.routeType === 1) {
+      //   return 'subway'
+      // } else if (this.routeType === 2) {
+      //   return 'train'
+      // } else if (this.routeType === 3) {
+      //   return 'bus'
+      // } else if (this.routeType === 4) {
+      //   return 'ferry'
+      // } else if (this.routeType === 6) {
+      //   return 'gondola'
+      // } else if (this.routeType === 6) {
+      //   return 'gondola'
+      // }
       return ''
     }
   }

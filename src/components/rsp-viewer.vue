@@ -1,34 +1,65 @@
 <template>
   <div>
+    <b-field grouped expanded>
+      <b-field label="Trip pattern" class="pr-3">
+        <b-select
+          v-model="selectedPattern"
+          placeholder="Select a trip pattern"
+          class="trip-select"
+          expanded
+        >
+          <option v-for="pattern of processedPatterns" :key="pattern.stop_pattern_id" :value="pattern.stop_pattern_id">
+            {{ pattern.desc }}
+          </option>
+        </b-select>
+          &nbsp;&nbsp;
+      </b-field>
+      <b-field label="Show transfers" class="pr-6">
+        <b-checkbox
+          v-model="showTransfers"
+          class="adjust-checkbox"
+        />
+      </b-field>
+      <b-field v-if="showTransferRadius" label="Transfer search radius (m)" expanded>
+        <b-slider
+          v-model="radius"
+          class="radius-select"
+          size="is-medium"
+          :min="0"
+          :max="500"
+          :step="100"
+          ticks
+          lazy
+        >
+          <template v-for="val in [0,100,250,500]">
+            <b-slider-tick :key="val" :value="val">
+              {{ val }}
+            </b-slider-tick>
+          </template>
+        </b-slider>
+      </b-field>
+    </b-field>
+
     <div v-if="$apollo.loading">
       Loading...
     </div>
     <div v-else-if="processedPatterns.length === 0">
-      No trip patterns were found for this direction; try checking the other direction.
+      No trip patterns were found for this route.
     </div>
-    <div v-else>
-      <b-select v-model="selectedPattern" placeholder="Select a trip pattern">
-        <option v-for="pattern of processedPatterns" :key="pattern.stop_pattern_id" :value="pattern.stop_pattern_id">
-          Headsign: "{{ pattern.trip.trip_headsign }}" --
-          From: "{{ pattern.stop_times[0].stop.stop_name }}" To: "{{ pattern.stop_times[pattern.stop_times.length-1].stop.stop_name }}"
-          ({{ pattern.count }} trips)
-        </option>
-      </b-select>
-      <br>
-      <ul v-if="activePattern" class="stop-list">
-        <li v-for="(st) of activePattern.stop_times" :key="st.stop_sequence">
-          <p>
-            {{ st.stop.stop_name }}
-            <br>
-          </p>
+    <ul v-else-if="activePattern" class="stop-list">
+      <li v-for="(st) of activePattern.stop_times" :key="st.stop_sequence">
+        <p class="route-stop-name">
+          {{ st.stop.stop_name }}
+        </p>
+        <div v-if="showTransfers">
           <div
             v-for="(rss,agency) of st.stop.routes"
             :key="agency"
             class="route-link"
           >
-            <h6 class="title is-6">
+            <div v-if="multiAgency" class="agency-name">
               {{ agency }}
-            </h6>
+            </div>
             <div v-for="rs of rss" :key="rs.id">
               <nuxt-link
                 :to="{name:'routes-onestop_id', params:{onestop_id:rs.onestop_id}}"
@@ -43,9 +74,9 @@
               </nuxt-link>
             </div>
           </div>
-        </li>
-      </ul>
-    </div>
+        </div>
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -53,8 +84,8 @@
 import haversine from 'haversine'
 import gql from 'graphql-tag'
 const q = gql`
-query ($route_id: Int!) {
-  routes(ids: [$route_id]) {
+query ($route_ids: [Int!]!, $radius:Float!) {
+  routes(ids: $route_ids) {
     id
     route_id
     route_short_name
@@ -68,6 +99,7 @@ query ($route_id: Int!) {
         id
         trip_id
         trip_headsign
+        direction_id
         stop_times {
           stop_sequence
           stop {
@@ -76,7 +108,7 @@ query ($route_id: Int!) {
             stop_name
             location_type
             geometry
-            nearby_stops(radius: 100.0, limit: 100) {
+            nearby_stops(radius: $radius, limit: 1000) {
               id
               stop_id
               stop_name
@@ -108,19 +140,20 @@ query ($route_id: Int!) {
 
 export default {
   props: {
-    routeId: {
-      type: Number,
+    routeIds: {
+      type: Array,
       required: true
     },
-    directionId: {
-      type: Number,
-      required: true
+    showTransferRadius: {
+      type: Boolean
     }
   },
   data () {
     return {
       routes: [],
-      selectedPattern: null
+      selectedPattern: null,
+      showTransfers: true,
+      radius: 100
     }
   },
   apollo: {
@@ -129,12 +162,14 @@ export default {
       query: q,
       variables () {
         return {
-          route_id: this.routeId
+          route_ids: this.routeIds,
+          radius: this.radius
         }
       }
     }
   },
   computed: {
+    // Attempt to draw a multiple sequent alignment, e.g. MBTA website
     // alignments () {
     //   const stops = {}
     //   const parents = {}
@@ -170,8 +205,14 @@ export default {
     //   }
     // },
     patterns () {
-      let pats = this.routes.length > 0 ? this.routes[0].patterns : []
-      pats = pats.filter((s) => { return s.trips && s.trips.length > 0 && s.trips[0].stop_times && s.trips[0].stop_times.length > 0 && s.direction_id === this.directionId })
+      const pats = []
+      for (const route of this.routes) {
+        for (const pat of route.patterns) {
+          if (pat.trips && pat.trips.length > 0) {
+            pats.push(pat)
+          }
+        }
+      }
       return pats
     },
     activePattern () {
@@ -184,6 +225,19 @@ export default {
         return this.processedPatterns[0]
       }
       return null
+    },
+    multiAgency () {
+      const a = new Set()
+      for (const pat of this.patterns) {
+        for (const st of pat.trips[0].stop_times) {
+          for (const ns of st.stop.nearby_stops) {
+            for (const rs of ns.route_stops) {
+              a.add(rs.route.agency.agency_name)
+            }
+          }
+        }
+      }
+      return a.size > 1
     },
     processedPatterns () {
       let totalTrips = 0
@@ -200,9 +254,11 @@ export default {
           continue
         }
         const pt = pat.trips[0]
+        const dirDesc = pt.direction_id === 0 ? 'Inbound' : 'Outbound'
         const p = {
           stop_pattern_id: pat.stop_pattern_id,
           count: pat.count,
+          desc: `${pt.trip_headsign} (${dirDesc})`,
           trip: {
             trip_headsign: pt.trip_headsign
           },
@@ -227,6 +283,7 @@ export default {
         }
         ret.push(p)
       }
+      ret.sort((a, b) => { return b.count - a.count })
       return ret
     }
   },
@@ -239,9 +296,8 @@ export default {
     },
     nearbyRouteStops (stop) {
       const rids = new Set()
-      if (this.routes && this.routes.length > 0) {
-        const thisRouteKey = `${this.routes[0].route_short_name}${this.routes[0].route_long_name}`
-        rids.add(thisRouteKey)
+      for (const route of this.routes) {
+        rids.add(route.id)
       }
       const ret = []
       for (const ns of (stop.nearby_stops || [])) {
@@ -250,8 +306,8 @@ export default {
           continue
         }
         for (const rs of ns.route_stops || []) {
-          const routeKey = `${rs.route.route_short_name}${rs.route.route_long_name}`
-          if (rids.has(routeKey)) {
+          const routeKey = rs.route.onestop_id
+          if (routeKey && rids.has(routeKey)) {
             continue
           }
           rids.add(routeKey)
@@ -317,5 +373,24 @@ function hsin (fromPoint, toPoint) {
   background-repeat: no-repeat;
   background-size:20px 100px;
   background-position:0px -18px;
+}
+.route-stop-name {
+  font-weight:bold;
+  margin-bottom:10px;
+}
+.agency-name {
+  margin:0px;
+  margin-top:10px;
+  margin-bottom:10px;
+}
+.adjust-checkbox {
+  margin-top:10px;
+}
+.trip-select {
+  min-width:400px;
+  width:400px;
+}
+.radius-select {
+  width:200px;
 }
 </style>
