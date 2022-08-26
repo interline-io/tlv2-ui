@@ -181,7 +181,7 @@
               has-icon
             >
               <div v-for="tr of filterRTTranslations(alert.description_text)" :key="tr.text">
-                {{ tr.text }}
+                Agency Alert: {{ tr.text }}
               </div>
             </b-message>
           </div>
@@ -325,7 +325,7 @@ query ($onestop_id: String, $route_id: String, $feed_onestop_id: String, $feed_v
     route_type
     route_url
     geometry
-    alerts {
+    alerts(active:true) {
       cause
       effect
       severity_level
