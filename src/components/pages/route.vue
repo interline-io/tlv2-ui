@@ -171,15 +171,30 @@
               </td>
             </tr>
           </table>
-          <b-message class="is-info block">
-            <p>
-              Learn more about the contents of <code>routes.txt</code> on
-              <a
-                href="https://gtfs.org/reference/static#routestxt"
-                target="_blank"
-              >gtfs.org</a>.
-            </p>
+
+          <div v-for="ent of entities" :key="ent.id">
+            <b-message
+              v-for="(alert,idx) of ent.alerts"
+              :key="idx"
+              type="is-warning"
+              class="block"
+              has-icon
+            >
+              <div v-for="tr of filterRTTranslations(alert.description_text)" :key="tr.text">
+                {{ tr.text }}
+              </div>
+            </b-message>
+          </div>
+
+          <br>
+          <b-message type="is-info" class="block">
+            Learn more about the contents of <code>routes.txt</code> on
+            <a
+              href="https://gtfs.org/reference/static#routestxt"
+              target="_blank"
+            >gtfs.org</a>.
           </b-message>
+          <br>
 
           <b-tabs
             v-model="activeTab"
@@ -188,7 +203,9 @@
             @input="setTab"
           >
             <b-tab-item label="Connections">
-              <tl-rsp-viewer v-if="activeTab === 0" :route-ids="entityIds" />
+              <client-only>
+                <tl-rsp-viewer v-if="activeTab === 0" :route-ids="entityIds" />
+              </client-only>
             </b-tab-item>
             <b-tab-item label="Headways">
               <tl-headway-viewer :headways="entity.headways" />
@@ -282,8 +299,6 @@
               :features="activeTab === 3 ? features : []"
             />
           </client-only>
-          <br>
-          <tl-headway-viewer :headways="entity.headways" :show-afternoon="false" :show-night="false" />
         </div>
       </div>
     </div>
@@ -296,61 +311,65 @@ import Filters from '../filters'
 import EntityPageMixin from './entity-page-mixin'
 
 const q = gql`
-  query(
-    $onestop_id: String
-    $route_id: String
-    $feed_onestop_id: String
-    $feed_version_sha1: String
-    $include_stops: Boolean! = true
-  ) {
-    entities: routes(
-      limit: 100
-      where: {
-        onestop_id: $onestop_id
-        feed_onestop_id: $feed_onestop_id
-        feed_version_sha1: $feed_version_sha1
-        route_id: $route_id
+query ($onestop_id: String, $route_id: String, $feed_onestop_id: String, $feed_version_sha1: String, $include_stops: Boolean! = true) {
+  entities: routes(limit: 100, where: {onestop_id: $onestop_id, feed_onestop_id: $feed_onestop_id, feed_version_sha1: $feed_version_sha1, route_id: $route_id}) {
+    id
+    onestop_id
+    feed_onestop_id
+    feed_version_sha1
+    route_id
+    route_color
+    route_desc
+    route_long_name
+    route_short_name
+    route_type
+    route_url
+    geometry
+    alerts {
+      cause
+      effect
+      severity_level
+      description_text {
+        language
+        text
       }
-    ) {
-      id
-      onestop_id
-      feed_onestop_id
-      feed_version_sha1
-      route_id
-      route_color
-      route_desc
-      route_long_name
-      route_short_name
-      route_type
-      route_url
-      geometry
-      route_stops @include(if: $include_stops) {
-        stop {
-          id
-          stop_id
-          stop_name
-          geometry
-        }
+      header_text {
+        language
+        text
       }
-      agency {
-        id
-        agency_id
-        agency_name
-        onestop_id
-      }
-      headways {
-        dow_category
-        service_date
-        direction_id
-        headway_secs
-        departures
-      }
-      feed_version {
-        id
-        fetched_at
+      url {
+        language
+        text
       }
     }
+    route_stops @include(if: $include_stops) {
+      stop {
+        id
+        stop_id
+        stop_name
+        geometry
+      }
+    }
+    agency {
+      id
+      agency_id
+      agency_name
+      onestop_id
+    }
+    headways {
+      dow_category
+      service_date
+      direction_id
+      headway_secs
+      departures
+    }
+    feed_version {
+      id
+      fetched_at
+    }
   }
+}
+
 `
 
 export default {
@@ -554,6 +573,11 @@ export default {
     },
     staticDescription () {
       return `${this.routeName} is a ${this.routeType} route available for browsing and analyzing on the Transitland platform.`
+    }
+  },
+  methods: {
+    filterRTTranslations (v) {
+      return v.filter((s) => { return !s.language.includes('html') })
     }
   }
 }
