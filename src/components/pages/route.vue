@@ -194,7 +194,6 @@
               target="_blank"
             >gtfs.org</a>.
           </b-message>
-          <br>
 
           <b-tabs
             v-model="activeTab"
