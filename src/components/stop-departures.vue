@@ -115,6 +115,7 @@ query( $stopIds: [Int!], $where: StopFilter, $stwhere: StopTimeFilter, $includeG
     stop_id
     stop_name
     stop_code
+    location_type
     geometry
     route_stops {
       route {
@@ -272,7 +273,7 @@ export default {
     },
     filteredStops () {
       return this.stops.filter((s) => {
-        return s.departures.length > 0
+        return s.departures.length > 0 && s.location_type === 0 && s.geometry.coordinates
       }).sort((a, b) => {
         const ad = this.haversine(this.currentPoint, a.geometry)
         const bd = this.haversine(this.currentPoint, b.geometry)
