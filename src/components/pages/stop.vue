@@ -84,11 +84,11 @@
               <td>GTFS ID</td>
               <td>
                 <div v-for="root of roots" :key="root.id">
-                  <template v-if="root.children.length > 0">
+                  <template v-if="(root.children || []).length > 0">
                     Station:
                   </template>
                   {{ root.stop_id }}
-                  <div v-for="child of root.children" :key="child.id" class="child-stop-id">
+                  <div v-for="child of root.children || []" :key="child.id" class="child-stop-id">
                     Platform: {{ child.stop_id }}
                   </div>
                 </div>
@@ -200,16 +200,18 @@
           </b-tabs>
         </div>
         <div class="column is-one-third">
-          <tl-map-viewer
-            :stop-features="stopFeatures"
-            :route-features="routeFeatures"
-            :features="features"
-            :auto-fit="false"
-            :center="entity.geometry.coordinates"
-            :circle-radius="20"
-            :zoom="15"
-            :overlay="true"
-          />
+          <client-only>
+            <tl-map-viewer
+              :stop-features="stopFeatures"
+              :route-features="routeFeatures"
+              :features="features"
+              :auto-fit="false"
+              :center="entity.geometry.coordinates"
+              :circle-radius="20"
+              :zoom="15"
+              :overlay="true"
+            />
+          </client-only>
         </div>
       </div>
     </div>
@@ -344,6 +346,7 @@ export default {
       for (const stop of this.allStops) {
         for (const alert of stop.alerts || []) {
           ret.push(alert)
+          console.log(alert)
         }
       }
       return ret
@@ -361,7 +364,7 @@ export default {
     routeFeatures () {
       const ret = []
       let featid = 1
-      for (const rss of Object.values(this.servedRoutes)) {
+      for (const rss of Object.values(this.servedRoutes || {})) {
         for (const rs of rss) {
           let routeColor = rs.route.route_color
           if (routeColor && routeColor.substr(0, 1) !== '#') {
@@ -445,7 +448,7 @@ export default {
     nearbyRoutes () {
       const ret = {}
       const excl = {}
-      for (const rss of Object.values(this.servedRoutes)) {
+      for (const rss of Object.values(this.servedRoutes || {})) {
         for (const rs of rss) {
           excl[rs.route.id] = true
         }
@@ -480,7 +483,7 @@ export default {
       const ret = []
       const sg = this.entity.geometry
       let featid = 1
-      for (const i of this.entity.children) {
+      for (const i of this.entity.children || []) {
         ret.push({
           type: 'Feature',
           id: featid,
@@ -506,7 +509,7 @@ export default {
         if (ent.parent) {
           ret[ent.parent.id] = ent.parent
         } else {
-          ret[ent.id] = ent.id
+          ret[ent.id] = ent
         }
       }
       return Object.values(ret)

@@ -48,7 +48,11 @@
     <ul v-else-if="activePattern" class="stop-list">
       <li v-for="(st) of activePattern.stop_times" :key="st.stop_sequence">
         <p class="route-stop-name">
-          {{ st.stop.stop_name }}
+          <nuxt-link
+            :to="{name:'stops-onestop_id', params:{onestop_id:st.stop.onestop_id}}"
+          >
+            {{ st.stop.stop_name }}
+          </nuxt-link>
         </p>
         <div v-if="showTransfers">
           <div
@@ -103,12 +107,14 @@ query ($route_ids: [Int!]!, $radius:Float!) {
           stop_sequence
           stop {
             id
+            onestop_id
             stop_id
             stop_name
             location_type
             geometry
             nearby_stops(radius: $radius, limit: 1000) {
               id
+              onestop_id
               stop_id
               stop_name
               location_type
@@ -276,6 +282,7 @@ export default {
               id: st.stop.id,
               stop_id: st.stop.stop_id,
               stop_name: st.stop.stop_name,
+              onestop_id: st.stop.onestop_id,
               routes: routesByAgency
             }
           })
