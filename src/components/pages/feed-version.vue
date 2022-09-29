@@ -389,16 +389,16 @@ export default {
       return ret
     },
     operatorOrAgencyNames () {
-      if (this.entity && this.entity.agencies) {
-        let names = this.entity.agencies.map(a => a.agency_name)
-        if (names.length > 3) {
-          names = `${names.slice(0, 3).join(', ')} and ${names.length - 3} additional operators`
+      if (this.entity && this.entity.agencies && this.entity.agencies.length > 0) {
+        let names = this.entity.agencies.slice(0, 3).map(a => a.agency_name)
+        if (this.entity.agencies.length > 3) {
+          names = `${names.join(', ')} and ${names.length - 3} additional operators`
         } else if (names.length > 0 && names.length <= 3) {
           names = names.slice(0, 3).join(', ')
         }
         return names
       } else {
-        return null
+        return this.entity.feed.onestop_id
       }
     },
     textDescription () {
