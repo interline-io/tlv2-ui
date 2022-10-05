@@ -25,7 +25,7 @@
               <nuxt-link
                 :to="{
                   name: 'routes-onestop_id',
-                  params: { onestop_id: onestopId },
+                  params: { onestop_id: pathKey },
                 }"
               >
                 {{ entity.route_short_name }}
@@ -310,8 +310,8 @@ import Filters from '../filters'
 import EntityPageMixin from './entity-page-mixin'
 
 const q = gql`
-query ($onestop_id: String, $route_id: String, $feed_onestop_id: String, $feed_version_sha1: String, $include_stops: Boolean! = true) {
-  entities: routes(limit: 100, where: {onestop_id: $onestop_id, feed_onestop_id: $feed_onestop_id, feed_version_sha1: $feed_version_sha1, route_id: $route_id}) {
+query ($onestop_id: String, $ids: [Int!], $entity_id: String, $feed_onestop_id: String, $feed_version_sha1: String, $include_stops: Boolean! = true) {
+  entities: routes(limit: 100, ids: $ids, where: {onestop_id: $onestop_id, feed_onestop_id: $feed_onestop_id, feed_version_sha1: $feed_version_sha1, route_id: $entity_id}) {
     id
     onestop_id
     feed_onestop_id
@@ -396,12 +396,7 @@ export default {
         return this.checkSearchSkip(this.entityId)
       },
       variables () {
-        return {
-          onestop_id: this.search ? null : this.onestopId,
-          feed_onestop_id: this.feedOnestopId,
-          feed_version_sha1: this.feedVersionSha1,
-          route_id: this.entityId
-        }
+        return this.searchKey
       }
     }
   },

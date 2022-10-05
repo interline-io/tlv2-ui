@@ -54,8 +54,8 @@ import gql from 'graphql-tag'
 import TableViewerMixin from './table-viewer-mixin'
 
 const q = gql`
-query($after: Int, $limit: Int, $feed_version_sha1: String, $operator_onestop_id: String, $search: String) {
-  entities: routes(after: $after, limit: $limit, where: { search: $search, feed_version_sha1: $feed_version_sha1, operator_onestop_id: $operator_onestop_id }) {
+query($after: Int, $limit: Int, $feed_version_sha1: String, $agency_ids: [Int!], $search: String) {
+  entities: routes(after: $after, limit: $limit, where: { search: $search, feed_version_sha1: $feed_version_sha1, agency_ids: $agency_ids }) {
     id
     onestop_id
     feed_version_sha1
@@ -79,8 +79,8 @@ export default {
   props: {
     feedVersionSha1: { type: String, default: null },
     fvids: { type: Array, default: null },
-    operatorOnestopId: { type: String, default: null },
     routeIds: { type: Array, default: null },
+    agencyIds: { type: Array, default: null },
     showAgency: { type: Boolean, default: true },
     showGeometry: { type: Boolean, default: true },
     linkVersion: { type: Boolean, default: false }
@@ -94,7 +94,7 @@ export default {
           limit: this.limit,
           search: this.search,
           feed_version_sha1: this.feedVersionSha1,
-          operator_onestop_id: this.operatorOnestopId
+          agency_ids: this.agencyIds
         }
       },
       error (e) { this.error = e }

@@ -1,9 +1,9 @@
 <template>
   <div>
     <tl-pages-route
-      :onestop-id="$route.params.onestop_id"
+      :path-key="$route.params.onestop_id"
+      :entity-id="$route.query.entity_id"
       :feed-onestop-id="$route.query.feed_onestop_id"
-      :entity-id="$route.query.route_id"
       :feed-version-sha1="$route.query.feed_version_sha1"
     />
   </div>

@@ -55,7 +55,7 @@
                   Onestop ID
                 </b-tooltip>
               </td>
-              <td><code>{{ onestopId }}</code></td>
+              <td><code>{{ searchKey.onestop_id }}</code></td>
             </tr>
             <tr>
               <td>
@@ -220,16 +220,16 @@
         <b-tabs v-model="activeTab" type="is-boxed" :animated="false" @input="setTab">
           <b-tab-item label="Map">
             <client-only placeholder="Map">
-              <tl-feed-version-map-viewer v-if="activeTab === 0" :operator-onestop-id="onestopId" :overlay="true" :link-version="linkVersion" />
+              <tl-feed-version-map-viewer v-if="activeTab === 0" :agency-ids="agencyIds" :overlay="true" :link-version="linkVersion" />
             </client-only>
           </b-tab-item>
 
           <b-tab-item label="Routes">
-            <tl-route-viewer v-if="activeTab === 1" :operator-onestop-id="onestopId" :show-agency="true" />
+            <tl-route-viewer v-if="activeTab === 1" :agency-ids="agencyIds" :show-agency="true" />
           </b-tab-item>
 
           <b-tab-item label="Stops">
-            <tl-stop-viewer v-if="activeTab === 2" :served-by-onestop-ids="[onestopId]" />
+            <tl-stop-viewer v-if="activeTab === 2" :agency-ids="agencyIds" />
           </b-tab-item>
 
           <b-tab-item v-if="advancedMode" label="Export">
@@ -311,9 +311,7 @@ export default {
       query: q,
       // skip () { return this.checkSearchSkip(this.$route.query.agency_id) }, // skip if search and no agency_id
       variables () {
-        return {
-          onestop_id: this.onestopId
-        }
+        return this.searchKey
       }
     }
   },

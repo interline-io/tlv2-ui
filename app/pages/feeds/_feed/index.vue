@@ -1,6 +1,6 @@
 <template>
   <div>
-    <tl-pages-feed :onestop-id="$route.params.feed" />
+    <tl-pages-feed :path-key="$route.params.feed" />
   </div>
 </template>
 

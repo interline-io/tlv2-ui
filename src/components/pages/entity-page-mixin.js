@@ -16,7 +16,7 @@ export default {
     }
   },
   props: {
-    onestopId: { type: String, default: null },
+    pathKey: { type: String, default: null },
     feedVersionSha1: { type: String, default: null },
     feedOnestopId: { type: String, default: null },
     entityId: { type: String, default: null }
@@ -33,6 +33,23 @@ export default {
     }
   },
   computed: {
+    searchKey () {
+      const pk = String(this.pathKey || '')
+      const k = pk.split(':')
+      if (k.length > 1) {
+        return { feed_onestop_id: k[0], entity_id: k.slice(1).join(':'), feed_version_sha1: this.feedVersionSha1 }
+      }
+      const kInts = pk.split(',').map((s) => { return parseInt(s) }).filter((s) => { return !isNaN(s) })
+      if (kInts.length > 0) {
+        return { ids: kInts }
+      }
+      return {
+        onestop_id: (this.feedOnestopId && this.feedVersionSha1 && this.entityId) ? null : this.pathKey,
+        entity_id: this.entityId,
+        feed_onestop_id: this.feedOnestopId,
+        feed_version_sha1: this.feedVersionSha1
+      }
+    },
     advancedMode () {
       if (this.$route.query && this.$route.query.advanced === 'true') {
         return true
@@ -52,12 +69,12 @@ export default {
       return Math.max(...daysAgo)
     },
     linkVersion () {
-      if (this.$route.query && this.$route.query.feed_onestop_id) {
+      if (this.searchKey.feed_version_sha1) {
         return true
       }
     },
     search () {
-      return this.$route.params.onestop_id === 'search'
+      return this.searchKey.onestop_id === 'search'
     },
     entity () {
       return (this.entities && this.entities.length > 0) ? this.entities[0] : null

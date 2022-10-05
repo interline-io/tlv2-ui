@@ -13,7 +13,7 @@
           </option>
         </b-select>
         <b-checkbox
-          v-model="showTransfers"
+          v-model="shadowIncludeNearbyStops"
           class="adjust-checkbox"
         >
           Show transfers
@@ -54,7 +54,7 @@
             {{ st.stop.stop_name }}
           </nuxt-link>
         </p>
-        <div v-if="showTransfers">
+        <div v-if="shadowIncludeNearbyStops">
           <div
             v-for="(rss,agency) of st.stop.routes"
             :key="agency"
@@ -87,7 +87,7 @@
 import haversine from 'haversine'
 import gql from 'graphql-tag'
 const q = gql`
-query ($route_ids: [Int!]!, $radius:Float!) {
+query ($route_ids: [Int!]!, $radius:Float!, $include_nearby_stops:Boolean!) {
   routes(ids: $route_ids) {
     id
     route_id
@@ -103,7 +103,7 @@ query ($route_ids: [Int!]!, $radius:Float!) {
         trip_id
         trip_headsign
         direction_id
-        stop_times {
+        stop_times  {
           stop_sequence
           stop {
             id
@@ -112,7 +112,7 @@ query ($route_ids: [Int!]!, $radius:Float!) {
             stop_name
             location_type
             geometry
-            nearby_stops(radius: $radius, limit: 1000) {
+            nearby_stops(radius: $radius, limit: 1000) @include(if: $include_nearby_stops) {
               id
               onestop_id
               stop_id
@@ -151,13 +151,17 @@ export default {
     },
     showTransferRadius: {
       type: Boolean
+    },
+    includeNearbyStops: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
     return {
       routes: [],
       selectedPattern: null,
-      showTransfers: true,
+      shadowIncludeNearbyStops: this.includeNearbyStops,
       radius: 100
     }
   },
@@ -168,7 +172,8 @@ export default {
       variables () {
         return {
           route_ids: this.routeIds,
-          radius: this.radius
+          radius: this.radius,
+          include_nearby_stops: this.shadowIncludeNearbyStops
         }
       }
     }
