@@ -278,8 +278,8 @@ fragment ss on Stop {
   }
 }
 
-query ($onestop_id: String, $stop_id: String, $feed_onestop_id: String, $feed_version_sha1: String) {
-  entities: stops(limit: 100, where: {onestop_id: $onestop_id, feed_onestop_id:$feed_onestop_id, feed_version_sha1:$feed_version_sha1, stop_id:$stop_id}) {
+query ($onestop_id: String, $ids: [Int!], $entity_id: String, $feed_onestop_id: String, $feed_version_sha1: String) {
+  entities: stops(limit: 1, ids: $ids, where: {onestop_id: $onestop_id, feed_onestop_id:$feed_onestop_id, feed_version_sha1:$feed_version_sha1, stop_id:$entity_id}) {
     ...ss
     parent {
       ...ss
@@ -316,12 +316,7 @@ export default {
       query: q,
       skip () { return this.checkSearchSkip(this.$route.query.stop_id) },
       variables () {
-        return {
-          onestop_id: this.$route.params.onestop_id,
-          feed_onestop_id: this.$route.query.feed_onestop_id,
-          feed_version_sha1: this.$route.query.feed_version_sha1,
-          stop_id: this.$route.query.stop_id
-        }
+        return this.searchKey
       }
     }
   },

@@ -349,8 +349,8 @@ import gql from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
 
 const q = gql`
-query($feed_onestop_id: String) {
-  entities: feeds(where: {onestop_id: $feed_onestop_id}, limit: 1) {
+query($onestop_id: String) {
+  entities: feeds(where: {onestop_id: $onestop_id}, limit: 1) {
     id
     onestop_id
     name
@@ -460,9 +460,7 @@ export default {
       client: 'transitland',
       query: q,
       variables () {
-        return {
-          feed_onestop_id: this.onestopId
-        }
+        return this.searchKey
       },
       update (data) {
         // overrides the update method in EntityPageMixin
