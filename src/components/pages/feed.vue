@@ -39,7 +39,7 @@
                 </b-tooltip>
               </td>
               <td>
-                <code>{{ onestopId }}</code>
+                <code>{{ entity.onestop_id }}</code>
               </td>
             </tr>
             <tr>
