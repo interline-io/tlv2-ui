@@ -502,6 +502,9 @@ export default {
     }
   },
   computed: {
+    onestopId () {
+      return this.entity?.onestop_id
+    },
     feedSpec () {
       return this.entity?.spec?.toUpperCase()?.replace('_', '-')
     },

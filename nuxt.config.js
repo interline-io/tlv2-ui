@@ -11,7 +11,7 @@ export default {
     timing: false
   },
   head: {
-    titleTemplate: 'Transitland'
+    titleTemplate: '%s • Transitland'
   },
   publicRuntimeConfig: {
     graphqlEndpoint: process.env.GRAPHQL_ENDPOINT || 'https://transit.land/api/v2/query',
