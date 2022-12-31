@@ -79,31 +79,32 @@
         </b-field>
       </b-field>
 
-      <b-table
+      <o-table
         :loading="$apollo.loading"
         :data="feedPage"
         :striped="true"
       >
-        <b-table-column v-slot="props" field="onestop_id" label="Feed Onestop ID">
-          <nuxt-link :to="{name: 'feeds-feed', params: {feed: props.row.onestop_id}}">
+        <o-table-column v-slot="props" field="onestop_id" label="Feed Onestop ID">
             {{ props.row.onestop_id }}
-          </nuxt-link>
-        </b-table-column>
+          <!-- <nuxt-link :to="{name: 'feeds-feed', params: {feed: props.row.onestop_id}}">
+            {{ props.row.onestop_id }}
+          </nuxt-link> -->
+        </o-table-column>
 
-        <b-table-column v-slot="props" field="spec" label="Format">
+        <o-table-column v-slot="props" field="spec" label="Format">
           {{ props.row.spec.toUpperCase() }}
-        </b-table-column>
+        </o-table-column>
 
-        <b-table-column v-slot="props" field="last_successful_fetch" label="Last Fetched">
+        <o-table-column v-slot="props" field="last_successful_fetch" label="Last Fetched">
           <template v-if="props.row.last_successful_fetch && props.row.last_successful_fetch.fetched_at ">
             {{ props.row.last_successful_fetch.fetched_at | fromNow }}
           </template>
           <template v-else>
             Unknown
           </template>
-        </b-table-column>
+        </o-table-column>
 
-        <b-table-column v-slot="props" field="last_successful_import_at" label="Last Imported">
+        <o-table-column v-slot="props" field="last_successful_import_at" label="Last Imported">
           <span v-if="props.row.spec === 'GTFS'">
             <template v-if="props.row.last_import">
               {{ props.row.last_import.fetched_at | fromNow }}
@@ -112,18 +113,18 @@
               Never
             </template>
           </span>
-        </b-table-column>
+        </o-table-column>
 
-        <b-table-column v-slot="props" field="last_fetch" label="Fetch Errors">
+        <o-table-column v-slot="props" field="last_fetch" label="Fetch Errors">
           <b-tooltip v-if="props.row.last_fetch && props.row.last_fetch.fetch_error" :label="props.row.last_fetch.fetch_error" multilined>
             <b-icon icon="alert" />
           </b-tooltip>
-        </b-table-column>
+        </o-table-column>
 
-        <b-table-column v-slot="props" :visible="tagUnstableUrl" field="tags" label="Tags">
+        <o-table-column v-slot="props" :visible="tagUnstableUrl" field="tags" label="Tags">
           <pre class="tags">{{ props.row.tags }}</pre>
-        </b-table-column>
-      </b-table>
+        </o-table-column>
+      </o-table>
       <tl-show-more v-if="entities.length === limit || hasMore" :limit="entities.length" @click="showAll" />
     </div>
 
