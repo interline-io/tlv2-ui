@@ -2,7 +2,7 @@
   <div class="outer">
     <tl-tlnav />
     <div class="main" style="flex:1">
-      <nuxt />
+      <slot />
     </div>
   </div>
 </template>

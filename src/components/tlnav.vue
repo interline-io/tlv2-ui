@@ -55,11 +55,11 @@ export default {
           icon: 'lightbulb',
           to: { name: 'feeds' }
         },
-        {
-          title: 'Documentation',
-          icon: 'lightbulb',
-          to: { name: 'documentation' }
-        }
+        // {
+        //   title: 'Documentation',
+        //   icon: 'lightbulb',
+        //   to: { name: 'documentation' }
+        // }
       ]
     }
   },
