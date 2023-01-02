@@ -212,8 +212,8 @@
 
             <!-- Data sources -->
             <b-tab-item label="Sources">
-              <b-table :data="entities" :striped="true">
-                <b-table-column
+              <o-table :data="entities" :striped="true">
+                <o-table-column
                   v-slot="props"
                   field="feed_onestop_id"
                   label="Feed"
@@ -226,8 +226,8 @@
                   >
                     {{ props.row.feed_onestop_id | shortenName }}
                   </nuxt-link>
-                </b-table-column>
-                <b-table-column
+                </o-table-column>
+                <o-table-column
                   v-slot="props"
                   field="feed_version_sha1"
                   label="Version"
@@ -243,8 +243,8 @@
                   >
                     {{ props.row.feed_version_sha1 | shortenName(8) }}
                   </nuxt-link>
-                </b-table-column>
-                <b-table-column
+                </o-table-column>
+                <o-table-column
                   v-slot="props"
                   field="route_id"
                   label="Route ID"
@@ -262,8 +262,8 @@
                   >
                     {{ props.row.route_id | shortenName }}
                   </nuxt-link>
-                </b-table-column>
-              </b-table>
+                </o-table-column>
+              </o-table>
             </b-tab-item>
 
             <b-tab-item label="Export">

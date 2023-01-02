@@ -1,17 +1,18 @@
 <template>
   <div>
+    hi
     <b-message v-if="error" class="is-danger">
       {{ error }}
     </b-message>
     <div v-else>
       <tl-search-bar v-model="search" placeholder="Filter Stops" />
-      <b-table
+      <o-table
         :loading="$apollo.loading"
         :data="entityPage"
         :striped="true"
         sort-icon="menu-up"
       >
-        <b-table-column
+        <o-table-column
           v-slot="props"
           field="stop_id"
           label="Stop ID"
@@ -22,23 +23,23 @@
           >
             {{ props.row.stop_id }}
           </nuxt-link>
-        </b-table-column>
-        <b-table-column
+        </o-table-column>
+        <o-table-column
           v-slot="props"
           field="stop_name"
           label="Name"
           :width="600"
         >
           {{ props.row.stop_name }}
-        </b-table-column>
+        </o-table-column>
 
-        <b-table-column v-if="showAgencies" v-slot="props" field="agencies" label="Agencies">
-          {{ props.row.route_stops.map((s)=>{return s.agency.agency_name}) | joinUnique }}
-        </b-table-column>
-        <b-table-column v-if="showRoutes" v-slot="props" field="routes" label="Routes">
-          {{ props.row.route_stops.map((s)=>{return s.route.route_short_name}) | joinUnique }}
-        </b-table-column>
-      </b-table>
+        <o-table-column v-if="showAgencies" v-slot="props" field="agencies" label="Agencies">
+          {{ props.row.route_stops.map((s)=>{return s.agency.agency_name})  }}
+        </o-table-column>
+        <o-table-column v-if="showRoutes" v-slot="props" field="routes" label="Routes">
+          {{ props.row.route_stops.map((s)=>{return s.route.route_short_name}) }}
+        </o-table-column>
+      </o-table>
       <tl-show-more v-if="entities.length === limit || hasMore" :limit="entities.length" @click="showAll" />
     </div>
   </div>

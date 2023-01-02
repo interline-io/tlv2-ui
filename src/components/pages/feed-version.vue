@@ -17,7 +17,7 @@
             </li>
             <li>
               <nuxt-link :to="{name: 'feeds-feed-versions-version', params:{feed:$route.params.feed, version:$route.params.version}}">
-                {{ $route.params.version | shortenName(8) }}
+                {{ $route.params.version  }}
               </nuxt-link>
             </li>
           </ul>
@@ -25,7 +25,7 @@
       </slot>
 
       <h1 class="title">
-        GTFS feed: {{ operatorOrAgencyNames }} version fetched {{ entity.fetched_at | formatDate }} ({{ entity.fetched_at | fromNow }})
+        GTFS feed: {{ operatorOrAgencyNames }} version fetched {{ entity.fetched_at  }} ({{ entity.fetched_at  }})
       </h1>
 
       <nav class="level">
@@ -124,7 +124,7 @@
         </tr>
         <tr>
           <td>Fetched</td>
-          <td>{{ entity.fetched_at | formatDate }} ({{ entity.fetched_at | fromNow }})</td>
+          <td>{{ entity.fetched_at  }} ({{ entity.fetched_at  }})</td>
         </tr>
         <tr>
           <td>URL</td>

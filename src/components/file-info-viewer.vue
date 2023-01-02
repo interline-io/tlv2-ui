@@ -14,8 +14,8 @@
         <tr v-for="f of files" :key="f.name">
           <td>{{ f.name }}</td>
           <td>{{ f.rows }}</td>
-          <td>{{ f.size | prettyBytes }}</td>
-          <td>{{ f.sha1 | shortenName(8) }}</td>
+          <td>{{ $filters.prettyBytes(f.size)  }}</td>
+          <td>{{ f.sha1  }}</td>
           <td>
             <b-tooltip v-if="f.csv_like" dashed>
               <template #content>

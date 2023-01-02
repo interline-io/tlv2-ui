@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   ssr: false,
   srcDir: 'app',
-  plugins: [{ src: 'plugins/oruga.js' }, { src: 'plugins/apollo.js' }],
+  plugins: [{ src: 'plugins/oruga.js' }, { src: 'plugins/apollo.js' }, { src: 'plugins/filters.js' }],
   components: [{
     path: '~/../src/components',
     prefix: 'tl'

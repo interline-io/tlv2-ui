@@ -85,10 +85,9 @@
         :striped="true"
       >
         <o-table-column v-slot="props" field="onestop_id" label="Feed Onestop ID">
+          <nuxt-link :to="{name: 'feeds-feed', params: {feed: props.row.onestop_id}}">
             {{ props.row.onestop_id }}
-          <!-- <nuxt-link :to="{name: 'feeds-feed', params: {feed: props.row.onestop_id}}">
-            {{ props.row.onestop_id }}
-          </nuxt-link> -->
+          </nuxt-link>
         </o-table-column>
 
         <o-table-column v-slot="props" field="spec" label="Format">
@@ -97,7 +96,7 @@
 
         <o-table-column v-slot="props" field="last_successful_fetch" label="Last Fetched">
           <template v-if="props.row.last_successful_fetch && props.row.last_successful_fetch.fetched_at ">
-            {{ props.row.last_successful_fetch.fetched_at | fromNow }}
+            {{ props.row.last_successful_fetch.fetched_at  }}
           </template>
           <template v-else>
             Unknown
@@ -107,7 +106,7 @@
         <o-table-column v-slot="props" field="last_successful_import_at" label="Last Imported">
           <span v-if="props.row.spec === 'GTFS'">
             <template v-if="props.row.last_import">
-              {{ props.row.last_import.fetched_at | fromNow }}
+              {{ props.row.last_import.fetched_at  }}
             </template>
             <template v-else>
               Never

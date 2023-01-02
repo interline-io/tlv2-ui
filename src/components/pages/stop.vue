@@ -176,26 +176,26 @@
 
             <!-- Data sources -->
             <b-tab-item label="Sources">
-              <b-table
+              <o-table
                 :data="allStops"
                 :striped="true"
               >
-                <b-table-column v-slot="props" field="feed_onestop_id" label="Feed">
+                <o-table-column v-slot="props" field="feed_onestop_id" label="Feed">
                   <nuxt-link :to="{name:'feeds-feed', params:{feed:props.row.feed_onestop_id}}">
                     {{ props.row.feed_onestop_id | shortenName }}
                   </nuxt-link>
-                </b-table-column>
-                <b-table-column v-slot="props" field="feed_version_sha1" label="Version">
+                </o-table-column>
+                <o-table-column v-slot="props" field="feed_version_sha1" label="Version">
                   <nuxt-link :to="{name:'feeds-feed-versions-version', params:{feed:props.row.feed_onestop_id, version:props.row.feed_version_sha1}}">
                     {{ props.row.feed_version_sha1 | shortenName(8) }}
                   </nuxt-link>
-                </b-table-column>
-                <b-table-column v-slot="props" field="stop_id" label="Stop ID">
+                </o-table-column>
+                <o-table-column v-slot="props" field="stop_id" label="Stop ID">
                   <nuxt-link :to="{name:'stops-onestop_id', params:{onestop_id:props.row.onestop_id || 'search'}, query:{feed_onestop_id:props.row.feed_onestop_id, feed_version_sha1:props.row.feed_version_sha1, stop_id:props.row.stop_id}}">
                     {{ props.row.stop_id | shortenName }}
                   </nuxt-link>
-                </b-table-column>
-              </b-table>
+                </o-table-column>
+              </o-table>
             </b-tab-item>
           </b-tabs>
         </div>
