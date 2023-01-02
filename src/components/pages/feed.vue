@@ -87,7 +87,7 @@
               </td>
               <td>
                 <template v-if="lastSuccessfulFetch && lastSuccessfulFetch.fetched_at">
-                  {{ lastSuccessfulFetch.fetched_at  }} ({{ lastSuccessfulFetch.fetched_at  }})
+                  {{ $filters.formatDate(lastSuccessfulFetch.fetched_at) }} ({{ $filters.fromNow(lastSuccessfulFetch.fetched_at)  }})
                 </template>
                 <template v-else>
                   Unknown
@@ -136,25 +136,25 @@
                     License Identifier: {{ entity.license.spdx_identifier }}
                   </li>
                   <li v-if="entity.license.use_without_attribution">
-                    Use allowed without attribution: {{ entity.license.use_without_attribution  }}
+                    Use allowed without attribution: {{ $filters.capitalize(entity.license.use_without_attribution)  }}
                   </li>
                   <li v-if="entity.license.share_alike_optional">
-                    Share-alike optional: {{ entity.license.share_alike_optional  }}
+                    Share-alike optional: {{ $filters.capitalize(entity.license.share_alike_optional)  }}
                   </li>
                   <li v-if="entity.license.commercial_use_allowed">
-                    Commercial use allowed: {{ entity.license.commercial_use_allowed  }}
+                    Commercial use allowed: {{ $filters.capitalize(entity.license.commercial_use_allowed)  }}
                   </li>
                   <li v-if="entity.license.create_derived_product">
-                    Creating derived products allowed: {{ entity.license.create_derived_product  }}
+                    Creating derived products allowed: {{ $filters.capitalize(entity.license.create_derived_product)  }}
                   </li>
                   <li v-if="entity.license.redistribution_allowed">
-                    Redistribution allowed: {{ entity.license.redistribution_allowed }}
+                    Redistribution allowed: {{ $filters.capitalize(entity.license.redistribution_allowed) }}
                   </li>
                   <li v-if="entity.license.attribution_text">
                     Required attribution text: {{ entity.license.attribution_text }}
                   </li>
                   <li v-if="entity.license.attribution_instructions" class="content">
-                    Attribution instructions: <blockquote>{{ entity.license.attribution_instructions }}</blockquote>
+                    Attribution instructions: <blockquote>{{ $filters.capitalize(entity.license.attribution_instructions) }}</blockquote>
                   </li>
                 </ul>
               </td>
@@ -250,7 +250,7 @@
                 label="Fetched"
               >
                 <template v-if="props.row.fetched_at">
-                  {{ props.row.fetched_at  }} ({{ props.row.fetched_at }})
+                  {{ $filters.formatDate(props.row.fetched_at)  }} ({{ $filters.fromNow(props.row.fetched_at) }})
                 </template>
                 <template v-else>
                   Unknown

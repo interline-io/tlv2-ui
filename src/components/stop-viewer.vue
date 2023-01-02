@@ -34,10 +34,10 @@
         </o-table-column>
 
         <o-table-column v-if="showAgencies" v-slot="props" field="agencies" label="Agencies">
-          {{ props.row.route_stops.map((s)=>{return s.agency.agency_name})  }}
+          {{ $filters.joinUnique(props.row.route_stops.map((s)=>{return s.agency.agency_name}))  }}
         </o-table-column>
         <o-table-column v-if="showRoutes" v-slot="props" field="routes" label="Routes">
-          {{ props.row.route_stops.map((s)=>{return s.route.route_short_name}) }}
+          {{ $filters.joinUnique(props.row.route_stops.map((s)=>{return s.route.route_short_name})) }}
         </o-table-column>
       </o-table>
       <tl-show-more v-if="entities.length === limit || hasMore" :limit="entities.length" @click="showAll" />
