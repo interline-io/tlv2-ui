@@ -25,16 +25,16 @@
               Weekday
             </td>
             <td v-if="showMorning">
-              {{ hws.weekday | formatHeadway('morning') }}
+              {{ $filters.formatHeadway(hws.weekday,'morning') }}
             </td>
             <td v-if="showMidday">
-              {{ hws.weekday | formatHeadway('midday') }}
+              {{ $filters.formatHeadway(hws.weekday, 'midday') }}
             </td>
             <td v-if="showAfternoon">
-              {{ hws.weekday | formatHeadway('afternoon') }}
+              {{ $filters.formatHeadway(hws.weekday, 'afternoon') }}
             </td>
             <td v-if="showNight">
-              {{ hws.weekday | formatHeadway('night') }}
+              {{ $filters.formatHeadway(hws.weekday,'night') }}
             </td>
           </tr>
           <tr>
@@ -42,16 +42,16 @@
               Saturday
             </td>
             <td v-if="showMorning">
-              {{ hws.saturday | formatHeadway('morning') }}
+              {{ $filters.formatHeadway(hws.saturday,'morning') }}
             </td>
             <td v-if="showMidday">
-              {{ hws.saturday | formatHeadway('midday') }}
+              {{ $filters.formatHeadway(hws.saturday,'midday') }}
             </td>
             <td v-if="showAfternoon">
-              {{ hws.saturday | formatHeadway('afternoon') }}
+              {{ $filters.formatHeadway(hws.saturday,'afternoon') }}
             </td>
             <td v-if="showNight">
-              {{ hws.saturday | formatHeadway('night') }}
+              {{ $filters.formatHeadway(hws.saturday,'night') }}
             </td>
           </tr>
           <tr>
@@ -59,16 +59,16 @@
               Sunday
             </td>
             <td v-if="showMorning">
-              {{ hws.sunday | formatHeadway('morning') }}
+              {{ $filters.formatHeadway(hws.sunday,'morning') }}
             </td>
             <td v-if="showMidday">
-              {{ hws.sunday | formatHeadway('midday') }}
+              {{ $filters.formatHeadway(hws.sunday,'midday') }}
             </td>
             <td v-if="showAfternoon">
-              {{ hws.sunday | formatHeadway('afternoon') }}
+              {{ $filters.formatHeadway(hws.sunday,'afternoon') }}
             </td>
             <td v-if="showNight">
-              {{ hws.sunday | formatHeadway('night') }}
+              {{ $filters.formatHeadway(hws.sunday,'night') }}
             </td>
           </tr>
         </tbody>

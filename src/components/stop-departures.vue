@@ -82,9 +82,9 @@
               <b-field grouped>
                 <b-tag v-for="st of sr.departures.slice(0,3)" :key="st.trip.id">
                   <template v-if="st.departure.estimated">
-                    {{ st.departure.estimated | reformatHMS }} &nbsp;<b-icon type="is-success" size="is-small" icon="wifi" />
+                    {{ $filters.reformatHMS(st.departure.estimated) }} &nbsp;<b-icon type="is-success" size="is-small" icon="wifi" />
                   </template><template v-else>
-                    {{ st.departure.scheduled | reformatHMS }} &nbsp;<b-icon type="is-success" size="is-small" icon="blank" />
+                    {{ $filters.reformatHMS(st.departure.scheduled) }} &nbsp;<b-icon type="is-success" size="is-small" icon="blank" />
                   </template>
                 </b-tag>
               </b-field>
@@ -97,7 +97,7 @@
       </div>
     </div>
     <div v-if="lastFetched" :key="lastFetchedDisplayKey" class="last-fetched">
-      Last checked: {{ lastFetched | fromNowDate }}
+      Last checked: {{ $filters.fromNowDate(lastFetched) }}
     </div>
   </div>
 </template>

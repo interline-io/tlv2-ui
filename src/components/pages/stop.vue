@@ -27,10 +27,10 @@
       <b-message v-if="linkVersion" type="is-warning" has-icon>
         You are viewing a single GTFS stop or station defined in source feed
         <nuxt-link :to="{name:'feeds-feed', params:{feed:$route.query.feed_onestop_id}}">
-          {{ $route.query.feed_onestop_id | shortenName }}
+          {{ $filters.shortenName($route.query.feed_onestop_id) }}
         </nuxt-link> version
         <nuxt-link :to="{name:'feeds-feed-versions-version', params:{feed:$route.query.feed_onestop_id, version:$route.query.feed_version_sha1}}">
-          {{ $route.query.feed_version_sha1 | shortenName(8) }}
+          {{ $filters.shortenName($route.query.feed_version_sha1, 8) }}
         </nuxt-link>.<br>
         <template v-if="!search">
           Click <nuxt-link :to="{name: 'stops-onestop_id', params:{onestop_id:$route.params.onestop_id}}">
@@ -166,7 +166,7 @@
             <b-tab-item v-if="entity.id" label="Departures">
               <client-only placeholder="Departures">
                 <tl-stop-departures
-                  v-if="activeTab == 1"
+                  v-if="activeTab == 2"
                   :show-fallback-selector="true"
                   :stop-ids="entityIds"
                   :search-coords="entity.geometry.coordinates"
@@ -182,17 +182,17 @@
               >
                 <o-table-column v-slot="props" field="feed_onestop_id" label="Feed">
                   <nuxt-link :to="{name:'feeds-feed', params:{feed:props.row.feed_onestop_id}}">
-                    {{ props.row.feed_onestop_id | shortenName }}
+                    {{ $filters.shortenName(props.row.feed_onestop_id) }}
                   </nuxt-link>
                 </o-table-column>
                 <o-table-column v-slot="props" field="feed_version_sha1" label="Version">
                   <nuxt-link :to="{name:'feeds-feed-versions-version', params:{feed:props.row.feed_onestop_id, version:props.row.feed_version_sha1}}">
-                    {{ props.row.feed_version_sha1 | shortenName(8) }}
+                    {{ $filters.shortenName(props.row.feed_version_sha1, 8) }}
                   </nuxt-link>
                 </o-table-column>
                 <o-table-column v-slot="props" field="stop_id" label="Stop ID">
                   <nuxt-link :to="{name:'stops-onestop_id', params:{onestop_id:props.row.onestop_id || 'search'}, query:{feed_onestop_id:props.row.feed_onestop_id, feed_version_sha1:props.row.feed_version_sha1, stop_id:props.row.stop_id}}">
-                    {{ props.row.stop_id | shortenName }}
+                    {{ $filters.shortenName(props.row.stop_id) }}
                   </nuxt-link>
                 </o-table-column>
               </o-table>

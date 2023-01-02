@@ -334,7 +334,7 @@
           </b-tab-item>
 
           <b-tab-item label="Service Levels">
-            <div v-if="activeTab === 1">
+            <div v-if="activeTab === 2">
               <tl-multi-service-levels :max-weeks="52" :week-agg="true" :fvids="entity.feed_versions.map((s)=>{return s.id}).slice(0,20)" />
             </div>
           </b-tab-item>

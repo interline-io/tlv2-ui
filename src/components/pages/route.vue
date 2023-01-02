@@ -66,7 +66,7 @@
               params: { feed: feedOnestopId },
             }"
           >
-            {{ feedOnestopId | shortenName }}
+            {{ $filters.shortenName(feedOnestopId) }}
           </nuxt-link>
           version
           <nuxt-link
@@ -78,7 +78,7 @@
               },
             }"
           >
-            {{ feedVersionSha1 | shortenName(8) }}
+            {{ $filters.shortenName(feedVersionSha1, 8) }}
           </nuxt-link>.<br>
           <template v-if="!search">
             Click
@@ -142,7 +142,7 @@
                   dashed
                   :label="`Route with route_type = ${entity.route_type}`"
                 >
-                  {{ entity.route_type | routeTypeToWords }}
+                  {{ $filters.routeTypeToWords(entity.route_type) }}
                 </b-tooltip>
               </td>
             </tr>
@@ -203,7 +203,7 @@
           >
             <b-tab-item label="Connections">
               <client-only>
-                <tl-rsp-viewer v-if="activeTab === 0" :route-ids="entityIds" />
+                <tl-rsp-viewer v-if="activeTab === 1" :route-ids="entityIds" />
               </client-only>
             </b-tab-item>
             <b-tab-item label="Headways">
@@ -224,7 +224,7 @@
                       params: { feed: props.row.feed_onestop_id },
                     }"
                   >
-                    {{ props.row.feed_onestop_id | shortenName }}
+                    {{ $filters.shortenName(props.row.feed_onestop_id) }}
                   </nuxt-link>
                 </o-table-column>
                 <o-table-column
@@ -241,7 +241,7 @@
                       },
                     }"
                   >
-                    {{ props.row.feed_version_sha1 | shortenName(8) }}
+                    {{ $filters.shortenName(props.row.feed_version_sha1, 8) }}
                   </nuxt-link>
                 </o-table-column>
                 <o-table-column
@@ -260,7 +260,7 @@
                       },
                     }"
                   >
-                    {{ props.row.route_id | shortenName }}
+                    {{ $filters.shortenName(props.row.route_id) }}
                   </nuxt-link>
                 </o-table-column>
               </o-table>
@@ -269,7 +269,7 @@
             <b-tab-item label="Export">
               <client-only placeholder="Export">
                 <tl-data-export
-                  v-if="activeTab === 3"
+                  v-if="activeTab === 4"
                   :route-name="routeName"
                   :route-features="routeFeatures"
                   :stop-features="stopFeatures"
@@ -295,7 +295,7 @@
               :overlay="false"
               :include-stops="true"
               :link-version="linkVersion"
-              :features="activeTab === 3 ? features : []"
+              :features="activeTab === 4 ? features : []"
             />
           </client-only>
         </div>

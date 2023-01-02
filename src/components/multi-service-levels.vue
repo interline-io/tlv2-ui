@@ -64,8 +64,8 @@
                 Week of
               </template>
               {{ formatDay(col.key, j) }}<br>
-              Feed: {{ cell.feed_onestop_id | shortenName(16) }} ({{ cell.feed_version_sha1 | shortenName(6) }})<br>
-              Fetched: {{ cell.fetched_at | formatDate }}<br>
+              Feed: {{ $filters.shortenName(cell.feed_onestop_id,16) }} ({{ $filters.shortenName(cell.feed_version_sha1,6) }})<br>
+              Fetched: {{ $filters.formatDate(cell.fetched_at) }}<br>
               {{ Math.ceil(dayval / 3600) }} service hours <br>
               <template v-if="maxAggMode === 'all'">
                 {{ Math.ceil((dayval / cell.max) * 100) }}% of max (all groups)
@@ -85,7 +85,7 @@
           <span v-for="(dow,j) of daysOfWeek" :key="j" class="cell rowlabel">
             <template v-if="showGroupInfo">.
               <nuxt-link :to="{name:'feeds-feed-versions-version', hash: '#service', params:{feed: cell.feed_onestop_id, version: cell.feed_version_sha1}}">
-                Fetched {{ cell.fetched_at | formatDate }}
+                Fetched {{ $filters.formatDate(cell.fetched_at) }}
               </nuxt-link>
             </template>
           </span>

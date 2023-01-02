@@ -25,7 +25,7 @@ export default {
   data () {
     return {
       entities: [],
-      activeTab: 0,
+      activeTab: 1,
       childLabel: null,
       error: null,
       errorMessage: null,

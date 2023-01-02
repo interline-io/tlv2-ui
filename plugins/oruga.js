@@ -15,6 +15,7 @@ import Oruga, {
   OIcon,
   ODatetimepicker,
   OInput,
+  OModal,
   OTabItem,
   OTabs
 } from '@oruga-ui/oruga-next'
@@ -44,4 +45,5 @@ export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.component('b-tabs', OTabs)
   nuxtApp.vueApp.component('b-table-column', OTableColumn)
   nuxtApp.vueApp.component('b-table', OTable)
+  nuxtApp.vueApp.component('b-modal', OModal)
 })

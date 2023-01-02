@@ -33,10 +33,10 @@
       <b-message v-if="linkVersion" type="is-warning" has-icon>
         You are viewing a single GTFS Agency entity defined in source feed
         <nuxt-link :to="{name:'feeds-feed', params:{feed:$route.query.feed_onestop_id}}">
-          {{ $route.query.feed_onestop_id | shortenName }}
+          {{ $filters.shortenName($route.query.feed_onestop_id) }}
         </nuxt-link> version
         <nuxt-link :to="{name:'feeds-feed-versions-version', params:{feed:$route.query.feed_onestop_id, version:$route.query.feed_version_sha1}}">
-          {{ $route.query.feed_version_sha1 | shortenName(8) }}
+          {{$filters.shortenName($route.query.feed_version_sha1, 8) }}
         </nuxt-link>.<br>
         <template v-if="!search">
           Click <nuxt-link :to="{name: 'operators-onestop_id', params:{onestop_id:$route.params.onestop_id}}">
@@ -220,20 +220,20 @@
         <b-tabs v-model="activeTab" type="is-boxed" :animated="false" @input="setTab">
           <b-tab-item label="Map">
             <client-only placeholder="Map">
-              <tl-feed-version-map-viewer v-if="activeTab === 0" :agency-ids="agencyIds" :overlay="true" :link-version="linkVersion" />
+              <tl-feed-version-map-viewer v-if="activeTab === 1" :agency-ids="agencyIds" :overlay="true" :link-version="linkVersion" />
             </client-only>
           </b-tab-item>
 
           <b-tab-item label="Routes">
-            <tl-route-viewer v-if="activeTab === 1" :agency-ids="agencyIds" :show-agency="true" />
+            <tl-route-viewer v-if="activeTab === 2" :agency-ids="agencyIds" :show-agency="true" />
           </b-tab-item>
 
           <b-tab-item label="Stops">
-            <tl-stop-viewer v-if="activeTab === 2" :agency-ids="agencyIds" />
+            <tl-stop-viewer v-if="activeTab === 3" :agency-ids="agencyIds" />
           </b-tab-item>
 
           <b-tab-item v-if="advancedMode" label="Export">
-            <template v-if="activeTab === 3 && agencyIds.length === 1">
+            <template v-if="activeTab === 4 && agencyIds.length === 1">
               <client-only>
                 <agency-export :agency-ids="agencyIds" />
               </client-only>

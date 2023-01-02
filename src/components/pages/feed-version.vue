@@ -186,7 +186,7 @@
         </b-tab-item>
 
         <b-tab-item label="Service levels">
-          <template v-if="activeTab === 1">
+          <template v-if="activeTab === 2">
             <client-only placeholder="Service levels">
               <tl-multi-service-levels :show-group-info="false" :show-service-relative="false" :fvids="[entity.id]" :week-agg="false" />
             </client-only>
@@ -194,7 +194,7 @@
         </b-tab-item>
 
         <b-tab-item label="Map">
-          <template v-if="activeTab === 2">
+          <template v-if="activeTab === 3">
             <div v-if="imported">
               <client-only placeholder="Map">
                 <tl-feed-version-map-viewer :feed-version-sha1="entity.sha1" :overlay="true" :link-version="true" />
@@ -207,15 +207,15 @@
         </b-tab-item>
 
         <b-tab-item v-if="imported" label="Agencies">
-          <tl-agency-viewer v-if="activeTab === 3" :fvid="entity.sha1" />
+          <tl-agency-viewer v-if="activeTab === 4" :fvid="entity.sha1" />
         </b-tab-item>
 
         <b-tab-item v-if="imported" label="Routes">
-          <tl-route-viewer v-if="activeTab === 4" :link-version="true" :feed-version-sha1="entity.sha1" />
+          <tl-route-viewer v-if="activeTab === 5" :link-version="true" :feed-version-sha1="entity.sha1" />
         </b-tab-item>
 
         <b-tab-item v-if="imported" label="Stops">
-          <tl-stop-viewer v-if="activeTab === 5" :link-version="true" :feed-version-sha1="entity.sha1" />
+          <tl-stop-viewer v-if="activeTab === 6" :link-version="true" :feed-version-sha1="entity.sha1" />
         </b-tab-item>
 
         <b-tab-item v-if="imported" label="Import log">
