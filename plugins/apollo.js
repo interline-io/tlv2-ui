@@ -5,11 +5,11 @@ const cache = new InMemoryCache()
 
 const apolloClient = new ApolloClient({
   cache,
-  uri: 'https://api.transit.land/api/v2/query?apikey=',
+  uri: 'https://api.transit.land/api/v2/query',
   httpLinkOptions: {
     credentials: 'same-origin',
     headers: {
-      apikey: ''
+      apikey: 'xyz'
     }
   }
 })
