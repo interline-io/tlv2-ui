@@ -289,7 +289,7 @@ export default {
       const seenRoutes = {}
       for (const stop of this.filteredStops) {
         for (const d of stop.departures) {
-          d.stop = stop
+          // d.stop = stop
           const agencyKey = d.trip.route.agency.agency_name // d.trip.route.agency.id
           const routeKey = makeRouteKey(d)
           if (seenRoutes[routeKey]) {

@@ -11,8 +11,8 @@
           ticks
           lazy
         >
-          <template v-for="val in [400,1000,2000]">
-            <b-slider-tick :key="val" :value="val">
+          <template v-for="val in [400,1000,2000]" :key="val">
+            <b-slider-tick  :value="val">
               {{ val }}
             </b-slider-tick>
           </template>

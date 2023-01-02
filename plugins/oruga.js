@@ -7,6 +7,7 @@ import Oruga, {
   OTooltip,
   OField,
   OSlider,
+  OSliderTick,
   OSelect,
   ODropdown,
   ODropdownItem,
@@ -33,6 +34,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.component('b-tooltip', OTooltip)
   nuxtApp.vueApp.component('b-field', OField)
   nuxtApp.vueApp.component('b-slider', OSlider)
+  nuxtApp.vueApp.component('b-slider-tick', OSliderTick)
   nuxtApp.vueApp.component('b-select', OSelect)
   nuxtApp.vueApp.component('b-dropdown', ODropdown)
   nuxtApp.vueApp.component('b-dropdown-item', ODropdownItem)

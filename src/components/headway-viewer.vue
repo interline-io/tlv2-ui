@@ -169,7 +169,8 @@ export default {
       }
       const ret = { weekday: {}, saturday: {}, sunday: {}, found: false }
       // sort by direction_id desc, so direction_id = 0 will be preferred
-      const headwaysSorted = (this.headways || []).sort((a, b) => { return b.direction_id - a.direction_id })
+      // const headwaysSorted = (this.headways || []).sort((a, b) => { return b.direction_id - a.direction_id })
+      const headwaysSorted = []
       // console.log('headwaysSorted:', headwaysSorted)
       for (const headway of headwaysSorted) {
         const deps = (headway.departures || []).map((s) => { return parseHMS(s) })

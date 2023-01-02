@@ -4,10 +4,8 @@
     <div v-else-if="entity">
       <nav class="breadcrumb">
         <ul>
-          <li>
-            <nuxt-link :to="{name:'stops'}">
-              Stops
-            </nuxt-link>
+          <li>            
+              <a href="#">Stops            </a>
           </li>
           <li>
             <nuxt-link :to="{name: 'stops-onestop_id', params:{onestop_id:$route.params.onestop_id}}">

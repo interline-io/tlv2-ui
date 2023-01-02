@@ -106,7 +106,7 @@
 
 <script>
 import gql from 'graphql-tag'
-import TableViewerMixin from '~/tl/table-viewer-mixin'
+import TableViewerMixin from '../table-viewer-mixin'
 
 const q = gql`
 query ($limit: Int, $after: Int, $search: String, $merged: Boolean, $adm0_name: String, $adm1_name: String, $city_name: String) {
