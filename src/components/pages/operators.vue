@@ -73,30 +73,30 @@
         </b-field>
       </b-field>
 
-      <b-table
+      <o-table
         :data="entityPageFlat"
         :striped="true"
         :loading="$apollo.loading"
       >
         <!-- TODO: fix sorting -->
-        <b-table-column v-slot="props" field="name" label="Operator Name (Short Name)">
+        <o-table-column v-slot="props" field="name" label="Operator Name (Short Name)">
           <nuxt-link :to="{name: 'operators-onestop_id', params: {onestop_id: props.row.onestop_id}}">
             <strong>{{ props.row.name }}</strong>
           </nuxt-link>
           <span v-if="props.row.short_name">({{ props.row.short_name }})</span>
-        </b-table-column>
-        <b-table-column v-slot="props" field="city_name" label="City" :width="200">
+        </o-table-column>
+        <o-table-column v-slot="props" field="city_name" label="City" :width="200">
           {{ props.row.city_name }}
-        </b-table-column>
-        <b-table-column v-slot="props" field="adm1_name" label="State/Province" :width="200">
+        </o-table-column>
+        <o-table-column v-slot="props" field="adm1_name" label="State/Province" :width="200">
           {{ props.row.adm1_name }}
-        </b-table-column>
-        <b-table-column v-slot="props" field="adm0_name" label="Country" :width="260">
+        </o-table-column>
+        <o-table-column v-slot="props" field="adm0_name" label="Country" :width="260">
           <b-tooltip :label="props.row.other_places.filter((s)=>{return s.city_name}).map((s)=>{return s.city_name}).join(', ')" dashed>
             {{ props.row.adm0_name }}
           </b-tooltip>
-        </b-table-column>
-      </b-table>
+        </o-table-column>
+      </o-table>
       <tl-show-more v-if="entities.length === limit || hasMore" :limit="entities.length" @click="showAll" />
     </div>
 

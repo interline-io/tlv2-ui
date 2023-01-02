@@ -177,23 +177,23 @@
             </nuxt-link> for more information on this process.
           </b-message>
           <div class="content">
-            <b-table
+            <o-table
               :data="sources"
               :striped="true"
               sort-icon="menu-up"
             >
-              <b-table-column v-slot="props" label="Association type">
+              <o-table-column v-slot="props" label="Association type">
                 {{ props.row.target_type }}
-              </b-table-column>
-              <b-table-column v-slot="props" label="Source Feed Onestop ID">
+              </o-table-column>
+              <o-table-column v-slot="props" label="Source Feed Onestop ID">
                 <nuxt-link :to="{name:'feeds-feed', params:{feed:props.row.target_feed}}">
                   {{ props.row.target_feed }}
                 </nuxt-link>
-              </b-table-column>
-              <b-table-column v-slot="props" label="Feed Spec">
+              </o-table-column>
+              <o-table-column v-slot="props" label="Feed Spec">
                 {{ props.row.target_feed_spec }}
-              </b-table-column>
-              <b-table-column v-slot="props" field="agency" label="Matched GTFS Agency">
+              </o-table-column>
+              <o-table-column v-slot="props" field="agency" label="Matched GTFS Agency">
                 <template v-if="props.row.target_match">
                   <b-icon icon="check" />
                   {{ props.row.target_match.agency_name }}
@@ -203,8 +203,8 @@
                     <b-icon icon="alert" />
                   </b-tooltip>
                 </template>
-              </b-table-column>
-            </b-table>
+              </o-table-column>
+            </o-table>
           </div>
         </b-tab-item>
       </b-tabs>

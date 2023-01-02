@@ -87,7 +87,7 @@
               </td>
               <td>
                 <template v-if="lastSuccessfulFetch && lastSuccessfulFetch.fetched_at">
-                  {{ lastSuccessfulFetch.fetched_at | formatDate }} ({{ lastSuccessfulFetch.fetched_at | fromNow }})
+                  {{ lastSuccessfulFetch.fetched_at  }} ({{ lastSuccessfulFetch.fetched_at  }})
                 </template>
                 <template v-else>
                   Unknown
@@ -136,19 +136,19 @@
                     License Identifier: {{ entity.license.spdx_identifier }}
                   </li>
                   <li v-if="entity.license.use_without_attribution">
-                    Use allowed without attribution: {{ entity.license.use_without_attribution | capitalize }}
+                    Use allowed without attribution: {{ entity.license.use_without_attribution  }}
                   </li>
                   <li v-if="entity.license.share_alike_optional">
-                    Share-alike optional: {{ entity.license.share_alike_optional | capitalize }}
+                    Share-alike optional: {{ entity.license.share_alike_optional  }}
                   </li>
                   <li v-if="entity.license.commercial_use_allowed">
-                    Commercial use allowed: {{ entity.license.commercial_use_allowed | capitalize }}
+                    Commercial use allowed: {{ entity.license.commercial_use_allowed  }}
                   </li>
                   <li v-if="entity.license.create_derived_product">
-                    Creating derived products allowed: {{ entity.license.create_derived_product | capitalize }}
+                    Creating derived products allowed: {{ entity.license.create_derived_product  }}
                   </li>
                   <li v-if="entity.license.redistribution_allowed">
-                    Redistribution allowed: {{ entity.license.redistribution_allowed | capitalize }}
+                    Redistribution allowed: {{ entity.license.redistribution_allowed }}
                   </li>
                   <li v-if="entity.license.attribution_text">
                     Required attribution text: {{ entity.license.attribution_text }}
@@ -234,7 +234,7 @@
 
         <b-tabs v-model="activeTab" type="is-boxed" :animated="false" @input="setTab">
           <b-tab-item label="Versions">
-            <b-table
+            <o-table
               :data="entity.feed_versions"
               :striped="true"
               :paginated="true"
@@ -243,43 +243,43 @@
               detailed
               :show-detail-icon="false"
             >
-              <b-table-column
+              <o-table-column
                 v-slot="props"
                 :sortable="true"
                 field="fetched_at"
                 label="Fetched"
               >
                 <template v-if="props.row.fetched_at">
-                  {{ props.row.fetched_at | formatDate }} ({{ props.row.fetched_at | fromNow }})
+                  {{ props.row.fetched_at  }} ({{ props.row.fetched_at }})
                 </template>
                 <template v-else>
                   Unknown
                 </template>
-              </b-table-column>
-              <b-table-column v-slot="props" :sortable="true" field="sha1" label="SHA1">
+              </o-table-column>
+              <o-table-column v-slot="props" :sortable="true" field="sha1" label="SHA1">
                 <nuxt-link
                   :to="{name: 'feeds-feed-versions-version', params: {feed: entity.onestop_id, version: props.row.sha1}}"
                 >
                   {{ props.row.sha1.substr(0,6) }}…
                 </nuxt-link>
-              </b-table-column>
-              <b-table-column
+              </o-table-column>
+              <o-table-column
                 v-slot="props"
                 :sortable="true"
                 field="earliest_calendar_date"
                 label="Earliest date"
               >
                 {{ props.row.earliest_calendar_date.substr(0,10) }}
-              </b-table-column>
-              <b-table-column
+              </o-table-column>
+              <o-table-column
                 v-slot="props"
                 :sortable="true"
                 field="latest_calendar_date"
                 label="Latest date"
               >
                 {{ props.row.latest_calendar_date.substr(0,10) }}
-              </b-table-column>
-              <b-table-column v-slot="props" field="feed_version_gtfs_import" label="Imported">
+              </o-table-column>
+              <o-table-column v-slot="props" field="feed_version_gtfs_import" label="Imported">
                 <template v-if="props.row.feed_version_gtfs_import">
                   <b-tooltip
                     v-if="props.row.feed_version_gtfs_import.schedule_removed"
@@ -304,14 +304,14 @@
                     <b-icon icon="alert" />
                   </b-tooltip>
                 </template>
-              </b-table-column>
-              <b-table-column v-slot="props" label="Active">
+              </o-table-column>
+              <o-table-column v-slot="props" label="Active">
                 <b-icon
                   v-if="entity.feed_state && entity.feed_state.feed_version && entity.feed_state.feed_version.id === props.row.id"
                   icon="check"
                 />
-              </b-table-column>
-              <b-table-column v-if="showDownloadColumn" v-slot="props" label="Download">
+              </o-table-column>
+              <o-table-column v-if="showDownloadColumn" v-slot="props" label="Download">
                 <template v-if="entity.license.redistribution_allowed !== 'no' && props.index == 0">
                   <a :href="`https://demo.transit.land/api/v2/rest/feed_versions/${props.row.sha1}/download`" target="_blank">
                     <b-icon icon="download" type="is-success" title="Download latest feed version" />
@@ -322,13 +322,13 @@
                     <b-icon icon="download" title="Download through Transitland Professional API" />
                   </a>
                 </template>
-              </b-table-column>
+              </o-table-column>
               <template v-if="showDownloadColumn" #detail="props">
                 <p>Want to download a copy of this feed version to process with your own software? Registered users with <a href="https://www.interline.io/transitland/plans-pricing/" target="_blank">Hobbyist/Academic, Professional, and Enterprise plans</a> can use the v2 REST API to download historical feed versions:</p>
                 <pre>GET https://transit.land/api/v2/rest/feed_versions/{{ props.row.sha1 }}/download?apikey=your-api-key</pre>
                 <p>Learn more in the <a href="/documentation/rest-api/feed_versions#downloading-source-gtfs" target="_blank">documentation</a>.</p>
               </template>
-            </b-table>
+            </o-table>
 
             <slot name="add-feed-version" :entity="entity" />
           </b-tab-item>
@@ -581,7 +581,6 @@ export default {
   },
   methods: {
     filterFeedInfo (fi) {
-      delete fi.__typename
       return Object.fromEntries(Object.entries(fi).filter(([_, v]) => v != null))
     }
   }
