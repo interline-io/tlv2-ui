@@ -9,6 +9,7 @@
     },
     "devDependencies": {
         "@oruga-ui/oruga": "^0.5.10",
+        "apollo-link-http": "^1.5.17",
         "date-fns": "^2.29.3",
         "haversine": "^1.1.1",
         "maplibre-gl": "^2.4.0",

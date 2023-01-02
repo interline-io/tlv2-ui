@@ -11,4 +11,10 @@ export default defineNuxtConfig({
     path: '~/../src/components/b',
     prefix: 'b'
   }],
+  runtimeConfig: {
+    public: {
+      graphqlEndpoint: process.env.GRAPHQL_ENDPOINT,
+      graphqlApikey: process.env.GRAPHQL_APIKEY,
+    }
+  }
 })
