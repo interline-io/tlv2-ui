@@ -89,12 +89,6 @@ function parseHMS (value) {
   return a[0] * 3600 + a[1] * 60 + a[2]
 }
 
-function median (values) {
-  const half = Math.floor(values.length / 2)
-  if (values.length % 2) { return values[half] }
-  return (values[half - 1] + values[half]) / 2.0
-}
-
 function departureFilter (values, vmin, vmax) {
   const ret = []
   for (let i = 0; i < values.length - 1; i++) {
@@ -111,46 +105,10 @@ function departureFilter (values, vmin, vmax) {
   return ret
 }
 
-function formatDuration (seconds) {
-  if (seconds > 3600) {
-    return `${Math.ceil(seconds / 3600)}h ${Math.ceil(seconds % 3600 / 60)} min`
-  }
-  if (seconds > 0) {
-    return `${Math.ceil(seconds / 60)} min`
-  }
-  return '-'
-}
-
 export default {
   filters: {
     parseHMS (value) {
       return parseHMS(value)
-    },
-    formatHeadway (hw, tod) {
-      if (!hw) {
-        return ''
-      }
-      const deps = hw[tod] || []
-      if (deps.length === 0) {
-        return ''
-      } else if (deps.length < 3) {
-        return `${deps.length + 1} trips`
-      }
-      const amin = Math.min(...deps)
-      const amax = Math.max(...deps)
-      const amid = median(deps)
-      if (amin && amax) {
-        const diff = Math.abs(amax - amin)
-        if (diff > 2 * 3600) {
-          return 'varies'
-        } else if (diff > 10 * 60) {
-          return `${formatDuration(amin)} - ${formatDuration(amax)}`
-        }
-      }
-      if (amid) {
-        return formatDuration(amid)
-      }
-      return ''
     }
   },
   props: {
@@ -169,9 +127,7 @@ export default {
       }
       const ret = { weekday: {}, saturday: {}, sunday: {}, found: false }
       // sort by direction_id desc, so direction_id = 0 will be preferred
-      // const headwaysSorted = (this.headways || []).sort((a, b) => { return b.direction_id - a.direction_id })
-      const headwaysSorted = []
-      // console.log('headwaysSorted:', headwaysSorted)
+      const headwaysSorted = (this.headways || []).slice(0).sort((a, b) => { return b.direction_id - a.direction_id })
       for (const headway of headwaysSorted) {
         const deps = (headway.departures || []).map((s) => { return parseHMS(s) })
         if (deps.length > 1) {

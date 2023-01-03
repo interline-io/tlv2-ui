@@ -9,6 +9,7 @@ function parseHMS (value) {
   return a[0] * 3600 + a[1] * 60 + a[2]
 }
 
+
 function formatHMS (value) {
   value = value % (24 * 3600)
   let h = Math.floor(value / 3600)

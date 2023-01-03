@@ -31,8 +31,50 @@ function formatHMS (value) {
   return `${h}:${m} ${ampm}`
 }
 
+function median (values) {
+  const half = Math.floor(values.length / 2)
+  if (values.length % 2) { return values[half] }
+  return (values[half - 1] + values[half]) / 2.0
+}
+
+function formatDuration (seconds) {
+  if (seconds > 3600) {
+    return `${Math.ceil(seconds / 3600)}h ${Math.ceil(seconds % 3600 / 60)} min`
+  }
+  if (seconds > 0) {
+    return `${Math.ceil(seconds / 60)} min`
+  }
+  return '-'
+}
+
 export default defineNuxtPlugin((nuxtApp) => {
     nuxtApp.vueApp.config.globalProperties.$filters = {
+      formatHeadway (hw, tod) {
+        if (!hw) {
+          return ''
+        }
+        const deps = hw[tod] || []
+        if (deps.length === 0) {
+          return ''
+        } else if (deps.length < 3) {
+          return `${deps.length + 1} trips`
+        }
+        const amin = Math.min(...deps)
+        const amax = Math.max(...deps)
+        const amid = median(deps)
+        if (amin && amax) {
+          const diff = Math.abs(amax - amin)
+          if (diff > 2 * 3600) {
+            return 'varies'
+          } else if (diff > 10 * 60) {
+            return `${formatDuration(amin)} - ${formatDuration(amax)}`
+          }
+        }
+        if (amid) {
+          return formatDuration(amid)
+        }
+        return ''
+      },  
         fromNowDate (comparisonDate) {
             return formatDistanceToNow(comparisonDate, {
               addSuffix: true
@@ -136,6 +178,5 @@ export default defineNuxtPlugin((nuxtApp) => {
             }
           }
         }
-    
     
   })
