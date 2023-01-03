@@ -9,11 +9,15 @@ module.exports = {
     requireConfigFile: false
   },
   extends: [
-    '@nuxtjs',
-    'plugin:nuxt/recommended'
+    'plugin:@typescript-eslint/recommended',
+    'plugin:nuxt/recommended',
+    'plugin:vue/vue3-recommended',
+    'plugin:prettier/recommended',
   ],
   plugins: [
   ],
   // add your custom rules here
   rules: {}
 }
+
+
