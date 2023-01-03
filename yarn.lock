@@ -5994,31 +5994,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"root-workspace-0b6124@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "root-workspace-0b6124@workspace:."
-  dependencies:
-    "@apollo/client": ^3.7.3
-    "@mdi/font": ^7.1.96
-    "@oruga-ui/oruga": ^0.5.10
-    "@oruga-ui/oruga-next": ^0.5.10
-    "@oruga-ui/theme-bulma": ^0.2.8
-    "@vue/apollo-option": ^4.0.0-alpha.20
-    "@vueuse/core": ^9.9.0
-    apollo-link-http: ^1.5.17
-    bulma: ^0.9.4
-    date-fns: ^2.29.3
-    graphql: ^16.6.0
-    graphql-tag: ^2.12.6
-    haversine: ^1.1.1
-    maplibre-gl: ^2.4.0
-    nuxt: 3.0.0
-    sanitize-filename: ^1.6.3
-    sass: ^1.57.1
-    vue: ^3.0.0
-  languageName: unknown
-  linkType: soft
-
 "run-async@npm:^2.4.0":
   version: 2.4.1
   resolution: "run-async@npm:2.4.1"
@@ -6604,6 +6579,31 @@ __metadata:
   checksum: 0b6bda46b680dca072f84aef1acd22a7085a2ff2aa8e222bb41045c61a056943805056d77d7f976587ed6a0597872beb5c416043f65f0314304432d6c178dd20
   languageName: node
   linkType: hard
+
+"tlv2-ui@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "tlv2-ui@workspace:."
+  dependencies:
+    "@apollo/client": ^3.7.3
+    "@mdi/font": ^7.1.96
+    "@oruga-ui/oruga": ^0.5.10
+    "@oruga-ui/oruga-next": ^0.5.10
+    "@oruga-ui/theme-bulma": ^0.2.8
+    "@vue/apollo-option": ^4.0.0-alpha.20
+    "@vueuse/core": ^9.9.0
+    apollo-link-http: ^1.5.17
+    bulma: ^0.9.4
+    date-fns: ^2.29.3
+    graphql: ^16.6.0
+    graphql-tag: ^2.12.6
+    haversine: ^1.1.1
+    maplibre-gl: ^2.4.0
+    nuxt: 3.0.0
+    sanitize-filename: ^1.6.3
+    sass: ^1.57.1
+    vue: ^3.0.0
+  languageName: unknown
+  linkType: soft
 
 "tmp@npm:^0.0.33":
   version: 0.0.33
