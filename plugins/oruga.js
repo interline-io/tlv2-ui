@@ -23,8 +23,8 @@ import Oruga, {
 
 import { bulmaConfig } from '@oruga-ui/theme-bulma'
 import '@oruga-ui/theme-bulma/dist/bulma.css'
-
-import '@oruga-ui/oruga-next/dist/oruga.css'
+import '@mdi/font/css/materialdesignicons.min.css'
+import '../node_modules/bulma/css/bulma-rtl.min.css'
 
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.use(Oruga, bulmaConfig)

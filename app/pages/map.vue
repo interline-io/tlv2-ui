@@ -7,8 +7,11 @@
 </template>
 
 <script>
-export default {
+definePageMeta({
   layout: 'map',
+});
+
+export default {
   head () {
     return {
       title: 'Global Transit Map'

@@ -759,6 +759,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mdi/font@npm:^7.1.96":
+  version: 7.1.96
+  resolution: "@mdi/font@npm:7.1.96"
+  checksum: db6dce72f553e844d049cc563cf89ae58dfd0f55f99f743ccbf1ca6ab644c940f50fbd78ecd91290a67ebb58fa5bae4983bbab782a6611456bd87566825c1ca4
+  languageName: node
+  linkType: hard
+
 "@netlify/functions@npm:^1.3.0":
   version: 1.3.0
   resolution: "@netlify/functions@npm:1.3.0"
@@ -945,15 +952,6 @@ __metadata:
   peerDependencies:
     vue: ^3.2.45
   checksum: 2ff4cd305231579936418c67174f98821460760ccd93c4e342807be96a18f984c6f5a6cf75d34a35ed3c5da454e2a325affd87058aea433df313a9b17ec58b27
-  languageName: node
-  linkType: hard
-
-"@nuxtjs/bulma@npm:^1.3.0":
-  version: 1.3.0
-  resolution: "@nuxtjs/bulma@npm:1.3.0"
-  dependencies:
-    bulma: ^0.9.0
-  checksum: f4d42403d141c2c054fff39293842024e6ca3acd1d3c84a2e133b4b6004f0803c225c7431dc711afd76076b724a4cfb76fe8a6d6af3fc0dc7933964fea64f5c6
   languageName: node
   linkType: hard
 
@@ -1857,17 +1855,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"buefy@npm:^0.9.22":
-  version: 0.9.22
-  resolution: "buefy@npm:0.9.22"
-  dependencies:
-    bulma: 0.9.4
-  peerDependencies:
-    vue: ^2.6.11
-  checksum: e0854c9f206ba58ee63999b38d758e6c0a78a847f2532d376e983fd1bd325a5b23e0370ec7259375ab49156521b8666e960596e25f713480761e966c6c9bca8a
-  languageName: node
-  linkType: hard
-
 "buffer-crc32@npm:^0.2.1, buffer-crc32@npm:^0.2.13":
   version: 0.2.13
   resolution: "buffer-crc32@npm:0.2.13"
@@ -1909,7 +1896,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bulma@npm:0.9.4, bulma@npm:^0.9.0, bulma@npm:^0.9.4":
+"bulma@npm:0.9.4, bulma@npm:^0.9.4":
   version: 0.9.4
   resolution: "bulma@npm:0.9.4"
   checksum: bc0ab8c203deb0ae200fab5b38547ad4bc8ed1e3abcf6f4ac8a2229af46540419bbcb78c9d2e80f3ddda8825d64fa186ed8775674656cdcabe5544be4d0f3d85
@@ -4943,15 +4930,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nuxt-buefy@npm:^0.4.24":
-  version: 0.4.24
-  resolution: "nuxt-buefy@npm:0.4.24"
-  dependencies:
-    buefy: ^0.9.22
-  checksum: 124896f925db1d2c9c47ccfc97bdab2180929623330716e65cc4ea13d4abfd205f3ae45e942597992e9546a49cefdeadfa54948f8a6f9ad4895de0df7d8c8a3a
-  languageName: node
-  linkType: hard
-
 "nuxt@npm:3.0.0":
   version: 3.0.0
   resolution: "nuxt@npm:3.0.0"
@@ -5986,7 +5964,7 @@ __metadata:
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
     "@apollo/client": ^3.7.3
-    "@nuxtjs/bulma": ^1.3.0
+    "@mdi/font": ^7.1.96
     "@oruga-ui/oruga": ^0.5.10
     "@oruga-ui/oruga-next": ^0.5.10
     "@oruga-ui/theme-bulma": ^0.2.8
@@ -5999,7 +5977,6 @@ __metadata:
     haversine: ^1.1.1
     maplibre-gl: ^2.4.0
     nuxt: 3.0.0
-    nuxt-buefy: ^0.4.24
     sanitize-filename: ^1.6.3
     sass: ^1.57.1
     vue: ^3.0.0

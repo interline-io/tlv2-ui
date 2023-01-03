@@ -17,8 +17,10 @@ export default defineNuxtConfig({
   }],
   runtimeConfig: {
     public: {
-      graphqlEndpoint: process.env.GRAPHQL_ENDPOINT,
+      graphqlEndpoint: process.env.GRAPHQL_ENDPOINT || 'https://transit.land/api/v2/query',
       graphqlApikey: process.env.GRAPHQL_APIKEY,
+      tileEndpoint: process.env.TILE_ENDPOINT || 'https://transit.land/api/v2/tiles',
+      tileApikey: process.env.TILE_APIKEY
     }
   },
   css: [
