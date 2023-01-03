@@ -105,7 +105,6 @@
 <script>
 import haversine from 'haversine'
 import { gql } from 'graphql-tag'
-import Filters from './filters'
 
 const query = gql`
 query( $stopIds: [Int!], $where: StopFilter, $stwhere: StopTimeFilter, $includeGeometry: Boolean! = false) {
@@ -166,7 +165,6 @@ query( $stopIds: [Int!], $where: StopFilter, $stwhere: StopTimeFilter, $includeG
 `
 
 export default {
-  mixins: [Filters],
   layout: 'map',
   props: {
     searchCoords: { type: Array, default () { return null } },

@@ -134,7 +134,6 @@
 <script>
 import gql from 'graphql-tag'
 import TableViewerMixin from '../table-viewer-mixin'
-import Filters from '../filters'
 
 const q = gql`
 query($specs: [FeedSpecTypes!], $after: Int, $limit:Int, $search: String, $fetch_error: Boolean, $import_status: ImportStatus, $tags: Tags) {
@@ -199,7 +198,7 @@ function first (v) {
 }
 
 export default {
-  mixins: [TableViewerMixin, Filters],
+  mixins: [TableViewerMixin],
   apollo: {
     entities: {
       client: 'transitland',

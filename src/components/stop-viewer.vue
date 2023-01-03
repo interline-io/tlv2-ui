@@ -47,7 +47,6 @@
 <script>
 import gql from 'graphql-tag'
 import TableViewerMixin from './table-viewer-mixin'
-import Filters from './filters'
 
 const q = gql`
 query ($feed_version_sha1: String, $agency_ids: [Int!], $limit: Int, $after: Int, $search: String) {
@@ -77,7 +76,7 @@ query ($feed_version_sha1: String, $agency_ids: [Int!], $limit: Int, $after: Int
 `
 
 export default {
-  mixins: [TableViewerMixin, Filters],
+  mixins: [TableViewerMixin],
   props: {
     showRoutes: { type: Boolean, default: true },
     showAgencies: { type: Boolean, default: false },

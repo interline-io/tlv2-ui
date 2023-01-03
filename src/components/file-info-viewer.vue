@@ -37,10 +37,7 @@
 </template>
 
 <script>
-import Filters from './filters'
-
 export default {
-  mixins: [Filters],
   props: {
     files: { type: Array, default () { return [] } }
   }

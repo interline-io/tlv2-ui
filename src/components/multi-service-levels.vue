@@ -99,7 +99,6 @@
 <script>
 import { parseISO, format, add, isBefore } from 'date-fns'
 import gql from 'graphql-tag'
-import Filters from './filters'
 
 const q = gql`
 query ($feed_version_ids: [Int!], $start_date: Date, $end_date: Date) {
@@ -128,7 +127,6 @@ query ($feed_version_ids: [Int!], $start_date: Date, $end_date: Date) {
 `
 
 export default {
-  mixins: [Filters],
   props: {
     showFilters: { type: Boolean, default: true },
     showServiceRelative: { type: Boolean, default: true },
