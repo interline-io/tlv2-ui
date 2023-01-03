@@ -1,3 +1,5 @@
 <template>
-    <div>tag</div>
+    <div class="message">
+        <slot />
+    </div>
 </template>

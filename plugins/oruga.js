@@ -31,6 +31,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.component('b-button', OButton)
   nuxtApp.vueApp.component('b-autocomplete', OAutocomplete)
   nuxtApp.vueApp.component('b-notification', ONotification)
+  nuxtApp.vueApp.component('b-message', ONotification)
   nuxtApp.vueApp.component('b-tooltip', OTooltip)
   nuxtApp.vueApp.component('b-field', OField)
   nuxtApp.vueApp.component('b-slider', OSlider)

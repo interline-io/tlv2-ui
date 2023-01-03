@@ -11,11 +11,10 @@
               </nuxt-link>
             </li>
             <li>
-              <!-- TODO: this is not ideal... it links only to the auto-generated onestop_id, and not the resolved, cached tl_mv_active_agencies lookup. -->
               <nuxt-link
                 :to="{
                   name: 'operators-onestop_id',
-                  params: { onestop_id: entity.agency.onestop_id },
+                  params: { onestop_id: entity.agency.onestop_id || 'ok' },
                 }"
               >
                 {{ entity.agency.agency_name }}
@@ -116,7 +115,7 @@
                 <nuxt-link
                   :to="{
                     name: 'operators-onestop_id',
-                    params: { onestop_id: entity.agency.onestop_id },
+                    params: { onestop_id: entity.agency.onestop_id || 'ok' },
                   }"
                 >
                   {{ entity.agency.agency_name }}
@@ -480,6 +479,9 @@ export default {
     }
   },
   computed: {
+    onestopId () { 
+      return this.searchKey.onestop_id
+    },
     // routeFeatures and stopFeatures are calculated from the main
     // graphql response so we don't need to copy in and rely on the response from the map
     routeFeatures () {

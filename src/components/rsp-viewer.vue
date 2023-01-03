@@ -368,19 +368,19 @@ function hsin (fromPoint, toPoint) {
   padding:10px;
 }
 .stop-list li {
-  background-image: url( '~assets/route-middle-1.svg' ) ;
+  background-image: url( '~/svg/route-middle-1.svg' ) ;
   background-repeat: no-repeat;
   background-size:20px 4000px;
   background-position:0px -18px;
 }
 .stop-list li:first-child {
-  background-image: url( '~assets/route-start.svg' ) ;
+  background-image: url( '~/svg/route-start.svg' ) ;
   background-repeat: no-repeat;
   background-size:20px 4000px;
   background-position:0px 10px;
 }
 .stop-list li:last-child {
-  background-image: url( '~assets/route-end.svg' ) ;
+  background-image: url( '~/svg/route-end.svg' ) ;
   background-repeat: no-repeat;
   background-size:20px 100px;
   background-position:0px -18px;
