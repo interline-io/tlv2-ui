@@ -12,7 +12,7 @@
         @typing="typing"
         @select="option => setLocation(option.geometry.coordinates)"
       >
-        <template slot-scope="props">
+        <template v-slot="props">
           {{ props.option.stop_name }}
           <div v-for="rs of props.option.route_stops" :key="rs.route.id" class="clearfix tag">
             {{ rs.route.agency.agency_name }} :{{ rs.route.route_short_name }}
@@ -20,15 +20,16 @@
         </template>
       </b-autocomplete>
       <div>
-        <span v-if="!useGeolocation" class="button" @click="watchLocation"><b-icon icon="crosshairs" /></span>
-        <span v-if="useGeolocation && $geolocation.loading" class="button"><b-icon icon="loading" /></span>
-        <span v-else-if="useGeolocation && !$geolocation.loading" class="button"><b-icon icon="crosshairs-gps" /></span>
+        <span v-if="!locationUse" class="button" @click="watchLocation"><b-icon icon="crosshairs" /></span>
+        <span v-if="locationUse && locationLoading" class="button"><b-icon icon="loading" /></span>
+        <span v-else-if="locationUse && !locationLoading" class="button"><b-icon icon="crosshairs-gps" /></span>
       </div>
     </b-field>
   </div>
 </template>
 
 <script>
+import { useGeolocation } from '@vueuse/core'
 import { gql } from 'graphql-tag'
 
 const stopSearchQuery = gql`
@@ -96,8 +97,11 @@ export default {
   data () {
     return {
       search: '',
+      error: null,
       minSearchLength: 4,
-      useGeolocation: false,
+      locationUse: false,
+      locationLoading: false,
+      coords: null,
       unboundedStops: [],
       boundedStops: []
     }
@@ -132,18 +136,27 @@ export default {
     }
   },
   watch: {
-    '$geolocation.coords' () {
-      this.setLocation([this.$geolocation.coords.longitude, this.$geolocation.coords.latitude])
-      this.$geolocation.watch = false
+    coords () {
+      const { error } = useGeolocation()
+      this.error = error
+      if (this.coords.accuracy === 0) {
+        return
+      }
+      this.setLocation([this.coords.longitude, this.coords.latitude])
     }
   },
   methods: {
     setLocation (coords) {
       this.$emit('setGeolocation', coords)
+      const { pause } = useGeolocation()
+      pause()
+      this.locationLoading = false
     },
     watchLocation () {
-      this.useGeolocation = true
-      this.$geolocation.watch = true
+      this.locationUse = true
+      this.locationLoading = true
+      const { coords  } = useGeolocation()
+      this.coords = coords
     },
     typing (val) {
       if (val.length >= this.minSearchLength) {

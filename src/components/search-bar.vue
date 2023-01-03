@@ -2,16 +2,16 @@
   <div>
     <b-field>
       <b-input
-        v-model="search"
+        :value="modelValue" 
+        @input="$emit('update:modelValue', $event.target.value)"
         :placeholder="placeholder"
         type="text"
         icon="magnify"
-        :icon-right="search.length > 0 ? 'close-circle' : null"
+        :icon-right="modelValue ? 'close-circle' : null"
         icon-right-clickable
         class="entity-search"
         @icon-right-click="clearSearch"
-        @keydown.esc.native="clearSearch"
-        @input="$emit('input',$event)"
+        @keydown.esc="clearSearch"
       />
     </b-field>
   </div>
@@ -19,16 +19,13 @@
 <script>
 export default {
   props: {
-    value: { type: String, default: '' },
+    modelValue: { type: String, default: '' },
     placeholder: { type: String, default: 'Search' }
   },
-  data () {
-    return { search: this.value || '' }
-  },
+  emits: ['update:modelValue'],
   methods: {
     clearSearch () {
-      this.search = ''
-      this.$emit('input', '')
+      this.$emit('update:modelValue', '')
     }
   }
 }

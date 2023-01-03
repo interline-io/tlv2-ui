@@ -277,14 +277,6 @@
                 />
               </client-only>
             </b-tab-item>
-
-            <!-- <b-tab-item :label="childLabel">
-              <nuxt-child
-                :service-date="serviceDate"
-                :entity="entity"
-                :label.sync="childLabel"
-              />
-            </b-tab-item> -->
           </b-tabs>
         </div>
         <div class="column is-one-third">
