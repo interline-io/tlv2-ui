@@ -102,7 +102,7 @@
                 </b-tooltip>
               </td>
               <td>
-                <b-message class="is-danger" has-icon>
+                <b-message variant="danger" has-icon>
                   {{ lastFetch.fetch_error }}
                 </b-message>
               </td>
@@ -154,12 +154,12 @@
                     Required attribution text: {{ entity.license.attribution_text }}
                   </li>
                   <li v-if="entity.license.attribution_instructions" class="content">
-                    Attribution instructions: <blockquote>{{ $filters.capitalize(entity.license.attribution_instructions) }}</blockquote>
+                    Attribution instructions
+                    <blockquote>{{ $filters.capitalize(entity.license.attribution_instructions) }}</blockquote>
                   </li>
                 </ul>
               </td>
             </tr>
-
             <tr v-if="entity.languages">
               <td>Languages</td>
               <td>{{ entity.languages }}</td>
@@ -198,7 +198,7 @@
             <b-message
               v-for="(operator,i) of entity.associated_operators"
               :key="i"
-              type="is-success"
+              variant="success"
               has-icon
               icon="information"
               :closable="false"
@@ -295,7 +295,7 @@
                   <b-tooltip
                     v-else-if="props.row.feed_version_gtfs_import.success == false"
                     :label="props.row.feed_version_gtfs_import.exception_log"
-                    position="is-top"
+                    position="top"
                   >
                     <b-icon icon="alert" />
                   </b-tooltip>
@@ -308,23 +308,22 @@
                 />
               </o-table-column>
               <o-table-column v-if="showDownloadColumn" v-slot="props" label="Download">
-                <template v-if="entity.license.redistribution_allowed !== 'no' && props.index == 0">
-                  <a :href="`https://demo.transit.land/api/v2/rest/feed_versions/${props.row.sha1}/download`" target="_blank">
-                    <b-icon icon="download" type="is-success" title="Download latest feed version" />
-                  </a>
-                </template>
-                <template v-else-if="entity.license.redistribution_allowed !== 'no'">
-                  <a @click="props.toggleDetails(props.row)">
-                    <b-icon icon="download" title="Download through Transitland Professional API" />
+                <template v-if="entity.license.redistribution_allowed !== 'no'"> 
+                  <a @click="showDownloadInstructions(props.row.sha1)">
+                    <b-icon icon="download" title="Download feed version" v-if="props.row.sha1 === latestFeedVersionSha1" variant="success" />
+                    <b-icon icon="download" title="Download feed version" v-else />
                   </a>
                 </template>
               </o-table-column>
-              <template v-if="showDownloadColumn" #detail="props">
-                <p>Want to download a copy of this feed version to process with your own software? Registered users with <a href="https://www.interline.io/transitland/plans-pricing/" target="_blank">Hobbyist/Academic, Professional, and Enterprise plans</a> can use the v2 REST API to download historical feed versions:</p>
-                <pre>GET https://transit.land/api/v2/rest/feed_versions/{{ props.row.sha1 }}/download?apikey=your-api-key</pre>
-                <p>Learn more in the <a href="/documentation/rest-api/feed_versions#downloading-source-gtfs" target="_blank">documentation</a>.</p>
-              </template>
             </o-table>
+
+            dd: {{ displayDownloadInstructions }} {{ displayDownloadSha1}}
+
+            <tl-feed-version-download-modal 
+              v-model="displayDownloadInstructions" 
+              :sha1="displayDownloadSha1"
+              :latest-feed-version-sha1="latestFeedVersionSha1"
+            />
 
             <slot name="add-feed-version" :entity="entity" />
           </b-tab-item>
@@ -469,12 +468,14 @@ export default {
     }
   },
   props: {
-    showDownloadColumn: { type: Boolean, default: false },
+    showDownloadColumn: { type: Boolean, default: true },
     showOperators: { type: Boolean, default: false }
   },
   data () {
     return {
       error: 'ok',
+      displayDownloadInstructions: false,
+      displayDownloadSha1: '',
       tabIndex: {
         1: 'versions',
         2: 'service'
@@ -497,6 +498,12 @@ export default {
       ]
     }
   },
+  methods: {
+    showDownloadInstructions(sha1) {
+      this.displayDownloadSha1 = sha1
+      this.displayDownloadInstructions = true
+    }
+  },
   computed: {
     onestopId () {
       return this.entity?.onestop_id
@@ -512,6 +519,13 @@ export default {
     },
     lastSuccessfulFetch () {
       return this.entity?.last_successful_fetch[0]
+    },
+    latestFeedVersionSha1() {
+      const s = this.entity?.feed_versions.slice(0).sort((a,b)=>{return a.fetched_at - b.fetched_at})
+      if (s.length > 0) {
+        return s[0].sha1
+      }
+      return ''
     },
     operatorNames () {
       let operatorNames = null
@@ -576,3 +590,10 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+blockquote {
+  margin:10px;
+  margin-left:20px;
+}
+</style>

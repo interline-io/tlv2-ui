@@ -3,6 +3,10 @@ code {
     white-space: nowrap;
 }
 
+.tag {
+    padding:5px;
+}
+
 table.property-list td,
 table.property-list th {
     padding: 5px;
@@ -146,3 +150,4 @@ nav.tabs {
     position: fixed;
     max-width:80%;
 }
+

@@ -1,6 +1,6 @@
 <template>
   <div style="position:relative">
-    <b-message v-if="error" class="is-danger">
+    <b-message v-if="error" variant="danger">
       {{ error }}
     </b-message>
     <div v-else-if="$apollo.loading" class="is-loading">

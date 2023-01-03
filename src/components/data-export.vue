@@ -4,7 +4,7 @@
       <b-field label="Stop Buffer Radius (m)" expanded class="pr-6">
         <b-slider
           v-model="radius"
-          size="is-medium"
+          size="medium"
           :min="0"
           :max="2000"
           :step="100"

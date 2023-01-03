@@ -22,7 +22,7 @@
         <b-slider
           v-model="radius"
           class="radius-select"
-          size="is-medium"
+          size="medium"
           :min="0"
           :max="500"
           :step="100"

@@ -11,7 +11,7 @@
     <slot name="description" />
 
     <div>
-      <b-message v-if="error" class="is-danger">
+      <b-message v-if="error" variant="danger">
         {{ error }}
       </b-message>
 
@@ -55,7 +55,7 @@
 
         <b-field label="Filter by tag">
           <div class="pt-2">
-            <b-checkbox v-model="tagUnstableUrl" native-value="true" class="is-medium">
+            <b-checkbox v-model="tagUnstableUrl" native-value="true" size="medium">
               Unstable URL
             </b-checkbox>
           </div>
@@ -63,16 +63,16 @@
 
         <b-field label="Filter by data format" class="pl-3">
           <div class="pt-2">
-            <b-checkbox v-model="feedSpecs" native-value="GTFS" class="is-medium">
+            <b-checkbox v-model="feedSpecs" native-value="GTFS" size="medium">
               <abbr title="General Transit Feed Specification">GTFS</abbr>
             </b-checkbox>
-            <b-checkbox v-model="feedSpecs" native-value="GTFS_RT" class="is-medium">
+            <b-checkbox v-model="feedSpecs" native-value="GTFS_RT" size="medium">
               <abbr title="GTFS Realtime">GTFS-RT</abbr>
             </b-checkbox>
-            <b-checkbox v-model="feedSpecs" native-value="GBFS" class="is-medium">
+            <b-checkbox v-model="feedSpecs" native-value="GBFS" size="medium">
               <abbr title="General Bikeshare Feed Specification">GBFS</abbr>
             </b-checkbox>
-            <b-checkbox v-model="feedSpecs" native-value="MDS" class="is-medium">
+            <b-checkbox v-model="feedSpecs" native-value="MDS" size="medium">
               <abbr title="Mobility Data Specification">MDS</abbr>
             </b-checkbox>
           </div>

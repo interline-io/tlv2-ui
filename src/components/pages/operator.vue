@@ -27,10 +27,10 @@
       </slot>
 
       <!-- Warnings for freshness and viewing a specific version -->
-      <b-message v-if="dataFreshness > 365" type="is-warning" has-icon>
+      <b-message v-if="dataFreshness > 365" variant="warning" has-icon>
         The GTFS feeds associated with this page were fetched {{ dataFreshness }} days ago; use caution or check if newer data is available.
       </b-message>
-      <b-message v-if="linkVersion" type="is-warning" has-icon>
+      <b-message v-if="linkVersion" variant="warning" has-icon>
         You are viewing a single GTFS Agency entity defined in source feed
         <nuxt-link :to="{name:'feeds-feed', params:{feed:$route.query.feed_onestop_id}}">
           {{ $filters.shortenName($route.query.feed_onestop_id) }}
@@ -149,7 +149,7 @@
           <b-message
             v-for="feedSpec, feedOnestopId in uniqueFeedSourcesOnestopIds"
             :key="feedOnestopId"
-            type="is-success"
+            variant="success"
             has-icon
             icon="information"
             :closable="false"
@@ -171,7 +171,7 @@
         </b-tab-item>
 
         <b-tab-item label="Source Feeds (Advanced View)">
-          <b-message type="is-light" has-icon icon="information" :closable="false">
+          <b-message variant="light" has-icon icon="information" :closable="false">
             This operator includes data from the references listed below. These references are defined in the operator's Atlas record, and describe the GTFS agencies that provide the routes, stops, schedules, and other information for this operator. If a reference to an agency cannot be resolved, this will be noted. Please see the <nuxt-link :to="{name:'documentation'}">
               Operator documentation
             </nuxt-link> for more information on this process.

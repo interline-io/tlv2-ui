@@ -4,7 +4,7 @@
       Loading...
     </div>
     <div v-else-if="geographies.length === 0">
-      <b-notification type="is-light" has-icon icon="information" :closable="false">
+      <b-notification type="light" has-icon icon="information" :closable="false">
         Demographic information not found for this route or is unavailable for this region. Currently, only information from the <a href="https://www.census.gov/programs-surveys/acs/news/data-releases/2018.html" target="_blank">US Census Bureau American Community Survey</a> is available.
       </b-notification>
     </div>
@@ -111,7 +111,7 @@
         </tbody>
       </table>
 
-      <b-notification type="is-light" :closable="false">
+      <b-notification type="light" :closable="false">
         <a href="https://www.census.gov/programs-surveys/acs/news/data-releases/2018.html" target="_blank">US Census Bureau American Community Survey, 2018, 5 year</a>. This feature is in beta release; please verify values before using. You can provide feedback or suggestions for additional data tables using the contact information at the bottom of the page.
       </b-notification>
     </div>

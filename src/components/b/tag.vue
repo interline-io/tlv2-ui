@@ -1,5 +1,5 @@
 <template>
-    <div class="message">
+    <div class="tag message is-small">
         <slot />
     </div>
 </template>

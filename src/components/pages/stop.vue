@@ -19,10 +19,10 @@
       </h1>
 
       <!-- Warnings for freshness and viewing a specific version -->
-      <b-message v-if="dataFreshness > 365" type="is-warning" has-icon>
+      <b-message v-if="dataFreshness > 365" variant="warning" has-icon>
         The GTFS feeds associated with this page were fetched {{ dataFreshness }} days ago; use caution or check if newer data is available.
       </b-message>
-      <b-message v-if="linkVersion" type="is-warning" has-icon>
+      <b-message v-if="linkVersion" variant="warning" has-icon>
         You are viewing a single GTFS stop or station defined in source feed
         <nuxt-link :to="{name:'feeds-feed', params:{feed:$route.query.feed_onestop_id}}">
           {{ $filters.shortenName($route.query.feed_onestop_id) }}
@@ -105,7 +105,7 @@
           <b-message
             v-for="(alert,idx) of allAlerts"
             :key="idx"
-            type="is-warning"
+            variant="warning"
             class="block"
             has-icon
           >
@@ -114,7 +114,7 @@
             </div>
           </b-message>
 
-          <b-message type="is-info" class="block">
+          <b-message variant="info" class="block">
             Learn more about the contents of <code>stops.txt</code> on
             <a
               href="https://gtfs.org/reference/static#stopstxt"

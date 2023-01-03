@@ -15,7 +15,7 @@
         <b-field :label="filteringByOperatorLocation ? 'Filter by operator location' : 'Search by operator name or location'" expanded>
           <b-field v-if="filteringByOperatorLocation" expanded>
             <b-tag
-              size="is-medium"
+              size="medium"
               attached
               closable
               aria-close-label="Close tag"
@@ -26,7 +26,7 @@
           </b-field>
           <b-field v-else-if="$route.query.search" expanded>
             <b-tag
-              size="is-medium"
+              size="medium"
               attached
               closable
               aria-close-label="Close tag"
@@ -40,7 +40,7 @@
           </div>
 
           <b-dropdown
-            position="is-bottom-left"
+            position="bottom-left"
             append-to-body
             aria-role="menu"
             trap-focus
@@ -48,7 +48,7 @@
             <template #trigger="{ active }">
               <b-button
                 label="Options"
-                type="is-primary"
+                variant="primary"
                 :icon-right="active ? 'menu-up' : 'menu-down'"
               />
             </template>

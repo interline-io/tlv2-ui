@@ -6,16 +6,16 @@
           <tr>
             <th>Headways</th>
             <th v-if="showMorning">
-              <span class="is-centered">7-9am</span>
+              <span class="centered">7-9am</span>
             </th>
             <th v-if="showMidday">
-              <span class="is-centered">9am-4pm</span>
+              <span class="centered">9am-4pm</span>
             </th>
             <th v-if="showAfternoon">
-              <span class="is-centered">4-6pm</span>
+              <span class="centered">4-6pm</span>
             </th>
             <th v-if="showNight">
-              <span class="is-centered">6pm-7am</span>
+              <span class="centered">6pm-7am</span>
             </th>
           </tr>
         </thead>

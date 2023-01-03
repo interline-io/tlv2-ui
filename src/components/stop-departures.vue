@@ -7,7 +7,7 @@
       </h6>
     </div>
     <div v-else-if="error">
-      <b-notification type="is-danger" style="margin:10px" :closable="false" :has-icon="true">
+      <b-notification type="danger" style="margin:10px" :closable="false" :has-icon="true">
         {{ error }}
       </b-notification>
     </div>
@@ -26,12 +26,12 @@
               placeholder="Now"
               icon="calendar-today"
               trap-focus
-              size="is-small"
+              size="small"
             />
           </b-field>
 
           <b-field v-if="showRadiusSelector">
-            <b-select v-model="radius" size="is-small">
+            <b-select v-model="radius" size="small">
               <option v-for="r of allowedRadius" :key="r" :value="r">
                 {{ r }}m
               </option>
@@ -41,11 +41,11 @@
             </p>
           </b-field>
 
-          <b-checkbox v-if="showAutoRefresh" v-model="autoRefresh" size="is-small">
+          <b-checkbox v-if="showAutoRefresh" v-model="autoRefresh" size="small">
             Auto-refresh
           </b-checkbox>
 
-          <b-checkbox v-if="showFallbackSelector" v-model="useServiceWindow" size="is-small">
+          <b-checkbox v-if="showFallbackSelector" v-model="useServiceWindow" size="small">
             Fallback service day
           </b-checkbox>
         </b-field>
@@ -82,16 +82,16 @@
               <b-field grouped>
                 <b-tag v-for="st of sr.departures.slice(0,3)" :key="st.trip.id">
                   <template v-if="st.departure.estimated">
-                    {{ $filters.reformatHMS(st.departure.estimated) }} &nbsp;<b-icon type="is-success" size="is-small" icon="wifi" />
+                    {{ $filters.reformatHMS(st.departure.estimated) }} &nbsp;<b-icon variant="success" size="small" icon="wifi" />
                   </template><template v-else>
-                    {{ $filters.reformatHMS(st.departure.scheduled) }} &nbsp;<b-icon type="is-success" size="is-small" icon="blank" />
+                    {{ $filters.reformatHMS(st.departure.scheduled) }} &nbsp;<b-icon variant="success" size="small" icon="blank" />
                   </template>
                 </b-tag>
               </b-field>
             </div>
           </div>
           <div v-if="ss.routes.length > routesPerAgencyShadow" class="is-clearfix">
-            <span class="button is-small" style="margin-left:30px" @click="expandRoutesPerAgency">Click to show {{ ss.routes.length - routesPerAgencyShadow }} additional rows</span>
+            <span class="button small" style="margin-left:30px" @click="expandRoutesPerAgency">Click to show {{ ss.routes.length - routesPerAgencyShadow }} additional rows</span>
           </div>
         </div>
       </div>
@@ -414,12 +414,12 @@ export default {
   white-space: nowrap;
 }
 
-.route-icon-departures .tag {
+.route-icon-departures .message {
   margin-right:5px;
   width:80px;
 }
 
-.route-icon-departures .tag .icon {
+.route-icon-departures .message .icon {
   display:inline-block;
   width:20px;
 }

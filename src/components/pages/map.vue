@@ -18,7 +18,7 @@
       @mapMove="mapMove"
     />
     <div class="map-panel map-panel-tabs">
-      <b-tabs v-model="activeTab" position="is-centered" class="block" type="boxed">
+      <b-tabs v-model="activeTab" position="centered" class="block" type="boxed">
         <b-tab-item label="Routes">
           <tl-map-route-list
             v-if="activeTab === 1"

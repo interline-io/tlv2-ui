@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-message v-if="error" class="is-danger">
+    <b-message v-if="error" class="danger">
       {{ error }}
     </b-message>
     <div v-else>
