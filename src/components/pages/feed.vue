@@ -172,11 +172,7 @@
                 </b-tooltip>
               </td>
               <td v-if="mostRecentFeedInfo">
-                <ul>
-                  <li v-for="(value, key) in filterFeedInfo(mostRecentFeedInfo)" :key="key">
-                    {{ key }}: {{ value }}
-                  </li>
-                </ul>
+                <tl-feed-info :feed-info="mostRecentFeedInfo" />
               </td>
               <td v-else>
                 <em>No <code>feed_info.txt</code> file included in the most recent feed version.</em>
@@ -194,7 +190,7 @@
         <h4 class="title is-4">
           Operator(s) Associated with this Feed
         </h4>
-        <b-tabs type="is-boxed" :animated="false">
+        <b-tabs type="boxed" :animated="false">
           <b-tab-item label="Operators">
             <b-message v-if="!entity.associated_operators || (entity.associated_operators && entity.associated_operators.length === 0)">
               There are no operators associated with this feed.
@@ -232,7 +228,7 @@
           Archived Feed Versions
         </h4>
 
-        <b-tabs v-model="activeTab" type="is-boxed" :animated="false" @input="setTab">
+        <b-tabs v-model="activeTab" type="boxed" :animated="false" @input="setTab">
           <b-tab-item label="Versions">
             <o-table
               :data="entity.feed_versions"
@@ -515,8 +511,7 @@ export default {
       return first(this.entity.last_fetch)
     },
     lastSuccessfulFetch () {
-      const feed = this.entity
-      return feed.last_successful_fetch
+      return this.entity?.last_successful_fetch[0]
     },
     operatorNames () {
       let operatorNames = null
@@ -577,11 +572,6 @@ export default {
         return description
       }
       return ''
-    }
-  },
-  methods: {
-    filterFeedInfo (fi) {
-      return Object.fromEntries(Object.entries(fi).filter(([_, v]) => v != null))
     }
   }
 }

@@ -12,13 +12,15 @@
             </li>
             <li>
               <nuxt-link
+                v-if="entity.agency.onestop_id"
                 :to="{
                   name: 'operators-onestop_id',
-                  params: { onestop_id: entity.agency.onestop_id || 'ok' },
+                  params: { onestop_id: entity.agency.onestop_id },
                 }"
               >
                 {{ entity.agency.agency_name }}
               </nuxt-link>
+              <a href="#" v-else>{{ entity.agency.agency_name }}</a>
             </li>
             <li>
               <nuxt-link
@@ -113,13 +115,15 @@
               <td>Operated by</td>
               <td>
                 <nuxt-link
+                  v-if="entity.agency.onestop_id"
                   :to="{
                     name: 'operators-onestop_id',
-                    params: { onestop_id: entity.agency.onestop_id || 'ok' },
+                    params: { onestop_id: entity.agency.onestop_id },
                   }"
                 >
                   {{ entity.agency.agency_name }}
                 </nuxt-link>
+                <a v-else href="#">{{entity.agency.agency_name}}</a>
               </td>
             </tr>
             <tr v-if="entity.route_short_name">
@@ -148,13 +152,7 @@
             <tr v-if="entity.route_url">
               <td>URL</td>
               <td>
-                {{ entity.route_url }}
-                <a
-                  :href="entity.route_url"
-                  target="_blank"
-                ><b-icon
-                  icon="link"
-                /></a>
+                <code>{{ entity.route_url }}</code>
               </td>
             </tr>
             <tr>
@@ -196,7 +194,7 @@
 
           <b-tabs
             v-model="activeTab"
-            type="is-boxed"
+            type="boxed"
             :animated="false"
             @input="setTab"
           >

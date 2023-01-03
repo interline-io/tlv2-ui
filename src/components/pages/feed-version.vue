@@ -134,6 +134,14 @@
           <td>SHA1</td>
           <td><code>{{ entity.sha1 }}</code></td>
         </tr>
+
+       <tr>
+        <td>Version info:</td>
+          <td v-if="entity.feed_infos && entity.feed_infos.length > 0">
+                <tl-feed-info :show-dates="true" :feed-info="entity.feed_infos[0]" />
+              </td>
+
+        </tr> 
       </table>
 
       <slot name="edit" :entity="entity">
@@ -180,7 +188,7 @@
 
       <slot name="download" :entity="entity" />
 
-      <b-tabs v-model="activeTab" type="is-boxed" :animated="false" @input="setTab">
+      <b-tabs v-model="activeTab" type="boxed" :animated="false" @input="setTab">
         <b-tab-item label="Files">
           <tl-file-info-viewer :files="entity.files" />
         </b-tab-item>
@@ -295,6 +303,17 @@ query ($feed_version_sha1: String!) {
       sha1
       csv_like
       header
+    }
+    feed_infos {
+      feed_publisher_name
+      feed_publisher_url
+      feed_lang
+      default_lang
+      feed_version
+      feed_start_date
+      feed_end_date
+      feed_contact_email
+      feed_contact_url
     }
     feed_version_gtfs_import {
       id

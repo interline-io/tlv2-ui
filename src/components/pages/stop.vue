@@ -122,7 +122,7 @@
             >gtfs.org</a>.
           </b-message>
 
-          <b-tabs v-model="activeTab" type="is-boxed" :animated="false">
+          <b-tabs v-model="activeTab" type="boxed" :animated="false">
             <b-tab-item label="Summary">
               <div v-if="servedRoutes">
                 <h6 class="title is-6">

@@ -144,7 +144,7 @@
         Source Feed(s)
       </h4>
 
-      <b-tabs type="is-boxed" :animated="false">
+      <b-tabs type="boxed" :animated="false">
         <b-tab-item label="Source Feeds">
           <b-message
             v-for="feedSpec, feedOnestopId in uniqueFeedSourcesOnestopIds"
@@ -217,7 +217,7 @@
         <h4 class="title is-4">
           Operator Service
         </h4>
-        <b-tabs v-model="activeTab" type="is-boxed" :animated="false" @input="setTab">
+        <b-tabs v-model="activeTab" type="boxed" :animated="false" @input="setTab">
           <b-tab-item label="Map">
             <client-only placeholder="Map">
               <tl-feed-version-map-viewer v-if="activeTab === 1" :agency-ids="agencyIds" :overlay="true" :link-version="linkVersion" />

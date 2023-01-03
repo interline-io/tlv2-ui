@@ -1,3 +1,8 @@
+code {
+    word-wrap: none;
+    white-space: nowrap;
+}
+
 table.property-list td,
 table.property-list th {
     padding: 5px;
@@ -97,6 +102,10 @@ th {
     padding-bottom: 10px;
 }
 
+nav.tabs {
+    margin-bottom:0px !important;
+}
+
 .map-panel {
     background-color: white;
     user-select: none;
@@ -112,15 +121,15 @@ th {
     background: none;
 }
 
-.map-panel-tabs li[role=tab] a {
+.map-panel-tabs div[role=tab] a {
     margin-right: 5px;
 }
 
-.map-panel-tabs li[role=tab] a {
+.map-panel-tabs div[role=tab] a {
     background-color: rgba(235, 235, 235, 0.9) !important;
 }
 
-.map-panel-tabs li[role=tab].is-active a {
+.map-panel-tabs div[role=tab][aria-selected=true] a {
     background-color: rgba(255, 255, 255, 0.9) !important;
 }
 

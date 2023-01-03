@@ -1,12 +1,11 @@
 <template>
   <div>
     <b-field grouped expanded class="controls-group">
-      <b-field label="Trip pattern" class="pr-3">
+      <b-field label="Trip pattern" class="pr-3" >
         <b-select
           v-model="selectedPattern"
           placeholder="Select a trip pattern"
           class="trip-select mr-4"
-          expanded
         >
           <option v-for="pattern of processedPatterns" :key="pattern.stop_pattern_id" :value="pattern.stop_pattern_id">
             {{ pattern.desc }}
