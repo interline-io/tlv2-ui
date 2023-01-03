@@ -96,7 +96,7 @@
 
         <o-table-column v-slot="props" field="last_successful_fetch" label="Last Fetched">
           <template v-if="props.row.last_successful_fetch && props.row.last_successful_fetch.fetched_at ">
-            {{ $filters.fromNow(props.row.last_successful_fetch.fetched_at)  }}
+            {{ $filters.fromNow(props.row.last_successful_fetch.fetched_at) }}
           </template>
           <template v-else>
             Unknown

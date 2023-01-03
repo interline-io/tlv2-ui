@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-field grouped expanded class="controls-group">
-      <b-field label="Trip pattern" class="pr-3" >
+      <b-field label="Trip pattern" class="pr-3">
         <b-select
           v-model="selectedPattern"
           placeholder="Select a trip pattern"
@@ -30,7 +30,7 @@
           lazy
         >
           <template v-for="val in [0,100,250,500]" :key="val">
-            <b-slider-tick  :value="val">
+            <b-slider-tick :value="val">
               {{ val }}
             </b-slider-tick>
           </template>

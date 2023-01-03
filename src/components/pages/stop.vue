@@ -4,8 +4,8 @@
     <div v-else-if="entity">
       <nav class="breadcrumb">
         <ul>
-          <li>            
-              <a href="#">Stops            </a>
+          <li>
+            <a href="#">Stops            </a>
           </li>
           <li>
             <nuxt-link :to="{name: 'stops-onestop_id', params:{onestop_id:$route.params.onestop_id}}">
@@ -323,7 +323,7 @@ export default {
       tabIndex: {
         1: 'summary',
         2: 'departure',
-        3: 'sources',
+        3: 'sources'
       }
     }
   },

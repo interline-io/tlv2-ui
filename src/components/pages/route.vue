@@ -20,7 +20,7 @@
               >
                 {{ entity.agency.agency_name }}
               </nuxt-link>
-              <a href="#" v-else>{{ entity.agency.agency_name }}</a>
+              <a v-else href="#">{{ entity.agency.agency_name }}</a>
             </li>
             <li>
               <nuxt-link
@@ -123,7 +123,7 @@
                 >
                   {{ entity.agency.agency_name }}
                 </nuxt-link>
-                <a v-else href="#">{{entity.agency.agency_name}}</a>
+                <a v-else href="#">{{ entity.agency.agency_name }}</a>
               </td>
             </tr>
             <tr v-if="entity.route_short_name">

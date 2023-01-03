@@ -33,7 +33,7 @@
         </o-table-column>
 
         <o-table-column v-if="showAgencies" v-slot="props" field="agencies" label="Agencies">
-          {{ $filters.joinUnique(props.row.route_stops.map((s)=>{return s.agency.agency_name}))  }}
+          {{ $filters.joinUnique(props.row.route_stops.map((s)=>{return s.agency.agency_name})) }}
         </o-table-column>
         <o-table-column v-if="showRoutes" v-slot="props" field="routes" label="Routes">
           {{ $filters.joinUnique(props.row.route_stops.map((s)=>{return s.route.route_short_name})) }}

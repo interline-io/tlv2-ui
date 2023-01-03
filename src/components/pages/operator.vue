@@ -36,7 +36,7 @@
           {{ $filters.shortenName($route.query.feed_onestop_id) }}
         </nuxt-link> version
         <nuxt-link :to="{name:'feeds-feed-versions-version', params:{feed:$route.query.feed_onestop_id, version:$route.query.feed_version_sha1}}">
-          {{$filters.shortenName($route.query.feed_version_sha1, 8) }}
+          {{ $filters.shortenName($route.query.feed_version_sha1, 8) }}
         </nuxt-link>.<br>
         <template v-if="!search">
           Click <nuxt-link :to="{name: 'operators-onestop_id', params:{onestop_id:$route.params.onestop_id}}">

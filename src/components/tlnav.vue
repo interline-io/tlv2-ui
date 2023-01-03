@@ -1,36 +1,32 @@
 <template>
-<nav class="navbar" role="navigation" aria-label="main navigation">
-  <div class="navbar-brand">
+  <nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
       <nuxt-link class="navbar-item" :to="{name:'index'}">
         <div class="logo-image" />
       </nuxt-link>
-  </div>
+    </div>
 
-  <div id="navbarBasicExample" class="navbar-menu">
-    <div class="navbar-start">
-      
-      <div class="navbar-item  is-hoverable" v-for="item in items" :key="item.title" >
-
+    <div id="navbarBasicExample" class="navbar-menu">
+      <div class="navbar-start">
+        <div v-for="item in items" :key="item.title" class="navbar-item  is-hoverable">
           <nuxt-link :to="item.to" class="navbar-item" :class="($route && $route.name && $route.name.startsWith(item.to.name)) ? 'is-active is-tab': ''">
             {{ item.title }}
           </nuxt-link>
+        </div>
+      </div>
 
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <tl-nav-search-bar
+            style="width:100%"
+            @focus="searchFocus = true"
+            @blur="searchFocus = false"
+          />
+        </div>
       </div>
     </div>
-
-    <div class="navbar-end">
-      <div class="navbar-item">
-        <tl-nav-search-bar
-          style="width:100%"
-          @focus="searchFocus = true"
-          @blur="searchFocus = false"
-        />
-      </div>
-    </div>
-  </div>
-</nav>
+  </nav>
 </template>
-
 
 <script>
 export default {

@@ -1,11 +1,11 @@
 export default {
   apollo: {
-    $error (e) {
+    $error(e) {
       this.error = e
     },
     $query: {
       client: 'transitland',
-      update (data) {
+      update(data) {
         if (data.entities.length === 0) {
           return this.setError(404)
         }
@@ -19,7 +19,7 @@ export default {
     feedOnestopId: { type: String, default: null },
     entityId: { type: String, default: null }
   },
-  data () {
+  data() {
     return {
       entities: [],
       activeTab: 1,
@@ -30,7 +30,7 @@ export default {
     }
   },
   computed: {
-    searchKey () {
+    searchKey() {
       const pk = String(this.pathKey || '')
       const k = pk.split(':')
       if (k.length > 1) {
@@ -47,13 +47,13 @@ export default {
         feed_version_sha1: this.feedVersionSha1
       }
     },
-    advancedMode () {
+    advancedMode() {
       if (this.$route.query && this.$route.query.advanced === 'true') {
         return true
       }
       return false
     },
-    dataFreshness () {
+    dataFreshness() {
       const daysAgo = []
       const n = new Date()
       try {
@@ -65,30 +65,30 @@ export default {
       }
       return Math.max(...daysAgo)
     },
-    linkVersion () {
+    linkVersion() {
       if (this.searchKey.feed_version_sha1) {
         return true
       }
     },
-    search () {
+    search() {
       return this.searchKey.onestop_id === 'search'
     },
-    entity () {
+    entity() {
       return (this.entities && this.entities.length > 0) ? this.entities[0] : null
     },
-    entityIds () {
+    entityIds() {
       return this.entities.map((s) => { return s.id })
     },
-    fvids () {
+    fvids() {
       return (this.agencies || []).map((s) => { return s.feed_version_id })
     }
   },
   watch: {
-    childLabel () {
+    childLabel() {
       this.activeTab = 5
     }
   },
-  mounted () {
+  mounted() {
     const tab = this.$route.hash.substr(1)
     if (tab) {
       for (const [k, v] of Object.entries(this.tabIndex)) {
@@ -99,7 +99,7 @@ export default {
     }
   },
   methods: {
-    checkSearchSkip (entityId) {
+    checkSearchSkip(entityId) {
       const fosid = this.$route.query.feed_onestop_id || ''
       const eid = entityId || ''
       if (this.$route.params.onestop_id === 'search' && (fosid.length === 0 || eid.length === 0)) {
@@ -108,10 +108,10 @@ export default {
       }
       return false
     },
-    setError (statusCode, message) {
+    setError(statusCode, message) {
       this.$nuxt.error({ statusCode, message })
     },
-    setTab (value) {
+    setTab(value) {
       const tab = this.tabIndex[value]
       if (tab) {
         // set window.location.hash directly; this.$router.push causes reload

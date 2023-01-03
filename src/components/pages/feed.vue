@@ -87,7 +87,7 @@
               </td>
               <td>
                 <template v-if="lastSuccessfulFetch && lastSuccessfulFetch.fetched_at">
-                  {{ $filters.formatDate(lastSuccessfulFetch.fetched_at) }} ({{ $filters.fromNow(lastSuccessfulFetch.fetched_at)  }})
+                  {{ $filters.formatDate(lastSuccessfulFetch.fetched_at) }} ({{ $filters.fromNow(lastSuccessfulFetch.fetched_at) }})
                 </template>
                 <template v-else>
                   Unknown
@@ -136,16 +136,16 @@
                     License Identifier: {{ entity.license.spdx_identifier }}
                   </li>
                   <li v-if="entity.license.use_without_attribution">
-                    Use allowed without attribution: {{ $filters.capitalize(entity.license.use_without_attribution)  }}
+                    Use allowed without attribution: {{ $filters.capitalize(entity.license.use_without_attribution) }}
                   </li>
                   <li v-if="entity.license.share_alike_optional">
-                    Share-alike optional: {{ $filters.capitalize(entity.license.share_alike_optional)  }}
+                    Share-alike optional: {{ $filters.capitalize(entity.license.share_alike_optional) }}
                   </li>
                   <li v-if="entity.license.commercial_use_allowed">
-                    Commercial use allowed: {{ $filters.capitalize(entity.license.commercial_use_allowed)  }}
+                    Commercial use allowed: {{ $filters.capitalize(entity.license.commercial_use_allowed) }}
                   </li>
                   <li v-if="entity.license.create_derived_product">
-                    Creating derived products allowed: {{ $filters.capitalize(entity.license.create_derived_product)  }}
+                    Creating derived products allowed: {{ $filters.capitalize(entity.license.create_derived_product) }}
                   </li>
                   <li v-if="entity.license.redistribution_allowed">
                     Redistribution allowed: {{ $filters.capitalize(entity.license.redistribution_allowed) }}
@@ -246,7 +246,7 @@
                 label="Fetched"
               >
                 <template v-if="props.row.fetched_at">
-                  {{ $filters.formatDate(props.row.fetched_at)  }} ({{ $filters.fromNow(props.row.fetched_at) }})
+                  {{ $filters.formatDate(props.row.fetched_at) }} ({{ $filters.fromNow(props.row.fetched_at) }})
                 </template>
                 <template v-else>
                   Unknown
@@ -308,19 +308,19 @@
                 />
               </o-table-column>
               <o-table-column v-if="showDownloadColumn" v-slot="props" label="Download">
-                <template v-if="entity.license.redistribution_allowed !== 'no'"> 
+                <template v-if="entity.license.redistribution_allowed !== 'no'">
                   <a @click="showDownloadInstructions(props.row.sha1)">
-                    <b-icon icon="download" title="Download feed version" v-if="props.row.sha1 === latestFeedVersionSha1" variant="success" />
-                    <b-icon icon="download" title="Download feed version" v-else />
+                    <b-icon v-if="props.row.sha1 === latestFeedVersionSha1" icon="download" title="Download feed version" variant="success" />
+                    <b-icon v-else icon="download" title="Download feed version" />
                   </a>
                 </template>
               </o-table-column>
             </o-table>
 
-            dd: {{ displayDownloadInstructions }} {{ displayDownloadSha1}}
+            dd: {{ displayDownloadInstructions }} {{ displayDownloadSha1 }}
 
-            <tl-feed-version-download-modal 
-              v-model="displayDownloadInstructions" 
+            <tl-feed-version-download-modal
+              v-model="displayDownloadInstructions"
               :sha1="displayDownloadSha1"
               :latest-feed-version-sha1="latestFeedVersionSha1"
             />
@@ -498,12 +498,6 @@ export default {
       ]
     }
   },
-  methods: {
-    showDownloadInstructions(sha1) {
-      this.displayDownloadSha1 = sha1
-      this.displayDownloadInstructions = true
-    }
-  },
   computed: {
     onestopId () {
       return this.entity?.onestop_id
@@ -520,8 +514,8 @@ export default {
     lastSuccessfulFetch () {
       return this.entity?.last_successful_fetch[0]
     },
-    latestFeedVersionSha1() {
-      const s = this.entity?.feed_versions.slice(0).sort((a,b)=>{return a.fetched_at - b.fetched_at})
+    latestFeedVersionSha1 () {
+      const s = this.entity?.feed_versions.slice(0).sort((a, b) => { return a.fetched_at - b.fetched_at })
       if (s.length > 0) {
         return s[0].sha1
       }
@@ -586,6 +580,12 @@ export default {
         return description
       }
       return ''
+    }
+  },
+  methods: {
+    showDownloadInstructions (sha1) {
+      this.displayDownloadSha1 = sha1
+      this.displayDownloadInstructions = true
     }
   }
 }

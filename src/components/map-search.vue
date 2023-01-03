@@ -12,7 +12,7 @@
         @typing="typing"
         @select="option => setLocation(option.geometry.coordinates)"
       >
-        <template v-slot="props">
+        <template #default="props">
           {{ props.option.stop_name }}
           <div v-for="rs of props.option.route_stops" :key="rs.route.id" class="clearfix tag">
             {{ rs.route.agency.agency_name }} :{{ rs.route.route_short_name }}
@@ -155,7 +155,7 @@ export default {
     watchLocation () {
       this.locationUse = true
       this.locationLoading = true
-      const { coords  } = useGeolocation()
+      const { coords } = useGeolocation()
       this.coords = coords
     },
     typing (val) {
