@@ -15,7 +15,7 @@
           <td>{{ f.name }}</td>
           <td>{{ f.rows }}</td>
           <td>{{ $filters.prettyBytes(f.size) }}</td>
-          <td>{{ $filters.shortenName(f.sha1,8) }}</td>
+          <td>{{ $filters.shortenName(f.sha1, 8) }}</td>
           <td>
             <b-tooltip v-if="f.csv_like" dashed>
               <template #content>
@@ -39,7 +39,7 @@
 <script>
 export default {
   props: {
-    files: { type: Array, default () { return [] } }
+    files: { type: Array, default() { return [] } }
   }
 }
 </script>

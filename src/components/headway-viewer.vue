@@ -25,7 +25,7 @@
               Weekday
             </td>
             <td v-if="showMorning">
-              {{ $filters.formatHeadway(hws.weekday,'morning') }}
+              {{ $filters.formatHeadway(hws.weekday, 'morning') }}
             </td>
             <td v-if="showMidday">
               {{ $filters.formatHeadway(hws.weekday, 'midday') }}
@@ -34,7 +34,7 @@
               {{ $filters.formatHeadway(hws.weekday, 'afternoon') }}
             </td>
             <td v-if="showNight">
-              {{ $filters.formatHeadway(hws.weekday,'night') }}
+              {{ $filters.formatHeadway(hws.weekday, 'night') }}
             </td>
           </tr>
           <tr>
@@ -42,16 +42,16 @@
               Saturday
             </td>
             <td v-if="showMorning">
-              {{ $filters.formatHeadway(hws.saturday,'morning') }}
+              {{ $filters.formatHeadway(hws.saturday, 'morning') }}
             </td>
             <td v-if="showMidday">
-              {{ $filters.formatHeadway(hws.saturday,'midday') }}
+              {{ $filters.formatHeadway(hws.saturday, 'midday') }}
             </td>
             <td v-if="showAfternoon">
-              {{ $filters.formatHeadway(hws.saturday,'afternoon') }}
+              {{ $filters.formatHeadway(hws.saturday, 'afternoon') }}
             </td>
             <td v-if="showNight">
-              {{ $filters.formatHeadway(hws.saturday,'night') }}
+              {{ $filters.formatHeadway(hws.saturday, 'night') }}
             </td>
           </tr>
           <tr>
@@ -59,16 +59,16 @@
               Sunday
             </td>
             <td v-if="showMorning">
-              {{ $filters.formatHeadway(hws.sunday,'morning') }}
+              {{ $filters.formatHeadway(hws.sunday, 'morning') }}
             </td>
             <td v-if="showMidday">
-              {{ $filters.formatHeadway(hws.sunday,'midday') }}
+              {{ $filters.formatHeadway(hws.sunday, 'midday') }}
             </td>
             <td v-if="showAfternoon">
-              {{ $filters.formatHeadway(hws.sunday,'afternoon') }}
+              {{ $filters.formatHeadway(hws.sunday, 'afternoon') }}
             </td>
             <td v-if="showNight">
-              {{ $filters.formatHeadway(hws.sunday,'night') }}
+              {{ $filters.formatHeadway(hws.sunday, 'night') }}
             </td>
           </tr>
         </tbody>
@@ -81,7 +81,7 @@
 </template>
 
 <script>
-function parseHMS (value) {
+function parseHMS(value) {
   const a = (value || '').split(':').map((s) => { return parseInt(s, 10) })
   if (a.length !== 3) {
     return null
@@ -89,7 +89,7 @@ function parseHMS (value) {
   return a[0] * 3600 + a[1] * 60 + a[2]
 }
 
-function departureFilter (values, vmin, vmax) {
+function departureFilter(values, vmin, vmax) {
   const ret = []
   for (let i = 0; i < values.length - 1; i++) {
     const a = values[i]
@@ -107,19 +107,19 @@ function departureFilter (values, vmin, vmax) {
 
 export default {
   filters: {
-    parseHMS (value) {
+    parseHMS(value) {
       return parseHMS(value)
     }
   },
   props: {
-    headways: { type: Array, default () { return [] } },
+    headways: { type: Array, default() { return [] } },
     showMorning: { type: Boolean, default: true },
     showMidday: { type: Boolean, default: true },
     showAfternoon: { type: Boolean, default: true },
     showNight: { type: Boolean, default: true }
   },
   computed: {
-    hws () {
+    hws() {
       const hwlookup = {
         1: 'weekday',
         6: 'saturday',

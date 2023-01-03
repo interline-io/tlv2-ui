@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "@mdi/font": "^7.1.96",
+    "@nuxtjs/eslint-config-typescript": "^12.0.0",
     "@nuxtjs/eslint-module": "^3.1.0",
     "@oruga-ui/oruga": "^0.5.10",
     "@typescript-eslint/eslint-plugin": "^5.48.0",
@@ -21,11 +22,8 @@
     "apollo-link-http": "^1.5.17",
     "date-fns": "^2.29.3",
     "eslint": "^7.32.0 || ^8.2.0",
-    "eslint-config-airbnb-base": "latest",
-    "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-import": "^2.25.2",
     "eslint-plugin-nuxt": "^4.0.0",
-    "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-vue": "latest",
     "haversine": "^1.1.1",
     "maplibre-gl": "^2.4.0",
@@ -33,6 +31,8 @@
     "prettier": "^2.8.1",
     "sanitize-filename": "^1.6.3",
     "sass": "^1.57.1",
+    "typescript": "^4.9.4",
+    "typescript-eslint": "^0.0.1-alpha.0",
     "vue": "^3.0.0"
   },
   "dependencies": {
