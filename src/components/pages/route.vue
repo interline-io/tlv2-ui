@@ -84,7 +84,7 @@
             <nuxt-link
               :to="{
                 name: 'routes-onestop_id',
-                params: { onestop_id: onestopId },
+                params: { onestop_id: searchKey.onestop_id },
               }"
             >
               here
@@ -479,9 +479,6 @@ export default {
     }
   },
   computed: {
-    onestopId () { 
-      return this.searchKey.onestop_id
-    },
     // routeFeatures and stopFeatures are calculated from the main
     // graphql response so we don't need to copy in and rely on the response from the map
     routeFeatures () {
@@ -562,7 +559,7 @@ export default {
       }
     },
     staticImage () {
-      return `https://transit.land/api/v2/rest/routes/${this.onestopId}.png`
+      return `https://transit.land/api/v2/rest/routes/${this.searchKey.onestop_id}.png`
     },
     staticTitle () {
       return `${this.routeName} • ${this.routeType} route`

@@ -71,7 +71,7 @@ export default {
   methods: {
     nextTickUpdateFeatures (v) {
       if (v) {
-        this.$nextTick(() => {
+        nextTick(() => {
           this.updateFeatures()
         })
       }
