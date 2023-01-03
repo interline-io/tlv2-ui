@@ -83,7 +83,7 @@
           <nuxt-link :to="{name: 'operators-onestop_id', params: {onestop_id: props.row.onestop_id}}">
             <strong>{{ props.row.name }}</strong>
           </nuxt-link>
-          <span v-if="props.row.short_name">({{ props.row.short_name }})</span>
+          <span v-if="props.row.short_name">&nbsp;({{ props.row.short_name }})</span>
         </o-table-column>
         <o-table-column v-slot="props" field="city_name" label="City" :width="200">
           {{ props.row.city_name }}

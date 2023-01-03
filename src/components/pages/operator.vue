@@ -217,7 +217,7 @@
         <h4 class="title is-4">
           Operator Service
         </h4>
-        <b-tabs v-model="activeTab" type="boxed" :animated="false" @input="setTab">
+        <b-tabs v-model="activeTab" type="boxed" :animated="false" @update:modelValue="setTab">
           <b-tab-item label="Map">
             <client-only placeholder="Map">
               <tl-feed-version-map-viewer v-if="activeTab === 1" :agency-ids="agencyIds" :overlay="true" :link-version="linkVersion" />
@@ -298,10 +298,10 @@ export default {
     return {
       features: [],
       tabIndex: {
-        0: 'map',
-        1: 'routes',
-        2: 'stops',
-        3: 'export'
+        1: 'map',
+        2: 'routes',
+        3: 'stops',
+        4: 'export'
       }
     }
   },

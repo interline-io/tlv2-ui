@@ -196,7 +196,7 @@
             v-model="activeTab"
             type="boxed"
             :animated="false"
-            @input="setTab"
+            @update:modelValue="setTab"
           >
             <b-tab-item label="Connections">
               <client-only>
@@ -370,10 +370,10 @@ export default {
       censusGeoms: null,
       selectDate: null,
       tabIndex: {
-        0: 'summary',
-        1: 'headways',
-        2: 'sources',
-        3: 'export'
+        1: 'summary',
+        2: 'headways',
+        3: 'sources',
+        4: 'export'
       }
     }
   },

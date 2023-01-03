@@ -50,6 +50,7 @@ export default {
         feedContactEmail() { return this.feedInfo['feed_contact_email'] },
         feedContactUrl() { return this.feedInfo['feed_contact_url'] },
         feedLang() { return this.feedInfo['feed_lang'] },
+        feedVersion() { return this.feedInfo['feed_version'] },
         defaultLang() { return this.feedInfo['default_lang'] },
     }
 }

@@ -188,7 +188,7 @@
 
       <slot name="download" :entity="entity" />
 
-      <b-tabs v-model="activeTab" type="boxed" :animated="false" @input="setTab">
+      <b-tabs v-model="activeTab" type="boxed" :animated="false" @update:modelValue="setTab">
         <b-tab-item label="Files">
           <tl-file-info-viewer :files="entity.files" />
         </b-tab-item>
@@ -369,13 +369,13 @@ export default {
       importLoading: false,
       features: [],
       tabIndex: {
-        0: 'files',
-        1: 'service',
-        2: 'map',
-        3: 'agencies',
-        4: 'routes',
-        5: 'stops',
-        6: 'import'
+        1: 'files',
+        2: 'service',
+        3: 'map',
+        4: 'agencies',
+        5: 'routes',
+        6: 'stops',
+        7: 'import'
       }
     }
   },

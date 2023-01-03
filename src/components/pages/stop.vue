@@ -122,7 +122,7 @@
             >gtfs.org</a>.
           </b-message>
 
-          <b-tabs v-model="activeTab" type="boxed" :animated="false">
+          <b-tabs v-model="activeTab" type="boxed" :animated="false" @update:modelValue="setTab">
             <b-tab-item label="Summary">
               <div v-if="servedRoutes">
                 <h6 class="title is-6">
@@ -320,7 +320,12 @@ export default {
   },
   data () {
     return {
-      radius: 1000
+      radius: 1000,
+      tabIndex: {
+        1: 'summary',
+        2: 'departure',
+        3: 'sources',
+      }
     }
   },
   head () {

@@ -228,7 +228,7 @@
           Archived Feed Versions
         </h4>
 
-        <b-tabs v-model="activeTab" type="boxed" :animated="false" @input="setTab">
+        <b-tabs v-model="activeTab" type="boxed" :animated="false" @update:modelValue="setTab">
           <b-tab-item label="Versions">
             <o-table
               :data="entity.feed_versions"
@@ -476,8 +476,8 @@ export default {
     return {
       error: 'ok',
       tabIndex: {
-        0: 'versions',
-        1: 'service'
+        1: 'versions',
+        2: 'service'
       }
     }
   },
