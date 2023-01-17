@@ -1,7 +1,7 @@
 <template>
-  <div>
-    <b-field>
       <b-input
+        expanded
+        root-class="is-expanded ml-0 mr-2"
         :value="modelValue"
         :placeholder="placeholder"
         type="text"
@@ -13,8 +13,6 @@
         @icon-right-click="clearSearch"
         @keydown.esc="clearSearch"
       />
-    </b-field>
-  </div>
 </template>
 <script>
 export default {

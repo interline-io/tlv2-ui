@@ -1,6 +1,7 @@
 <template>
   <div>
-    <div v-if="$apollo.loading" class="is-loading" />
+    <tl-loading v-if="$apollo.loading" />
+    <tl-error v-else-if="error">{{ error }}</tl-error>
     <div v-else-if="entity">
       <slot name="nav" :entity="entity">
         <nav class="breadcrumb">
@@ -406,7 +407,7 @@ export default {
       if (this.entity && this.entity.agencies && this.entity.agencies.length > 0) {
         let names = this.entity.agencies.slice(0, 3).map(a => a.agency_name)
         if (this.entity.agencies.length > 3) {
-          names = `${names.join(', ')} and ${names.length - 3} additional operators`
+          names = `${names.join(', ')} and ${this.entity.agencies.length - 3} additional operators`
         } else if (names.length > 0 && names.length <= 3) {
           names = names.slice(0, 3).join(', ')
         }

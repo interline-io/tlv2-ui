@@ -11,76 +11,47 @@
     <slot name="description" />
 
     <div>
-      <b-field grouped>
-        <b-field :label="filteringByOperatorLocation ? 'Filter by operator location' : 'Search by operator name or location'" expanded>
-          <b-field v-if="filteringByOperatorLocation" expanded>
-            <b-tag
-              size="medium"
-              attached
-              closable
-              aria-close-label="Close tag"
-              @close="clearQuery"
-            >
-              {{ [$route.query.adm0_name, $route.query.adm1_name, $route.query.city_name].filter(n => n).join(' / ') }}
-            </b-tag>
-          </b-field>
-          <b-field v-else-if="$route.query.search" expanded>
-            <b-tag
-              size="medium"
-              attached
-              closable
-              aria-close-label="Close tag"
-              @close="clearQuery"
-            >
-              {{ $route.query.search }}
-            </b-tag>
-          </b-field>
-          <div v-else style="width: 100%;">
-            <tl-search-bar v-model="search" placeholder="e.g. Bay Area Rapid Transit" />
-          </div>
+      <b-field grouped :label="filteringByOperatorLocation ? 'Filter by operator location' : 'Search by operator name or location'">
+        <tl-search-bar v-model="search" placeholder="e.g. Bay Area Rapid Transit" />
 
-          <b-dropdown
-            position="bottom-left"
-            append-to-body
-            aria-role="menu"
-            trap-focus
-          >
-            <template #trigger="{ active }">
-              <b-button
-                label="Options"
-                variant="primary"
-                :icon-right="active ? 'menu-up' : 'menu-down'"
-              />
-            </template>
+        <b-dropdown position="bottom-left" append-to-body aria-role="menu" trap-focus>
+          <template #trigger="{ active }">
+            <b-button label="Options" variant="primary" :icon-left="active ? 'menu-up' : 'menu-down'" />
+          </template>
 
-            <b-dropdown-item
-              aria-role="menu-item"
-              custom
-            >
-              <div class="field">
-                <b-checkbox v-model="merged">
-                  Group agencies by operator
-                </b-checkbox>
-              </div>
+          <b-dropdown-item aria-role="menu-item" custom>
+            <div class="field">
+              <b-checkbox v-model="merged">
+                Group agencies by operator
+              </b-checkbox>
+            </div>
 
-              <div class="field">
-                <b-checkbox v-model="unmatched">
-                  Show operators without agency matches
-                </b-checkbox>
-              </div>
-            </b-dropdown-item>
-          </b-dropdown>
+            <div class="field">
+              <b-checkbox v-model="unmatched">
+                Show operators without agency matches
+              </b-checkbox>
+            </div>
+          </b-dropdown-item>
+        </b-dropdown>
+      </b-field>
+
+      <b-field>
+        <b-field v-if="filteringByOperatorLocation" expanded>
+          <b-tag attached closable aria-close-label="Close tag" @close="clearQuery">
+            {{ [$route.query.adm0_name, $route.query.adm1_name, $route.query.city_name].filter(n => n).join(' / ') }}
+          </b-tag>
+        </b-field>
+        <b-field v-else-if="$route.query.search" expanded>
+          <b-tag attached closable aria-close-label="Close tag" @close="clearQuery">
+            {{ $route.query.search }}
+          </b-tag>
         </b-field>
       </b-field>
 
-      <o-table
-        :data="entityPageFlat"
-        :striped="true"
-        :loading="$apollo.loading"
-      >
+      <o-table :data="entityPageFlat" :striped="true" :loading="$apollo.loading">
         <!-- TODO: fix sorting -->
         <o-table-column v-slot="props" field="name" label="Operator Name (Short Name)">
-          <nuxt-link :to="{name: 'operators-onestop_id', params: {onestop_id: props.row.onestop_id}}">
+          <nuxt-link :to="{ name: 'operators-onestop_id', params: { onestop_id: props.row.onestop_id } }">
             <strong>{{ props.row.name }}</strong>
           </nuxt-link>
           <span v-if="props.row.short_name">&nbsp;({{ props.row.short_name }})</span>
@@ -92,7 +63,9 @@
           {{ props.row.adm1_name }}
         </o-table-column>
         <o-table-column v-slot="props" field="adm0_name" label="Country" :width="260">
-          <b-tooltip :label="props.row.other_places.filter((s)=>{return s.city_name}).map((s)=>{return s.city_name}).join(', ')" dashed>
+          <b-tooltip
+            :label="props.row.other_places.filter((s) => { return s.city_name }).map((s) => { return s.city_name }).join(', ')"
+            dashed>
             {{ props.row.adm0_name }}
           </b-tooltip>
         </o-table-column>
@@ -129,7 +102,7 @@ query ($limit: Int, $after: Int, $search: String, $merged: Boolean, $adm0_name: 
 
 export default {
   mixins: [TableViewerMixin],
-  data () {
+  data() {
     return {
       search: this.$route.query.search,
       adm0_name: this.$route.query.adm0_name,
@@ -142,8 +115,8 @@ export default {
   apollo: {
     entities: {
       query: q,
-      error (e) { this.error = e },
-      variables () {
+      error(e) { this.error = e },
+      variables() {
         return {
           search: this.search,
           adm0_name: this.adm0_name,
@@ -155,7 +128,7 @@ export default {
       }
     }
   },
-  head () {
+  head() {
     return {
       title: 'Browse all Operators',
       meta: [
@@ -164,10 +137,10 @@ export default {
     }
   },
   computed: {
-    filteringByOperatorLocation () {
+    filteringByOperatorLocation() {
       return (this.$route.query.adm0_name || this.$route.query.adm1_name || this.$route.query.city_name)
     },
-    entityPageFlat () {
+    entityPageFlat() {
       return this.entityPage.map((s) => {
         const entity = {
           name: s.name,
@@ -193,14 +166,14 @@ export default {
     }
   },
   methods: {
-    clearQuery () {
+    clearQuery() {
       this.search = ''
       this.adm0_name = null
       this.adm1_name = null
       this.city_name = null
-      this.$router.push({ name: 'operators', query: { } })
+      this.$router.push({ name: 'operators', query: {} })
     },
-    onAutocomplete (a, b) {
+    onAutocomplete(a, b) {
       const q = {}
       q[a] = b
       this.$router.push({ name: 'operators', query: q })

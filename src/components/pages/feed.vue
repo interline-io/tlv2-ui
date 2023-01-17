@@ -451,14 +451,6 @@ export default {
       query: q,
       variables () {
         return this.searchKey
-      },
-      update (data) {
-        // overrides the update method in EntityPageMixin
-        if (data.entities.length === 0) {
-          return this.setError(404)
-        }
-        this.$emit('entitiesLoaded', data.entities)
-        return data.entities
       }
     }
   },

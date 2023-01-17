@@ -88,17 +88,6 @@
             </tr>
           </table>
 
-          <tl-warning
-            v-for="(alert,idx) of allAlerts"
-            :key="idx"
-            variant="warning is-light"
-            type="warning"
-          >
-            <div v-for="tr of filterRTTranslations(alert.description_text)" :key="tr.text">
-              Agency Alert: {{ tr.text }}
-            </div>
-          </tl-warning>
-
           <tl-info>
             Learn more about the contents of <code>stops.txt</code> on
             <a
@@ -106,6 +95,20 @@
               target="_blank"
             >gtfs.org</a>.
           </tl-info>
+
+          <div v-for="ent of entities" :key="ent.id">
+            <tl-warning
+              v-for="(alert,idx) of ent.alerts"
+              :key="idx">
+              Agency Alert:
+              <div v-for="tr of filterRTTranslations(alert.header_text)" :key="tr.text">
+                {{ tr.text }}
+              </div>
+              <div v-for="tr of filterRTTranslations(alert.description_text)" :key="tr.text">
+                {{ tr.text }}
+              </div>
+            </tl-warning>
+          </div>
 
           <b-tabs v-model="activeTab" type="boxed" :animated="false" @update:modelValue="setTab">
             <b-tab-item label="Summary">

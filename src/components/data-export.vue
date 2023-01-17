@@ -54,9 +54,7 @@
       </b-field>
     </b-field>
 
-    <div v-if="$apollo.loading">
-      Loading...
-    </div>
+    <tl-loading v-if="$apollo.loading" />
     <div v-else class="block">
       <b-field grouped>
         <b-field label="Download GeoJSON">

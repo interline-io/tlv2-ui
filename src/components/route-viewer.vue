@@ -1,7 +1,6 @@
 <template>
   <div>
-    <tl-loading v-if="$apollo.loading" />
-    <tl-error v-else-if="error">{{ error }}</tl-error>
+    <tl-error v-if="error">{{ error }}</tl-error>
     <div v-else>
       <tl-search-bar v-model="search" placeholder="Filter Routes" />
       <o-table
@@ -16,7 +15,7 @@
           :width="140"
         >
           <nuxt-link
-            :to="{name:'routes-onestop_id', params:{onestop_id:props.row.onestop_id || 'search'}, query: (linkVersion ? {feed_onestop_id:props.row.feed_onestop_id, feed_version_sha1:props.row.feed_version_sha1, route_id:props.row.route_id} : {})}"
+            :to="{name:'routes-onestop_id', params:{onestop_id:props.row.onestop_id || 'search'}, query: (linkVersion ? {feed_onestop_id:props.row.feed_onestop_id, feed_version_sha1:props.row.feed_version_sha1, entity_id:props.row.route_id} : {})}"
           >
             {{ props.row.route_id }}
           </nuxt-link>

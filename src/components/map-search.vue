@@ -4,9 +4,10 @@
       <b-autocomplete
         expanded
         placeholder="Search stops. Example: Penn Station"
-        :data="stopSearch"
+        root-class="is-expanded m-0 mr-2"
         max-height="800px"
         max-width="600px"
+        :data="stopSearch"
         :clearable="true"
         icon="magnify"
         @typing="typing"
@@ -27,7 +28,7 @@
       </b-field>
     </b-field>
     <tl-warning v-if="locationError">
-      There was an error trying to obtain your location.
+      There was an error trying to obtain your location. {{ locationError }}
     </tl-warning>
   </div>
 </template>

@@ -2,6 +2,7 @@ export default {
   apollo: {
     $query: {
       client: 'transitland',
+      error (e) { this.error = e },
       update(data) {
         if (data.entities.length === 0) {
           return this.setError(404, 'Not found')
@@ -83,11 +84,11 @@ export default {
     }
   },
   methods: {
-    checkSearchSkip(entityId) {
+    checkSearchSkip() {
       const fosid = this.$route.query.feed_onestop_id || ''
-      const eid = entityId || ''
+      const eid = this.$route.query.entity_id || ''
       if (this.$route.params.onestop_id === 'search' && (fosid.length === 0 || eid.length === 0)) {
-        this.setError(404)
+        this.setError(404, 'Not found')
         return true
       }
       return false

@@ -1,7 +1,6 @@
 <template>
   <div>
-    <tl-loading v-if="$apollo.loading && stops.length === 0" />
-    <tl-error v-else-if="error">{{ error }}</tl-error>
+    <tl-error v-if="error">{{ error }}</tl-error>
     <div v-else-if="!searchCoords && stopIds.length === 0">
       <h6 class="title is-6">
         Click on the map to select a location
@@ -41,7 +40,9 @@
           </b-checkbox>
         </b-field>
       </div>
-      <div v-if="filteredStopsGroupRoutes.length === 0">
+
+      <tl-loading v-if="$apollo.loading && stops.length === 0" />
+      <div v-else-if="filteredStopsGroupRoutes.length === 0">
         <h6 class="title is-6">
           No results
         </h6>

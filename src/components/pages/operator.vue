@@ -276,6 +276,16 @@ query ($onestop_id: String, $feed_onestop_id: String) {
 `
 export default {
   mixins: [EntityPageMixin],
+  apollo: {
+    entities: {
+      client: 'transitland',
+      query: q,
+      // skip () { return this.checkSearchSkip(this.$route.query.agency_id) }, // skip if search and no agency_id
+      variables () {
+        return this.searchKey
+      }
+    }
+  },
   data () {
     return {
       features: [],
@@ -284,16 +294,6 @@ export default {
         2: 'routes',
         3: 'stops',
         4: 'export'
-      }
-    }
-  },
-  apollo: {
-    entities: {
-      client: 'transitland',
-      query: q,
-      // skip () { return this.checkSearchSkip(this.$route.query.agency_id) }, // skip if search and no agency_id
-      variables () {
-        return this.searchKey
       }
     }
   },

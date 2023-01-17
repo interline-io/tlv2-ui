@@ -38,9 +38,8 @@
       </b-field>
     </b-field>
 
-    <div v-if="$apollo.loading">
-      Loading...
-    </div>
+    <tl-loading v-if="$apollo.loading" />
+    <tl-error v-else-if="error">{{ error }}</tl-error>
     <div v-else-if="processedPatterns.length === 0">
       No trip patterns were found for this route.
     </div>
@@ -161,13 +160,15 @@ export default {
       routes: [],
       selectedPattern: null,
       shadowIncludeNearbyStops: this.includeNearbyStops,
-      radius: 100
+      radius: 100,
+      error: null
     }
   },
   apollo: {
     routes: {
       client: 'transitland',
       query: q,
+      error (e) { this.error = e },
       variables () {
         return {
           route_ids: this.routeIds,

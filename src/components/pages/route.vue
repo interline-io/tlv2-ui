@@ -129,18 +129,6 @@
             </tr>
           </table>
 
-          <div v-for="ent of entities" :key="ent.id">
-            <tl-alert
-              v-for="(alert,idx) of ent.alerts"
-              :key="idx"
-              variant="warning is-light"
-              type="warning">
-              <div v-for="tr of filterRTTranslations(alert.description_text)" :key="tr.text">
-                Agency Alert: {{ tr.text }}
-              </div>
-            </tl-alert>
-          </div>
-
           <tl-info>
             Learn more about the contents of <code>routes.txt</code> on
             <a
@@ -148,6 +136,20 @@
               target="_blank"
             >gtfs.org</a>.
           </tl-info>
+
+          <div v-for="ent of entities" :key="ent.id">
+            <tl-warning
+              v-for="(alert,idx) of ent.alerts"
+              :key="idx">
+              <p>Agency Alert:</p>
+              <div v-for="tr of filterRTTranslations(alert.header_text)" :key="tr.text">
+                {{ tr.text }}
+              </div>
+              <div v-for="tr of filterRTTranslations(alert.description_text)" :key="tr.text">
+                {{ tr.text }}
+              </div>
+            </tl-warning>
+          </div>
 
           <b-tabs
             v-model="activeTab"
@@ -318,6 +320,18 @@ query ($onestop_id: String, $ids: [Int!], $entity_id: String, $feed_onestop_id: 
 
 export default {
   mixins: [EntityPageMixin],
+  apollo: {
+    entities: {
+      client: 'transitland',
+      query: q,
+      skip () {
+        return this.checkSearchSkip(this.entityId)
+      },
+      variables () {
+        return this.searchKey
+      }
+    }
+  },
   data () {
     return {
       features: [],
@@ -330,18 +344,6 @@ export default {
         2: 'headways',
         3: 'sources',
         4: 'export'
-      }
-    }
-  },
-  apollo: {
-    entities: {
-      client: 'transitland',
-      query: q,
-      skip () {
-        return this.checkSearchSkip(this.entityId)
-      },
-      variables () {
-        return this.searchKey
       }
     }
   },
