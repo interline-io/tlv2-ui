@@ -46,12 +46,23 @@
           </div>
         </b-tab-item>
         <b-tab-item label="Options">
-          <tl-map-options
-            :show-generated-geometries="showGeneratedGeometries"
-            :show-problematic-geometries="showProblematicGeometries"
-            @update:showGeneratedGeometries="showGeneratedGeometries = $event"
-            @update:showProblematicGeometries="showProblematicGeometries = $event"
-          />
+
+          <div class="field">
+      <b-checkbox
+        v-model="showGeneratedGeometries"
+      >
+        Show stop-to-stop geometries
+      </b-checkbox>
+    </div>
+    <div class="field">
+      <b-checkbox
+      v-model="showProblematicGeometries"
+      >
+        Show problematic geometries
+      </b-checkbox>
+    </div>
+
+
         </b-tab-item>
       </b-tabs>
     </div>

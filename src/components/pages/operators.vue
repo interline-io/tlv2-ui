@@ -52,7 +52,7 @@
         <!-- TODO: fix sorting -->
         <o-table-column v-slot="props" field="name" label="Operator Name (Short Name)">
           <nuxt-link :to="{ name: 'operators-onestop_id', params: { onestop_id: props.row.onestop_id } }">
-            <strong>{{ props.row.name }}</strong>
+            {{ props.row.name }}
           </nuxt-link>
           <span v-if="props.row.short_name">&nbsp;({{ props.row.short_name }})</span>
         </o-table-column>
