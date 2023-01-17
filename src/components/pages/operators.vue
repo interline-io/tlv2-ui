@@ -1,5 +1,12 @@
 <template>
   <div class="container">
+    <Title>{{staticTitle }}</Title>
+    <Meta name="description" :content="staticDescription" />
+    <Meta name="twitter:title" :content="staticTitle" />
+    <Meta name="twitter:description" :content="staticDescription" />
+    <Meta name="og:title" :content="staticTitle" />
+    <Meta name="og:description" :content="staticDescription" />
+
     <slot name="nav" />
 
     <slot name="title">
@@ -128,14 +135,6 @@ export default {
       }
     }
   },
-  head() {
-    return {
-      title: 'Browse all Operators',
-      meta: [
-        { hid: 'description', name: 'description', content: 'Transitland uses operators to group together source feeds and other relevant data.' }
-      ]
-    }
-  },
   computed: {
     filteringByOperatorLocation() {
       return (this.$route.query.adm0_name || this.$route.query.adm1_name || this.$route.query.city_name)
@@ -163,6 +162,12 @@ export default {
         entity.other_places = places
         return entity
       })
+    },
+    staticTitle () {
+      return 'Browse all operators'
+    },
+    staticDescription () {
+      return 'Transitland uses operators to group together source feeds and other relevant data'
     }
   },
   methods: {

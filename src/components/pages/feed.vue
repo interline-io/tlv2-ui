@@ -3,6 +3,13 @@
     <tl-loading v-if="$apollo.loading" />
     <tl-error v-else-if="error">{{ error }}</tl-error>
     <div v-else-if="entity">
+      <Title>{{ staticTitle }}</Title>
+      <Meta name="description" :content="staticDescription" />
+      <Meta name="twitter:title" :content="staticTitle" />
+      <Meta name="twitter:description" :content="staticDescription" />
+      <Meta name="og:title" :content="staticTitle" />
+      <Meta name="og:description" :content="staticDescription" />
+
       <slot name="nav" :entity="entity">
         <nav class="breadcrumb">
           <ul>
@@ -23,12 +30,6 @@
       <h1 class="title">
         {{ feedSpec }} feed: {{ operatorNames }}
       </h1>
-
-      <slot name="description">
-        <div class="content">
-          {{ staticDescription }}
-        </div>
-      </slot>
 
       <div class="columns">
         <div class="column is-three-quarters">
@@ -180,6 +181,13 @@
               </td>
             </tr>
           </table>
+
+          <slot name="description">
+            <div class="content">
+              {{ staticDescription }}
+            </div>
+          </slot>
+
         </div>
 
         <slot name="edit-feed" :entity="entity" />
@@ -468,26 +476,7 @@ export default {
       }
     }
   },
-  head () {
-    return {
-      title: this.staticTitle,
-      meta: [
-        { hid: 'description', name: 'description', content: this.staticDescription },
-        { hid: 'twitter:card', name: 'twitter:card', content: 'summary' },
-        { hid: 'twitter:site', name: 'twitter:site', content: '@transitland' },
-        { hid: 'twitter:title', name: 'twitter:title', content: this.staticTitle },
-        { hid: 'twitter:image', name: 'twitter:image', content: 'https://www.transit.land/images/transitland-logo-square-with-whitebackground-smaller.png' },
-        { hid: 'twitter:image:alt', name: 'twitter:image:alt', content: 'Transitland' },
-        { hid: 'twitter:description', name: 'twitter:description', content: this.staticDescription },
-        { hid: 'og:title', property: 'og:title', content: this.staticTitle },
-        { hid: 'og:description', property: 'og:description', content: this.staticDescription }
-      ]
-    }
-  },
   computed: {
-    onestopId () {
-      return this.entity?.onestop_id
-    },
     feedSpec () {
       return this.entity?.spec?.toUpperCase()?.replace('_', '-')
     },
@@ -521,7 +510,6 @@ export default {
       } else if (names.length > 0 && names.length <= 3) {
         operatorNames = names.slice(0, 3).join(', ')
       }
-      this.$emit('operatorNamesUpdated', operatorNames)
       return operatorNames
     },
     displayLicense () {
@@ -541,31 +529,25 @@ export default {
       return false
     },
     staticTitle () {
-      let title = `feed details: ${this.onestopId}`
-      if (this.entity) {
-        title = this.feedSpec + ' ' + title
-        if (this.entity.associated_operators) {
-          title = `${this.operatorNames} • ` + title
-        }
+      let title = `feed details: ${this.entity.onestop_id}`
+      title = this.feedSpec + ' ' + title
+      if (this.entity.associated_operators) {
+        title = `${this.operatorNames} • ` + title
       }
       return title
     },
     staticDescription () {
-      if (this.entity) {
-        const operatorDescription = (this.entity && this.entity.associated_operators) ? ` with data for ${this.entity.name || this.operatorNames}` : ''
-        const fvCount = this.entity.feed_versions.length
-        let description = `This is a ${this.feedSpec} feed ${operatorDescription} with the Onestop ID of ${this.onestopId}.`
-        if (fvCount === 1000) {
-          description += ` Transitland has archived over 1,000 versions of this feed,
-          which are available to query by API and to download.`
-        } else if (fvCount > 0) {
-          description += ` Transitland has archived ${fvCount} versions of this feed,
-          which are available to query by API and to download.`
-        }
-        this.$emit('staticDescriptionUpdated', description)
-        return description
+      const operatorDescription = (this.entity && this.entity.associated_operators) ? ` with data for ${this.entity.name || this.operatorNames}` : ''
+      const fvCount = this.entity.feed_versions.length
+      let description = `This is a ${this.feedSpec} feed ${operatorDescription} with the Onestop ID of ${this.entity.onestop_id}.`
+      if (fvCount === 1000) {
+        description += ` Transitland has archived over 1,000 versions of this feed,
+        which are available to query by API and to download.`
+      } else if (fvCount > 0) {
+        description += ` Transitland has archived ${fvCount} versions of this feed,
+        which are available to query by API and to download.`
       }
-      return ''
+      return description
     }
   },
   methods: {

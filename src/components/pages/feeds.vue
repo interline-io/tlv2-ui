@@ -1,7 +1,13 @@
 <template>
   <div>
-    <slot name="nav" />
+    <Title>{{ staticTitle }}</Title>
+    <Meta name="description" :content="staticDescription" />
+    <Meta name="twitter:title" :content="staticTitle" />
+    <Meta name="twitter:description" :content="staticDescription" />
+    <Meta name="og:title" :content="staticTitle" />
+    <Meta name="og:description" :content="staticDescription" />
 
+    <slot name="nav" />
     <slot name="title">
       <h1 class="title">
         Feeds
@@ -230,14 +236,6 @@ export default {
       tagUnstableUrl: this.$route.query.tag_unstable_url || false
     }
   },
-  head () {
-    return {
-      title: 'Source Feeds: GTFS, GTFS Realtime, GBFS',
-      meta: [
-        { hid: 'description', name: 'description', content: 'GTFS, GTFS Realtime, and GBFS source feeds cataloged by the Transitland platform.' }
-      ]
-    }
-  },
   computed: {
     feedPage () {
       return this.entityPage.map((feed) => {
@@ -261,6 +259,12 @@ export default {
       } else {
         return {}
       }
+    },
+    staticTitle () {
+      return 'Feeds index'
+    },
+    staticDescription () {
+      return 'An index of data sources indexed in Transitland'
     }
   },
   watch: {

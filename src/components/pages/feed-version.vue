@@ -3,6 +3,13 @@
     <tl-loading v-if="$apollo.loading" />
     <tl-error v-else-if="error">{{ error }}</tl-error>
     <div v-else-if="entity">
+      <Title>{{ staticTitle }}</Title>
+      <Meta name="description" :content="staticDescription" />
+      <Meta name="twitter:title" :content="staticTitle" />
+      <Meta name="twitter:description" :content="staticDescription" />
+      <Meta name="og:title" :content="staticTitle" />
+      <Meta name="og:description" :content="staticDescription" />
+
       <slot name="nav" :entity="entity">
         <nav class="breadcrumb">
           <ul>
@@ -375,20 +382,6 @@ export default {
       }
     }
   },
-  head () {
-    const meta = []
-    if (this.entity) {
-      meta.push({
-        hid: 'description',
-        name: 'description',
-        content: this.textDescription
-      })
-    }
-    return {
-      title: `${this.$route.params.feed} • ${this.$route.params.version} • Feed version`,
-      meta
-    }
-  },
   computed: {
     imported () {
       return this.fvi && this.fvi.success
@@ -416,7 +409,10 @@ export default {
         return this.entity.feed.onestop_id
       }
     },
-    textDescription () {
+    staticTitle () {
+      return `${this.entity.feed.onestop_id} • ${this.entity.sha1} • Feed version`
+    },
+    staticDescription () {
       return `An archived GTFS feed version for ${this.operatorOrAgencyNames} from the feed with a Onestop ID of ${this.$route.params.feed} first fetched at ${this.entity.fetched_at}. This feed version contains ${this.rowCount['agency.txt'] ? this.rowCount['agency.txt'].toLocaleString() : '-'} agencies, ${this.rowCount['routes.txt'] ? this.rowCount['routes.txt'].toLocaleString() : '-'} routes, and ${this.rowCount['stops.txt'] ? this.rowCount['stops.txt'].toLocaleString() : '-'} stops.`
     }
   },

@@ -1,5 +1,6 @@
 <template>
   <div>
+    <title>Global transit map</title>
     <client-only placeholder="Map">
       <tl-pages-map />
     </client-only>
@@ -8,14 +9,6 @@
 
 <script>
 definePageMeta({
-  layout: 'map',
-});
-
-export default {
-  head () {
-    return {
-      title: 'Global Transit Map'
-    }
-  }
-}
+  layout: 'map'
+})
 </script>

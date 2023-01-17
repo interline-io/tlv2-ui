@@ -3,6 +3,13 @@
     <tl-loading v-if="$apollo.loading" />
     <tl-error v-else-if="error">{{ error }}</tl-error>
     <div v-else-if="entity">
+      <Title>{{ staticTitle }}</Title>
+      <Meta name="description" :content="staticDescription" />
+      <Meta name="twitter:title" :content="staticTitle" />
+      <Meta name="twitter:description" :content="staticDescription" />
+      <Meta name="og:title" :content="staticTitle" />
+      <Meta name="og:description" :content="staticDescription" />
+
       <nav class="breadcrumb">
         <ul>
           <li>
@@ -318,16 +325,6 @@ export default {
       }
     }
   },
-  head () {
-    if (this.entity) {
-      return {
-        title: this.entity.stop_name,
-        meta: [
-          { hid: 'description', name: 'description', content: `${this.entity.stop_name} is a stop ` }
-        ]
-      }
-    }
-  },
   computed: {
     allAlerts  () {
       const ret = []
@@ -504,6 +501,12 @@ export default {
     },
     entity () {
       return this.roots.length > 0 ? this.roots[0] : null
+    },
+    staticTitle () {
+      return `${this.entity.stop_name} • Stop`
+    },
+    staticDescription () {
+      return `${this.entity.stop_name} stop available for browsing and analyzing on the Transitland platform`
     }
   },
   methods: {

@@ -3,6 +3,20 @@
     <tl-loading v-if="$apollo.loading" />
     <tl-error v-else-if="error">{{ error }}</tl-error>
     <div v-else-if="entity">
+      <Title>{{ staticTitle }}</Title>
+      <Meta name="description" :content="staticDescription" />
+      <Meta name="twitter:title" :content="staticTitle" />
+      <Meta name="twitter:description" :content="staticDescription" />
+      <Meta name="twitter:image" :content="staticImage" />
+      <Meta name="twitter:image:alt" :content="staticDescription" />
+      <Meta name="og:title" :content="staticTitle" />
+      <Meta name="og:description" :content="staticDescription" />
+      <Meta name="og:image:type" content="image/png" />
+      <Meta name="og:image:width" content="800" />
+      <Meta name="og:image:height" content="600" />
+      <Meta name="og:image" :content="staticImage" />
+      <Meta name="og:image:alt" :content="staticDescription" />
+
       <slot name="nav">
         <nav class="breadcrumb">
           <ul>
@@ -347,85 +361,6 @@ export default {
       }
     }
   },
-  head () {
-    if (this.entity) {
-      return {
-        title: this.staticTitle,
-        meta: [
-          {
-            hid: 'description',
-            name: 'description',
-            content: this.staticDescription
-          },
-          {
-            hid: 'twitter:card',
-            name: 'twitter:card',
-            content: 'summary'
-          },
-          {
-            hid: 'twitter:site',
-            name: 'twitter:site',
-            content: '@transitland'
-          },
-          {
-            hid: 'twitter:title',
-            name: 'twitter:title',
-            content: this.staticTitle
-          },
-          {
-            hid: 'twitter:description',
-            name: 'twitter:description',
-            content: this.staticDescription
-          },
-          {
-            hid: 'twitter:image',
-            name: 'twitter:image',
-            content: this.staticImage
-          },
-          {
-            hid: 'twitter:image:alt',
-            name: 'twitter:image:alt',
-            content: this.staticTitle
-          },
-          {
-            hid: 'og:title',
-            property: 'og:title',
-            content: this.staticTitle
-          },
-          {
-            hid: 'og:description',
-            property: 'og:description',
-            content: this.staticDescription
-          },
-          {
-            hid: 'og:image',
-            property: 'og:image',
-            content: this.staticImage
-          },
-          {
-            hid: 'og:image:alt',
-            property: 'og:image:alt',
-            content: this.staticTitle
-          },
-          {
-            hid: 'og:image:type',
-            property: 'og:image:type',
-            content: 'image/png'
-          },
-          {
-            hid: 'og:image:width',
-            property: 'og:image:width',
-            content: '800'
-          },
-          {
-            hid: 'og:image:height',
-            property: 'og:image:height',
-            content: '600'
-          }
-        ]
-      }
-    }
-  },
   computed: {
     // routeFeatures and stopFeatures are calculated from the main
     // graphql response so we don't need to copy in and rely on the response from the map
@@ -476,11 +411,7 @@ export default {
       return Array.from(rs.values()).slice(0, 4)
     },
     routeType () {
-      if (this.entity) {
-        return this.$options.filters.routeTypeToWords(this.entity.route_type)
-      } else {
-        return ''
-      }
+      return this.$filters.routeTypeToWords(this.entity.route_type)
     },
     operators () {
       const rs = new Map()
@@ -507,7 +438,7 @@ export default {
       }
     },
     staticImage () {
-      return `https://transit.land/api/v2/rest/routes/${this.searchKey.onestop_id}.png`
+      return `https://transit.land/api/v2/rest/routes/${this.pathKey}.png`
     },
     staticTitle () {
       return `${this.routeName} • ${this.routeType} route`

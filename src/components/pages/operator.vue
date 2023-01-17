@@ -2,6 +2,13 @@
   <div>
     <div v-if="$apollo.loading" class="is-loading" />
     <div v-else-if="entity">
+      <Title>{{staticTitle }}</Title>
+      <Meta name="description" :content="staticDescription" />
+      <Meta name="twitter:title" :content="staticTitle" />
+      <Meta name="twitter:description" :content="staticDescription" />
+      <Meta name="og:title" :content="staticTitle" />
+      <Meta name="og:description" :content="staticDescription" />
+
       <nav class="breadcrumb">
         <ul>
           <li>
@@ -19,12 +26,6 @@
       <h1 class="title">
         {{ operatorName }}
       </h1>
-
-      <slot name="description">
-        <div class="content">
-          {{ staticDescription }}
-        </div>
-      </slot>
 
       <!-- Warnings for freshness and viewing a specific version -->
       <tl-check-fresh :fetched="dataFreshness" />
@@ -117,6 +118,13 @@
               </td>
             </tr>
           </table>
+
+          <slot name="description">
+        <div class="content">
+          {{ staticDescription }}
+        </div>
+      </slot>
+
         </div>
 
         <div class="column is-one-quarter is-full-height">
@@ -295,22 +303,6 @@ export default {
         3: 'stops',
         4: 'export'
       }
-    }
-  },
-  head () {
-    return {
-      title: this.staticTitle,
-      meta: [
-        { hid: 'description', name: 'description', content: this.staticDescription },
-        { hid: 'twitter:card', name: 'twitter:card', content: 'summary' },
-        { hid: 'twitter:site', name: 'twitter:site', content: '@transitland' },
-        { hid: 'twitter:title', name: 'twitter:title', content: this.staticTitle },
-        { hid: 'twitter:image', name: 'twitter:image', content: 'https://www.transit.land/images/transitland-logo-square-with-whitebackground-smaller.png' },
-        { hid: 'twitter:image:alt', name: 'twitter:image:alt', content: 'Transitland' },
-        { hid: 'twitter:description', name: 'twitter:description', content: this.staticDescription },
-        { hid: 'og:title', property: 'og:title', content: this.staticTitle },
-        { hid: 'og:description', property: 'og:description', content: this.staticDescription }
-      ]
     }
   },
   computed: {

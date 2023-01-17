@@ -1,16 +1,11 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  ssr: false,
+  ssr: true,
   srcDir: 'app',
   plugins: [
     { src: 'plugins/oruga.js' },
     { src: 'plugins/apollo.js' },
     { src: 'plugins/filters.js' }
-  ],
-  modules: [
-
-
-
   ],
   components: [{
     path: '~/../src/components',
