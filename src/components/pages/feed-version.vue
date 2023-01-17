@@ -147,18 +147,14 @@
         <div v-if="canEdit" class="=clearfix block pb-4">
           &nbsp;
           <div class="is-pulled-right">
-            <div v-if="showEdit">
-              <span class="button is-primary" @click="saveEntity">Save</span>
-            </div>
-            <div v-else>
-              <span class="button is-primary has-addons" @click="showEdit = true"><b-icon icon="pencil" /> <span>Edit</span></span>
-            </div>
+            <b-button v-if="showEdit" variant="primary" @click="saveEntity">Save</b-button>
+            <b-button v-else variant="primary" icon-left="pencil" @click="showEdit = true">Edit</b-button>
           </div>
         </div>
       </slot>
 
       <slot name="import" :entity="entity">
-        <b-message v-if="!fvi" variant="info" has-icon icon="information" :closeable="false">
+        <tl-info v-if="!fvi">
           This feed version is not currently imported into the database.
           <template v-if="importLoading">
             <span class="button is-primary is-pulled-right" :disabled="true">
@@ -170,19 +166,19 @@
               Import feed version
             </span>
           </template>
-        </b-message>
-        <b-message v-else-if="fvi.schedule_removed" variant="success" has-icon icon="check" :closeable="false">
+        </tl-info>
+        <tl-success v-else-if="fvi.schedule_removed">
           Agencies, stops, and routes are available for this feed version. Schedule data is not available.
-        </b-message>
-        <b-message v-else-if="fvi.success" variant="success" has-icon icon="check-all" :closeable="false">
+        </tl-success>
+        <tl-success v-else-if="fvi.success" icon="check-all">
           This feed version was successfully imported into the database.
-        </b-message>
-        <b-message v-else-if="fvi.in_progress" variant="info" has-icon icon="clock" :closeable="false">
+        </tl-success>
+        <tl-success v-else-if="fvi.in_progress" icon="clock">
           Import in progress! Please be patient.
-        </b-message>
-        <b-message v-else-if="!fvi.success" has-icon icon="alert" :closeable="false" variant="danger">
+        </tl-success>
+        <tl-warning v-else-if="!fvi.success">
           Import Error: {{ fvi.exception_log }}
-        </b-message>
+        </tl-warning>
       </slot>
 
       <slot name="download" :entity="entity" />
@@ -207,9 +203,9 @@
                 <tl-feed-version-map-viewer :feed-version-sha1="entity.sha1" :overlay="true" :link-version="true" />
               </client-only>
             </div>
-            <b-message v-else has-icon variant="warning">
+            <tl-info v-else>
               Map is only available for successfully imported feed versions.
-            </b-message>
+            </tl-info>
           </template>
         </b-tab-item>
 

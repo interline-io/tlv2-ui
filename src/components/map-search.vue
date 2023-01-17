@@ -19,12 +19,16 @@
           </div>
         </template>
       </b-autocomplete>
-      <div>
+      <b-field>
         <span v-if="!locationUse" class="button" @click="watchLocation"><b-icon icon="crosshairs" /></span>
-        <span v-if="locationUse && locationLoading" class="button"><b-icon icon="loading" /></span>
+        <span v-if="locationError" class="button"><b-icon icon="crosshairs" /></span>
+        <span v-else-if="locationUse && locationLoading" class="button"><b-icon icon="loading" /></span>
         <span v-else-if="locationUse && !locationLoading" class="button"><b-icon icon="crosshairs-gps" /></span>
-      </div>
+      </b-field>
     </b-field>
+    <tl-warning v-if="locationError">
+      There was an error trying to obtain your location.
+    </tl-warning>
   </div>
 </template>
 
@@ -98,6 +102,7 @@ export default {
     return {
       search: '',
       error: null,
+      locationError: null,
       minSearchLength: 4,
       locationUse: false,
       locationLoading: false,
@@ -138,7 +143,7 @@ export default {
   watch: {
     coords () {
       const { error } = useGeolocation()
-      this.error = error
+      this.locationError = error
       if (this.coords.accuracy === 0) {
         return
       }

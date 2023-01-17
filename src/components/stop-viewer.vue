@@ -1,8 +1,6 @@
 <template>
   <div>
-    <b-message v-if="error" variant="danger">
-      {{ error }}
-    </b-message>
+    <tl-error v-if="error">{{ error  }}</tl-error>
     <div v-else>
       <tl-search-bar v-model="search" placeholder="Filter Stops" />
       <o-table

@@ -1,16 +1,7 @@
 <template>
   <div>
-    <div v-if="$apollo.loading && stops.length === 0">
-      <!-- "double buffer" -->
-      <h6 class="title is-6">
-        Loading
-      </h6>
-    </div>
-    <div v-else-if="error">
-      <b-notification type="danger" style="margin:10px" :closable="false" :has-icon="true">
-        {{ error }}
-      </b-notification>
-    </div>
+    <tl-loading v-if="$apollo.loading && stops.length === 0" />
+    <tl-error v-else-if="error">{{ error }}</tl-error>
     <div v-else-if="!searchCoords && stopIds.length === 0">
       <h6 class="title is-6">
         Click on the map to select a location

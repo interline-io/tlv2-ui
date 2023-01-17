@@ -1,6 +1,7 @@
 <template>
   <div>
-    <div v-if="$apollo.loading" class="is-loading" />
+    <tl-loading v-if="$apollo.loading" />
+    <tl-error v-else-if="error">{{ error }}</tl-error>
     <div v-else-if="entity">
       <slot name="nav">
         <nav class="breadcrumb">
@@ -52,49 +53,8 @@
       </h1>
 
       <!-- Warnings for freshness and viewing a specific version -->
-      <div class="block">
-        <b-message v-if="dataFreshness > 365" variant="warning" has-icon>
-          The GTFS feeds associated with this page were fetched
-          {{ dataFreshness }} days ago; use caution or check if newer data is
-          available.
-        </b-message>
-
-        <b-message v-if="linkVersion" variant="warning" has-icon>
-          You are viewing a single GTFS Route entity defined in source feed
-          <nuxt-link
-            :to="{
-              name: 'feeds-feed',
-              params: { feed: feedOnestopId },
-            }"
-          >
-            {{ $filters.shortenName(feedOnestopId) }}
-          </nuxt-link>
-          version
-          <nuxt-link
-            :to="{
-              name: 'feeds-feed-versions-version',
-              params: {
-                feed: feedOnestopId,
-                version: feedVersionSha1,
-              },
-            }"
-          >
-            {{ $filters.shortenName(feedVersionSha1, 8) }}
-          </nuxt-link>.<br>
-          <template v-if="!search">
-            Click
-            <nuxt-link
-              :to="{
-                name: 'routes-onestop_id',
-                params: { onestop_id: searchKey.onestop_id },
-              }"
-            >
-              here
-            </nuxt-link>
-            to return to the main view.
-          </template>
-        </b-message>
-      </div>
+      <tl-check-fresh :fetched="entity.feed_version.fetched_at" />
+      <tl-check-single :feed-onestop-id="feedOnestopId" :feed-version-sha1="feedVersionSha1" />
 
       <!-- Main content -->
       <div class="columns">
@@ -170,27 +130,24 @@
           </table>
 
           <div v-for="ent of entities" :key="ent.id">
-            <b-message
+            <tl-alert
               v-for="(alert,idx) of ent.alerts"
               :key="idx"
-              variant="warning"
-              class="block"
-              has-icon
-            >
+              variant="warning is-light"
+              type="warning">
               <div v-for="tr of filterRTTranslations(alert.description_text)" :key="tr.text">
                 Agency Alert: {{ tr.text }}
               </div>
-            </b-message>
+            </tl-alert>
           </div>
 
-          <br>
-          <b-message variant="info" class="block">
+          <tl-info>
             Learn more about the contents of <code>routes.txt</code> on
             <a
               href="https://gtfs.org/reference/static#routestxt"
               target="_blank"
             >gtfs.org</a>.
-          </b-message>
+          </tl-info>
 
           <b-tabs
             v-model="activeTab"

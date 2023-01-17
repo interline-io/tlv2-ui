@@ -27,23 +27,8 @@
       </slot>
 
       <!-- Warnings for freshness and viewing a specific version -->
-      <b-message v-if="dataFreshness > 365" variant="warning" has-icon>
-        The GTFS feeds associated with this page were fetched {{ dataFreshness }} days ago; use caution or check if newer data is available.
-      </b-message>
-      <b-message v-if="linkVersion" variant="warning" has-icon>
-        You are viewing a single GTFS Agency entity defined in source feed
-        <nuxt-link :to="{name:'feeds-feed', params:{feed:$route.query.feed_onestop_id}}">
-          {{ $filters.shortenName($route.query.feed_onestop_id) }}
-        </nuxt-link> version
-        <nuxt-link :to="{name:'feeds-feed-versions-version', params:{feed:$route.query.feed_onestop_id, version:$route.query.feed_version_sha1}}">
-          {{ $filters.shortenName($route.query.feed_version_sha1, 8) }}
-        </nuxt-link>.<br>
-        <template v-if="!search">
-          Click <nuxt-link :to="{name: 'operators-onestop_id', params:{onestop_id:$route.params.onestop_id}}">
-            here
-          </nuxt-link> to return to the main view.
-        </template>
-      </b-message>
+      <tl-check-fresh :fetched="dataFreshness" />
+      <tl-check-single :feed-onestop-id="feedOnestopId" :feed-version-sha1="feedVersionSha1" />
 
       <!-- Main content -->
       <div class="columns">
@@ -146,13 +131,9 @@
 
       <b-tabs type="boxed" :animated="false">
         <b-tab-item label="Source Feeds">
-          <b-message
+          <tl-info
             v-for="feedSpec, feedOnestopId in uniqueFeedSourcesOnestopIds"
             :key="feedOnestopId"
-            variant="success"
-            has-icon
-            icon="information"
-            :closable="false"
           >
             <div class="columns">
               <div class="column is-8">
@@ -167,15 +148,16 @@
                 </nuxt-link>
               </div>
             </div>
-          </b-message>
+          </tl-info>
         </b-tab-item>
 
         <b-tab-item label="Source Feeds (Advanced View)">
-          <b-message variant="light" has-icon icon="information" :closable="false">
+          <tl-info>
             This operator includes data from the references listed below. These references are defined in the operator's Atlas record, and describe the GTFS agencies that provide the routes, stops, schedules, and other information for this operator. If a reference to an agency cannot be resolved, this will be noted. Please see the <nuxt-link :to="{name:'documentation'}">
               Operator documentation
             </nuxt-link> for more information on this process.
-          </b-message>
+          </tl-info>
+          
           <div class="content">
             <o-table
               :data="sources"
@@ -333,17 +315,8 @@ export default {
   },
   computed: {
     dataFreshness () {
-      // The fetched_at is on agencies, not the top level entities
-      const daysAgo = []
-      const n = new Date()
-      try {
-        for (const ent of this.agencies) {
-          const n2 = Date.parse(ent.feed_version.fetched_at)
-          daysAgo.push(Math.floor((n2 - n) / (1000 * 3600 * 24 * -1)))
-        }
-      } catch {
-      }
-      return Math.max(...daysAgo)
+      if (this.agencies.length > 0) { return this.agencies[0].feed_version.fetched_at }
+      return null
     },
     locations () {
       const ret = new Map()

@@ -1,8 +1,7 @@
 <template>
   <div>
-    <b-message v-if="error" variant="danger">
-      {{ error }}
-    </b-message>
+    <tl-loading v-if="$apollo.loading" />
+    <tl-error v-else-if="error">{{ error }}</tl-error>
     <div v-else>
       <tl-search-bar v-model="search" placeholder="Filter Routes" />
       <o-table

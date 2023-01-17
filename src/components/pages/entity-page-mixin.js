@@ -1,13 +1,10 @@
 export default {
   apollo: {
-    $error(e) {
-      this.error = e
-    },
     $query: {
       client: 'transitland',
       update(data) {
         if (data.entities.length === 0) {
-          return this.setError(404)
+          return this.setError(404, 'Not found')
         }
         return data.entities
       }
@@ -25,7 +22,6 @@ export default {
       activeTab: 1,
       childLabel: null,
       error: null,
-      errorMessage: null,
       tabIndex: {}
     }
   },
@@ -52,18 +48,6 @@ export default {
         return true
       }
       return false
-    },
-    dataFreshness() {
-      const daysAgo = []
-      const n = new Date()
-      try {
-        for (const ent of this.entities) {
-          const n2 = Date.parse(ent.feed_version.fetched_at)
-          daysAgo.push(Math.floor((n2 - n) / (1000 * 3600 * 24 * -1)))
-        }
-      } catch {
-      }
-      return Math.max(...daysAgo)
     },
     linkVersion() {
       if (this.searchKey.feed_version_sha1) {
@@ -109,7 +93,8 @@ export default {
       return false
     },
     setError(statusCode, message) {
-      this.$nuxt.error({ statusCode, message })
+      // this.$nuxt.error({ statusCode, message })
+      this.error = message
     },
     setTab(value) {
       const tab = this.tabIndex[value]

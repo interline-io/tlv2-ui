@@ -15,14 +15,14 @@
           <button type="button" class="delete" @click="$emit('update:modelValue', false)" />
         </header>
         <section class="modal-card-body">
-          <div class="container">
+          <div class="container content">
             <template v-if="sha1 === latestFeedVersionSha1">
               <p>The most recent feed version can be accessed by all users.</p>
-              <div class="is-centered">
+              <p class="is-centered">
                 <a :href="`https://demo.transit.land/api/v2/rest/feed_versions/${sha1}/download`" target="_blank">
-                  <b-button variant="success">Download feed version <b-icon icon="download" /></b-button>
+                  <b-button variant="success" icon-left="download">Download feed version</b-button>
                 </a>
-              </div>
+              </p>
               <p>
                 Older feed versions can be accessed with a <a href="https://www.interline.io/transitland/plans-pricing/" target="_blank">Transitland Hobbyist/Academic, Professional, and Enterprise plan</a>.
               </p>

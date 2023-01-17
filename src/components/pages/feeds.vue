@@ -11,10 +11,6 @@
     <slot name="description" />
 
     <div>
-      <b-message v-if="error" variant="danger">
-        {{ error }}
-      </b-message>
-
       <b-field grouped group-multiline>
         <b-field label="Search by feed name">
           <div>
@@ -78,6 +74,8 @@
           </div>
         </b-field>
       </b-field>
+
+      <tl-error v-if="error">{{ error }}</tl-error>
 
       <o-table
         :loading="$apollo.loading"

@@ -33,11 +33,10 @@
           multiple
           aria-role="list"
         >
-          <button slot="trigger" class="button" type="button">
+          <button slot="trigger" class="button" type="button" icon="menu-down">
             <span>
               {{ showOnMap.map((s)=>{return titleize(s)}).join(", ") }}
             </span>
-            <b-icon icon="menu-down" />
           </button>
 
           <b-dropdown-item value="buffer" aria-role="listitem">

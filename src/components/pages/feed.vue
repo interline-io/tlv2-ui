@@ -1,6 +1,7 @@
 <template>
   <div>
-    <div v-if="$apollo.loading" class="is-loading" />
+    <tl-loading v-if="$apollo.loading" />
+    <tl-error v-else-if="error">{{ error }}</tl-error>
     <div v-else-if="entity">
       <slot name="nav" :entity="entity">
         <nav class="breadcrumb">
@@ -102,9 +103,9 @@
                 </b-tooltip>
               </td>
               <td>
-                <b-message variant="danger" has-icon>
+                <tl-error>
                   {{ lastFetch.fetch_error }}
-                </b-message>
+                </tl-error>
               </td>
             </tr>
 
@@ -192,16 +193,12 @@
         </h4>
         <b-tabs type="boxed" :animated="false">
           <b-tab-item label="Operators">
-            <b-message v-if="!entity.associated_operators || (entity.associated_operators && entity.associated_operators.length === 0)">
+            <tl-info v-if="!entity.associated_operators || (entity.associated_operators && entity.associated_operators.length === 0)">
               There are no operators associated with this feed.
-            </b-message>
-            <b-message
+            </tl-info>
+            <tl-success
               v-for="(operator,i) of entity.associated_operators"
               :key="i"
-              variant="success"
-              has-icon
-              icon="information"
-              :closable="false"
             >
               <div class="columns">
                 <div class="column is-8">
@@ -216,7 +213,7 @@
                   </nuxt-link>
                 </div>
               </div>
-            </b-message>
+            </tl-success>
           </b-tab-item>
         </b-tabs>
       </div>
@@ -316,8 +313,6 @@
                 </template>
               </o-table-column>
             </o-table>
-
-            dd: {{ displayDownloadInstructions }} {{ displayDownloadSha1 }}
 
             <tl-feed-version-download-modal
               v-model="displayDownloadInstructions"
@@ -469,11 +464,10 @@ export default {
   },
   props: {
     showDownloadColumn: { type: Boolean, default: true },
-    showOperators: { type: Boolean, default: false }
+    showOperators: { type: Boolean, default: true }
   },
   data () {
     return {
-      error: 'ok',
       displayDownloadInstructions: false,
       displayDownloadSha1: '',
       tabIndex: {

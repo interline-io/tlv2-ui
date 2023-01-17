@@ -1,6 +1,7 @@
 <template>
   <div class="container">
-    <span v-if="$apollo.loading" class="is-loading" />
+    <tl-loading v-if="$apollo.loading" />
+    <tl-error v-else-if="error">{{ error }}</tl-error>
     <div v-else-if="entity">
       <nav class="breadcrumb">
         <ul>
@@ -19,23 +20,8 @@
       </h1>
 
       <!-- Warnings for freshness and viewing a specific version -->
-      <b-message v-if="dataFreshness > 365" variant="warning" has-icon>
-        The GTFS feeds associated with this page were fetched {{ dataFreshness }} days ago; use caution or check if newer data is available.
-      </b-message>
-      <b-message v-if="linkVersion" variant="warning" has-icon>
-        You are viewing a single GTFS stop or station defined in source feed
-        <nuxt-link :to="{name:'feeds-feed', params:{feed:$route.query.feed_onestop_id}}">
-          {{ $filters.shortenName($route.query.feed_onestop_id) }}
-        </nuxt-link> version
-        <nuxt-link :to="{name:'feeds-feed-versions-version', params:{feed:$route.query.feed_onestop_id, version:$route.query.feed_version_sha1}}">
-          {{ $filters.shortenName($route.query.feed_version_sha1, 8) }}
-        </nuxt-link>.<br>
-        <template v-if="!search">
-          Click <nuxt-link :to="{name: 'stops-onestop_id', params:{onestop_id:$route.params.onestop_id}}">
-            here
-          </nuxt-link> to return to the main view.
-        </template>
-      </b-message>
+      <tl-check-fresh :fetched="entity.feed_version.fetched_at" />
+      <tl-check-single :feed-onestop-id="feedOnestopId" :feed-version-sha1="feedVersionSha1" />
 
       <!-- Main content -->
       <div class="columns">
@@ -102,25 +88,24 @@
             </tr>
           </table>
 
-          <b-message
+          <tl-warning
             v-for="(alert,idx) of allAlerts"
             :key="idx"
-            variant="warning"
-            class="block"
-            has-icon
+            variant="warning is-light"
+            type="warning"
           >
             <div v-for="tr of filterRTTranslations(alert.description_text)" :key="tr.text">
               Agency Alert: {{ tr.text }}
             </div>
-          </b-message>
+          </tl-warning>
 
-          <b-message variant="info" class="block">
+          <tl-info>
             Learn more about the contents of <code>stops.txt</code> on
             <a
               href="https://gtfs.org/reference/static#stopstxt"
               target="_blank"
             >gtfs.org</a>.
-          </b-message>
+          </tl-info>
 
           <b-tabs v-model="activeTab" type="boxed" :animated="false" @update:modelValue="setTab">
             <b-tab-item label="Summary">
@@ -270,6 +255,9 @@ fragment ss on Stop {
   wheelchair_boarding
   zone_id
   geometry
+  feed_version { 
+    fetched_at
+  }
   alerts(active:true) {
     ...alert
   }

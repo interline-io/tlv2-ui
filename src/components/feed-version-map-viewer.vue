@@ -1,11 +1,7 @@
 <template>
   <div style="position:relative">
-    <b-message v-if="error" variant="danger">
-      {{ error }}
-    </b-message>
-    <div v-else-if="$apollo.loading" class="is-loading">
-      Loading
-    </div>
+    <tl-loading v-if="$apollo.loading" />
+    <tl-error v-else-if="error">{{ error }}</tl-error>
     <div v-else>
       <tl-map-viewer
         :enable-scroll-zoom="enableScrollZoom"
