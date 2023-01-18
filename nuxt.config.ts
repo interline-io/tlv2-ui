@@ -1,4 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+const apiBase = process.env.TRANSITLAND_API_BASE || 'https://transit.land/api/v2'
+
 export default defineNuxtConfig({
   ssr: true,
   srcDir: 'app',
@@ -17,9 +19,10 @@ export default defineNuxtConfig({
   }],
   runtimeConfig: {
     public: {
-      graphqlEndpoint: process.env.GRAPHQL_ENDPOINT || 'https://transit.land/api/v2/query',
+      apiBase,
+      graphqlEndpoint: process.env.GRAPHQL_ENDPOINT || apiBase + '/query',
       graphqlApikey: process.env.GRAPHQL_APIKEY,
-      tileEndpoint: process.env.TILE_ENDPOINT || 'https://transit.land/api/v2/tiles',
+      tileEndpoint: process.env.TILE_ENDPOINT || apiBase + '/tiles',
       tileApikey: process.env.TILE_APIKEY
     }
   },

@@ -487,7 +487,7 @@ export default {
       return first(this.entity.last_fetch)
     },
     lastSuccessfulFetch () {
-      return this.entity?.last_successful_fetch[0]
+      return (this.entity.last_successful_fetch && this.entity.last_successful_fetch.length > 0) ? this.entity.last_successful_fetch[0] : null
     },
     latestFeedVersionSha1 () {
       const s = this.entity?.feed_versions.slice(0).sort((a, b) => { return a.fetched_at - b.fetched_at })

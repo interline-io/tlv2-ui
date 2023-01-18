@@ -329,7 +329,6 @@ query ($onestop_id: String, $ids: [Int!], $entity_id: String, $feed_onestop_id: 
     }
   }
 }
-
 `
 
 export default {
@@ -438,7 +437,8 @@ export default {
       }
     },
     staticImage () {
-      return `https://transit.land/api/v2/rest/routes/${this.pathKey}.png`
+      const config = useRuntimeConfig()
+      return `${config.public.apiBase}/rest/routes/${this.pathKey}.png`
     },
     staticTitle () {
       return `${this.routeName} • ${this.routeType} route`
