@@ -16,7 +16,7 @@
           @select="option => selected = option"
           @keydown.esc.native="clearSearch"
         >
-          <template slot-scope="props">
+          <template #default="props">
             {{ props.option.name }}
             <span class="is-pulled-right" style="color:#ccc">{{ props.option.type }}</span>
           </template>

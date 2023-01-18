@@ -1,3 +1,21 @@
+code {
+    word-wrap: none;
+    white-space: nowrap;
+}
+
+.button-wrapper .icon {
+    padding-right:20px;
+}
+
+.tag {
+    padding:5px;
+}
+
+article.notification {
+    margin-top:20px;
+    margin-bottom:20px;
+}
+
 table.property-list td,
 table.property-list th {
     padding: 5px;
@@ -90,11 +108,16 @@ th {
     padding-top: 0.5em;
 }
 
+
 .b-tabs .tab-content {
     margin: 0px;
     padding: 0px;
     padding-top: 10px;
     padding-bottom: 10px;
+}
+
+nav.tabs {
+    margin-bottom:0px !important;
 }
 
 .map-panel {
@@ -112,15 +135,15 @@ th {
     background: none;
 }
 
-.map-panel-tabs li[role=tab] a {
+.map-panel-tabs div[role=tab] a {
     margin-right: 5px;
 }
 
-.map-panel-tabs li[role=tab] a {
+.map-panel-tabs div[role=tab] a {
     background-color: rgba(235, 235, 235, 0.9) !important;
 }
 
-.map-panel-tabs li[role=tab].is-active a {
+.map-panel-tabs div[role=tab][aria-selected=true] a {
     background-color: rgba(255, 255, 255, 0.9) !important;
 }
 
@@ -137,3 +160,4 @@ th {
     position: fixed;
     max-width:80%;
 }
+

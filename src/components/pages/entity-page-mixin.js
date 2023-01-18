@@ -1,15 +1,11 @@
-import Filters from '../filters'
-
 export default {
   apollo: {
-    $error (e) {
-      this.error = e
-    },
     $query: {
       client: 'transitland',
-      update (data) {
+      error (e) { this.error = e },
+      update(data) {
         if (data.entities.length === 0) {
-          return this.setError(404)
+          return this.setError(404, 'Not found')
         }
         return data.entities
       }
@@ -21,19 +17,17 @@ export default {
     feedOnestopId: { type: String, default: null },
     entityId: { type: String, default: null }
   },
-  mixins: [Filters],
-  data () {
+  data() {
     return {
       entities: [],
-      activeTab: 0,
+      activeTab: 1,
       childLabel: null,
       error: null,
-      errorMessage: null,
       tabIndex: {}
     }
   },
   computed: {
-    searchKey () {
+    searchKey() {
       const pk = String(this.pathKey || '')
       const k = pk.split(':')
       if (k.length > 1) {
@@ -50,48 +44,36 @@ export default {
         feed_version_sha1: this.feedVersionSha1
       }
     },
-    advancedMode () {
+    advancedMode() {
       if (this.$route.query && this.$route.query.advanced === 'true') {
         return true
       }
       return false
     },
-    dataFreshness () {
-      const daysAgo = []
-      const n = new Date()
-      try {
-        for (const ent of this.entities) {
-          const n2 = Date.parse(ent.feed_version.fetched_at)
-          daysAgo.push(Math.floor((n2 - n) / (1000 * 3600 * 24 * -1)))
-        }
-      } catch {
-      }
-      return Math.max(...daysAgo)
-    },
-    linkVersion () {
+    linkVersion() {
       if (this.searchKey.feed_version_sha1) {
         return true
       }
     },
-    search () {
-      return this.searchKey.onestop_id === 'search'
+    search() {
+      return this.pathKey.onestop_id === 'search'
     },
-    entity () {
+    entity() {
       return (this.entities && this.entities.length > 0) ? this.entities[0] : null
     },
-    entityIds () {
+    entityIds() {
       return this.entities.map((s) => { return s.id })
     },
-    fvids () {
+    fvids() {
       return (this.agencies || []).map((s) => { return s.feed_version_id })
     }
   },
   watch: {
-    childLabel () {
+    childLabel() {
       this.activeTab = 5
     }
   },
-  mounted () {
+  mounted() {
     const tab = this.$route.hash.substr(1)
     if (tab) {
       for (const [k, v] of Object.entries(this.tabIndex)) {
@@ -102,23 +84,23 @@ export default {
     }
   },
   methods: {
-    checkSearchSkip (entityId) {
+    checkSearchSkip() {
       const fosid = this.$route.query.feed_onestop_id || ''
-      const eid = entityId || ''
+      const eid = this.$route.query.entity_id || ''
       if (this.$route.params.onestop_id === 'search' && (fosid.length === 0 || eid.length === 0)) {
-        this.setError(404)
+        this.setError(404, 'Not found')
         return true
       }
       return false
     },
-    setError (statusCode, message) {
-      this.$nuxt.error({ statusCode, message })
+    setError(statusCode, message) {
+      // this.$nuxt.error({ statusCode, message })
+      this.error = message
     },
-    setTab (value) {
+    setTab(value) {
       const tab = this.tabIndex[value]
       if (tab) {
         // set window.location.hash directly; this.$router.push causes reload
-        // this.$router.push({ hash: '#' + tab })
         window.location.hash = tab
       }
     }

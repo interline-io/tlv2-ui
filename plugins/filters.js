@@ -1,15 +1,16 @@
-<script>
 import { formatDistanceToNow, parseISO, format } from 'date-fns'
 
-function parseHMS (value) {
-  const a = (value || '').split(':').map((s) => { return parseInt(s) })
+function parseHMS(value) {
+  const a = (value || '').split(':').map(s => {
+    return parseInt(s)
+  })
   if (a.length !== 3) {
     return null
   }
   return a[0] * 3600 + a[1] * 60 + a[2]
 }
 
-function formatHMS (value) {
+function formatHMS(value) {
   value = value % (24 * 3600)
   let h = Math.floor(value / 3600)
   let m = Math.floor((value % 3600) / 60)
@@ -32,28 +33,74 @@ function formatHMS (value) {
   return `${h}:${m} ${ampm}`
 }
 
-export default {
-  filters: {
-    fromNowDate (comparisonDate) {
+function median(values) {
+  const half = Math.floor(values.length / 2)
+  if (values.length % 2) {
+    return values[half]
+  }
+  return (values[half - 1] + values[half]) / 2.0
+}
+
+function formatDuration(seconds) {
+  if (seconds > 3600) {
+    return `${Math.ceil(seconds / 3600)}h ${Math.ceil(
+      (seconds % 3600) / 60
+    )} min`
+  }
+  if (seconds > 0) {
+    return `${Math.ceil(seconds / 60)} min`
+  }
+  return '-'
+}
+
+export default defineNuxtPlugin(nuxtApp => {
+  nuxtApp.vueApp.config.globalProperties.$filters = {
+    formatHeadway(hw, tod) {
+      if (!hw) {
+        return ''
+      }
+      const deps = hw[tod] || []
+      if (deps.length === 0) {
+        return ''
+      } else if (deps.length < 3) {
+        return `${deps.length + 1} trips`
+      }
+      const amin = Math.min(...deps)
+      const amax = Math.max(...deps)
+      const amid = median(deps)
+      if (amin && amax) {
+        const diff = Math.abs(amax - amin)
+        if (diff > 2 * 3600) {
+          return 'varies'
+        } else if (diff > 10 * 60) {
+          return `${formatDuration(amin)} - ${formatDuration(amax)}`
+        }
+      }
+      if (amid) {
+        return formatDuration(amid)
+      }
+      return ''
+    },
+    fromNowDate(comparisonDate) {
       return formatDistanceToNow(comparisonDate, {
         addSuffix: true
       }).replace('about ', '')
     },
-    fromNow (comparisonDate) {
+    fromNow(comparisonDate) {
       return formatDistanceToNow(parseISO(comparisonDate + 'Z'), {
         addSuffix: true
       }).replace('about ', '')
     },
-    reformatHMS (value) {
+    reformatHMS(value) {
       return formatHMS(parseHMS(value))
     },
-    parseHMS (value) {
+    parseHMS(value) {
       return parseHMS(value)
     },
-    formatHMS (value) {
+    formatHMS(value) {
       return formatHMS(value)
     },
-    shortenName (value, len) {
+    shortenName(value, len) {
       if (!value) {
         value = ''
       }
@@ -65,32 +112,32 @@ export default {
       }
       return value
     },
-    formatDate: function formatdate (value) {
+    formatDate: function formatdate(value) {
       return format(parseISO(value), 'yyyy-MM-dd')
     },
-    joinUnique (values) {
+    joinUnique(values) {
       return Array.from(new Set(values)).sort().join(', ')
     },
-    round (value) {
+    round(value) {
       return value.toFixed(2)
     },
-    thousands (value) {
+    thousands(value) {
       value = parseFloat(value)
       if (isNaN(value)) {
         return '-'
       }
       return Math.ceil(value).toLocaleString()
     },
-    pct (value) {
+    pct(value) {
       if (isNaN(parseFloat(value))) {
         return ''
       }
       return `${(value * 100).toFixed(2)} %`
     },
-    capitalize (value) {
+    capitalize(value) {
       return value
         .split(' ')
-        .map((w) => {
+        .map(w => {
           return (
             w.substr(0, 1).toUpperCase() +
             w.substr(1, w.length - 1).toLowerCase()
@@ -98,7 +145,7 @@ export default {
         })
         .join(' ')
     },
-    prettyBytes (num) {
+    prettyBytes(num) {
       if (typeof num !== 'number' || isNaN(num)) {
         throw new TypeError('Expected a number')
       }
@@ -118,7 +165,7 @@ export default {
       const unit = units[exponent]
       return (neg ? '-' : '') + num + ' ' + unit
     },
-    routeTypeToWords (num) {
+    routeTypeToWords(num) {
       if (num >= 0 <= 12) {
         return {
           0: 'Tram, Streetcar, Light rail',
@@ -137,5 +184,4 @@ export default {
       }
     }
   }
-}
-</script>
+})

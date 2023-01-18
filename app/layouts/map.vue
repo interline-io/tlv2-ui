@@ -2,10 +2,18 @@
   <div class="outer">
     <tl-tlnav />
     <div class="main" style="flex:1">
-      <nuxt />
+      <slot />
     </div>
   </div>
 </template>
+
+<script>
+useHead({
+  titleTemplate: (titleChunk) => {
+    return titleChunk ? `Transitland • ${titleChunk}` : 'Transitland'
+  }
+})
+</script>
 
 <style scoped>
 .main {

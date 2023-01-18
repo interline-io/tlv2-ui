@@ -6,6 +6,8 @@
 import maplibre from 'maplibre-gl'
 import mapLayers from './map-layers.js'
 
+const config = useRuntimeConfig()
+
 export default {
   props: {
     markerCoords: { type: Array, default () { return [] } },
@@ -69,7 +71,7 @@ export default {
   methods: {
     nextTickUpdateFeatures (v) {
       if (v) {
-        this.$nextTick(() => {
+        nextTick(() => {
           this.updateFeatures()
         })
       }
@@ -97,7 +99,7 @@ export default {
           if (resourceType === 'Tile' && url.startsWith('https://transit.land')) {
             return {
               url,
-              headers: { apikey: this.$config.tileApikey }
+              headers: { apikey: config.public.tileApikey }
             }
           }
         },

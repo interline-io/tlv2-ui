@@ -18,10 +18,10 @@
       @mapMove="mapMove"
     />
     <div class="map-panel map-panel-tabs">
-      <b-tabs v-model="activeTab" position="is-centered" class="block" type="is-boxed">
+      <b-tabs v-model="activeTab" position="centered" class="block" type="boxed">
         <b-tab-item label="Routes">
           <tl-map-route-list
-            v-if="activeTab === 0"
+            v-if="activeTab === 1"
             :current-zoom="currentZoom"
             :agency-features="agencyFeatures"
             :is-component-modal-active="isComponentModalActive"
@@ -35,7 +35,7 @@
             @setGeolocation="setGeolocation"
           />
           <tl-stop-departures
-            v-if="activeTab === 1"
+            v-if="activeTab === 2"
             :show-auto-refresh="true"
             :show-fallback-selector="true"
             :show-radius-selector="true"
@@ -46,12 +46,23 @@
           </div>
         </b-tab-item>
         <b-tab-item label="Options">
-          <tl-map-options
-            :show-generated-geometries="showGeneratedGeometries"
-            :show-problematic-geometries="showProblematicGeometries"
-            @update:showGeneratedGeometries="showGeneratedGeometries = $event"
-            @update:showProblematicGeometries="showProblematicGeometries = $event"
-          />
+
+          <div class="field">
+      <b-checkbox
+        v-model="showGeneratedGeometries"
+      >
+        Show stop-to-stop geometries
+      </b-checkbox>
+    </div>
+    <div class="field">
+      <b-checkbox
+      v-model="showProblematicGeometries"
+      >
+        Show problematic geometries
+      </b-checkbox>
+    </div>
+
+
         </b-tab-item>
       </b-tabs>
     </div>
@@ -62,7 +73,7 @@
 export default {
   data () {
     return {
-      activeTab: 0,
+      activeTab: 1,
       initialZoom: 1.5,
       currentZoom: 1.5,
       center: [-119.49, 12.66],
@@ -113,7 +124,7 @@ export default {
       this.initialZoom = 16
     },
     mapClick (e) {
-      if (this.activeTab === 1) {
+      if (this.activeTab === 2) {
         this.setCoords([e.lngLat.lng, e.lngLat.lat])
       } else {
         this.setCoords(null)

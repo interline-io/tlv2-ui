@@ -1,35 +1,30 @@
 <template>
-  <div>
-    <b-field>
       <b-input
-        v-model="search"
+        expanded
+        root-class="is-expanded ml-0 mr-2"
+        :value="modelValue"
         :placeholder="placeholder"
         type="text"
         icon="magnify"
-        :icon-right="search.length > 0 ? 'close-circle' : null"
+        :icon-right="modelValue ? 'close-circle' : null"
         icon-right-clickable
         class="entity-search"
+        @input="$emit('update:modelValue', $event.target.value)"
         @icon-right-click="clearSearch"
-        @keydown.esc.native="clearSearch"
-        @input="$emit('input',$event)"
+        @keydown.esc="clearSearch"
       />
-    </b-field>
-  </div>
 </template>
 <script>
 export default {
   props: {
-    value: { type: String, default: '' },
-    placeholder: { type: String, default: 'Search' }
+    modelValue: { type: String, default: "" },
+    placeholder: { type: String, default: "Search" },
   },
-  data () {
-    return { search: this.value || '' }
-  },
+  emits: ["update:modelValue"],
   methods: {
-    clearSearch () {
-      this.search = ''
-      this.$emit('input', '')
-    }
-  }
-}
+    clearSearch() {
+      this.$emit("update:modelValue", "");
+    },
+  },
+};
 </script>

@@ -21,7 +21,6 @@ yarn-error.log*
 *.sw?
 
 .nuxt
-
 .eslintcache
 
 # Storybook

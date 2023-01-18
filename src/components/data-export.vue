@@ -4,15 +4,15 @@
       <b-field label="Stop Buffer Radius (m)" expanded class="pr-6">
         <b-slider
           v-model="radius"
-          size="is-medium"
+          size="medium"
           :min="0"
           :max="2000"
           :step="100"
           ticks
           lazy
         >
-          <template v-for="val in [400,1000,2000]">
-            <b-slider-tick :key="val" :value="val">
+          <template v-for="val in [400,1000,2000]" :key="val">
+            <b-slider-tick  :value="val">
               {{ val }}
             </b-slider-tick>
           </template>
@@ -33,11 +33,10 @@
           multiple
           aria-role="list"
         >
-          <button slot="trigger" class="button" type="button">
+          <button slot="trigger" class="button" type="button" icon="menu-down">
             <span>
               {{ showOnMap.map((s)=>{return titleize(s)}).join(", ") }}
             </span>
-            <b-icon icon="menu-down" />
           </button>
 
           <b-dropdown-item value="buffer" aria-role="listitem">
@@ -55,9 +54,7 @@
       </b-field>
     </b-field>
 
-    <div v-if="$apollo.loading">
-      Loading...
-    </div>
+    <tl-loading v-if="$apollo.loading" />
     <div v-else class="block">
       <b-field grouped>
         <b-field label="Download GeoJSON">

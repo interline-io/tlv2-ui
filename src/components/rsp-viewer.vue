@@ -6,7 +6,6 @@
           v-model="selectedPattern"
           placeholder="Select a trip pattern"
           class="trip-select mr-4"
-          expanded
         >
           <option v-for="pattern of processedPatterns" :key="pattern.stop_pattern_id" :value="pattern.stop_pattern_id">
             {{ pattern.desc }}
@@ -23,15 +22,15 @@
         <b-slider
           v-model="radius"
           class="radius-select"
-          size="is-medium"
+          size="medium"
           :min="0"
           :max="500"
           :step="100"
           ticks
           lazy
         >
-          <template v-for="val in [0,100,250,500]">
-            <b-slider-tick :key="val" :value="val">
+          <template v-for="val in [0,100,250,500]" :key="val">
+            <b-slider-tick :value="val">
               {{ val }}
             </b-slider-tick>
           </template>
@@ -39,9 +38,8 @@
       </b-field>
     </b-field>
 
-    <div v-if="$apollo.loading">
-      Loading...
-    </div>
+    <tl-loading v-if="$apollo.loading" />
+    <tl-error v-else-if="error">{{ error }}</tl-error>
     <div v-else-if="processedPatterns.length === 0">
       No trip patterns were found for this route.
     </div>
@@ -162,13 +160,15 @@ export default {
       routes: [],
       selectedPattern: null,
       shadowIncludeNearbyStops: this.includeNearbyStops,
-      radius: 100
+      radius: 100,
+      error: null
     }
   },
   apollo: {
     routes: {
       client: 'transitland',
       query: q,
+      error (e) { this.error = e },
       variables () {
         return {
           route_ids: this.routeIds,
@@ -368,19 +368,19 @@ function hsin (fromPoint, toPoint) {
   padding:10px;
 }
 .stop-list li {
-  background-image: url( '~assets/route-middle-1.svg' ) ;
+  background-image: url( '~/svg/route-middle-1.svg' ) ;
   background-repeat: no-repeat;
   background-size:20px 4000px;
   background-position:0px -18px;
 }
 .stop-list li:first-child {
-  background-image: url( '~assets/route-start.svg' ) ;
+  background-image: url( '~/svg/route-start.svg' ) ;
   background-repeat: no-repeat;
   background-size:20px 4000px;
   background-position:0px 10px;
 }
 .stop-list li:last-child {
-  background-image: url( '~assets/route-end.svg' ) ;
+  background-image: url( '~/svg/route-end.svg' ) ;
   background-repeat: no-repeat;
   background-size:20px 100px;
   background-position:0px -18px;

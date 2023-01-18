@@ -1,36 +1,39 @@
 {
-    "name": "tlv2-ui",
-    "version": "0.0.1",
-    "repository": "https://github.com/interline-io/tlv2-ui",
-    "license": "SEE LICENSE IN LICENSE.md",
-    "files": [
-        "src",
-        "nuxt"
-    ],
-    "scripts": {
-        "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
-        "dev": "nuxt dev"
-    },
-    "dependencies": {
-        "@nuxtjs/apollo": "^4.0.1-rc.5",
-        "date-fns": "^2.28.0",
-        "maplibre-gl": "^1.15.3",
-        "nuxt-material-design-icons-iconfont": "^1.0.2",
-        "sanitize-filename": "^1.6.3"
-    },
-    "devDependencies": {
-        "@babel/eslint-parser": "^7.17.0",
-        "@babel/polyfill": "^7.12.1",
-        "@nuxtjs/eslint-config": "^6.0.1",
-        "@nuxtjs/eslint-module": "^3.0.2",
-        "@nuxtjs/style-resources": "^1.2.1",
-        "eslint": "^7.32.0",
-        "eslint-plugin-nuxt": "^2.0.0",
-        "eslint-plugin-vue": "^7.20.0",
-        "haversine": "^1.1.1",
-        "nuxt": "^2.15.8",
-        "nuxt-buefy": "^0.4.24",
-        "vue-geolocation-api": "^0.1.21"
-    },
-    "packageManager": "yarn@3.1.0"
+  "name": "tlv2-ui",
+  "version": "0.2.0",
+  "repository": "https://github.com/interline-io/tlv2-ui",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "lint": "eslint --ext .js,.ts,.vue --ignore-path .eslintignore ."
+  },
+  "devDependencies": {
+    "@nuxtjs/eslint-config-typescript": "^12.0.0",
+    "eslint": "^7.32.0 || ^8.2.0",
+    "prettier": "^2.8.1",
+    "typescript-eslint": "^0.0.1-alpha.0",
+    "sass": "^1.57.1"
+  },
+  "dependencies": {
+    "@mdi/font": "^7.1.96",
+    "@oruga-ui/oruga": "^0.5.10",
+    "@vueuse/core": "^9.9.0",
+    "apollo-link-http": "^1.5.17",
+    "date-fns": "^2.29.3",
+    "haversine": "^1.1.1",
+    "maplibre-gl": "^2.4.0",
+    "nuxt": "3.0.0",
+    "sanitize-filename": "^1.6.3",
+    "vue": "^3.0.0",
+    "@apollo/client": "^3.7.3",
+    "@oruga-ui/oruga-next": "^0.5.10",
+    "@oruga-ui/theme-bulma": "^0.2.8",
+    "@vue/apollo-option": "^4.0.0-alpha.20",
+    "bulma": "^0.9.4",
+    "graphql": "^16.6.0",
+    "graphql-tag": "^2.12.6"
+  }
 }

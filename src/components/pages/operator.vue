@@ -2,6 +2,13 @@
   <div>
     <div v-if="$apollo.loading" class="is-loading" />
     <div v-else-if="entity">
+      <Title>{{staticTitle }}</Title>
+      <Meta name="description" :content="staticDescription" />
+      <Meta name="twitter:title" :content="staticTitle" />
+      <Meta name="twitter:description" :content="staticDescription" />
+      <Meta name="og:title" :content="staticTitle" />
+      <Meta name="og:description" :content="staticDescription" />
+
       <nav class="breadcrumb">
         <ul>
           <li>
@@ -20,30 +27,9 @@
         {{ operatorName }}
       </h1>
 
-      <slot name="description">
-        <div class="content">
-          {{ staticDescription }}
-        </div>
-      </slot>
-
       <!-- Warnings for freshness and viewing a specific version -->
-      <b-message v-if="dataFreshness > 365" type="is-warning" has-icon>
-        The GTFS feeds associated with this page were fetched {{ dataFreshness }} days ago; use caution or check if newer data is available.
-      </b-message>
-      <b-message v-if="linkVersion" type="is-warning" has-icon>
-        You are viewing a single GTFS Agency entity defined in source feed
-        <nuxt-link :to="{name:'feeds-feed', params:{feed:$route.query.feed_onestop_id}}">
-          {{ $route.query.feed_onestop_id | shortenName }}
-        </nuxt-link> version
-        <nuxt-link :to="{name:'feeds-feed-versions-version', params:{feed:$route.query.feed_onestop_id, version:$route.query.feed_version_sha1}}">
-          {{ $route.query.feed_version_sha1 | shortenName(8) }}
-        </nuxt-link>.<br>
-        <template v-if="!search">
-          Click <nuxt-link :to="{name: 'operators-onestop_id', params:{onestop_id:$route.params.onestop_id}}">
-            here
-          </nuxt-link> to return to the main view.
-        </template>
-      </b-message>
+      <tl-check-fresh :fetched="dataFreshness" />
+      <tl-check-single :feed-onestop-id="feedOnestopId" :feed-version-sha1="feedVersionSha1" />
 
       <!-- Main content -->
       <div class="columns">
@@ -132,6 +118,13 @@
               </td>
             </tr>
           </table>
+
+          <slot name="description">
+        <div class="content">
+          {{ staticDescription }}
+        </div>
+      </slot>
+
         </div>
 
         <div class="column is-one-quarter is-full-height">
@@ -144,15 +137,11 @@
         Source Feed(s)
       </h4>
 
-      <b-tabs type="is-boxed" :animated="false">
+      <b-tabs type="boxed" :animated="false">
         <b-tab-item label="Source Feeds">
-          <b-message
+          <tl-info
             v-for="feedSpec, feedOnestopId in uniqueFeedSourcesOnestopIds"
             :key="feedOnestopId"
-            type="is-success"
-            has-icon
-            icon="information"
-            :closable="false"
           >
             <div class="columns">
               <div class="column is-8">
@@ -167,33 +156,34 @@
                 </nuxt-link>
               </div>
             </div>
-          </b-message>
+          </tl-info>
         </b-tab-item>
 
         <b-tab-item label="Source Feeds (Advanced View)">
-          <b-message type="is-light" has-icon icon="information" :closable="false">
+          <tl-info>
             This operator includes data from the references listed below. These references are defined in the operator's Atlas record, and describe the GTFS agencies that provide the routes, stops, schedules, and other information for this operator. If a reference to an agency cannot be resolved, this will be noted. Please see the <nuxt-link :to="{name:'documentation'}">
               Operator documentation
             </nuxt-link> for more information on this process.
-          </b-message>
+          </tl-info>
+          
           <div class="content">
-            <b-table
+            <o-table
               :data="sources"
               :striped="true"
               sort-icon="menu-up"
             >
-              <b-table-column v-slot="props" label="Association type">
+              <o-table-column v-slot="props" label="Association type">
                 {{ props.row.target_type }}
-              </b-table-column>
-              <b-table-column v-slot="props" label="Source Feed Onestop ID">
+              </o-table-column>
+              <o-table-column v-slot="props" label="Source Feed Onestop ID">
                 <nuxt-link :to="{name:'feeds-feed', params:{feed:props.row.target_feed}}">
                   {{ props.row.target_feed }}
                 </nuxt-link>
-              </b-table-column>
-              <b-table-column v-slot="props" label="Feed Spec">
+              </o-table-column>
+              <o-table-column v-slot="props" label="Feed Spec">
                 {{ props.row.target_feed_spec }}
-              </b-table-column>
-              <b-table-column v-slot="props" field="agency" label="Matched GTFS Agency">
+              </o-table-column>
+              <o-table-column v-slot="props" field="agency" label="Matched GTFS Agency">
                 <template v-if="props.row.target_match">
                   <b-icon icon="check" />
                   {{ props.row.target_match.agency_name }}
@@ -203,8 +193,8 @@
                     <b-icon icon="alert" />
                   </b-tooltip>
                 </template>
-              </b-table-column>
-            </b-table>
+              </o-table-column>
+            </o-table>
           </div>
         </b-tab-item>
       </b-tabs>
@@ -217,23 +207,23 @@
         <h4 class="title is-4">
           Operator Service
         </h4>
-        <b-tabs v-model="activeTab" type="is-boxed" :animated="false" @input="setTab">
+        <b-tabs v-model="activeTab" type="boxed" :animated="false" @update:modelValue="setTab">
           <b-tab-item label="Map">
             <client-only placeholder="Map">
-              <tl-feed-version-map-viewer v-if="activeTab === 0" :agency-ids="agencyIds" :overlay="true" :link-version="linkVersion" />
+              <tl-feed-version-map-viewer v-if="activeTab === 1" :agency-ids="agencyIds" :overlay="true" :link-version="linkVersion" />
             </client-only>
           </b-tab-item>
 
           <b-tab-item label="Routes">
-            <tl-route-viewer v-if="activeTab === 1" :agency-ids="agencyIds" :show-agency="true" />
+            <tl-route-viewer v-if="activeTab === 2" :agency-ids="agencyIds" :show-agency="true" />
           </b-tab-item>
 
           <b-tab-item label="Stops">
-            <tl-stop-viewer v-if="activeTab === 2" :agency-ids="agencyIds" />
+            <tl-stop-viewer v-if="activeTab === 3" :agency-ids="agencyIds" />
           </b-tab-item>
 
           <b-tab-item v-if="advancedMode" label="Export">
-            <template v-if="activeTab === 3 && agencyIds.length === 1">
+            <template v-if="activeTab === 4 && agencyIds.length === 1">
               <client-only>
                 <agency-export :agency-ids="agencyIds" />
               </client-only>
@@ -294,17 +284,6 @@ query ($onestop_id: String, $feed_onestop_id: String) {
 `
 export default {
   mixins: [EntityPageMixin],
-  data () {
-    return {
-      features: [],
-      tabIndex: {
-        0: 'map',
-        1: 'routes',
-        2: 'stops',
-        3: 'export'
-      }
-    }
-  },
   apollo: {
     entities: {
       client: 'transitland',
@@ -315,35 +294,21 @@ export default {
       }
     }
   },
-  head () {
+  data () {
     return {
-      title: this.staticTitle,
-      meta: [
-        { hid: 'description', name: 'description', content: this.staticDescription },
-        { hid: 'twitter:card', name: 'twitter:card', content: 'summary' },
-        { hid: 'twitter:site', name: 'twitter:site', content: '@transitland' },
-        { hid: 'twitter:title', name: 'twitter:title', content: this.staticTitle },
-        { hid: 'twitter:image', name: 'twitter:image', content: 'https://www.transit.land/images/transitland-logo-square-with-whitebackground-smaller.png' },
-        { hid: 'twitter:image:alt', name: 'twitter:image:alt', content: 'Transitland' },
-        { hid: 'twitter:description', name: 'twitter:description', content: this.staticDescription },
-        { hid: 'og:title', property: 'og:title', content: this.staticTitle },
-        { hid: 'og:description', property: 'og:description', content: this.staticDescription }
-      ]
+      features: [],
+      tabIndex: {
+        1: 'map',
+        2: 'routes',
+        3: 'stops',
+        4: 'export'
+      }
     }
   },
   computed: {
     dataFreshness () {
-      // The fetched_at is on agencies, not the top level entities
-      const daysAgo = []
-      const n = new Date()
-      try {
-        for (const ent of this.agencies) {
-          const n2 = Date.parse(ent.feed_version.fetched_at)
-          daysAgo.push(Math.floor((n2 - n) / (1000 * 3600 * 24 * -1)))
-        }
-      } catch {
-      }
-      return Math.max(...daysAgo)
+      if (this.agencies.length > 0) { return this.agencies[0].feed_version.fetched_at }
+      return null
     },
     locations () {
       const ret = new Map()
