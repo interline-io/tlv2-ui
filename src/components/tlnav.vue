@@ -30,7 +30,6 @@
       <div class="navbar-end">
         <div class="navbar-item">
           <tl-nav-search-bar
-            style="width: 100%"
             @focus="searchFocus = true"
             @blur="searchFocus = false"
           />

@@ -1,5 +1,5 @@
 <template>
-  <div style="position:relative">
+  <div class="tl-map">
     <tl-map-viewer
       :key="0"
       :show-generated-geometries="showGeneratedGeometries"
@@ -138,8 +138,11 @@ export default {
 </script>
 
 <style>
+.tl-map {
+  position: relative;
+}
+
 .tl-map-panel {
-    background-color: white;
     user-select: none;
     position: absolute !important;
     margin: 0px;

@@ -7,7 +7,7 @@
       </h6>
     </div>
     <div v-else>
-      <div class="search-options">
+      <div class="search-options mb-2">
         <o-field grouped>
           <o-field v-if="showDateSelector">
             <o-datetimepicker
@@ -26,7 +26,7 @@
                 {{ r }}m
               </option>
             </o-select>
-            <p class="control button-like-small" style="padding-left:10px">
+            <p class="control button-like-small">
               Radius
             </p>
           </o-field>
@@ -83,7 +83,7 @@
             </div>
           </div>
           <div v-if="ss.routes.length > routesPerAgencyShadow" class="is-clearfix">
-            <span class="button small" style="margin-left:30px" @click="expandRoutesPerAgency">Click to show {{ ss.routes.length - routesPerAgencyShadow }} additional rows</span>
+            <span class="button small ml-5" @click="expandRoutesPerAgency">Click to show {{ ss.routes.length - routesPerAgencyShadow }} additional rows</span>
           </div>
         </div>
       </div>
@@ -434,6 +434,7 @@ export default {
 
 .button-like-small {
     font-size: 0.75rem;
+    padding-left:10px;
     padding-bottom: 0.5em;
     padding-top: 0.5em;
 }

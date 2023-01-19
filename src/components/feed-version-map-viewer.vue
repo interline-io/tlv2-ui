@@ -1,5 +1,5 @@
 <template>
-  <div style="position:relative">
+  <div class="tl-map">
     <tl-loading v-if="$apollo.loading" />
     <tl-msg-error v-else-if="error">{{ error }}</tl-msg-error>
     <div v-else>
@@ -184,6 +184,9 @@ export default {
 </script>
 
 <style>
+.tl-map {
+  position:relative
+}
 .tl-map-panel {
     background-color: white;
     user-select: none;
