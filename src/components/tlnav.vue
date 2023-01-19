@@ -6,16 +6,13 @@
       </nuxt-link>
     </div>
 
-    <div id="navbarBasicExample" class="navbar-menu">
+    <div class="navbar-menu">
       <div class="navbar-start">
-        <div
+          <nuxt-link
           v-for="item in items"
           :key="item.title"
-          class="navbar-item is-hoverable"
-        >
-          <nuxt-link
             :to="item.to"
-            class="navbar-item"
+            class="navbar-item is-hoverable"
             :class="
               $route && $route.name && $route.name.startsWith(item.to.name)
                 ? 'is-active is-tab'
@@ -24,7 +21,6 @@
           >
             {{ item.title }}
           </nuxt-link>
-        </div>
       </div>
 
       <div class="navbar-end">
@@ -65,11 +61,6 @@ export default {
           title: 'Source Feeds',
           icon: 'lightbulb',
           to: { name: 'feeds' }
-        },
-        {
-          title: 'Documentation',
-          icon: 'lightbulb',
-          to: { name: 'documentation' }
         }
       ]
     }
