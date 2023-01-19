@@ -1,4 +1,4 @@
-import { defineNuxtPlugin } from "#app";
+import { defineNuxtPlugin, useRuntimeConfig } from "#app";
 import { createApolloProvider } from '@vue/apollo-option'
 import { ApolloClient, InMemoryCache } from '@apollo/client/core'
 import { HttpLink } from 'apollo-link-http'
