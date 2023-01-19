@@ -1,3 +1,4 @@
+import { defineNuxtPlugin } from "#app";
 import { formatDistanceToNow, parseISO, format } from 'date-fns'
 
 function parseHMS(value) {
