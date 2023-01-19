@@ -3,6 +3,7 @@
 </template>
 
 <script>
+import { useRuntimeConfig } from "#app";
 import maplibre from 'maplibre-gl'
 import mapLayers from './map-layers.js'
 
