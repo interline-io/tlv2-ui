@@ -5,15 +5,15 @@ export default defineNuxtModule({
   setup (options, nuxt) {
     // Create resolver to resolve relative paths
     const { resolve } = createResolver(import.meta.url)
-    nuxt.options.css.push('~/src/assets/main.css')
     if (options.bulma) {
       nuxt.options.css.push(options.bulma)
     } else {
-      nuxt.options.css.push('~/src/assets/bulma.scss')
+      nuxt.options.css.push(resolve('../src/assets/bulma.scss'))
     }
     addPlugin(resolve('../src/plugins/apollo.js'))
     addPlugin(resolve('../src/plugins/oruga.js'))
     addPlugin(resolve('../src/plugins/filters.js'))
+    nuxt.options.css.push(resolve('../src/assets/main.css'))
   },
   hooks: {
     'components:dirs'(dirs) {
