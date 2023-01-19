@@ -136,3 +136,46 @@ export default {
   }
 }
 </script>
+
+<style>
+.tl-map-panel {
+    background-color: white;
+    user-select: none;
+    position: absolute !important;
+    margin: 0px;
+    padding: 10px;
+    top: 10px;
+    left: 10px;
+    width: 565px;
+}
+
+.tl-map-panel-tabs {
+    background: none;
+}
+
+.tl-map-panel-tabs div[role=tab] a {
+    margin-right: 5px;
+}
+
+.tl-map-panel-tabs div[role=tab] a {
+    background-color: rgba(235, 235, 235, 0.9) !important;
+}
+
+.tl-map-panel-tabs div[role=tab][aria-selected=true] a {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.tl-map-panel-tabs .tab-content {
+    background-color: rgba(255, 255, 255, 0.9);
+    margin: 0px;
+    padding-left: 10px;
+    padding-right: 10px;
+    max-height:80vh;
+    overflow-y:auto;
+}
+
+.tl-map-panel .dropdown-content{
+    position: fixed;
+    max-width:80%;
+}
+</style>

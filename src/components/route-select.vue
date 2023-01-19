@@ -4,7 +4,7 @@
       <h6 class="title is-6">
         {{ agency }}
       </h6>
-      <template v-if="routeCount > maxAgencyRows && collapse">
+      <template v-if="isCollapsed">
         <div>{{ Object.keys(routes).length }} routes</div>
       </template>
       <template v-else>
@@ -44,6 +44,9 @@ export default {
     agencyFeatures: { type: Object, default () { return {} } }
   },
   computed: {
+    isCollapsed () {
+      return this.routeCount > this.maxAgencyRows && this.collapse
+    },
     routeCount () {
       let count = 0
       for (const v of Object.values(this.agencyFeatures)) {
