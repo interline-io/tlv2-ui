@@ -1,5 +1,5 @@
 <template>
-  <b-modal
+  <o-modal
     v-if="modelValue"
     :active="true"
     can-cancel
@@ -20,7 +20,7 @@
               <p>The most recent feed version can be accessed by all users.</p>
               <p class="is-centered">
                 <a :href="`https://demo.transit.land/api/v2/rest/feed_versions/${sha1}/download`" target="_blank">
-                  <b-button variant="success" icon-left="download">Download feed version</b-button>
+                  <o-button variant="success" icon-left="download">Download feed version</o-button>
                 </a>
               </p>
               <p>
@@ -36,7 +36,7 @@
         </section>
       </div>
     </template>
-  </b-modal>
+  </o-modal>
 </template>
 
 <script>

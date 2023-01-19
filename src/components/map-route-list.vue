@@ -17,7 +17,7 @@
       </div>
     </div>
     <div v-if="isComponentModalActive">
-      <b-modal
+      <o-modal
         :active="isComponentModalActive"
         has-modal-card
         :on-cancel="close"
@@ -35,7 +35,7 @@
             </section>
           </div>
         </template>
-      </b-modal>
+      </o-modal>
     </div>
   </div>
 </template>

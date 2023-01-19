@@ -1,5 +1,5 @@
 <template>
-      <b-input
+      <o-input
         expanded
         root-class="is-expanded ml-0 mr-2"
         :value="modelValue"
@@ -28,3 +28,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.entity-search {
+    margin-bottom: 10px;
+}
+</style>

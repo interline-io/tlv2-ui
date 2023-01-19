@@ -1,8 +1,8 @@
 <template>
   <div>
-    <b-field grouped expanded class="controls-group">
-      <b-field label="Trip pattern" class="pr-3">
-        <b-select
+    <o-field grouped expanded class="controls-group">
+      <o-field label="Trip pattern" class="pr-3">
+        <o-select
           v-model="selectedPattern"
           placeholder="Select a trip pattern"
           class="trip-select mr-4"
@@ -10,16 +10,16 @@
           <option v-for="pattern of processedPatterns" :key="pattern.stop_pattern_id" :value="pattern.stop_pattern_id">
             {{ pattern.desc }}
           </option>
-        </b-select>
-        <b-checkbox
+        </o-select>
+        <o-checkbox
           v-model="shadowIncludeNearbyStops"
           class="adjust-checkbox"
         >
           Show transfers
-        </b-checkbox>
-      </b-field>
-      <b-field v-if="showTransferRadius" label="Transfer search radius (m)" expanded>
-        <b-slider
+        </o-checkbox>
+      </o-field>
+      <o-field v-if="showTransferRadius" label="Transfer search radius (m)" expanded>
+        <o-slider
           v-model="radius"
           class="radius-select"
           size="medium"
@@ -30,16 +30,16 @@
           lazy
         >
           <template v-for="val in [0,100,250,500]" :key="val">
-            <b-slider-tick :value="val">
+            <o-slider-tick :value="val">
               {{ val }}
-            </b-slider-tick>
+            </o-slider-tick>
           </template>
-        </b-slider>
-      </b-field>
-    </b-field>
+        </o-slider>
+      </o-field>
+    </o-field>
 
     <tl-loading v-if="$apollo.loading" />
-    <tl-error v-else-if="error">{{ error }}</tl-error>
+    <tl-msg-error v-else-if="error">{{ error }}</tl-msg-error>
     <div v-else-if="processedPatterns.length === 0">
       No trip patterns were found for this route.
     </div>

@@ -17,9 +17,9 @@
       @mapClick="mapClick"
       @mapMove="mapMove"
     />
-    <div class="map-panel map-panel-tabs">
-      <b-tabs v-model="activeTab" position="centered" class="block" type="boxed">
-        <b-tab-item label="Routes">
+    <div class="tl-map-panel tl-map-panel-tabs">
+      <o-tabs class="tl-tabs block" v-model="activeTab" position="centered" type="boxed">
+        <o-tab-item label="Routes">
           <tl-map-route-list
             v-if="activeTab === 1"
             :current-zoom="currentZoom"
@@ -27,8 +27,8 @@
             :is-component-modal-active="isComponentModalActive"
             @close="isComponentModalActive = false"
           />
-        </b-tab-item>
-        <b-tab-item label="Departures">
+        </o-tab-item>
+        <o-tab-item label="Departures">
           <tl-map-search
             :zoom="currentZoom"
             :bbox="currentBbox"
@@ -41,30 +41,30 @@
             :show-radius-selector="true"
             :search-coords="searchCoords"
           />
-          <div class="is-pulled-right is-clearfix learn-more">
+          <p class="content block is-pulled-right is-small">
             <a href="https://www.transit.land/documentation/rest-api/" target="_blank">Learn more about Transitland APIs</a>
-          </div>
-        </b-tab-item>
-        <b-tab-item label="Options">
+          </p>
+        </o-tab-item>
+        <o-tab-item label="Options">
 
           <div class="field">
-      <b-checkbox
+      <o-checkbox
         v-model="showGeneratedGeometries"
       >
         Show stop-to-stop geometries
-      </b-checkbox>
+      </o-checkbox>
     </div>
     <div class="field">
-      <b-checkbox
+      <o-checkbox
       v-model="showProblematicGeometries"
       >
         Show problematic geometries
-      </b-checkbox>
+      </o-checkbox>
     </div>
 
 
-        </b-tab-item>
-      </b-tabs>
+        </o-tab-item>
+      </o-tabs>
     </div>
   </div>
 </template>
@@ -136,10 +136,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.learn-more {
-  margin-top:10px;
-  font-size:10pt;
-}
-</style>

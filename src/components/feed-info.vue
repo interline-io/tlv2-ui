@@ -8,7 +8,7 @@
           <br>
           <code>{{ feedPublisherUrl }}</code>
           <a v-if="showLinks" :href="feedPublisherUrl">
-            <b-icon icon="link" />
+            <o-icon icon="link" />
           </a>
         </template>
       </li>
@@ -21,7 +21,7 @@
           <br>
           <code>{{ feedContactUrl }}</code>
           <a v-if="showLinks && feedContactUrl" :href="feedContactUrl">
-            <b-icon icon="link" />
+            <o-icon icon="link" />
           </a>
         </template>
       </li>

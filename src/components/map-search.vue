@@ -1,7 +1,7 @@
 <template>
   <div>
-    <b-field grouped>
-      <b-autocomplete
+    <o-field grouped>
+      <o-autocomplete
         expanded
         placeholder="Search stops. Example: Penn Station"
         root-class="is-expanded m-0 mr-2"
@@ -19,17 +19,17 @@
             {{ rs.route.agency.agency_name }} :{{ rs.route.route_short_name }}
           </div>
         </template>
-      </b-autocomplete>
-      <b-field>
-        <span v-if="!locationUse" class="button" @click="watchLocation"><b-icon icon="crosshairs" /></span>
-        <span v-if="locationError" class="button"><b-icon icon="crosshairs" /></span>
-        <span v-else-if="locationUse && locationLoading" class="button"><b-icon icon="loading" /></span>
-        <span v-else-if="locationUse && !locationLoading" class="button"><b-icon icon="crosshairs-gps" /></span>
-      </b-field>
-    </b-field>
-    <tl-warning v-if="locationError">
+      </o-autocomplete>
+      <o-field>
+        <span v-if="!locationUse" class="button" @click="watchLocation"><o-icon icon="crosshairs" /></span>
+        <span v-if="locationError" class="button"><o-icon icon="crosshairs" /></span>
+        <span v-else-if="locationUse && locationLoading" class="button"><o-icon icon="loading" /></span>
+        <span v-else-if="locationUse && !locationLoading" class="button"><o-icon icon="crosshairs-gps" /></span>
+      </o-field>
+    </o-field>
+    <tl-msg-warning v-if="locationError">
       There was an error trying to obtain your location. {{ locationError }}
-    </tl-warning>
+    </tl-msg-warning>
   </div>
 </template>
 

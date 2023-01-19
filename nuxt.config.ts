@@ -2,7 +2,7 @@
 const apiBase = process.env.TRANSITLAND_API_BASE || 'https://transit.land/api/v2'
 
 export default defineNuxtConfig({
-  ssr: true,
+  ssr: false,
   srcDir: 'app',
   plugins: [
     { src: 'plugins/oruga.js' },
@@ -27,6 +27,6 @@ export default defineNuxtConfig({
     }
   },
   css: [
-    '~/assets/main.scss',
+    '~/assets/main.css'
   ]
 })

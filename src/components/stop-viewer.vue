@@ -1,6 +1,6 @@
 <template>
   <div>
-    <tl-error v-if="error">{{ error  }}</tl-error>
+    <tl-msg-error v-if="error">{{ error  }}</tl-msg-error>
     <div v-else>
       <tl-search-bar v-model="search" placeholder="Filter Stops" />
       <o-table

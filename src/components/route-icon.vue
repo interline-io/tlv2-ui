@@ -1,13 +1,13 @@
 <template>
-  <div class="route-icon">
-    <span class="route-icon-icon">
-      <b-icon :icon="routeTypeIcon" />
+  <div class="tl-route-icon">
+    <span class="tl-route-icon-icon">
+      <o-icon :icon="routeTypeIcon" />
     </span>
-    <span v-if="routeShortName" class="route-icon-short-name">{{ routeShortName }}</span>
-    <span v-if="nameIcon" class="route-name-icon">
-      <b-icon :icon="nameIcon" />
+    <span v-if="routeShortName" class="tl-route-icon-short-name">{{ routeShortName }}</span>
+    <span v-if="nameIcon" class="tl-route-name-icon">
+      <o-icon :icon="nameIcon" />
     </span>
-    <span v-if="routeLongName && routeShortName != routeLongName" class="route-icon-long-name">
+    <span v-if="routeLongName && routeShortName != routeLongName" class="tl-route-icon-long-name">
       {{ routeLongName }}
     </span>
   </div>

@@ -1,6 +1,6 @@
 <template>
     <div>
-    <tl-info v-if="feedVersionSha1">
+    <tl-msg-info v-if="feedVersionSha1">
         You are viewing a single GTFS Route entity defined in source feed
         <nuxt-link :to="{
             name: 'feeds-feed',
@@ -28,7 +28,7 @@
             </nuxt-link>
             to return to the main view.
         </template> -->
-    </tl-info>
+    </tl-msg-info>
     </div>
 </template>
 

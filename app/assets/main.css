@@ -3,36 +3,38 @@ code {
     white-space: nowrap;
 }
 
-.button-wrapper .icon {
-    padding-right:20px;
-}
-
-.tag {
-    padding:5px;
-}
-
-article.notification {
-    margin-top:20px;
-    margin-bottom:20px;
-}
-
-table.property-list td,
-table.property-list th {
+.tl-props td,
+.tl-props th {
     padding: 5px;
+    border: 0px;
 }
 
-table.property-list td:first-child {
+.tl-props td:first-child {
     padding-right: 20px;
     font-weight: bold;
     text-align: right;
     width: 200px;
 }
 
-.datepicker .dropdown-content {
-    box-shadow: none !important;
+.tl-tabs .tab-content {
+    margin: 0px;
+    padding: 0px;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
-.route-icon {
+.tl-tabs nav.tabs {
+    margin-bottom:0px !important;
+}
+
+.is-6 {
+    margin: 0px !important;
+    padding: 0px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.tl-route-icon {
     white-space: nowrap;
     overflow: hidden;
     padding:0px;
@@ -41,7 +43,7 @@ table.property-list td:first-child {
     /* background:red; */
 }
 
-.route-icon .route-icon-short-name {
+.tl-route-icon .tl-route-icon-short-name {
     display:inline-block;
     padding-top:4px;
     padding-bottom:4px;
@@ -56,7 +58,7 @@ table.property-list td:first-child {
     /* background:#efefef; */
 }
 
-.route-icon .route-icon-long-name {
+.tl-route-icon .tl-route-icon-long-name {
     display:inline-block;
     margin:0px;
     padding:0px;
@@ -64,7 +66,7 @@ table.property-list td:first-child {
     /* background:blue; */
 }
 
-.route-icon .route-icon-icon {
+.tl-route-icon .tl-route-icon-icon {
     display:inline-block;
     width:26px;
     text-align:center;
@@ -73,54 +75,14 @@ table.property-list td:first-child {
     /* background:green; */
 }
 
-.route-icon .route-name-icon {
+.tl-route-icon .route-name-icon {
     display:inline-block;
     position:relative;
     top:3px;
     /* background:green; */
 }
 
-
-.entity-search {
-    margin-bottom: 10px;
-}
-
-.table.is-borderless td,
-th {
-    border: 0
-}
-
-.is-6 {
-    margin: 0px !important;
-    padding: 0px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-}
-
-.button-like {
-    padding-bottom: 0.5em;
-    padding-top: 0.5em;
-}
-
-.button-like-small {
-    font-size: 0.75rem;
-    padding-bottom: 0.5em;
-    padding-top: 0.5em;
-}
-
-
-.b-tabs .tab-content {
-    margin: 0px;
-    padding: 0px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-}
-
-nav.tabs {
-    margin-bottom:0px !important;
-}
-
-.map-panel {
+.tl-map-panel {
     background-color: white;
     user-select: none;
     position: absolute !important;
@@ -131,23 +93,23 @@ nav.tabs {
     width: 565px;
 }
 
-.map-panel-tabs {
+.tl-map-panel-tabs {
     background: none;
 }
 
-.map-panel-tabs div[role=tab] a {
+.tl-map-panel-tabs div[role=tab] a {
     margin-right: 5px;
 }
 
-.map-panel-tabs div[role=tab] a {
+.tl-map-panel-tabs div[role=tab] a {
     background-color: rgba(235, 235, 235, 0.9) !important;
 }
 
-.map-panel-tabs div[role=tab][aria-selected=true] a {
+.tl-map-panel-tabs div[role=tab][aria-selected=true] a {
     background-color: rgba(255, 255, 255, 0.9) !important;
 }
 
-.map-panel-tabs .tab-content {
+.tl-map-panel-tabs .tab-content {
     background-color: rgba(255, 255, 255, 0.9);
     margin: 0px;
     padding-left: 10px;
@@ -156,8 +118,7 @@ nav.tabs {
     overflow-y:auto;
 }
 
-.map-panel .dropdown-content{
+.tl-map-panel .dropdown-content{
     position: fixed;
     max-width:80%;
 }
-

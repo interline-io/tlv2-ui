@@ -1,7 +1,7 @@
 <template>
   <div>
     <tl-loading v-if="$apollo.loading" />
-    <tl-error v-else-if="error">{{ error }}</tl-error>
+    <tl-msg-error v-else-if="error">{{ error }}</tl-msg-error>
     <div v-else-if="entity">
       <Title>{{ staticTitle }}</Title>
       <Meta name="description" :content="staticDescription" />
@@ -33,12 +33,12 @@
 
       <div class="columns">
         <div class="column is-three-quarters">
-          <table class="table is-borderless property-list">
+          <table class="table is-borderless property-list tl-props">
             <tr>
               <td>
-                <b-tooltip dashed label="A globally unique identifier for this feed">
+                <o-tooltip dashed label="A globally unique identifier for this feed">
                   Onestop ID
-                </b-tooltip>
+                </o-tooltip>
               </td>
               <td>
                 <code>{{ entity.onestop_id }}</code>
@@ -46,9 +46,9 @@
             </tr>
             <tr>
               <td>
-                <b-tooltip dashed label="Data specification or format for this feed">
+                <o-tooltip dashed label="Data specification or format for this feed">
                   Format
-                </b-tooltip>
+                </o-tooltip>
               </td>
               <td>{{ feedSpec }}</td>
             </tr>
@@ -83,9 +83,9 @@
 
             <tr>
               <td>
-                <b-tooltip dashed label="Last time a fetch successfully returned valid GTFS data">
+                <o-tooltip dashed label="Last time a fetch successfully returned valid GTFS data">
                   Last Fetch
-                </b-tooltip>
+                </o-tooltip>
               </td>
               <td>
                 <template v-if="lastSuccessfulFetch && lastSuccessfulFetch.fetched_at">
@@ -99,14 +99,14 @@
 
             <tr v-if="lastFetch && lastFetch.fetch_error">
               <td>
-                <b-tooltip dashed label="Error message from last fetch attempt">
+                <o-tooltip dashed label="Error message from last fetch attempt">
                   Fetch Error
-                </b-tooltip>
+                </o-tooltip>
               </td>
               <td>
-                <tl-error>
+                <tl-msg-error>
                   {{ lastFetch.fetch_error }}
-                </tl-error>
+                </tl-msg-error>
               </td>
             </tr>
 
@@ -169,9 +169,9 @@
 
             <tr v-if="entity.spec == 'GTFS'">
               <td>
-                <b-tooltip dashed multilined label="Information provided by the feed producer inside a feed_info.txt file">
+                <o-tooltip dashed multilined label="Information provided by the feed producer inside a feed_info.txt file">
                   Feed Info
-                </b-tooltip>
+                </o-tooltip>
               </td>
               <td v-if="mostRecentFeedInfo">
                 <tl-feed-info :feed-info="mostRecentFeedInfo" />
@@ -199,12 +199,12 @@
         <h4 class="title is-4">
           Operator(s) Associated with this Feed
         </h4>
-        <b-tabs type="boxed" :animated="false">
-          <b-tab-item label="Operators">
-            <tl-info v-if="!entity.associated_operators || (entity.associated_operators && entity.associated_operators.length === 0)">
+        <o-tabs class="tl-tabs" type="boxed" :animated="false">
+          <o-tab-item label="Operators">
+            <tl-msg-info v-if="!entity.associated_operators || (entity.associated_operators && entity.associated_operators.length === 0)">
               There are no operators associated with this feed.
-            </tl-info>
-            <tl-success
+            </tl-msg-info>
+            <tl-msg-info
               v-for="(operator,i) of entity.associated_operators"
               :key="i"
             >
@@ -221,9 +221,9 @@
                   </nuxt-link>
                 </div>
               </div>
-            </tl-success>
-          </b-tab-item>
-        </b-tabs>
+            </tl-msg-info>
+          </o-tab-item>
+        </o-tabs>
       </div>
 
       <hr>
@@ -233,8 +233,8 @@
           Archived Feed Versions
         </h4>
 
-        <b-tabs v-model="activeTab" type="boxed" :animated="false" @update:modelValue="setTab">
-          <b-tab-item label="Versions">
+        <o-tabs class="tl-tabs" v-model="activeTab" type="boxed" :animated="false" @update:modelValue="setTab">
+          <o-tab-item label="Versions">
             <o-table
               :data="entity.feed_versions"
               :striped="true"
@@ -282,32 +282,32 @@
               </o-table-column>
               <o-table-column v-slot="props" field="feed_version_gtfs_import" label="Imported">
                 <template v-if="props.row.feed_version_gtfs_import">
-                  <b-tooltip
+                  <o-tooltip
                     v-if="props.row.feed_version_gtfs_import.schedule_removed"
                     label="Agencies, stops, and routes available"
                   >
-                    <b-icon icon="check" />
-                  </b-tooltip>
-                  <b-tooltip
+                    <o-icon icon="check" />
+                  </o-tooltip>
+                  <o-tooltip
                     v-else-if="props.row.feed_version_gtfs_import.success"
                     label="Successfully imported"
                   >
-                    <b-icon icon="check-all" />
-                  </b-tooltip>
-                  <b-tooltip v-else-if="props.row.feed_version_gtfs_import.in_progress">
-                    <b-icon icon="clock" />
-                  </b-tooltip>
-                  <b-tooltip
+                    <o-icon icon="check-all" />
+                  </o-tooltip>
+                  <o-tooltip v-else-if="props.row.feed_version_gtfs_import.in_progress">
+                    <o-icon icon="clock" />
+                  </o-tooltip>
+                  <o-tooltip
                     v-else-if="props.row.feed_version_gtfs_import.success == false"
                     :label="props.row.feed_version_gtfs_import.exception_log"
                     position="top"
                   >
-                    <b-icon icon="alert" />
-                  </b-tooltip>
+                    <o-icon icon="alert" />
+                  </o-tooltip>
                 </template>
               </o-table-column>
               <o-table-column v-slot="props" label="Active">
-                <b-icon
+                <o-icon
                   v-if="entity.feed_state && entity.feed_state.feed_version && entity.feed_state.feed_version.id === props.row.id"
                   icon="check"
                 />
@@ -315,8 +315,8 @@
               <o-table-column v-if="showDownloadColumn" v-slot="props" label="Download">
                 <template v-if="entity.license.redistribution_allowed !== 'no'">
                   <a @click="showDownloadInstructions(props.row.sha1)">
-                    <b-icon v-if="props.row.sha1 === latestFeedVersionSha1" icon="download" title="Download feed version" variant="success" />
-                    <b-icon v-else icon="download" title="Download feed version" />
+                    <o-icon v-if="props.row.sha1 === latestFeedVersionSha1" icon="download" title="Download feed version" variant="success" />
+                    <o-icon v-else icon="download" title="Download feed version" />
                   </a>
                 </template>
               </o-table-column>
@@ -329,14 +329,14 @@
             />
 
             <slot name="add-feed-version" :entity="entity" />
-          </b-tab-item>
+          </o-tab-item>
 
-          <b-tab-item label="Service Levels">
+          <o-tab-item label="Service Levels">
             <div v-if="activeTab === 2">
               <tl-multi-service-levels :max-weeks="52" :week-agg="true" :fvids="entity.feed_versions.map((s)=>{return s.id}).slice(0,20)" />
             </div>
-          </b-tab-item>
-        </b-tabs>
+          </o-tab-item>
+        </o-tabs>
       </div>
     </div>
   </div>
