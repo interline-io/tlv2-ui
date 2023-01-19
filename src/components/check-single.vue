@@ -1,7 +1,7 @@
 <template>
     <div>
     <tl-msg-info v-if="feedVersionSha1">
-        You are viewing a single GTFS Route entity defined in source feed
+        You are viewing the version of this entity defined by feed
         <nuxt-link :to="{
             name: 'feeds-feed',
             params: { feed: feedOnestopId },

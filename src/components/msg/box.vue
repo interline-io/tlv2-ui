@@ -4,7 +4,7 @@
             <div class="message-header" v-if="title">{{ title }}</div>
             <template v-if="hasIcon">
                 <div class="media message-body">
-                    <o-icon :icon="getIcon" size="large" class="media-left"></o-icon>
+                    <o-icon :icon="getIcon" size="medium" class="media-left"></o-icon>
                     <div class="media-content">
                         <slot />
                     </div>
@@ -57,6 +57,6 @@ export default {
     flex-basis: auto;
     flex-grow: 0;
     flex-shrink: 0;
-    padding: 2em;
+    padding: 1em;
 }
 </style>

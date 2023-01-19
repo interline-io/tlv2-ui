@@ -156,7 +156,7 @@
                     Required attribution text: {{ entity.license.attribution_text }}
                   </li>
                   <li v-if="entity.license.attribution_instructions" class="content">
-                    Attribution instructions
+                    Attribution instructions:
                     <blockquote>{{ $filters.capitalize(entity.license.attribution_instructions) }}</blockquote>
                   </li>
                 </ul>
