@@ -34,20 +34,20 @@
       <!-- Main content -->
       <div class="columns">
         <div class="column is-three-quarters">
-          <table class="table is-borderless property-list">
+          <table class="table is-borderless property-list tl-props">
             <tr>
               <td>
-                <b-tooltip dashed label="A globally unique identifier for this operator">
+                <o-tooltip dashed label="A globally unique identifier for this operator">
                   Onestop ID
-                </b-tooltip>
+                </o-tooltip>
               </td>
               <td><code>{{ searchKey.onestop_id }}</code></td>
             </tr>
             <tr>
               <td>
-                <b-tooltip dashed multiline label="Matched agencies; see 'Sources' below for full details">
+                <o-tooltip dashed multiline label="Matched agencies; see 'Sources' below for full details">
                   Agencies
-                </b-tooltip>
+                </o-tooltip>
               </td>
               <td>
                 <ul>
@@ -59,9 +59,9 @@
             </tr>
             <tr>
               <td>
-                <b-tooltip dashed multiline label="Operators and their service areas are matched against place names from the Natural Earth project">
+                <o-tooltip dashed multiline label="Operators and their service areas are matched against place names from the Natural Earth project">
                   Locations
-                </b-tooltip>
+                </o-tooltip>
               </td>
               <td>
                 <ul>
@@ -99,20 +99,20 @@
             </tr>
             <tr v-if="entity && entity.tags && Object.keys(entity.tags).length > 0">
               <td>
-                <b-tooltip dashed multiline label="Links between Transitland and other catalogs and data sources on the Internet">
+                <o-tooltip dashed multiline label="Links between Transitland and other catalogs and data sources on the Internet">
                   ID Crosswalk
-                </b-tooltip>
+                </o-tooltip>
               </td>
               <td>
                 <ul>
                   <li v-if="entity.tags.us_ntd_id">
-                    US National Transit Database (NTD) ID: <code>{{ entity.tags.us_ntd_id }}</code> <a target="_blank" href="https://www.transit.dot.gov/ntd/"><b-icon icon="link" title="US National Transit Database website" /></a>
+                    US National Transit Database (NTD) ID: <code>{{ entity.tags.us_ntd_id }}</code> <a target="_blank" href="https://www.transit.dot.gov/ntd/"><o-icon icon="link" title="US National Transit Database website" /></a>
                   </li>
                   <li v-if="entity.tags.omd_provider_id">
-                    OpenMobilityData Provider ID: <code>{{ entity.tags.omd_provider_id }}</code> <a target="_blank" :href="`https://openmobilitydata.org/p/${entity.tags.omd_provider_id}`"><b-icon icon="link" title="OpenMobilityData provider page" /></a>
+                    OpenMobilityData Provider ID: <code>{{ entity.tags.omd_provider_id }}</code> <a target="_blank" :href="`https://openmobilitydata.org/p/${entity.tags.omd_provider_id}`"><o-icon icon="link" title="OpenMobilityData provider page" /></a>
                   </li>
                   <li v-if="entity.tags.wikidata_id">
-                    Wikidata Entity ID: <code>{{ entity.tags.wikidata_id }}</code> <a target="_blank" :href="`https://www.wikidata.org/wiki/${entity.tags.wikidata_id}`"><b-icon icon="link" title="Wikidata entity query page" /></a>
+                    Wikidata Entity ID: <code>{{ entity.tags.wikidata_id }}</code> <a target="_blank" :href="`https://www.wikidata.org/wiki/${entity.tags.wikidata_id}`"><o-icon icon="link" title="Wikidata entity query page" /></a>
                   </li>
                 </ul>
               </td>
@@ -137,9 +137,9 @@
         Source Feed(s)
       </h4>
 
-      <b-tabs type="boxed" :animated="false">
-        <b-tab-item label="Source Feeds">
-          <tl-info
+      <o-tabs class="tl-tabs" type="boxed" :animated="false">
+        <o-tab-item label="Source Feeds">
+          <tl-msg-info
             v-for="feedSpec, feedOnestopId in uniqueFeedSourcesOnestopIds"
             :key="feedOnestopId"
           >
@@ -156,15 +156,15 @@
                 </nuxt-link>
               </div>
             </div>
-          </tl-info>
-        </b-tab-item>
+          </tl-msg-info>
+        </o-tab-item>
 
-        <b-tab-item label="Source Feeds (Advanced View)">
-          <tl-info>
+        <o-tab-item label="Source Feeds (Advanced View)">
+          <tl-msg-info>
             This operator includes data from the references listed below. These references are defined in the operator's Atlas record, and describe the GTFS agencies that provide the routes, stops, schedules, and other information for this operator. If a reference to an agency cannot be resolved, this will be noted. Please see the <nuxt-link :to="{name:'documentation'}">
               Operator documentation
             </nuxt-link> for more information on this process.
-          </tl-info>
+          </tl-msg-info>
           
           <div class="content">
             <o-table
@@ -185,19 +185,19 @@
               </o-table-column>
               <o-table-column v-slot="props" field="agency" label="Matched GTFS Agency">
                 <template v-if="props.row.target_match">
-                  <b-icon icon="check" />
+                  <o-icon icon="check" />
                   {{ props.row.target_match.agency_name }}
                 </template>
                 <template v-else-if="props.row.feed_spec == 'GTFS'">
-                  <b-tooltip dashed label="The active version of this source feed does not contain a matching agency">
-                    <b-icon icon="alert" />
-                  </b-tooltip>
+                  <o-tooltip dashed label="The active version of this source feed does not contain a matching agency">
+                    <o-icon icon="alert" />
+                  </o-tooltip>
                 </template>
               </o-table-column>
             </o-table>
           </div>
-        </b-tab-item>
-      </b-tabs>
+        </o-tab-item>
+      </o-tabs>
 
       <hr>
 
@@ -207,22 +207,22 @@
         <h4 class="title is-4">
           Operator Service
         </h4>
-        <b-tabs v-model="activeTab" type="boxed" :animated="false" @update:modelValue="setTab">
-          <b-tab-item label="Map">
+        <o-tabs class="tl-tabs" v-model="activeTab" type="boxed" :animated="false" @update:modelValue="setTab">
+          <o-tab-item label="Map">
             <client-only placeholder="Map">
               <tl-feed-version-map-viewer v-if="activeTab === 1" :agency-ids="agencyIds" :overlay="true" :link-version="linkVersion" />
             </client-only>
-          </b-tab-item>
+          </o-tab-item>
 
-          <b-tab-item label="Routes">
+          <o-tab-item label="Routes">
             <tl-route-viewer v-if="activeTab === 2" :agency-ids="agencyIds" :show-agency="true" />
-          </b-tab-item>
+          </o-tab-item>
 
-          <b-tab-item label="Stops">
+          <o-tab-item label="Stops">
             <tl-stop-viewer v-if="activeTab === 3" :agency-ids="agencyIds" />
-          </b-tab-item>
+          </o-tab-item>
 
-          <b-tab-item v-if="advancedMode" label="Export">
+          <o-tab-item v-if="advancedMode" label="Export">
             <template v-if="activeTab === 4 && agencyIds.length === 1">
               <client-only>
                 <agency-export :agency-ids="agencyIds" />
@@ -231,8 +231,8 @@
             <template v-else>
               Currently this feature is only available when a single agency is returned for this query.
             </template>
-          </b-tab-item>
-        </b-tabs>
+          </o-tab-item>
+        </o-tabs>
       </div>
     </div>
   </div>

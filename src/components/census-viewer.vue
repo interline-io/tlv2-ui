@@ -4,9 +4,9 @@
       Loading...
     </div>
     <div v-else-if="geographies.length === 0">
-      <b-notification type="light" has-icon icon="information" :closable="false">
+      <o-notification type="light" has-icon icon="information" :closable="false">
         Demographic information not found for this route or is unavailable for this region. Currently, only information from the <a href="https://www.census.gov/programs-surveys/acs/news/data-releases/2018.html" target="_blank">US Census Bureau American Community Survey</a> is available.
-      </b-notification>
+      </o-notification>
     </div>
     <div v-else>
       <h5 class="title is-5">
@@ -24,9 +24,9 @@
         <tbody>
           <tr>
             <td>
-              <b-tooltip dashed :label="`Population (B01001) of ${layerInfo[layer].plural.toLowerCase()} within ${radius}m of stops`">
+              <o-tooltip dashed :label="`Population (B01001) of ${layerInfo[layer].plural.toLowerCase()} within ${radius}m of stops`">
                 Population
-              </b-tooltip>
+              </o-tooltip>
             </td>
             <td> {{ Object.keys(tableGroups['B01001'] || {}).length }} </td>
             <td>{{ tableSums | dig(['B01001','1']) | thousands }}</td>
@@ -34,9 +34,9 @@
 
           <tr>
             <td>
-              <b-tooltip dashed :label="`Median household income (B19013) in the past 12 months of ${layerInfo[layer].plural.toLowerCase()} within ${radius}m of stops, weighted by population`">
+              <o-tooltip dashed :label="`Median household income (B19013) in the past 12 months of ${layerInfo[layer].plural.toLowerCase()} within ${radius}m of stops, weighted by population`">
                 Median Income
-              </b-tooltip>
+              </o-tooltip>
             </td>
             <td> {{ Object.keys(tableGroups['B19013'] || {}).length }} </td>
             <td>$ {{ weightedIncome| thousands }}</td>
@@ -48,9 +48,9 @@
         <thead>
           <tr>
             <th>
-              <b-tooltip dashed label="Means of transportation to work by vehicles available (B08141)">
+              <o-tooltip dashed label="Means of transportation to work by vehicles available (B08141)">
                 Means of transport to work
-              </b-tooltip>
+              </o-tooltip>
             </th>
             <th>Workers</th>
             <th>(% of total)</th>
@@ -111,9 +111,9 @@
         </tbody>
       </table>
 
-      <b-notification type="light" :closable="false">
+      <o-notification type="light" :closable="false">
         <a href="https://www.census.gov/programs-surveys/acs/news/data-releases/2018.html" target="_blank">US Census Bureau American Community Survey, 2018, 5 year</a>. This feature is in beta release; please verify values before using. You can provide feedback or suggestions for additional data tables using the contact information at the bottom of the page.
-      </b-notification>
+      </o-notification>
     </div>
   </div>
 </template>

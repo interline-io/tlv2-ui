@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div style="padding-bottom:10px">
+    <div>
       <div v-if="Object.keys(agencyFeatures).length > 0">
         <tl-route-select :agency-features="agencyFeatures" :collapse="true" :link="true" />
       </div>
@@ -17,7 +17,7 @@
       </div>
     </div>
     <div v-if="isComponentModalActive">
-      <b-modal
+      <o-modal
         :active="isComponentModalActive"
         has-modal-card
         :on-cancel="close"
@@ -35,7 +35,7 @@
             </section>
           </div>
         </template>
-      </b-modal>
+      </o-modal>
     </div>
   </div>
 </template>

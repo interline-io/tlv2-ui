@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <tl-loading v-if="$apollo.loading" />
-    <tl-error v-else-if="error">{{ error }}</tl-error>
+    <tl-msg-error v-else-if="error">{{ error }}</tl-msg-error>
     <div v-else-if="entity">
       <Title>{{ staticTitle }}</Title>
       <Meta name="description" :content="staticDescription" />
@@ -33,15 +33,15 @@
       <!-- Main content -->
       <div class="columns">
         <div class="column is-two-thirds">
-          <table class="table is-borderless property-list">
+          <table class="table is-borderless property-list tl-props">
             <tr>
               <td>
-                <b-tooltip
+                <o-tooltip
                   dashed
                   label="A globally unique identifier for this route"
                 >
                   Onestop ID
-                </b-tooltip>
+                </o-tooltip>
               </td>
               <td>
                 <div v-for="root of roots" :key="root.id">
@@ -65,7 +65,7 @@
                   <a
                     :href="stop.stop_url"
                     target="_blank"
-                  ><b-icon
+                  ><o-icon
                     icon="link"
                   /></a>
                 </div>
@@ -95,16 +95,16 @@
             </tr>
           </table>
 
-          <tl-info>
+          <tl-msg-info no-icon>
             Learn more about the contents of <code>stops.txt</code> on
             <a
               href="https://gtfs.org/reference/static#stopstxt"
               target="_blank"
             >gtfs.org</a>.
-          </tl-info>
+          </tl-msg-info>
 
           <div v-for="ent of entities" :key="ent.id">
-            <tl-warning
+            <tl-msg-warning
               v-for="(alert,idx) of ent.alerts"
               :key="idx">
               Agency Alert:
@@ -114,11 +114,11 @@
               <div v-for="tr of filterRTTranslations(alert.description_text)" :key="tr.text">
                 {{ tr.text }}
               </div>
-            </tl-warning>
+            </tl-msg-warning>
           </div>
 
-          <b-tabs v-model="activeTab" type="boxed" :animated="false" @update:modelValue="setTab">
-            <b-tab-item label="Summary">
+          <o-tabs class="tl-tabs" v-model="activeTab" type="boxed" :animated="false" @update:modelValue="setTab">
+            <o-tab-item label="Summary">
               <div v-if="servedRoutes">
                 <h6 class="title is-6">
                   Routes at this stop
@@ -154,9 +154,9 @@
                   </div>
                 </div>
               </div>
-            </b-tab-item>
+            </o-tab-item>
 
-            <b-tab-item v-if="entity.id" label="Departures">
+            <o-tab-item v-if="entity.id" label="Departures">
               <client-only placeholder="Departures">
                 <tl-stop-departures
                   v-if="activeTab == 2"
@@ -165,10 +165,10 @@
                   :search-coords="entity.geometry.coordinates"
                 />
               </client-only>
-            </b-tab-item>
+            </o-tab-item>
 
             <!-- Data sources -->
-            <b-tab-item label="Sources">
+            <o-tab-item label="Sources">
               <o-table
                 :data="allStops"
                 :striped="true"
@@ -189,8 +189,8 @@
                   </nuxt-link>
                 </o-table-column>
               </o-table>
-            </b-tab-item>
-          </b-tabs>
+            </o-tab-item>
+          </o-tabs>
         </div>
         <div class="column is-one-third">
           <client-only>

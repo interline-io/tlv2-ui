@@ -1,7 +1,7 @@
 <template>
   <div>
     <tl-loading v-if="$apollo.loading" />
-    <tl-error v-else-if="error">{{ error }}</tl-error>
+    <tl-msg-error v-else-if="error">{{ error }}</tl-msg-error>
     <div v-else-if="entity">
       <Title>{{ staticTitle }}</Title>
       <Meta name="description" :content="staticDescription" />
@@ -73,15 +73,15 @@
       <!-- Main content -->
       <div class="columns">
         <div class="column is-two-thirds">
-          <table class="table is-borderless property-list">
+          <table class="table is-borderless property-list tl-props">
             <tr v-if="entity.onestop_id">
               <td>
-                <b-tooltip
+                <o-tooltip
                   dashed
                   label="A globally unique identifier for this route"
                 >
                   Onestop ID
-                </b-tooltip>
+                </o-tooltip>
               </td>
               <td>{{ entity.onestop_id }}</td>
             </tr>
@@ -115,12 +115,12 @@
             <tr>
               <td>Vehicle Type</td>
               <td>
-                <b-tooltip
+                <o-tooltip
                   dashed
                   :label="`Route with route_type = ${entity.route_type}`"
                 >
                   {{ $filters.routeTypeToWords(entity.route_type) }}
-                </b-tooltip>
+                </o-tooltip>
               </td>
             </tr>
             <tr v-if="entity.route_url">
@@ -143,16 +143,16 @@
             </tr>
           </table>
 
-          <tl-info>
+          <tl-msg-info no-icon>
             Learn more about the contents of <code>routes.txt</code> on
             <a
               href="https://gtfs.org/reference/static#routestxt"
               target="_blank"
             >gtfs.org</a>.
-          </tl-info>
+          </tl-msg-info>
 
           <div v-for="ent of entities" :key="ent.id">
-            <tl-warning
+            <tl-msg-warning
               v-for="(alert,idx) of ent.alerts"
               :key="idx">
               <p>Agency Alert:</p>
@@ -162,26 +162,27 @@
               <div v-for="tr of filterRTTranslations(alert.description_text)" :key="tr.text">
                 {{ tr.text }}
               </div>
-            </tl-warning>
+            </tl-msg-warning>
           </div>
 
-          <b-tabs
+          <o-tabs
+            class="tl-tabs"
             v-model="activeTab"
             type="boxed"
             :animated="false"
             @update:modelValue="setTab"
           >
-            <b-tab-item label="Connections">
+            <o-tab-item label="Connections">
               <client-only>
                 <tl-rsp-viewer v-if="activeTab === 1" :route-ids="entityIds" />
               </client-only>
-            </b-tab-item>
-            <b-tab-item label="Headways">
+            </o-tab-item>
+            <o-tab-item label="Headways">
               <tl-headway-viewer :headways="entity.headways" />
-            </b-tab-item>
+            </o-tab-item>
 
             <!-- Data sources -->
-            <b-tab-item label="Sources">
+            <o-tab-item label="Sources">
               <o-table :data="entities" :striped="true">
                 <o-table-column
                   v-slot="props"
@@ -234,9 +235,9 @@
                   </nuxt-link>
                 </o-table-column>
               </o-table>
-            </b-tab-item>
+            </o-tab-item>
 
-            <b-tab-item label="Export">
+            <o-tab-item label="Export">
               <client-only placeholder="Export">
                 <tl-data-export
                   v-if="activeTab === 4"
@@ -247,8 +248,8 @@
                   @setFeatures="features = $event"
                 />
               </client-only>
-            </b-tab-item>
-          </b-tabs>
+            </o-tab-item>
+          </o-tabs>
         </div>
         <div class="column is-one-third">
           <client-only>

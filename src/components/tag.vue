@@ -1,7 +1,7 @@
 <template>
   <div class="tag message is-small">
     <slot />
-    <b-icon class="ml-1" v-if="closable" size="small" icon="close" @click="$emit('close')" />
+    <o-icon class="ml-1" v-if="closable" size="small" icon="close" @click="$emit('close')" />
   </div>
 </template>
 

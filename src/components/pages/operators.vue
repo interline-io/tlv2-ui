@@ -18,42 +18,42 @@
     <slot name="description" />
 
     <div>
-      <b-field grouped :label="filteringByOperatorLocation ? 'Filter by operator location' : 'Search by operator name or location'">
+      <o-field grouped :label="filteringByOperatorLocation ? 'Filter by operator location' : 'Search by operator name or location'">
         <tl-search-bar v-model="search" placeholder="e.g. Bay Area Rapid Transit" />
 
-        <b-dropdown position="bottom-left" append-to-body aria-role="menu" trap-focus>
+        <o-dropdown position="bottom-left" append-to-body aria-role="menu" trap-focus>
           <template #trigger="{ active }">
-            <b-button label="Options" variant="primary" :icon-left="active ? 'menu-up' : 'menu-down'" />
+            <o-button label="Options" variant="primary" :icon-left="active ? 'menu-up' : 'menu-down'" />
           </template>
 
-          <b-dropdown-item aria-role="menu-item" custom>
+          <o-dropdown-item aria-role="menu-item" custom>
             <div class="field">
-              <b-checkbox v-model="merged">
+              <o-checkbox v-model="merged">
                 Group agencies by operator
-              </b-checkbox>
+              </o-checkbox>
             </div>
 
             <div class="field">
-              <b-checkbox v-model="unmatched">
+              <o-checkbox v-model="unmatched">
                 Show operators without agency matches
-              </b-checkbox>
+              </o-checkbox>
             </div>
-          </b-dropdown-item>
-        </b-dropdown>
-      </b-field>
+          </o-dropdown-item>
+        </o-dropdown>
+      </o-field>
 
-      <b-field>
-        <b-field v-if="filteringByOperatorLocation" expanded>
-          <b-tag attached closable aria-close-label="Close tag" @close="clearQuery">
+      <o-field>
+        <o-field v-if="filteringByOperatorLocation" expanded>
+          <tl-tag attached closable aria-close-label="Close tag" @close="clearQuery">
             {{ [$route.query.adm0_name, $route.query.adm1_name, $route.query.city_name].filter(n => n).join(' / ') }}
-          </b-tag>
-        </b-field>
-        <b-field v-else-if="$route.query.search" expanded>
-          <b-tag attached closable aria-close-label="Close tag" @close="clearQuery">
+          </tl-tag>
+        </o-field>
+        <o-field v-else-if="$route.query.search" expanded>
+          <tl-tag attached closable aria-close-label="Close tag" @close="clearQuery">
             {{ $route.query.search }}
-          </b-tag>
-        </b-field>
-      </b-field>
+          </tl-tag>
+        </o-field>
+      </o-field>
 
       <o-table :data="entityPageFlat" :striped="true" :loading="$apollo.loading">
         <!-- TODO: fix sorting -->
@@ -70,11 +70,11 @@
           {{ props.row.adm1_name }}
         </o-table-column>
         <o-table-column v-slot="props" field="adm0_name" label="Country" :width="260">
-          <b-tooltip
+          <o-tooltip
             :label="props.row.other_places.filter((s) => { return s.city_name }).map((s) => { return s.city_name }).join(', ')"
             dashed>
             {{ props.row.adm0_name }}
-          </b-tooltip>
+          </o-tooltip>
         </o-table-column>
       </o-table>
       <tl-show-more v-if="entities.length === limit || hasMore" :limit="entities.length" @click="showAll" />

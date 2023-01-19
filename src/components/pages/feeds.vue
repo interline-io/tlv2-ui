@@ -17,15 +17,15 @@
     <slot name="description" />
 
     <div>
-      <b-field grouped group-multiline>
-        <b-field label="Search by feed name">
+      <o-field grouped group-multiline>
+        <o-field label="Search by feed name">
           <div>
             <tl-search-bar v-model="search" />
           </div>
-        </b-field>
+        </o-field>
 
-        <b-field label="Filter by fetch status">
-          <b-select v-model="fetchError">
+        <o-field label="Filter by fetch status">
+          <o-select v-model="fetchError">
             <option value="">
               All
             </option>
@@ -35,11 +35,11 @@
             <option value="true">
               Has fetch error
             </option>
-          </b-select>
-        </b-field>
+          </o-select>
+        </o-field>
 
-        <b-field label="Filter by import status">
-          <b-select v-model="importStatus">
+        <o-field label="Filter by import status">
+          <o-select v-model="importStatus">
             <option value="">
               All
             </option>
@@ -52,36 +52,36 @@
             <option value="IN_PROGRESS">
               In progress
             </option>
-          </b-select>
-        </b-field>
+          </o-select>
+        </o-field>
 
-        <b-field label="Filter by tag">
+        <o-field label="Filter by tag">
           <div class="pt-2">
-            <b-checkbox v-model="tagUnstableUrl" native-value="true" size="medium">
+            <o-checkbox v-model="tagUnstableUrl" native-value="true" size="medium">
               Unstable URL
-            </b-checkbox>
+            </o-checkbox>
           </div>
-        </b-field>
+        </o-field>
 
-        <b-field label="Filter by data format" class="pl-3">
+        <o-field label="Filter by data format" class="pl-3">
           <div class="pt-2">
-            <b-checkbox v-model="feedSpecs" native-value="GTFS" size="medium">
+            <o-checkbox v-model="feedSpecs" native-value="GTFS" size="medium">
               <abbr title="General Transit Feed Specification">GTFS</abbr>
-            </b-checkbox>
-            <b-checkbox v-model="feedSpecs" native-value="GTFS_RT" size="medium">
+            </o-checkbox>
+            <o-checkbox v-model="feedSpecs" native-value="GTFS_RT" size="medium">
               <abbr title="GTFS Realtime">GTFS-RT</abbr>
-            </b-checkbox>
-            <b-checkbox v-model="feedSpecs" native-value="GBFS" size="medium">
+            </o-checkbox>
+            <o-checkbox v-model="feedSpecs" native-value="GBFS" size="medium">
               <abbr title="General Bikeshare Feed Specification">GBFS</abbr>
-            </b-checkbox>
-            <b-checkbox v-model="feedSpecs" native-value="MDS" size="medium">
+            </o-checkbox>
+            <o-checkbox v-model="feedSpecs" native-value="MDS" size="medium">
               <abbr title="Mobility Data Specification">MDS</abbr>
-            </b-checkbox>
+            </o-checkbox>
           </div>
-        </b-field>
-      </b-field>
+        </o-field>
+      </o-field>
 
-      <tl-error v-if="error">{{ error }}</tl-error>
+      <tl-msg-error v-if="error">{{ error }}</tl-msg-error>
 
       <o-table
         :loading="$apollo.loading"
@@ -119,9 +119,9 @@
         </o-table-column>
 
         <o-table-column v-slot="props" field="last_fetch" label="Fetch Errors">
-          <b-tooltip v-if="props.row.last_fetch && props.row.last_fetch.fetch_error" :label="props.row.last_fetch.fetch_error" multilined>
-            <b-icon icon="alert" />
-          </b-tooltip>
+          <o-tooltip v-if="props.row.last_fetch && props.row.last_fetch.fetch_error" :label="props.row.last_fetch.fetch_error" multilined>
+            <o-icon icon="alert" />
+          </o-tooltip>
         </o-table-column>
 
         <o-table-column v-slot="props" :visible="tagUnstableUrl" field="tags" label="Tags">

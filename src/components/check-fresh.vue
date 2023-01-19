@@ -1,9 +1,9 @@
 <template>
-  <tl-warning v-if="dataFreshness > 365">
+  <tl-msg-warning v-if="dataFreshness > 365">
     The GTFS feeds associated with this page were fetched
     {{ dataFreshness }} days ago; use caution or check if newer data is
     available.
-  </tl-warning>
+  </tl-msg-warning>
 </template>
 
 <script>

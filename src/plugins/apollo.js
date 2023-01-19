@@ -5,7 +5,7 @@ import { HttpLink } from 'apollo-link-http'
 export default defineNuxtPlugin((nuxtApp) => {
   const config = useRuntimeConfig()
   const httpLink = new HttpLink({ 
-    uri: config.public.graphqlEndpoint ,
+    uri: config.public.graphqlEndpoint,
     headers: {
       apikey: config.public.graphqlApikey
     }
@@ -14,7 +14,6 @@ export default defineNuxtPlugin((nuxtApp) => {
     link: httpLink,
     cache: new InMemoryCache(),
   });
-  
   const apolloProvider = createApolloProvider({
     defaultClient: apolloClient,
     clients: { transitland: apolloClient }

@@ -1,7 +1,7 @@
 <template>
   <div>
     <tl-loading v-if="$apollo.loading" />
-    <tl-error v-else-if="error">{{ error }}</tl-error>
+    <tl-msg-error v-else-if="error">{{ error }}</tl-msg-error>
     <div v-else-if="entity">
       <Title>{{ staticTitle }}</Title>
       <Meta name="description" :content="staticDescription" />
@@ -89,7 +89,7 @@
         </div>
       </nav>
 
-      <table class="table is-borderless property-list">
+      <table class="table is-borderless property-list tl-props">
         <tr>
           <td>Feed Onestop ID</td>
           <td><code>{{ entity.feed.onestop_id }}</code></td>
@@ -98,7 +98,7 @@
           <td>Name</td>
           <td>
             <template v-if="showEdit">
-              <b-input v-model="entity.name" size="small" />
+              <o-input v-model="entity.name" size="small" />
             </template>
             <template v-else-if="entity.name">
               {{ entity.name }}
@@ -112,7 +112,7 @@
           <td>Description</td>
           <td>
             <template v-if="showEdit">
-              <b-input v-model="entity.description" size="small" />
+              <o-input v-model="entity.description" size="small" />
             </template>
             <template v-else-if="entity.description">
               {{ entity.description }}
@@ -155,14 +155,14 @@
         <div v-if="canEdit" class="=clearfix block pb-4">
           &nbsp;
           <div class="is-pulled-right">
-            <b-button v-if="showEdit" variant="primary" @click="saveEntity">Save</b-button>
-            <b-button v-else variant="primary" icon-left="pencil" @click="showEdit = true">Edit</b-button>
+            <o-button v-if="showEdit" variant="primary" @click="saveEntity">Save</o-button>
+            <o-button v-else variant="primary" icon-left="pencil" @click="showEdit = true">Edit</o-button>
           </div>
         </div>
       </slot>
 
       <slot name="import" :entity="entity">
-        <tl-info v-if="!fvi">
+        <tl-msg-info v-if="!fvi">
           This feed version is not currently imported into the database.
           <template v-if="importLoading">
             <span class="button is-primary is-pulled-right" :disabled="true">
@@ -174,62 +174,62 @@
               Import feed version
             </span>
           </template>
-        </tl-info>
-        <tl-success v-else-if="fvi.schedule_removed">
+        </tl-msg-info>
+        <tl-msg-success v-else-if="fvi.schedule_removed">
           Agencies, stops, and routes are available for this feed version. Schedule data is not available.
-        </tl-success>
-        <tl-success v-else-if="fvi.success" icon="check-all">
+        </tl-msg-success>
+        <tl-msg-success v-else-if="fvi.success" icon="check-all">
           This feed version was successfully imported into the database.
-        </tl-success>
-        <tl-success v-else-if="fvi.in_progress" icon="clock">
+        </tl-msg-success>
+        <tl-msg-success v-else-if="fvi.in_progress" icon="clock">
           Import in progress! Please be patient.
-        </tl-success>
-        <tl-warning v-else-if="!fvi.success">
+        </tl-msg-success>
+        <tl-msg-warning v-else-if="!fvi.success">
           Import Error: {{ fvi.exception_log }}
-        </tl-warning>
+        </tl-msg-warning>
       </slot>
 
       <slot name="download" :entity="entity" />
 
-      <b-tabs v-model="activeTab" type="boxed" :animated="false" @update:modelValue="setTab">
-        <b-tab-item label="Files">
+      <o-tabs class="tl-tabs" v-model="activeTab" type="boxed" :animated="false" @update:modelValue="setTab">
+        <o-tab-item label="Files">
           <tl-file-info-viewer :files="entity.files" />
-        </b-tab-item>
+        </o-tab-item>
 
-        <b-tab-item label="Service levels">
+        <o-tab-item label="Service levels">
           <template v-if="activeTab === 2">
             <client-only placeholder="Service levels">
               <tl-multi-service-levels :show-group-info="false" :show-service-relative="false" :fvids="[entity.id]" :week-agg="false" />
             </client-only>
           </template>
-        </b-tab-item>
+        </o-tab-item>
 
-        <b-tab-item label="Map">
+        <o-tab-item label="Map">
           <template v-if="activeTab === 3">
             <div v-if="imported">
               <client-only placeholder="Map">
                 <tl-feed-version-map-viewer :feed-version-sha1="entity.sha1" :overlay="true" :link-version="true" />
               </client-only>
             </div>
-            <tl-info v-else>
+            <tl-msg-info v-else>
               Map is only available for successfully imported feed versions.
-            </tl-info>
+            </tl-msg-info>
           </template>
-        </b-tab-item>
+        </o-tab-item>
 
-        <b-tab-item v-if="imported" label="Agencies">
+        <o-tab-item v-if="imported" label="Agencies">
           <tl-agency-viewer v-if="activeTab === 4" :fvid="entity.sha1" />
-        </b-tab-item>
+        </o-tab-item>
 
-        <b-tab-item v-if="imported" label="Routes">
+        <o-tab-item v-if="imported" label="Routes">
           <tl-route-viewer v-if="activeTab === 5" :link-version="true" :feed-version-sha1="entity.sha1" />
-        </b-tab-item>
+        </o-tab-item>
 
-        <b-tab-item v-if="imported" label="Stops">
+        <o-tab-item v-if="imported" label="Stops">
           <tl-stop-viewer v-if="activeTab === 6" :link-version="true" :feed-version-sha1="entity.sha1" />
-        </b-tab-item>
+        </o-tab-item>
 
-        <b-tab-item v-if="imported" label="Import log">
+        <o-tab-item v-if="imported" label="Import log">
           <table class="table is-striped is-fullwidth">
             <thead>
               <tr>
@@ -257,8 +257,8 @@
               </tr>
             </tbody>
           </table>
-        </b-tab-item>
-      </b-tabs>
+        </o-tab-item>
+      </o-tabs>
     </div>
   </div>
 </template>

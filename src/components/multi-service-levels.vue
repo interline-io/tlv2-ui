@@ -1,43 +1,43 @@
 <template>
   <div>
     <div v-if="showFilters" class="block">
-      <b-field grouped expanded>
-        <b-field v-if="showServiceRelative" label="Service relative to">
-          <b-select v-model="maxAggMode">
+      <o-field grouped expanded>
+        <o-field v-if="showServiceRelative" label="Service relative to">
+          <o-select v-model="maxAggMode">
             <option value="all">
               All cells
             </option>
             <option value="group">
               Within group
             </option>
-          </b-select>
-        </b-field>
+          </o-select>
+        </o-field>
 
-        <b-field v-if="showDateSelector" label="Start date">
-          <b-datepicker
+        <o-field v-if="showDateSelector" label="Start date">
+          <o-datepicker
             v-model="displayStartDate"
             :unselectable-days-of-week="[0,2,3,4,5,6]"
             placeholder="Click to select..."
             icon="calendar-today"
             trap-focus
           />
-        </b-field>
+        </o-field>
 
-        <b-field v-if="showDateSelector" label="End date">
-          <b-datepicker
+        <o-field v-if="showDateSelector" label="End date">
+          <o-datepicker
             v-model="displayEndDate"
             :unselectable-days-of-week="[1,2,3,4,5,6]"
             placeholder="Click to select..."
             icon="calendar-today"
             trap-focus
           />
-        </b-field>
+        </o-field>
 
         <!-- label is zero width joiner -->
-        <b-field label="‍">
+        <o-field label="‍">
           <span v-if="maxWeeks && displayWeeks.length >= maxWeeks" class="tag">Note: only {{ maxWeeks }} weeks are displayed</span>
-        </b-field>
-      </b-field>
+        </o-field>
+      </o-field>
     </div>
 
     <div class="clearfix">
@@ -427,4 +427,11 @@ const months = {
 .cell:hover .tt {
   visibility: visible;
 }
+
+
+.datepicker .dropdown-content {
+    z-index:100;
+    box-shadow: none !important;
+}
+
 </style>

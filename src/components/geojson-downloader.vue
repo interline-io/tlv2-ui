@@ -1,5 +1,5 @@
 <template>
-  <button class="button" style="margin-right:10px" @click="saveFile">
+  <button class="button mr-2" @click="saveFile">
     {{ label }}
   </button>
 </template>

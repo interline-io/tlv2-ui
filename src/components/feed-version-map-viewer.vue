@@ -1,7 +1,7 @@
 <template>
-  <div style="position:relative">
+  <div class="tl-map">
     <tl-loading v-if="$apollo.loading" />
-    <tl-error v-else-if="error">{{ error }}</tl-error>
+    <tl-msg-error v-else-if="error">{{ error }}</tl-msg-error>
     <div v-else>
       <tl-map-viewer
         :enable-scroll-zoom="enableScrollZoom"
@@ -15,7 +15,7 @@
         @mapClick="mapClick"
         @setZoom="currentZoom = $event"
       />
-      <div v-if="overlay" class="map-panel">
+      <div v-if="overlay" class="tl-map-panel">
         <tl-map-route-list
           :current-zoom="currentZoom"
           :link-version="linkVersion"
@@ -182,3 +182,27 @@ export default {
   }
 }
 </script>
+
+<style>
+.tl-map {
+  position:relative
+}
+.tl-map-panel {
+    background-color: white;
+    user-select: none;
+    position: absolute !important;
+    margin: 0px;
+    padding: 10px;
+    top: 10px;
+    left: 10px;
+    width: 565px;
+}
+.tl-map-panel-tabs .tab-content {
+    background-color: rgba(255, 255, 255, 0.9);
+    margin: 0px;
+    padding-left: 10px;
+    padding-right: 10px;
+    max-height:80vh;
+    overflow-y:auto;
+}
+</style>

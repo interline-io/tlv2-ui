@@ -1,8 +1,8 @@
 <template>
   <div>
-    <b-field grouped expanded class="block">
-      <b-field label="Stop Buffer Radius (m)" expanded class="pr-6">
-        <b-slider
+    <o-field grouped expanded class="block">
+      <o-field label="Stop Buffer Radius (m)" expanded class="pr-6">
+        <o-slider
           v-model="radius"
           size="medium"
           :min="0"
@@ -12,23 +12,23 @@
           lazy
         >
           <template v-for="val in [400,1000,2000]" :key="val">
-            <b-slider-tick  :value="val">
+            <o-slider-tick  :value="val">
               {{ val }}
-            </b-slider-tick>
+            </o-slider-tick>
           </template>
-        </b-slider>
-      </b-field>
+        </o-slider>
+      </o-field>
 
-      <b-field label="Summary Level" expanded>
-        <b-select v-model="layer">
+      <o-field label="Summary Level" expanded>
+        <o-select v-model="layer">
           <option v-for="(v,k) of layerInfo" :key="k" :value="k">
             {{ v.name }}
           </option>
-        </b-select>
-      </b-field>
+        </o-select>
+      </o-field>
 
-      <b-field label="Show on Map" expanded>
-        <b-dropdown
+      <o-field label="Show on Map" expanded>
+        <o-dropdown
           v-model="showOnMap"
           multiple
           aria-role="list"
@@ -39,32 +39,32 @@
             </span>
           </button>
 
-          <b-dropdown-item value="buffer" aria-role="listitem">
+          <o-dropdown-item value="buffer" aria-role="listitem">
             <span>Stop Buffer</span>
-          </b-dropdown-item>
+          </o-dropdown-item>
 
-          <b-dropdown-item value="hull" aria-role="listitem">
+          <o-dropdown-item value="hull" aria-role="listitem">
             <span>Stop Hull</span>
-          </b-dropdown-item>
+          </o-dropdown-item>
 
-          <b-dropdown-item value="census" aria-role="listitem">
+          <o-dropdown-item value="census" aria-role="listitem">
             <span>Census Geographies</span>
-          </b-dropdown-item>
-        </b-dropdown>
-      </b-field>
-    </b-field>
+          </o-dropdown-item>
+        </o-dropdown>
+      </o-field>
+    </o-field>
 
     <tl-loading v-if="$apollo.loading" />
     <div v-else class="block">
-      <b-field grouped>
-        <b-field label="Download GeoJSON">
+      <o-field grouped>
+        <o-field label="Download GeoJSON">
           <tl-geojson-downloader v-if="routeFeatures.length > 0" :features="routeFeatures" label="Routes" :filename="routeName" />
           <tl-geojson-downloader v-if="stopFeatures.length > 0" :features="stopFeatures" label="Stops" :filename="routeName + ' - Stops'" />
           <tl-geojson-downloader v-if="bufferFeatures.length > 0" :features="bufferFeatures" label="Stop Buffer" :filename="routeName + ' - Stop Buffer'" />
           <tl-geojson-downloader v-if="hullFeatures.length > 0" :features="hullFeatures" label="Stop Hull" :filename="routeName + '- Stop Hull'" />
           <tl-geojson-downloader v-if="censusFeatures.length > 0" :features="censusFeatures" label="Census Geographies" :filename="routeName + '- Census Geographies'" />
-        </b-field>
-      </b-field>
+        </o-field>
+      </o-field>
     </div>
 
     <tl-buffer-viewer :route-ids="routeIds" :agency-ids="agencyIds" :radius="radius" @setBufferFeatures="bufferFeatures = $event" @setHullFeatures="hullFeatures = $event" />

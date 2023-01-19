@@ -1,17 +1,28 @@
-import { join } from 'path'
+import { fileURLToPath } from 'node:url'
+import { defineNuxtModule, addPlugin, createResolver } from '@nuxt/kit'
 
-export default function () {
-  const { nuxt } = this
-  // Make sure components is enabled
-  if (!nuxt.options.components) {
-    throw new Error('please set `components: true` inside `nuxt.config` and ensure using `nuxt >= 2.13.0`')
+export default defineNuxtModule({
+  setup (options, nuxt) {
+    // Create resolver to resolve relative paths
+    const { resolve } = createResolver(import.meta.url)
+    if (options.bulma) {
+      nuxt.options.css.push(options.bulma)
+    } else {
+      nuxt.options.css.push(resolve('../src/assets/bulma.scss'))
+    }
+    addPlugin(resolve('../src/plugins/apollo.js'))
+    addPlugin(resolve('../src/plugins/oruga.js'))
+    addPlugin(resolve('../src/plugins/filters.js'))
+    nuxt.options.css.push(resolve('../src/assets/main.css'))
+  },
+  hooks: {
+    'components:dirs'(dirs) {
+      // Add ../src/components dir to the list
+      dirs.push({
+        // global: true,
+        path: fileURLToPath(new URL('../src/components', import.meta.url)),
+        prefix: 'tl'
+      })
+    }
   }
-
-  this.nuxt.hook('components:dirs', (dirs) => {
-    // Add ./components dir to the list
-    dirs.push({
-      path: join(__dirname, '../src/components'),
-      prefix: 'tl'
-    })
-  })
-}
+})
