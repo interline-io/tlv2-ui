@@ -6,6 +6,7 @@
 import { useRuntimeConfig } from "#app";
 import maplibre from 'maplibre-gl'
 import mapLayers from './map-layers.js'
+import { nextTick } from 'vue'
 
 const config = useRuntimeConfig()
 
