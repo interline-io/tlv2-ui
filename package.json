@@ -28,7 +28,7 @@
     "nuxt": "3.0.0",
     "sanitize-filename": "^1.6.3",
     "vue": "^3.0.0",
-    "@apollo/client": "^3.7.3",
+    "@apollo/client": "^3.7.4",
     "@oruga-ui/oruga-next": "^0.5.10",
     "@oruga-ui/theme-bulma": "^0.2.8",
     "@vue/apollo-option": "^4.0.0-alpha.20",

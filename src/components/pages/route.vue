@@ -268,6 +268,7 @@
 </template>
 
 <script>
+import { useRuntimeConfig } from "#app";
 import gql from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
 

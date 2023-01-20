@@ -225,7 +225,7 @@
           <o-tab-item v-if="advancedMode" label="Export">
             <template v-if="activeTab === 4 && agencyIds.length === 1">
               <client-only>
-                <agency-export :agency-ids="agencyIds" />
+                <tl-agency-export :agency-ids="agencyIds" />
               </client-only>
             </template>
             <template v-else>
