@@ -88,17 +88,17 @@
         :data="feedPage"
         :striped="true"
       >
-        <o-table-column v-slot="props" field="onestop_id" label="Feed Onestop ID">
+        <o-table-column v-slot:default="props" field="onestop_id" label="Feed Onestop ID">
           <nuxt-link :to="{name: 'feeds-feed', params: {feed: props.row.onestop_id}}">
             {{ props.row.onestop_id }}
           </nuxt-link>
         </o-table-column>
 
-        <o-table-column v-slot="props" field="spec" label="Format">
+        <o-table-column v-slot:default="props" field="spec" label="Format">
           {{ props.row.spec.toUpperCase() }}
         </o-table-column>
 
-        <o-table-column v-slot="props" field="last_successful_fetch" label="Last Fetched">
+        <o-table-column v-slot:default="props" field="last_successful_fetch" label="Last Fetched">
           <template v-if="props.row.last_successful_fetch && props.row.last_successful_fetch.fetched_at ">
             {{ $filters.fromNow(props.row.last_successful_fetch.fetched_at) }}
           </template>
@@ -107,7 +107,7 @@
           </template>
         </o-table-column>
 
-        <o-table-column v-slot="props" field="last_successful_import_at" label="Last Imported">
+        <o-table-column v-slot:default="props" field="last_successful_import_at" label="Last Imported">
           <span v-if="props.row.spec === 'GTFS'">
             <template v-if="props.row.last_import">
               {{ $filters.fromNow(props.row.last_import.fetched_at) }}
@@ -118,16 +118,17 @@
           </span>
         </o-table-column>
 
-        <o-table-column v-slot="props" field="last_fetch" label="Fetch Errors">
+        <o-table-column v-slot:default="props" field="last_fetch" label="Fetch Errors">
           <o-tooltip v-if="props.row.last_fetch && props.row.last_fetch.fetch_error" :label="props.row.last_fetch.fetch_error" multilined>
             <o-icon icon="alert" />
           </o-tooltip>
         </o-table-column>
 
-        <o-table-column v-slot="props" :visible="tagUnstableUrl" field="tags" label="Tags">
+        <o-table-column v-slot:default="props" :visible="tagUnstableUrl" field="tags" label="Tags">
           <pre class="tags">{{ props.row.tags }}</pre>
         </o-table-column>
       </o-table>
+      
       <tl-show-more v-if="entities.length === limit || hasMore" :limit="entities.length" @click="showAll" />
     </div>
 

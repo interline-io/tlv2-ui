@@ -1,11 +1,10 @@
 import { defineNuxtPlugin, useRuntimeConfig } from "#app";
 import { createApolloProvider } from '@vue/apollo-option'
-import { ApolloClient, InMemoryCache } from '@apollo/client/core'
-import { HttpLink } from 'apollo-link-http'
+import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client/core/index.js'
 
 export default defineNuxtPlugin((nuxtApp) => {
   const config = useRuntimeConfig()
-  const httpLink = new HttpLink({ 
+  const httpLink = new createHttpLink({ 
     uri: config.public.graphqlEndpoint,
     headers: {
       apikey: config.public.graphqlApikey
@@ -19,6 +18,5 @@ export default defineNuxtPlugin((nuxtApp) => {
     defaultClient: apolloClient,
     clients: { transitland: apolloClient }
   })
-  
   nuxtApp.vueApp.use(apolloProvider)
 })

@@ -83,7 +83,7 @@ a {
 }
 
 .logo-image {
-  background: url('~/svg/transitland_logo.svg');
+  background: url('/svg/transitland_logo.svg');
   background-size: contain;
   background-repeat: no-repeat;
   margin-left: 20px;
