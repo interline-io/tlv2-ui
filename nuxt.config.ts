@@ -3,7 +3,7 @@ const apiBase =
   process.env.TRANSITLAND_API_BASE || 'https://transit.land/api/v2'
 
 export default defineNuxtConfig({
-  ssr: false,
+  ssr: true,
   modules: [
     './nuxt'
   ],
