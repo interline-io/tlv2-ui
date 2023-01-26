@@ -1,6 +1,6 @@
 <template>
   <div>
-    <title>Global transit map</title>
+    <title>Transitland • Global transit map</title>
     <client-only placeholder="Map">
       <tl-pages-map />
     </client-only>
