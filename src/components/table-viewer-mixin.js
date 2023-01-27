@@ -6,7 +6,7 @@ export default {
     return {
       hasMore: false,
       prevAfter: null,
-      search: null,
+      search: this.$route.query.search,
       entities: [],
       error: null
     }
@@ -21,7 +21,7 @@ export default {
   },
   methods: {
     showAll() {
-      const newLimit = 1000
+      const newLimit = 500
       this.$apollo.queries.entities.fetchMore({
         variables: {
           after: this.maxId,

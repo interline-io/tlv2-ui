@@ -4,7 +4,7 @@ export default {
       client: 'transitland',
       error (e) { this.error = e },
       update(data) {
-        if (data.entities.length === 0) {
+        if (data && data.entities && data.entities.length === 0) {
           return this.setError(404, 'Not found')
         }
         return data.entities
@@ -21,6 +21,7 @@ export default {
     return {
       entities: [],
       activeTab: 1,
+      newLimit: null,
       childLabel: null,
       error: null,
       tabIndex: {}

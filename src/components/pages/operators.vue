@@ -135,6 +135,11 @@ export default {
       }
     }
   },
+  watch: {
+    search(v) {
+      this.$router.replace({ name: 'operators', query: { ...this.$route.query, search: v } })
+    },
+  },
   computed: {
     filteringByOperatorLocation() {
       return (this.$route.query.adm0_name || this.$route.query.adm1_name || this.$route.query.city_name)

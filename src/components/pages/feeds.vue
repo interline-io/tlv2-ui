@@ -19,7 +19,7 @@
     <div>
       <o-field grouped group-multiline>
         <o-field label="Search by feed name">
-          <div>
+          <div> 
             <tl-search-bar v-model="search" />
           </div>
         </o-field>
@@ -83,53 +83,59 @@
 
       <tl-msg-error v-if="error">{{ error }}</tl-msg-error>
 
-      <o-table
-        :loading="$apollo.loading"
-        :data="feedPage"
-        :striped="true"
-      >
-        <o-table-column v-slot:default="props" field="onestop_id" label="Feed Onestop ID">
-          <nuxt-link :to="{name: 'feeds-feed', params: {feed: props.row.onestop_id}}">
-            {{ props.row.onestop_id }}
-          </nuxt-link>
-        </o-table-column>
-
-        <o-table-column v-slot:default="props" field="spec" label="Format">
-          {{ props.row.spec.toUpperCase() }}
-        </o-table-column>
-
-        <o-table-column v-slot:default="props" field="last_successful_fetch" label="Last Fetched">
-          <template v-if="props.row.last_successful_fetch && props.row.last_successful_fetch.fetched_at ">
-            {{ $filters.fromNow(props.row.last_successful_fetch.fetched_at) }}
-          </template>
-          <template v-else>
-            Unknown
-          </template>
-        </o-table-column>
-
-        <o-table-column v-slot:default="props" field="last_successful_import_at" label="Last Imported">
-          <span v-if="props.row.spec === 'GTFS'">
-            <template v-if="props.row.last_import">
-              {{ $filters.fromNow(props.row.last_import.fetched_at) }}
-            </template>
-            <template v-else>
-              Never
-            </template>
-          </span>
-        </o-table-column>
-
-        <o-table-column v-slot:default="props" field="last_fetch" label="Fetch Errors">
-          <o-tooltip v-if="props.row.last_fetch && props.row.last_fetch.fetch_error" :label="props.row.last_fetch.fetch_error" multilined>
-            <o-icon icon="alert" />
-          </o-tooltip>
-        </o-table-column>
-
-        <o-table-column v-slot:default="props" :visible="tagUnstableUrl" field="tags" label="Tags">
-          <pre class="tags">{{ props.row.tags }}</pre>
-        </o-table-column>
-      </o-table>
-      
+      <table class="table is-striped" style="width:100%">
+        <thead>
+          <tr>
+            <th>Feed Onestop ID</th>
+            <th>Format</th>
+            <th>Last Fetched</th>
+            <th>Last Imported</th>
+            <th>Fetch Errors</th>
+            <th v-if="tagUnstableUrl">Tags</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="row of entities">
+            <td>
+              <nuxt-link :to="{ name: 'feeds-feed', params: { feed: row.onestop_id } }">
+                {{ row.onestop_id }}
+              </nuxt-link>
+            </td>
+            <td>
+              {{ row.spec.toUpperCase() }}
+            </td>
+            <td>
+              <template v-if="row.last_successful_fetch && row.last_successful_fetch.length > 0">
+                {{ $filters.fromNow(row.last_successful_fetch[0].fetched_at) }}
+              </template>
+              <template v-else>
+                Unknown
+              </template>
+            </td>
+            <td>
+              <span v-if="row.spec === 'GTFS'">
+                <template v-if="row.last_successful_import && row.last_successful_import.length > 0">
+                  {{ $filters.fromNow(row.last_successful_import[0].fetched_at) }}
+                </template>
+                <template v-else>
+                  Never
+                </template>
+              </span>
+            </td>
+            <td>
+              <o-tooltip v-if="row.last_fetch && row.last_fetch.length > 0 && row.last_fetch[0].fetch_error"
+                :label="row.last_fetch[0].fetch_error" multilined>
+                <o-icon icon="alert" />
+              </o-tooltip>
+            </td>
+            <td v-if="tagUnstableUrl">
+              <pre class="tags">{{ row.tags }}</pre>
+            </td>
+          </tr>
+        </tbody>
+      </table>
       <tl-show-more v-if="entities.length === limit || hasMore" :limit="entities.length" @click="showAll" />
+      <o-loading :full-page="false" v-model:active="$apollo.loading"></o-loading>
     </div>
 
     <slot name="add-feed" />
@@ -195,7 +201,7 @@ const nullString = function (v) {
   return v
 }
 
-function first (v) {
+function first(v) {
   if (v && v.length > 0) {
     return v[0]
   }
@@ -208,7 +214,7 @@ export default {
     entities: {
       client: 'transitland',
       query: q,
-      variables () {
+      variables() {
         return {
           search: this.search,
           limit: this.limit,
@@ -218,10 +224,10 @@ export default {
           tags: this.tagVariable
         }
       },
-      error (e) { this.error = e }
+      error(e) { this.error = e }
     }
   },
-  data () {
+  data() {
     let spec = this.$route.query.feed_specs
     if (Array.isArray(spec)) {
       // ok
@@ -238,7 +244,7 @@ export default {
     }
   },
   computed: {
-    feedPage () {
+    feedPage() {
       return this.entityPage.map((feed) => {
         const lastImport = first(feed.last_successful_import)
         return {
@@ -252,7 +258,7 @@ export default {
         }
       })
     },
-    tagVariable () {
+    tagVariable() {
       if (this.tagUnstableUrl) {
         return {
           unstable_url: 'true'
@@ -261,24 +267,27 @@ export default {
         return {}
       }
     },
-    staticTitle () {
+    staticTitle() {
       return 'Feeds index'
     },
-    staticDescription () {
+    staticDescription() {
       return 'An index of data sources indexed in Transitland'
     }
   },
   watch: {
-    fetchError (v) {
+    search(v) {
+      this.$router.replace({ name: 'feeds', query: { ...this.$route.query, search: v } })
+    },
+    fetchError(v) {
       this.$router.replace({ name: 'feeds', query: { ...this.$route.query, fetch_error: v } })
     },
-    importStatus (v) {
+    importStatus(v) {
       this.$router.replace({ name: 'feeds', query: { ...this.$route.query, import_status: v } })
     },
-    feedSpecs (v) {
+    feedSpecs(v) {
       this.$router.replace({ name: 'feeds', query: { ...this.$route.query, feed_specs: v } })
     },
-    tagUnstableUrl (v) {
+    tagUnstableUrl(v) {
       this.$router.replace({ name: 'feeds', query: { ...this.$route.query, tag_unstable_url: v ? true : null } })
     }
   }

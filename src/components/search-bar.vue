@@ -3,7 +3,7 @@
         expanded
         root-class="is-expanded ml-0 mr-2"
         :value="modelValue"
-        :placeholder="placeholder"
+        :placeholder="modelValue ? modelValue : placeholder"
         type="text"
         icon="magnify"
         :icon-right="modelValue ? 'close-circle' : null"
