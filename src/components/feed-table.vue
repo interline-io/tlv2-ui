@@ -125,6 +125,8 @@
 </template>
 
 <script setup>
+import { useQuery } from '@vue/apollo-composable'
+
 const query = gql`
 query($specs: [FeedSpecTypes!], $after: Int, $limit:Int, $search: String, $fetch_error: Boolean, $import_status: ImportStatus, $tags: Tags) {
   entities: feeds(after: $after, limit:$limit, where: {search: $search, spec: $specs, fetch_error: $fetch_error, import_status: $import_status, tags: $tags}) {
