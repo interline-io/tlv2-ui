@@ -11,12 +11,10 @@
     "lint": "eslint --ext .js,.ts,.vue --ignore-path .eslintignore ."
   },
   "dependencies": {
-    "@apollo/client": "^3.7.7",
     "@mdi/font": "^7.1.96",
     "@oruga-ui/oruga": "^0.5.10",
     "@oruga-ui/oruga-next": "^0.5.10",
     "@oruga-ui/theme-bulma": "^0.2.8",
-    "@vue/apollo-composable": "4.0.0-alpha.14",
     "@vue/apollo-option": "^4.0.0-beta.2",
     "@vueuse/core": "^9.9.0",
     "bulma": "^0.9.4",
@@ -30,8 +28,10 @@
     "vue": "^3.2.47"
   },
   "devDependencies": {
-    "@nuxtjs/apollo": "next",
+    "@apollo/client": "^3.7.7",
     "@nuxtjs/eslint-config-typescript": "^12.0.0",
+    "@vue/apollo-composable": "^4.0.0-beta.2",
+    "destr": "^1.2.2",
     "eslint": "^7.32.0 || ^8.2.0",
     "prettier": "^2.8.3",
     "sass": "^1.58.0",

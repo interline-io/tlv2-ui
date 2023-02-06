@@ -125,6 +125,7 @@
 </template>
 
 <script setup>
+import gql from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
 
 const query = gql`

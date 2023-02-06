@@ -5,21 +5,8 @@ const apiBase =
 export default defineNuxtConfig({
   ssr: true,
   modules: [
-    './nuxt',
-    '@nuxtjs/apollo'
+    './nuxt'
   ],
-  apollo: {
-    clients: {
-      transitland: {
-        httpEndpoint: 'https://transit.land/api/v2/query',
-        httpLinkOptions: {
-          headers: {
-            apikey: process.env.GRAPHQL_APIKEY
-          }
-        }
-      }
-    },
-  },
   runtimeConfig: {
     public: {
       apiBase,
