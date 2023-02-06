@@ -1,6 +1,8 @@
 import { defineNuxtPlugin, useRuntimeConfig } from '#app'
-import { DefaultApolloClient } from '@vue/apollo-composable'
+import { ApolloClients } from '@vue/apollo-composable'
 import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client/core/index.js'
+import { createApolloProvider } from '@vue/apollo-option'
+
 
 export default defineNuxtPlugin((nuxtApp) => {
   const config = useRuntimeConfig()
@@ -14,7 +16,19 @@ export default defineNuxtPlugin((nuxtApp) => {
     link: httpLink,
     cache: new InMemoryCache()
   })
-  nuxtApp.vueApp.provide(DefaultApolloClient, apolloClient)
+
+  // options api
+  const apolloProvider = createApolloProvider({
+    defaultClient: apolloClient,
+    clients: {
+      default: apolloClient,
+      transitland: apolloClient
+    }
+  })
+  nuxtApp.vueApp.use(apolloProvider)
+
+  // composable api
+  nuxtApp.vueApp.provide(ApolloClients, { default: apolloClient, transitland: apolloClient })
   return {
     provide: {
       apolloClient

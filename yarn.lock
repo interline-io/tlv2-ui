@@ -15,42 +15,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client@npm:^3.7.1":
-  version: 3.7.5
-  resolution: "@apollo/client@npm:3.7.5"
-  dependencies:
-    "@graphql-typed-document-node/core": ^3.1.1
-    "@wry/context": ^0.7.0
-    "@wry/equality": ^0.5.0
-    "@wry/trie": ^0.3.0
-    graphql-tag: ^2.12.6
-    hoist-non-react-statics: ^3.3.2
-    optimism: ^0.16.1
-    prop-types: ^15.7.2
-    response-iterator: ^0.2.6
-    symbol-observable: ^4.0.0
-    ts-invariant: ^0.10.3
-    tslib: ^2.3.0
-    zen-observable-ts: ^1.2.5
-  peerDependencies:
-    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
-    graphql-ws: ^5.5.5
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-    subscriptions-transport-ws: ^0.9.0 || ^0.11.0
-  peerDependenciesMeta:
-    graphql-ws:
-      optional: true
-    react:
-      optional: true
-    react-dom:
-      optional: true
-    subscriptions-transport-ws:
-      optional: true
-  checksum: c36f4469eb6a9ebc0f750a97cb201bcca725e1e98098c3d135d923e6d711ef8fa99365745b66f40744f59b78b3ffc0883ab2448ddadce89a5053033b40db8706
-  languageName: node
-  linkType: hard
-
 "@apollo/client@npm:^3.7.7":
   version: 3.7.7
   resolution: "@apollo/client@npm:3.7.7"
@@ -1259,22 +1223,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nuxt/module-builder@npm:^0.2.1":
-  version: 0.2.1
-  resolution: "@nuxt/module-builder@npm:0.2.1"
-  dependencies:
-    consola: ^2.15.3
-    mlly: ^1.0.0
-    mri: ^1.2.0
-    pathe: ^1.0.0
-    unbuild: ^1.0.1
-  bin:
-    nuxt-build-module: dist/cli.mjs
-    nuxt-module-build: dist/cli.mjs
-  checksum: 47b800768026d0bc1ab30231d71c9519eb225d69c608da3a96bbd96c886577288cba113ea122d57d3fa61d2070d205cfc8cdb7be153f88350927d3f3d4833b47
-  languageName: node
-  linkType: hard
-
 "@nuxt/schema@npm:3.1.1":
   version: 3.1.1
   resolution: "@nuxt/schema@npm:3.1.1"
@@ -1397,27 +1345,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nuxtjs/apollo@npm:next":
-  version: 5.0.0-alpha.5
-  resolution: "@nuxtjs/apollo@npm:5.0.0-alpha.5"
-  dependencies:
-    "@apollo/client": ^3.7.1
-    "@nuxt/kit": ^3.0.0
-    "@nuxt/module-builder": ^0.2.1
-    "@rollup/plugin-graphql": ^2.0.2
-    "@vue/apollo-composable": 4.0.0-beta.1
-    cookie-es: ^0.5.0
-    defu: ^6.1.1
-    destr: ^1.2.1
-    graphql: ^16.5.0
-    graphql-tag: ^2.12.6
-    graphql-ws: ^5.11.2
-    jiti: ^1.15.0
-    ohash: ^1.0.0
-  checksum: 75742a80444bb66595bf0e6ba4c6d9d5ea970752816ed057ff326f31dc82276d674d3cf2305402f6274cadc81a727f35d34113906691fc83671ac7517dea97c3
-  languageName: node
-  linkType: hard
-
 "@nuxtjs/eslint-config-typescript@npm:^12.0.0":
   version: 12.0.0
   resolution: "@nuxtjs/eslint-config-typescript@npm:12.0.0"
@@ -1493,20 +1420,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/plugin-alias@npm:^4.0.2":
-  version: 4.0.2
-  resolution: "@rollup/plugin-alias@npm:4.0.2"
-  dependencies:
-    slash: ^4.0.0
-  peerDependencies:
-    rollup: ^1.20.0||^2.0.0||^3.0.0
-  peerDependenciesMeta:
-    rollup:
-      optional: true
-  checksum: 6f2db9cfea12b366d1127fca8774e09ab3de98da8ea62082834e795544e1e706479d3056b0d4863c3cc41de2ff04aa7f89942c3c333a8a9944c60108051b2e3c
-  languageName: node
-  linkType: hard
-
 "@rollup/plugin-alias@npm:^4.0.3":
   version: 4.0.3
   resolution: "@rollup/plugin-alias@npm:4.0.3"
@@ -1521,7 +1434,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/plugin-commonjs@npm:^24.0.0, @rollup/plugin-commonjs@npm:^24.0.1":
+"@rollup/plugin-commonjs@npm:^24.0.1":
   version: 24.0.1
   resolution: "@rollup/plugin-commonjs@npm:24.0.1"
   dependencies:
@@ -1537,22 +1450,6 @@ __metadata:
     rollup:
       optional: true
   checksum: ff5b09f5c350640fe6836fcc97bf5c5612bf78b26eaaad01bf1aee955f0b136135d1a8950a02f680779aec1f16f2c6b6cf89d6080e84ed09be62737abb6b3a5f
-  languageName: node
-  linkType: hard
-
-"@rollup/plugin-graphql@npm:^2.0.2":
-  version: 2.0.3
-  resolution: "@rollup/plugin-graphql@npm:2.0.3"
-  dependencies:
-    "@rollup/pluginutils": ^5.0.1
-    graphql-tag: ^2.12.6
-  peerDependencies:
-    graphql: ">=0.9.0"
-    rollup: ^1.20.0||^2.0.0||^3.0.0
-  peerDependenciesMeta:
-    rollup:
-      optional: true
-  checksum: 08d55cbe42df26a8bc4223316156b4bac4731905f6da9340e16607e7c1bfd6f6bbc5d4b8ee04489fc893817ce0f384ad725b48c3efc7a763fa6d64ac2e7fb980
   languageName: node
   linkType: hard
 
@@ -1985,25 +1882,6 @@ __metadata:
     graphql: ^15.3.0
     vue: ^3.1.0
   checksum: 2362b9f2b36e9899e4d911f4cbd4a9696b89413efe238b7a944eba0957649c66344c08a060243467b332dfab0d9a9b29c77d9c08a24ff760abf07a2d0c29bfe7
-  languageName: node
-  linkType: hard
-
-"@vue/apollo-composable@npm:4.0.0-beta.1":
-  version: 4.0.0-beta.1
-  resolution: "@vue/apollo-composable@npm:4.0.0-beta.1"
-  dependencies:
-    throttle-debounce: ^3.0.1
-    ts-essentials: ^9.1.2
-    vue-demi: ^0.13.1
-  peerDependencies:
-    "@apollo/client": ^3.4.13
-    "@vue/composition-api": ^1.0.0
-    graphql: ">=15"
-    vue: ^2.6.0 || ^3.1.0
-  peerDependenciesMeta:
-    "@vue/composition-api":
-      optional: true
-  checksum: 6694690c00ba95186b743a182c869503a954402345df2262eb19638a6f2616a551897643588896153e0d61e6e3693888b11c5a293675ff1415ab157279903dff
   languageName: node
   linkType: hard
 
@@ -3633,7 +3511,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:^0.16.14, esbuild@npm:^0.16.16, esbuild@npm:^0.16.17":
+"esbuild@npm:^0.16.14":
   version: 0.16.17
   resolution: "esbuild@npm:0.16.17"
   dependencies:
@@ -4885,16 +4763,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-ws@npm:^5.11.2":
-  version: 5.11.2
-  resolution: "graphql-ws@npm:5.11.2"
-  peerDependencies:
-    graphql: ">=0.11 <=16"
-  checksum: 2c94b06c1919217dc15a0556474673de7aabcc7179a2982a87ded51856c105e4f4ee6d54a6c135a0a7f55d85a5997a6a15cff514959258885814adec6a61ff00
-  languageName: node
-  linkType: hard
-
-"graphql@npm:^16.5.0, graphql@npm:^16.6.0":
+"graphql@npm:^16.6.0":
   version: 16.6.0
   resolution: "graphql@npm:16.6.0"
   checksum: bf1d9e3c1938ce3c1a81e909bd3ead1ae4707c577f91cff1ca2eca474bfbc7873d5d7b942e1e9777ff5a8304421dba57a4b76d7a29eb19de8711cb70e3c2415e
@@ -5550,21 +5419,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jiti@npm:^1.15.0, jiti@npm:^1.16.2":
-  version: 1.16.2
-  resolution: "jiti@npm:1.16.2"
-  bin:
-    jiti: bin/jiti.js
-  checksum: c0e83d1ac976c0157ac0fdd0f11aafad8d276d44ad672100d1a97b266e70ef2fa7606b6bd128d3cddd8f5f61a56390a6bd9442275e6afef7bd76d0a976ddf555
-  languageName: node
-  linkType: hard
-
 "jiti@npm:^1.16.0":
   version: 1.16.1
   resolution: "jiti@npm:1.16.1"
   bin:
     jiti: bin/jiti.js
   checksum: dce56f5bb0ba61d500e854389fed128a19f72061247c86405c7e2a47f772ca8dea26bb9e64b9b69a5645dbc1d4170f29e147606e4c6359a3a0800a0658e4e593
+  languageName: node
+  linkType: hard
+
+"jiti@npm:^1.16.2":
+  version: 1.16.2
+  resolution: "jiti@npm:1.16.2"
+  bin:
+    jiti: bin/jiti.js
+  checksum: c0e83d1ac976c0157ac0fdd0f11aafad8d276d44ad672100d1a97b266e70ef2fa7606b6bd128d3cddd8f5f61a56390a6bd9442275e6afef7bd76d0a976ddf555
   languageName: node
   linkType: hard
 
@@ -6244,31 +6113,6 @@ __metadata:
   bin:
     mkdirp: bin/cmd.js
   checksum: a96865108c6c3b1b8e1d5e9f11843de1e077e57737602de1b82030815f311be11f96f09cce59bd5b903d0b29834733e5313f9301e3ed6d6f6fba2eae0df4298f
-  languageName: node
-  linkType: hard
-
-"mkdist@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "mkdist@npm:1.1.0"
-  dependencies:
-    defu: ^6.1.1
-    esbuild: ^0.16.16
-    fs-extra: ^11.1.0
-    globby: ^13.1.3
-    jiti: ^1.16.2
-    mri: ^1.2.0
-    pathe: ^1.0.0
-  peerDependencies:
-    sass: ^1.57.1
-    typescript: ">=4.9.4"
-  peerDependenciesMeta:
-    sass:
-      optional: true
-    typescript:
-      optional: true
-  bin:
-    mkdist: dist/cli.cjs
-  checksum: e047cc26028c6ce186dbc97a5f8e9a8a6668428d3e4c7e2f36d36163b5a5ae55509aa1b7da6ddd9c869a456561d1b38d3434b0118cfd94e6978d1da69f749d23
   languageName: node
   linkType: hard
 
@@ -7812,22 +7656,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rollup-plugin-dts@npm:^5.1.1":
-  version: 5.1.1
-  resolution: "rollup-plugin-dts@npm:5.1.1"
-  dependencies:
-    "@babel/code-frame": ^7.18.6
-    magic-string: ^0.27.0
-  peerDependencies:
-    rollup: ^3.0.0
-    typescript: ^4.1
-  dependenciesMeta:
-    "@babel/code-frame":
-      optional: true
-  checksum: 12de87d537cf10f1808d6e6304c5f0b17620456b1ef0f4dfb80d2aa82d4fa5a40ebcf1c99bca840578dd53315696efcf0825b731707102540013edadcdd529f3
-  languageName: node
-  linkType: hard
-
 "rollup-plugin-visualizer@npm:^5.9.0":
   version: 5.9.0
   resolution: "rollup-plugin-visualizer@npm:5.9.0"
@@ -8596,7 +8424,6 @@ __metadata:
   dependencies:
     "@apollo/client": ^3.7.7
     "@mdi/font": ^7.1.96
-    "@nuxtjs/apollo": next
     "@nuxtjs/eslint-config-typescript": ^12.0.0
     "@oruga-ui/oruga": ^0.5.10
     "@oruga-ui/oruga-next": ^0.5.10
@@ -8665,15 +8492,6 @@ __metadata:
   dependencies:
     utf8-byte-length: ^1.0.1
   checksum: ad097314709ea98444ad9c80c03aac8da805b894f37ceb5685c49ad297483afe3a5ec9572ebcaff699dda72b6cd447a2ba2a3fd10e96c2628cd16d94abeb328a
-  languageName: node
-  linkType: hard
-
-"ts-essentials@npm:^9.1.2":
-  version: 9.3.0
-  resolution: "ts-essentials@npm:9.3.0"
-  peerDependencies:
-    typescript: ">=4.1.0"
-  checksum: fd001aff21324d5025f8d4258a517f765cfea60aa57361869f43dc0d8b6b89400c413b149f05c395438ae525dd3a3b891b4a3bb92eaec691d135ba2b03a590fb
   languageName: node
   linkType: hard
 
@@ -8788,26 +8606,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^4.9.4":
-  version: 4.9.4
-  resolution: "typescript@npm:4.9.4"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: e782fb9e0031cb258a80000f6c13530288c6d63f1177ed43f770533fdc15740d271554cdae86701c1dd2c83b082cea808b07e97fd68b38a172a83dbf9e0d0ef9
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@^4.9.4#~builtin<compat/typescript>":
-  version: 4.9.4
-  resolution: "typescript@patch:typescript@npm%3A4.9.4#~builtin<compat/typescript>::version=4.9.4&hash=ddd1e8"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 37f6e2c3c5e2aa5934b85b0fddbf32eeac8b1bacf3a5b51d01946936d03f5377fe86255d4e5a4ae628fd0cd553386355ad362c57f13b4635064400f3e8e05b9d
-  languageName: node
-  linkType: hard
-
 "ufo@npm:^1.0.0, ufo@npm:^1.0.1":
   version: 1.0.1
   resolution: "ufo@npm:1.0.1"
@@ -8831,42 +8629,6 @@ __metadata:
     has-symbols: ^1.0.3
     which-boxed-primitive: ^1.0.2
   checksum: b7a1cf5862b5e4b5deb091672ffa579aa274f648410009c81cca63fed3b62b610c4f3b773f912ce545bb4e31edc3138975b5bc777fc6e4817dca51affb6380e9
-  languageName: node
-  linkType: hard
-
-"unbuild@npm:^1.0.1":
-  version: 1.1.1
-  resolution: "unbuild@npm:1.1.1"
-  dependencies:
-    "@rollup/plugin-alias": ^4.0.2
-    "@rollup/plugin-commonjs": ^24.0.0
-    "@rollup/plugin-json": ^6.0.0
-    "@rollup/plugin-node-resolve": ^15.0.1
-    "@rollup/plugin-replace": ^5.0.2
-    "@rollup/pluginutils": ^5.0.2
-    chalk: ^5.2.0
-    consola: ^2.15.3
-    defu: ^6.1.1
-    esbuild: ^0.16.17
-    globby: ^13.1.3
-    hookable: ^5.4.2
-    jiti: ^1.16.2
-    magic-string: ^0.27.0
-    mkdirp: ^1.0.4
-    mkdist: ^1.1.0
-    mlly: ^1.1.0
-    mri: ^1.2.0
-    pathe: ^1.0.0
-    pkg-types: ^1.0.1
-    pretty-bytes: ^6.0.0
-    rollup: ^3.10.0
-    rollup-plugin-dts: ^5.1.1
-    scule: ^1.0.0
-    typescript: ^4.9.4
-    untyped: ^1.2.2
-  bin:
-    unbuild: dist/cli.mjs
-  checksum: 268e72c4d30b2d23f6f6574d6be192b392bb1bb2f3f5462e897348dbb4b92e28f78b7f8abe10fa5f38579b68a9ea6355fd63180b3ab8497937f38df72aed95f5
   languageName: node
   linkType: hard
 
@@ -9283,7 +9045,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vue-demi@npm:*, vue-demi@npm:^0.13.1":
+"vue-demi@npm:*":
   version: 0.13.11
   resolution: "vue-demi@npm:0.13.11"
   peerDependencies:
