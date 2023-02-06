@@ -125,7 +125,6 @@
 </template>
 
 <script setup>
-import gql from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
 
 const query = gql`
@@ -220,9 +219,7 @@ const { result, loading, error } = useQuery(
         fetch_error: nullBool(fetchError.value),
         import_status: nullString(importStatus.value),
         // tags: tagVariable
-    }),
-    {clientId: 'transitland'}
-    )
+    }))
 
 const entities = computed(() => result.value?.entities ?? [])
 
