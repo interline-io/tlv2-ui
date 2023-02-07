@@ -108,7 +108,7 @@ export default {
           sources: {
             'protomaps-base': {
               type: 'vector',
-              tiles: ['https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf?key=731b289d2fbdec50'],
+              tiles: [`https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf?key=${this.$config.protoMapsApiKey}`],
               maxZoom: 14,
               attribution: '<a href="https://www.transit.land/terms">Transitland</a> | <a href="https://protomaps.com">Protomaps</a> | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             }

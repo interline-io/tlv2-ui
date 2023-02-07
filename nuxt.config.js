@@ -18,7 +18,8 @@ export default {
     graphqlApikey: process.env.GRAPHQL_APIKEY || '',
     graphqlServerReferer: process.env.GRAPHQL_SERVER_REFERER || '',
     tileEndpoint: process.env.TILE_ENDPOINT || 'https://transit.land/api/v2/tiles',
-    tileApikey: process.env.TILE_APIKEY || ''
+    tileApikey: process.env.TILE_APIKEY || '',
+    protoMapsApiKey: process.env.PROTOMAPS_APIKEY || ''
   },
   buildModules: [
     '@nuxtjs/eslint-module',
