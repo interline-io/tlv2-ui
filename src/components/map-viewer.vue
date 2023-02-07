@@ -5,6 +5,7 @@
 <script>
 import maplibre from 'maplibre-gl'
 import mapLayers from './map-layers.js'
+import { noLabels, labels } from 'protomaps-themes-base'
 
 export default {
   props: {
@@ -102,30 +103,17 @@ export default {
           }
         },
         style: {
+          glyphs:'https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf',
           version: 8,
           sources: {
-            'raster-tiles-base': {
-              type: 'raster',
-              tiles: ['https://0.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{scale}.png'],
-              tileSize: 256,
-              attribution: '<a href="https://www.transit.land/terms">Transitland</a> | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>'
-            },
-            'raster-tiles-labels': {
-              type: 'raster',
-              tiles: ['https://0.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{scale}.png'],
-              tileSize: 256,
-              attribution: '<a href="https://www.transit.land/terms">Transitland</a> | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>'
+            'protomaps-base': {
+              type: 'vector',
+              tiles: ['https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf?key=731b289d2fbdec50'],
+              maxZoom: 14,
+              attribution: '<a href="https://www.transit.land/terms">Transitland</a> | <a href="https://protomaps.com">Protomaps</a> | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             }
           },
-          layers: [
-            {
-              id: 'simple-tiles-base',
-              type: 'raster',
-              source: 'raster-tiles-base',
-              minzoom: 0,
-              maxzoom: 22
-            }
-          ]
+          layers: noLabels('protomaps-base','grayscale')
         }
       }
       if (this.center && this.center.length > 0) {
@@ -314,13 +302,10 @@ export default {
         this.map.addLayer(layer)
       }
       // add labels last
-      this.map.addLayer({
-        id: 'simple-tiles-labels',
-        type: 'raster',
-        source: 'raster-tiles-labels',
-        minzoom: 0,
-        maxzoom: 22
-      })
+      for (const label_layer of labels("protomaps-base","grayscale")) {
+        this.map.addLayer(label_layer);
+      }
+
       // Set initial show generated geometry
       this.updateFilters()
     },
