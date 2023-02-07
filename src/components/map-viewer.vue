@@ -4,8 +4,8 @@
 
 <script>
 import maplibre from 'maplibre-gl'
-import mapLayers from './map-layers.js'
 import { noLabels, labels } from 'protomaps-themes-base'
+import mapLayers from './map-layers.js'
 
 export default {
   props: {
@@ -103,7 +103,7 @@ export default {
           }
         },
         style: {
-          glyphs:'https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf',
+          glyphs: 'https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf',
           version: 8,
           sources: {
             'protomaps-base': {
@@ -113,7 +113,7 @@ export default {
               attribution: '<a href="https://www.transit.land/terms">Transitland</a> | <a href="https://protomaps.com">Protomaps</a> | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             }
           },
-          layers: noLabels('protomaps-base','grayscale')
+          layers: noLabels('protomaps-base', 'grayscale')
         }
       }
       if (this.center && this.center.length > 0) {
@@ -302,8 +302,8 @@ export default {
         this.map.addLayer(layer)
       }
       // add labels last
-      for (const label_layer of labels("protomaps-base","grayscale")) {
-        this.map.addLayer(label_layer);
+      for (const labelLayer of labels('protomaps-base', 'grayscale')) {
+        this.map.addLayer(labelLayer)
       }
 
       // Set initial show generated geometry
