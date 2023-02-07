@@ -32,5 +32,5 @@
         "nuxt-buefy": "^0.4.24",
         "vue-geolocation-api": "^0.1.21"
     },
-    "packageManager": "yarn@3.1.0"
+    "packageManager": "yarn@3.4.1"
 }
