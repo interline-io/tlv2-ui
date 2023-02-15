@@ -123,6 +123,7 @@ export default {
         opts.zoom = this.zoom
       }
 
+      maplibre.setRTLTextPlugin("https://unpkg.com/@mapbox/mapbox-gl-rtl-text@0.2.3/mapbox-gl-rtl-text.min.js")
       this.map = new maplibre.Map(opts)
       this.map.addControl(new maplibre.FullscreenControl())
       this.map.addControl(new maplibre.NavigationControl())
