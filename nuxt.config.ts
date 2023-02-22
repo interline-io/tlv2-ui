@@ -2,6 +2,8 @@
 const apiBase =
   process.env.TRANSITLAND_API_BASE || 'https://transit.land/api/v2'
 
+const isDev = process.env.NODE_ENV === "development";
+
 export default defineNuxtConfig({
   ssr: true,
   modules: [
@@ -9,6 +11,12 @@ export default defineNuxtConfig({
   ],
   build: {
     transpile: ["@vue/apollo-composable", "@apollo/client"],
+  },
+  vite: {
+    // bug https://github.com/apollographql/apollo-client/issues/9756
+    define: {
+      __DEV__: isDev.toString(),
+    }
   },
   runtimeConfig: {
     public: {
