@@ -16,7 +16,7 @@
 
     <slot name="description" />
 
-    <tl-feed-table v-model:search="search" v-model:importStatus="importStatus" v-model:feedSpecs="feedSpecs" v-model:fetchError="fetchError" :limit="10" />
+    <tl-feeds-table v-model:search="search" v-model:importStatus="importStatus" v-model:feedSpecs="feedSpecs" v-model:fetchError="fetchError" :limit="10" />
 
     <slot name="add-feed" />
   </div>
