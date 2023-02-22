@@ -24,7 +24,8 @@ export default defineNuxtConfig({
       graphqlEndpoint: process.env.GRAPHQL_ENDPOINT || apiBase + '/query',
       graphqlApikey: process.env.GRAPHQL_APIKEY,
       tileEndpoint: process.env.TILE_ENDPOINT || apiBase + '/tiles',
-      tileApikey: process.env.TILE_APIKEY
+      tileApikey: process.env.TILE_APIKEY,
+      protoMapsApiKey: process.env.PROTOMAPS_APIKEY || ''
     }
   }
 })
