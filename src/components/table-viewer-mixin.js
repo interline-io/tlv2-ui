@@ -2,26 +2,26 @@ export default {
   props: {
     limit: { type: Number, default: 100 }
   },
-  data () {
+  data() {
     return {
       hasMore: false,
       prevAfter: null,
-      search: null,
+      search: this.$route.query.search,
       entities: [],
       error: null
     }
   },
   computed: {
-    maxId () {
+    maxId() {
       return Math.max(...this.entities.map((s) => { return s.id }))
     },
-    entityPage () {
+    entityPage() {
       return this.entities
     }
   },
   methods: {
-    showAll () {
-      const newLimit = 1000
+    showAll() {
+      const newLimit = 500
       this.$apollo.queries.entities.fetchMore({
         variables: {
           after: this.maxId,

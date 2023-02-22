@@ -1,13 +1,19 @@
 <template>
   <div class="container">
-    <span v-if="$apollo.loading" class="is-loading" />
+    <tl-loading v-if="$apollo.loading" />
+    <tl-msg-error v-else-if="error">{{ error }}</tl-msg-error>
     <div v-else-if="entity">
+      <Title>{{ staticTitle }}</Title>
+      <Meta name="description" :content="staticDescription" />
+      <Meta name="twitter:title" :content="staticTitle" />
+      <Meta name="twitter:description" :content="staticDescription" />
+      <Meta name="og:title" :content="staticTitle" />
+      <Meta name="og:description" :content="staticDescription" />
+
       <nav class="breadcrumb">
         <ul>
           <li>
-            <nuxt-link :to="{name:'stops'}">
-              Stops
-            </nuxt-link>
+            <a href="#">Stops            </a>
           </li>
           <li>
             <nuxt-link :to="{name: 'stops-onestop_id', params:{onestop_id:$route.params.onestop_id}}">
@@ -21,36 +27,21 @@
       </h1>
 
       <!-- Warnings for freshness and viewing a specific version -->
-      <b-message v-if="dataFreshness > 365" type="is-warning" has-icon>
-        The GTFS feeds associated with this page were fetched {{ dataFreshness }} days ago; use caution or check if newer data is available.
-      </b-message>
-      <b-message v-if="linkVersion" type="is-warning" has-icon>
-        You are viewing a single GTFS stop or station defined in source feed
-        <nuxt-link :to="{name:'feeds-feed', params:{feed:$route.query.feed_onestop_id}}">
-          {{ $route.query.feed_onestop_id | shortenName }}
-        </nuxt-link> version
-        <nuxt-link :to="{name:'feeds-feed-versions-version', params:{feed:$route.query.feed_onestop_id, version:$route.query.feed_version_sha1}}">
-          {{ $route.query.feed_version_sha1 | shortenName(8) }}
-        </nuxt-link>.<br>
-        <template v-if="!search">
-          Click <nuxt-link :to="{name: 'stops-onestop_id', params:{onestop_id:$route.params.onestop_id}}">
-            here
-          </nuxt-link> to return to the main view.
-        </template>
-      </b-message>
+      <tl-check-fresh :fetched="entity.feed_version.fetched_at" />
+      <tl-check-single :feed-onestop-id="feedOnestopId" :feed-version-sha1="feedVersionSha1" />
 
       <!-- Main content -->
       <div class="columns">
         <div class="column is-two-thirds">
-          <table class="table is-borderless property-list">
+          <table class="table is-borderless property-list tl-props">
             <tr>
               <td>
-                <b-tooltip
+                <o-tooltip
                   dashed
                   label="A globally unique identifier for this route"
                 >
                   Onestop ID
-                </b-tooltip>
+                </o-tooltip>
               </td>
               <td>
                 <div v-for="root of roots" :key="root.id">
@@ -74,7 +65,7 @@
                   <a
                     :href="stop.stop_url"
                     target="_blank"
-                  ><b-icon
+                  ><o-icon
                     icon="link"
                   /></a>
                 </div>
@@ -104,28 +95,30 @@
             </tr>
           </table>
 
-          <b-message
-            v-for="(alert,idx) of allAlerts"
-            :key="idx"
-            type="is-warning"
-            class="block"
-            has-icon
-          >
-            <div v-for="tr of filterRTTranslations(alert.description_text)" :key="tr.text">
-              Agency Alert: {{ tr.text }}
-            </div>
-          </b-message>
-
-          <b-message type="is-info" class="block">
+          <tl-msg-info no-icon>
             Learn more about the contents of <code>stops.txt</code> on
             <a
               href="https://gtfs.org/reference/static#stopstxt"
               target="_blank"
             >gtfs.org</a>.
-          </b-message>
+          </tl-msg-info>
 
-          <b-tabs v-model="activeTab" type="is-boxed" :animated="false">
-            <b-tab-item label="Summary">
+          <div v-for="ent of entities" :key="ent.id">
+            <tl-msg-warning
+              v-for="(alert,idx) of ent.alerts"
+              :key="idx">
+              Agency Alert:
+              <div v-for="tr of filterRTTranslations(alert.header_text)" :key="tr.text">
+                {{ tr.text }}
+              </div>
+              <div v-for="tr of filterRTTranslations(alert.description_text)" :key="tr.text">
+                {{ tr.text }}
+              </div>
+            </tl-msg-warning>
+          </div>
+
+          <o-tabs class="tl-tabs" v-model="activeTab" type="boxed" :animated="false" @update:modelValue="setTab">
+            <o-tab-item label="Summary">
               <div v-if="servedRoutes">
                 <h6 class="title is-6">
                   Routes at this stop
@@ -161,43 +154,43 @@
                   </div>
                 </div>
               </div>
-            </b-tab-item>
+            </o-tab-item>
 
-            <b-tab-item v-if="entity.id" label="Departures">
+            <o-tab-item v-if="entity.id" label="Departures">
               <client-only placeholder="Departures">
                 <tl-stop-departures
-                  v-if="activeTab == 1"
+                  v-if="activeTab == 2"
                   :show-fallback-selector="true"
                   :stop-ids="entityIds"
                   :search-coords="entity.geometry.coordinates"
                 />
               </client-only>
-            </b-tab-item>
+            </o-tab-item>
 
             <!-- Data sources -->
-            <b-tab-item label="Sources">
-              <b-table
+            <o-tab-item label="Sources">
+              <o-table
                 :data="allStops"
                 :striped="true"
               >
-                <b-table-column v-slot="props" field="feed_onestop_id" label="Feed">
+                <o-table-column v-slot="props" field="feed_onestop_id" label="Feed">
                   <nuxt-link :to="{name:'feeds-feed', params:{feed:props.row.feed_onestop_id}}">
-                    {{ props.row.feed_onestop_id | shortenName }}
+                    {{ $filters.shortenName(props.row.feed_onestop_id) }}
                   </nuxt-link>
-                </b-table-column>
-                <b-table-column v-slot="props" field="feed_version_sha1" label="Version">
+                </o-table-column>
+                <o-table-column v-slot="props" field="feed_version_sha1" label="Version">
                   <nuxt-link :to="{name:'feeds-feed-versions-version', params:{feed:props.row.feed_onestop_id, version:props.row.feed_version_sha1}}">
-                    {{ props.row.feed_version_sha1 | shortenName(8) }}
+                    {{ $filters.shortenName(props.row.feed_version_sha1, 8) }}
                   </nuxt-link>
-                </b-table-column>
-                <b-table-column v-slot="props" field="stop_id" label="Stop ID">
+                </o-table-column>
+                <o-table-column v-slot="props" field="stop_id" label="Stop ID">
                   <nuxt-link :to="{name:'stops-onestop_id', params:{onestop_id:props.row.onestop_id || 'search'}, query:{feed_onestop_id:props.row.feed_onestop_id, feed_version_sha1:props.row.feed_version_sha1, stop_id:props.row.stop_id}}">
-                    {{ props.row.stop_id | shortenName }}
+                    {{ $filters.shortenName(props.row.stop_id) }}
                   </nuxt-link>
-                </b-table-column>
-              </b-table>
-            </b-tab-item>
-          </b-tabs>
+                </o-table-column>
+              </o-table>
+            </o-tab-item>
+          </o-tabs>
         </div>
         <div class="column is-one-third">
           <client-only>
@@ -220,7 +213,6 @@
 
 <script>
 import gql from 'graphql-tag'
-import Filters from '../filters'
 import EntityPageMixin from './entity-page-mixin'
 
 const q = gql`
@@ -273,6 +265,9 @@ fragment ss on Stop {
   wheelchair_boarding
   zone_id
   geometry
+  feed_version { 
+    fetched_at
+  }
   alerts(active:true) {
     ...alert
   }
@@ -310,7 +305,7 @@ query ($onestop_id: String, $ids: [Int!], $entity_id: String, $feed_onestop_id: 
 `
 
 export default {
-  mixins: [EntityPageMixin, Filters],
+  mixins: [EntityPageMixin],
   apollo: {
     entities: {
       query: q,
@@ -322,16 +317,11 @@ export default {
   },
   data () {
     return {
-      radius: 1000
-    }
-  },
-  head () {
-    if (this.entity) {
-      return {
-        title: this.entity.stop_name,
-        meta: [
-          { hid: 'description', name: 'description', content: `${this.entity.stop_name} is a stop ` }
-        ]
+      radius: 1000,
+      tabIndex: {
+        1: 'summary',
+        2: 'departure',
+        3: 'sources'
       }
     }
   },
@@ -511,6 +501,12 @@ export default {
     },
     entity () {
       return this.roots.length > 0 ? this.roots[0] : null
+    },
+    staticTitle () {
+      return `${this.entity.stop_name} • Stop`
+    },
+    staticDescription () {
+      return `${this.entity.stop_name} stop available for browsing and analyzing on the Transitland platform`
     }
   },
   methods: {

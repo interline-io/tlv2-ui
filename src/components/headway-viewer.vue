@@ -6,16 +6,16 @@
           <tr>
             <th>Headways</th>
             <th v-if="showMorning">
-              <span class="is-centered">7-9am</span>
+              <span class="centered">7-9am</span>
             </th>
             <th v-if="showMidday">
-              <span class="is-centered">9am-4pm</span>
+              <span class="centered">9am-4pm</span>
             </th>
             <th v-if="showAfternoon">
-              <span class="is-centered">4-6pm</span>
+              <span class="centered">4-6pm</span>
             </th>
             <th v-if="showNight">
-              <span class="is-centered">6pm-7am</span>
+              <span class="centered">6pm-7am</span>
             </th>
           </tr>
         </thead>
@@ -25,16 +25,16 @@
               Weekday
             </td>
             <td v-if="showMorning">
-              {{ hws.weekday | formatHeadway('morning') }}
+              {{ $filters.formatHeadway(hws.weekday, 'morning') }}
             </td>
             <td v-if="showMidday">
-              {{ hws.weekday | formatHeadway('midday') }}
+              {{ $filters.formatHeadway(hws.weekday, 'midday') }}
             </td>
             <td v-if="showAfternoon">
-              {{ hws.weekday | formatHeadway('afternoon') }}
+              {{ $filters.formatHeadway(hws.weekday, 'afternoon') }}
             </td>
             <td v-if="showNight">
-              {{ hws.weekday | formatHeadway('night') }}
+              {{ $filters.formatHeadway(hws.weekday, 'night') }}
             </td>
           </tr>
           <tr>
@@ -42,16 +42,16 @@
               Saturday
             </td>
             <td v-if="showMorning">
-              {{ hws.saturday | formatHeadway('morning') }}
+              {{ $filters.formatHeadway(hws.saturday, 'morning') }}
             </td>
             <td v-if="showMidday">
-              {{ hws.saturday | formatHeadway('midday') }}
+              {{ $filters.formatHeadway(hws.saturday, 'midday') }}
             </td>
             <td v-if="showAfternoon">
-              {{ hws.saturday | formatHeadway('afternoon') }}
+              {{ $filters.formatHeadway(hws.saturday, 'afternoon') }}
             </td>
             <td v-if="showNight">
-              {{ hws.saturday | formatHeadway('night') }}
+              {{ $filters.formatHeadway(hws.saturday, 'night') }}
             </td>
           </tr>
           <tr>
@@ -59,16 +59,16 @@
               Sunday
             </td>
             <td v-if="showMorning">
-              {{ hws.sunday | formatHeadway('morning') }}
+              {{ $filters.formatHeadway(hws.sunday, 'morning') }}
             </td>
             <td v-if="showMidday">
-              {{ hws.sunday | formatHeadway('midday') }}
+              {{ $filters.formatHeadway(hws.sunday, 'midday') }}
             </td>
             <td v-if="showAfternoon">
-              {{ hws.sunday | formatHeadway('afternoon') }}
+              {{ $filters.formatHeadway(hws.sunday, 'afternoon') }}
             </td>
             <td v-if="showNight">
-              {{ hws.sunday | formatHeadway('night') }}
+              {{ $filters.formatHeadway(hws.sunday, 'night') }}
             </td>
           </tr>
         </tbody>
@@ -81,7 +81,7 @@
 </template>
 
 <script>
-function parseHMS (value) {
+function parseHMS(value) {
   const a = (value || '').split(':').map((s) => { return parseInt(s, 10) })
   if (a.length !== 3) {
     return null
@@ -89,13 +89,7 @@ function parseHMS (value) {
   return a[0] * 3600 + a[1] * 60 + a[2]
 }
 
-function median (values) {
-  const half = Math.floor(values.length / 2)
-  if (values.length % 2) { return values[half] }
-  return (values[half - 1] + values[half]) / 2.0
-}
-
-function departureFilter (values, vmin, vmax) {
+function departureFilter(values, vmin, vmax) {
   const ret = []
   for (let i = 0; i < values.length - 1; i++) {
     const a = values[i]
@@ -111,57 +105,21 @@ function departureFilter (values, vmin, vmax) {
   return ret
 }
 
-function formatDuration (seconds) {
-  if (seconds > 3600) {
-    return `${Math.ceil(seconds / 3600)}h ${Math.ceil(seconds % 3600 / 60)} min`
-  }
-  if (seconds > 0) {
-    return `${Math.ceil(seconds / 60)} min`
-  }
-  return '-'
-}
-
 export default {
   filters: {
-    parseHMS (value) {
+    parseHMS(value) {
       return parseHMS(value)
-    },
-    formatHeadway (hw, tod) {
-      if (!hw) {
-        return ''
-      }
-      const deps = hw[tod] || []
-      if (deps.length === 0) {
-        return ''
-      } else if (deps.length < 3) {
-        return `${deps.length + 1} trips`
-      }
-      const amin = Math.min(...deps)
-      const amax = Math.max(...deps)
-      const amid = median(deps)
-      if (amin && amax) {
-        const diff = Math.abs(amax - amin)
-        if (diff > 2 * 3600) {
-          return 'varies'
-        } else if (diff > 10 * 60) {
-          return `${formatDuration(amin)} - ${formatDuration(amax)}`
-        }
-      }
-      if (amid) {
-        return formatDuration(amid)
-      }
-      return ''
     }
   },
   props: {
-    headways: { type: Array, default () { return [] } },
+    headways: { type: Array, default() { return [] } },
     showMorning: { type: Boolean, default: true },
     showMidday: { type: Boolean, default: true },
     showAfternoon: { type: Boolean, default: true },
     showNight: { type: Boolean, default: true }
   },
   computed: {
-    hws () {
+    hws() {
       const hwlookup = {
         1: 'weekday',
         6: 'saturday',
@@ -169,8 +127,7 @@ export default {
       }
       const ret = { weekday: {}, saturday: {}, sunday: {}, found: false }
       // sort by direction_id desc, so direction_id = 0 will be preferred
-      const headwaysSorted = (this.headways || []).sort((a, b) => { return b.direction_id - a.direction_id })
-      // console.log('headwaysSorted:', headwaysSorted)
+      const headwaysSorted = (this.headways || []).slice(0).sort((a, b) => { return b.direction_id - a.direction_id })
       for (const headway of headwaysSorted) {
         const deps = (headway.departures || []).map((s) => { return parseHMS(s) })
         if (deps.length > 1) {

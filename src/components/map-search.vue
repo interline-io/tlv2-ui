@@ -1,34 +1,40 @@
 <template>
   <div>
-    <b-field grouped>
-      <b-autocomplete
+    <o-field grouped>
+      <o-autocomplete
         expanded
         placeholder="Search stops. Example: Penn Station"
-        :data="stopSearch"
+        root-class="is-expanded m-0 mr-2"
         max-height="800px"
         max-width="600px"
+        :data="stopSearch"
         :clearable="true"
         icon="magnify"
         @typing="typing"
         @select="option => setLocation(option.geometry.coordinates)"
       >
-        <template slot-scope="props">
+        <template #default="props">
           {{ props.option.stop_name }}
           <div v-for="rs of props.option.route_stops" :key="rs.route.id" class="clearfix tag">
             {{ rs.route.agency.agency_name }} :{{ rs.route.route_short_name }}
           </div>
         </template>
-      </b-autocomplete>
-      <div>
-        <span v-if="!useGeolocation" class="button" @click="watchLocation"><b-icon icon="crosshairs" /></span>
-        <span v-if="useGeolocation && $geolocation.loading" class="button"><b-icon icon="loading" /></span>
-        <span v-else-if="useGeolocation && !$geolocation.loading" class="button"><b-icon icon="crosshairs-gps" /></span>
-      </div>
-    </b-field>
+      </o-autocomplete>
+      <o-field>
+        <span v-if="!locationUse" class="button" @click="watchLocation"><o-icon icon="crosshairs" /></span>
+        <span v-if="locationError" class="button"><o-icon icon="crosshairs" /></span>
+        <span v-else-if="locationUse && locationLoading" class="button"><o-icon icon="loading" /></span>
+        <span v-else-if="locationUse && !locationLoading" class="button"><o-icon icon="crosshairs-gps" /></span>
+      </o-field>
+    </o-field>
+    <tl-msg-warning v-if="locationError">
+      There was an error trying to obtain your location. {{ locationError }}
+    </tl-msg-warning>
   </div>
 </template>
 
 <script>
+import { useGeolocation } from '@vueuse/core'
 import { gql } from 'graphql-tag'
 
 const stopSearchQuery = gql`
@@ -96,8 +102,12 @@ export default {
   data () {
     return {
       search: '',
+      error: null,
+      locationError: null,
       minSearchLength: 4,
-      useGeolocation: false,
+      locationUse: false,
+      locationLoading: false,
+      coords: null,
       unboundedStops: [],
       boundedStops: []
     }
@@ -132,18 +142,27 @@ export default {
     }
   },
   watch: {
-    '$geolocation.coords' () {
-      this.setLocation([this.$geolocation.coords.longitude, this.$geolocation.coords.latitude])
-      this.$geolocation.watch = false
+    coords () {
+      const { error } = useGeolocation()
+      this.locationError = error
+      if (this.coords.accuracy === 0) {
+        return
+      }
+      this.setLocation([this.coords.longitude, this.coords.latitude])
     }
   },
   methods: {
     setLocation (coords) {
       this.$emit('setGeolocation', coords)
+      const { pause } = useGeolocation()
+      pause()
+      this.locationLoading = false
     },
     watchLocation () {
-      this.useGeolocation = true
-      this.$geolocation.watch = true
+      this.locationUse = true
+      this.locationLoading = true
+      const { coords } = useGeolocation()
+      this.coords = coords
     },
     typing (val) {
       if (val.length >= this.minSearchLength) {

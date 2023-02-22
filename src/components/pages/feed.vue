@@ -1,7 +1,15 @@
 <template>
   <div>
-    <div v-if="$apollo.loading" class="is-loading" />
+    <tl-loading v-if="$apollo.loading" />
+    <tl-msg-error v-else-if="error">{{ error }}</tl-msg-error>
     <div v-else-if="entity">
+      <Title>{{ staticTitle }}</Title>
+      <Meta name="description" :content="staticDescription" />
+      <Meta name="twitter:title" :content="staticTitle" />
+      <Meta name="twitter:description" :content="staticDescription" />
+      <Meta name="og:title" :content="staticTitle" />
+      <Meta name="og:description" :content="staticDescription" />
+
       <slot name="nav" :entity="entity">
         <nav class="breadcrumb">
           <ul>
@@ -23,20 +31,14 @@
         {{ feedSpec }} feed: {{ operatorNames }}
       </h1>
 
-      <slot name="description">
-        <div class="content">
-          {{ staticDescription }}
-        </div>
-      </slot>
-
       <div class="columns">
         <div class="column is-three-quarters">
-          <table class="table is-borderless property-list">
+          <table class="table is-borderless property-list tl-props">
             <tr>
               <td>
-                <b-tooltip dashed label="A globally unique identifier for this feed">
+                <o-tooltip dashed label="A globally unique identifier for this feed">
                   Onestop ID
-                </b-tooltip>
+                </o-tooltip>
               </td>
               <td>
                 <code>{{ entity.onestop_id }}</code>
@@ -44,9 +46,9 @@
             </tr>
             <tr>
               <td>
-                <b-tooltip dashed label="Data specification or format for this feed">
+                <o-tooltip dashed label="Data specification or format for this feed">
                   Format
-                </b-tooltip>
+                </o-tooltip>
               </td>
               <td>{{ feedSpec }}</td>
             </tr>
@@ -81,13 +83,13 @@
 
             <tr>
               <td>
-                <b-tooltip dashed label="Last time a fetch successfully returned valid GTFS data">
+                <o-tooltip dashed label="Last time a fetch successfully returned valid GTFS data">
                   Last Fetch
-                </b-tooltip>
+                </o-tooltip>
               </td>
               <td>
                 <template v-if="lastSuccessfulFetch && lastSuccessfulFetch.fetched_at">
-                  {{ lastSuccessfulFetch.fetched_at | formatDate }} ({{ lastSuccessfulFetch.fetched_at | fromNow }})
+                  {{ $filters.formatDate(lastSuccessfulFetch.fetched_at) }} ({{ $filters.fromNow(lastSuccessfulFetch.fetched_at) }})
                 </template>
                 <template v-else>
                   Unknown
@@ -97,14 +99,14 @@
 
             <tr v-if="lastFetch && lastFetch.fetch_error">
               <td>
-                <b-tooltip dashed label="Error message from last fetch attempt">
+                <o-tooltip dashed label="Error message from last fetch attempt">
                   Fetch Error
-                </b-tooltip>
+                </o-tooltip>
               </td>
               <td>
-                <b-message class="is-danger" has-icon>
+                <tl-msg-error>
                   {{ lastFetch.fetch_error }}
-                </b-message>
+                </tl-msg-error>
               </td>
             </tr>
 
@@ -136,30 +138,30 @@
                     License Identifier: {{ entity.license.spdx_identifier }}
                   </li>
                   <li v-if="entity.license.use_without_attribution">
-                    Use allowed without attribution: {{ entity.license.use_without_attribution | capitalize }}
+                    Use allowed without attribution: {{ $filters.capitalize(entity.license.use_without_attribution) }}
                   </li>
                   <li v-if="entity.license.share_alike_optional">
-                    Share-alike optional: {{ entity.license.share_alike_optional | capitalize }}
+                    Share-alike optional: {{ $filters.capitalize(entity.license.share_alike_optional) }}
                   </li>
                   <li v-if="entity.license.commercial_use_allowed">
-                    Commercial use allowed: {{ entity.license.commercial_use_allowed | capitalize }}
+                    Commercial use allowed: {{ $filters.capitalize(entity.license.commercial_use_allowed) }}
                   </li>
                   <li v-if="entity.license.create_derived_product">
-                    Creating derived products allowed: {{ entity.license.create_derived_product | capitalize }}
+                    Creating derived products allowed: {{ $filters.capitalize(entity.license.create_derived_product) }}
                   </li>
                   <li v-if="entity.license.redistribution_allowed">
-                    Redistribution allowed: {{ entity.license.redistribution_allowed | capitalize }}
+                    Redistribution allowed: {{ $filters.capitalize(entity.license.redistribution_allowed) }}
                   </li>
                   <li v-if="entity.license.attribution_text">
                     Required attribution text: {{ entity.license.attribution_text }}
                   </li>
                   <li v-if="entity.license.attribution_instructions" class="content">
-                    Attribution instructions: <blockquote>{{ entity.license.attribution_instructions }}</blockquote>
+                    Attribution instructions:
+                    <blockquote>{{ $filters.capitalize(entity.license.attribution_instructions) }}</blockquote>
                   </li>
                 </ul>
               </td>
             </tr>
-
             <tr v-if="entity.languages">
               <td>Languages</td>
               <td>{{ entity.languages }}</td>
@@ -167,22 +169,25 @@
 
             <tr v-if="entity.spec == 'GTFS'">
               <td>
-                <b-tooltip dashed multilined label="Information provided by the feed producer inside a feed_info.txt file">
+                <o-tooltip dashed multilined label="Information provided by the feed producer inside a feed_info.txt file">
                   Feed Info
-                </b-tooltip>
+                </o-tooltip>
               </td>
               <td v-if="mostRecentFeedInfo">
-                <ul>
-                  <li v-for="(value, key) in filterFeedInfo(mostRecentFeedInfo)" :key="key">
-                    {{ key }}: {{ value }}
-                  </li>
-                </ul>
+                <tl-feed-info :feed-info="mostRecentFeedInfo" />
               </td>
               <td v-else>
                 <em>No <code>feed_info.txt</code> file included in the most recent feed version.</em>
               </td>
             </tr>
           </table>
+
+          <slot name="description">
+            <div class="content">
+              {{ staticDescription }}
+            </div>
+          </slot>
+
         </div>
 
         <slot name="edit-feed" :entity="entity" />
@@ -194,18 +199,14 @@
         <h4 class="title is-4">
           Operator(s) Associated with this Feed
         </h4>
-        <b-tabs type="is-boxed" :animated="false">
-          <b-tab-item label="Operators">
-            <b-message v-if="!entity.associated_operators || (entity.associated_operators && entity.associated_operators.length === 0)">
+        <o-tabs class="tl-tabs" type="boxed" :animated="false">
+          <o-tab-item label="Operators">
+            <tl-msg-info v-if="!entity.associated_operators || (entity.associated_operators && entity.associated_operators.length === 0)">
               There are no operators associated with this feed.
-            </b-message>
-            <b-message
+            </tl-msg-info>
+            <tl-msg-info
               v-for="(operator,i) of entity.associated_operators"
               :key="i"
-              type="is-success"
-              has-icon
-              icon="information"
-              :closable="false"
             >
               <div class="columns">
                 <div class="column is-8">
@@ -220,9 +221,9 @@
                   </nuxt-link>
                 </div>
               </div>
-            </b-message>
-          </b-tab-item>
-        </b-tabs>
+            </tl-msg-info>
+          </o-tab-item>
+        </o-tabs>
       </div>
 
       <hr>
@@ -232,9 +233,9 @@
           Archived Feed Versions
         </h4>
 
-        <b-tabs v-model="activeTab" type="is-boxed" :animated="false" @input="setTab">
-          <b-tab-item label="Versions">
-            <b-table
+        <o-tabs class="tl-tabs" v-model="activeTab" type="boxed" :animated="false" @update:modelValue="setTab">
+          <o-tab-item label="Versions">
+            <o-table
               :data="entity.feed_versions"
               :striped="true"
               :paginated="true"
@@ -243,102 +244,99 @@
               detailed
               :show-detail-icon="false"
             >
-              <b-table-column
+              <o-table-column
                 v-slot="props"
                 :sortable="true"
                 field="fetched_at"
                 label="Fetched"
               >
                 <template v-if="props.row.fetched_at">
-                  {{ props.row.fetched_at | formatDate }} ({{ props.row.fetched_at | fromNow }})
+                  {{ $filters.formatDate(props.row.fetched_at) }} ({{ $filters.fromNow(props.row.fetched_at) }})
                 </template>
                 <template v-else>
                   Unknown
                 </template>
-              </b-table-column>
-              <b-table-column v-slot="props" :sortable="true" field="sha1" label="SHA1">
+              </o-table-column>
+              <o-table-column v-slot="props" :sortable="true" field="sha1" label="SHA1">
                 <nuxt-link
                   :to="{name: 'feeds-feed-versions-version', params: {feed: entity.onestop_id, version: props.row.sha1}}"
                 >
                   {{ props.row.sha1.substr(0,6) }}…
                 </nuxt-link>
-              </b-table-column>
-              <b-table-column
+              </o-table-column>
+              <o-table-column
                 v-slot="props"
                 :sortable="true"
                 field="earliest_calendar_date"
                 label="Earliest date"
               >
                 {{ props.row.earliest_calendar_date.substr(0,10) }}
-              </b-table-column>
-              <b-table-column
+              </o-table-column>
+              <o-table-column
                 v-slot="props"
                 :sortable="true"
                 field="latest_calendar_date"
                 label="Latest date"
               >
                 {{ props.row.latest_calendar_date.substr(0,10) }}
-              </b-table-column>
-              <b-table-column v-slot="props" field="feed_version_gtfs_import" label="Imported">
+              </o-table-column>
+              <o-table-column v-slot="props" field="feed_version_gtfs_import" label="Imported">
                 <template v-if="props.row.feed_version_gtfs_import">
-                  <b-tooltip
+                  <o-tooltip
                     v-if="props.row.feed_version_gtfs_import.schedule_removed"
                     label="Agencies, stops, and routes available"
                   >
-                    <b-icon icon="check" />
-                  </b-tooltip>
-                  <b-tooltip
+                    <o-icon icon="check" />
+                  </o-tooltip>
+                  <o-tooltip
                     v-else-if="props.row.feed_version_gtfs_import.success"
                     label="Successfully imported"
                   >
-                    <b-icon icon="check-all" />
-                  </b-tooltip>
-                  <b-tooltip v-else-if="props.row.feed_version_gtfs_import.in_progress">
-                    <b-icon icon="clock" />
-                  </b-tooltip>
-                  <b-tooltip
+                    <o-icon icon="check-all" />
+                  </o-tooltip>
+                  <o-tooltip v-else-if="props.row.feed_version_gtfs_import.in_progress">
+                    <o-icon icon="clock" />
+                  </o-tooltip>
+                  <o-tooltip
                     v-else-if="props.row.feed_version_gtfs_import.success == false"
                     :label="props.row.feed_version_gtfs_import.exception_log"
-                    position="is-top"
+                    position="top"
                   >
-                    <b-icon icon="alert" />
-                  </b-tooltip>
+                    <o-icon icon="alert" />
+                  </o-tooltip>
                 </template>
-              </b-table-column>
-              <b-table-column v-slot="props" label="Active">
-                <b-icon
+              </o-table-column>
+              <o-table-column v-slot="props" label="Active">
+                <o-icon
                   v-if="entity.feed_state && entity.feed_state.feed_version && entity.feed_state.feed_version.id === props.row.id"
                   icon="check"
                 />
-              </b-table-column>
-              <b-table-column v-if="showDownloadColumn" v-slot="props" label="Download">
-                <template v-if="entity.license.redistribution_allowed !== 'no' && props.index == 0">
-                  <a :href="`https://demo.transit.land/api/v2/rest/feed_versions/${props.row.sha1}/download`" target="_blank">
-                    <b-icon icon="download" type="is-success" title="Download latest feed version" />
+              </o-table-column>
+              <o-table-column v-if="showDownloadColumn" v-slot="props" label="Download">
+                <template v-if="entity.license.redistribution_allowed !== 'no'">
+                  <a @click="showDownloadInstructions(props.row.sha1)">
+                    <o-icon v-if="props.row.sha1 === latestFeedVersionSha1" icon="download" title="Download feed version" variant="success" />
+                    <o-icon v-else icon="download" title="Download feed version" />
                   </a>
                 </template>
-                <template v-else-if="entity.license.redistribution_allowed !== 'no'">
-                  <a @click="props.toggleDetails(props.row)">
-                    <b-icon icon="download" title="Download through Transitland Professional API" />
-                  </a>
-                </template>
-              </b-table-column>
-              <template v-if="showDownloadColumn" #detail="props">
-                <p>Want to download a copy of this feed version to process with your own software? Registered users with <a href="https://www.interline.io/transitland/plans-pricing/" target="_blank">Hobbyist/Academic, Professional, and Enterprise plans</a> can use the v2 REST API to download historical feed versions:</p>
-                <pre>GET https://transit.land/api/v2/rest/feed_versions/{{ props.row.sha1 }}/download?apikey=your-api-key</pre>
-                <p>Learn more in the <a href="/documentation/rest-api/feed_versions#downloading-source-gtfs" target="_blank">documentation</a>.</p>
-              </template>
-            </b-table>
+              </o-table-column>
+            </o-table>
+
+            <tl-feed-version-download-modal
+              v-model="displayDownloadInstructions"
+              :sha1="displayDownloadSha1"
+              :latest-feed-version-sha1="latestFeedVersionSha1"
+            />
 
             <slot name="add-feed-version" :entity="entity" />
-          </b-tab-item>
+          </o-tab-item>
 
-          <b-tab-item label="Service Levels">
-            <div v-if="activeTab === 1">
+          <o-tab-item label="Service Levels">
+            <div v-if="activeTab === 2">
               <tl-multi-service-levels :max-weeks="52" :week-agg="true" :fvids="entity.feed_versions.map((s)=>{return s.id}).slice(0,20)" />
             </div>
-          </b-tab-item>
-        </b-tabs>
+          </o-tab-item>
+        </o-tabs>
       </div>
     </div>
   </div>
@@ -461,50 +459,24 @@ export default {
       query: q,
       variables () {
         return this.searchKey
-      },
-      update (data) {
-        // overrides the update method in EntityPageMixin
-        if (data.entities.length === 0) {
-          return this.setError(404)
-        }
-        this.$emit('entitiesLoaded', data.entities)
-        return data.entities
       }
     }
   },
   props: {
-    showDownloadColumn: { type: Boolean, default: false },
-    showOperators: { type: Boolean, default: false }
+    showDownloadColumn: { type: Boolean, default: true },
+    showOperators: { type: Boolean, default: true }
   },
   data () {
     return {
-      error: 'ok',
+      displayDownloadInstructions: false,
+      displayDownloadSha1: '',
       tabIndex: {
-        0: 'versions',
-        1: 'service'
+        1: 'versions',
+        2: 'service'
       }
     }
   },
-  head () {
-    return {
-      title: this.staticTitle,
-      meta: [
-        { hid: 'description', name: 'description', content: this.staticDescription },
-        { hid: 'twitter:card', name: 'twitter:card', content: 'summary' },
-        { hid: 'twitter:site', name: 'twitter:site', content: '@transitland' },
-        { hid: 'twitter:title', name: 'twitter:title', content: this.staticTitle },
-        { hid: 'twitter:image', name: 'twitter:image', content: 'https://www.transit.land/images/transitland-logo-square-with-whitebackground-smaller.png' },
-        { hid: 'twitter:image:alt', name: 'twitter:image:alt', content: 'Transitland' },
-        { hid: 'twitter:description', name: 'twitter:description', content: this.staticDescription },
-        { hid: 'og:title', property: 'og:title', content: this.staticTitle },
-        { hid: 'og:description', property: 'og:description', content: this.staticDescription }
-      ]
-    }
-  },
   computed: {
-    onestopId () {
-      return this.entity?.onestop_id
-    },
     feedSpec () {
       return this.entity?.spec?.toUpperCase()?.replace('_', '-')
     },
@@ -515,8 +487,14 @@ export default {
       return first(this.entity.last_fetch)
     },
     lastSuccessfulFetch () {
-      const feed = this.entity
-      return feed.last_successful_fetch
+      return (this.entity.last_successful_fetch && this.entity.last_successful_fetch.length > 0) ? this.entity.last_successful_fetch[0] : null
+    },
+    latestFeedVersionSha1 () {
+      const s = this.entity?.feed_versions.slice(0).sort((a, b) => { return a.fetched_at - b.fetched_at })
+      if (s.length > 0) {
+        return s[0].sha1
+      }
+      return ''
     },
     operatorNames () {
       let operatorNames = null
@@ -532,7 +510,6 @@ export default {
       } else if (names.length > 0 && names.length <= 3) {
         operatorNames = names.slice(0, 3).join(', ')
       }
-      this.$emit('operatorNamesUpdated', operatorNames)
       return operatorNames
     },
     displayLicense () {
@@ -552,38 +529,39 @@ export default {
       return false
     },
     staticTitle () {
-      let title = `feed details: ${this.onestopId}`
-      if (this.entity) {
-        title = this.feedSpec + ' ' + title
-        if (this.entity.associated_operators) {
-          title = `${this.operatorNames} • ` + title
-        }
+      let title = `feed details: ${this.entity.onestop_id}`
+      title = this.feedSpec + ' ' + title
+      if (this.entity.associated_operators) {
+        title = `${this.operatorNames} • ` + title
       }
       return title
     },
     staticDescription () {
-      if (this.entity) {
-        const operatorDescription = (this.entity && this.entity.associated_operators) ? ` with data for ${this.entity.name || this.operatorNames}` : ''
-        const fvCount = this.entity.feed_versions.length
-        let description = `This is a ${this.feedSpec} feed ${operatorDescription} with the Onestop ID of ${this.onestopId}.`
-        if (fvCount === 1000) {
-          description += ` Transitland has archived over 1,000 versions of this feed,
-          which are available to query by API and to download.`
-        } else if (fvCount > 0) {
-          description += ` Transitland has archived ${fvCount} versions of this feed,
-          which are available to query by API and to download.`
-        }
-        this.$emit('staticDescriptionUpdated', description)
-        return description
+      const operatorDescription = (this.entity && this.entity.associated_operators) ? ` with data for ${this.entity.name || this.operatorNames}` : ''
+      const fvCount = this.entity.feed_versions.length
+      let description = `This is a ${this.feedSpec} feed ${operatorDescription} with the Onestop ID of ${this.entity.onestop_id}.`
+      if (fvCount === 1000) {
+        description += ` Transitland has archived over 1,000 versions of this feed,
+        which are available to query by API and to download.`
+      } else if (fvCount > 0) {
+        description += ` Transitland has archived ${fvCount} versions of this feed,
+        which are available to query by API and to download.`
       }
-      return ''
+      return description
     }
   },
   methods: {
-    filterFeedInfo (fi) {
-      delete fi.__typename
-      return Object.fromEntries(Object.entries(fi).filter(([_, v]) => v != null))
+    showDownloadInstructions (sha1) {
+      this.displayDownloadSha1 = sha1
+      this.displayDownloadInstructions = true
     }
   }
 }
 </script>
+
+<style scoped>
+blockquote {
+  margin:10px;
+  margin-left:20px;
+}
+</style>

@@ -1,49 +1,47 @@
 <template>
   <div>
-    <b-message v-if="error" class="is-danger">
-      {{ error }}
-    </b-message>
+    <tl-msg-error v-if="error">{{ error }}</tl-msg-error>
     <div v-else>
       <tl-search-bar v-model="search" placeholder="Filter Routes" />
-      <b-table
+      <o-table
         :loading="$apollo.loading"
         :data="entityPage"
         :striped="true"
       >
-        <b-table-column
+        <o-table-column
           v-slot="props"
           field="route_id"
           label="Route ID"
           :width="140"
         >
           <nuxt-link
-            :to="{name:'routes-onestop_id', params:{onestop_id:props.row.onestop_id || 'search'}, query: (linkVersion ? {feed_onestop_id:props.row.feed_onestop_id, feed_version_sha1:props.row.feed_version_sha1, route_id:props.row.route_id} : {})}"
+            :to="{name:'routes-onestop_id', params:{onestop_id:props.row.onestop_id || 'search'}, query: (linkVersion ? {feed_onestop_id:props.row.feed_onestop_id, feed_version_sha1:props.row.feed_version_sha1, entity_id:props.row.route_id} : {})}"
           >
             {{ props.row.route_id }}
           </nuxt-link>
-        </b-table-column>
+        </o-table-column>
 
-        <b-table-column
+        <o-table-column
           v-slot="props"
           field="route_short_name"
           label="Name"
           :width="140"
         >
           {{ props.row.route_short_name }}
-        </b-table-column>
-        <b-table-column
+        </o-table-column>
+        <o-table-column
           v-slot="props"
           field="route_long_name"
           label=""
           :width="500"
         >
           {{ props.row.route_long_name }}
-        </b-table-column>
+        </o-table-column>
 
-        <b-table-column v-if="showAgency" v-slot="props" field="agency" label="Agency">
+        <o-table-column v-if="showAgency" v-slot="props" field="agency" label="Agency">
           {{ props.row.agency.agency_name }}
-        </b-table-column>
-      </b-table>
+        </o-table-column>
+      </o-table>
       <tl-show-more v-if="entities.length === limit || hasMore" :limit="entities.length" @click="showAll" />
     </div>
   </div>

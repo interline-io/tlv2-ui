@@ -1,5 +1,5 @@
 <template>
-  <div style="position:relative">
+  <div class="tl-map">
     <tl-map-viewer
       :key="0"
       :show-generated-geometries="showGeneratedGeometries"
@@ -17,43 +17,54 @@
       @mapClick="mapClick"
       @mapMove="mapMove"
     />
-    <div class="map-panel map-panel-tabs">
-      <b-tabs v-model="activeTab" position="is-centered" class="block" type="is-boxed">
-        <b-tab-item label="Routes">
+    <div class="tl-map-panel tl-map-panel-tabs">
+      <o-tabs class="tl-tabs block" v-model="activeTab" position="centered" type="boxed">
+        <o-tab-item label="Routes">
           <tl-map-route-list
-            v-if="activeTab === 0"
+            v-if="activeTab === 1"
             :current-zoom="currentZoom"
             :agency-features="agencyFeatures"
             :is-component-modal-active="isComponentModalActive"
             @close="isComponentModalActive = false"
           />
-        </b-tab-item>
-        <b-tab-item label="Departures">
+        </o-tab-item>
+        <o-tab-item label="Departures">
           <tl-map-search
             :zoom="currentZoom"
             :bbox="currentBbox"
             @setGeolocation="setGeolocation"
           />
           <tl-stop-departures
-            v-if="activeTab === 1"
+            v-if="activeTab === 2"
             :show-auto-refresh="true"
             :show-fallback-selector="true"
             :show-radius-selector="true"
             :search-coords="searchCoords"
           />
-          <div class="is-pulled-right is-clearfix learn-more">
+          <p class="content block is-pulled-right is-small">
             <a href="https://www.transit.land/documentation/rest-api/" target="_blank">Learn more about Transitland APIs</a>
-          </div>
-        </b-tab-item>
-        <b-tab-item label="Options">
-          <tl-map-options
-            :show-generated-geometries="showGeneratedGeometries"
-            :show-problematic-geometries="showProblematicGeometries"
-            @update:showGeneratedGeometries="showGeneratedGeometries = $event"
-            @update:showProblematicGeometries="showProblematicGeometries = $event"
-          />
-        </b-tab-item>
-      </b-tabs>
+          </p>
+        </o-tab-item>
+        <o-tab-item label="Options">
+
+          <div class="field">
+      <o-checkbox
+        v-model="showGeneratedGeometries"
+      >
+        Show stop-to-stop geometries
+      </o-checkbox>
+    </div>
+    <div class="field">
+      <o-checkbox
+      v-model="showProblematicGeometries"
+      >
+        Show problematic geometries
+      </o-checkbox>
+    </div>
+
+
+        </o-tab-item>
+      </o-tabs>
     </div>
   </div>
 </template>
@@ -62,7 +73,7 @@
 export default {
   data () {
     return {
-      activeTab: 0,
+      activeTab: 1,
       initialZoom: 1.5,
       currentZoom: 1.5,
       center: [-119.49, 12.66],
@@ -113,7 +124,7 @@ export default {
       this.initialZoom = 16
     },
     mapClick (e) {
-      if (this.activeTab === 1) {
+      if (this.activeTab === 2) {
         this.setCoords([e.lngLat.lng, e.lngLat.lat])
       } else {
         this.setCoords(null)
@@ -126,9 +137,48 @@ export default {
 }
 </script>
 
-<style scoped>
-.learn-more {
-  margin-top:10px;
-  font-size:10pt;
+<style>
+.tl-map {
+  position: relative;
+}
+
+.tl-map-panel {
+    user-select: none;
+    position: absolute !important;
+    margin: 0px;
+    padding: 10px;
+    top: 10px;
+    left: 10px;
+    width: 565px;
+}
+
+.tl-map-panel-tabs {
+    background: none;
+}
+
+.tl-map-panel-tabs div[role=tab] a {
+    margin-right: 5px;
+}
+
+.tl-map-panel-tabs div[role=tab] a {
+    background-color: rgba(235, 235, 235, 0.9) !important;
+}
+
+.tl-map-panel-tabs div[role=tab][aria-selected=true] a {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.tl-map-panel-tabs .tab-content {
+    background-color: rgba(255, 255, 255, 0.9);
+    margin: 0px;
+    padding-left: 10px;
+    padding-right: 10px;
+    max-height:80vh;
+    overflow-y:auto;
+}
+
+.tl-map-panel .dropdown-content{
+    position: fixed;
+    max-width:80%;
 }
 </style>

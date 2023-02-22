@@ -1,5 +1,12 @@
 <template>
   <div class="container">
+    <Title>{{ staticTitle }}</Title>
+    <Meta name="description" :content="staticDescription" />
+    <Meta name="twitter:title" :content="staticTitle" />
+    <Meta name="twitter:description" :content="staticDescription" />
+    <Meta name="og:title" :content="staticTitle" />
+    <Meta name="og:description" :content="staticDescription" />
+
     <slot name="nav" />
 
     <slot name="title">
@@ -11,93 +18,84 @@
     <slot name="description" />
 
     <div>
-      <b-field grouped>
-        <b-field :label="filteringByOperatorLocation ? 'Filter by operator location' : 'Search by operator name or location'" expanded>
-          <b-field v-if="filteringByOperatorLocation" expanded>
-            <b-tag
-              size="is-medium"
-              attached
-              closable
-              aria-close-label="Close tag"
-              @close="clearQuery"
-            >
-              {{ [$route.query.adm0_name, $route.query.adm1_name, $route.query.city_name].filter(n => n).join(' / ') }}
-            </b-tag>
-          </b-field>
-          <b-field v-else-if="$route.query.search" expanded>
-            <b-tag
-              size="is-medium"
-              attached
-              closable
-              aria-close-label="Close tag"
-              @close="clearQuery"
-            >
-              {{ $route.query.search }}
-            </b-tag>
-          </b-field>
-          <div v-else style="width: 100%;">
-            <tl-search-bar v-model="search" placeholder="e.g. Bay Area Rapid Transit" />
-          </div>
+      <o-field grouped
+        :label="filteringByOperatorLocation ? 'Filter by operator location' : 'Search by operator name or location'">
+        <tl-search-bar v-model="search" placeholder="e.g. Bay Area Rapid Transit" />
 
-          <b-dropdown
-            position="is-bottom-left"
-            append-to-body
-            aria-role="menu"
-            trap-focus
-          >
-            <template #trigger="{ active }">
-              <b-button
-                label="Options"
-                type="is-primary"
-                :icon-right="active ? 'menu-up' : 'menu-down'"
-              />
-            </template>
+        <o-dropdown position="bottom-left" append-to-body aria-role="menu" trap-focus>
+          <template #trigger="{ active }">
+            <o-button label="Options" variant="primary" :icon-left="active ? 'menu-up' : 'menu-down'" />
+          </template>
 
-            <b-dropdown-item
-              aria-role="menu-item"
-              custom
-            >
-              <div class="field">
-                <b-checkbox v-model="merged">
-                  Group agencies by operator
-                </b-checkbox>
-              </div>
+          <o-dropdown-item aria-role="menu-item" custom>
+            <div class="field">
+              <o-checkbox v-model="merged">
+                Group agencies by operator
+              </o-checkbox>
+            </div>
 
-              <div class="field">
-                <b-checkbox v-model="unmatched">
-                  Show operators without agency matches
-                </b-checkbox>
-              </div>
-            </b-dropdown-item>
-          </b-dropdown>
-        </b-field>
-      </b-field>
+            <div class="field">
+              <o-checkbox v-model="unmatched">
+                Show operators without agency matches
+              </o-checkbox>
+            </div>
+          </o-dropdown-item>
+        </o-dropdown>
+      </o-field>
 
-      <b-table
-        :data="entityPageFlat"
-        :striped="true"
-        :loading="$apollo.loading"
-      >
-        <!-- TODO: fix sorting -->
-        <b-table-column v-slot="props" field="name" label="Operator Name (Short Name)">
-          <nuxt-link :to="{name: 'operators-onestop_id', params: {onestop_id: props.row.onestop_id}}">
-            <strong>{{ props.row.name }}</strong>
-          </nuxt-link>
-          <span v-if="props.row.short_name">({{ props.row.short_name }})</span>
-        </b-table-column>
-        <b-table-column v-slot="props" field="city_name" label="City" :width="200">
-          {{ props.row.city_name }}
-        </b-table-column>
-        <b-table-column v-slot="props" field="adm1_name" label="State/Province" :width="200">
-          {{ props.row.adm1_name }}
-        </b-table-column>
-        <b-table-column v-slot="props" field="adm0_name" label="Country" :width="260">
-          <b-tooltip :label="props.row.other_places.filter((s)=>{return s.city_name}).map((s)=>{return s.city_name}).join(', ')" dashed>
-            {{ props.row.adm0_name }}
-          </b-tooltip>
-        </b-table-column>
-      </b-table>
-      <tl-show-more v-if="entities.length === limit || hasMore" :limit="entities.length" @click="showAll" />
+      <o-field>
+        <o-field v-if="filteringByOperatorLocation" expanded>
+          <tl-tag attached closable aria-close-label="Close tag" @close="clearQuery">
+            {{ [$route.query.adm0_name, $route.query.adm1_name, $route.query.city_name].filter(n => n).join(' / ') }}
+          </tl-tag>
+        </o-field>
+        <o-field v-else-if="$route.query.search" expanded>
+          <tl-tag attached closable aria-close-label="Close tag" @close="clearQuery">
+            {{ $route.query.search }}
+          </tl-tag>
+        </o-field>
+      </o-field>
+
+      <tl-msg-error v-if="error">{{ error }}</tl-msg-error>
+
+      <table class="table is-striped" style="width:100%">
+        <thead>
+          <tr>
+            <th>Operator Name (Short Name)</th>
+            <th style="width:200px">City</th>
+            <th style="width:200px">State/Province</th>
+            <th style="width:260px">Country</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="row of entityPageFlat" :key="row.id">
+            <td>
+              <nuxt-link :to="{ name: 'operators-onestop_id', params: { onestop_id: row.onestop_id } }">
+                {{ row.name }}
+              </nuxt-link>
+              <span v-if="row.short_name">&nbsp;({{ row.short_name }})</span>
+            </td>
+            <td>
+              {{ row.city_name }}
+            </td>
+            <td>
+              {{ row.adm1_name }}
+            </td>
+            <td>
+              <o-tooltip
+                :label="row.other_places.filter((s) => { return s.city_name }).map((s) => { return s.city_name }).join(', ')"
+                dashed>
+                {{ row.adm0_name }}
+              </o-tooltip>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <tl-show-more v-if="entities.length >= limit" :limit="entities.length" @click="showAll" />
+
+      <o-loading :full-page="false" v-model:active="$apollo.loading"></o-loading>
+
     </div>
 
     <slot name="add-operator" />
@@ -129,7 +127,7 @@ query ($limit: Int, $after: Int, $search: String, $merged: Boolean, $adm0_name: 
 
 export default {
   mixins: [TableViewerMixin],
-  data () {
+  data() {
     return {
       search: this.$route.query.search,
       adm0_name: this.$route.query.adm0_name,
@@ -142,8 +140,8 @@ export default {
   apollo: {
     entities: {
       query: q,
-      error (e) { this.error = e },
-      variables () {
+      error(e) { this.error = e },
+      variables() {
         return {
           search: this.search,
           adm0_name: this.adm0_name,
@@ -155,19 +153,16 @@ export default {
       }
     }
   },
-  head () {
-    return {
-      title: 'Browse all Operators',
-      meta: [
-        { hid: 'description', name: 'description', content: 'Transitland uses operators to group together source feeds and other relevant data.' }
-      ]
-    }
+  watch: {
+    search(v) {
+      this.$router.replace({ name: 'operators', query: { ...this.$route.query, search: v } })
+    },
   },
   computed: {
-    filteringByOperatorLocation () {
+    filteringByOperatorLocation() {
       return (this.$route.query.adm0_name || this.$route.query.adm1_name || this.$route.query.city_name)
     },
-    entityPageFlat () {
+    entityPageFlat() {
       return this.entityPage.map((s) => {
         const entity = {
           name: s.name,
@@ -190,17 +185,23 @@ export default {
         entity.other_places = places
         return entity
       })
+    },
+    staticTitle() {
+      return 'Browse all operators'
+    },
+    staticDescription() {
+      return 'Transitland uses operators to group together source feeds and other relevant data'
     }
   },
   methods: {
-    clearQuery () {
+    clearQuery() {
       this.search = ''
       this.adm0_name = null
       this.adm1_name = null
       this.city_name = null
-      this.$router.push({ name: 'operators', query: { } })
+      this.$router.push({ name: 'operators', query: {} })
     },
-    onAutocomplete (a, b) {
+    onAutocomplete(a, b) {
       const q = {}
       q[a] = b
       this.$router.push({ name: 'operators', query: q })

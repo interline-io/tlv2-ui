@@ -24,12 +24,12 @@ export default {
   props: {
     agencyIds: {
       type: Array,
-      default () {
+      default() {
         return []
       }
     }
   },
-  data () {
+  data() {
     return {
       linkVersion: true,
       routes: [],

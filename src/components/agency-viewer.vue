@@ -1,27 +1,25 @@
 <template>
   <div>
-    <b-message v-if="error" class="is-danger">
-      {{ error }}
-    </b-message>
+    <tl-msg-error v-if="error">{{ error }}</tl-msg-error>
     <div v-else>
       <tl-search-bar v-model="search" placeholder="Filter Agencies" />
-      <b-table
+      <o-table
         :loading="$apollo.loading"
         :data="entityPage"
         :striped="true"
         sort-icon="menu-up"
       >
-        <b-table-column v-slot="props" field="agency_id" label="Agency ID">
+        <o-table-column v-slot="props" field="agency_id" label="Agency ID">
           {{ props.row.agency_id }}
-        </b-table-column>
-        <b-table-column
+        </o-table-column>
+        <o-table-column
           v-slot="props"
           field="agency_name"
           label="Name"
         >
           {{ props.row.agency_name }}
-        </b-table-column>
-      </b-table>
+        </o-table-column>
+      </o-table>
     </div>
   </div>
 </template>

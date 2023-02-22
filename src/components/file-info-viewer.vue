@@ -14,10 +14,10 @@
         <tr v-for="f of files" :key="f.name">
           <td>{{ f.name }}</td>
           <td>{{ f.rows }}</td>
-          <td>{{ f.size | prettyBytes }}</td>
-          <td>{{ f.sha1 | shortenName(8) }}</td>
+          <td>{{ $filters.prettyBytes(f.size) }}</td>
+          <td>{{ $filters.shortenName(f.sha1, 8) }}</td>
           <td>
-            <b-tooltip v-if="f.csv_like" dashed>
+            <o-tooltip v-if="f.csv_like" dashed>
               <template #content>
                 <div>Columns</div>
                 <ul>
@@ -27,7 +27,7 @@
                 </ul>
               </template>
               Yes
-            </b-tooltip>
+            </o-tooltip>
             <span v-else>No</span>
           </td>
         </tr>
@@ -37,12 +37,9 @@
 </template>
 
 <script>
-import Filters from './filters'
-
 export default {
-  mixins: [Filters],
   props: {
-    files: { type: Array, default () { return [] } }
+    files: { type: Array, default() { return [] } }
   }
 }
 </script>

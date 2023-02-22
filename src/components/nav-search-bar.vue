@@ -2,7 +2,7 @@
   <form style="flex: 1 0 auto;" @submit.prevent>
     <div class="field has-addons" style="flex: 1 0 auto;">
       <div class="control" style="flex: 1 0 auto;">
-        <b-autocomplete
+        <o-autocomplete
           :expanded="focused"
           :data="data"
           max-height="600px"
@@ -16,11 +16,11 @@
           @select="option => selected = option"
           @keydown.esc.native="clearSearch"
         >
-          <template slot-scope="props">
+          <template #default="props">
             {{ props.option.name }}
             <span class="is-pulled-right" style="color:#ccc">{{ props.option.type }}</span>
           </template>
-        </b-autocomplete>
+        </o-autocomplete>
       </div>
       <!-- <div class="control">
         <button v-if="focused" class="button is-primary" @click="goToSearch">

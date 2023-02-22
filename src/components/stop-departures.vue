@@ -1,56 +1,48 @@
 <template>
   <div>
-    <div v-if="$apollo.loading && stops.length === 0">
-      <!-- "double buffer" -->
-      <h6 class="title is-6">
-        Loading
-      </h6>
-    </div>
-    <div v-else-if="error">
-      <b-notification type="is-danger" style="margin:10px" :closable="false" :has-icon="true">
-        {{ error }}
-      </b-notification>
-    </div>
+    <tl-msg-error v-if="error">{{ error }}</tl-msg-error>
     <div v-else-if="!searchCoords && stopIds.length === 0">
       <h6 class="title is-6">
         Click on the map to select a location
       </h6>
     </div>
     <div v-else>
-      <div class="search-options">
-        <b-field grouped>
-          <b-field v-if="showDateSelector">
-            <b-datetimepicker
+      <div class="search-options mb-2">
+        <o-field grouped>
+          <o-field v-if="showDateSelector">
+            <o-datetimepicker
               v-model="displayStartDate"
               horizontal-time-picker
               placeholder="Now"
               icon="calendar-today"
               trap-focus
-              size="is-small"
+              size="small"
             />
-          </b-field>
+          </o-field>
 
-          <b-field v-if="showRadiusSelector">
-            <b-select v-model="radius" size="is-small">
+          <o-field v-if="showRadiusSelector">
+            <o-select v-model="radius" size="small">
               <option v-for="r of allowedRadius" :key="r" :value="r">
                 {{ r }}m
               </option>
-            </b-select>
-            <p class="control button-like-small" style="padding-left:10px">
+            </o-select>
+            <p class="control button-like-small">
               Radius
             </p>
-          </b-field>
+          </o-field>
 
-          <b-checkbox v-if="showAutoRefresh" v-model="autoRefresh" size="is-small">
+          <o-checkbox v-if="showAutoRefresh" v-model="autoRefresh" size="small">
             Auto-refresh
-          </b-checkbox>
+          </o-checkbox>
 
-          <b-checkbox v-if="showFallbackSelector" v-model="useServiceWindow" size="is-small">
+          <o-checkbox v-if="showFallbackSelector" v-model="useServiceWindow" size="small">
             Fallback service day
-          </b-checkbox>
-        </b-field>
+          </o-checkbox>
+        </o-field>
       </div>
-      <div v-if="filteredStopsGroupRoutes.length === 0">
+
+      <tl-loading v-if="$apollo.loading && stops.length === 0" />
+      <div v-else-if="filteredStopsGroupRoutes.length === 0">
         <h6 class="title is-6">
           No results
         </h6>
@@ -63,7 +55,7 @@
           </h6>
           <div v-for="(sr,srkey) of ss.routes.slice(0,routesPerAgencyShadow)" :key="srkey" class="is-clearfix">
             <div
-              class="is-pulled-left route-icon-fade-out"
+              class="is-pulled-left tl-route-icon-fade-out"
             >
               <nuxt-link
                 :to="{name:'routes-onestop_id', params:{onestop_id:sr.route.onestop_id}}"
@@ -78,26 +70,26 @@
                 />
               </nuxt-link>
             </div>
-            <div class="route-icon-departures">
-              <b-field grouped>
-                <b-tag v-for="st of sr.departures.slice(0,3)" :key="st.trip.id">
+            <div class="tl-route-icon-departures">
+              <o-field grouped>
+                <tl-tag v-for="st of sr.departures.slice(0,3)" :key="st.trip.id">
                   <template v-if="st.departure.estimated">
-                    {{ st.departure.estimated | reformatHMS }} &nbsp;<b-icon type="is-success" size="is-small" icon="wifi" />
+                    {{ $filters.reformatHMS(st.departure.estimated) }} &nbsp;<o-icon variant="success" size="small" icon="wifi" />
                   </template><template v-else>
-                    {{ st.departure.scheduled | reformatHMS }} &nbsp;<b-icon type="is-success" size="is-small" icon="blank" />
+                    {{ $filters.reformatHMS(st.departure.scheduled) }} &nbsp;<o-icon variant="success" size="small" icon="blank" />
                   </template>
-                </b-tag>
-              </b-field>
+                </tl-tag>
+              </o-field>
             </div>
           </div>
           <div v-if="ss.routes.length > routesPerAgencyShadow" class="is-clearfix">
-            <span class="button is-small" style="margin-left:30px" @click="expandRoutesPerAgency">Click to show {{ ss.routes.length - routesPerAgencyShadow }} additional rows</span>
+            <span class="button small ml-5" @click="expandRoutesPerAgency">Click to show {{ ss.routes.length - routesPerAgencyShadow }} additional rows</span>
           </div>
         </div>
       </div>
     </div>
     <div v-if="lastFetched" :key="lastFetchedDisplayKey" class="last-fetched">
-      Last checked: {{ lastFetched | fromNowDate }}
+      Last checked: {{ $filters.fromNowDate(lastFetched) }}
     </div>
   </div>
 </template>
@@ -105,7 +97,6 @@
 <script>
 import haversine from 'haversine'
 import { gql } from 'graphql-tag'
-import Filters from './filters'
 
 const query = gql`
 query( $stopIds: [Int!], $where: StopFilter, $stwhere: StopTimeFilter, $includeGeometry: Boolean! = false) {
@@ -166,7 +157,6 @@ query( $stopIds: [Int!], $where: StopFilter, $stwhere: StopTimeFilter, $includeG
 `
 
 export default {
-  mixins: [Filters],
   layout: 'map',
   props: {
     searchCoords: { type: Array, default () { return null } },
@@ -289,7 +279,7 @@ export default {
       const seenRoutes = {}
       for (const stop of this.filteredStops) {
         for (const d of stop.departures) {
-          d.stop = stop
+          // d.stop = stop
           const agencyKey = d.trip.route.agency.agency_name // d.trip.route.agency.id
           const routeKey = makeRouteKey(d)
           if (seenRoutes[routeKey]) {
@@ -407,7 +397,7 @@ export default {
   padding-top:10px
 }
 
-.route-icon-departures {
+.tl-route-icon-departures {
   text-align:left;
   display:inline-block;
   margin:0px;
@@ -416,17 +406,17 @@ export default {
   white-space: nowrap;
 }
 
-.route-icon-departures .tag {
+.tl-route-icon-departures .message {
   margin-right:5px;
   width:80px;
 }
 
-.route-icon-departures .tag .icon {
+.tl-route-icon-departures .message .icon {
   display:inline-block;
   width:20px;
 }
 
-.route-icon-fade-out {
+.tl-route-icon-fade-out {
   display:inline-block;
   width:250px;
   -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1) 90%, rgba(0,0,0,0));
@@ -435,5 +425,17 @@ export default {
 .last-fetched {
   padding-top:10px;
   font-size:0.75rem;
+}
+
+.button-like {
+    padding-bottom: 0.5em;
+    padding-top: 0.5em;
+}
+
+.button-like-small {
+    font-size: 0.75rem;
+    padding-left:10px;
+    padding-bottom: 0.5em;
+    padding-top: 0.5em;
 }
 </style>
