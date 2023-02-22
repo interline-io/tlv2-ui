@@ -1,8 +1,8 @@
 import destr from 'destr'
 import { defineNuxtPlugin, useRuntimeConfig } from '#app'
-import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client/core/index.js'
 import { ApolloClients } from '@vue/apollo-composable'
 import { createApolloProvider } from '@vue/apollo-option'
+import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client/core/index.js'
 
 export default defineNuxtPlugin((nuxtApp) => {
   const config = useRuntimeConfig()

@@ -127,6 +127,7 @@
 <script setup>
 import gql from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
+import { ref, watch, computed } from "vue"
 
 const query = gql`
 query($specs: [FeedSpecTypes!], $after: Int, $limit:Int, $search: String, $fetch_error: Boolean, $import_status: ImportStatus, $tags: Tags) {

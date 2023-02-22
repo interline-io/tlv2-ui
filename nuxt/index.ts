@@ -10,9 +10,9 @@ export default defineNuxtModule({
     } else {
       nuxt.options.css.push(resolve('../src/assets/bulma.scss'))
     }
-    addPlugin(resolve('../src/plugins/apollo.js'))
-    addPlugin(resolve('../src/plugins/oruga.js'))
-    addPlugin(resolve('../src/plugins/filters.js'))
+    addPlugin(resolve('../src/plugins/apollo.ts'))
+    addPlugin(resolve('../src/plugins/oruga.ts'))
+    addPlugin(resolve('../src/plugins/filters.ts'))
     nuxt.options.css.push(resolve('../src/assets/main.css'))
   },
   hooks: {
