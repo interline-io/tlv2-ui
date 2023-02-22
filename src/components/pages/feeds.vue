@@ -16,7 +16,7 @@
 
     <slot name="description" />
 
-    <tl-feeds-table v-model:search="search" v-model:importStatus="importStatus" v-model:feedSpecs="feedSpecs" v-model:fetchError="fetchError" :limit="10" />
+    <tl-feeds-table v-model:search="search" v-model:importStatus="importStatus" v-model:feedSpecs="feedSpecs" v-model:fetchError="fetchError" :limit="limit" />
 
     <slot name="add-feed" />
   </div>
@@ -24,6 +24,9 @@
 
 <script>
 export default {
+  props: { 
+    limit: { type: Number, default: 20 },
+  },
   computed: {
     staticTitle() {
       return 'Feeds index'

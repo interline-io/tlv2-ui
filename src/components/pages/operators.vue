@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <Title>{{staticTitle }}</Title>
+    <Title>{{ staticTitle }}</Title>
     <Meta name="description" :content="staticDescription" />
     <Meta name="twitter:title" :content="staticTitle" />
     <Meta name="twitter:description" :content="staticDescription" />
@@ -18,7 +18,8 @@
     <slot name="description" />
 
     <div>
-      <o-field grouped :label="filteringByOperatorLocation ? 'Filter by operator location' : 'Search by operator name or location'">
+      <o-field grouped
+        :label="filteringByOperatorLocation ? 'Filter by operator location' : 'Search by operator name or location'">
         <tl-search-bar v-model="search" placeholder="e.g. Bay Area Rapid Transit" />
 
         <o-dropdown position="bottom-left" append-to-body aria-role="menu" trap-focus>
@@ -55,29 +56,46 @@
         </o-field>
       </o-field>
 
-      <o-table :data="entityPageFlat" :striped="true" :loading="$apollo.loading">
-        <!-- TODO: fix sorting -->
-        <o-table-column v-slot="props" field="name" label="Operator Name (Short Name)">
-          <nuxt-link :to="{ name: 'operators-onestop_id', params: { onestop_id: props.row.onestop_id } }">
-            {{ props.row.name }}
-          </nuxt-link>
-          <span v-if="props.row.short_name">&nbsp;({{ props.row.short_name }})</span>
-        </o-table-column>
-        <o-table-column v-slot="props" field="city_name" label="City" :width="200">
-          {{ props.row.city_name }}
-        </o-table-column>
-        <o-table-column v-slot="props" field="adm1_name" label="State/Province" :width="200">
-          {{ props.row.adm1_name }}
-        </o-table-column>
-        <o-table-column v-slot="props" field="adm0_name" label="Country" :width="260">
-          <o-tooltip
-            :label="props.row.other_places.filter((s) => { return s.city_name }).map((s) => { return s.city_name }).join(', ')"
-            dashed>
-            {{ props.row.adm0_name }}
-          </o-tooltip>
-        </o-table-column>
-      </o-table>
-      <tl-show-more v-if="entities.length === limit || hasMore" :limit="entities.length" @click="showAll" />
+      <tl-msg-error v-if="error">{{ error }}</tl-msg-error>
+
+      <table class="table is-striped" style="width:100%">
+        <thead>
+          <tr>
+            <th>Operator Name (Short Name)</th>
+            <th style="width:200px">City</th>
+            <th style="width:200px">State/Province</th>
+            <th style="width:260px">Country</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="row of entityPageFlat" :key="row.id">
+            <td>
+              <nuxt-link :to="{ name: 'operators-onestop_id', params: { onestop_id: row.onestop_id } }">
+                {{ row.name }}
+              </nuxt-link>
+              <span v-if="row.short_name">&nbsp;({{ row.short_name }})</span>
+            </td>
+            <td>
+              {{ row.city_name }}
+            </td>
+            <td>
+              {{ row.adm1_name }}
+            </td>
+            <td>
+              <o-tooltip
+                :label="row.other_places.filter((s) => { return s.city_name }).map((s) => { return s.city_name }).join(', ')"
+                dashed>
+                {{ row.adm0_name }}
+              </o-tooltip>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <tl-show-more v-if="entities.length >= limit" :limit="entities.length" @click="showAll" />
+
+      <o-loading :full-page="false" v-model:active="$apollo.loading"></o-loading>
+
     </div>
 
     <slot name="add-operator" />
@@ -168,10 +186,10 @@ export default {
         return entity
       })
     },
-    staticTitle () {
+    staticTitle() {
       return 'Browse all operators'
     },
-    staticDescription () {
+    staticDescription() {
       return 'Transitland uses operators to group together source feeds and other relevant data'
     }
   },
