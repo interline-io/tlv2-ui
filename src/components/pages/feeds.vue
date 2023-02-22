@@ -34,25 +34,25 @@ export default {
     search: {
       get() { return this.$route.query.search },
       set(v) {
-        this.$router.replace({ name: 'feeds', query: { ...this.$route.query, search: v } })
+        this.$router.replace({ query: { ...this.$route.query, search: v } })
       }
     },
     fetchError: {
       get() { return this.$route.query.fetchError },
       set(v) {
-        this.$router.replace({ name: 'feeds', query: { ...this.$route.query, fetchError: v } })
+        this.$router.replace({ query: { ...this.$route.query, fetchError: v } })
       }
     },
     importStatus: {
       get() { return this.$route.query.importStatus },
       set(v) {
-        this.$router.replace({ name: 'feeds', query: { ...this.$route.query, importStatus: v } })
+        this.$router.replace({ query: { ...this.$route.query, importStatus: v } })
       }
     },
     feedSpecs: {
       get() { return this.$route.query.feedSpecs },
       set(v) {
-        this.$router.replace({ name: 'feeds', query: { ...this.$route.query, feedSpecs: v } })
+        this.$router.replace({ query: { ...this.$route.query, feedSpecs: v } })
       }
     }    
   }
