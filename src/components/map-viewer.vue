@@ -113,7 +113,7 @@ export default {
             'protomaps-base': {
               type: 'vector',
               tiles: [`https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf?key=${this.$config.protoMapsApiKey}`],
-              maxZoom: 14,
+              maxzoom: 14,
               attribution: '<a href="https://www.transit.land/terms">Transitland</a> | <a href="https://protomaps.com">Protomaps</a> | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             }
           },
@@ -127,7 +127,7 @@ export default {
         opts.zoom = this.zoom
       }
 
-      maplibre.setRTLTextPlugin("https://unpkg.com/@mapbox/mapbox-gl-rtl-text@0.2.3/mapbox-gl-rtl-text.min.js")
+      // maplibre.setRTLTextPlugin("https://unpkg.com/@mapbox/mapbox-gl-rtl-text@0.2.3/mapbox-gl-rtl-text.min.js")
       this.map = new maplibre.Map(opts)
       this.map.addControl(new maplibre.FullscreenControl())
       this.map.addControl(new maplibre.NavigationControl())
@@ -359,7 +359,7 @@ export default {
         this.map.fitBounds(bounds, {
           duration: 0,
           padding: 20,
-          maxZoom: 16
+          maxZoom: 14
         })
       }
     },
