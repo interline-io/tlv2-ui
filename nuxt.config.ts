@@ -5,8 +5,11 @@ const apiBase =
 export default defineNuxtConfig({
   ssr: true,
   modules: [
-    './nuxt'
+    './modules/tlv2-ui'
   ],
+  build: {
+    transpile: ["@vue/apollo-composable", "@apollo/client"],
+  },
   runtimeConfig: {
     public: {
       apiBase,

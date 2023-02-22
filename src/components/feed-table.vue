@@ -119,8 +119,6 @@
         </table>
         <tl-show-more v-if="entities.length >= limit" :limit="entities.length" @click="limit += 100" />
         <o-loading :full-page="false" v-model:active="loading"></o-loading>
-
-
     </div>
 </template>
 
