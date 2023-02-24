@@ -9,7 +9,8 @@ export default defineNuxtPlugin((nuxtApp) => {
   const httpLink = new HttpLink({
     uri: config.public.graphqlEndpoint,
     headers: {
-      apikey: config.public.graphqlApikey
+      apikey: config.graphqlApikey,
+      referer: config.graphqlServerReferer,
     }
   })
   const cache = new InMemoryCache()
