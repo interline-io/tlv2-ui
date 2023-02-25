@@ -6,11 +6,13 @@ import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client/core/index
 
 export default defineNuxtPlugin((nuxtApp) => {
   const config = useRuntimeConfig()
+  const endpoint = process.client ? config.public.graphqlEndpoint : (config.ssrGraphqlEndpoint || config.public.graphqlEndpoint)
+  const apikey = process.client ? config.public.graphqlApikey : (config.ssrGraphqlApikey || config.public.graphqlApikey)
   const httpLink = new HttpLink({
-    uri: config.public.graphqlEndpoint,
+    uri: endpoint,
     headers: {
-      apikey: config.graphqlApikey,
-      referer: config.graphqlServerReferer,
+      apikey: apikey,
+      referer: config.ssrGraphqlServerReferer,
     }
   })
   const cache = new InMemoryCache()
