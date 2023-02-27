@@ -10,7 +10,7 @@ export default defineNuxtConfig({
     './modules/tlv2-ui'
   ],
   build: {
-    transpile: ["@vue/apollo-composable", "@apollo/client"],
+    transpile: ["@vue/apollo-composable", "@apollo/client", "protomaps-themes-base"],
   },
   vite: {
     // bug https://github.com/apollographql/apollo-client/issues/9756
@@ -21,12 +21,12 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       apiBase,
-      graphqlEndpoint: process.env.GRAPHQL_ENDPOINT || apiBase + '/query',
-      graphqlApikey: process.env.GRAPHQL_APIKEY,
-      graphqlServerReferer: process.env.GRAPHQL_SERVER_REFERER || '',
-      tileEndpoint: process.env.TILE_ENDPOINT || apiBase + '/tiles',
-      tileApikey: process.env.TILE_APIKEY,
-      protoMapsApiKey: process.env.PROTOMAPS_APIKEY || ''
+      graphqlEndpoint: apiBase + "/query",
+      graphqlApikey: '',
+      graphqlServerReferer: '',
+      tileEndpoint: apiBase + "/tiles",
+      tileApikey: '',
+      protomapsApikey: ''
     }
   }
 })
