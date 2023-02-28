@@ -9,8 +9,6 @@ import { noLabels, labels } from 'protomaps-themes-base'
 import mapLayers from './map-layers.js'
 import { nextTick } from 'vue'
 
-const config = useRuntimeConfig()
-
 export default {
   props: {
     markerCoords: { type: Array, default () { return [] } },
@@ -112,7 +110,7 @@ export default {
           sources: {
             'protomaps-base': {
               type: 'vector',
-              tiles: [`https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf?key=${this.$config.protoMapsApiKey}`],
+              tiles: [`https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf?key=${this.$config.protomapsApikey}`],
               maxzoom: 14,
               attribution: '<a href="https://www.transit.land/terms">Transitland</a> | <a href="https://protomaps.com">Protomaps</a> | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             }
