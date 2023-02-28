@@ -6,8 +6,8 @@ import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client/core/index
 
 export default defineNuxtPlugin((nuxtApp) => {
   const config = useRuntimeConfig()
-  const endpoint = process.client ? config.public.graphqlEndpoint : (config.ssrGraphqlEndpoint || config.public.graphqlEndpoint)
-  const apikey = process.client ? config.public.graphqlApikey : (config.ssrGraphqlApikey || config.public.graphqlApikey)
+  const endpoint = process.client ? config.public.graphqlEndpoint : config.ssrGraphqlEndpoint
+  const apikey = process.client ? config.public.graphqlApikey : config.ssrGraphqlApikey
   const httpLink = new HttpLink({
     uri: endpoint,
     headers: {
@@ -43,10 +43,4 @@ export default defineNuxtPlugin((nuxtApp) => {
   if (process.client && nuxtApp.payload.data[cacheKey]) {
     cache.restore(destr(JSON.stringify(nuxtApp.payload.data[cacheKey])))
   }
-  // nuxtApp.vueApp.provide(DefaultApolloClient, apolloClient)
-  // return {
-  //   provide: {
-  //     apolloClient
-  //   }
-  // }
 })
