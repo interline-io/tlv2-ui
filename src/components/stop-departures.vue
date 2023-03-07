@@ -1,6 +1,8 @@
 <template>
   <div>
-    <tl-msg-error v-if="error">{{ error }}</tl-msg-error>
+    <tl-msg-error v-if="error">
+      {{ error }}
+    </tl-msg-error>
     <div v-else-if="!searchCoords && stopIds.length === 0">
       <h6 class="title is-6">
         Click on the map to select a location
@@ -61,8 +63,10 @@
         <h6 class="title is-6">
           No results
         </h6>
-        <div>Unfortunately, no departures were found at this location for the selected location and time. Try increasing
-          the search radius or selecting the "fallback service day" option.</div>
+        <div>
+          Unfortunately, no departures were found at this location for the selected location and time. Try increasing
+          the search radius or selecting the "fallback service day" option.
+        </div>
       </div>
       <div v-else>
         <div
@@ -199,22 +203,22 @@ query( $stopIds: [Int!], $where: StopFilter, $stwhere: StopTimeFilter, $includeG
 export default {
   layout: 'map',
   props: {
-    searchCoords: { type: Array, default() { return null } },
-    nextSeconds: { type: Number, default() { return 7200 } },
-    routesPerAgency: { type: Number, default() { return 10 } },
-    showDateSelector: { type: Boolean, default() { return false } },
-    showRadiusSelector: { type: Boolean, default() { return false } },
-    showFallbackSelector: { type: Boolean, default() { return false } },
-    showAutoRefresh: { type: Boolean, default() { return false } },
-    showLastFetched: { type: Boolean, default() { return false } },
-    autoRefreshInterval: { type: Number, default() { return 60 } },
-    stopIds: { type: Array, default() { return [] } }
+    searchCoords: { type: Array, default () { return null } },
+    nextSeconds: { type: Number, default () { return 7200 } },
+    routesPerAgency: { type: Number, default () { return 10 } },
+    showDateSelector: { type: Boolean, default () { return false } },
+    showRadiusSelector: { type: Boolean, default () { return false } },
+    showFallbackSelector: { type: Boolean, default () { return false } },
+    showAutoRefresh: { type: Boolean, default () { return false } },
+    showLastFetched: { type: Boolean, default () { return false } },
+    autoRefreshInterval: { type: Number, default () { return 60 } },
+    stopIds: { type: Array, default () { return [] } }
   },
   apollo: {
     departureQuery: {
       query,
-      skip() { return !this.searchCoords && this.stopIds.length === 0 },
-      variables() {
+      skip () { return !this.searchCoords && this.stopIds.length === 0 },
+      variables () {
         const q = {
           stwhere: {
             use_service_window: this.useServiceWindow,
@@ -225,17 +229,17 @@ export default {
         if (this.searchCoords) { q.where = { near: { lon: this.searchCoords[0], lat: this.searchCoords[1], radius: this.radius } } }
         return q
       },
-      update(data) {
+      update (data) {
         this.resetTimer()
         this.stops = data.stops
         this.lastFetched = new Date()
       },
-      error(e) {
+      error (e) {
         this.error = e
       }
     }
   },
-  data() {
+  data () {
     return {
       timer: null,
       error: null,
@@ -252,7 +256,7 @@ export default {
     }
   },
   computed: {
-    routeFeatures() {
+    routeFeatures () {
       const features = new Map()
       for (const stop of this.stops || []) {
         for (const rs of stop.route_stops) {
@@ -283,7 +287,7 @@ export default {
       }
       return Array.from(features.values())
     },
-    stopFeatures() {
+    stopFeatures () {
       const features = []
       for (const g of this.stops || []) {
         features.push({
@@ -295,13 +299,13 @@ export default {
       }
       return features
     },
-    currentPoint() {
+    currentPoint () {
       return {
         type: 'Point',
         coordinates: this.searchCoords
       }
     },
-    filteredStops() {
+    filteredStops () {
       return this.stops.filter((s) => {
         return s.departures.length > 0 && s.location_type === 0 && s.geometry.coordinates
       }).sort((a, b) => {
@@ -310,7 +314,7 @@ export default {
         return ad - bd
       })
     },
-    filteredStopsGroupRoutes() {
+    filteredStopsGroupRoutes () {
       const makeRouteKey = function (d) {
         return `${d.trip.direction_id}:${d.trip.route.route_short_name}:${d.trip.route.route_long_name}:${d.trip.trip_headsign}`
       }
@@ -384,41 +388,41 @@ export default {
     }
   },
   watch: {
-    autoRefresh(v) {
+    autoRefresh (v) {
       // Helper to restart interval
       if (v) {
         this.refetch()
       }
     },
-    searchCoords() {
+    searchCoords () {
       this.stops = []
     }
   },
-  mounted() {
+  mounted () {
     // Force redraw
     setInterval(() => {
       this.lastFetchedDisplayKey += 1
     }, 1000)
   },
   methods: {
-    startTimer() {
+    startTimer () {
       this.timer = setInterval(() => {
         if (this.autoRefresh) {
           this.refetch()
         }
       }, this.autoRefreshInterval * 1000)
     },
-    resetTimer() {
+    resetTimer () {
       window.clearInterval(this.timer)
       this.startTimer()
     },
-    refetch() {
+    refetch () {
       this.$apollo.queries.departureQuery.refetch()
     },
-    expandRoutesPerAgency() {
+    expandRoutesPerAgency () {
       this.routesPerAgencyShadow = 1000
     },
-    haversine(fromPoint, toPoint) {
+    haversine (fromPoint, toPoint) {
       const d = haversine({
         latitude: fromPoint.coordinates[1],
         longitude: fromPoint.coordinates[0]
@@ -460,6 +464,7 @@ export default {
   display: inline-block;
   width: 250px;
   -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 90%, rgba(0, 0, 0, 0));
+  mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 90%, rgba(0, 0, 0, 0));
 }
 
 .last-fetched {

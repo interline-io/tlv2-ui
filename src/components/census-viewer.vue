@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-deprecated-filter -->
 <template>
   <div>
     <div v-if="$apollo.loading">
@@ -145,7 +146,7 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 
 const dig = (path, object) => path.reduce((xs, x) => (xs && xs[x]) ? xs[x] : null, object)
 
@@ -182,18 +183,19 @@ const tableNames = [
 
 export default {
   filters: {
-    dig(object, path) {
+    dig (object, path) {
       return path.reduce((xs, x) => (xs && xs[x] ? xs[x] : null), object)
     }
   },
   props: {
     layer: { type: String, default: 'tract' },
     radius: { type: Number, default: 400 },
-    stopIds: { type: Array, default() { return null } },
-    routeIds: { type: Array, default() { return null } },
-    agencyIds: { type: Array, default() { return null } }
+    stopIds: { type: Array, default () { return null } },
+    routeIds: { type: Array, default () { return null } },
+    agencyIds: { type: Array, default () { return null } }
   },
-  data() {
+  emits: ['setFeatures'],
+  data () {
     return {
       geographies: [],
       // copied...
@@ -211,7 +213,7 @@ export default {
     routes: {
       client: 'transitland',
       query: q,
-      variables() {
+      variables () {
         const q = {
           table_names: tableNames,
           layer_name: this.layer,
@@ -226,7 +228,7 @@ export default {
         }
         return q
       },
-      update(data) {
+      update (data) {
         const a = []
         for (const ent of data.routes || []) {
           for (const g of ent.census_geographies || []) {
@@ -238,14 +240,14 @@ export default {
     }
   },
   computed: {
-    geographiesByID() {
+    geographiesByID () {
       const a = {}
       for (const g of this.geographies) {
         a[g.id] = g
       }
       return a
     },
-    tableGroups() {
+    tableGroups () {
       // Invert
       const tableGroups = {}
       for (const g of Object.values(this.geographiesByID)) {
@@ -257,7 +259,7 @@ export default {
       }
       return tableGroups
     },
-    tableSums() {
+    tableSums () {
       // Calculate sums of each table and field
       const tableSums = {}
       for (const [tableName, geogs] of Object.entries(this.tableGroups)) {
@@ -276,7 +278,7 @@ export default {
       }
       return tableSums
     },
-    tablePcts() {
+    tablePcts () {
       // Calculate percentage of total (field 1)
       const tablePcts = {}
       for (const [tableName, tableSum] of Object.entries(this.tableSums)) {
@@ -288,7 +290,7 @@ export default {
       }
       return tablePcts
     },
-    weightedIncome() {
+    weightedIncome () {
       // Calculated weighted income
       const totalPop = parseFloat(dig(['B01001', '1'], this.tableSums))
       let weightedIncome = 0
@@ -302,7 +304,7 @@ export default {
       }
       return weightedIncome
     },
-    features() {
+    features () {
       if (this.$apollo.loading) { return [] }
       const ret = []
       for (const f of Object.values(this.geographiesByID)) {
@@ -318,7 +320,7 @@ export default {
     }
   },
   watch: {
-    features() {
+    features () {
       this.$emit('setFeatures', this.features)
     }
   }

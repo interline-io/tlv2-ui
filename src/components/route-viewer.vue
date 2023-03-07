@@ -1,6 +1,8 @@
 <template>
   <div>
-    <tl-msg-error v-if="error">{{ error }}</tl-msg-error>
+    <tl-msg-error v-if="error">
+      {{ error }}
+    </tl-msg-error>
     <div v-else>
       <tl-search-bar
         v-model="search"
@@ -60,7 +62,7 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 import TableViewerMixin from './table-viewer-mixin'
 
 const q = gql`
@@ -99,7 +101,7 @@ export default {
     entities: {
       client: 'transitland',
       query: q,
-      variables() {
+      variables () {
         return {
           limit: this.limit,
           search: this.search,
@@ -107,11 +109,11 @@ export default {
           agency_ids: this.agencyIds
         }
       },
-      error(e) { this.error = e }
+      error (e) { this.error = e }
     }
   },
   methods: {
-    headwayTooltip(hws) {
+    headwayTooltip (hws) {
       // Buefy 0.9 will have a tooltip slot and we can use HeadwaysViewer
       const hwlookup = {
         1: 'weekday',

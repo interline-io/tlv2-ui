@@ -160,27 +160,27 @@
                       target="_blank"
                       href="https://www.transit.dot.gov/ntd/"
                     ><o-icon
-                        icon="link"
-                        title="US National Transit Database website"
-                      /></a>
+                      icon="link"
+                      title="US National Transit Database website"
+                    /></a>
                   </li>
                   <li v-if="entity.tags.omd_provider_id">
                     OpenMobilityData Provider ID: <code>{{ entity.tags.omd_provider_id }}</code> <a
                       target="_blank"
                       :href="`https://openmobilitydata.org/p/${entity.tags.omd_provider_id}`"
                     ><o-icon
-                        icon="link"
-                        title="OpenMobilityData provider page"
-                      /></a>
+                      icon="link"
+                      title="OpenMobilityData provider page"
+                    /></a>
                   </li>
                   <li v-if="entity.tags.wikidata_id">
                     Wikidata Entity ID: <code>{{ entity.tags.wikidata_id }}</code> <a
                       target="_blank"
                       :href="`https://www.wikidata.org/wiki/${entity.tags.wikidata_id}`"
                     ><o-icon
-                        icon="link"
-                        title="Wikidata entity query page"
-                      /></a>
+                      icon="link"
+                      title="Wikidata entity query page"
+                    /></a>
                   </li>
                 </ul>
               </td>
@@ -192,7 +192,6 @@
               {{ staticDescription }}
             </div>
           </slot>
-
         </div>
 
         <div class="column is-one-quarter is-full-height">
@@ -312,11 +311,11 @@
           Operator Service
         </h4>
         <o-tabs
-          class="tl-tabs"
           v-model="activeTab"
+          class="tl-tabs"
           type="boxed"
           :animated="false"
-          @update:modelValue="setTab"
+          @update:model-value="setTab"
         >
           <o-tab-item label="Map">
             <client-only placeholder="Map">
@@ -364,7 +363,7 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
 
 const q = gql`
@@ -414,12 +413,12 @@ export default {
       client: 'transitland',
       query: q,
       // skip () { return this.checkSearchSkip(this.$route.query.agency_id) }, // skip if search and no agency_id
-      variables() {
+      variables () {
         return this.searchKey
       }
     }
   },
-  data() {
+  data () {
     return {
       features: [],
       tabIndex: {
@@ -431,11 +430,11 @@ export default {
     }
   },
   computed: {
-    dataFreshness() {
+    dataFreshness () {
       if (this.agencies.length > 0) { return this.agencies[0].feed_version.fetched_at }
       return null
     },
-    locations() {
+    locations () {
       const ret = new Map()
       for (const ent of this.agencies) {
         if (!ent) { continue }
@@ -446,22 +445,22 @@ export default {
       }
       return Array.from(ret.values()).sort(function (a, b) { return a.rank - b.rank })
     },
-    agencies() {
+    agencies () {
       return (this.entity || {}).agencies || []
     },
-    agencyIds() {
+    agencyIds () {
       return this.agencies.map((s) => { return s.id }).filter((s) => { return s })
     },
-    agencyNames() {
+    agencyNames () {
       return [...new Set(this.agencies.map((s) => { return s.agency_name }))]
     },
-    agencyURLs() {
+    agencyURLs () {
       return [...new Set(this.agencies.map((s) => { return s.agency_url }))]
     },
-    generatedOperator() {
+    generatedOperator () {
       return this.entity && this.entity.generated
     },
-    operatorName() {
+    operatorName () {
       if (this.entity && this.entity.name && this.entity.short_name) {
         return `${this.entity.name} (${this.entity.short_name})`
       } else if (this.entity && (this.entity.name || this.entity.short_name)) {
@@ -472,7 +471,7 @@ export default {
         return ''
       }
     },
-    sources() {
+    sources () {
       const ret = []
       const matchedFeeds = {}
       if (!this.entity) {
@@ -506,20 +505,20 @@ export default {
       }
       return ret
     },
-    uniqueFeedSourcesOnestopIds() {
+    uniqueFeedSourcesOnestopIds () {
       const onestopIdsToSpec = {}
       this.sources.forEach((s) => {
         onestopIdsToSpec[s.target_feed] = s.target_feed_spec.toUpperCase()
       })
       return onestopIdsToSpec
     },
-    feedCounts() {
+    feedCounts () {
       return Object.keys(this.uniqueFeedSourcesOnestopIds).length
     },
-    staticTitle() {
+    staticTitle () {
       return `${this.operatorName} • Operator details`
     },
-    staticDescription() {
+    staticDescription () {
       const gtfsCount = this.sources.filter(s => s.target_feed_spec === 'GTFS').length
       const gtfsRtCount = this.sources.filter(s => s.target_feed_spec === 'GTFS_RT').length
       let feedCounts = `${gtfsCount} GTFS feed${gtfsCount > 1 ? 's' : ''}`

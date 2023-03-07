@@ -52,20 +52,20 @@
 <script>
 export default {
   props: {
-    feedInfo: { type: Object, default() { return {} } },
+    feedInfo: { type: Object, default () { return {} } },
     showDates: { type: Boolean },
     showLinks: { type: Boolean }
   },
   computed: {
-    feedStartDate() { return this.feedInfo.feed_start_date },
-    feedEndDate() { return this.feedInfo.feed_end_date },
-    feedPublisherName() { return this.feedInfo.feed_publisher_name },
-    feedPublisherUrl() { return this.feedInfo.feed_publisher_url },
-    feedContactEmail() { return this.feedInfo.feed_contact_email },
-    feedContactUrl() { return this.feedInfo.feed_contact_url },
-    feedLang() { return this.feedInfo.feed_lang },
-    feedVersion() { return this.feedInfo.feed_version },
-    defaultLang() { return this.feedInfo.default_lang }
+    feedStartDate () { return this.feedInfo.feed_start_date },
+    feedEndDate () { return this.feedInfo.feed_end_date },
+    feedPublisherName () { return this.feedInfo.feed_publisher_name },
+    feedPublisherUrl () { return this.feedInfo.feed_publisher_url },
+    feedContactEmail () { return this.feedInfo.feed_contact_email },
+    feedContactUrl () { return this.feedInfo.feed_contact_url },
+    feedLang () { return this.feedInfo.feed_lang },
+    feedVersion () { return this.feedInfo.feed_version },
+    defaultLang () { return this.feedInfo.default_lang }
   }
 }
 </script>

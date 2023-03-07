@@ -17,16 +17,16 @@
 <script>
 export default {
   props: {
-    modelValue: { type: String, default: "" },
-    placeholder: { type: String, default: "Search" },
+    modelValue: { type: String, default: '' },
+    placeholder: { type: String, default: 'Search' }
   },
-  emits: ["update:modelValue"],
+  emits: ['update:modelValue'],
   methods: {
-    clearSearch() {
-      this.$emit("update:modelValue", "");
-    },
-  },
-};
+    clearSearch () {
+      this.$emit('update:modelValue', '')
+    }
+  }
+}
 </script>
 
 <style scoped>

@@ -58,13 +58,14 @@
 <script>
 export default {
   props: {
-    currentZoom: { type: Number, default() { return 0 } },
+    currentZoom: { type: Number, default () { return 0 } },
     linkVersion: { type: Boolean, default: false },
     isComponentModalActive: { type: Boolean, default: false },
-    agencyFeatures: { type: Object, default() { return {} } }
+    agencyFeatures: { type: Object, default () { return {} } }
   },
+  emits: ['close'],
   methods: {
-    close() {
+    close () {
       this.$emit('close')
     }
   }

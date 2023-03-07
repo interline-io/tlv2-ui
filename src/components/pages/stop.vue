@@ -1,7 +1,9 @@
 <template>
   <div class="container">
     <tl-loading v-if="$apollo.loading" />
-    <tl-msg-error v-else-if="error">{{ error }}</tl-msg-error>
+    <tl-msg-error v-else-if="error">
+      {{ error }}
+    </tl-msg-error>
     <div v-else-if="entity">
       <Title>{{ staticTitle }}</Title>
       <Meta
@@ -163,11 +165,11 @@
           </div>
 
           <o-tabs
-            class="tl-tabs"
             v-model="activeTab"
+            class="tl-tabs"
             type="boxed"
             :animated="false"
-            @update:modelValue="setTab"
+            @update:model-value="setTab"
           >
             <o-tab-item label="Summary">
               <div v-if="servedRoutes">
@@ -300,7 +302,7 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
 
 const q = gql`
@@ -397,13 +399,13 @@ export default {
   apollo: {
     entities: {
       query: q,
-      skip() { return this.checkSearchSkip(this.$route.query.stop_id) },
-      variables() {
+      skip () { return this.checkSearchSkip(this.$route.query.stop_id) },
+      variables () {
         return this.searchKey
       }
     }
   },
-  data() {
+  data () {
     return {
       radius: 1000,
       tabIndex: {
@@ -414,7 +416,7 @@ export default {
     }
   },
   computed: {
-    allAlerts() {
+    allAlerts () {
       const ret = []
       for (const stop of this.allStops) {
         for (const alert of stop.alerts || []) {
@@ -424,7 +426,7 @@ export default {
       }
       return ret
     },
-    stopFeatures() {
+    stopFeatures () {
       const ret = []
       for (const i of this.allStops) {
         if (!i.geometry) {
@@ -434,7 +436,7 @@ export default {
       }
       return ret
     },
-    routeFeatures() {
+    routeFeatures () {
       const ret = []
       let featid = 1
       for (const rss of Object.values(this.servedRoutes || {})) {
@@ -469,7 +471,7 @@ export default {
       }
       return ret
     },
-    allStops() {
+    allStops () {
       const ret = {}
       for (const ent of this.roots) {
         ret[ent.id] = ent
@@ -482,7 +484,7 @@ export default {
       }
       return Object.values(ret)
     },
-    servedRoutes() {
+    servedRoutes () {
       const ret = {}
       for (const stop of this.allStops) {
         for (const rs of stop.route_stops || []) {
@@ -501,7 +503,7 @@ export default {
       }
       return byAgency
     },
-    nearbyStops() {
+    nearbyStops () {
       const ret = []
       const excl = {}
       for (const stop of this.allStops) {
@@ -518,7 +520,7 @@ export default {
       }
       return ret
     },
-    nearbyRoutes() {
+    nearbyRoutes () {
       const ret = {}
       const excl = {}
       for (const rss of Object.values(this.servedRoutes || {})) {
@@ -546,13 +548,13 @@ export default {
       }
       return byAgency
     },
-    stopUrls() {
+    stopUrls () {
       return this.allStops.filter((s) => { return s.stop_url })
     },
-    stopDescs() {
+    stopDescs () {
       return this.allStops.filter((s) => { return s.stop_desc })
     },
-    features() {
+    features () {
       const ret = []
       const sg = this.entity.geometry
       let featid = 1
@@ -573,10 +575,10 @@ export default {
       }
       return ret
     },
-    entityIds() {
+    entityIds () {
       return this.allStops.map((s) => { return s.id })
     },
-    roots() {
+    roots () {
       const ret = {}
       for (const ent of this.entities) {
         if (ent.parent) {
@@ -587,18 +589,18 @@ export default {
       }
       return Object.values(ret)
     },
-    entity() {
+    entity () {
       return this.roots.length > 0 ? this.roots[0] : null
     },
-    staticTitle() {
+    staticTitle () {
       return `${this.entity.stop_name} • Stop`
     },
-    staticDescription() {
+    staticDescription () {
       return `${this.entity.stop_name} stop available for browsing and analyzing on the Transitland platform`
     }
   },
   methods: {
-    filterRTTranslations(v) {
+    filterRTTranslations (v) {
       return v.filter((s) => { return !s.language.includes('html') })
     }
   }

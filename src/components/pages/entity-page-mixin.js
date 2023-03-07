@@ -2,8 +2,8 @@ export default {
   apollo: {
     $query: {
       client: 'transitland',
-      error(e) { this.error = e },
-      update(data) {
+      error (e) { this.error = e },
+      update (data) {
         if (data && data.entities && data.entities.length === 0) {
           return this.setError(404, 'Not found')
         }
@@ -17,7 +17,7 @@ export default {
     feedOnestopId: { type: String, default: null },
     entityId: { type: String, default: null }
   },
-  data() {
+  data () {
     return {
       entities: [],
       activeTab: 1,
@@ -28,7 +28,7 @@ export default {
     }
   },
   computed: {
-    searchKey() {
+    searchKey () {
       const pk = String(this.pathKey || '')
       const k = pk.split(':')
       if (k.length > 1) {
@@ -45,36 +45,36 @@ export default {
         feed_version_sha1: this.feedVersionSha1
       }
     },
-    advancedMode() {
+    advancedMode () {
       if (this.$route.query && this.$route.query.advanced === 'true') {
         return true
       }
       return false
     },
-    linkVersion() {
+    linkVersion () {
       if (this.searchKey.feed_version_sha1) {
         return true
       }
     },
-    search() {
+    search () {
       return this.pathKey.onestop_id === 'search'
     },
-    entity() {
+    entity () {
       return (this.entities && this.entities.length > 0) ? this.entities[0] : null
     },
-    entityIds() {
+    entityIds () {
       return this.entities.map((s) => { return s.id })
     },
-    fvids() {
+    fvids () {
       return (this.agencies || []).map((s) => { return s.feed_version_id })
     }
   },
   watch: {
-    childLabel() {
+    childLabel () {
       this.activeTab = 5
     }
   },
-  mounted() {
+  mounted () {
     const tab = this.$route.hash.substr(1)
     if (tab) {
       for (const [k, v] of Object.entries(this.tabIndex)) {
@@ -85,7 +85,7 @@ export default {
     }
   },
   methods: {
-    checkSearchSkip() {
+    checkSearchSkip () {
       const fosid = this.$route.query.feed_onestop_id || ''
       const eid = this.$route.query.entity_id || ''
       if (this.$route.params.onestop_id === 'search' && (fosid.length === 0 || eid.length === 0)) {
@@ -94,11 +94,11 @@ export default {
       }
       return false
     },
-    setError(statusCode, message) {
+    setError (_, message) {
       // this.$nuxt.error({ statusCode, message })
       this.error = message
     },
-    setTab(value) {
+    setTab (value) {
       const tab = this.tabIndex[value]
       if (tab) {
         // set window.location.hash directly; this.$router.push causes reload

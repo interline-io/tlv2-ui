@@ -7,35 +7,35 @@
 </template>
 
 <script>
-import { useRuntimeConfig } from "#app";
-import maplibre from 'maplibre-gl'
+import { Map, NavigationControl, FullscreenControl, Marker, LngLatBounds } from 'maplibre-gl'
 import { noLabels, labels } from 'protomaps-themes-base'
-import mapLayers from './map-layers.js'
 import { nextTick } from 'vue'
+import mapLayers from './map-layers.js'
 
 export default {
   props: {
-    markerCoords: { type: Array, default() { return [] } },
+    markerCoords: { type: Array, default () { return [] } },
     enableScrollZoom: { type: Boolean, default: false },
     showProblematicGeometries: { type: Boolean, default: true },
     showGeneratedGeometries: { type: Boolean, default: true },
     mapClass: { type: String, default: 'short' },
-    routeTiles: { type: Object, default() { return null } },
-    stopTiles: { type: Object, default() { return null } },
-    stopFeatures: { type: Array, default() { return [] } },
-    routeFeatures: { type: Array, default() { return [] } },
+    routeTiles: { type: Object, default () { return null } },
+    stopTiles: { type: Object, default () { return null } },
+    stopFeatures: { type: Array, default () { return [] } },
+    routeFeatures: { type: Array, default () { return [] } },
     interactive: { type: Boolean, default: true },
     autoFit: { type: Boolean, default: true },
-    center: { type: Array, default() { return null } },
+    center: { type: Array, default () { return null } },
     circleRadius: { type: Number, default: 1 },
     circleColor: { type: String, default: '#f03b20' },
     zoom: { type: Number, default: 4 },
     hash: { type: Boolean, default: false },
     features: {
-      type: Array, default() { return [] }
+      type: Array, default () { return [] }
     }
   },
-  data() {
+  emits: ['mapClick', 'setZoom', 'mapMove', 'setAgencyFeatures'],
+  data () {
     return {
       map: null,
       marker: null,
@@ -43,45 +43,45 @@ export default {
     }
   },
   watch: {
-    showProblematicGeometries(v) {
+    showProblematicGeometries () {
       this.updateFilters()
     },
-    showGeneratedGeometries(v) {
+    showGeneratedGeometries () {
       this.updateFilters()
     },
-    features(v) {
+    features (v) {
       this.nextTickUpdateFeatures(v)
     },
-    stopFeatures(v) {
+    stopFeatures (v) {
       this.nextTickUpdateFeatures(v)
     },
-    routeFeatures(v) {
+    routeFeatures (v) {
       this.nextTickUpdateFeatures(v)
     },
-    center() {
+    center () {
       this.map.jumpTo({ center: this.center, zoom: this.zoom })
     },
-    zoom() {
+    zoom () {
       this.map.jumpTo({ center: this.center, zoom: this.zoom })
     },
-    markerCoords(v) {
+    markerCoords (v) {
       this.drawMarker(v)
     }
   },
-  mounted() {
+  mounted () {
     if (this.features) {
       this.initMap()
     }
   },
   methods: {
-    nextTickUpdateFeatures(v) {
+    nextTickUpdateFeatures (v) {
       if (v) {
         nextTick(() => {
           this.updateFeatures()
         })
       }
     },
-    saveImage() {
+    saveImage () {
       const canvas = this.map.getCanvas() // .toDataURL('image/png')
       const fileName = 'image'
       const link = document.createElement('a')
@@ -91,7 +91,7 @@ export default {
         link.click()
       })
     },
-    initMap() {
+    initMap () {
       if (this.map) {
         return
       }
@@ -130,9 +130,9 @@ export default {
       }
 
       // maplibre.setRTLTextPlugin("https://unpkg.com/@mapbox/mapbox-gl-rtl-text@0.2.3/mapbox-gl-rtl-text.min.js")
-      this.map = new maplibre.Map(opts)
-      this.map.addControl(new maplibre.FullscreenControl())
-      this.map.addControl(new maplibre.NavigationControl())
+      this.map = new Map(opts)
+      this.map.addControl(new FullscreenControl())
+      this.map.addControl(new NavigationControl())
       if (!this.enableScrollZoom) {
         this.map.scrollZoom.disable()
       }
@@ -149,7 +149,7 @@ export default {
         this.map.resize()
       })
     },
-    updateFeatures() {
+    updateFeatures () {
       const polygons = this.features.filter((s) => { return s.geometry.type === 'MultiPolygon' || s.geometry.type === 'Polygon' })
       const points = this.features.filter((s) => { return s.geometry.type === 'Point' })
       const lines = this.features.filter((s) => { return s.geometry.type === 'LineString' })
@@ -165,7 +165,7 @@ export default {
       // this.map.getSource('routes').setData({ type: 'FeatureCollection', features: this.routeFeatures })
       this.fitFeatures()
     },
-    updateFilters() {
+    updateFilters () {
       for (const v of mapLayers.routeLayers) {
         const f = (v.filter || []).slice()
         if (f.length === 0) {
@@ -187,7 +187,7 @@ export default {
         }
       }
     },
-    createSources() {
+    createSources () {
       this.map.addSource('polygons', {
         type: 'geojson',
         data: { type: 'FeatureCollection', features: [] }
@@ -228,7 +228,7 @@ export default {
         })
       }
     },
-    createLayers() {
+    createLayers () {
       // Other feature layers
       this.map.addLayer({
         id: 'polygons',
@@ -316,7 +316,7 @@ export default {
       // Set initial show generated geometry
       this.updateFilters()
     },
-    drawMarker(coords) {
+    drawMarker (coords) {
       if (!coords || coords.length === 0 || coords[0] === 0) {
         if (this.marker) {
           this.marker.remove()
@@ -325,12 +325,12 @@ export default {
         return
       }
       if (!this.marker) {
-        this.marker = new maplibre.Marker().setLngLat(coords).addTo(this.map)
+        this.marker = new Marker().setLngLat(coords).addTo(this.map)
       } else {
         this.marker.setLngLat(coords)
       }
     },
-    fitFeatures() {
+    fitFeatures () {
       const coords = []
       for (const f of [...this.features, ...this.routeFeatures, ...this.stopFeatures]) {
         const g = f.geometry
@@ -357,7 +357,7 @@ export default {
       if (this.autoFit && coords.length > 0) {
         const bounds = coords.reduce(function (bounds, coord) {
           return bounds.extend(coord)
-        }, new maplibre.LngLatBounds(coords[0], coords[0]))
+        }, new LngLatBounds(coords[0], coords[0]))
         this.map.fitBounds(bounds, {
           duration: 0,
           padding: 20,
@@ -365,16 +365,16 @@ export default {
         })
       }
     },
-    mapClick(e) {
+    mapClick (e) {
       this.$emit('mapClick', e)
     },
-    mapZoom(e) {
+    mapZoom () {
       this.$emit('setZoom', this.map.getZoom())
     },
-    mapMove(e) {
+    mapMove () {
       this.$emit('mapMove', { zoom: this.map.getZoom(), bbox: this.map.getBounds().toArray() })
     },
-    mapMouseMove(e) {
+    mapMouseMove (e) {
       const map = this.map
       const features = map.queryRenderedFeatures(e.point, { layers: ['route-active'] })
       map.getCanvas().style.cursor = 'pointer'

@@ -11,6 +11,7 @@
 export default {
   props: {
     limit: { type: Number, default: 0 }
-  }
+  },
+  emits: ['showMore']
 }
 </script>

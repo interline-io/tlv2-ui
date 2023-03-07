@@ -47,7 +47,7 @@ export default {
     }
   },
   computed: {
-    routeTypeIcon() {
+    routeTypeIcon () {
       switch (this.routeType) {
         case 0:
           return 'tram'

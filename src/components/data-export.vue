@@ -55,7 +55,6 @@
           aria-role="list"
         >
           <button
-            slot="trigger"
             class="button"
             type="button"
             icon="menu-down"
@@ -134,15 +133,15 @@
       :route-ids="routeIds"
       :agency-ids="agencyIds"
       :radius="radius"
-      @setBufferFeatures="bufferFeatures = $event"
-      @setHullFeatures="hullFeatures = $event"
+      @set-buffer-features="bufferFeatures = $event"
+      @set-hull-features="hullFeatures = $event"
     />
     <tl-census-viewer
       :route-ids="routeIds"
       :agency-ids="agencyIds"
       :radius="radius"
       :layer="layer"
-      @setFeatures="censusFeatures = $event"
+      @set-features="censusFeatures = $event"
     />
   </div>
 </template>
@@ -152,13 +151,14 @@
 export default {
   props: {
     routeName: { type: String, default: 'export' },
-    stopIds: { type: Array, default() { return null } },
-    routeIds: { type: Array, default() { return null } },
-    agencyIds: { type: Array, default() { return null } },
-    routeFeatures: { type: Array, default() { return [] } },
-    stopFeatures: { type: Array, default() { return [] } }
+    stopIds: { type: Array, default () { return null } },
+    routeIds: { type: Array, default () { return null } },
+    agencyIds: { type: Array, default () { return null } },
+    routeFeatures: { type: Array, default () { return [] } },
+    stopFeatures: { type: Array, default () { return [] } }
   },
-  data() {
+  emits: ['setFeatures'],
+  data () {
     return {
       showOnMap: ['census', 'hull', 'buffer'],
       censusFeatures: [],
@@ -177,7 +177,7 @@ export default {
     }
   },
   computed: {
-    features() {
+    features () {
       if (this.$apollo.loading) { return [] }
       let ret = []
       if (this.showOnMap.includes('buffer')) {
@@ -193,12 +193,12 @@ export default {
     }
   },
   watch: {
-    features() {
+    features () {
       this.$emit('setFeatures', this.features)
     }
   },
   methods: {
-    titleize(s) {
+    titleize (s) {
       return s.substr(0, 1).toUpperCase() + s.substr(1)
     }
   }

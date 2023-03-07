@@ -2,7 +2,7 @@ export default {
   props: {
     limit: { type: Number, default: 100 }
   },
-  data() {
+  data () {
     return {
       hasMore: false,
       prevAfter: null,
@@ -12,15 +12,15 @@ export default {
     }
   },
   computed: {
-    maxId() {
+    maxId () {
       return Math.max(...this.entities.map((s) => { return s.id }))
     },
-    entityPage() {
+    entityPage () {
       return this.entities
     }
   },
   methods: {
-    showAll() {
+    showAll () {
       const newLimit = 500
       this.$apollo.queries.entities.fetchMore({
         variables: {

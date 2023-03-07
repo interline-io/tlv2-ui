@@ -1,7 +1,9 @@
 <template>
   <div class="tl-map">
     <tl-loading v-if="$apollo.loading" />
-    <tl-msg-error v-else-if="error">{{ error }}</tl-msg-error>
+    <tl-msg-error v-else-if="error">
+      {{ error }}
+    </tl-msg-error>
     <div v-else>
       <tl-map-viewer
         :enable-scroll-zoom="enableScrollZoom"
@@ -11,9 +13,9 @@
         :center="center"
         :auto-fit="true"
         :zoom="zoom ? zoom : null"
-        @setAgencyFeatures="agencyFeatures = $event"
-        @mapClick="mapClick"
-        @setZoom="currentZoom = $event"
+        @set-agency-features="agencyFeatures = $event"
+        @map-click="mapClick"
+        @set-zoom="currentZoom = $event"
       />
       <div
         v-if="overlay"
@@ -32,7 +34,7 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 
 const q = gql`
 query ($limit: Int!, $agency_ids: [Int!], $route_ids: [Int!], $feed_version_sha1: String, $include_stops: Boolean! = false) {
@@ -78,12 +80,26 @@ query ($limit: Int!, $agency_ids: [Int!], $route_ids: [Int!], $feed_version_sha1
 `
 
 export default {
+  props: {
+    feedVersionSha1: { type: String, default: null },
+    includeStops: { type: Boolean, default: false },
+    overlay: { type: Boolean, default: false },
+    fvids: { type: Array, default: null },
+    routeIds: { type: Array, default: null },
+    agencyIds: { type: Array, default: null },
+    linkVersion: { type: Boolean, default: false },
+    features: { type: Array, default () { return [] } },
+    center: { type: Array, default () { return [] } },
+    zoom: { type: Number, default: null },
+    enableScrollZoom: { type: Boolean, default: false }
+  },
+  emits: ['setRouteFeatures', 'setStopFeatures'],
   apollo: {
     routes: {
       client: 'transitland',
       query: q,
-      error(e) { this.error = e },
-      variables() {
+      error (e) { this.error = e },
+      variables () {
         return {
           include_stops: this.includeStops,
           feed_version_sha1: this.feedVersionSha1,
@@ -94,20 +110,7 @@ export default {
       }
     }
   },
-  props: {
-    feedVersionSha1: { type: String, default: null },
-    includeStops: { type: Boolean, default: false },
-    overlay: { type: Boolean, default: false },
-    fvids: { type: Array, default: null },
-    routeIds: { type: Array, default: null },
-    agencyIds: { type: Array, default: null },
-    linkVersion: { type: Boolean, default: false },
-    features: { type: Array, default() { return [] } },
-    center: { type: Array, default() { return [] } },
-    zoom: { type: Number, default: null },
-    enableScrollZoom: { type: Boolean, default: false }
-  },
-  data() {
+  data () {
     return {
       routes: [],
       error: null,
@@ -117,7 +120,7 @@ export default {
     }
   },
   computed: {
-    routeFeatures() {
+    routeFeatures () {
       const features = []
       for (const feature of this.routes) {
         if (!feature.geometries || feature.geometries.length === 0) {
@@ -150,7 +153,7 @@ export default {
       }
       return features
     },
-    stopFeatures() {
+    stopFeatures () {
       const features = []
       for (const feature of this.routes) {
         for (const g of feature.route_stops || []) {
@@ -169,15 +172,15 @@ export default {
     }
   },
   watch: {
-    routeFeatures(v) {
+    routeFeatures (v) {
       this.$emit('setRouteFeatures', v)
     },
-    stopFeatures(v) {
-      this.$emit('setSopFeatures', v)
+    stopFeatures (v) {
+      this.$emit('setStopFeatures', v)
     }
   },
   methods: {
-    mapClick() {
+    mapClick () {
       if (Object.keys(this.agencyFeatures).length > 0) {
         this.isComponentModalActive = true
       }

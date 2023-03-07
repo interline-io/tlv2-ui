@@ -39,21 +39,27 @@
                   target="_blank"
                 >Transitland Hobbyist/Academic, Professional, and Enterprise plan</a>.
               </p>
-              <p>Learn more in the <a
+              <p>
+                Learn more in the <a
                   href="/documentation/rest-api/feed_versions#downloading-source-gtfs"
                   target="_blank"
-                >documentation</a>.</p>
+                >documentation</a>.
+              </p>
             </template>
             <template v-else>
-              <p>Want to download a copy of this feed version to process with your own software? Registered users with <a
+              <p>
+                Want to download a copy of this feed version to process with your own software? Registered users with <a
                   href="https://www.interline.io/transitland/plans-pricing/"
                   target="_blank"
                 >Hobbyist/Academic, Professional, and Enterprise plans</a> can use the Transitland v2 REST API to download
-                historical feed versions.</p>
-              <p>Learn more in the <a
+                historical feed versions.
+              </p>
+              <p>
+                Learn more in the <a
                   href="/documentation/rest-api/feed_versions#downloading-source-gtfs"
                   target="_blank"
-                >documentation</a>.</p>
+                >documentation</a>.
+              </p>
             </template>
           </div>
         </section>
@@ -64,7 +70,12 @@
 
 <script>
 export default {
-  props: ['sha1', 'latestFeedVersionSha1', 'modelValue'],
-  emits: ['update']
+  // props: ['sha1', 'latestFeedVersionSha1', 'modelValue'],
+  props: {
+    sha1: { type: String, default: null },
+    latestFeedVersionSha1: { type: String, default: null },
+    modelValue: { type: String, default: null }
+  },
+  emits: ['update:modelValue']
 }
 </script>

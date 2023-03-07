@@ -104,7 +104,9 @@
         </o-field>
       </o-field>
 
-      <tl-msg-error v-if="error">{{ error }}</tl-msg-error>
+      <tl-msg-error v-if="error">
+        {{ error }}
+      </tl-msg-error>
 
       <table
         class="table is-striped"
@@ -113,9 +115,15 @@
         <thead>
           <tr>
             <th>Operator Name (Short Name)</th>
-            <th style="width:200px">City</th>
-            <th style="width:200px">State/Province</th>
-            <th style="width:260px">Country</th>
+            <th style="width:200px">
+              City
+            </th>
+            <th style="width:200px">
+              State/Province
+            </th>
+            <th style="width:260px">
+              Country
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -154,10 +162,9 @@
       />
 
       <o-loading
-        :full-page="false"
         v-model:active="$apollo.loading"
-      ></o-loading>
-
+        :full-page="false"
+      />
     </div>
 
     <slot name="add-operator" />
@@ -165,7 +172,7 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 import TableViewerMixin from '../table-viewer-mixin'
 
 const q = gql`
@@ -189,7 +196,7 @@ query ($limit: Int, $after: Int, $search: String, $merged: Boolean, $adm0_name: 
 
 export default {
   mixins: [TableViewerMixin],
-  data() {
+  data () {
     return {
       search: this.$route.query.search,
       adm0_name: this.$route.query.adm0_name,
@@ -202,8 +209,8 @@ export default {
   apollo: {
     entities: {
       query: q,
-      error(e) { this.error = e },
-      variables() {
+      error (e) { this.error = e },
+      variables () {
         return {
           search: this.search,
           adm0_name: this.adm0_name,
@@ -215,16 +222,11 @@ export default {
       }
     }
   },
-  watch: {
-    search(v) {
-      this.$router.replace({ name: 'operators', query: { ...this.$route.query, search: v } })
-    },
-  },
   computed: {
-    filteringByOperatorLocation() {
+    filteringByOperatorLocation () {
       return (this.$route.query.adm0_name || this.$route.query.adm1_name || this.$route.query.city_name)
     },
-    entityPageFlat() {
+    entityPageFlat () {
       return this.entityPage.map((s) => {
         const entity = {
           name: s.name,
@@ -248,22 +250,27 @@ export default {
         return entity
       })
     },
-    staticTitle() {
+    staticTitle () {
       return 'Browse all operators'
     },
-    staticDescription() {
+    staticDescription () {
       return 'Transitland uses operators to group together source feeds and other relevant data'
     }
   },
+  watch: {
+    search (v) {
+      this.$router.replace({ name: 'operators', query: { ...this.$route.query, search: v } })
+    }
+  },
   methods: {
-    clearQuery() {
+    clearQuery () {
       this.search = ''
       this.adm0_name = null
       this.adm1_name = null
       this.city_name = null
       this.$router.push({ name: 'operators', query: {} })
     },
-    onAutocomplete(a, b) {
+    onAutocomplete (a, b) {
       const q = {}
       q[a] = b
       this.$router.push({ name: 'operators', query: q })

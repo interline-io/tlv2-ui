@@ -57,7 +57,9 @@
     </o-field>
 
     <tl-loading v-if="$apollo.loading" />
-    <tl-msg-error v-else-if="error">{{ error }}</tl-msg-error>
+    <tl-msg-error v-else-if="error">
+      {{ error }}
+    </tl-msg-error>
     <div v-else-if="processedPatterns.length === 0">
       No trip patterns were found for this route.
     </div>
@@ -108,7 +110,7 @@
 
 <script>
 import haversine from 'haversine'
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 const q = gql`
 query ($route_ids: [Int!]!, $radius:Float!, $include_nearby_stops:Boolean!) {
   routes(ids: $route_ids) {
@@ -180,7 +182,7 @@ export default {
       default: false
     }
   },
-  data() {
+  data () {
     return {
       routes: [],
       selectedPattern: null,
@@ -193,8 +195,8 @@ export default {
     routes: {
       client: 'transitland',
       query: q,
-      error(e) { this.error = e },
-      variables() {
+      error (e) { this.error = e },
+      variables () {
         return {
           route_ids: this.routeIds,
           radius: this.radius,
@@ -239,7 +241,7 @@ export default {
     //     children
     //   }
     // },
-    patterns() {
+    patterns () {
       const pats = []
       for (const route of this.routes) {
         for (const pat of route.patterns) {
@@ -250,7 +252,7 @@ export default {
       }
       return pats
     },
-    activePattern() {
+    activePattern () {
       for (const pat of this.processedPatterns) {
         if (pat.stop_pattern_id === this.selectedPattern) {
           return pat
@@ -261,7 +263,7 @@ export default {
       }
       return null
     },
-    multiAgency() {
+    multiAgency () {
       const a = new Set()
       for (const pat of this.patterns) {
         for (const st of pat.trips[0].stop_times) {
@@ -274,7 +276,7 @@ export default {
       }
       return a.size > 1
     },
-    processedPatterns() {
+    processedPatterns () {
       let totalTrips = 0
       for (const pat of this.patterns) {
         totalTrips += pat.count
@@ -324,13 +326,13 @@ export default {
     }
   },
   methods: {
-    firstOrLast(idx, v) {
+    firstOrLast (idx, v) {
       if (idx === 0 || idx === v.length - 1) {
         return true
       }
       return false
     },
-    nearbyRouteStops(stop) {
+    nearbyRouteStops (stop) {
       const rids = new Set()
       for (const route of this.routes) {
         rids.add(route.onestop_id)
@@ -364,7 +366,7 @@ export default {
   }
 }
 
-function hsin(fromPoint, toPoint) {
+function hsin (fromPoint, toPoint) {
   const d = haversine({
     latitude: fromPoint.coordinates[1],
     longitude: fromPoint.coordinates[0]

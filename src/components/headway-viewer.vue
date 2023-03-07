@@ -81,7 +81,7 @@
 </template>
 
 <script>
-function parseHMS(value) {
+function parseHMS (value) {
   const a = (value || '').split(':').map((s) => { return parseInt(s, 10) })
   if (a.length !== 3) {
     return null
@@ -89,7 +89,7 @@ function parseHMS(value) {
   return a[0] * 3600 + a[1] * 60 + a[2]
 }
 
-function departureFilter(values, vmin, vmax) {
+function departureFilter (values, vmin, vmax) {
   const ret = []
   for (let i = 0; i < values.length - 1; i++) {
     const a = values[i]
@@ -107,19 +107,19 @@ function departureFilter(values, vmin, vmax) {
 
 export default {
   filters: {
-    parseHMS(value) {
+    parseHMS (value) {
       return parseHMS(value)
     }
   },
   props: {
-    headways: { type: Array, default() { return [] } },
+    headways: { type: Array, default () { return [] } },
     showMorning: { type: Boolean, default: true },
     showMidday: { type: Boolean, default: true },
     showAfternoon: { type: Boolean, default: true },
     showNight: { type: Boolean, default: true }
   },
   computed: {
-    hws() {
+    hws () {
       const hwlookup = {
         1: 'weekday',
         6: 'saturday',

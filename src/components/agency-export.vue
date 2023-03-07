@@ -6,15 +6,15 @@
       :agency-ids="agencyIds"
       :overlay="true"
       :link-version="linkVersion"
-      @setRouteFeatures="routeFeatures = $event"
-      @setStopFeatures="stopFeatures = $event"
+      @set-route-features="routeFeatures = $event"
+      @set-stop-features="stopFeatures = $event"
     />
 
     <data-export
       :agency-ids="agencyIds"
       :route-features="routeFeatures"
       :stop-features="stopFeatures"
-      @setFeatures="features = $event"
+      @set-features="features = $event"
     />
   </div>
 </template>
@@ -24,12 +24,13 @@ export default {
   props: {
     agencyIds: {
       type: Array,
-      default() {
+      default () {
         return []
       }
+
     }
   },
-  data() {
+  data () {
     return {
       linkVersion: true,
       routes: [],

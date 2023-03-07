@@ -1,7 +1,9 @@
 <template>
   <div>
     <tl-loading v-if="$apollo.loading" />
-    <tl-msg-error v-else-if="error">{{ error }}</tl-msg-error>
+    <tl-msg-error v-else-if="error">
+      {{ error }}
+    </tl-msg-error>
     <div v-else-if="entity">
       <Title>{{ staticTitle }}</Title>
       <Meta
@@ -195,13 +197,17 @@
               v-if="showEdit"
               variant="primary"
               @click="saveEntity"
-            >Save</o-button>
+            >
+              Save
+            </o-button>
             <o-button
               v-else
               variant="primary"
               icon-left="pencil"
               @click="showEdit = true"
-            >Edit</o-button>
+            >
+              Edit
+            </o-button>
           </div>
         </div>
       </slot>
@@ -255,11 +261,11 @@
       />
 
       <o-tabs
-        class="tl-tabs"
         v-model="activeTab"
+        class="tl-tabs"
         type="boxed"
         :animated="false"
-        @update:modelValue="setTab"
+        @update:model-value="setTab"
       >
         <o-tab-item label="Files">
           <tl-file-info-viewer :files="entity.files" />
@@ -369,7 +375,7 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
 
 const importQuery = gql`
@@ -460,7 +466,7 @@ export default {
     entities: {
       client: 'transitland',
       query: q,
-      variables() {
+      variables () {
         return {
           feed_version_sha1: this.feedVersionSha1
         }
@@ -471,7 +477,7 @@ export default {
     canEdit: { type: Boolean, default: false },
     feedVersionSha1: { type: String, default: null }
   },
-  data() {
+  data () {
     return {
       showEdit: false,
       importLoading: false,
@@ -488,20 +494,20 @@ export default {
     }
   },
   computed: {
-    imported() {
+    imported () {
       return this.fvi && this.fvi.success
     },
-    fvi() {
+    fvi () {
       return (this.entity && this.entity.feed_version_gtfs_import) ? this.entity.feed_version_gtfs_import : null
     },
-    rowCount() {
+    rowCount () {
       const ret = {}
       for (const f of this.entity.files || []) {
         ret[f.name] = f.rows
       }
       return ret
     },
-    operatorOrAgencyNames() {
+    operatorOrAgencyNames () {
       if (this.entity && this.entity.agencies && this.entity.agencies.length > 0) {
         let names = this.entity.agencies.slice(0, 3).map(a => a.agency_name)
         if (this.entity.agencies.length > 3) {
@@ -514,15 +520,15 @@ export default {
         return this.entity.feed.onestop_id
       }
     },
-    staticTitle() {
+    staticTitle () {
       return `${this.entity.feed.onestop_id} • ${this.entity.sha1} • Feed version`
     },
-    staticDescription() {
+    staticDescription () {
       return `An archived GTFS feed version for ${this.operatorOrAgencyNames} from the feed with a Onestop ID of ${this.$route.params.feed} first fetched at ${this.entity.fetched_at}. This feed version contains ${this.rowCount['agency.txt'] ? this.rowCount['agency.txt'].toLocaleString() : '-'} agencies, ${this.rowCount['routes.txt'] ? this.rowCount['routes.txt'].toLocaleString() : '-'} routes, and ${this.rowCount['stops.txt'] ? this.rowCount['stops.txt'].toLocaleString() : '-'} stops.`
     }
   },
   methods: {
-    saveEntity() {
+    saveEntity () {
       this.$apollo
         .mutate({
           client: 'transitland',
@@ -534,7 +540,7 @@ export default {
               description: this.entity.description
             }
           },
-          update: (store, { data }) => {
+          update: () => {
             this.showEdit = false
             this.$apollo.queries.entities.refetch()
           }
@@ -542,7 +548,7 @@ export default {
           this.setError(500, error)
         })
     },
-    importFeedVersion() {
+    importFeedVersion () {
       this.importLoading = true
       this.$apollo
         .mutate({
@@ -551,7 +557,7 @@ export default {
           variables: {
             sha1: this.entity.sha1
           },
-          update: (store, { data }) => {
+          update: () => {
             this.importLoading = false
             this.$apollo.queries.entities.refetch()
           }
@@ -559,7 +565,7 @@ export default {
           this.setError(500, error)
         })
     },
-    mergedCount(fvi) {
+    mergedCount (fvi) {
       const m = {}
       if (!fvi) { return m }
       for (const [a, b] of Object.entries(fvi.entity_count || {})) {

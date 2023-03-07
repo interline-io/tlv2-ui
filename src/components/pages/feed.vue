@@ -1,7 +1,9 @@
 <template>
   <div>
     <tl-loading v-if="$apollo.loading" />
-    <tl-msg-error v-else-if="error">{{ error }}</tl-msg-error>
+    <tl-msg-error v-else-if="error">
+      {{ error }}
+    </tl-msg-error>
     <div v-else-if="entity">
       <Title>{{ staticTitle }}</Title>
       <Meta
@@ -228,7 +230,6 @@
               {{ staticDescription }}
             </div>
           </slot>
-
         </div>
 
         <slot
@@ -288,11 +289,11 @@
         </h4>
 
         <o-tabs
-          class="tl-tabs"
           v-model="activeTab"
+          class="tl-tabs"
           type="boxed"
           :animated="false"
-          @update:modelValue="setTab"
+          @update:model-value="setTab"
         >
           <o-tab-item label="Versions">
             <o-table
@@ -435,7 +436,7 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
 
 const q = gql`
@@ -526,7 +527,7 @@ query($onestop_id: String) {
 }
 `
 
-function isEmpty(obj) {
+function isEmpty (obj) {
   if (!obj) { return false }
   for (const [k, v] of Object.entries(obj)) {
     if (k && k[0] !== '_' && v && v.length > 0) {
@@ -536,7 +537,7 @@ function isEmpty(obj) {
   return false
 }
 
-function first(v) {
+function first (v) {
   if (v && v.length > 0) {
     return v[0]
   }
@@ -549,7 +550,7 @@ export default {
     entities: {
       client: 'transitland',
       query: q,
-      variables() {
+      variables () {
         return this.searchKey
       }
     }
@@ -558,7 +559,7 @@ export default {
     showDownloadColumn: { type: Boolean, default: true },
     showOperators: { type: Boolean, default: true }
   },
-  data() {
+  data () {
     return {
       displayDownloadInstructions: false,
       displayDownloadSha1: '',
@@ -569,26 +570,26 @@ export default {
     }
   },
   computed: {
-    feedSpec() {
+    feedSpec () {
       return this.entity?.spec?.toUpperCase()?.replace('_', '-')
     },
-    mostRecentFeedInfo() {
+    mostRecentFeedInfo () {
       return this.entity?.feed_versions[0]?.feed_infos[0]
     },
-    lastFetch() {
+    lastFetch () {
       return first(this.entity.last_fetch)
     },
-    lastSuccessfulFetch() {
+    lastSuccessfulFetch () {
       return (this.entity.last_successful_fetch && this.entity.last_successful_fetch.length > 0) ? this.entity.last_successful_fetch[0] : null
     },
-    latestFeedVersionSha1() {
+    latestFeedVersionSha1 () {
       const s = this.entity?.feed_versions.slice(0).sort((a, b) => { return a.fetched_at - b.fetched_at })
       if (s.length > 0) {
         return s[0].sha1
       }
       return ''
     },
-    operatorNames() {
+    operatorNames () {
       let operatorNames = null
       const names = (this.entity.associated_operators || []).map((o) => {
         if (o.short_name) {
@@ -604,23 +605,23 @@ export default {
       }
       return operatorNames
     },
-    displayLicense() {
+    displayLicense () {
       if (this.entity) {
         return isEmpty(this.entity.license)
       }
       return false
     },
-    displayAuthorization() {
+    displayAuthorization () {
       if (this.entity) {
         return isEmpty(this.entity.authentication)
       }
       return false
     },
-    displayUrls() {
+    displayUrls () {
       if (this.entity) { return isEmpty(this.entity.urls) }
       return false
     },
-    staticTitle() {
+    staticTitle () {
       let title = `feed details: ${this.entity.onestop_id}`
       title = this.feedSpec + ' ' + title
       if (this.entity.associated_operators) {
@@ -628,7 +629,7 @@ export default {
       }
       return title
     },
-    staticDescription() {
+    staticDescription () {
       const operatorDescription = (this.entity && this.entity.associated_operators) ? ` with data for ${this.entity.name || this.operatorNames}` : ''
       const fvCount = this.entity.feed_versions.length
       let description = `This is a ${this.feedSpec} feed ${operatorDescription} with the Onestop ID of ${this.entity.onestop_id}.`
@@ -643,7 +644,7 @@ export default {
     }
   },
   methods: {
-    showDownloadInstructions(sha1) {
+    showDownloadInstructions (sha1) {
       this.displayDownloadSha1 = sha1
       this.displayDownloadInstructions = true
     }

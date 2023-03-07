@@ -1,6 +1,8 @@
 <template>
   <div>
-    <tl-msg-error v-if="error">{{ error }}</tl-msg-error>
+    <tl-msg-error v-if="error">
+      {{ error }}
+    </tl-msg-error>
     <div v-else>
       <tl-search-bar
         v-model="search"
@@ -60,7 +62,7 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 import TableViewerMixin from './table-viewer-mixin'
 
 const q = gql`
@@ -96,10 +98,10 @@ export default {
     showRoutes: { type: Boolean, default: true },
     showAgencies: { type: Boolean, default: false },
     feedVersionSha1: { type: String, default: null },
-    agencyIds: { type: Array, default() { return [] } },
+    agencyIds: { type: Array, default () { return [] } },
     linkVersion: { type: Boolean, default: false }
   },
-  data() {
+  data () {
     return {
       sortField: 'stop_id',
       sortOrder: 'asc'
@@ -109,7 +111,7 @@ export default {
     entities: {
       client: 'transitland',
       query: q,
-      variables() {
+      variables () {
         return {
           search: this.search,
           limit: this.limit,
@@ -117,7 +119,7 @@ export default {
           agency_ids: this.agencyIds
         }
       },
-      error(e) { this.error = e }
+      error (e) { this.error = e }
     }
   }
 }

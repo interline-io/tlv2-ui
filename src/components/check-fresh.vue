@@ -12,14 +12,14 @@ export default {
     fetched: { type: String, default: null }
   },
   computed: {
-    dataFreshness() {
+    dataFreshness () {
       const daysAgo = []
       const n = new Date()
       try {
         const n2 = Date.parse(this.fetched)
         daysAgo.push(Math.floor((n2 - n) / (1000 * 3600 * 24 * -1)))
       } catch {
-        console.log("error parsing data freshness")
+        console.log('error parsing data freshness')
       }
       return Math.max(...daysAgo)
     }

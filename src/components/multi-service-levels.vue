@@ -111,7 +111,7 @@
               </template>
               {{ formatDay(col.key, j) }}<br>
               Feed: {{ $filters.shortenName(cell.feed_onestop_id, 16) }} ({{ $filters.shortenName(cell.feed_version_sha1,
-                6)
+                                                                                                  6)
               }})<br>
               Fetched: {{ $filters.formatDate(cell.fetched_at) }}<br>
               {{ Math.ceil(dayval / 3600) }} service hours <br>
@@ -161,7 +161,7 @@
 
 <script>
 import { parseISO, format, add, isBefore } from 'date-fns'
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 
 const q = gql`
 query ($feed_version_ids: [Int!], $start_date: Date, $end_date: Date) {
@@ -195,12 +195,12 @@ export default {
     showServiceRelative: { type: Boolean, default: true },
     showGroupInfo: { type: Boolean, default: true },
     showDateSelector: { type: Boolean, default: true },
-    fvids: { type: Array, default() { return [] } },
-    maxWeeks: { type: Number, default() { return null } },
-    weekAgg: { type: Boolean, default() { return true } },
-    useFeedVersions: { type: Array, default() { return [] } }
+    fvids: { type: Array, default () { return [] } },
+    maxWeeks: { type: Number, default () { return null } },
+    weekAgg: { type: Boolean, default () { return true } },
+    useFeedVersions: { type: Array, default () { return [] } }
   },
-  data() {
+  data () {
     return {
       dowNames,
       feed_versions: this.useFeedVersions,
@@ -214,19 +214,19 @@ export default {
     feed_versions: {
       client: 'transitland',
       query: q,
-      skip() { return this.useFeedVersions.length > 0 },
-      variables() {
+      skip () { return this.useFeedVersions.length > 0 },
+      variables () {
         return {
           feed_version_ids: this.fvids,
           start_date: this.startDate,
           end_date: this.endDate
         }
       },
-      error(e) { this.error = e }
+      error (e) { this.error = e }
     }
   },
   computed: {
-    fvsls() {
+    fvsls () {
       const a = []
       for (const fv of this.feed_versions) {
         for (const fvsl of fv.service_levels) {
@@ -236,7 +236,7 @@ export default {
       return a
     },
     displayStartDate: {
-      get() {
+      get () {
         if (this.startDate) {
           return this.startDate
         }
@@ -246,12 +246,12 @@ export default {
         }
         return parseISO('2020-01-01')
       },
-      set(v) {
+      set (v) {
         this.startDate = v
       }
     },
     displayEndDate: {
-      get() {
+      get () {
         if (this.endDate) {
           return this.endDate
         }
@@ -261,11 +261,11 @@ export default {
         }
         return parseISO('2020-01-01')
       },
-      set(v) {
+      set (v) {
         this.endDate = v
       }
     },
-    displayWeeks() {
+    displayWeeks () {
       const g = []
       let startDate = this.displayStartDate
       const endDate = this.displayEndDate
@@ -278,7 +278,7 @@ export default {
       }
       return g
     },
-    colGroups() {
+    colGroups () {
       // Create a grid of results
       const groups = new Map()
       const rowmax = new Map()
@@ -359,7 +359,7 @@ export default {
         cols
       }
     },
-    daysOfWeek() {
+    daysOfWeek () {
       if (this.weekAgg) {
         return ['']
       }
@@ -367,11 +367,11 @@ export default {
     }
   },
   methods: {
-    formatDay(start, offset) {
+    formatDay (start, offset) {
       const d = parseISO(start.substr(0, 10))
       return format(add(d, { days: offset }), 'PPPP')
     },
-    formatMonth(v) {
+    formatMonth (v) {
       const s = v.split('-')
       const t = parseInt(s[1])
       const d = parseInt(s[2])
@@ -383,7 +383,7 @@ export default {
       }
       return months[t]
     },
-    cmap(v) {
+    cmap (v) {
       const c = Math.floor((1 - (v)) * 50) + 50
       return {
         'background-color': 'hsl(215,100%,' + c + '%)'
@@ -490,7 +490,6 @@ const months = {
 .cell:hover .tt {
   visibility: visible;
 }
-
 
 .datepicker .dropdown-content {
   z-index: 100;

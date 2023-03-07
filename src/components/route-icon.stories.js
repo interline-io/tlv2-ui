@@ -20,7 +20,7 @@ export default {
   }
 }
 
-export const Route = (arg, { argTypes }) => ({
+export const Route = (_, { argTypes }) => ({
   props: Object.keys(argTypes),
   template: '<tl-route-icon v-bind="$props" />'
 })

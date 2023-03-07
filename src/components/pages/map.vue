@@ -12,15 +12,15 @@
       :hash="true"
       :marker-coords="searchCoords"
       map-class="tall"
-      @setZoom="setZoom"
-      @setAgencyFeatures="setAgencyFeatures"
-      @mapClick="mapClick"
-      @mapMove="mapMove"
+      @set-zoom="setZoom"
+      @set-agency-features="setAgencyFeatures"
+      @map-click="mapClick"
+      @map-move="mapMove"
     />
     <div class="tl-map-panel tl-map-panel-tabs">
       <o-tabs
-        class="tl-tabs block"
         v-model="activeTab"
+        class="tl-tabs block"
         position="centered"
         type="boxed"
       >
@@ -37,7 +37,7 @@
           <tl-map-search
             :zoom="currentZoom"
             :bbox="currentBbox"
-            @setGeolocation="setGeolocation"
+            @set-geolocation="setGeolocation"
           />
           <tl-stop-departures
             v-if="activeTab === 2"
@@ -54,7 +54,6 @@
           </p>
         </o-tab-item>
         <o-tab-item label="Options">
-
           <div class="field">
             <o-checkbox v-model="showGeneratedGeometries">
               Show stop-to-stop geometries
@@ -65,8 +64,6 @@
               Show problematic geometries
             </o-checkbox>
           </div>
-
-
         </o-tab-item>
       </o-tabs>
     </div>
@@ -75,7 +72,7 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       activeTab: 1,
       initialZoom: 1.5,
@@ -102,32 +99,32 @@ export default {
     }
   },
   watch: {
-    activeTab() {
+    activeTab () {
       // Hacky; always set modal back to empty when switching tabs
       this.isComponentModalActive = false
       this.setCoords(null)
     }
   },
   methods: {
-    mapMove(e) {
+    mapMove (e) {
       this.currentZoom = e.zoom
       this.currentBbox = e.bbox
     },
-    setAgencyFeatures(e) {
+    setAgencyFeatures (e) {
       this.agencyFeatures = e
     },
-    setCoords(coords) {
+    setCoords (coords) {
       this.searchCoords = coords
     },
-    setZoom(v) {
+    setZoom (v) {
       this.currentZoom = v
     },
-    setGeolocation(coords) {
+    setGeolocation (coords) {
       this.setCoords(coords)
       this.center = coords
       this.initialZoom = 16
     },
-    mapClick(e) {
+    mapClick (e) {
       if (this.activeTab === 2) {
         this.setCoords([e.lngLat.lng, e.lngLat.lat])
       } else {

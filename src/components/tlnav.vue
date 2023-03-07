@@ -32,7 +32,6 @@
 
       <div class="navbar-end">
         <div class="navbar-item">
-
           <tl-nav-search-bar
             @focus="searchFocus = true"
             @blur="searchFocus = false"
@@ -45,7 +44,7 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       searchFocus: false,
       apikey: null,
@@ -74,7 +73,7 @@ export default {
     }
   },
   computed: {
-    searchBarWidth() {
+    searchBarWidth () {
       return { 'flex-grow': this.searchFocus ? 1 : 0.25 }
     }
   }
