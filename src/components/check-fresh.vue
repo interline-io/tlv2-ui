@@ -19,6 +19,7 @@ export default {
         const n2 = Date.parse(this.fetched)
         daysAgo.push(Math.floor((n2 - n) / (1000 * 3600 * 24 * -1)))
       } catch {
+        console.log("error parsing data freshness")
       }
       return Math.max(...daysAgo)
     }

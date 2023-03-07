@@ -21,8 +21,15 @@
           </o-field>
 
           <o-field v-if="showRadiusSelector">
-            <o-select v-model="radius" size="small">
-              <option v-for="r of allowedRadius" :key="r" :value="r">
+            <o-select
+              v-model="radius"
+              size="small"
+            >
+              <option
+                v-for="r of allowedRadius"
+                :key="r"
+                :value="r"
+              >
                 {{ r }}m
               </option>
             </o-select>
@@ -31,11 +38,19 @@
             </p>
           </o-field>
 
-          <o-checkbox v-if="showAutoRefresh" v-model="autoRefresh" size="small">
+          <o-checkbox
+            v-if="showAutoRefresh"
+            v-model="autoRefresh"
+            size="small"
+          >
             Auto-refresh
           </o-checkbox>
 
-          <o-checkbox v-if="showFallbackSelector" v-model="useServiceWindow" size="small">
+          <o-checkbox
+            v-if="showFallbackSelector"
+            v-model="useServiceWindow"
+            size="small"
+          >
             Fallback service day
           </o-checkbox>
         </o-field>
@@ -46,22 +61,26 @@
         <h6 class="title is-6">
           No results
         </h6>
-        <div>Unfortunately, no departures were found at this location for the selected location and time. Try increasing the search radius or selecting the "fallback service day" option.</div>
+        <div>Unfortunately, no departures were found at this location for the selected location and time. Try increasing
+          the search radius or selecting the "fallback service day" option.</div>
       </div>
       <div v-else>
-        <div v-for="(ss, sskey) of filteredStopsGroupRoutes" :key="sskey">
+        <div
+          v-for="(ss, sskey) of filteredStopsGroupRoutes"
+          :key="sskey"
+        >
           <h6 class="title is-6">
             {{ ss.agency.agency_name }}
           </h6>
-          <div v-for="(sr,srkey) of ss.routes.slice(0,routesPerAgencyShadow)" :key="srkey" class="is-clearfix">
-            <div
-              class="is-pulled-left tl-route-icon-fade-out"
-            >
-              <nuxt-link
-                :to="{name:'routes-onestop_id', params:{onestop_id:sr.route.onestop_id}}"
-              >
+          <div
+            v-for="(sr, srkey) of ss.routes.slice(0, routesPerAgencyShadow)"
+            :key="srkey"
+            class="is-clearfix"
+          >
+            <div class="is-pulled-left tl-route-icon-fade-out">
+              <nuxt-link :to="{ name: 'routes-onestop_id', params: { onestop_id: sr.route.onestop_id } }">
                 <tl-route-icon
-                  :key="'icon'+sr.route.id"
+                  :key="'icon' + sr.route.id"
                   :name-icon="(sr.direction_id === 0 ? 'arrow-left' : 'arrow-right')"
                   :route-type="sr.route.route_type"
                   :route-short-name="sr.route.route_short_name"
@@ -72,23 +91,44 @@
             </div>
             <div class="tl-route-icon-departures">
               <o-field grouped>
-                <tl-tag v-for="st of sr.departures.slice(0,3)" :key="st.trip.id">
+                <tl-tag
+                  v-for="st of sr.departures.slice(0, 3)"
+                  :key="st.trip.id"
+                >
                   <template v-if="st.departure.estimated">
-                    {{ $filters.reformatHMS(st.departure.estimated) }} &nbsp;<o-icon variant="success" size="small" icon="wifi" />
+                    {{ $filters.reformatHMS(st.departure.estimated) }} &nbsp;<o-icon
+                      variant="success"
+                      size="small"
+                      icon="wifi"
+                    />
                   </template><template v-else>
-                    {{ $filters.reformatHMS(st.departure.scheduled) }} &nbsp;<o-icon variant="success" size="small" icon="blank" />
+                    {{ $filters.reformatHMS(st.departure.scheduled) }} &nbsp;<o-icon
+                      variant="success"
+                      size="small"
+                      icon="blank"
+                    />
                   </template>
                 </tl-tag>
               </o-field>
             </div>
           </div>
-          <div v-if="ss.routes.length > routesPerAgencyShadow" class="is-clearfix">
-            <span class="button small ml-5" @click="expandRoutesPerAgency">Click to show {{ ss.routes.length - routesPerAgencyShadow }} additional rows</span>
+          <div
+            v-if="ss.routes.length > routesPerAgencyShadow"
+            class="is-clearfix"
+          >
+            <span
+              class="button small ml-5"
+              @click="expandRoutesPerAgency"
+            >Click to show {{ ss.routes.length - routesPerAgencyShadow }} additional rows</span>
           </div>
         </div>
       </div>
     </div>
-    <div v-if="lastFetched" :key="lastFetchedDisplayKey" class="last-fetched">
+    <div
+      v-if="lastFetched"
+      :key="lastFetchedDisplayKey"
+      class="last-fetched"
+    >
       Last checked: {{ $filters.fromNowDate(lastFetched) }}
     </div>
   </div>
@@ -159,22 +199,22 @@ query( $stopIds: [Int!], $where: StopFilter, $stwhere: StopTimeFilter, $includeG
 export default {
   layout: 'map',
   props: {
-    searchCoords: { type: Array, default () { return null } },
-    nextSeconds: { type: Number, default () { return 7200 } },
-    routesPerAgency: { type: Number, default () { return 10 } },
-    showDateSelector: { type: Boolean, default () { return false } },
-    showRadiusSelector: { type: Boolean, default () { return false } },
-    showFallbackSelector: { type: Boolean, default () { return false } },
-    showAutoRefresh: { type: Boolean, default () { return false } },
-    showLastFetched: { type: Boolean, default () { return false } },
-    autoRefreshInterval: { type: Number, default () { return 60 } },
-    stopIds: { type: Array, default () { return [] } }
+    searchCoords: { type: Array, default() { return null } },
+    nextSeconds: { type: Number, default() { return 7200 } },
+    routesPerAgency: { type: Number, default() { return 10 } },
+    showDateSelector: { type: Boolean, default() { return false } },
+    showRadiusSelector: { type: Boolean, default() { return false } },
+    showFallbackSelector: { type: Boolean, default() { return false } },
+    showAutoRefresh: { type: Boolean, default() { return false } },
+    showLastFetched: { type: Boolean, default() { return false } },
+    autoRefreshInterval: { type: Number, default() { return 60 } },
+    stopIds: { type: Array, default() { return [] } }
   },
   apollo: {
     departureQuery: {
       query,
-      skip () { return !this.searchCoords && this.stopIds.length === 0 },
-      variables () {
+      skip() { return !this.searchCoords && this.stopIds.length === 0 },
+      variables() {
         const q = {
           stwhere: {
             use_service_window: this.useServiceWindow,
@@ -185,17 +225,17 @@ export default {
         if (this.searchCoords) { q.where = { near: { lon: this.searchCoords[0], lat: this.searchCoords[1], radius: this.radius } } }
         return q
       },
-      update (data) {
+      update(data) {
         this.resetTimer()
         this.stops = data.stops
         this.lastFetched = new Date()
       },
-      error (e) {
+      error(e) {
         this.error = e
       }
     }
   },
-  data () {
+  data() {
     return {
       timer: null,
       error: null,
@@ -212,7 +252,7 @@ export default {
     }
   },
   computed: {
-    routeFeatures () {
+    routeFeatures() {
       const features = new Map()
       for (const stop of this.stops || []) {
         for (const rs of stop.route_stops) {
@@ -243,7 +283,7 @@ export default {
       }
       return Array.from(features.values())
     },
-    stopFeatures () {
+    stopFeatures() {
       const features = []
       for (const g of this.stops || []) {
         features.push({
@@ -255,13 +295,13 @@ export default {
       }
       return features
     },
-    currentPoint () {
+    currentPoint() {
       return {
         type: 'Point',
         coordinates: this.searchCoords
       }
     },
-    filteredStops () {
+    filteredStops() {
       return this.stops.filter((s) => {
         return s.departures.length > 0 && s.location_type === 0 && s.geometry.coordinates
       }).sort((a, b) => {
@@ -270,7 +310,7 @@ export default {
         return ad - bd
       })
     },
-    filteredStopsGroupRoutes () {
+    filteredStopsGroupRoutes() {
       const makeRouteKey = function (d) {
         return `${d.trip.direction_id}:${d.trip.route.route_short_name}:${d.trip.route.route_long_name}:${d.trip.trip_headsign}`
       }
@@ -344,41 +384,41 @@ export default {
     }
   },
   watch: {
-    autoRefresh (v) {
+    autoRefresh(v) {
       // Helper to restart interval
       if (v) {
         this.refetch()
       }
     },
-    searchCoords (v) {
+    searchCoords() {
       this.stops = []
     }
   },
-  mounted () {
+  mounted() {
     // Force redraw
     setInterval(() => {
       this.lastFetchedDisplayKey += 1
     }, 1000)
   },
   methods: {
-    startTimer () {
+    startTimer() {
       this.timer = setInterval(() => {
         if (this.autoRefresh) {
           this.refetch()
         }
       }, this.autoRefreshInterval * 1000)
     },
-    resetTimer () {
+    resetTimer() {
       window.clearInterval(this.timer)
       this.startTimer()
     },
-    refetch () {
+    refetch() {
       this.$apollo.queries.departureQuery.refetch()
     },
-    expandRoutesPerAgency () {
+    expandRoutesPerAgency() {
       this.routesPerAgencyShadow = 1000
     },
-    haversine (fromPoint, toPoint) {
+    haversine(fromPoint, toPoint) {
       const d = haversine({
         latitude: fromPoint.coordinates[1],
         longitude: fromPoint.coordinates[0]
@@ -394,48 +434,48 @@ export default {
 
 <style scoped>
 .search-options {
-  padding-top:10px
+  padding-top: 10px
 }
 
 .tl-route-icon-departures {
-  text-align:left;
-  display:inline-block;
-  margin:0px;
-  padding:0px;
-  padding-top:5px;
+  text-align: left;
+  display: inline-block;
+  margin: 0px;
+  padding: 0px;
+  padding-top: 5px;
   white-space: nowrap;
 }
 
 .tl-route-icon-departures .message {
-  margin-right:5px;
-  width:80px;
+  margin-right: 5px;
+  width: 80px;
 }
 
 .tl-route-icon-departures .message .icon {
-  display:inline-block;
-  width:20px;
+  display: inline-block;
+  width: 20px;
 }
 
 .tl-route-icon-fade-out {
-  display:inline-block;
-  width:250px;
-  -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1) 90%, rgba(0,0,0,0));
+  display: inline-block;
+  width: 250px;
+  -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 90%, rgba(0, 0, 0, 0));
 }
 
 .last-fetched {
-  padding-top:10px;
-  font-size:0.75rem;
+  padding-top: 10px;
+  font-size: 0.75rem;
 }
 
 .button-like {
-    padding-bottom: 0.5em;
-    padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  padding-top: 0.5em;
 }
 
 .button-like-small {
-    font-size: 0.75rem;
-    padding-left:10px;
-    padding-bottom: 0.5em;
-    padding-top: 0.5em;
+  font-size: 0.75rem;
+  padding-left: 10px;
+  padding-bottom: 0.5em;
+  padding-top: 0.5em;
 }
 </style>

@@ -15,7 +15,10 @@
         @mapClick="mapClick"
         @setZoom="currentZoom = $event"
       />
-      <div v-if="overlay" class="tl-map-panel">
+      <div
+        v-if="overlay"
+        class="tl-map-panel"
+      >
         <tl-map-route-list
           :current-zoom="currentZoom"
           :link-version="linkVersion"
@@ -79,8 +82,8 @@ export default {
     routes: {
       client: 'transitland',
       query: q,
-      error (e) { this.error = e },
-      variables () {
+      error(e) { this.error = e },
+      variables() {
         return {
           include_stops: this.includeStops,
           feed_version_sha1: this.feedVersionSha1,
@@ -99,12 +102,12 @@ export default {
     routeIds: { type: Array, default: null },
     agencyIds: { type: Array, default: null },
     linkVersion: { type: Boolean, default: false },
-    features: { type: Array, default () { return [] } },
-    center: { type: Array, default () { return [] } },
+    features: { type: Array, default() { return [] } },
+    center: { type: Array, default() { return [] } },
     zoom: { type: Number, default: null },
     enableScrollZoom: { type: Boolean, default: false }
   },
-  data () {
+  data() {
     return {
       routes: [],
       error: null,
@@ -114,7 +117,7 @@ export default {
     }
   },
   computed: {
-    routeFeatures () {
+    routeFeatures() {
       const features = []
       for (const feature of this.routes) {
         if (!feature.geometries || feature.geometries.length === 0) {
@@ -147,7 +150,7 @@ export default {
       }
       return features
     },
-    stopFeatures () {
+    stopFeatures() {
       const features = []
       for (const feature of this.routes) {
         for (const g of feature.route_stops || []) {
@@ -166,15 +169,15 @@ export default {
     }
   },
   watch: {
-    routeFeatures (v) {
+    routeFeatures(v) {
       this.$emit('setRouteFeatures', v)
     },
-    stopFeatures (v) {
+    stopFeatures(v) {
       this.$emit('setSopFeatures', v)
     }
   },
   methods: {
-    mapClick (e) {
+    mapClick() {
       if (Object.keys(this.agencyFeatures).length > 0) {
         this.isComponentModalActive = true
       }
@@ -185,24 +188,26 @@ export default {
 
 <style>
 .tl-map {
-  position:relative
+  position: relative
 }
+
 .tl-map-panel {
-    background-color: white;
-    user-select: none;
-    position: absolute !important;
-    margin: 0px;
-    padding: 10px;
-    top: 10px;
-    left: 10px;
-    width: 565px;
+  background-color: white;
+  user-select: none;
+  position: absolute !important;
+  margin: 0px;
+  padding: 10px;
+  top: 10px;
+  left: 10px;
+  width: 565px;
 }
+
 .tl-map-panel-tabs .tab-content {
-    background-color: rgba(255, 255, 255, 0.9);
-    margin: 0px;
-    padding-left: 10px;
-    padding-right: 10px;
-    max-height:80vh;
-    overflow-y:auto;
+  background-color: rgba(255, 255, 255, 0.9);
+  margin: 0px;
+  padding-left: 10px;
+  padding-right: 10px;
+  max-height: 80vh;
+  overflow-y: auto;
 }
 </style>

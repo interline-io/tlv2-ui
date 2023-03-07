@@ -2,7 +2,11 @@
   <div>
     <div>
       <div v-if="Object.keys(agencyFeatures).length > 0">
-        <tl-route-select :agency-features="agencyFeatures" :collapse="true" :link="true" />
+        <tl-route-select
+          :agency-features="agencyFeatures"
+          :collapse="true"
+          :link="true"
+        />
       </div>
       <div v-else>
         <h6 class="title is-6">
@@ -23,15 +27,26 @@
         :on-cancel="close"
       >
         <template #default>
-          <div v-if="isComponentModalActive" class="modal-card">
+          <div
+            v-if="isComponentModalActive"
+            class="modal-card"
+          >
             <header class="modal-card-head">
               <p class="modal-card-title">
                 Select Route
               </p>
-              <button type="button" class="delete" @click="close" />
+              <button
+                type="button"
+                class="delete"
+                @click="close"
+              />
             </header>
             <section class="modal-card-body">
-              <tl-route-select :agency-features="agencyFeatures" :link="true" :link-version="linkVersion" />
+              <tl-route-select
+                :agency-features="agencyFeatures"
+                :link="true"
+                :link-version="linkVersion"
+              />
             </section>
           </div>
         </template>
@@ -43,13 +58,13 @@
 <script>
 export default {
   props: {
-    currentZoom: { type: Number, default () { return 0 } },
+    currentZoom: { type: Number, default() { return 0 } },
     linkVersion: { type: Boolean, default: false },
     isComponentModalActive: { type: Boolean, default: false },
-    agencyFeatures: { type: Object, default () { return {} } }
+    agencyFeatures: { type: Object, default() { return {} } }
   },
   methods: {
-    close () {
+    close() {
       this.$emit('close')
     }
   }

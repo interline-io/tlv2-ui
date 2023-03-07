@@ -51,7 +51,7 @@ query ($search: String!) {
 const asyncDebounceTime = 200
 
 export default {
-  data () {
+  data() {
     return {
       search: '',
       data: [],
@@ -59,7 +59,7 @@ export default {
     }
   },
   methods: {
-    clearSearch () {
+    clearSearch() {
       this.$emit('blur')
       this.search = ''
     },

@@ -15,16 +15,33 @@
       >
         <template #default="props">
           {{ props.option.stop_name }}
-          <div v-for="rs of props.option.route_stops" :key="rs.route.id" class="clearfix tag">
+          <div
+            v-for="rs of props.option.route_stops"
+            :key="rs.route.id"
+            class="clearfix tag"
+          >
             {{ rs.route.agency.agency_name }} :{{ rs.route.route_short_name }}
           </div>
         </template>
       </o-autocomplete>
       <o-field>
-        <span v-if="!locationUse" class="button" @click="watchLocation"><o-icon icon="crosshairs" /></span>
-        <span v-if="locationError" class="button"><o-icon icon="crosshairs" /></span>
-        <span v-else-if="locationUse && locationLoading" class="button"><o-icon icon="loading" /></span>
-        <span v-else-if="locationUse && !locationLoading" class="button"><o-icon icon="crosshairs-gps" /></span>
+        <span
+          v-if="!locationUse"
+          class="button"
+          @click="watchLocation"
+        ><o-icon icon="crosshairs" /></span>
+        <span
+          v-if="locationError"
+          class="button"
+        ><o-icon icon="crosshairs" /></span>
+        <span
+          v-else-if="locationUse && locationLoading"
+          class="button"
+        ><o-icon icon="loading" /></span>
+        <span
+          v-else-if="locationUse && !locationLoading"
+          class="button"
+        ><o-icon icon="crosshairs-gps" /></span>
       </o-field>
     </o-field>
     <tl-msg-warning v-if="locationError">
@@ -63,10 +80,10 @@ export default {
   apollo: {
     boundedStopsQuery: {
       query: stopSearchQuery,
-      skip () {
+      skip() {
         return this.search.length < this.minSearchLength || !this.bboxPolygon || this.zoom < 8
       },
-      variables () {
+      variables() {
         return {
           where: {
             search: this.search,
@@ -74,32 +91,32 @@ export default {
           }
         }
       },
-      update (data) {
+      update(data) {
         this.boundedStops = data.stops
       }
     },
     unboundedStopsQuery: {
       query: stopSearchQuery,
-      skip () {
+      skip() {
         return this.search.length < this.minSearchLength
       },
-      variables () {
+      variables() {
         return {
           where: {
             search: this.search
           }
         }
       },
-      update (data) {
+      update(data) {
         this.unboundedStops = data.stops
       }
     }
   },
   props: {
-    bbox: { type: Array, default () { return null } },
-    zoom: { type: Number, default () { return 0 } }
+    bbox: { type: Array, default() { return null } },
+    zoom: { type: Number, default() { return 0 } }
   },
-  data () {
+  data() {
     return {
       search: '',
       error: null,
@@ -113,7 +130,7 @@ export default {
     }
   },
   computed: {
-    stopSearch () {
+    stopSearch() {
       const boundedIds = {}
       const ret = []
       for (const stop of this.boundedStops) {
@@ -127,7 +144,7 @@ export default {
       }
       return ret
     },
-    bboxPolygon () {
+    bboxPolygon() {
       if (!this.bbox) { return null }
       const sw = this.bbox[0]
       const ne = this.bbox[1]
@@ -142,7 +159,7 @@ export default {
     }
   },
   watch: {
-    coords () {
+    coords() {
       const { error } = useGeolocation()
       this.locationError = error
       if (this.coords.accuracy === 0) {
@@ -152,19 +169,19 @@ export default {
     }
   },
   methods: {
-    setLocation (coords) {
+    setLocation(coords) {
       this.$emit('setGeolocation', coords)
       const { pause } = useGeolocation()
       pause()
       this.locationLoading = false
     },
-    watchLocation () {
+    watchLocation() {
       this.locationUse = true
       this.locationLoading = true
       const { coords } = useGeolocation()
       this.coords = coords
     },
-    typing (val) {
+    typing(val) {
       if (val.length >= this.minSearchLength) {
         this.search = val
       }

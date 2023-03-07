@@ -1,8 +1,17 @@
 <template>
   <div>
-    <div v-if="showFilters" class="block">
-      <o-field grouped expanded>
-        <o-field v-if="showServiceRelative" label="Service relative to">
+    <div
+      v-if="showFilters"
+      class="block"
+    >
+      <o-field
+        grouped
+        expanded
+      >
+        <o-field
+          v-if="showServiceRelative"
+          label="Service relative to"
+        >
           <o-select v-model="maxAggMode">
             <option value="all">
               All cells
@@ -13,20 +22,26 @@
           </o-select>
         </o-field>
 
-        <o-field v-if="showDateSelector" label="Start date">
+        <o-field
+          v-if="showDateSelector"
+          label="Start date"
+        >
           <o-datepicker
             v-model="displayStartDate"
-            :unselectable-days-of-week="[0,2,3,4,5,6]"
+            :unselectable-days-of-week="[0, 2, 3, 4, 5, 6]"
             placeholder="Click to select..."
             icon="calendar-today"
             trap-focus
           />
         </o-field>
 
-        <o-field v-if="showDateSelector" label="End date">
+        <o-field
+          v-if="showDateSelector"
+          label="End date"
+        >
           <o-datepicker
             v-model="displayEndDate"
-            :unselectable-days-of-week="[1,2,3,4,5,6]"
+            :unselectable-days-of-week="[1, 2, 3, 4, 5, 6]"
             placeholder="Click to select..."
             icon="calendar-today"
             trap-focus
@@ -35,36 +50,69 @@
 
         <!-- label is zero width joiner -->
         <o-field label="‍">
-          <span v-if="maxWeeks && displayWeeks.length >= maxWeeks" class="tag">Note: only {{ maxWeeks }} weeks are displayed</span>
+          <span
+            v-if="maxWeeks && displayWeeks.length >= maxWeeks"
+            class="tag"
+          >Note: only {{ maxWeeks }} weeks are displayed</span>
         </o-field>
       </o-field>
     </div>
 
     <div class="clearfix">
-      <div v-if="!weekAgg" class="col daylabel">
+      <div
+        v-if="!weekAgg"
+        class="col daylabel"
+      >
         <span class="cell month">&nbsp;</span>
         <div>
-          <div v-for="(row,i) of colGroups.rowinfo" :key="i">
-            <span v-for="(dow,j) of daysOfWeek" :key="j" class="cell rowlabel">
+          <div
+            v-for="(row, i) of colGroups.rowinfo"
+            :key="i"
+          >
+            <span
+              v-for="(dow, j) of daysOfWeek"
+              :key="j"
+              class="cell rowlabel"
+            >
               <template v-if="!weekAgg">
                 {{ dow }}
               </template>
             </span>
-            <span v-if="!weekAgg" class="cell break">&nbsp;</span>
+            <span
+              v-if="!weekAgg"
+              class="cell break"
+            >&nbsp;</span>
           </div>
         </div>
       </div>
 
-      <div v-for="col of colGroups.cols" :key="col.key" class="col">
+      <div
+        v-for="col of colGroups.cols"
+        :key="col.key"
+        class="col"
+      >
         <span class="cell month">{{ formatMonth(col.key) }}</span>
-        <div v-for="(cell,i) of col.rows" :key="i">
-          <span v-for="(dayval,j) of cell.vals" :key="j" class="cell value" :style="cmap(dayval / cell.max)">
-            <span v-if="cell.feed_version_sha1" class="tt">
+        <div
+          v-for="(cell, i) of col.rows"
+          :key="i"
+        >
+          <span
+            v-for="(dayval, j) of cell.vals"
+            :key="j"
+            class="cell value"
+            :style="cmap(dayval / cell.max)"
+          >
+            <span
+              v-if="cell.feed_version_sha1"
+              class="tt"
+            >
               <template v-if="weekAgg">
                 Week of
               </template>
               {{ formatDay(col.key, j) }}<br>
-              Feed: {{ $filters.shortenName(cell.feed_onestop_id,16) }} ({{ $filters.shortenName(cell.feed_version_sha1,6) }})<br>
+              Feed: {{ $filters.shortenName(cell.feed_onestop_id, 16) }} ({{ $filters.shortenName(cell.feed_version_sha1,
+                6)
+              }})<br>
               Fetched: {{ $filters.formatDate(cell.fetched_at) }}<br>
               {{ Math.ceil(dayval / 3600) }} service hours <br>
               <template v-if="maxAggMode === 'all'">
@@ -75,21 +123,36 @@
               </template>
             </span>
           </span>
-          <span v-if="!weekAgg" class="cell break">&nbsp;</span>
+          <span
+            v-if="!weekAgg"
+            class="cell break"
+          >&nbsp;</span>
         </div>
       </div>
 
       <div class="col rowlabel">
         <span class="cell month">&nbsp;</span>
-        <div v-for="(cell,i) of colGroups.rowinfo" :key="i">
-          <span v-for="(dow,j) of daysOfWeek" :key="j" class="cell rowlabel">
+        <div
+          v-for="(cell, i) of colGroups.rowinfo"
+          :key="i"
+        >
+          <span
+            v-for="(dow, j) of daysOfWeek"
+            :key="j"
+            class="cell rowlabel"
+          >
             <template v-if="showGroupInfo">.
-              <nuxt-link :to="{name:'feeds-feed-versions-version', hash: '#service', params:{feed: cell.feed_onestop_id, version: cell.feed_version_sha1}}">
+              <nuxt-link
+                :to="{ name: 'feeds-feed-versions-version', hash: '#service', params: { feed: cell.feed_onestop_id, version: cell.feed_version_sha1 } }"
+              >
                 Fetched {{ $filters.formatDate(cell.fetched_at) }}
               </nuxt-link>
             </template>
           </span>
-          <span v-if="!weekAgg" class="cell break">&nbsp;</span>
+          <span
+            v-if="!weekAgg"
+            class="cell break"
+          >&nbsp;</span>
         </div>
       </div>
     </div>
@@ -132,12 +195,12 @@ export default {
     showServiceRelative: { type: Boolean, default: true },
     showGroupInfo: { type: Boolean, default: true },
     showDateSelector: { type: Boolean, default: true },
-    fvids: { type: Array, default () { return [] } },
-    maxWeeks: { type: Number, default () { return null } },
-    weekAgg: { type: Boolean, default () { return true } },
-    useFeedVersions: { type: Array, default () { return [] } }
+    fvids: { type: Array, default() { return [] } },
+    maxWeeks: { type: Number, default() { return null } },
+    weekAgg: { type: Boolean, default() { return true } },
+    useFeedVersions: { type: Array, default() { return [] } }
   },
-  data () {
+  data() {
     return {
       dowNames,
       feed_versions: this.useFeedVersions,
@@ -151,19 +214,19 @@ export default {
     feed_versions: {
       client: 'transitland',
       query: q,
-      skip () { return this.useFeedVersions.length > 0 },
-      variables () {
+      skip() { return this.useFeedVersions.length > 0 },
+      variables() {
         return {
           feed_version_ids: this.fvids,
           start_date: this.startDate,
           end_date: this.endDate
         }
       },
-      error (e) { this.error = e }
+      error(e) { this.error = e }
     }
   },
   computed: {
-    fvsls () {
+    fvsls() {
       const a = []
       for (const fv of this.feed_versions) {
         for (const fvsl of fv.service_levels) {
@@ -173,7 +236,7 @@ export default {
       return a
     },
     displayStartDate: {
-      get () {
+      get() {
         if (this.startDate) {
           return this.startDate
         }
@@ -183,12 +246,12 @@ export default {
         }
         return parseISO('2020-01-01')
       },
-      set (v) {
+      set(v) {
         this.startDate = v
       }
     },
     displayEndDate: {
-      get () {
+      get() {
         if (this.endDate) {
           return this.endDate
         }
@@ -198,11 +261,11 @@ export default {
         }
         return parseISO('2020-01-01')
       },
-      set (v) {
+      set(v) {
         this.endDate = v
       }
     },
-    displayWeeks () {
+    displayWeeks() {
       const g = []
       let startDate = this.displayStartDate
       const endDate = this.displayEndDate
@@ -215,7 +278,7 @@ export default {
       }
       return g
     },
-    colGroups () {
+    colGroups() {
       // Create a grid of results
       const groups = new Map()
       const rowmax = new Map()
@@ -296,7 +359,7 @@ export default {
         cols
       }
     },
-    daysOfWeek () {
+    daysOfWeek() {
       if (this.weekAgg) {
         return ['']
       }
@@ -304,11 +367,11 @@ export default {
     }
   },
   methods: {
-    formatDay (start, offset) {
+    formatDay(start, offset) {
       const d = parseISO(start.substr(0, 10))
       return format(add(d, { days: offset }), 'PPPP')
     },
-    formatMonth (v) {
+    formatMonth(v) {
       const s = v.split('-')
       const t = parseInt(s[1])
       const d = parseInt(s[2])
@@ -320,7 +383,7 @@ export default {
       }
       return months[t]
     },
-    cmap (v) {
+    cmap(v) {
       const c = Math.floor((1 - (v)) * 50) + 50
       return {
         'background-color': 'hsl(215,100%,' + c + '%)'
@@ -358,54 +421,54 @@ const months = {
 
 <style scoped>
 .col {
-    width: 16px;
-    float: left;
-    padding-bottom:1px;
+  width: 16px;
+  float: left;
+  padding-bottom: 1px;
 }
 
 .cell {
-    position: relative;
-    display:block;
-    width:16px;
-    height:16px;
-    border:solid 1px #fff;
+  position: relative;
+  display: block;
+  width: 16px;
+  height: 16px;
+  border: solid 1px #fff;
 }
 
 .value:hover {
-    border:solid 1px #ff0000;
+  border: solid 1px #ff0000;
 }
 
 .days {
-  font-size:8pt;
+  font-size: 8pt;
   width: 200px !important;
 }
 
 .month {
-    width:100px;
-    font-size:10pt;
-    border:none;
-  margin-bottom:10px;
+  width: 100px;
+  font-size: 10pt;
+  border: none;
+  margin-bottom: 10px;
 }
 
 .daylabel {
   width: 50px;
-  font-size:10pt;
+  font-size: 10pt;
 }
 
 .rowlabel {
   white-space: nowrap;
   text-overflow: clip;
-  width:150px;
-  font-size:10pt;
+  width: 150px;
+  font-size: 10pt;
   padding-left: 10px;
-  border:none;
+  border: none;
 }
 
 .break {
-  height:1px;
-  border-bottom:solid 1px #ccc;
-  margin-top:10px;
-  margin-bottom:10px;
+  height: 1px;
+  border-bottom: solid 1px #ccc;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 .tt {
@@ -430,8 +493,7 @@ const months = {
 
 
 .datepicker .dropdown-content {
-    z-index:100;
-    box-shadow: none !important;
+  z-index: 100;
+  box-shadow: none !important;
 }
-
 </style>

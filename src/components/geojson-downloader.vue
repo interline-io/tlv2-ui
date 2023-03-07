@@ -1,5 +1,8 @@
 <template>
-  <button class="button mr-2" @click="saveFile">
+  <button
+    class="button mr-2"
+    @click="saveFile"
+  >
     {{ label }}
   </button>
 </template>
@@ -9,12 +12,12 @@ import sanitize from 'sanitize-filename'
 
 export default {
   props: {
-    features: { type: Array, default () { return [] } },
+    features: { type: Array, default() { return [] } },
     filename: { type: String, default: 'export.geojson' },
     label: { type: String, default: 'Download' }
   },
   methods: {
-    saveFile () {
+    saveFile() {
       const data = JSON.stringify(
         {
           type: 'FeatureCollection',

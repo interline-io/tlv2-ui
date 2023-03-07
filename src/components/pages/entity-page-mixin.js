@@ -2,7 +2,7 @@ export default {
   apollo: {
     $query: {
       client: 'transitland',
-      error (e) { this.error = e },
+      error(e) { this.error = e },
       update(data) {
         if (data && data.entities && data.entities.length === 0) {
           return this.setError(404, 'Not found')

@@ -18,7 +18,12 @@
       @mapMove="mapMove"
     />
     <div class="tl-map-panel tl-map-panel-tabs">
-      <o-tabs class="tl-tabs block" v-model="activeTab" position="centered" type="boxed">
+      <o-tabs
+        class="tl-tabs block"
+        v-model="activeTab"
+        position="centered"
+        type="boxed"
+      >
         <o-tab-item label="Routes">
           <tl-map-route-list
             v-if="activeTab === 1"
@@ -42,25 +47,24 @@
             :search-coords="searchCoords"
           />
           <p class="content block is-pulled-right is-small">
-            <a href="https://www.transit.land/documentation/rest-api/" target="_blank">Learn more about Transitland APIs</a>
+            <a
+              href="https://www.transit.land/documentation/rest-api/"
+              target="_blank"
+            >Learn more about Transitland APIs</a>
           </p>
         </o-tab-item>
         <o-tab-item label="Options">
 
           <div class="field">
-      <o-checkbox
-        v-model="showGeneratedGeometries"
-      >
-        Show stop-to-stop geometries
-      </o-checkbox>
-    </div>
-    <div class="field">
-      <o-checkbox
-      v-model="showProblematicGeometries"
-      >
-        Show problematic geometries
-      </o-checkbox>
-    </div>
+            <o-checkbox v-model="showGeneratedGeometries">
+              Show stop-to-stop geometries
+            </o-checkbox>
+          </div>
+          <div class="field">
+            <o-checkbox v-model="showProblematicGeometries">
+              Show problematic geometries
+            </o-checkbox>
+          </div>
 
 
         </o-tab-item>
@@ -71,7 +75,7 @@
 
 <script>
 export default {
-  data () {
+  data() {
     return {
       activeTab: 1,
       initialZoom: 1.5,
@@ -98,32 +102,32 @@ export default {
     }
   },
   watch: {
-    activeTab () {
+    activeTab() {
       // Hacky; always set modal back to empty when switching tabs
       this.isComponentModalActive = false
       this.setCoords(null)
     }
   },
   methods: {
-    mapMove (e) {
+    mapMove(e) {
       this.currentZoom = e.zoom
       this.currentBbox = e.bbox
     },
-    setAgencyFeatures (e) {
+    setAgencyFeatures(e) {
       this.agencyFeatures = e
     },
-    setCoords (coords) {
+    setCoords(coords) {
       this.searchCoords = coords
     },
-    setZoom (v) {
+    setZoom(v) {
       this.currentZoom = v
     },
-    setGeolocation (coords) {
+    setGeolocation(coords) {
       this.setCoords(coords)
       this.center = coords
       this.initialZoom = 16
     },
-    mapClick (e) {
+    mapClick(e) {
       if (this.activeTab === 2) {
         this.setCoords([e.lngLat.lng, e.lngLat.lat])
       } else {
@@ -143,42 +147,41 @@ export default {
 }
 
 .tl-map-panel {
-    user-select: none;
-    position: absolute !important;
-    margin: 0px;
-    padding: 10px;
-    top: 10px;
-    left: 10px;
-    width: 565px;
+  user-select: none;
+  position: absolute !important;
+  margin: 0px;
+  padding: 10px;
+  top: 10px;
+  left: 10px;
+  width: 565px;
 }
 
 .tl-map-panel-tabs {
-    background: none;
+  background: none;
 }
 
 .tl-map-panel-tabs div[role=tab] a {
-    margin-right: 5px;
+  margin-right: 5px;
 }
 
 .tl-map-panel-tabs div[role=tab] a {
-    background-color: rgba(235, 235, 235, 0.9) !important;
+  background-color: rgba(235, 235, 235, 0.9) !important;
 }
 
 .tl-map-panel-tabs div[role=tab][aria-selected=true] a {
-    background-color: rgba(255, 255, 255, 0.9) !important;
+  background-color: rgba(255, 255, 255, 0.9) !important;
 }
 
 .tl-map-panel-tabs .tab-content {
-    background-color: rgba(255, 255, 255, 0.9);
-    margin: 0px;
-    padding-left: 10px;
-    padding-right: 10px;
-    max-height:80vh;
-    overflow-y:auto;
+  background-color: rgba(255, 255, 255, 0.9);
+  margin: 0px;
+  padding-left: 10px;
+  padding-right: 10px;
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
-.tl-map-panel .dropdown-content{
-    position: fixed;
-    max-width:80%;
-}
-</style>
+.tl-map-panel .dropdown-content {
+  position: fixed;
+  max-width: 80%;
+}</style>

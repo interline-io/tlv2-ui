@@ -6,6 +6,10 @@ const isDev = process.env.NODE_ENV === "development";
 
 export default defineNuxtConfig({
   ssr: true,
+  typescript: {
+    strict: true,
+    shim: false
+  },
   modules: [
     './modules/tlv2-ui'
   ],

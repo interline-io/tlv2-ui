@@ -1,8 +1,11 @@
 <template>
   <div>
-    <tl-msg-error v-if="error">{{ error  }}</tl-msg-error>
+    <tl-msg-error v-if="error">{{ error }}</tl-msg-error>
     <div v-else>
-      <tl-search-bar v-model="search" placeholder="Filter Stops" />
+      <tl-search-bar
+        v-model="search"
+        placeholder="Filter Stops"
+      />
       <o-table
         :loading="$apollo.loading"
         :data="entityPage"
@@ -16,7 +19,7 @@
           :width="140"
         >
           <nuxt-link
-            :to="{name:'stops-onestop_id', params:{onestop_id:props.row.onestop_id}, query: (linkVersion ? {feed_onestop_id:props.row.feed_onestop_id, feed_version_sha1:props.row.feed_version_sha1, entity_id:props.row.stop_id} : {})}"
+            :to="{ name: 'stops-onestop_id', params: { onestop_id: props.row.onestop_id }, query: (linkVersion ? { feed_onestop_id: props.row.feed_onestop_id, feed_version_sha1: props.row.feed_version_sha1, entity_id: props.row.stop_id } : {}) }"
           >
             {{ props.row.stop_id }}
           </nuxt-link>
@@ -30,14 +33,28 @@
           {{ props.row.stop_name }}
         </o-table-column>
 
-        <o-table-column v-if="showAgencies" v-slot="props" field="agencies" label="Agencies">
-          {{ $filters.joinUnique(props.row.route_stops.map((s)=>{return s.agency.agency_name})) }}
+        <o-table-column
+          v-if="showAgencies"
+          v-slot="props"
+          field="agencies"
+          label="Agencies"
+        >
+          {{ $filters.joinUnique(props.row.route_stops.map((s) => { return s.agency.agency_name })) }}
         </o-table-column>
-        <o-table-column v-if="showRoutes" v-slot="props" field="routes" label="Routes">
-          {{ $filters.joinUnique(props.row.route_stops.map((s)=>{return s.route.route_short_name})) }}
+        <o-table-column
+          v-if="showRoutes"
+          v-slot="props"
+          field="routes"
+          label="Routes"
+        >
+          {{ $filters.joinUnique(props.row.route_stops.map((s) => { return s.route.route_short_name })) }}
         </o-table-column>
       </o-table>
-      <tl-show-more v-if="entities.length === limit || hasMore" :limit="entities.length" @click="showAll" />
+      <tl-show-more
+        v-if="entities.length === limit || hasMore"
+        :limit="entities.length"
+        @click="showAll"
+      />
     </div>
   </div>
 </template>
@@ -79,10 +96,10 @@ export default {
     showRoutes: { type: Boolean, default: true },
     showAgencies: { type: Boolean, default: false },
     feedVersionSha1: { type: String, default: null },
-    agencyIds: { type: Array, default () { return [] } },
+    agencyIds: { type: Array, default() { return [] } },
     linkVersion: { type: Boolean, default: false }
   },
-  data () {
+  data() {
     return {
       sortField: 'stop_id',
       sortOrder: 'asc'
@@ -92,7 +109,7 @@ export default {
     entities: {
       client: 'transitland',
       query: q,
-      variables () {
+      variables() {
         return {
           search: this.search,
           limit: this.limit,
@@ -100,7 +117,7 @@ export default {
           agency_ids: this.agencyIds
         }
       },
-      error (e) { this.error = e }
+      error(e) { this.error = e }
     }
   }
 }

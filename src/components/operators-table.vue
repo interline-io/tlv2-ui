@@ -2,16 +2,33 @@
     <div>
         props: {{ props }}
         args: {{ args }}
-        <o-field grouped
-            :label="filteringByOperatorLocation ? 'Filter by operator location' : 'Search by operator name or location'">
-            <tl-search-bar v-model="args.search" placeholder="e.g. Bay Area Rapid Transit" />
+        <o-field
+            grouped
+            :label="filteringByOperatorLocation ? 'Filter by operator location' : 'Search by operator name or location'"
+        >
+            <tl-search-bar
+                v-model="args.search"
+                placeholder="e.g. Bay Area Rapid Transit"
+            />
 
-            <o-dropdown position="bottom-left" append-to-body aria-role="menu" trap-focus>
+            <o-dropdown
+                position="bottom-left"
+                append-to-body
+                aria-role="menu"
+                trap-focus
+            >
                 <template #trigger="{ active }">
-                    <o-button label="Options" variant="primary" :icon-left="active ? 'menu-up' : 'menu-down'" />
+                    <o-button
+                        label="Options"
+                        variant="primary"
+                        :icon-left="active ? 'menu-up' : 'menu-down'"
+                    />
                 </template>
 
-                <o-dropdown-item aria-role="menu-item" custom>
+                <o-dropdown-item
+                    aria-role="menu-item"
+                    custom
+                >
                     <div class="field">
                         <o-checkbox v-model="merged">
                             Group agencies by operator
@@ -28,23 +45,55 @@
         </o-field>
 
         <o-field>
-            <o-field v-if="search" expanded>
-                <tl-tag attached closable aria-close-label="Close tag" @close="clearQuery">
+            <o-field
+                v-if="search"
+                expanded
+            >
+                <tl-tag
+                    attached
+                    closable
+                    aria-close-label="Close tag"
+                    @close="clearQuery"
+                >
                     {{ search }}
                 </tl-tag>
-            </o-field>            
-            <o-field v-if="adm0Name" expanded>
-                <tl-tag attached closable aria-close-label="Close tag" @close="clearQuery">
+            </o-field>
+            <o-field
+                v-if="adm0Name"
+                expanded
+            >
+                <tl-tag
+                    attached
+                    closable
+                    aria-close-label="Close tag"
+                    @close="clearQuery"
+                >
                     Country: {{ adm0Name }}
                 </tl-tag>
             </o-field>
-            <o-field v-if="adm1Name" expanded>
-                <tl-tag attached closable aria-close-label="Close tag" @close="clearQuery">
+            <o-field
+                v-if="adm1Name"
+                expanded
+            >
+                <tl-tag
+                    attached
+                    closable
+                    aria-close-label="Close tag"
+                    @close="clearQuery"
+                >
                     State/Province: {{ adm1Name }}
                 </tl-tag>
             </o-field>
-            <o-field v-if="cityName" expanded>
-                <tl-tag attached closable aria-close-label="Close tag" @close="clearQuery">
+            <o-field
+                v-if="cityName"
+                expanded
+            >
+                <tl-tag
+                    attached
+                    closable
+                    aria-close-label="Close tag"
+                    @close="clearQuery"
+                >
                     City: {{ cityName }}
                 </tl-tag>
             </o-field>
@@ -53,7 +102,10 @@
 
         <tl-msg-error v-if="error">{{ error }}</tl-msg-error>
 
-        <table class="table is-striped" style="width:100%">
+        <table
+            class="table is-striped"
+            style="width:100%"
+        >
             <thead>
                 <tr>
                     <th>Operator Name (Short Name)</th>
@@ -63,7 +115,10 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="row of entities" :key="row.id">
+                <tr
+                    v-for="row of entities"
+                    :key="row.id"
+                >
                     <td>
                         <nuxt-link :to="{ name: 'operators-onestop_id', params: { onestop_id: row.onestop_id } }">
                             {{ row.name }}
@@ -79,15 +134,23 @@
                     <td>
                         <o-tooltip
                             :label="row.other_places.filter((s) => { return s.city_name }).map((s) => { return s.city_name }).join(', ')"
-                            dashed>
+                            dashed
+                        >
                             {{ row.adm0_name }}
                         </o-tooltip>
                     </td>
                 </tr>
             </tbody>
         </table>
-        <tl-show-more v-if="entities.length >= limit" :limit="entities.length" @click="limit += 100" />
-        <o-loading :full-page="false" v-model:active="loading"></o-loading>
+        <tl-show-more
+            v-if="entities.length >= limit"
+            :limit="entities.length"
+            @click="limit += 100"
+        />
+        <o-loading
+            :full-page="false"
+            v-model:active="loading"
+        ></o-loading>
     </div>
 </template>
 
@@ -132,7 +195,7 @@ const nullBool = function (v) {
 }
 
 const props = defineProps({
-    modelValue: {type:Object, default () {return {}}},
+    modelValue: { type: Object, default() { return {} } },
     search: String,
     adm0Name: String,
     adm1Name: String,
@@ -163,10 +226,10 @@ const emit = defineEmits([
     'update:cityName'
 ])
 
-watch(args, (v)=>{
+watch(args, () => {
     console.log('args update')
     emit('update:modelValue', args)
-}, {deep:true})
+}, { deep: true })
 watch(search, (v) => { emit('update:search', v) })
 watch(adm0Name, (v) => { emit('update:adm0Name', v) })
 watch(adm1Name, (v) => { emit('update:adm1Name', v) })

@@ -1,30 +1,38 @@
 <template>
-  <nav class="navbar" role="navigation" aria-label="main navigation">
+  <nav
+    class="navbar"
+    role="navigation"
+    aria-label="main navigation"
+  >
     <div class="navbar-brand">
-      <nuxt-link class="navbar-item" :to="{ name: 'index' }">
+      <nuxt-link
+        class="navbar-item"
+        :to="{ name: 'index' }"
+      >
         <div class="logo-image" />
       </nuxt-link>
     </div>
 
     <div class="navbar-menu">
       <div class="navbar-start">
-          <nuxt-link
+        <nuxt-link
           v-for="item in items"
           :key="item.title"
-            :to="item.to"
-            class="navbar-item is-hoverable"
-            :class="
-              $route && $route.name && $route.name.startsWith(item.to.name)
-                ? 'is-active is-tab'
-                : ''
-            "
-          >
-            {{ item.title }}
-          </nuxt-link>
+          :to="item.to"
+          class="navbar-item is-hoverable"
+          :class="
+            $route && $route.name && $route.name.startsWith(item.to.name)
+              ? 'is-active is-tab'
+              : ''
+          "
+        >
+          {{ item.title }}
+        </nuxt-link>
       </div>
 
       <div class="navbar-end">
         <div class="navbar-item">
+
           <tl-nav-search-bar
             @focus="searchFocus = true"
             @blur="searchFocus = false"

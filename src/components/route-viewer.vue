@@ -2,7 +2,10 @@
   <div>
     <tl-msg-error v-if="error">{{ error }}</tl-msg-error>
     <div v-else>
-      <tl-search-bar v-model="search" placeholder="Filter Routes" />
+      <tl-search-bar
+        v-model="search"
+        placeholder="Filter Routes"
+      />
       <o-table
         :loading="$apollo.loading"
         :data="entityPage"
@@ -15,7 +18,7 @@
           :width="140"
         >
           <nuxt-link
-            :to="{name:'routes-onestop_id', params:{onestop_id:props.row.onestop_id || 'search'}, query: (linkVersion ? {feed_onestop_id:props.row.feed_onestop_id, feed_version_sha1:props.row.feed_version_sha1, entity_id:props.row.route_id} : {})}"
+            :to="{ name: 'routes-onestop_id', params: { onestop_id: props.row.onestop_id || 'search' }, query: (linkVersion ? { feed_onestop_id: props.row.feed_onestop_id, feed_version_sha1: props.row.feed_version_sha1, entity_id: props.row.route_id } : {}) }"
           >
             {{ props.row.route_id }}
           </nuxt-link>
@@ -38,11 +41,20 @@
           {{ props.row.route_long_name }}
         </o-table-column>
 
-        <o-table-column v-if="showAgency" v-slot="props" field="agency" label="Agency">
+        <o-table-column
+          v-if="showAgency"
+          v-slot="props"
+          field="agency"
+          label="Agency"
+        >
           {{ props.row.agency.agency_name }}
         </o-table-column>
       </o-table>
-      <tl-show-more v-if="entities.length === limit || hasMore" :limit="entities.length" @click="showAll" />
+      <tl-show-more
+        v-if="entities.length === limit || hasMore"
+        :limit="entities.length"
+        @click="showAll"
+      />
     </div>
   </div>
 </template>
@@ -87,7 +99,7 @@ export default {
     entities: {
       client: 'transitland',
       query: q,
-      variables () {
+      variables() {
         return {
           limit: this.limit,
           search: this.search,
@@ -95,11 +107,11 @@ export default {
           agency_ids: this.agencyIds
         }
       },
-      error (e) { this.error = e }
+      error(e) { this.error = e }
     }
   },
   methods: {
-    headwayTooltip (hws) {
+    headwayTooltip(hws) {
       // Buefy 0.9 will have a tooltip slot and we can use HeadwaysViewer
       const hwlookup = {
         1: 'weekday',

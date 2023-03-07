@@ -1,7 +1,16 @@
 <template>
-  <form style="flex: 1 0 auto;" @submit.prevent>
-    <div class="field has-addons" style="flex: 1 0 auto;">
-      <div class="control" style="flex: 1 0 auto;">
+  <form
+    style="flex: 1 0 auto;"
+    @submit.prevent
+  >
+    <div
+      class="field has-addons"
+      style="flex: 1 0 auto;"
+    >
+      <div
+        class="control"
+        style="flex: 1 0 auto;"
+      >
         <o-autocomplete
           :expanded="focused"
           :data="data"
@@ -18,7 +27,10 @@
         >
           <template #default="props">
             {{ props.option.name }}
-            <span class="is-pulled-right" style="color:#ccc">{{ props.option.type }}</span>
+            <span
+              class="is-pulled-right"
+              style="color:#ccc"
+            >{{ props.option.type }}</span>
           </template>
         </o-autocomplete>
       </div>
@@ -35,14 +47,14 @@
 import SearchBarMixin from './search-bar-mixin.js'
 export default {
   mixins: [SearchBarMixin],
-  data () {
+  data() {
     return {
       focused: false,
       selected: null
     }
   },
   watch: {
-    selected () {
+    selected() {
       this.$emit('blur')
       const key = this.selected ? this.selected.type : null
       const ent = this.selected.entity
@@ -69,27 +81,27 @@ export default {
     }
   },
   methods: {
-    typing (val) {
+    typing(val) {
       this.search = val
       return this.getAsyncData(val)
     },
-    selectOrSearch () {
+    selectOrSearch() {
       if (typeof this.selected !== 'undefined') {
         this.selected()
       } else {
         this.goToSearch()
       }
     },
-    goToSearch () {
+    goToSearch() {
       this.$emit('blur')
       this.$router.push({ name: 'search', query: { q: this.search } })
       this.clearSearch()
     },
-    focus () {
+    focus() {
       this.focused = true
       this.$emit('focus')
     },
-    blur () {
+    blur() {
       this.focused = false
       this.$emit('blur')
     }

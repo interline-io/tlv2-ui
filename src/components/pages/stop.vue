@@ -4,19 +4,34 @@
     <tl-msg-error v-else-if="error">{{ error }}</tl-msg-error>
     <div v-else-if="entity">
       <Title>{{ staticTitle }}</Title>
-      <Meta name="description" :content="staticDescription" />
-      <Meta name="twitter:title" :content="staticTitle" />
-      <Meta name="twitter:description" :content="staticDescription" />
-      <Meta name="og:title" :content="staticTitle" />
-      <Meta name="og:description" :content="staticDescription" />
+      <Meta
+        name="description"
+        :content="staticDescription"
+      />
+      <Meta
+        name="twitter:title"
+        :content="staticTitle"
+      />
+      <Meta
+        name="twitter:description"
+        :content="staticDescription"
+      />
+      <Meta
+        name="og:title"
+        :content="staticTitle"
+      />
+      <Meta
+        name="og:description"
+        :content="staticDescription"
+      />
 
       <nav class="breadcrumb">
         <ul>
           <li>
-            <a href="#">Stops            </a>
+            <a href="#">Stops </a>
           </li>
           <li>
-            <nuxt-link :to="{name: 'stops-onestop_id', params:{onestop_id:$route.params.onestop_id}}">
+            <nuxt-link :to="{ name: 'stops-onestop_id', params: { onestop_id: $route.params.onestop_id } }">
               {{ entity.stop_name }}
             </nuxt-link>
           </li>
@@ -28,7 +43,10 @@
 
       <!-- Warnings for freshness and viewing a specific version -->
       <tl-check-fresh :fetched="entity.feed_version.fetched_at" />
-      <tl-check-single :feed-onestop-id="feedOnestopId" :feed-version-sha1="feedVersionSha1" />
+      <tl-check-single
+        :feed-onestop-id="feedOnestopId"
+        :feed-version-sha1="feedVersionSha1"
+      />
 
       <!-- Main content -->
       <div class="columns">
@@ -44,7 +62,10 @@
                 </o-tooltip>
               </td>
               <td>
-                <div v-for="root of roots" :key="root.id">
+                <div
+                  v-for="root of roots"
+                  :key="root.id"
+                >
                   {{ root.onestop_id }}
                 </div>
               </td>
@@ -52,7 +73,10 @@
             <tr>
               <td>Name</td>
               <td>
-                <div v-for="root of roots" :key="root.id">
+                <div
+                  v-for="root of roots"
+                  :key="root.id"
+                >
                   {{ root.stop_name }}
                 </div>
               </td>
@@ -60,26 +84,34 @@
             <tr v-if="stopUrls.length > 0">
               <td>URL</td>
               <td>
-                <div v-for="stop of stopUrls" :key="stop.id">
+                <div
+                  v-for="stop of stopUrls"
+                  :key="stop.id"
+                >
                   {{ stop.stop_url }}
                   <a
                     :href="stop.stop_url"
                     target="_blank"
-                  ><o-icon
-                    icon="link"
-                  /></a>
+                  ><o-icon icon="link" /></a>
                 </div>
               </td>
             </tr>
             <tr>
               <td>GTFS ID</td>
               <td>
-                <div v-for="root of roots" :key="root.id">
+                <div
+                  v-for="root of roots"
+                  :key="root.id"
+                >
                   <template v-if="(root.children || []).length > 0">
                     Station:
                   </template>
                   {{ root.stop_id }}
-                  <div v-for="child of root.children || []" :key="child.id" class="child-stop-id">
+                  <div
+                    v-for="child of root.children || []"
+                    :key="child.id"
+                    class="child-stop-id"
+                  >
                     Platform: {{ child.stop_id }}
                   </div>
                 </div>
@@ -88,7 +120,10 @@
             <tr v-if="stopDescs.length > 0">
               <td>Description</td>
               <td>
-                <div v-for="stop of stopDescs" :key="stop.id">
+                <div
+                  v-for="stop of stopDescs"
+                  :key="stop.id"
+                >
                   {{ stop.stop_desc }}
                 </div>
               </td>
@@ -103,35 +138,60 @@
             >gtfs.org</a>.
           </tl-msg-info>
 
-          <div v-for="ent of entities" :key="ent.id">
+          <div
+            v-for="ent of entities"
+            :key="ent.id"
+          >
             <tl-msg-warning
-              v-for="(alert,idx) of ent.alerts"
-              :key="idx">
+              v-for="(alert, idx) of ent.alerts"
+              :key="idx"
+            >
               Agency Alert:
-              <div v-for="tr of filterRTTranslations(alert.header_text)" :key="tr.text">
+              <div
+                v-for="tr of filterRTTranslations(alert.header_text)"
+                :key="tr.text"
+              >
                 {{ tr.text }}
               </div>
-              <div v-for="tr of filterRTTranslations(alert.description_text)" :key="tr.text">
+              <div
+                v-for="tr of filterRTTranslations(alert.description_text)"
+                :key="tr.text"
+              >
                 {{ tr.text }}
               </div>
             </tl-msg-warning>
           </div>
 
-          <o-tabs class="tl-tabs" v-model="activeTab" type="boxed" :animated="false" @update:modelValue="setTab">
+          <o-tabs
+            class="tl-tabs"
+            v-model="activeTab"
+            type="boxed"
+            :animated="false"
+            @update:modelValue="setTab"
+          >
             <o-tab-item label="Summary">
               <div v-if="servedRoutes">
                 <h6 class="title is-6">
                   Routes at this stop
                 </h6>
-                <div v-for="(rss,agency) of servedRoutes" :key="agency">
+                <div
+                  v-for="(rss, agency) of servedRoutes"
+                  :key="agency"
+                >
                   <div class="agency-name">
                     {{ agency }}
                   </div>
-                  <div v-for="rs of rss" :key="rs.route.id">
-                    <nuxt-link
-                      :to="{name:'routes-onestop_id', params:{onestop_id:rs.route.onestop_id}}"
-                    >
-                      <tl-route-icon :route-type="rs.route.route_type" :route-short-name="rs.route.route_short_name" :route-long-name="rs.route.route_long_name" :route-link="rs.route.route_url" />
+                  <div
+                    v-for="rs of rss"
+                    :key="rs.route.id"
+                  >
+                    <nuxt-link :to="{ name: 'routes-onestop_id', params: { onestop_id: rs.route.onestop_id } }">
+                      <tl-route-icon
+                        :route-type="rs.route.route_type"
+                        :route-short-name="rs.route.route_short_name"
+                        :route-long-name="rs.route.route_long_name"
+                        :route-link="rs.route.route_url"
+                      />
                     </nuxt-link>
                   </div>
                 </div>
@@ -141,22 +201,34 @@
                 <h6 class="title is-6">
                   Routes at nearby stops
                 </h6>
-                <div v-for="(rss,agency) of nearbyRoutes" :key="agency">
+                <div
+                  v-for="(rss, agency) of nearbyRoutes"
+                  :key="agency"
+                >
                   <div class="agency-name">
                     {{ agency }}
                   </div>
-                  <div v-for="rs of rss" :key="rs.route.id">
-                    <nuxt-link
-                      :to="{name:'routes-onestop_id', params:{onestop_id:rs.route.onestop_id}}"
-                    >
-                      <tl-route-icon :route-type="rs.route.route_type" :route-short-name="rs.route.route_short_name" :route-long-name="rs.route.route_long_name" :route-link="rs.route.route_url" />
+                  <div
+                    v-for="rs of rss"
+                    :key="rs.route.id"
+                  >
+                    <nuxt-link :to="{ name: 'routes-onestop_id', params: { onestop_id: rs.route.onestop_id } }">
+                      <tl-route-icon
+                        :route-type="rs.route.route_type"
+                        :route-short-name="rs.route.route_short_name"
+                        :route-long-name="rs.route.route_long_name"
+                        :route-link="rs.route.route_url"
+                      />
                     </nuxt-link>
                   </div>
                 </div>
               </div>
             </o-tab-item>
 
-            <o-tab-item v-if="entity.id" label="Departures">
+            <o-tab-item
+              v-if="entity.id"
+              label="Departures"
+            >
               <client-only placeholder="Departures">
                 <tl-stop-departures
                   v-if="activeTab == 2"
@@ -173,18 +245,34 @@
                 :data="allStops"
                 :striped="true"
               >
-                <o-table-column v-slot="props" field="feed_onestop_id" label="Feed">
-                  <nuxt-link :to="{name:'feeds-feed', params:{feed:props.row.feed_onestop_id}}">
+                <o-table-column
+                  v-slot="props"
+                  field="feed_onestop_id"
+                  label="Feed"
+                >
+                  <nuxt-link :to="{ name: 'feeds-feed', params: { feed: props.row.feed_onestop_id } }">
                     {{ $filters.shortenName(props.row.feed_onestop_id) }}
                   </nuxt-link>
                 </o-table-column>
-                <o-table-column v-slot="props" field="feed_version_sha1" label="Version">
-                  <nuxt-link :to="{name:'feeds-feed-versions-version', params:{feed:props.row.feed_onestop_id, version:props.row.feed_version_sha1}}">
+                <o-table-column
+                  v-slot="props"
+                  field="feed_version_sha1"
+                  label="Version"
+                >
+                  <nuxt-link
+                    :to="{ name: 'feeds-feed-versions-version', params: { feed: props.row.feed_onestop_id, version: props.row.feed_version_sha1 } }"
+                  >
                     {{ $filters.shortenName(props.row.feed_version_sha1, 8) }}
                   </nuxt-link>
                 </o-table-column>
-                <o-table-column v-slot="props" field="stop_id" label="Stop ID">
-                  <nuxt-link :to="{name:'stops-onestop_id', params:{onestop_id:props.row.onestop_id || 'search'}, query:{feed_onestop_id:props.row.feed_onestop_id, feed_version_sha1:props.row.feed_version_sha1, stop_id:props.row.stop_id}}">
+                <o-table-column
+                  v-slot="props"
+                  field="stop_id"
+                  label="Stop ID"
+                >
+                  <nuxt-link
+                    :to="{ name: 'stops-onestop_id', params: { onestop_id: props.row.onestop_id || 'search' }, query: { feed_onestop_id: props.row.feed_onestop_id, feed_version_sha1: props.row.feed_version_sha1, stop_id: props.row.stop_id } }"
+                  >
                     {{ $filters.shortenName(props.row.stop_id) }}
                   </nuxt-link>
                 </o-table-column>
@@ -309,13 +397,13 @@ export default {
   apollo: {
     entities: {
       query: q,
-      skip () { return this.checkSearchSkip(this.$route.query.stop_id) },
-      variables () {
+      skip() { return this.checkSearchSkip(this.$route.query.stop_id) },
+      variables() {
         return this.searchKey
       }
     }
   },
-  data () {
+  data() {
     return {
       radius: 1000,
       tabIndex: {
@@ -326,7 +414,7 @@ export default {
     }
   },
   computed: {
-    allAlerts  () {
+    allAlerts() {
       const ret = []
       for (const stop of this.allStops) {
         for (const alert of stop.alerts || []) {
@@ -336,7 +424,7 @@ export default {
       }
       return ret
     },
-    stopFeatures () {
+    stopFeatures() {
       const ret = []
       for (const i of this.allStops) {
         if (!i.geometry) {
@@ -346,7 +434,7 @@ export default {
       }
       return ret
     },
-    routeFeatures () {
+    routeFeatures() {
       const ret = []
       let featid = 1
       for (const rss of Object.values(this.servedRoutes || {})) {
@@ -381,7 +469,7 @@ export default {
       }
       return ret
     },
-    allStops () {
+    allStops() {
       const ret = {}
       for (const ent of this.roots) {
         ret[ent.id] = ent
@@ -394,7 +482,7 @@ export default {
       }
       return Object.values(ret)
     },
-    servedRoutes () {
+    servedRoutes() {
       const ret = {}
       for (const stop of this.allStops) {
         for (const rs of stop.route_stops || []) {
@@ -413,7 +501,7 @@ export default {
       }
       return byAgency
     },
-    nearbyStops () {
+    nearbyStops() {
       const ret = []
       const excl = {}
       for (const stop of this.allStops) {
@@ -430,7 +518,7 @@ export default {
       }
       return ret
     },
-    nearbyRoutes () {
+    nearbyRoutes() {
       const ret = {}
       const excl = {}
       for (const rss of Object.values(this.servedRoutes || {})) {
@@ -458,13 +546,13 @@ export default {
       }
       return byAgency
     },
-    stopUrls () {
+    stopUrls() {
       return this.allStops.filter((s) => { return s.stop_url })
     },
-    stopDescs () {
+    stopDescs() {
       return this.allStops.filter((s) => { return s.stop_desc })
     },
-    features () {
+    features() {
       const ret = []
       const sg = this.entity.geometry
       let featid = 1
@@ -472,7 +560,7 @@ export default {
         ret.push({
           type: 'Feature',
           id: featid,
-          properties: { },
+          properties: {},
           geometry: {
             type: 'LineString',
             coordinates: [
@@ -485,10 +573,10 @@ export default {
       }
       return ret
     },
-    entityIds () {
+    entityIds() {
       return this.allStops.map((s) => { return s.id })
     },
-    roots () {
+    roots() {
       const ret = {}
       for (const ent of this.entities) {
         if (ent.parent) {
@@ -499,31 +587,30 @@ export default {
       }
       return Object.values(ret)
     },
-    entity () {
+    entity() {
       return this.roots.length > 0 ? this.roots[0] : null
     },
-    staticTitle () {
+    staticTitle() {
       return `${this.entity.stop_name} • Stop`
     },
-    staticDescription () {
+    staticDescription() {
       return `${this.entity.stop_name} stop available for browsing and analyzing on the Transitland platform`
     }
   },
   methods: {
-    filterRTTranslations (v) {
+    filterRTTranslations(v) {
       return v.filter((s) => { return !s.language.includes('html') })
     }
   }
 }
 </script>
 
-<style scoped>
-.child-stop-id {
-  padding-left:20px;
+<style scoped>.child-stop-id {
+  padding-left: 20px;
 }
+
 .agency-name {
-  margin:0px;
-  margin-top:10px;
-  margin-bottom:10px;
-}
-</style>
+  margin: 0px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}</style>

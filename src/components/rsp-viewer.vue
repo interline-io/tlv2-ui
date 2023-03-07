@@ -1,13 +1,24 @@
 <template>
   <div>
-    <o-field grouped expanded class="controls-group">
-      <o-field label="Trip pattern" class="pr-3">
+    <o-field
+      grouped
+      expanded
+      class="controls-group"
+    >
+      <o-field
+        label="Trip pattern"
+        class="pr-3"
+      >
         <o-select
           v-model="selectedPattern"
           placeholder="Select a trip pattern"
           class="trip-select mr-4"
         >
-          <option v-for="pattern of processedPatterns" :key="pattern.stop_pattern_id" :value="pattern.stop_pattern_id">
+          <option
+            v-for="pattern of processedPatterns"
+            :key="pattern.stop_pattern_id"
+            :value="pattern.stop_pattern_id"
+          >
             {{ pattern.desc }}
           </option>
         </o-select>
@@ -18,7 +29,11 @@
           Show transfers
         </o-checkbox>
       </o-field>
-      <o-field v-if="showTransferRadius" label="Transfer search radius (m)" expanded>
+      <o-field
+        v-if="showTransferRadius"
+        label="Transfer search radius (m)"
+        expanded
+      >
         <o-slider
           v-model="radius"
           class="radius-select"
@@ -29,7 +44,10 @@
           ticks
           lazy
         >
-          <template v-for="val in [0,100,250,500]" :key="val">
+          <template
+            v-for="val in [0, 100, 250, 500]"
+            :key="val"
+          >
             <o-slider-tick :value="val">
               {{ val }}
             </o-slider-tick>
@@ -43,30 +61,37 @@
     <div v-else-if="processedPatterns.length === 0">
       No trip patterns were found for this route.
     </div>
-    <ul v-else-if="activePattern" class="stop-list">
-      <li v-for="(st) of activePattern.stop_times" :key="st.stop_sequence">
+    <ul
+      v-else-if="activePattern"
+      class="stop-list"
+    >
+      <li
+        v-for="(st) of activePattern.stop_times"
+        :key="st.stop_sequence"
+      >
         <p class="route-stop-name">
-          <nuxt-link
-            :to="{name:'stops-onestop_id', params:{onestop_id:st.stop.onestop_id}}"
-          >
+          <nuxt-link :to="{ name: 'stops-onestop_id', params: { onestop_id: st.stop.onestop_id } }">
             {{ st.stop.stop_name }}
           </nuxt-link>
         </p>
         <div v-if="shadowIncludeNearbyStops">
           <div
-            v-for="(rss,agency) of st.stop.routes"
+            v-for="(rss, agency) of st.stop.routes"
             :key="agency"
             class="route-link"
           >
-            <div v-if="multiAgency" class="agency-name">
+            <div
+              v-if="multiAgency"
+              class="agency-name"
+            >
               {{ agency }}
             </div>
-            <div v-for="rs of rss" :key="rs.id">
-              <nuxt-link
-                :to="{name:'routes-onestop_id', params:{onestop_id:rs.onestop_id}}"
-              >
+            <div
+              v-for="rs of rss"
+              :key="rs.id"
+            >
+              <nuxt-link :to="{ name: 'routes-onestop_id', params: { onestop_id: rs.onestop_id } }">
                 <tl-route-icon
-
                   :agency-name="rs.agency_name"
                   :route-short-name="rs.route_short_name"
                   :route-type="rs.route_type"
@@ -155,7 +180,7 @@ export default {
       default: false
     }
   },
-  data () {
+  data() {
     return {
       routes: [],
       selectedPattern: null,
@@ -168,8 +193,8 @@ export default {
     routes: {
       client: 'transitland',
       query: q,
-      error (e) { this.error = e },
-      variables () {
+      error(e) { this.error = e },
+      variables() {
         return {
           route_ids: this.routeIds,
           radius: this.radius,
@@ -214,7 +239,7 @@ export default {
     //     children
     //   }
     // },
-    patterns () {
+    patterns() {
       const pats = []
       for (const route of this.routes) {
         for (const pat of route.patterns) {
@@ -225,7 +250,7 @@ export default {
       }
       return pats
     },
-    activePattern () {
+    activePattern() {
       for (const pat of this.processedPatterns) {
         if (pat.stop_pattern_id === this.selectedPattern) {
           return pat
@@ -236,7 +261,7 @@ export default {
       }
       return null
     },
-    multiAgency () {
+    multiAgency() {
       const a = new Set()
       for (const pat of this.patterns) {
         for (const st of pat.trips[0].stop_times) {
@@ -249,7 +274,7 @@ export default {
       }
       return a.size > 1
     },
-    processedPatterns () {
+    processedPatterns() {
       let totalTrips = 0
       for (const pat of this.patterns) {
         totalTrips += pat.count
@@ -299,13 +324,13 @@ export default {
     }
   },
   methods: {
-    firstOrLast (idx, v) {
+    firstOrLast(idx, v) {
       if (idx === 0 || idx === v.length - 1) {
         return true
       }
       return false
     },
-    nearbyRouteStops (stop) {
+    nearbyRouteStops(stop) {
       const rids = new Set()
       for (const route of this.routes) {
         rids.add(route.onestop_id)
@@ -339,7 +364,7 @@ export default {
   }
 }
 
-function hsin (fromPoint, toPoint) {
+function hsin(fromPoint, toPoint) {
   const d = haversine({
     latitude: fromPoint.coordinates[1],
     longitude: fromPoint.coordinates[0]
@@ -354,53 +379,61 @@ function hsin (fromPoint, toPoint) {
 
 <style scoped>
 .connecting-routes {
-    padding-left:20px;
+  padding-left: 20px;
 }
+
 .stop-list p {
-  padding-left:40px;
+  padding-left: 40px;
 }
+
 .stop-list li .route-link {
-  margin-top:5px;
-  margin-left:40px;
+  margin-top: 5px;
+  margin-left: 40px;
 }
+
 .stop-list li {
-  margin:0px;
-  padding:10px;
+  margin: 0px;
+  padding: 10px;
 }
+
 .stop-list li {
-  background-image: url( '/svg/route-middle-1.svg' ) ;
+  background-image: url('/svg/route-middle-1.svg');
   background-repeat: no-repeat;
-  background-size:20px 4000px;
-  background-position:0px -18px;
+  background-size: 20px 4000px;
+  background-position: 0px -18px;
 }
+
 .stop-list li:first-child {
-  background-image: url( '/svg/route-start.svg' ) ;
+  background-image: url('/svg/route-start.svg');
   background-repeat: no-repeat;
-  background-size:20px 4000px;
-  background-position:0px 10px;
+  background-size: 20px 4000px;
+  background-position: 0px 10px;
 }
+
 .stop-list li:last-child {
-  background-image: url( '/svg/route-end.svg' ) ;
+  background-image: url('/svg/route-end.svg');
   background-repeat: no-repeat;
-  background-size:20px 100px;
-  background-position:0px -18px;
+  background-size: 20px 100px;
+  background-position: 0px -18px;
 }
+
 .route-stop-name {
-  font-weight:bold;
-  margin-bottom:10px;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
+
 .agency-name {
-  margin:0px;
-  margin-top:10px;
-  margin-bottom:10px;
+  margin: 0px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
-.adjust-checkbox {
-}
+
 .trip-select {
-  min-width:400px;
-  width:400px;
+  min-width: 400px;
+  width: 400px;
 }
+
 .radius-select {
-  width:200px;
+  width: 200px;
 }
 </style>

@@ -1,11 +1,26 @@
 <template>
   <div>
     <Title>{{ staticTitle }}</Title>
-    <Meta name="description" :content="staticDescription" />
-    <Meta name="twitter:title" :content="staticTitle" />
-    <Meta name="twitter:description" :content="staticDescription" />
-    <Meta name="og:title" :content="staticTitle" />
-    <Meta name="og:description" :content="staticDescription" />
+    <Meta
+      name="description"
+      :content="staticDescription"
+    />
+    <Meta
+      name="twitter:title"
+      :content="staticTitle"
+    />
+    <Meta
+      name="twitter:description"
+      :content="staticDescription"
+    />
+    <Meta
+      name="og:title"
+      :content="staticTitle"
+    />
+    <Meta
+      name="og:description"
+      :content="staticDescription"
+    />
 
     <slot name="nav" />
     <slot name="title">
@@ -16,7 +31,13 @@
 
     <slot name="description" />
 
-    <tl-feeds-table v-model:search="search" v-model:importStatus="importStatus" v-model:feedSpecs="feedSpecs" v-model:fetchError="fetchError" :limit="limit" />
+    <tl-feeds-table
+      v-model:search="search"
+      v-model:importStatus="importStatus"
+      v-model:feedSpecs="feedSpecs"
+      v-model:fetchError="fetchError"
+      :limit="limit"
+    />
 
     <slot name="add-feed" />
   </div>
@@ -24,7 +45,7 @@
 
 <script>
 export default {
-  props: { 
+  props: {
     limit: { type: Number, default: 20 },
   },
   computed: {
@@ -57,14 +78,12 @@ export default {
       set(v) {
         this.$router.replace({ query: { ...this.$route.query, feedSpecs: v } })
       }
-    }    
+    }
   }
 }
 </script>
 
-<style scoped>
-pre.tags {
+<style scoped>pre.tags {
   padding: 1px;
   font-size: 0.8em;
-}
-</style>
+}</style>

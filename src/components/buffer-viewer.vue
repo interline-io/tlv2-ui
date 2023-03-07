@@ -21,11 +21,11 @@ query ($route_ids: [Int!], $radius: Float!) {
 export default {
   props: {
     radius: { type: Number, default: 400 },
-    stopIds: { type: Array, default () { return null } },
-    routeIds: { type: Array, default () { return null } },
-    agencyIds: { type: Array, default () { return null } }
+    stopIds: { type: Array, default() { return null } },
+    routeIds: { type: Array, default() { return null } },
+    agencyIds: { type: Array, default() { return null } }
   },
-  data () {
+  data() {
     return {
       routes: []
     }
@@ -34,7 +34,7 @@ export default {
     routes: {
       client: 'transitland',
       query: q,
-      variables () {
+      variables() {
         return {
           radius: this.radius,
           route_ids: this.routeIds
@@ -43,7 +43,7 @@ export default {
     }
   },
   computed: {
-    bufferFeatures () {
+    bufferFeatures() {
       if (this.$apollo.loading) { return [] }
       const ret = []
       for (const route of this.routes || []) {
@@ -58,7 +58,7 @@ export default {
       }
       return ret
     },
-    hullFeatures () {
+    hullFeatures() {
       if (this.$apollo.loading) { return [] }
       const ret = []
       for (const route of this.routes || []) {
@@ -75,10 +75,10 @@ export default {
     }
   },
   watch: {
-    bufferFeatures () {
+    bufferFeatures() {
       this.$emit('setBufferFeatures', this.bufferFeatures)
     },
-    hullFeatures () {
+    hullFeatures() {
       this.$emit('setHullFeatures', this.hullFeatures)
     }
   }

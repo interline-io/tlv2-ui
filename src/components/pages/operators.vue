@@ -1,11 +1,26 @@
 <template>
   <div class="container">
     <Title>{{ staticTitle }}</Title>
-    <Meta name="description" :content="staticDescription" />
-    <Meta name="twitter:title" :content="staticTitle" />
-    <Meta name="twitter:description" :content="staticDescription" />
-    <Meta name="og:title" :content="staticTitle" />
-    <Meta name="og:description" :content="staticDescription" />
+    <Meta
+      name="description"
+      :content="staticDescription"
+    />
+    <Meta
+      name="twitter:title"
+      :content="staticTitle"
+    />
+    <Meta
+      name="twitter:description"
+      :content="staticDescription"
+    />
+    <Meta
+      name="og:title"
+      :content="staticTitle"
+    />
+    <Meta
+      name="og:description"
+      :content="staticDescription"
+    />
 
     <slot name="nav" />
 
@@ -18,16 +33,33 @@
     <slot name="description" />
 
     <div>
-      <o-field grouped
-        :label="filteringByOperatorLocation ? 'Filter by operator location' : 'Search by operator name or location'">
-        <tl-search-bar v-model="search" placeholder="e.g. Bay Area Rapid Transit" />
+      <o-field
+        grouped
+        :label="filteringByOperatorLocation ? 'Filter by operator location' : 'Search by operator name or location'"
+      >
+        <tl-search-bar
+          v-model="search"
+          placeholder="e.g. Bay Area Rapid Transit"
+        />
 
-        <o-dropdown position="bottom-left" append-to-body aria-role="menu" trap-focus>
+        <o-dropdown
+          position="bottom-left"
+          append-to-body
+          aria-role="menu"
+          trap-focus
+        >
           <template #trigger="{ active }">
-            <o-button label="Options" variant="primary" :icon-left="active ? 'menu-up' : 'menu-down'" />
+            <o-button
+              label="Options"
+              variant="primary"
+              :icon-left="active ? 'menu-up' : 'menu-down'"
+            />
           </template>
 
-          <o-dropdown-item aria-role="menu-item" custom>
+          <o-dropdown-item
+            aria-role="menu-item"
+            custom
+          >
             <div class="field">
               <o-checkbox v-model="merged">
                 Group agencies by operator
@@ -44,13 +76,29 @@
       </o-field>
 
       <o-field>
-        <o-field v-if="filteringByOperatorLocation" expanded>
-          <tl-tag attached closable aria-close-label="Close tag" @close="clearQuery">
+        <o-field
+          v-if="filteringByOperatorLocation"
+          expanded
+        >
+          <tl-tag
+            attached
+            closable
+            aria-close-label="Close tag"
+            @close="clearQuery"
+          >
             {{ [$route.query.adm0_name, $route.query.adm1_name, $route.query.city_name].filter(n => n).join(' / ') }}
           </tl-tag>
         </o-field>
-        <o-field v-else-if="$route.query.search" expanded>
-          <tl-tag attached closable aria-close-label="Close tag" @close="clearQuery">
+        <o-field
+          v-else-if="$route.query.search"
+          expanded
+        >
+          <tl-tag
+            attached
+            closable
+            aria-close-label="Close tag"
+            @close="clearQuery"
+          >
             {{ $route.query.search }}
           </tl-tag>
         </o-field>
@@ -58,7 +106,10 @@
 
       <tl-msg-error v-if="error">{{ error }}</tl-msg-error>
 
-      <table class="table is-striped" style="width:100%">
+      <table
+        class="table is-striped"
+        style="width:100%"
+      >
         <thead>
           <tr>
             <th>Operator Name (Short Name)</th>
@@ -68,7 +119,10 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="row of entityPageFlat" :key="row.id">
+          <tr
+            v-for="row of entityPageFlat"
+            :key="row.id"
+          >
             <td>
               <nuxt-link :to="{ name: 'operators-onestop_id', params: { onestop_id: row.onestop_id } }">
                 {{ row.name }}
@@ -84,7 +138,8 @@
             <td>
               <o-tooltip
                 :label="row.other_places.filter((s) => { return s.city_name }).map((s) => { return s.city_name }).join(', ')"
-                dashed>
+                dashed
+              >
                 {{ row.adm0_name }}
               </o-tooltip>
             </td>
@@ -92,9 +147,16 @@
         </tbody>
       </table>
 
-      <tl-show-more v-if="entities.length >= limit" :limit="entities.length" @click="showAll" />
+      <tl-show-more
+        v-if="entities.length >= limit"
+        :limit="entities.length"
+        @click="showAll"
+      />
 
-      <o-loading :full-page="false" v-model:active="$apollo.loading"></o-loading>
+      <o-loading
+        :full-page="false"
+        v-model:active="$apollo.loading"
+      ></o-loading>
 
     </div>
 

@@ -1,18 +1,18 @@
 <template>
-      <o-input
-        expanded
-        root-class="is-expanded ml-0 mr-2"
-        :value="modelValue"
-        :placeholder="modelValue ? modelValue : placeholder"
-        type="text"
-        icon="magnify"
-        :icon-right="modelValue ? 'close-circle' : null"
-        icon-right-clickable
-        class="entity-search"
-        @input="$emit('update:modelValue', $event.target.value)"
-        @icon-right-click="clearSearch"
-        @keydown.esc="clearSearch"
-      />
+  <o-input
+    expanded
+    root-class="is-expanded ml-0 mr-2"
+    :value="modelValue"
+    :placeholder="modelValue ? modelValue : placeholder"
+    type="text"
+    icon="magnify"
+    :icon-right="modelValue ? 'close-circle' : null"
+    icon-right-clickable
+    class="entity-search"
+    @input="$emit('update:modelValue', $event.target.value)"
+    @icon-right-click="clearSearch"
+    @keydown.esc="clearSearch"
+  />
 </template>
 <script>
 export default {
@@ -31,6 +31,6 @@ export default {
 
 <style scoped>
 .entity-search {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 </style>

@@ -1,6 +1,9 @@
 <template>
   <div class="pt-6 pb-6">
-    <a class="button is-primary is-outlined is-fullwidth" @click="$emit('showMore')">First {{ limit.toLocaleString() }} results shown. Click to load more.</a>
+    <a
+      class="button is-primary is-outlined is-fullwidth"
+      @click="$emit('showMore')"
+    >First {{ limit.toLocaleString() }} results shown. Click to load more.</a>
   </div>
 </template>
 

@@ -2,6 +2,8 @@
 node_modules
 /dist
 .output
+.nuxt
+.eslintcache
 
 # local env files
 .env.local
@@ -20,9 +22,6 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
-
-.nuxt
-.eslintcache
 
 # Storybook
 .nuxt-storybook

@@ -4,8 +4,17 @@
       Loading...
     </div>
     <div v-else-if="geographies.length === 0">
-      <o-notification type="light" has-icon icon="information" :closable="false">
-        Demographic information not found for this route or is unavailable for this region. Currently, only information from the <a href="https://www.census.gov/programs-surveys/acs/news/data-releases/2018.html" target="_blank">US Census Bureau American Community Survey</a> is available.
+      <o-notification
+        type="light"
+        has-icon
+        icon="information"
+        :closable="false"
+      >
+        Demographic information not found for this route or is unavailable for this region. Currently, only information
+        from the <a
+          href="https://www.census.gov/programs-surveys/acs/news/data-releases/2018.html"
+          target="_blank"
+        >US Census Bureau American Community Survey</a> is available.
       </o-notification>
     </div>
     <div v-else>
@@ -24,22 +33,28 @@
         <tbody>
           <tr>
             <td>
-              <o-tooltip dashed :label="`Population (B01001) of ${layerInfo[layer].plural.toLowerCase()} within ${radius}m of stops`">
+              <o-tooltip
+                dashed
+                :label="`Population (B01001) of ${layerInfo[layer].plural.toLowerCase()} within ${radius}m of stops`"
+              >
                 Population
               </o-tooltip>
             </td>
             <td> {{ Object.keys(tableGroups['B01001'] || {}).length }} </td>
-            <td>{{ tableSums | dig(['B01001','1']) | thousands }}</td>
+            <td>{{ tableSums | dig(['B01001', '1']) | thousands }}</td>
           </tr>
 
           <tr>
             <td>
-              <o-tooltip dashed :label="`Median household income (B19013) in the past 12 months of ${layerInfo[layer].plural.toLowerCase()} within ${radius}m of stops, weighted by population`">
+              <o-tooltip
+                dashed
+                :label="`Median household income (B19013) in the past 12 months of ${layerInfo[layer].plural.toLowerCase()} within ${radius}m of stops, weighted by population`"
+              >
                 Median Income
               </o-tooltip>
             </td>
             <td> {{ Object.keys(tableGroups['B19013'] || {}).length }} </td>
-            <td>$ {{ weightedIncome| thousands }}</td>
+            <td>$ {{ weightedIncome | thousands }}</td>
           </tr>
         </tbody>
       </table>
@@ -48,7 +63,10 @@
         <thead>
           <tr>
             <th>
-              <o-tooltip dashed label="Means of transportation to work by vehicles available (B08141)">
+              <o-tooltip
+                dashed
+                label="Means of transportation to work by vehicles available (B08141)"
+              >
                 Means of transport to work
               </o-tooltip>
             </th>
@@ -61,58 +79,66 @@
         <tbody>
           <tr class="census-total">
             <td>Total workers</td>
-            <td>{{ tableSums | dig(['B08141','1']) | thousands }}</td>
-            <td>{{ tablePcts | dig(['B08141','1']) | pct }}</td>
-            <td>{{ tableSums | dig(['B08141','2']) | thousands }}</td>
-            <td>{{ tablePcts | dig(['B08141','2']) | pct }}</td>
+            <td>{{ tableSums | dig(['B08141', '1']) | thousands }}</td>
+            <td>{{ tablePcts | dig(['B08141', '1']) | pct }}</td>
+            <td>{{ tableSums | dig(['B08141', '2']) | thousands }}</td>
+            <td>{{ tablePcts | dig(['B08141', '2']) | pct }}</td>
           </tr>
           <tr>
             <td>Drive alone</td>
-            <td>{{ tableSums | dig(['B08141','6']) | thousands }}</td>
-            <td>{{ tablePcts | dig(['B08141','6']) | pct }}</td>
-            <td>{{ tableSums | dig(['B08141','7']) | thousands }}</td>
-            <td>{{ tablePcts | dig(['B08141','7']) | pct }}</td>
+            <td>{{ tableSums | dig(['B08141', '6']) | thousands }}</td>
+            <td>{{ tablePcts | dig(['B08141', '6']) | pct }}</td>
+            <td>{{ tableSums | dig(['B08141', '7']) | thousands }}</td>
+            <td>{{ tablePcts | dig(['B08141', '7']) | pct }}</td>
           </tr>
           <tr>
             <td>Carpool</td>
-            <td>{{ tableSums | dig(['B08141','11']) | thousands }}</td>
-            <td>{{ tablePcts | dig(['B08141','11']) | pct }}</td>
-            <td>{{ tableSums | dig(['B08141','12']) | thousands }}</td>
-            <td>{{ tablePcts | dig(['B08141','12']) | pct }}</td>
+            <td>{{ tableSums | dig(['B08141', '11']) | thousands }}</td>
+            <td>{{ tablePcts | dig(['B08141', '11']) | pct }}</td>
+            <td>{{ tableSums | dig(['B08141', '12']) | thousands }}</td>
+            <td>{{ tablePcts | dig(['B08141', '12']) | pct }}</td>
           </tr>
           <tr>
             <td>Public transit</td>
-            <td>{{ tableSums | dig(['B08141','16']) | thousands }}</td>
-            <td>{{ tablePcts | dig(['B08141','16']) | pct }}</td>
-            <td>{{ tableSums | dig(['B08141','17']) | thousands }}</td>
-            <td>{{ tablePcts | dig(['B08141','17']) | pct }}</td>
+            <td>{{ tableSums | dig(['B08141', '16']) | thousands }}</td>
+            <td>{{ tablePcts | dig(['B08141', '16']) | pct }}</td>
+            <td>{{ tableSums | dig(['B08141', '17']) | thousands }}</td>
+            <td>{{ tablePcts | dig(['B08141', '17']) | pct }}</td>
           </tr>
           <tr>
             <td>Walked</td>
-            <td>{{ tableSums | dig(['B08141','21']) | thousands }}</td>
-            <td>{{ tablePcts | dig(['B08141','21']) | pct }}</td>
-            <td>{{ tableSums | dig(['B08141','22']) | thousands }}</td>
-            <td>{{ tablePcts | dig(['B08141','22']) | pct }}</td>
+            <td>{{ tableSums | dig(['B08141', '21']) | thousands }}</td>
+            <td>{{ tablePcts | dig(['B08141', '21']) | pct }}</td>
+            <td>{{ tableSums | dig(['B08141', '22']) | thousands }}</td>
+            <td>{{ tablePcts | dig(['B08141', '22']) | pct }}</td>
           </tr>
           <tr>
             <td>Bicycle / motorcycle / taxi</td>
-            <td>{{ tableSums | dig(['B08141','26']) | thousands }}</td>
-            <td>{{ tablePcts | dig(['B08141','26']) | pct }}</td>
-            <td>{{ tableSums | dig(['B08141','27']) | thousands }}</td>
-            <td>{{ tablePcts | dig(['B08141','27']) | pct }}</td>
+            <td>{{ tableSums | dig(['B08141', '26']) | thousands }}</td>
+            <td>{{ tablePcts | dig(['B08141', '26']) | pct }}</td>
+            <td>{{ tableSums | dig(['B08141', '27']) | thousands }}</td>
+            <td>{{ tablePcts | dig(['B08141', '27']) | pct }}</td>
           </tr>
           <tr>
             <td>Work from home</td>
-            <td>{{ tableSums | dig(['B08141','31']) | thousands }}</td>
-            <td>{{ tablePcts | dig(['B08141','31']) | pct }}</td>
-            <td>{{ tableSums | dig(['B08141','32']) | thousands }}</td>
-            <td>{{ tablePcts | dig(['B08141','32']) | pct }}</td>
+            <td>{{ tableSums | dig(['B08141', '31']) | thousands }}</td>
+            <td>{{ tablePcts | dig(['B08141', '31']) | pct }}</td>
+            <td>{{ tableSums | dig(['B08141', '32']) | thousands }}</td>
+            <td>{{ tablePcts | dig(['B08141', '32']) | pct }}</td>
           </tr>
         </tbody>
       </table>
 
-      <o-notification type="light" :closable="false">
-        <a href="https://www.census.gov/programs-surveys/acs/news/data-releases/2018.html" target="_blank">US Census Bureau American Community Survey, 2018, 5 year</a>. This feature is in beta release; please verify values before using. You can provide feedback or suggestions for additional data tables using the contact information at the bottom of the page.
+      <o-notification
+        type="light"
+        :closable="false"
+      >
+        <a
+          href="https://www.census.gov/programs-surveys/acs/news/data-releases/2018.html"
+          target="_blank"
+        >US Census Bureau American Community Survey, 2018, 5 year</a>. This feature is in beta release; please verify
+        values before using. You can provide feedback or suggestions for additional data tables using the contact
+        information at the bottom of the page.
       </o-notification>
     </div>
   </div>
@@ -156,18 +182,18 @@ const tableNames = [
 
 export default {
   filters: {
-    dig (object, path) {
+    dig(object, path) {
       return path.reduce((xs, x) => (xs && xs[x] ? xs[x] : null), object)
     }
   },
   props: {
     layer: { type: String, default: 'tract' },
     radius: { type: Number, default: 400 },
-    stopIds: { type: Array, default () { return null } },
-    routeIds: { type: Array, default () { return null } },
-    agencyIds: { type: Array, default () { return null } }
+    stopIds: { type: Array, default() { return null } },
+    routeIds: { type: Array, default() { return null } },
+    agencyIds: { type: Array, default() { return null } }
   },
-  data () {
+  data() {
     return {
       geographies: [],
       // copied...
@@ -185,7 +211,7 @@ export default {
     routes: {
       client: 'transitland',
       query: q,
-      variables () {
+      variables() {
         const q = {
           table_names: tableNames,
           layer_name: this.layer,
@@ -200,7 +226,7 @@ export default {
         }
         return q
       },
-      update (data) {
+      update(data) {
         const a = []
         for (const ent of data.routes || []) {
           for (const g of ent.census_geographies || []) {
@@ -212,14 +238,14 @@ export default {
     }
   },
   computed: {
-    geographiesByID () {
+    geographiesByID() {
       const a = {}
       for (const g of this.geographies) {
         a[g.id] = g
       }
       return a
     },
-    tableGroups () {
+    tableGroups() {
       // Invert
       const tableGroups = {}
       for (const g of Object.values(this.geographiesByID)) {
@@ -231,7 +257,7 @@ export default {
       }
       return tableGroups
     },
-    tableSums () {
+    tableSums() {
       // Calculate sums of each table and field
       const tableSums = {}
       for (const [tableName, geogs] of Object.entries(this.tableGroups)) {
@@ -250,7 +276,7 @@ export default {
       }
       return tableSums
     },
-    tablePcts () {
+    tablePcts() {
       // Calculate percentage of total (field 1)
       const tablePcts = {}
       for (const [tableName, tableSum] of Object.entries(this.tableSums)) {
@@ -262,7 +288,7 @@ export default {
       }
       return tablePcts
     },
-    weightedIncome () {
+    weightedIncome() {
       // Calculated weighted income
       const totalPop = parseFloat(dig(['B01001', '1'], this.tableSums))
       let weightedIncome = 0
@@ -276,7 +302,7 @@ export default {
       }
       return weightedIncome
     },
-    features () {
+    features() {
       if (this.$apollo.loading) { return [] }
       const ret = []
       for (const f of Object.values(this.geographiesByID)) {
@@ -292,7 +318,7 @@ export default {
     }
   },
   watch: {
-    features () {
+    features() {
       this.$emit('setFeatures', this.features)
     }
   }
@@ -301,6 +327,6 @@ export default {
 
 <style scoped>
 .census-total {
-  border-bottom:solid 2px #ccc
+  border-bottom: solid 2px #ccc
 }
 </style>

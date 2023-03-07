@@ -1,6 +1,9 @@
 <template>
     <div>
-        <o-field grouped group-multiline>
+        <o-field
+            grouped
+            group-multiline
+        >
             <o-field label="Search by feed name">
                 <div>
                     <tl-search-bar v-model="search" />
@@ -40,24 +43,47 @@
 
             <o-field label="Filter by tag">
                 <div class="pt-2">
-                    <o-checkbox v-model="tagUnstableUrl" native-value="true" size="medium">
+                    <o-checkbox
+                        v-model="tagUnstableUrl"
+                        native-value="true"
+                        size="medium"
+                    >
                         Unstable URL
                     </o-checkbox>
                 </div>
             </o-field>
 
-            <o-field label="Filter by data format" class="pl-3">
+            <o-field
+                label="Filter by data format"
+                class="pl-3"
+            >
                 <div class="pt-2">
-                    <o-checkbox v-model="feedSpecs" native-value="GTFS" size="medium">
+                    <o-checkbox
+                        v-model="feedSpecs"
+                        native-value="GTFS"
+                        size="medium"
+                    >
                         <abbr title="General Transit Feed Specification">GTFS</abbr>
                     </o-checkbox>
-                    <o-checkbox v-model="feedSpecs" native-value="GTFS_RT" size="medium">
+                    <o-checkbox
+                        v-model="feedSpecs"
+                        native-value="GTFS_RT"
+                        size="medium"
+                    >
                         <abbr title="GTFS Realtime">GTFS-RT</abbr>
                     </o-checkbox>
-                    <o-checkbox v-model="feedSpecs" native-value="GBFS" size="medium">
+                    <o-checkbox
+                        v-model="feedSpecs"
+                        native-value="GBFS"
+                        size="medium"
+                    >
                         <abbr title="General Bikeshare Feed Specification">GBFS</abbr>
                     </o-checkbox>
-                    <o-checkbox v-model="feedSpecs" native-value="MDS" size="medium">
+                    <o-checkbox
+                        v-model="feedSpecs"
+                        native-value="MDS"
+                        size="medium"
+                    >
                         <abbr title="Mobility Data Specification">MDS</abbr>
                     </o-checkbox>
                 </div>
@@ -66,7 +92,10 @@
 
         <tl-msg-error v-if="error">{{ error }}</tl-msg-error>
 
-        <table class="table is-striped" style="width:100%">
+        <table
+            class="table is-striped"
+            style="width:100%"
+        >
             <thead>
                 <tr>
                     <th>Feed Onestop ID</th>
@@ -78,7 +107,10 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="row of entities" :key="row.id">
+                <tr
+                    v-for="row of entities"
+                    :key="row.id"
+                >
                     <td>
                         <nuxt-link :to="{ name: 'feeds-feed', params: { feed: row.onestop_id } }">
                             {{ row.onestop_id }}
@@ -106,8 +138,11 @@
                         </span>
                     </td>
                     <td>
-                        <o-tooltip v-if="row.last_fetch && row.last_fetch.length > 0 && row.last_fetch[0].fetch_error"
-                            :label="row.last_fetch[0].fetch_error" multilined>
+                        <o-tooltip
+                            v-if="row.last_fetch && row.last_fetch.length > 0 && row.last_fetch[0].fetch_error"
+                            :label="row.last_fetch[0].fetch_error"
+                            multilined
+                        >
                             <o-icon icon="alert" />
                         </o-tooltip>
                     </td>
@@ -117,8 +152,15 @@
                 </tr>
             </tbody>
         </table>
-        <tl-show-more v-if="entities.length >= limit" :limit="entities.length" @click="limit += 20" />
-        <o-loading :full-page="false" v-model:active="loading"></o-loading>
+        <tl-show-more
+            v-if="entities.length >= limit"
+            :limit="entities.length"
+            @click="limit += 20"
+        />
+        <o-loading
+            :full-page="false"
+            v-model:active="loading"
+        ></o-loading>
     </div>
 </template>
 

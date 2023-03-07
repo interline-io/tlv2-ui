@@ -3,11 +3,20 @@
     <span class="tl-route-icon-icon">
       <o-icon :icon="routeTypeIcon" />
     </span>
-    <span v-if="routeShortName" class="tl-route-icon-short-name">{{ routeShortName }}</span>
-    <span v-if="nameIcon" class="tl-route-name-icon">
+    <span
+      v-if="routeShortName"
+      class="tl-route-icon-short-name"
+    >{{ routeShortName }}</span>
+    <span
+      v-if="nameIcon"
+      class="tl-route-name-icon"
+    >
       <o-icon :icon="nameIcon" />
     </span>
-    <span v-if="routeLongName && routeShortName != routeLongName" class="tl-route-icon-long-name">
+    <span
+      v-if="routeLongName && routeShortName != routeLongName"
+      class="tl-route-icon-long-name"
+    >
       {{ routeLongName }}
     </span>
   </div>
@@ -38,7 +47,7 @@ export default {
     }
   },
   computed: {
-    routeTypeIcon () {
+    routeTypeIcon() {
       switch (this.routeType) {
         case 0:
           return 'tram'
@@ -69,49 +78,50 @@ export default {
 
 <style scoped>
 .tl-route-icon {
-    white-space: nowrap;
-    overflow: hidden;
-    padding:0px;
-    margin:0px;
-    margin-bottom:10px;
-    /* background:red; */
+  white-space: nowrap;
+  overflow: hidden;
+  padding: 0px;
+  margin: 0px;
+  margin-bottom: 10px;
+  /* background:red; */
 }
 
 .tl-route-icon .tl-route-icon-short-name {
-    display:inline-block;
-    padding-top:4px;
-    padding-bottom:4px;
-    padding-left:8px;
-    padding-right:8px;
-    margin:0px;
-    margin-right:4px;
-    outline:solid 1px #ccc;
-    outline-offset: -1px;
-    border-radius: 5px;
-    white-space: nowrap;
-    /* background:#efefef; */
+  display: inline-block;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 8px;
+  padding-right: 8px;
+  margin: 0px;
+  margin-right: 4px;
+  outline: solid 1px #ccc;
+  outline-offset: -1px;
+  border-radius: 5px;
+  white-space: nowrap;
+  /* background:#efefef; */
 }
 
 .tl-route-icon .tl-route-icon-long-name {
-    display:inline-block;
-    margin:0px;
-    padding:0px;
-    white-space: nowrap;
-    /* background:blue; */
+  display: inline-block;
+  margin: 0px;
+  padding: 0px;
+  white-space: nowrap;
+  /* background:blue; */
 }
 
 .tl-route-icon .tl-route-icon-icon {
-    display:inline-block;
-    width:26px;
-    text-align:center;
-    position:relative;
-    top:3px;
-    /* background:green; */
+  display: inline-block;
+  width: 26px;
+  text-align: center;
+  position: relative;
+  top: 3px;
+  /* background:green; */
 }
 
 .tl-route-icon .route-name-icon {
-    display:inline-block;
-    position:relative;
-    top:3px;
-    /* background:green; */
-}</style>
+  display: inline-block;
+  position: relative;
+  top: 3px;
+  /* background:green; */
+}
+</style>

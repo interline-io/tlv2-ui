@@ -4,18 +4,54 @@
     <tl-msg-error v-else-if="error">{{ error }}</tl-msg-error>
     <div v-else-if="entity">
       <Title>{{ staticTitle }}</Title>
-      <Meta name="description" :content="staticDescription" />
-      <Meta name="twitter:title" :content="staticTitle" />
-      <Meta name="twitter:description" :content="staticDescription" />
-      <Meta name="twitter:image" :content="staticImage" />
-      <Meta name="twitter:image:alt" :content="staticDescription" />
-      <Meta name="og:title" :content="staticTitle" />
-      <Meta name="og:description" :content="staticDescription" />
-      <Meta name="og:image:type" content="image/png" />
-      <Meta name="og:image:width" content="800" />
-      <Meta name="og:image:height" content="600" />
-      <Meta name="og:image" :content="staticImage" />
-      <Meta name="og:image:alt" :content="staticDescription" />
+      <Meta
+        name="description"
+        :content="staticDescription"
+      />
+      <Meta
+        name="twitter:title"
+        :content="staticTitle"
+      />
+      <Meta
+        name="twitter:description"
+        :content="staticDescription"
+      />
+      <Meta
+        name="twitter:image"
+        :content="staticImage"
+      />
+      <Meta
+        name="twitter:image:alt"
+        :content="staticDescription"
+      />
+      <Meta
+        name="og:title"
+        :content="staticTitle"
+      />
+      <Meta
+        name="og:description"
+        :content="staticDescription"
+      />
+      <Meta
+        name="og:image:type"
+        content="image/png"
+      />
+      <Meta
+        name="og:image:width"
+        content="800"
+      />
+      <Meta
+        name="og:image:height"
+        content="600"
+      />
+      <Meta
+        name="og:image"
+        :content="staticImage"
+      />
+      <Meta
+        name="og:image:alt"
+        :content="staticDescription"
+      />
 
       <slot name="nav">
         <nav class="breadcrumb">
@@ -35,19 +71,18 @@
               >
                 {{ entity.agency.agency_name }}
               </nuxt-link>
-              <a v-else href="#">{{ entity.agency.agency_name }}</a>
+              <a
+                v-else
+                href="#"
+              >{{ entity.agency.agency_name }}</a>
             </li>
             <li>
-              <nuxt-link
-                :to="{
-                  name: 'routes-onestop_id',
-                  params: { onestop_id: pathKey },
-                }"
-              >
+              <nuxt-link :to="{
+                name: 'routes-onestop_id',
+                params: { onestop_id: pathKey },
+              }">
                 {{ entity.route_short_name }}
-                <template
-                  v-if="entity.route_short_name != entity.route_long_name"
-                >
+                <template v-if="entity.route_short_name != entity.route_long_name">
                   {{ entity.route_long_name }}
                 </template>
               </nuxt-link>
@@ -56,7 +91,11 @@
         </nav>
       </slot>
 
-      <h1 v-for="ent of routeNames" :key="ent.id" class="title">
+      <h1
+        v-for="ent of routeNames"
+        :key="ent.id"
+        class="title"
+      >
         {{ ent.agency.agency_name }} <br>
         <tl-route-icon
           :route-link="ent.route_url"
@@ -68,7 +107,10 @@
 
       <!-- Warnings for freshness and viewing a specific version -->
       <tl-check-fresh :fetched="entity.feed_version.fetched_at" />
-      <tl-check-single :feed-onestop-id="feedOnestopId" :feed-version-sha1="feedVersionSha1" />
+      <tl-check-single
+        :feed-onestop-id="feedOnestopId"
+        :feed-version-sha1="feedVersionSha1"
+      />
 
       <!-- Main content -->
       <div class="columns">
@@ -97,7 +139,10 @@
                 >
                   {{ entity.agency.agency_name }}
                 </nuxt-link>
-                <a v-else href="#">{{ entity.agency.agency_name }}</a>
+                <a
+                  v-else
+                  href="#"
+                >{{ entity.agency.agency_name }}</a>
               </td>
             </tr>
             <tr v-if="entity.route_short_name">
@@ -151,15 +196,25 @@
             >gtfs.org</a>.
           </tl-msg-info>
 
-          <div v-for="ent of entities" :key="ent.id">
+          <div
+            v-for="ent of entities"
+            :key="ent.id"
+          >
             <tl-msg-warning
-              v-for="(alert,idx) of ent.alerts"
-              :key="idx">
+              v-for="(alert, idx) of ent.alerts"
+              :key="idx"
+            >
               <p>Agency Alert:</p>
-              <div v-for="tr of filterRTTranslations(alert.header_text)" :key="tr.text">
+              <div
+                v-for="tr of filterRTTranslations(alert.header_text)"
+                :key="tr.text"
+              >
                 {{ tr.text }}
               </div>
-              <div v-for="tr of filterRTTranslations(alert.description_text)" :key="tr.text">
+              <div
+                v-for="tr of filterRTTranslations(alert.description_text)"
+                :key="tr.text"
+              >
                 {{ tr.text }}
               </div>
             </tl-msg-warning>
@@ -174,7 +229,10 @@
           >
             <o-tab-item label="Connections">
               <client-only>
-                <tl-rsp-viewer v-if="activeTab === 1" :route-ids="entityIds" />
+                <tl-rsp-viewer
+                  v-if="activeTab === 1"
+                  :route-ids="entityIds"
+                />
               </client-only>
             </o-tab-item>
             <o-tab-item label="Headways">
@@ -183,18 +241,19 @@
 
             <!-- Data sources -->
             <o-tab-item label="Sources">
-              <o-table :data="entities" :striped="true">
+              <o-table
+                :data="entities"
+                :striped="true"
+              >
                 <o-table-column
                   v-slot="props"
                   field="feed_onestop_id"
                   label="Feed"
                 >
-                  <nuxt-link
-                    :to="{
-                      name: 'feeds-feed',
-                      params: { feed: props.row.feed_onestop_id },
-                    }"
-                  >
+                  <nuxt-link :to="{
+                    name: 'feeds-feed',
+                    params: { feed: props.row.feed_onestop_id },
+                  }">
                     {{ $filters.shortenName(props.row.feed_onestop_id) }}
                   </nuxt-link>
                 </o-table-column>
@@ -203,15 +262,13 @@
                   field="feed_version_sha1"
                   label="Version"
                 >
-                  <nuxt-link
-                    :to="{
-                      name: 'feeds-feed-versions-version',
-                      params: {
-                        feed: props.row.feed_onestop_id,
-                        version: props.row.feed_version_sha1,
-                      },
-                    }"
-                  >
+                  <nuxt-link :to="{
+                    name: 'feeds-feed-versions-version',
+                    params: {
+                      feed: props.row.feed_onestop_id,
+                      version: props.row.feed_version_sha1,
+                    },
+                  }">
                     {{ $filters.shortenName(props.row.feed_version_sha1, 8) }}
                   </nuxt-link>
                 </o-table-column>
@@ -220,17 +277,15 @@
                   field="route_id"
                   label="Route ID"
                 >
-                  <nuxt-link
-                    :to="{
-                      name: 'routes-onestop_id',
-                      params: { onestop_id: props.row.onestop_id },
-                      query: {
-                        feed_onestop_id: props.row.feed_onestop_id,
-                        feed_version_sha1: props.row.feed_version_sha1,
-                        route_id: props.row.route_id,
-                      },
-                    }"
-                  >
+                  <nuxt-link :to="{
+                    name: 'routes-onestop_id',
+                    params: { onestop_id: props.row.onestop_id },
+                    query: {
+                      feed_onestop_id: props.row.feed_onestop_id,
+                      feed_version_sha1: props.row.feed_version_sha1,
+                      route_id: props.row.route_id,
+                    },
+                  }">
                     {{ $filters.shortenName(props.row.route_id) }}
                   </nuxt-link>
                 </o-table-column>
@@ -339,15 +394,15 @@ export default {
     entities: {
       client: 'transitland',
       query: q,
-      skip () {
+      skip() {
         return this.checkSearchSkip(this.entityId)
       },
-      variables () {
+      variables() {
         return this.searchKey
       }
     }
   },
-  data () {
+  data() {
     return {
       features: [],
       bufferGeom: null,
@@ -365,7 +420,7 @@ export default {
   computed: {
     // routeFeatures and stopFeatures are calculated from the main
     // graphql response so we don't need to copy in and rely on the response from the map
-    routeFeatures () {
+    routeFeatures() {
       const ret = []
       for (const f of this.entities || []) {
         const fcopy = Object.assign({}, f)
@@ -380,7 +435,7 @@ export default {
       }
       return ret
     },
-    stopFeatures () {
+    stopFeatures() {
       const ret = []
       for (const f of this.entities || []) {
         for (const g of f.route_stops || []) {
@@ -397,13 +452,13 @@ export default {
       }
       return ret
     },
-    routeName () {
+    routeName() {
       if (this.entity) {
         return `${this.entity.agency.agency_name} - ${this.entity.route_short_name} ${this.entity.route_long_name}`
       }
       return 'route'
     },
-    routeNames () {
+    routeNames() {
       const rs = new Map()
       for (const ent of this.entities) {
         const key = `${ent.agency.agency_name}-${ent.route_short_name}-${ent.route_long_name}-${ent.route_type}`
@@ -411,10 +466,10 @@ export default {
       }
       return Array.from(rs.values()).slice(0, 4)
     },
-    routeType () {
+    routeType() {
       return this.$filters.routeTypeToWords(this.entity.route_type)
     },
-    operators () {
+    operators() {
       const rs = new Map()
       for (const ent of this.entities) {
         if (ent.operator) {
@@ -424,12 +479,12 @@ export default {
       return Array.from(rs.values())
     },
     serviceDate: {
-      get () {
+      get() {
         return this.$route.query.service_date
           ? this.$route.query.service_date
           : 'TODO'
       },
-      set (value) {
+      set(value) {
         this.$router.push({
           name: this.$router.name,
           query: {
@@ -438,19 +493,19 @@ export default {
         })
       }
     },
-    staticImage () {
+    staticImage() {
       const config = useRuntimeConfig()
       return `${config.public.apiBase}/rest/routes/${this.pathKey}.png`
     },
-    staticTitle () {
+    staticTitle() {
       return `${this.routeName} • ${this.routeType} route`
     },
-    staticDescription () {
+    staticDescription() {
       return `${this.routeName} is a ${this.routeType} route available for browsing and analyzing on the Transitland platform.`
     }
   },
   methods: {
-    filterRTTranslations (v) {
+    filterRTTranslations(v) {
       return v.filter((s) => { return !s.language.includes('html') })
     }
   }

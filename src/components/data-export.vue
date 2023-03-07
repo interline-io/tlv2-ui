@@ -1,7 +1,15 @@
 <template>
   <div>
-    <o-field grouped expanded class="block">
-      <o-field label="Stop Buffer Radius (m)" expanded class="pr-6">
+    <o-field
+      grouped
+      expanded
+      class="block"
+    >
+      <o-field
+        label="Stop Buffer Radius (m)"
+        expanded
+        class="pr-6"
+      >
         <o-slider
           v-model="radius"
           size="medium"
@@ -11,43 +19,70 @@
           ticks
           lazy
         >
-          <template v-for="val in [400,1000,2000]" :key="val">
-            <o-slider-tick  :value="val">
+          <template
+            v-for="val in [400, 1000, 2000]"
+            :key="val"
+          >
+            <o-slider-tick :value="val">
               {{ val }}
             </o-slider-tick>
           </template>
         </o-slider>
       </o-field>
 
-      <o-field label="Summary Level" expanded>
+      <o-field
+        label="Summary Level"
+        expanded
+      >
         <o-select v-model="layer">
-          <option v-for="(v,k) of layerInfo" :key="k" :value="k">
+          <option
+            v-for="(v, k) of layerInfo"
+            :key="k"
+            :value="k"
+          >
             {{ v.name }}
           </option>
         </o-select>
       </o-field>
 
-      <o-field label="Show on Map" expanded>
+      <o-field
+        label="Show on Map"
+        expanded
+      >
         <o-dropdown
           v-model="showOnMap"
           multiple
           aria-role="list"
         >
-          <button slot="trigger" class="button" type="button" icon="menu-down">
+          <button
+            slot="trigger"
+            class="button"
+            type="button"
+            icon="menu-down"
+          >
             <span>
-              {{ showOnMap.map((s)=>{return titleize(s)}).join(", ") }}
+              {{ showOnMap.map((s) => { return titleize(s) }).join(", ") }}
             </span>
           </button>
 
-          <o-dropdown-item value="buffer" aria-role="listitem">
+          <o-dropdown-item
+            value="buffer"
+            aria-role="listitem"
+          >
             <span>Stop Buffer</span>
           </o-dropdown-item>
 
-          <o-dropdown-item value="hull" aria-role="listitem">
+          <o-dropdown-item
+            value="hull"
+            aria-role="listitem"
+          >
             <span>Stop Hull</span>
           </o-dropdown-item>
 
-          <o-dropdown-item value="census" aria-role="listitem">
+          <o-dropdown-item
+            value="census"
+            aria-role="listitem"
+          >
             <span>Census Geographies</span>
           </o-dropdown-item>
         </o-dropdown>
@@ -55,20 +90,60 @@
     </o-field>
 
     <tl-loading v-if="$apollo.loading" />
-    <div v-else class="block">
+    <div
+      v-else
+      class="block"
+    >
       <o-field grouped>
         <o-field label="Download GeoJSON">
-          <tl-geojson-downloader v-if="routeFeatures.length > 0" :features="routeFeatures" label="Routes" :filename="routeName" />
-          <tl-geojson-downloader v-if="stopFeatures.length > 0" :features="stopFeatures" label="Stops" :filename="routeName + ' - Stops'" />
-          <tl-geojson-downloader v-if="bufferFeatures.length > 0" :features="bufferFeatures" label="Stop Buffer" :filename="routeName + ' - Stop Buffer'" />
-          <tl-geojson-downloader v-if="hullFeatures.length > 0" :features="hullFeatures" label="Stop Hull" :filename="routeName + '- Stop Hull'" />
-          <tl-geojson-downloader v-if="censusFeatures.length > 0" :features="censusFeatures" label="Census Geographies" :filename="routeName + '- Census Geographies'" />
+          <tl-geojson-downloader
+            v-if="routeFeatures.length > 0"
+            :features="routeFeatures"
+            label="Routes"
+            :filename="routeName"
+          />
+          <tl-geojson-downloader
+            v-if="stopFeatures.length > 0"
+            :features="stopFeatures"
+            label="Stops"
+            :filename="routeName + ' - Stops'"
+          />
+          <tl-geojson-downloader
+            v-if="bufferFeatures.length > 0"
+            :features="bufferFeatures"
+            label="Stop Buffer"
+            :filename="routeName + ' - Stop Buffer'"
+          />
+          <tl-geojson-downloader
+            v-if="hullFeatures.length > 0"
+            :features="hullFeatures"
+            label="Stop Hull"
+            :filename="routeName + '- Stop Hull'"
+          />
+          <tl-geojson-downloader
+            v-if="censusFeatures.length > 0"
+            :features="censusFeatures"
+            label="Census Geographies"
+            :filename="routeName + '- Census Geographies'"
+          />
         </o-field>
       </o-field>
     </div>
 
-    <tl-buffer-viewer :route-ids="routeIds" :agency-ids="agencyIds" :radius="radius" @setBufferFeatures="bufferFeatures = $event" @setHullFeatures="hullFeatures = $event" />
-    <tl-census-viewer :route-ids="routeIds" :agency-ids="agencyIds" :radius="radius" :layer="layer" @setFeatures="censusFeatures = $event" />
+    <tl-buffer-viewer
+      :route-ids="routeIds"
+      :agency-ids="agencyIds"
+      :radius="radius"
+      @setBufferFeatures="bufferFeatures = $event"
+      @setHullFeatures="hullFeatures = $event"
+    />
+    <tl-census-viewer
+      :route-ids="routeIds"
+      :agency-ids="agencyIds"
+      :radius="radius"
+      :layer="layer"
+      @setFeatures="censusFeatures = $event"
+    />
   </div>
 </template>
 
@@ -77,13 +152,13 @@
 export default {
   props: {
     routeName: { type: String, default: 'export' },
-    stopIds: { type: Array, default () { return null } },
-    routeIds: { type: Array, default () { return null } },
-    agencyIds: { type: Array, default () { return null } },
-    routeFeatures: { type: Array, default () { return [] } },
-    stopFeatures: { type: Array, default () { return [] } }
+    stopIds: { type: Array, default() { return null } },
+    routeIds: { type: Array, default() { return null } },
+    agencyIds: { type: Array, default() { return null } },
+    routeFeatures: { type: Array, default() { return [] } },
+    stopFeatures: { type: Array, default() { return [] } }
   },
-  data () {
+  data() {
     return {
       showOnMap: ['census', 'hull', 'buffer'],
       censusFeatures: [],
@@ -102,7 +177,7 @@ export default {
     }
   },
   computed: {
-    features () {
+    features() {
       if (this.$apollo.loading) { return [] }
       let ret = []
       if (this.showOnMap.includes('buffer')) {
@@ -118,12 +193,12 @@ export default {
     }
   },
   watch: {
-    features () {
+    features() {
       this.$emit('setFeatures', this.features)
     }
   },
   methods: {
-    titleize (s) {
+    titleize(s) {
       return s.substr(0, 1).toUpperCase() + s.substr(1)
     }
   }

@@ -1,6 +1,9 @@
 <template>
   <div>
-    <div v-for="(routes,agency) in agencyFeatures" :key="agency">
+    <div
+      v-for="(routes, agency) in agencyFeatures"
+      :key="agency"
+    >
       <h6 class="title is-6">
         {{ agency }}
       </h6>
@@ -8,10 +11,13 @@
         <div>{{ Object.keys(routes).length }} routes</div>
       </template>
       <template v-else>
-        <div v-for="route in routes" :key="route.id">
+        <div
+          v-for="route in routes"
+          :key="route.id"
+        >
           <nuxt-link
             v-if="link"
-            :to="{name: 'routes-onestop_id', params:{onestop_id:route.onestop_id || 'search' }, query:( (linkVersion || !route.onestop_id) ? {feed_onestop_id:route.feed_onestop_id,feed_version_sha1:route.feed_version_sha1,route_id:route.route_id} : {})}"
+            :to="{ name: 'routes-onestop_id', params: { onestop_id: route.onestop_id || 'search' }, query: ((linkVersion || !route.onestop_id) ? { feed_onestop_id: route.feed_onestop_id, feed_version_sha1: route.feed_version_sha1, route_id: route.route_id } : {}) }"
           >
             <tl-route-icon
               :key="route.id"
@@ -38,16 +44,16 @@
 export default {
   props: {
     link: { type: Boolean, default: false },
-    maxAgencyRows: { type: Number, default () { return 5 } },
+    maxAgencyRows: { type: Number, default() { return 5 } },
     collapse: { type: Boolean },
     linkVersion: { type: Boolean, default: false },
-    agencyFeatures: { type: Object, default () { return {} } }
+    agencyFeatures: { type: Object, default() { return {} } }
   },
   computed: {
-    isCollapsed () {
+    isCollapsed() {
       return this.routeCount > this.maxAgencyRows && this.collapse
     },
-    routeCount () {
+    routeCount() {
       let count = 0
       for (const v of Object.values(this.agencyFeatures)) {
         count = count + Object.keys(v).length

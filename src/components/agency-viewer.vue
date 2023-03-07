@@ -2,14 +2,21 @@
   <div>
     <tl-msg-error v-if="error">{{ error }}</tl-msg-error>
     <div v-else>
-      <tl-search-bar v-model="search" placeholder="Filter Agencies" />
+      <tl-search-bar
+        v-model="search"
+        placeholder="Filter Agencies"
+      />
       <o-table
         :loading="$apollo.loading"
         :data="entityPage"
         :striped="true"
         sort-icon="menu-up"
       >
-        <o-table-column v-slot="props" field="agency_id" label="Agency ID">
+        <o-table-column
+          v-slot="props"
+          field="agency_id"
+          label="Agency ID"
+        >
           {{ props.row.agency_id }}
         </o-table-column>
         <o-table-column
@@ -44,9 +51,9 @@ query ($feed_version_sha1: String, $limit: Int, $after: Int, $search: String) {
 export default {
   mixins: [TableViewerMixin],
   props: {
-    fvid: { type: String, default () { return '' } }
+    fvid: { type: String, default() { return '' } }
   },
-  data () {
+  data() {
     return {
       sortField: 'agency_id',
       sortOrder: 'asc'
@@ -56,14 +63,14 @@ export default {
     entities: {
       client: 'transitland',
       query: q,
-      variables () {
+      variables() {
         return {
           search: this.search,
           feed_version_sha1: this.fvid,
           limit: this.limit
         }
       },
-      error (e) { this.error = e }
+      error(e) { this.error = e }
     }
   }
 }
