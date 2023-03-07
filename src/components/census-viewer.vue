@@ -182,11 +182,6 @@ const tableNames = [
 ]
 
 export default {
-  filters: {
-    dig (object, path) {
-      return path.reduce((xs, x) => (xs && xs[x] ? xs[x] : null), object)
-    }
-  },
   props: {
     layer: { type: String, default: 'tract' },
     radius: { type: Number, default: 400 },
@@ -206,36 +201,6 @@ export default {
         // state: { name: 'State', plural: 'States' },
         // city: { name: 'City (Census Designated Place)', plural: 'Cities' },
         // cd: { name: 'Congressional District', plural: 'Congressional Districts' }
-      }
-    }
-  },
-  apollo: {
-    routes: {
-      client: 'transitland',
-      query: q,
-      variables () {
-        const q = {
-          table_names: tableNames,
-          layer_name: this.layer,
-          radius: this.radius
-        }
-        if (this.agencyIds) {
-          q.arg_agency_ids = `{${this.agencyIds.join(',')}}`
-        } else if (this.routeIds) {
-          q.route_ids = this.routeIds
-        } else if (this.stopIds) {
-          q.arg_stop_ids = `{${this.stopIds.join(',')}}`
-        }
-        return q
-      },
-      update (data) {
-        const a = []
-        for (const ent of data.routes || []) {
-          for (const g of ent.census_geographies || []) {
-            a.push(g)
-          }
-        }
-        this.geographies = a
       }
     }
   },
@@ -322,6 +287,54 @@ export default {
   watch: {
     features () {
       this.$emit('setFeatures', this.features)
+    }
+  },
+  methods: {
+    dig (object, path) {
+      return path.reduce((xs, x) => (xs && xs[x] ? xs[x] : null), object)
+    },
+    thousands (value) {
+      const t = parseFloat(value)
+      if (isNaN(t)) {
+        return '-'
+      }
+      return Math.ceil(t).toLocaleString()
+    },
+    pct (value) {
+      if (isNaN(parseFloat(value))) {
+        return ''
+      }
+      return `${(value * 100).toFixed(2)} %`
+    }
+  },
+  apollo: {
+    routes: {
+      client: 'transitland',
+      query: q,
+      variables () {
+        const q = {
+          table_names: tableNames,
+          layer_name: this.layer,
+          radius: this.radius
+        }
+        if (this.agencyIds) {
+          q.arg_agency_ids = `{${this.agencyIds.join(',')}}`
+        } else if (this.routeIds) {
+          q.route_ids = this.routeIds
+        } else if (this.stopIds) {
+          q.arg_stop_ids = `{${this.stopIds.join(',')}}`
+        }
+        return q
+      },
+      update (data) {
+        const a = []
+        for (const ent of data.routes || []) {
+          for (const g of ent.census_geographies || []) {
+            a.push(g)
+          }
+        }
+        this.geographies = a
+      }
     }
   }
 }

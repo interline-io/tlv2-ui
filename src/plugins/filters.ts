@@ -1,21 +1,41 @@
-import { defineNuxtPlugin } from "#app";
+import { defineNuxtPlugin } from '#app'
 import { formatDistanceToNow, parseISO, format } from 'date-fns'
 
-function parseHMS(value) {
-  const a = (value || '').split(':').map(s => {
+const routeTypeLookup = new Map(Object.entries({
+  0: 'Tram, Streetcar, Light rail',
+  1: 'Subway, Metro',
+  2: 'Rail',
+  3: 'Bus',
+  4: 'Ferry',
+  5: 'Cable tram',
+  6: 'Aerial lift',
+  7: 'Funicular',
+  11: 'Trolleybus',
+  12: 'Monorail'
+}))
+
+function parseHMS (value: string): number {
+  const a = (value || '').split(':').map((s) => {
     return parseInt(s)
   })
   if (a.length !== 3) {
-    return null
+    return -1
   }
   return a[0] * 3600 + a[1] * 60 + a[2]
 }
 
-function formatHMS(value) {
+function zeroPad (num: number, places: number): string {
+  return String(num).padStart(places, '0')
+}
+
+function formatHMS (value: number): string {
+  if (value < 0) {
+    return ''
+  }
   value = value % (24 * 3600)
   let h = Math.floor(value / 3600)
-  let m = Math.floor((value % 3600) / 60)
-  let s = Math.floor((value % 3600) % 60)
+  const m = Math.floor((value % 3600) / 60)
+  // const s = Math.floor((value % 3600) % 60)
   let ampm = 'am'
   if (h === 0) {
     h = h + 12
@@ -25,83 +45,31 @@ function formatHMS(value) {
     h -= 12
     ampm = 'pm'
   }
-  if (m < 10) {
-    m = '0' + m
-  }
-  if (s < 10) {
-    s = '0' + s
-  }
-  return `${h}:${m} ${ampm}`
+  return `${zeroPad(h, 2)}:${zeroPad(m, 2)} ${ampm}`
 }
 
-function median(values) {
-  const half = Math.floor(values.length / 2)
-  if (values.length % 2) {
-    return values[half]
-  }
-  return (values[half - 1] + values[half]) / 2.0
-}
-
-function formatDuration(seconds) {
-  if (seconds > 3600) {
-    return `${Math.ceil(seconds / 3600)}h ${Math.ceil(
-      (seconds % 3600) / 60
-    )} min`
-  }
-  if (seconds > 0) {
-    return `${Math.ceil(seconds / 60)} min`
-  }
-  return '-'
-}
-
-export default defineNuxtPlugin(nuxtApp => {
+export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.config.globalProperties.$filters = {
-    formatHeadway(hw, tod) {
-      if (!hw) {
-        return ''
-      }
-      const deps = hw[tod] || []
-      if (deps.length === 0) {
-        return ''
-      } else if (deps.length < 3) {
-        return `${deps.length + 1} trips`
-      }
-      const amin = Math.min(...deps)
-      const amax = Math.max(...deps)
-      const amid = median(deps)
-      if (amin && amax) {
-        const diff = Math.abs(amax - amin)
-        if (diff > 2 * 3600) {
-          return 'varies'
-        } else if (diff > 10 * 60) {
-          return `${formatDuration(amin)} - ${formatDuration(amax)}`
-        }
-      }
-      if (amid) {
-        return formatDuration(amid)
-      }
-      return ''
-    },
-    fromNowDate(comparisonDate) {
+    fromNowDate (comparisonDate: number) {
       return formatDistanceToNow(comparisonDate, {
         addSuffix: true
       }).replace('about ', '')
     },
-    fromNow(comparisonDate) {
+    fromNow (comparisonDate: number) {
       return formatDistanceToNow(parseISO(comparisonDate + 'Z'), {
         addSuffix: true
       }).replace('about ', '')
     },
-    reformatHMS(value) {
+    reformatHMS (value: string): string {
       return formatHMS(parseHMS(value))
     },
-    parseHMS(value) {
+    parseHMS (value: string): number {
       return parseHMS(value)
     },
-    formatHMS(value) {
+    formatHMS (value: number): string {
       return formatHMS(value)
     },
-    shortenName(value, len) {
+    shortenName (value: string, len: number): string {
       if (!value) {
         value = ''
       }
@@ -113,32 +81,19 @@ export default defineNuxtPlugin(nuxtApp => {
       }
       return value
     },
-    formatDate: function formatdate(value) {
+    formatDate (value: string): string {
       return format(parseISO(value), 'yyyy-MM-dd')
     },
-    joinUnique(values) {
+    joinUnique (values: string[]): string {
       return Array.from(new Set(values)).sort().join(', ')
     },
-    round(value) {
+    round (value: number): string {
       return value.toFixed(2)
     },
-    thousands(value) {
-      value = parseFloat(value)
-      if (isNaN(value)) {
-        return '-'
-      }
-      return Math.ceil(value).toLocaleString()
-    },
-    pct(value) {
-      if (isNaN(parseFloat(value))) {
-        return ''
-      }
-      return `${(value * 100).toFixed(2)} %`
-    },
-    capitalize(value) {
+    capitalize (value: string): string {
       return value
         .split(' ')
-        .map(w => {
+        .map((w) => {
           return (
             w.substr(0, 1).toUpperCase() +
             w.substr(1, w.length - 1).toLowerCase()
@@ -146,7 +101,7 @@ export default defineNuxtPlugin(nuxtApp => {
         })
         .join(' ')
     },
-    prettyBytes(num) {
+    prettyBytes (num: number): string {
       if (typeof num !== 'number' || isNaN(num)) {
         throw new TypeError('Expected a number')
       }
@@ -162,27 +117,12 @@ export default defineNuxtPlugin(nuxtApp => {
         Math.floor(Math.log(num) / Math.log(1000)),
         units.length - 1
       )
-      num = (num / 1000 ** exponent).toFixed(2) * 1
+      const snum = (num / 1000 ** exponent).toFixed(2)
       const unit = units[exponent]
-      return (neg ? '-' : '') + num + ' ' + unit
+      return (neg ? '-' : '') + snum + ' ' + unit
     },
-    routeTypeToWords(num) {
-      if (num >= 0 <= 12) {
-        return {
-          0: 'Tram, Streetcar, Light rail',
-          1: 'Subway, Metro',
-          2: 'Rail',
-          3: 'Bus',
-          4: 'Ferry',
-          5: 'Cable tram',
-          6: 'Aerial lift',
-          7: 'Funicular',
-          11: 'Trolleybus',
-          12: 'Monorail'
-        }[num]
-      } else {
-        return num
-      }
+    routeTypeToWords (num: number) {
+      return routeTypeLookup.get(num.toString()) || num.toString()
     }
   }
 })

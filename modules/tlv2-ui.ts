@@ -16,7 +16,7 @@ export default defineNuxtModule({
     nuxt.options.css.push(resolve('../src/assets/main.css'))
   },
   hooks: {
-    'components:dirs'(dirs) {
+    'components:dirs' (dirs) {
       // Add ../src/components dir to the list
       dirs.push({
         // global: true,

@@ -34,10 +34,7 @@
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^12.0.0",
-    "@rushstack/eslint-patch": "^1.2.0",
     "@types/node": "^18.14.2",
-    "@vitejs/plugin-vue": "^4.0.0",
-    "@volar-plugins/eslint": "latest",
     "@vue/eslint-config-typescript": "^11.0.2",
     "@vue/tsconfig": "^0.1.3",
     "eslint": "^8.35.0",

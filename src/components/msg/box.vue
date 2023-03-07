@@ -1,50 +1,52 @@
 <template>
-    <div class="mb-4">
-        <article :class="msgClass">
-            <div
-                class="message-header"
-                v-if="title"
-            >{{ title }}</div>
-            <template v-if="hasIcon">
-                <div class="media message-body">
-                    <o-icon
-                        :icon="getIcon"
-                        size="medium"
-                        class="media-left"
-                    ></o-icon>
-                    <div class="media-content">
-                        <slot />
-                    </div>
-                </div>
-            </template>
-            <template v-else>
-                <div class="message-body">
-                    <slot />
-                </div>
-            </template>
-        </article>
-    </div>
+  <div class="mb-4">
+    <article :class="msgClass">
+      <div
+        v-if="title"
+        class="message-header"
+      >
+        {{ title }}
+      </div>
+      <template v-if="hasIcon">
+        <div class="media message-body">
+          <o-icon
+            :icon="getIcon"
+            size="medium"
+            class="media-left"
+          />
+          <div class="media-content">
+            <slot />
+          </div>
+        </div>
+      </template>
+      <template v-else>
+        <div class="message-body">
+          <slot />
+        </div>
+      </template>
+    </article>
+  </div>
 </template>
 
-<script>
+<script lang="ts">
 export default {
-    props: {
-        variant: { type: String, default() { return 'info' } },
-        title: { type: String, default: null },
-        icon: { type: String, default: null },
-        noIcon: { type: Boolean, default: false }
+  props: {
+    variant: { type: String, default () { return 'info' } },
+    title: { type: String, default: null },
+    icon: { type: String, default: null },
+    noIcon: { type: Boolean, default: false }
+  },
+  computed: {
+    getIcon () {
+      if (this.variant === 'info') { return 'information' }
+      if (this.variant === 'danger' || this.variant === 'warning') { return 'alert' }
+      return this.icon || this.variant
     },
-    computed: {
-        getIcon() {
-            if (this.variant === 'info') { return 'information' }
-            if (this.variant === 'danger' || this.variant === 'warning') { return 'alert' }
-            return this.icon || this.variant
-        },
-        hasIcon() { return !this.noIcon },
-        msgClass() {
-            return `message block is-${this.variant}`
-        }
+    hasIcon () { return !this.noIcon },
+    msgClass () {
+      return `message block is-${this.variant}`
     }
+  }
 }
 </script>
 

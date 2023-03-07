@@ -74,7 +74,7 @@ export default {
   props: {
     sha1: { type: String, default: null },
     latestFeedVersionSha1: { type: String, default: null },
-    modelValue: { type: String, default: null }
+    modelValue: { type: Boolean, default: null }
   },
   emits: ['update:modelValue']
 }
