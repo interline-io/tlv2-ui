@@ -14,7 +14,7 @@
     "@apollo/client": "^3.7.11",
     "@mdi/font": "^7.2.96",
     "@nuxtjs/eslint-config-typescript": "^12.0.0",
-    "@oruga-ui/oruga-next": "oruga-ui/oruga#4b1da518c5c0a00b40acf1dbb252adb56b44a52c",
+    "@oruga-ui/oruga-next": "^0.5.10",
     "@oruga-ui/theme-bulma": "^0.2.9",
     "@vue/apollo-composable": "^4.0.0-beta.4",
     "@vue/apollo-option": "^4.0.0-beta.4",

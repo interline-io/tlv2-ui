@@ -1026,10 +1026,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oruga-ui/oruga-next@oruga-ui/oruga#4b1da518c5c0a00b40acf1dbb252adb56b44a52c":
+"@oruga-ui/oruga-next@npm:^0.5.10":
   version: 0.5.10
-  resolution: "@oruga-ui/oruga-next@https://github.com/oruga-ui/oruga.git#commit=4b1da518c5c0a00b40acf1dbb252adb56b44a52c"
-  checksum: b3aa3021762a41c28e0c080ed79955635613c3518dd1c069bb9eb49cf12d5a42b6664c16aefe6d05fec7b1358b8d44ecf33a417b38dc02eb6e8c498e353a2d26
+  resolution: "@oruga-ui/oruga-next@npm:0.5.10"
+  peerDependencies:
+    vue: ^3.0.0
+  checksum: 4d01ece009521c35caceca31f70aa2f1fb4ed7a503ab311835cd43509bbf77159188f013e181f72a2b0272d52259fadc639f43cf4a041b5af70b8e2422b86c58
   languageName: node
   linkType: hard
 
@@ -7887,7 +7889,7 @@ __metadata:
     "@apollo/client": ^3.7.11
     "@mdi/font": ^7.2.96
     "@nuxtjs/eslint-config-typescript": ^12.0.0
-    "@oruga-ui/oruga-next": "oruga-ui/oruga#4b1da518c5c0a00b40acf1dbb252adb56b44a52c"
+    "@oruga-ui/oruga-next": ^0.5.10
     "@oruga-ui/theme-bulma": ^0.2.9
     "@vue/apollo-composable": ^4.0.0-beta.4
     "@vue/apollo-option": ^4.0.0-beta.4
