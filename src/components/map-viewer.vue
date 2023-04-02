@@ -98,6 +98,7 @@ export default {
         container: this.$refs.mapelem,
         transformRequest: (url, resourceType) => {
           if (resourceType === 'Tile' && url.startsWith('https://transit.land')) {
+            const config = useRuntimeConfig()
             return {
               url,
               headers: { apikey: config.public.tileApikey }
