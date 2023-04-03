@@ -3,7 +3,9 @@ import { defineNuxtPlugin } from "#app";
 import { bulmaConfig } from '@oruga-ui/theme-bulma'
 import '@mdi/font/css/materialdesignicons.min.css'
 
-import Oruga from '@oruga-ui/oruga-next';
+// sigh
+// import Oruga from '@oruga-ui/oruga-next'
+import Oruga from "@oruga-ui/oruga-next/dist/oruga.mjs";
 
 import '@oruga-ui/oruga-next/dist/oruga.css'
 
