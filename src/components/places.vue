@@ -1,6 +1,12 @@
 <template>
-    <div>
-        <tl-msg-info
+    <div class="content">
+        <h3 class="is-3 title">Browse Places</h3>
+        <div class="field">
+            <label for="sortBy" class="label">Sort places by</label>
+            <o-radio v-model="sortBy" native-value="alphabetical">Alphabetical</o-radio>
+            <o-radio v-model="sortBy" native-value="count">Count</o-radio>
+        </div>
+        <p
             v-for="place of sortedPlaces"
             :key="place.adm0_name"
         >
@@ -14,10 +20,11 @@
                     :to="{ name: 'places-adm0-adm1-city', params: { adm0: place.adm0_name, adm1: place.adm1_name, city: place.city_name || 'asd' } }"
                 >{{ place.city_name }}</nuxt-link>
             </template>
-            {{ place.count }} operators
-        </tl-msg-info>
+            &nbsp; <span class="tag">{{ place.count?.toLocaleString() }} operators</span>
+        </p>
 
-        <ul>
+        <h3 class="is-3 title" v-if="placeLevelInt > 1">Operators</h3>
+        <ul v-if="placeLevelInt > 1">
             <li
                 class="pl-4"
                 v-for="operator of allOperators"
@@ -84,7 +91,8 @@ export default {
     },
     data() {
         return {
-            places: []
+            places: [],
+            sortBy: 'alphabetical'
         }
     },
     computed: {
@@ -112,7 +120,11 @@ export default {
         },
         sortedPlaces() {
             return this.places.slice(0).sort((a, b) => {
-                return b.count - a.count
+                if (this.sortBy == 'count') {
+                    return b.count - a.count
+                } else if (this.sortBy == 'alphabetical') {
+                    return a.name > b.name
+                }
             })
         },
         staticTitle() {
