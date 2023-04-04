@@ -10,17 +10,27 @@
             v-for="place of sortedPlaces"
             :key="place.adm0_name"
         >
-            <nuxt-link :to="{ name: 'places-adm0', params: { adm0: place.adm0_name } }">{{ place.adm0_name }}</nuxt-link>
-            <template v-if="placeLevelInt > 0"> /
-                <nuxt-link :to="{ name: 'places-adm0-adm1', params: { adm0: place.adm0_name, adm1: place.adm1_name } }">{{
-                    place.adm1_name }}</nuxt-link>
+            <template v-if="(placeLevelInt > 1) ? (place.adm0_name && place.adm1_name && place.city_name) : true">
+                <nuxt-link to="/places"><o-icon icon="earth" title="earth" size="small" /></nuxt-link> /
+                <nuxt-link :to="{ name: 'places-adm0', params: { adm0: place.adm0_name } }">{{ place.adm0_name }}</nuxt-link>
+                <template v-if="placeLevelInt > 0"> /
+                    <nuxt-link :to="{ name: 'places-adm0-adm1', params: { adm0: place.adm0_name, adm1: place.adm1_name } }">{{
+                        place.adm1_name }}</nuxt-link>
+                </template>
+                <template v-if="placeLevelInt > 1"> /
+                    <nuxt-link
+                        :to="{ name: 'places-adm0-adm1-city', params: { adm0: place.adm0_name, adm1: place.adm1_name, city: place.city_name || 'asd' } }"
+                    >{{ place.city_name }}</nuxt-link>
+                </template>
+                &nbsp; <span class="tag">{{ place.count?.toLocaleString() }} operators</span>
             </template>
-            <template v-if="placeLevelInt > 1"> /
-                <nuxt-link
-                    :to="{ name: 'places-adm0-adm1-city', params: { adm0: place.adm0_name, adm1: place.adm1_name, city: place.city_name || 'asd' } }"
-                >{{ place.city_name }}</nuxt-link>
+            <template v-else-if="sortedPlaces.length == 1">
+                <!-- if there is only one adm0/adm1 record to display -->
+                <nuxt-link :to="{ name: 'places-adm0', params: { adm0: place.adm0_name } }">{{ place.adm0_name }}</nuxt-link> / 
+                <nuxt-link :to="{ name: 'places-adm0-adm1', params: { adm0: place.adm0_name, adm1: place.adm1_name } }">{{ place.adm1_name }}</nuxt-link>
+                &nbsp; <span class="tag">{{ place.count?.toLocaleString() }} operators</span>
             </template>
-            &nbsp; <span class="tag">{{ place.count?.toLocaleString() }} operators</span>
+
         </p>
 
         <h3 class="is-3 title" v-if="placeLevelInt > 1">Operators</h3>
