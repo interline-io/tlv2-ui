@@ -122,14 +122,16 @@
             </template>
           </td>
         </tr>
-        <tr v-if="entity.created_by">
-          <td>Created by</td>
-          <td>{{ entity.created_by }}</td>
-        </tr>
-        <tr v-if="entity.updated_by">
-          <td>Last updated by</td>
-          <td>{{ entity.updated_by }}</td>
-        </tr>
+        <template v-if="showUserInformation">
+          <tr v-if="entity.created_by">
+            <td>Created by</td>
+            <td>{{ entity.created_by }}</td>
+          </tr>
+          <tr v-if="entity.updated_by">
+            <td>Last updated by</td>
+            <td>{{ entity.updated_by }}</td>
+          </tr>
+        </template>
         <tr>
           <td>Fetched</td>
           <td>{{ $filters.formatDate(entity.fetched_at) }} ({{ $filters.fromNow(entity.fetched_at) }})</td>
@@ -364,7 +366,8 @@ export default {
   },
   props: {
     canEdit: { type: Boolean, default: false },
-    feedVersionSha1: { type: String, default: null }
+    feedVersionSha1: { type: String, default: null },
+    showUserInformation: { type: Boolean, default: false },
   },
   data () {
     return {
