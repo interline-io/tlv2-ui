@@ -187,6 +187,7 @@ const props = defineProps({
     limit: { type: Number, default: 5 },
     fetchError: String,
     importStatus: String,
+    tagUnstableUrl: String,
     feedSpecs: { type: Array, default() { return ['GTFS', 'GTFS_RT', 'GBFS', 'MDS'] } }
 })
 
@@ -196,19 +197,23 @@ const limit = ref(props.limit)
 const fetchError = ref(props.fetchError)
 const feedSpecs = ref(props.feedSpecs)
 const importStatus = ref(props.importStatus)
-const tagUnstableUrl = ref(false)
+const tagUnstableUrl = ref(nullBool(props.tagUnstableUrl))
 
 const emit = defineEmits([
     'update:search',
     'update:fetchError',
     'update:feedSpecs',
-    'update:importStatus'
+    'update:importStatus',
+    'update:tagUnstableUrl'
 ])
 
 watch(search, (v) => { emit('update:search', v) })
 watch(fetchError, (v) => { emit('update:fetchError', v) })
 watch(feedSpecs, (v) => { emit('update:feedSpecs', v) })
 watch(importStatus, (v) => { emit('update:importStatus', v) })
+watch(tagUnstableUrl, (v) => { emit('update:tagUnstableUrl', v) })
+
+console.log('tag:', tagUnstableUrl)
 
 const { result, loading, error } = useQuery(
     query,
@@ -218,7 +223,7 @@ const { result, loading, error } = useQuery(
         specs: feedSpecs.value.length === 4 ? null : feedSpecs.value,
         fetch_error: nullBool(fetchError.value),
         import_status: nullString(importStatus.value),
-        // tags: tagVariable
+        tags: tagUnstableUrl.value ? {'unstable_url':'true'} : null
     }))
 
 const entities = computed(() => result.value?.entities ?? [])
