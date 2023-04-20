@@ -14,12 +14,12 @@
         <nav class="breadcrumb">
           <ul>
             <li>
-              <nuxt-link :to="{name:'feeds'}">
+              <nuxt-link :to="{ name: 'feeds' }">
                 Source Feeds
               </nuxt-link>
             </li>
             <li>
-              <nuxt-link :to="{name: 'feeds-feed', params:{feed:$route.params.feed}}">
+              <nuxt-link :to="{ name: 'feeds-feed', params: { feed: $route.params.feed } }">
                 {{ $route.params.feed }}
               </nuxt-link>
             </li>
@@ -64,7 +64,7 @@
                     Future Static GTFS: <code>{{ entity.urls.static_planned }}</code>
                   </li>
                   <li v-if="entity.urls.static_historic">
-                    <div v-for="(k,i) of entity.urls.static_historic" :key="i">
+                    <div v-for="(k, i) of entity.urls.static_historic" :key="i">
                       Historic GTFS: <code>{{ k }}</code>
                     </div>
                   </li>
@@ -89,7 +89,8 @@
               </td>
               <td>
                 <template v-if="lastSuccessfulFetch && lastSuccessfulFetch.fetched_at">
-                  {{ $filters.formatDate(lastSuccessfulFetch.fetched_at) }} ({{ $filters.fromNow(lastSuccessfulFetch.fetched_at) }})
+                  {{ $filters.formatDate(lastSuccessfulFetch.fetched_at) }} ({{
+                    $filters.fromNow(lastSuccessfulFetch.fetched_at) }})
                 </template>
                 <template v-else>
                   Unknown
@@ -169,7 +170,8 @@
 
             <tr v-if="entity.spec == 'GTFS'">
               <td>
-                <o-tooltip dashed multilined label="Information provided by the feed producer inside a feed_info.txt file">
+                <o-tooltip dashed multilined
+                  label="Information provided by the feed producer inside a feed_info.txt file">
                   Feed Info
                 </o-tooltip>
               </td>
@@ -201,22 +203,22 @@
         </h4>
         <o-tabs class="tl-tabs" type="boxed" :animated="false">
           <o-tab-item label="Operators">
-            <tl-msg-info v-if="!entity.associated_operators || (entity.associated_operators && entity.associated_operators.length === 0)">
+            <tl-msg-info
+              v-if="!entity.associated_operators || (entity.associated_operators && entity.associated_operators.length === 0)">
               There are no operators associated with this feed.
             </tl-msg-info>
-            <tl-msg-info
-              v-for="(operator,i) of entity.associated_operators"
-              :key="i"
-            >
+            <tl-msg-info v-for="(operator, i) of entity.associated_operators" :key="i">
               <div class="columns">
                 <div class="column is-8">
                   <p>
                     This feed is associated with the operator record with Onestop ID of
-                    <code>{{ operator.onestop_id }}</code> See this operator for more metadata related to this feed and to explore routes, stops, and other data imported from this feed.
+                    <code>{{ operator.onestop_id }}</code> See this operator for more metadata related to this feed and to
+                    explore routes, stops, and other data imported from this feed.
                   </p>
                 </div>
                 <div class="column is-4 has-text-right">
-                  <nuxt-link class="button is-primary" :to="{name:'operators-onestop_id', params:{onestop_id:operator.onestop_id}}">
+                  <nuxt-link class="button is-primary"
+                    :to="{ name: 'operators-onestop_id', params: { onestop_id: operator.onestop_id } }">
                     View Operator Record
                   </nuxt-link>
                 </div>
@@ -235,105 +237,15 @@
 
         <o-tabs class="tl-tabs" v-model="activeTab" type="boxed" :animated="false" @update:modelValue="setTab">
           <o-tab-item label="Versions">
-            <o-table
-              :data="entity.feed_versions"
-              :striped="true"
-              :paginated="true"
-              :pagination-simple="true"
-              sort-icon="menu-up"
-              detailed
-              :show-detail-icon="false"
-            >
-              <o-table-column
-                v-slot="props"
-                :sortable="true"
-                field="fetched_at"
-                label="Fetched"
-              >
-                <template v-if="props.row.fetched_at">
-                  {{ $filters.formatDate(props.row.fetched_at) }} ({{ $filters.fromNow(props.row.fetched_at) }})
-                </template>
-                <template v-else>
-                  Unknown
-                </template>
-              </o-table-column>
-              <o-table-column v-slot="props" :sortable="true" field="sha1" label="SHA1">
-                <nuxt-link
-                  :to="{name: 'feeds-feed-versions-version', params: {feed: entity.onestop_id, version: props.row.sha1}}"
-                >
-                  {{ props.row.sha1.substr(0,6) }}…
-                </nuxt-link>
-              </o-table-column>
-              <o-table-column
-                v-slot="props"
-                :sortable="true"
-                field="earliest_calendar_date"
-                label="Earliest date"
-              >
-                {{ props.row.earliest_calendar_date.substr(0,10) }}
-              </o-table-column>
-              <o-table-column
-                v-slot="props"
-                :sortable="true"
-                field="latest_calendar_date"
-                label="Latest date"
-              >
-                {{ props.row.latest_calendar_date.substr(0,10) }}
-              </o-table-column>
-              <o-table-column v-slot="props" field="feed_version_gtfs_import" label="Imported">
-                <template v-if="props.row.feed_version_gtfs_import">
-                  <o-tooltip
-                    v-if="props.row.feed_version_gtfs_import.schedule_removed"
-                    label="Agencies, stops, and routes available"
-                  >
-                    <o-icon icon="check" />
-                  </o-tooltip>
-                  <o-tooltip
-                    v-else-if="props.row.feed_version_gtfs_import.success"
-                    label="Successfully imported"
-                  >
-                    <o-icon icon="check-all" />
-                  </o-tooltip>
-                  <o-tooltip v-else-if="props.row.feed_version_gtfs_import.in_progress">
-                    <o-icon icon="clock" />
-                  </o-tooltip>
-                  <o-tooltip
-                    v-else-if="props.row.feed_version_gtfs_import.success == false"
-                    :label="props.row.feed_version_gtfs_import.exception_log"
-                    position="top"
-                  >
-                    <o-icon icon="alert" />
-                  </o-tooltip>
-                </template>
-              </o-table-column>
-              <o-table-column v-slot="props" label="Active">
-                <o-icon
-                  v-if="entity.feed_state && entity.feed_state.feed_version && entity.feed_state.feed_version.id === props.row.id"
-                  icon="check"
-                />
-              </o-table-column>
-              <o-table-column v-if="showDownloadColumn" v-slot="props" label="Download">
-                <template v-if="entity.license.redistribution_allowed !== 'no'">
-                  <a @click="showDownloadInstructions(props.row.sha1)">
-                    <o-icon v-if="props.row.sha1 === latestFeedVersionSha1" icon="download" title="Download feed version" variant="success" />
-                    <o-icon v-else icon="download" title="Download feed version" />
-                  </a>
-                </template>
-              </o-table-column>
-            </o-table>
-
-            <tl-feed-version-download-modal
-              v-model="displayDownloadInstructions"
-              :sha1="displayDownloadSha1"
-              :latest-feed-version-sha1="latestFeedVersionSha1"
-            />
+            <tl-feed-version-table :feed="entity" />
 
             <slot name="add-feed-version" :entity="entity" />
           </o-tab-item>
 
           <o-tab-item label="Service Levels">
             <div v-if="activeTab === 2">
-              <tl-multi-service-levels :max-weeks="52" :week-agg="true" :fvids="entity.feed_versions.map((s)=>{return s.id}).slice(0,20)" />
+              <tl-multi-service-levels :max-weeks="52" :week-agg="true"
+                :fvids="entity.feed_versions.map((s) => { return s.id }).slice(0, 20)" />
             </div>
           </o-tab-item>
         </o-tabs>
@@ -470,6 +382,8 @@ export default {
     return {
       displayDownloadInstructions: false,
       displayDownloadSha1: '',
+      page: 1,
+      perPage: 20,
       tabIndex: {
         1: 'versions',
         2: 'service'
@@ -561,7 +475,7 @@ export default {
 
 <style scoped>
 blockquote {
-  margin:10px;
-  margin-left:20px;
+  margin: 10px;
+  margin-left: 20px;
 }
 </style>

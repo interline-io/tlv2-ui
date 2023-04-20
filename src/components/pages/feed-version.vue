@@ -195,7 +195,7 @@
 
       <o-tabs class="tl-tabs" v-model="activeTab" type="boxed" :animated="false" @update:modelValue="setTab">
         <o-tab-item label="Files">
-          <tl-file-info-viewer :files="entity.files" />
+          <tl-file-info-table :files="entity.files" />
         </o-tab-item>
 
         <o-tab-item label="Service levels">
@@ -220,15 +220,15 @@
         </o-tab-item>
 
         <o-tab-item v-if="imported" label="Agencies">
-          <tl-agency-viewer v-if="activeTab === 4" :fvid="entity.sha1" />
+          <tl-agency-table v-if="activeTab === 4" :fvid="entity.sha1" />
         </o-tab-item>
 
         <o-tab-item v-if="imported" label="Routes">
-          <tl-route-viewer v-if="activeTab === 5" :link-version="true" :feed-version-sha1="entity.sha1" />
+          <tl-route-table v-if="activeTab === 5" :link-version="true" :feed-version-sha1="entity.sha1" />
         </o-tab-item>
 
         <o-tab-item v-if="imported" label="Stops">
-          <tl-stop-viewer v-if="activeTab === 6" :link-version="true" :feed-version-sha1="entity.sha1" />
+          <tl-stop-table v-if="activeTab === 6" :link-version="true" :feed-version-sha1="entity.sha1" />
         </o-tab-item>
 
         <o-tab-item v-if="imported" label="Import log">
