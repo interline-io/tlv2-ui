@@ -16,7 +16,14 @@
 
     <slot name="description" />
 
-    <tl-feeds-table v-model:search="search" v-model:importStatus="importStatus" v-model:feedSpecs="feedSpecs" v-model:fetchError="fetchError" v-model:tagUnstableUrl="tagUnstableUrl" :limit="limit" />
+    <tl-feeds-table
+      v-model:search="search"
+      v-model:importStatus="importStatus"
+      v-model:feedSpecs="feedSpecs"
+      v-model:fetchError="fetchError"
+      v-model:tagUnstableUrl="tagUnstableUrl"
+      :limit="limit"
+    />
 
     <slot name="add-feed" />
   </div>
@@ -24,8 +31,8 @@
 
 <script>
 export default {
-  props: { 
-    limit: { type: Number, default: 20 },
+  props: {
+    limit: { type: Number, default: 20 }
   },
   computed: {
     staticTitle() {
@@ -63,7 +70,7 @@ export default {
       set(v) {
         this.$router.replace({ query: { ...this.$route.query, tagUnstableUrl: v } })
       }
-    }   
+    }
   }
 }
 </script>

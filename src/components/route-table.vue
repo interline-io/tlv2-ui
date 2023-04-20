@@ -1,6 +1,8 @@
 <template>
   <div>
-    <tl-msg-error v-if="error">{{ error }}</tl-msg-error>
+    <tl-msg-error v-if="error">
+      {{ error }}
+    </tl-msg-error>
     <div v-else>
       <tl-search-bar v-model="search" placeholder="Filter Routes" />
       <o-loading v-model:active="$apollo.loading" :full-page="false" />
@@ -9,24 +11,27 @@
           <tr>
             <th>Route ID</th>
             <th>Name</th>
-            <th></th>
-            <th v-if="showAgency">Agency</th>
+            <th />
+            <th v-if="showAgency">
+              Agency
+            </th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="route of entityPage" :key="route.id">
             <td>
               <nuxt-link
-                :to="{ name: 'routes-onestop_id', params: { onestop_id: route.onestop_id || 'search' }, query: (linkVersion ? { feed_onestop_id: route.feed_onestop_id, feed_version_sha1: route.feed_version_sha1, entity_id: route.route_id } : {}) }">
+                :to="{ name: 'routes-onestop_id', params: { onestop_id: route.onestop_id || 'search' }, query: (linkVersion ? { feed_onestop_id: route.feed_onestop_id, feed_version_sha1: route.feed_version_sha1, entity_id: route.route_id } : {}) }"
+              >
                 {{ route.route_id }}
               </nuxt-link>
             </td>
-            <td> {{ route.route_short_name }}
+            <td>
+              {{ route.route_short_name }}
             </td>
             <td>{{ route.route_long_name }}</td>
             <td v-if="showAgency">
               {{ route.agency.agency_name }}
-
             </td>
           </tr>
         </tbody>

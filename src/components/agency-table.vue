@@ -1,9 +1,10 @@
 <template>
   <div>
-    <tl-msg-error v-if="error">{{ error }}</tl-msg-error>
+    <tl-msg-error v-if="error">
+      {{ error }}
+    </tl-msg-error>
     <div v-else>
       <tl-search-bar v-model="search" placeholder="Filter Agencies" />
-
 
       <o-loading v-model:active="$apollo.loading" :full-page="false" />
       <table class="table is-striped is-fullwidth">
@@ -16,9 +17,10 @@
         <tbody>
           <tr v-for="agency of entityPage" :key="agency.id">
             <td>
-              {{  agency.agency_id }}
+              {{ agency.agency_id }}
             </td>
-            <td> {{ agency.agency_name }}
+            <td>
+              {{ agency.agency_name }}
             </td>
           </tr>
         </tbody>

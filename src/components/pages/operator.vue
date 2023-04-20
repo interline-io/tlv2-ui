@@ -2,7 +2,7 @@
   <div>
     <div v-if="$apollo.loading" class="is-loading" />
     <div v-else-if="entity">
-      <Title>{{staticTitle }}</Title>
+      <Title>{{ staticTitle }}</Title>
       <Meta name="description" :content="staticDescription" />
       <Meta name="twitter:title" :content="staticTitle" />
       <Meta name="twitter:description" :content="staticDescription" />
@@ -120,11 +120,10 @@
           </table>
 
           <slot name="description">
-        <div class="content">
-          {{ staticDescription }}
-        </div>
-      </slot>
-
+            <div class="content">
+              {{ staticDescription }}
+            </div>
+          </slot>
         </div>
 
         <div class="column is-one-quarter is-full-height">
@@ -165,7 +164,7 @@
               Operator documentation
             </nuxt-link> for more information on this process.
           </tl-msg-info>
-          
+
           <div class="content">
             <o-table
               :data="sources"
@@ -207,7 +206,7 @@
         <h4 class="title is-4">
           Operator Service
         </h4>
-        <o-tabs class="tl-tabs" v-model="activeTab" type="boxed" :animated="false" @update:modelValue="setTab">
+        <o-tabs v-model="activeTab" class="tl-tabs" type="boxed" :animated="false" @update:modelValue="setTab">
           <o-tab-item label="Map">
             <client-only placeholder="Map">
               <tl-feed-version-map-viewer v-if="activeTab === 1" :agency-ids="agencyIds" :overlay="true" :link-version="linkVersion" />

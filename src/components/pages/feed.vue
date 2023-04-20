@@ -1,7 +1,9 @@
 <template>
   <div>
     <tl-loading v-if="$apollo.loading" />
-    <tl-msg-error v-else-if="error">{{ error }}</tl-msg-error>
+    <tl-msg-error v-else-if="error">
+      {{ error }}
+    </tl-msg-error>
     <div v-else-if="entity">
       <Title>{{ staticTitle }}</Title>
       <Meta name="description" :content="staticDescription" />
@@ -170,8 +172,11 @@
 
             <tr v-if="entity.spec == 'GTFS'">
               <td>
-                <o-tooltip dashed multilined
-                  label="Information provided by the feed producer inside a feed_info.txt file">
+                <o-tooltip
+                  dashed
+                  multilined
+                  label="Information provided by the feed producer inside a feed_info.txt file"
+                >
                   Feed Info
                 </o-tooltip>
               </td>
@@ -189,7 +194,6 @@
               {{ staticDescription }}
             </div>
           </slot>
-
         </div>
 
         <slot name="edit-feed" :entity="entity" />
@@ -204,7 +208,8 @@
         <o-tabs class="tl-tabs" type="boxed" :animated="false">
           <o-tab-item label="Operators">
             <tl-msg-info
-              v-if="!entity.associated_operators || (entity.associated_operators && entity.associated_operators.length === 0)">
+              v-if="!entity.associated_operators || (entity.associated_operators && entity.associated_operators.length === 0)"
+            >
               There are no operators associated with this feed.
             </tl-msg-info>
             <tl-msg-info v-for="(operator, i) of entity.associated_operators" :key="i">
@@ -217,8 +222,10 @@
                   </p>
                 </div>
                 <div class="column is-4 has-text-right">
-                  <nuxt-link class="button is-primary"
-                    :to="{ name: 'operators-onestop_id', params: { onestop_id: operator.onestop_id } }">
+                  <nuxt-link
+                    class="button is-primary"
+                    :to="{ name: 'operators-onestop_id', params: { onestop_id: operator.onestop_id } }"
+                  >
                     View Operator Record
                   </nuxt-link>
                 </div>
@@ -235,7 +242,7 @@
           Archived Feed Versions
         </h4>
 
-        <o-tabs class="tl-tabs" v-model="activeTab" type="boxed" :animated="false" @update:modelValue="setTab">
+        <o-tabs v-model="activeTab" class="tl-tabs" type="boxed" :animated="false" @update:modelValue="setTab">
           <o-tab-item label="Versions">
             <tl-feed-version-table :feed="entity" />
 
@@ -244,8 +251,11 @@
 
           <o-tab-item label="Service Levels">
             <div v-if="activeTab === 2">
-              <tl-multi-service-levels :max-weeks="52" :week-agg="true"
-                :fvids="entity.feed_versions.map((s) => { return s.id }).slice(0, 20)" />
+              <tl-multi-service-levels
+                :max-weeks="52"
+                :week-agg="true"
+                :fvids="entity.feed_versions.map((s) => { return s.id }).slice(0, 20)"
+              />
             </div>
           </o-tab-item>
         </o-tabs>
