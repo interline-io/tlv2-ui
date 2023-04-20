@@ -390,8 +390,6 @@ export default {
   },
   data () {
     return {
-      displayDownloadInstructions: false,
-      displayDownloadSha1: '',
       page: 1,
       perPage: 20,
       tabIndex: {
@@ -412,13 +410,6 @@ export default {
     },
     lastSuccessfulFetch () {
       return (this.entity.last_successful_fetch && this.entity.last_successful_fetch.length > 0) ? this.entity.last_successful_fetch[0] : null
-    },
-    latestFeedVersionSha1 () {
-      const s = this.entity?.feed_versions.slice(0).sort((a, b) => { return a.fetched_at - b.fetched_at })
-      if (s.length > 0) {
-        return s[0].sha1
-      }
-      return ''
     },
     operatorNames () {
       let operatorNames = null
@@ -472,12 +463,6 @@ export default {
         which are available to query by API and to download.`
       }
       return description
-    }
-  },
-  methods: {
-    showDownloadInstructions (sha1) {
-      this.displayDownloadSha1 = sha1
-      this.displayDownloadInstructions = true
     }
   }
 }

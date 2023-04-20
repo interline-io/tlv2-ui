@@ -16,7 +16,7 @@
         <td>{{ $filters.formatDate(fv.fetched_at) }} ({{ $filters.fromNow(fv.fetched_at) }})</td>
         <td>
           <nuxt-link
-            :to="{ name: 'feeds-feed-versions-version', params: { feed: entity.onestop_id, version: fv.sha1 } }"
+            :to="{ name: 'feeds-feed-versions-version', params: { feed: feed.onestop_id, version: fv.sha1 } }"
           >
             {{ fv.sha1.substr(0, 6) }}…
           </nuxt-link>
@@ -94,7 +94,24 @@ export default {
   data() {
     return {
       page: 1,
-      perPage: 20
+      perPage: 20,
+      displayDownloadInstructions: false,
+      displayDownloadSha1: ''
+    }
+  },
+  computed: {
+    latestFeedVersionSha1 () {
+      const s = this.feed?.feed_versions.slice(0).sort((a, b) => { return a.fetched_at - b.fetched_at })
+      if (s.length > 0) {
+        return s[0].sha1
+      }
+      return ''
+    }
+  },
+  methods: {
+    showDownloadInstructions (sha1) {
+      this.displayDownloadSha1 = sha1
+      this.displayDownloadInstructions = true
     }
   }
 }
