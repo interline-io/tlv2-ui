@@ -30,11 +30,6 @@ code {
     margin-bottom:0px !important;
 }
 
-.tab-item {
-    width:100%;
-    overflow-x:auto;
-}
-
 .is-6 {
     margin: 0px !important;
     padding: 0px;
@@ -42,7 +37,17 @@ code {
     padding-bottom: 10px;
 }
 
+.tab-item {
+    width:100%;
+}
+
 .table-container {
     width:100%;
     overflow-x:auto;
+}
+
+@media only screen and (max-width: 600px) {
+    .tab-item {
+    overflow-x:auto;
+  }
 }
