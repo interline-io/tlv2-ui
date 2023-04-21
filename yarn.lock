@@ -396,6 +396,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@braintree/sanitize-url@npm:^6.0.2":
+  version: 6.0.2
+  resolution: "@braintree/sanitize-url@npm:6.0.2"
+  checksum: 6a9dfd4081cc96516eeb281d1a83d3b5f1ad3d2837adf968fcc2ba18889ee833554f9c641b4083c36d3360a932e4504ddf25b0b51e9933c3742622df82cf7c9a
+  languageName: node
+  linkType: hard
+
 "@cloudflare/kv-asset-handler@npm:^0.3.0":
   version: 0.3.0
   resolution: "@cloudflare/kv-asset-handler@npm:0.3.0"
@@ -7936,6 +7943,7 @@ __metadata:
   resolution: "tlv2-ui@workspace:."
   dependencies:
     "@apollo/client": ^3.7.11
+    "@braintree/sanitize-url": ^6.0.2
     "@mdi/font": ^7.2.96
     "@nuxtjs/eslint-config-typescript": ^12.0.0
     "@oruga-ui/oruga-next": ^0.5.10

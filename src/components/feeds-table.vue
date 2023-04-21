@@ -67,63 +67,64 @@
     <tl-msg-error v-if="error">
       {{ error }}
     </tl-msg-error>
-
-    <table class="table is-striped" style="width:100%">
-      <thead>
-        <tr>
-          <th>Feed Onestop ID</th>
-          <th>Format</th>
-          <th>Last Fetched</th>
-          <th>Last Imported</th>
-          <th>Fetch Errors</th>
-          <th v-if="tagUnstableUrl">
-            Tags
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="row of entities" :key="row.id">
-          <td>
-            <nuxt-link :to="{ name: 'feeds-feed', params: { feed: row.onestop_id } }">
-              {{ row.onestop_id }}
-            </nuxt-link>
-          </td>
-          <td>
-            {{ row.spec.toUpperCase() }}
-          </td>
-          <td>
-            <template v-if="row.last_successful_fetch && row.last_successful_fetch.length > 0">
-              {{ $filters.fromNow(row.last_successful_fetch[0].fetched_at) }}
-            </template>
-            <template v-else>
-              Unknown
-            </template>
-          </td>
-          <td>
-            <span v-if="row.spec === 'GTFS'">
-              <template v-if="row.last_successful_import && row.last_successful_import.length > 0">
-                {{ $filters.fromNow(row.last_successful_import[0].fetched_at) }}
+    <div class="table-container">
+      <table class="table is-striped is-fullwidth">
+        <thead>
+          <tr>
+            <th>Feed Onestop ID</th>
+            <th>Format</th>
+            <th>Last Fetched</th>
+            <th>Last Imported</th>
+            <th>Fetch Errors</th>
+            <th v-if="tagUnstableUrl">
+              Tags
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="row of entities" :key="row.id">
+            <td>
+              <nuxt-link :to="{ name: 'feeds-feed', params: { feed: row.onestop_id } }">
+                {{ row.onestop_id }}
+              </nuxt-link>
+            </td>
+            <td>
+              {{ row.spec.toUpperCase() }}
+            </td>
+            <td>
+              <template v-if="row.last_successful_fetch && row.last_successful_fetch.length > 0">
+                {{ $filters.fromNow(row.last_successful_fetch[0].fetched_at) }}
               </template>
               <template v-else>
-                Never
+                Unknown
               </template>
-            </span>
-          </td>
-          <td>
-            <o-tooltip
-              v-if="row.last_fetch && row.last_fetch.length > 0 && row.last_fetch[0].fetch_error"
-              :label="row.last_fetch[0].fetch_error"
-              multilined
-            >
-              <o-icon icon="alert" />
-            </o-tooltip>
-          </td>
-          <td v-if="tagUnstableUrl">
-            <pre class="tags">{{ row.tags }}</pre>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+            </td>
+            <td>
+              <span v-if="row.spec === 'GTFS'">
+                <template v-if="row.last_successful_import && row.last_successful_import.length > 0">
+                  {{ $filters.fromNow(row.last_successful_import[0].fetched_at) }}
+                </template>
+                <template v-else>
+                  Never
+                </template>
+              </span>
+            </td>
+            <td>
+              <o-tooltip
+                v-if="row.last_fetch && row.last_fetch.length > 0 && row.last_fetch[0].fetch_error"
+                :label="row.last_fetch[0].fetch_error"
+                multilined
+              >
+                <o-icon icon="alert" />
+              </o-tooltip>
+            </td>
+            <td v-if="tagUnstableUrl">
+              <pre class="tags">{{ row.tags }}</pre>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
     <tl-show-more v-if="entities.length >= limit" :limit="entities.length" @click="limit += 20" />
     <o-loading v-model:active="loading" :full-page="false" />
   </div>

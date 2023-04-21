@@ -6,38 +6,40 @@
     <div v-else>
       <tl-search-bar v-model="search" placeholder="Filter Stops" />
       <o-loading v-model:active="$apollo.loading" :full-page="false" />
-      <table class="table is-striped is-fullwidth">
-        <thead>
-          <tr>
-            <th>Stop ID</th>
-            <th>Name</th>
-            <th v-if="showAgencies">
-              Agencies
-            </th>
-            <th v-if="showRoutes">
-              Routes
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="stop of entityPage" :key="stop.id">
-            <td>
-              <nuxt-link
-                :to="{ name: 'stops-onestop_id', params: { onestop_id: stop.onestop_id }, query: (linkVersion ? { feed_onestop_id: stop.feed_onestop_id, feed_version_sha1: stop.feed_version_sha1, entity_id: stop.stop_id } : {}) }"
-              >
-                {{ stop.stop_id }}
-              </nuxt-link>
-            </td>
-            <td>{{ stop.stop_name }}</td>
-            <td v-if="showAgencies">
-              {{ $filters.joinUnique(props.row.route_stops.map((s) => { return s.agency.agency_name })) }}
-            </td>
-            <td v-if="showRoutes">
-              {{ $filters.joinUnique(stop.route_stops.map((s) => { return s.route.route_short_name })) }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-container">
+        <table class="table is-striped is-fullwidth">
+          <thead>
+            <tr>
+              <th>Stop ID</th>
+              <th>Name</th>
+              <th v-if="showAgencies">
+                Agencies
+              </th>
+              <th v-if="showRoutes">
+                Routes
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="stop of entityPage" :key="stop.id">
+              <td>
+                <nuxt-link
+                  :to="{ name: 'stops-onestop_id', params: { onestop_id: stop.onestop_id }, query: (linkVersion ? { feed_onestop_id: stop.feed_onestop_id, feed_version_sha1: stop.feed_version_sha1, entity_id: stop.stop_id } : {}) }"
+                >
+                  {{ stop.stop_id }}
+                </nuxt-link>
+              </td>
+              <td>{{ stop.stop_name }}</td>
+              <td v-if="showAgencies">
+                {{ $filters.joinUnique(props.row.route_stops.map((s) => { return s.agency.agency_name })) }}
+              </td>
+              <td v-if="showRoutes">
+                {{ $filters.joinUnique(stop.route_stops.map((s) => { return s.route.route_short_name })) }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <tl-show-more v-if="entities.length === limit || hasMore" :limit="entities.length" @click="showAll" />
     </div>
   </div>

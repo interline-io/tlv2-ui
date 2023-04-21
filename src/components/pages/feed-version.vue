@@ -92,67 +92,75 @@
       </nav>
 
       <table class="table is-borderless property-list tl-props">
-        <tr>
-          <td>Feed Onestop ID</td>
-          <td><code>{{ entity.feed.onestop_id }}</code></td>
-        </tr>
-        <tr v-if="entity.name || canEdit">
-          <td>Name</td>
-          <td>
-            <template v-if="showEdit">
-              <o-input v-model="entity.name" size="small" />
-            </template>
-            <template v-else-if="entity.name">
-              {{ entity.name }}
-            </template>
-            <template v-else>
-              <em>No name provided</em>
-            </template>
-          </td>
-        </tr>
-        <tr v-if="entity.description">
-          <td>Description</td>
-          <td>
-            <template v-if="showEdit">
-              <o-input v-model="entity.description" size="small" />
-            </template>
-            <template v-else-if="entity.description">
-              {{ entity.description }}
-            </template>
-            <template v-else>
-              <em>No description provided</em>
-            </template>
-          </td>
-        </tr>
-        <template v-if="showUserInformation">
-          <tr v-if="entity.created_by">
-            <td>Created by</td>
-            <td>{{ entity.created_by }}</td>
+        <tbody>
+          <tr>
+            <td>Feed Onestop ID</td>
+            <td>
+              <tl-safelink :text="entity.feed.onestop_id" />
+            </td>
           </tr>
-          <tr v-if="entity.updated_by">
-            <td>Last updated by</td>
-            <td>{{ entity.updated_by }}</td>
+          <tr v-if="entity.name || canEdit">
+            <td>Name</td>
+            <td>
+              <template v-if="showEdit">
+                <o-input v-model="entity.name" size="small" />
+              </template>
+              <template v-else-if="entity.name">
+                {{ entity.name }}
+              </template>
+              <template v-else>
+                <em>No name provided</em>
+              </template>
+            </td>
           </tr>
-        </template>
-        <tr>
-          <td>Fetched</td>
-          <td>{{ $filters.formatDate(entity.fetched_at) }} ({{ $filters.fromNow(entity.fetched_at) }})</td>
-        </tr>
-        <tr>
-          <td>URL</td>
-          <td><code>{{ entity.url }}</code></td>
-        </tr>
-        <tr>
-          <td>SHA1</td>
-          <td><code>{{ entity.sha1 }}</code></td>
-        </tr>
+          <tr v-if="entity.description">
+            <td>Description</td>
+            <td>
+              <template v-if="showEdit">
+                <o-input v-model="entity.description" size="small" />
+              </template>
+              <template v-else-if="entity.description">
+                {{ entity.description }}
+              </template>
+              <template v-else>
+                <em>No description provided</em>
+              </template>
+            </td>
+          </tr>
+          <template v-if="showUserInformation">
+            <tr v-if="entity.created_by">
+              <td>Created by</td>
+              <td>{{ entity.created_by }}</td>
+            </tr>
+            <tr v-if="entity.updated_by">
+              <td>Last updated by</td>
+              <td>{{ entity.updated_by }}</td>
+            </tr>
+          </template>
+          <tr>
+            <td>Fetched</td>
+            <td>{{ $filters.formatDate(entity.fetched_at) }} ({{ $filters.fromNow(entity.fetched_at) }})</td>
+          </tr>
+          <tr>
+            <td>URL</td>
+            <td>
+              <tl-safelink :url="entity.url" />
+            </td>
+          </tr>
+          <tr>
+            <td>SHA1</td>
+            <td>
+              <tl-safelink :text="entity.sha1" />
+            </td>
+          </tr>
 
-        <tr>
-          <td>Version info:</td>
-          <td v-if="entity.feed_infos && entity.feed_infos.length > 0">
-            <tl-feed-info :show-dates="true" :feed-info="entity.feed_infos[0]" />
-          </td>
-        </tr>
+          <tr>
+            <td>Version info:</td>
+            <td v-if="entity.feed_infos && entity.feed_infos.length > 0">
+              <tl-feed-info :show-dates="true" :feed-info="entity.feed_infos[0]" />
+            </td>
+          </tr>
+        </tbody>
       </table>
 
       <slot name="edit" :entity="entity">
@@ -200,11 +208,11 @@
       <slot name="download" :entity="entity" />
 
       <o-tabs v-model="activeTab" class="tl-tabs" type="boxed" :animated="false" @update:modelValue="setTab">
-        <o-tab-item label="Files">
+        <o-tab-item id="files" label="Files">
           <tl-file-info-table :files="entity.files" />
         </o-tab-item>
 
-        <o-tab-item label="Service levels">
+        <o-tab-item id="service" label="Service levels">
           <template v-if="activeTab === 2">
             <client-only placeholder="Service levels">
               <tl-multi-service-levels :show-group-info="false" :show-service-relative="false" :fvids="[entity.id]" :week-agg="false" />
@@ -212,7 +220,7 @@
           </template>
         </o-tab-item>
 
-        <o-tab-item label="Map">
+        <o-tab-item id="map" label="Map">
           <template v-if="activeTab === 3">
             <div v-if="imported">
               <client-only placeholder="Map">
@@ -225,19 +233,19 @@
           </template>
         </o-tab-item>
 
-        <o-tab-item v-if="imported" label="Agencies">
+        <o-tab-item v-if="imported" id="agencies" label="Agencies">
           <tl-agency-table v-if="activeTab === 4" :fvid="entity.sha1" />
         </o-tab-item>
 
-        <o-tab-item v-if="imported" label="Routes">
+        <o-tab-item v-if="imported" id="routes" label="Routes">
           <tl-route-table v-if="activeTab === 5" :link-version="true" :feed-version-sha1="entity.sha1" />
         </o-tab-item>
 
-        <o-tab-item v-if="imported" label="Stops">
+        <o-tab-item v-if="imported" id="stops" label="Stops">
           <tl-stop-table v-if="activeTab === 6" :link-version="true" :feed-version-sha1="entity.sha1" />
         </o-tab-item>
 
-        <o-tab-item v-if="imported" label="Import log">
+        <o-tab-item v-if="imported" id="import" label="Import log">
           <table class="table is-striped is-fullwidth">
             <thead>
               <tr>

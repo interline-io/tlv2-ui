@@ -9,11 +9,14 @@ code {
     border: 0px;
 }
 
+
 .tl-props td:first-child {
     padding-right: 20px;
     font-weight: bold;
     text-align: right;
     width: 200px;
+    white-space: nowrap;
+    word-wrap: nowrap;
 }
 
 .tl-tabs .tab-content {
@@ -27,9 +30,19 @@ code {
     margin-bottom:0px !important;
 }
 
+.tab-item {
+    width:100%;
+    overflow-x:auto;
+}
+
 .is-6 {
     margin: 0px !important;
     padding: 0px;
     padding-top: 10px;
     padding-bottom: 10px;
+}
+
+.table-container {
+    width:100%;
+    overflow-x:auto;
 }

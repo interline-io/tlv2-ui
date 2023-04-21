@@ -18,8 +18,10 @@
     <slot name="description" />
 
     <div>
-      <o-field grouped
-        :label="filteringByOperatorLocation ? 'Filter by operator location' : 'Search by operator name or location'">
+      <o-field
+        grouped
+        :label="filteringByOperatorLocation ? 'Filter by operator location' : 'Search by operator name or location'"
+      >
         <tl-search-bar v-model="search" placeholder="e.g. Bay Area Rapid Transit" />
 
         <o-dropdown position="bottom-left" append-to-body aria-role="menu" trap-focus>
@@ -56,46 +58,56 @@
         </o-field>
       </o-field>
 
-      <tl-msg-error v-if="error">{{ error }}</tl-msg-error>
+      <tl-msg-error v-if="error">
+        {{ error }}
+      </tl-msg-error>
 
-      <table class="table is-striped" style="width:100%">
-        <thead>
-          <tr>
-            <th>Operator Name (Short Name)</th>
-            <th style="width:200px">City</th>
-            <th style="width:200px">State/Province</th>
-            <th style="width:260px">Country</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="row of entityPageFlat" :key="row.id">
-            <td>
-              <nuxt-link :to="{ name: 'operators-onestop_id', params: { onestop_id: row.onestop_id } }">
-                {{ row.name }}
-              </nuxt-link>
-              <span v-if="row.short_name">&nbsp;({{ row.short_name }})</span>
-            </td>
-            <td>
-              {{ row.city_name }}
-            </td>
-            <td>
-              {{ row.adm1_name }}
-            </td>
-            <td>
-              <o-tooltip
-                :label="row.other_places.filter((s) => { return s.city_name }).map((s) => { return s.city_name }).join(', ')"
-                dashed>
-                {{ row.adm0_name }}
-              </o-tooltip>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-container">
+        <table class="table is-striped is-fullwidth">
+          <thead>
+            <tr>
+              <th>Operator Name (Short Name)</th>
+              <th style="width:200px">
+                City
+              </th>
+              <th style="width:200px">
+                State/Province
+              </th>
+              <th style="width:260px">
+                Country
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="row of entityPageFlat" :key="row.id">
+              <td>
+                <nuxt-link :to="{ name: 'operators-onestop_id', params: { onestop_id: row.onestop_id } }">
+                  {{ row.name }}
+                </nuxt-link>
+                <span v-if="row.short_name">&nbsp;({{ row.short_name }})</span>
+              </td>
+              <td>
+                {{ row.city_name }}
+              </td>
+              <td>
+                {{ row.adm1_name }}
+              </td>
+              <td>
+                <o-tooltip
+                  :label="row.other_places.filter((s) => { return s.city_name }).map((s) => { return s.city_name }).join(', ')"
+                  dashed
+                >
+                  {{ row.adm0_name }}
+                </o-tooltip>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <tl-show-more v-if="entities.length >= limit" :limit="entities.length" @click="showAll" />
 
-      <o-loading :full-page="false" v-model:active="$apollo.loading"></o-loading>
-
+      <o-loading v-model:active="$apollo.loading" :full-page="false" />
     </div>
 
     <slot name="add-operator" />
@@ -153,11 +165,6 @@ export default {
       }
     }
   },
-  watch: {
-    search(v) {
-      this.$router.replace({ name: 'operators', query: { ...this.$route.query, search: v } })
-    },
-  },
   computed: {
     filteringByOperatorLocation() {
       return (this.$route.query.adm0_name || this.$route.query.adm1_name || this.$route.query.city_name)
@@ -191,6 +198,11 @@ export default {
     },
     staticDescription() {
       return 'Transitland uses operators to group together source feeds and other relevant data'
+    }
+  },
+  watch: {
+    search(v) {
+      this.$router.replace({ name: 'operators', query: { ...this.$route.query, search: v } })
     }
   },
   methods: {

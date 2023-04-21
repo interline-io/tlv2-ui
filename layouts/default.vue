@@ -32,5 +32,8 @@ useHead({
 .main {
   flex:1;
   padding-top: 2em;
+  padding-left:20px;
+  padding-right:20px;
 }
+
 </style>

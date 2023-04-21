@@ -5,24 +5,16 @@
         Publisher:
         {{ feedPublisherName }}
         <template v-if="feedPublisherUrl">
-          <br>
-          <code>{{ feedPublisherUrl }}</code>
-          <a v-if="showLinks" :href="feedPublisherUrl">
-            <o-icon icon="link" />
-          </a>
+          <tl-safelink :url="feedPublisherUrl" />
         </template>
       </li>
       <li v-if="feedContactEmail || feedContactUrl">
         Contact:
         <template v-if="feedContactEmail">
-          {{ feedContactEmail }}
+          <tl-safelink :url="feedContactEmail" />
         </template>
         <template v-if="feedContactUrl">
-          <br>
-          <code>{{ feedContactUrl }}</code>
-          <a v-if="showLinks && feedContactUrl" :href="feedContactUrl">
-            <o-icon icon="link" />
-          </a>
+          <tl-safelink :url="feedContactUrl" />
         </template>
       </li>
       <li v-if="feedLang">

@@ -1,7 +1,9 @@
 <template>
   <div>
     <tl-loading v-if="$apollo.loading" />
-    <tl-msg-error v-else-if="error">{{ error }}</tl-msg-error>
+    <tl-msg-error v-else-if="error">
+      {{ error }}
+    </tl-msg-error>
     <div v-else-if="entity">
       <Title>{{ staticTitle }}</Title>
       <Meta name="description" :content="staticDescription" />
@@ -74,73 +76,75 @@
       <div class="columns">
         <div class="column is-two-thirds">
           <table class="table is-borderless property-list tl-props">
-            <tr v-if="entity.onestop_id">
-              <td>
-                <o-tooltip
-                  dashed
-                  label="A globally unique identifier for this route"
-                >
-                  Onestop ID
-                </o-tooltip>
-              </td>
-              <td>{{ entity.onestop_id }}</td>
-            </tr>
-            <tr v-if="entity.agency">
-              <td>Operated by</td>
-              <td>
-                <nuxt-link
-                  v-if="entity.agency.onestop_id"
-                  :to="{
-                    name: 'operators-onestop_id',
-                    params: { onestop_id: entity.agency.onestop_id },
-                  }"
-                >
-                  {{ entity.agency.agency_name }}
-                </nuxt-link>
-                <a v-else href="#">{{ entity.agency.agency_name }}</a>
-              </td>
-            </tr>
-            <tr v-if="entity.route_short_name">
-              <td>Name (Short)</td>
-              <td>
-                {{ entity.route_short_name }}
-              </td>
-            </tr>
-            <tr v-if="entity.route_long_name">
-              <td>Name (Long)</td>
-              <td>
-                {{ entity.route_long_name }}
-              </td>
-            </tr>
-            <tr>
-              <td>Vehicle Type</td>
-              <td>
-                <o-tooltip
-                  dashed
-                  :label="`Route with route_type = ${entity.route_type}`"
-                >
-                  {{ $filters.routeTypeToWords(entity.route_type) }}
-                </o-tooltip>
-              </td>
-            </tr>
-            <tr v-if="entity.route_url">
-              <td>URL</td>
-              <td>
-                <code>{{ entity.route_url }}</code>
-              </td>
-            </tr>
-            <tr>
-              <td>GTFS ID</td>
-              <td>
-                {{ entity.route_id }}
-              </td>
-            </tr>
-            <tr v-if="entity.entity_desc">
-              <td>Description</td>
-              <td>
-                {{ entity.entity_desc }}
-              </td>
-            </tr>
+            <tbody>
+              <tr v-if="entity.onestop_id">
+                <td>
+                  <o-tooltip
+                    dashed
+                    label="A globally unique identifier for this route"
+                  >
+                    Onestop ID
+                  </o-tooltip>
+                </td>
+                <td>{{ entity.onestop_id }}</td>
+              </tr>
+              <tr v-if="entity.agency">
+                <td>Operated by</td>
+                <td>
+                  <nuxt-link
+                    v-if="entity.agency.onestop_id"
+                    :to="{
+                      name: 'operators-onestop_id',
+                      params: { onestop_id: entity.agency.onestop_id },
+                    }"
+                  >
+                    {{ entity.agency.agency_name }}
+                  </nuxt-link>
+                  <a v-else href="#">{{ entity.agency.agency_name }}</a>
+                </td>
+              </tr>
+              <tr v-if="entity.route_short_name">
+                <td>Name (Short)</td>
+                <td>
+                  {{ entity.route_short_name }}
+                </td>
+              </tr>
+              <tr v-if="entity.route_long_name">
+                <td>Name (Long)</td>
+                <td>
+                  {{ entity.route_long_name }}
+                </td>
+              </tr>
+              <tr>
+                <td>Vehicle Type</td>
+                <td>
+                  <o-tooltip
+                    dashed
+                    :label="`Route with route_type = ${entity.route_type}`"
+                  >
+                    {{ $filters.routeTypeToWords(entity.route_type) }}
+                  </o-tooltip>
+                </td>
+              </tr>
+              <tr v-if="entity.route_url">
+                <td>URL</td>
+                <td>
+                  <tl-safelink :url="entity.route_url" />
+                </td>
+              </tr>
+              <tr>
+                <td>GTFS ID</td>
+                <td>
+                  {{ entity.route_id }}
+                </td>
+              </tr>
+              <tr v-if="entity.entity_desc">
+                <td>Description</td>
+                <td>
+                  {{ entity.entity_desc }}
+                </td>
+              </tr>
+            </tbody>
           </table>
 
           <tl-msg-info no-icon>
@@ -154,7 +158,8 @@
           <div v-for="ent of entities" :key="ent.id">
             <tl-msg-warning
               v-for="(alert,idx) of ent.alerts"
-              :key="idx">
+              :key="idx"
+            >
               <p>Agency Alert:</p>
               <div v-for="tr of filterRTTranslations(alert.header_text)" :key="tr.text">
                 {{ tr.text }}
@@ -166,78 +171,79 @@
           </div>
 
           <o-tabs
-            class="tl-tabs"
             v-model="activeTab"
+            class="tl-tabs"
             type="boxed"
             :animated="false"
             @update:modelValue="setTab"
           >
-            <o-tab-item label="Connections">
+            <o-tab-item id="summary" label="Connections">
               <client-only>
                 <tl-rsp-viewer v-if="activeTab === 1" :route-ids="entityIds" />
               </client-only>
             </o-tab-item>
-            <o-tab-item label="Headways">
+            <o-tab-item id="headways" label="Headways">
               <tl-headway-viewer :headways="entity.headways" />
             </o-tab-item>
 
             <!-- Data sources -->
-            <o-tab-item label="Sources">
-              <o-table :data="entities" :striped="true">
-                <o-table-column
-                  v-slot="props"
-                  field="feed_onestop_id"
-                  label="Feed"
-                >
-                  <nuxt-link
-                    :to="{
-                      name: 'feeds-feed',
-                      params: { feed: props.row.feed_onestop_id },
-                    }"
-                  >
-                    {{ $filters.shortenName(props.row.feed_onestop_id) }}
-                  </nuxt-link>
-                </o-table-column>
-                <o-table-column
-                  v-slot="props"
-                  field="feed_version_sha1"
-                  label="Version"
-                >
-                  <nuxt-link
-                    :to="{
-                      name: 'feeds-feed-versions-version',
-                      params: {
-                        feed: props.row.feed_onestop_id,
-                        version: props.row.feed_version_sha1,
-                      },
-                    }"
-                  >
-                    {{ $filters.shortenName(props.row.feed_version_sha1, 8) }}
-                  </nuxt-link>
-                </o-table-column>
-                <o-table-column
-                  v-slot="props"
-                  field="route_id"
-                  label="Route ID"
-                >
-                  <nuxt-link
-                    :to="{
-                      name: 'routes-onestop_id',
-                      params: { onestop_id: props.row.onestop_id },
-                      query: {
-                        feed_onestop_id: props.row.feed_onestop_id,
-                        feed_version_sha1: props.row.feed_version_sha1,
-                        route_id: props.row.route_id,
-                      },
-                    }"
-                  >
-                    {{ $filters.shortenName(props.row.route_id) }}
-                  </nuxt-link>
-                </o-table-column>
-              </o-table>
+            <o-tab-item id="sources" label="Sources">
+              <div class="table-container">
+                <table class="table is-striped is-fullwidth">
+                  <thead>
+                    <tr>
+                      <th>Feed</th>
+                      <th>Version</th>
+                      <th>Route ID</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="row of entities" :key="row.id">
+                      <td>
+                        <nuxt-link
+                          :to="{
+                            name: 'feeds-feed',
+                            params: { feed: row.feed_onestop_id },
+                          }"
+                        >
+                          {{ $filters.shortenName(row.feed_onestop_id) }}
+                        </nuxt-link>
+                      </td>
+                      <td>
+                        <nuxt-link
+                          :to="{
+                            name: 'feeds-feed-versions-version',
+                            params: {
+                              feed: row.feed_onestop_id,
+                              version: row.feed_version_sha1,
+                            },
+                          }"
+                        >
+                          {{ $filters.shortenName(row.feed_version_sha1, 8) }}
+                        </nuxt-link>
+                      </td>
+                      <td>
+                        <nuxt-link
+                          :to="{
+                            name: 'routes-onestop_id',
+                            params: { onestop_id: row.onestop_id },
+                            query: {
+                              feed_onestop_id: row.feed_onestop_id,
+                              feed_version_sha1: row.feed_version_sha1,
+                              route_id: row.route_id,
+                            },
+                          }"
+                        >
+                          {{ $filters.shortenName(row.route_id) }}
+                        </nuxt-link>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </o-tab-item>
 
-            <o-tab-item label="Export">
+            <o-tab-item id="export" label="Export">
               <client-only placeholder="Export">
                 <tl-data-export
                   v-if="activeTab === 4"
@@ -268,7 +274,7 @@
 </template>
 
 <script>
-import { useRuntimeConfig } from "#app";
+import { useRuntimeConfig } from '#app'
 import gql from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
 

@@ -1,7 +1,9 @@
 <template>
   <div class="tl-map">
     <tl-loading v-if="$apollo.loading" />
-    <tl-msg-error v-else-if="error">{{ error }}</tl-msg-error>
+    <tl-msg-error v-else-if="error">
+      {{ error }}
+    </tl-msg-error>
     <div v-else>
       <tl-map-viewer
         :enable-scroll-zoom="enableScrollZoom"
