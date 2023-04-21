@@ -221,8 +221,6 @@ watch(feedSpecs, (v) => { emit('update:feedSpecs', v) })
 watch(importStatus, (v) => { emit('update:importStatus', v) })
 watch(tagUnstableUrl, (v) => { emit('update:tagUnstableUrl', v) })
 
-console.log('tag:', tagUnstableUrl)
-
 const { result, loading, error } = useQuery(
   query,
   () => ({

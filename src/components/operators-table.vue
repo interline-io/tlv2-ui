@@ -1,12 +1,10 @@
 <template>
   <div>
-    props: {{ props }}
-    args: {{ args }}
     <o-field
       grouped
       :label="filteringByOperatorLocation ? 'Filter by operator location' : 'Search by operator name or location'"
     >
-      <tl-search-bar v-model="args.search" placeholder="e.g. Bay Area Rapid Transit" />
+      <tl-search-bar v-model="search" placeholder="e.g. Bay Area Rapid Transit" />
 
       <o-dropdown position="bottom-left" append-to-body aria-role="menu" trap-focus>
         <template #trigger="{ active }">
@@ -20,21 +18,16 @@
             </o-checkbox>
           </div>
 
-          <div class="field">
+          <!-- <div class="field">
             <o-checkbox v-model="unmatched">
               Show operators without agency matches
             </o-checkbox>
-          </div>
+          </div> -->
         </o-dropdown-item>
       </o-dropdown>
     </o-field>
 
     <o-field>
-      <o-field v-if="search" expanded>
-        <tl-tag attached closable aria-close-label="Close tag" @close="clearQuery">
-          {{ search }}
-        </tl-tag>
-      </o-field>
       <o-field v-if="adm0Name" expanded>
         <tl-tag attached closable aria-close-label="Close tag" @close="clearQuery">
           Country: {{ adm0Name }}
@@ -138,57 +131,46 @@ const nullBool = function (v) {
 }
 
 const props = defineProps({
-  modelValue: { type: Object, default () { return {} } },
-  search: String,
-  adm0Name: String,
-  adm1Name: String,
-  cityName: String,
-  limit: { type: Number, default: 10 }
-})
-
-const args = ref({
-  test: 123,
-  search: props.search,
-  adm1Name: props.modelValue.adm1Name
+  search: { type: String, default: null },
+  limit: { type: Number, default: 20 },
+  adm0Name: { type: String, default: null },
+  adm1Name: { type: String, default: null },
+  cityName: { type: String, default: null },
+  merged: { type: Boolean, default: true }
 })
 
 // shadow props
 const search = ref(props.search)
+const limit = ref(props.limit)
 const adm0Name = ref(props.adm0Name)
 const adm1Name = ref(props.adm1Name)
 const cityName = ref(props.cityName)
-const limit = ref(props.limit)
-const unmatched = ref(false)
-const merged = ref(false)
+const merged = ref(props.mereged)
 
 const emit = defineEmits([
-  'update:modelValue',
   'update:search',
   'update:adm0Name',
   'update:adm1Name',
-  'update:cityName'
+  'update:cityName',
+  'update:merged',
+  'clear'
 ])
 
-watch(args, (v) => {
-  console.log('args update')
-  emit('update:modelValue', args)
-}, { deep: true })
 watch(search, (v) => { emit('update:search', v) })
 watch(adm0Name, (v) => { emit('update:adm0Name', v) })
 watch(adm1Name, (v) => { emit('update:adm1Name', v) })
 watch(cityName, (v) => { emit('update:cityName', v) })
+watch(merged, (v) => { emit('update:merged', v) })
 
 const { result, loading, error } = useQuery(
   query,
   () => ({
     search: nullString(search.value),
-    merged: nullBool(merged.value),
     adm0_name: nullString(adm0Name.value),
     adm1_name: nullString(adm1Name.value),
     city_name: nullString(cityName.value),
-    limit: limit.value
-    //   merged: this.merged,
-    //   limit: this.limit
+    limit: limit.value,
+    merged: nullBool(merged.value)
   }))
 
 const filteringByOperatorLocation = computed(() => {
@@ -196,10 +178,7 @@ const filteringByOperatorLocation = computed(() => {
 })
 
 const clearQuery = function () {
-  search.value = null
-  adm0Name.value = null
-  adm1Name.value = null
-  cityName.value = null
+  emit('clear')
 }
 
 const entities = computed(() => {
