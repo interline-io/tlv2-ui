@@ -212,11 +212,11 @@
           </o-tab-item>
 
           <o-tab-item label="Routes">
-            <tl-route-viewer v-if="activeTab === 2" :agency-ids="agencyIds" :show-agency="true" />
+            <tl-route-table v-if="activeTab === 2" :agency-ids="agencyIds" :show-agency="true" />
           </o-tab-item>
 
           <o-tab-item label="Stops">
-            <tl-stop-viewer v-if="activeTab === 3" :agency-ids="agencyIds" />
+            <tl-stop-table v-if="activeTab === 3" :agency-ids="agencyIds" />
           </o-tab-item>
 
           <o-tab-item v-if="advancedMode" label="Export">
