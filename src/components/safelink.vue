@@ -4,8 +4,11 @@
       <div class="desc">
         {{ text || sanitizedUrl }}
       </div>
+      <a v-if="text || sanitizedUrl" class="linker" @click="clipboard">
+        <o-tooltip label="Copy to clipboard"><i class="mdi mdi-content-paste" /></o-tooltip>
+      </a>
       <a v-if="url && sanitizedUrl" target="_blank" :href="sanitizedUrl" class="linker">
-        <i class="mdi mdi-link" />
+        <o-tooltip label="Open URL"><i class="mdi mdi-link" /></o-tooltip>
       </a>
     </div>
   </div>
@@ -24,6 +27,11 @@ export default {
     },
     sanitizedUrl() {
       return sanitizeUrl(this.url)
+    }
+  },
+  methods: {
+    clipboard() {
+      navigator.clipboard.writeText(this.text || this.sanitizedUrl)
     }
   }
 }
@@ -51,7 +59,7 @@ export default {
     padding-bottom:3px;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width:300px;
+    max-width:400px;
     white-space: nowrap;
     word-wrap: nowrap;
 }
@@ -61,7 +69,8 @@ export default {
     text-align:center;
     margin:0px;
     padding:3px;
-    background:#ccc;
+    background:hsl(0, 0%, 94%);
+
 }
 
 @media only screen and (max-width: 600px) {
