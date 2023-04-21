@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="table-container">
     <table class="table is-striped is-fullwidth">
       <thead>
         <tr>

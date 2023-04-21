@@ -428,7 +428,6 @@ const months = {
   visibility: visible;
 }
 
-
 .datepicker .dropdown-content {
     z-index:100;
     box-shadow: none !important;

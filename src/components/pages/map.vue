@@ -18,8 +18,8 @@
       @mapMove="mapMove"
     />
     <div class="tl-map-panel tl-map-panel-tabs">
-      <o-tabs class="tl-tabs block" v-model="activeTab" position="centered" type="boxed">
-        <o-tab-item label="Routes">
+      <o-tabs v-model="activeTab" class="tl-tabs block" position="centered" type="boxed">
+        <o-tab-item id="routes" label="Routes">
           <tl-map-route-list
             v-if="activeTab === 1"
             :current-zoom="currentZoom"
@@ -28,7 +28,7 @@
             @close="isComponentModalActive = false"
           />
         </o-tab-item>
-        <o-tab-item label="Departures">
+        <o-tab-item id="departures" label="Departures">
           <tl-map-search
             :zoom="currentZoom"
             :bbox="currentBbox"
@@ -45,24 +45,21 @@
             <a href="https://www.transit.land/documentation/rest-api/" target="_blank">Learn more about Transitland APIs</a>
           </p>
         </o-tab-item>
-        <o-tab-item label="Options">
-
+        <o-tab-item id="options" label="Options">
           <div class="field">
-      <o-checkbox
-        v-model="showGeneratedGeometries"
-      >
-        Show stop-to-stop geometries
-      </o-checkbox>
-    </div>
-    <div class="field">
-      <o-checkbox
-      v-model="showProblematicGeometries"
-      >
-        Show problematic geometries
-      </o-checkbox>
-    </div>
-
-
+            <o-checkbox
+              v-model="showGeneratedGeometries"
+            >
+              Show stop-to-stop geometries
+            </o-checkbox>
+          </div>
+          <div class="field">
+            <o-checkbox
+              v-model="showProblematicGeometries"
+            >
+              Show problematic geometries
+            </o-checkbox>
+          </div>
         </o-tab-item>
       </o-tabs>
     </div>

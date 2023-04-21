@@ -1,47 +1,43 @@
 <template>
   <div>
-    <tl-msg-error v-if="error">{{ error }}</tl-msg-error>
+    <tl-msg-error v-if="error">
+      {{ error }}
+    </tl-msg-error>
     <div v-else>
       <tl-search-bar v-model="search" placeholder="Filter Routes" />
-      <o-table
-        :loading="$apollo.loading"
-        :data="entityPage"
-        :striped="true"
-      >
-        <o-table-column
-          v-slot="props"
-          field="route_id"
-          label="Route ID"
-          :width="140"
-        >
-          <nuxt-link
-            :to="{name:'routes-onestop_id', params:{onestop_id:props.row.onestop_id || 'search'}, query: (linkVersion ? {feed_onestop_id:props.row.feed_onestop_id, feed_version_sha1:props.row.feed_version_sha1, entity_id:props.row.route_id} : {})}"
-          >
-            {{ props.row.route_id }}
-          </nuxt-link>
-        </o-table-column>
-
-        <o-table-column
-          v-slot="props"
-          field="route_short_name"
-          label="Name"
-          :width="140"
-        >
-          {{ props.row.route_short_name }}
-        </o-table-column>
-        <o-table-column
-          v-slot="props"
-          field="route_long_name"
-          label=""
-          :width="500"
-        >
-          {{ props.row.route_long_name }}
-        </o-table-column>
-
-        <o-table-column v-if="showAgency" v-slot="props" field="agency" label="Agency">
-          {{ props.row.agency.agency_name }}
-        </o-table-column>
-      </o-table>
+      <o-loading v-model:active="$apollo.loading" :full-page="false" />
+      <div class="table-container">
+        <table class="table is-striped is-fullwidth">
+          <thead>
+            <tr>
+              <th>Route ID</th>
+              <th>Name</th>
+              <th />
+              <th v-if="showAgency">
+                Agency
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="route of entityPage" :key="route.id">
+              <td>
+                <nuxt-link
+                  :to="{ name: 'routes-onestop_id', params: { onestop_id: route.onestop_id || 'search' }, query: (linkVersion ? { feed_onestop_id: route.feed_onestop_id, feed_version_sha1: route.feed_version_sha1, entity_id: route.route_id } : {}) }"
+                >
+                  {{ route.route_id }}
+                </nuxt-link>
+              </td>
+              <td>
+                {{ route.route_short_name }}
+              </td>
+              <td>{{ route.route_long_name }}</td>
+              <td v-if="showAgency">
+                {{ route.agency.agency_name }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <tl-show-more v-if="entities.length === limit || hasMore" :limit="entities.length" @click="showAll" />
     </div>
   </div>
@@ -53,7 +49,7 @@ import TableViewerMixin from './table-viewer-mixin'
 
 const q = gql`
 query($after: Int, $limit: Int, $feed_version_sha1: String, $agency_ids: [Int!], $search: String) {
-  entities: routes(after: $after, limit: $limit, where: { search: $search, feed_version_sha1: $feed_version_sha1, agency_ids: $agency_ids }) {
+  entities: routes(after: $after, limit: $limit, where: { serviced: true, search: $search, feed_version_sha1: $feed_version_sha1, agency_ids: $agency_ids }) {
     id
     onestop_id
     feed_version_sha1

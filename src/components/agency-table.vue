@@ -1,25 +1,32 @@
 <template>
   <div>
-    <tl-msg-error v-if="error">{{ error }}</tl-msg-error>
+    <tl-msg-error v-if="error">
+      {{ error }}
+    </tl-msg-error>
     <div v-else>
       <tl-search-bar v-model="search" placeholder="Filter Agencies" />
-      <o-table
-        :loading="$apollo.loading"
-        :data="entityPage"
-        :striped="true"
-        sort-icon="menu-up"
-      >
-        <o-table-column v-slot="props" field="agency_id" label="Agency ID">
-          {{ props.row.agency_id }}
-        </o-table-column>
-        <o-table-column
-          v-slot="props"
-          field="agency_name"
-          label="Name"
-        >
-          {{ props.row.agency_name }}
-        </o-table-column>
-      </o-table>
+      <o-loading v-model:active="$apollo.loading" :full-page="false" />
+      <div class="table-container">
+        <table class="table is-striped is-fullwidth">
+          <thead>
+            <tr>
+              <th>Agency ID</th>
+              <th>Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="agency of entityPage" :key="agency.id">
+              <td>
+                {{ agency.agency_id }}
+              </td>
+              <td>
+                {{ agency.agency_name }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <tl-show-more v-if="entities.length === limit || hasMore" :limit="entities.length" @click="showAll" />
     </div>
   </div>
 </template>

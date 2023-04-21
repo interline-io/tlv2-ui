@@ -1,78 +1,80 @@
 <template>
   <div>
     <div v-if="hws.found">
-      <table class="table is-fullwidth">
-        <thead>
-          <tr>
-            <th>Headways</th>
-            <th v-if="showMorning">
-              <span class="centered">7-9am</span>
-            </th>
-            <th v-if="showMidday">
-              <span class="centered">9am-4pm</span>
-            </th>
-            <th v-if="showAfternoon">
-              <span class="centered">4-6pm</span>
-            </th>
-            <th v-if="showNight">
-              <span class="centered">6pm-7am</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              Weekday
-            </td>
-            <td v-if="showMorning">
-              {{ $filters.formatHeadway(hws.weekday, 'morning') }}
-            </td>
-            <td v-if="showMidday">
-              {{ $filters.formatHeadway(hws.weekday, 'midday') }}
-            </td>
-            <td v-if="showAfternoon">
-              {{ $filters.formatHeadway(hws.weekday, 'afternoon') }}
-            </td>
-            <td v-if="showNight">
-              {{ $filters.formatHeadway(hws.weekday, 'night') }}
-            </td>
-          </tr>
-          <tr>
-            <td>
-              Saturday
-            </td>
-            <td v-if="showMorning">
-              {{ $filters.formatHeadway(hws.saturday, 'morning') }}
-            </td>
-            <td v-if="showMidday">
-              {{ $filters.formatHeadway(hws.saturday, 'midday') }}
-            </td>
-            <td v-if="showAfternoon">
-              {{ $filters.formatHeadway(hws.saturday, 'afternoon') }}
-            </td>
-            <td v-if="showNight">
-              {{ $filters.formatHeadway(hws.saturday, 'night') }}
-            </td>
-          </tr>
-          <tr>
-            <td>
-              Sunday
-            </td>
-            <td v-if="showMorning">
-              {{ $filters.formatHeadway(hws.sunday, 'morning') }}
-            </td>
-            <td v-if="showMidday">
-              {{ $filters.formatHeadway(hws.sunday, 'midday') }}
-            </td>
-            <td v-if="showAfternoon">
-              {{ $filters.formatHeadway(hws.sunday, 'afternoon') }}
-            </td>
-            <td v-if="showNight">
-              {{ $filters.formatHeadway(hws.sunday, 'night') }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-container">
+        <table class="table is-fullwidth">
+          <thead>
+            <tr>
+              <th>Headways</th>
+              <th v-if="showMorning">
+                <span class="centered">7-9am</span>
+              </th>
+              <th v-if="showMidday">
+                <span class="centered">9am-4pm</span>
+              </th>
+              <th v-if="showAfternoon">
+                <span class="centered">4-6pm</span>
+              </th>
+              <th v-if="showNight">
+                <span class="centered">6pm-7am</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                Weekday
+              </td>
+              <td v-if="showMorning">
+                {{ $filters.formatHeadway(hws.weekday, 'morning') }}
+              </td>
+              <td v-if="showMidday">
+                {{ $filters.formatHeadway(hws.weekday, 'midday') }}
+              </td>
+              <td v-if="showAfternoon">
+                {{ $filters.formatHeadway(hws.weekday, 'afternoon') }}
+              </td>
+              <td v-if="showNight">
+                {{ $filters.formatHeadway(hws.weekday, 'night') }}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Saturday
+              </td>
+              <td v-if="showMorning">
+                {{ $filters.formatHeadway(hws.saturday, 'morning') }}
+              </td>
+              <td v-if="showMidday">
+                {{ $filters.formatHeadway(hws.saturday, 'midday') }}
+              </td>
+              <td v-if="showAfternoon">
+                {{ $filters.formatHeadway(hws.saturday, 'afternoon') }}
+              </td>
+              <td v-if="showNight">
+                {{ $filters.formatHeadway(hws.saturday, 'night') }}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Sunday
+              </td>
+              <td v-if="showMorning">
+                {{ $filters.formatHeadway(hws.sunday, 'morning') }}
+              </td>
+              <td v-if="showMidday">
+                {{ $filters.formatHeadway(hws.sunday, 'midday') }}
+              </td>
+              <td v-if="showAfternoon">
+                {{ $filters.formatHeadway(hws.sunday, 'afternoon') }}
+              </td>
+              <td v-if="showNight">
+                {{ $filters.formatHeadway(hws.sunday, 'night') }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
     <div v-else>
       No headways information available.

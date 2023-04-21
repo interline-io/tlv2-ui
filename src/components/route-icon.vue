@@ -7,7 +7,7 @@
     <span v-if="nameIcon" class="tl-route-name-icon">
       <o-icon :icon="nameIcon" />
     </span>
-    <span v-if="routeLongName && routeShortName != routeLongName" class="tl-route-icon-long-name">
+    <span v-if="routeLongName && routeShortName != routeLongName">
       {{ routeLongName }}
     </span>
   </div>
@@ -69,7 +69,7 @@ export default {
 
 <style scoped>
 .tl-route-icon {
-    white-space: nowrap;
+    /* white-space: nowrap; */
     overflow: hidden;
     padding:0px;
     margin:0px;
@@ -88,7 +88,7 @@ export default {
     outline:solid 1px #ccc;
     outline-offset: -1px;
     border-radius: 5px;
-    white-space: nowrap;
+    /* white-space: nowrap; */
     /* background:#efefef; */
 }
 
@@ -96,7 +96,7 @@ export default {
     display:inline-block;
     margin:0px;
     padding:0px;
-    white-space: nowrap;
+    /* white-space: nowrap; */
     /* background:blue; */
 }
 

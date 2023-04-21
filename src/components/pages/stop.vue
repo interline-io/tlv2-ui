@@ -1,7 +1,9 @@
 <template>
   <div class="container">
     <tl-loading v-if="$apollo.loading" />
-    <tl-msg-error v-else-if="error">{{ error }}</tl-msg-error>
+    <tl-msg-error v-else-if="error">
+      {{ error }}
+    </tl-msg-error>
     <div v-else-if="entity">
       <Title>{{ staticTitle }}</Title>
       <Meta name="description" :content="staticDescription" />
@@ -34,68 +36,75 @@
       <div class="columns">
         <div class="column is-two-thirds">
           <table class="table is-borderless property-list tl-props">
-            <tr>
-              <td>
-                <o-tooltip
-                  dashed
-                  label="A globally unique identifier for this route"
-                >
-                  Onestop ID
-                </o-tooltip>
-              </td>
-              <td>
-                <div v-for="root of roots" :key="root.id">
-                  {{ root.onestop_id }}
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>Name</td>
-              <td>
-                <div v-for="root of roots" :key="root.id">
-                  {{ root.stop_name }}
-                </div>
-              </td>
-            </tr>
-            <tr v-if="stopUrls.length > 0">
-              <td>URL</td>
-              <td>
-                <div v-for="stop of stopUrls" :key="stop.id">
-                  {{ stop.stop_url }}
-                  <a
-                    :href="stop.stop_url"
-                    target="_blank"
-                  ><o-icon
-                    icon="link"
-                  /></a>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>GTFS ID</td>
-              <td>
-                <div v-for="root of roots" :key="root.id">
-                  <template v-if="(root.children || []).length > 0">
-                    Station:
-                  </template>
-                  {{ root.stop_id }}
-                  <div v-for="child of root.children || []" :key="child.id" class="child-stop-id">
-                    Platform: {{ child.stop_id }}
+            <tbody>
+              <tr>
+                <td>
+                  <o-tooltip
+                    dashed
+                    label="A globally unique identifier for this route"
+                  >
+                    Onestop ID
+                  </o-tooltip>
+                </td>
+                <td>
+                  <div v-for="root of roots" :key="root.id">
+                    {{ root.onestop_id }}
                   </div>
-                </div>
-              </td>
-            </tr>
-            <tr v-if="stopDescs.length > 0">
-              <td>Description</td>
-              <td>
-                <div v-for="stop of stopDescs" :key="stop.id">
-                  {{ stop.stop_desc }}
-                </div>
-              </td>
-            </tr>
+                </td>
+              </tr>
+              <tr>
+                <td>Name</td>
+                <td>
+                  <div v-for="root of roots" :key="root.id">
+                    {{ root.stop_name }}
+                  </div>
+                </td>
+              </tr>
+              <tr v-if="stopUrls.length > 0">
+                <td>URL</td>
+                <td>
+                  <div v-for="stop of stopUrls" :key="stop.id">
+                    {{ stop.stop_url }}
+                    <a
+                      :href="stop.stop_url"
+                      target="_blank"
+                    ><o-icon
+                      icon="link"
+                    /></a>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>GTFS ID</td>
+                <td>
+                  <div v-for="root of roots" :key="root.id">
+                    <template v-if="(root.children || []).length > 0">
+                      Station:
+                    </template>
+                    {{ root.stop_id }}
+                    <div v-for="child of root.children || []" :key="child.id" class="child-stop-id">
+                      <template v-if="child.location_type === 0">
+                        Platform: {{ child.stop_id }}
+                      </template>
+                      <template v-if="child.location_type === 2">
+                        Entrance: {{ child.stop_id }}
+                      </template>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <tr v-if="stopDescs.length > 0">
+                <td>Description</td>
+                <td>
+                  <div v-for="stop of stopDescs" :key="stop.id">
+                    {{ stop.stop_desc }}
+                  </div>
+                </td>
+              </tr>
+            </tbody>
           </table>
 
-          <tl-msg-info no-icon>
+          <tl-msg-info>
             Learn more about the contents of <code>stops.txt</code> on
             <a
               href="https://gtfs.org/reference/static#stopstxt"
@@ -106,7 +115,8 @@
           <div v-for="ent of entities" :key="ent.id">
             <tl-msg-warning
               v-for="(alert,idx) of ent.alerts"
-              :key="idx">
+              :key="idx"
+            >
               Agency Alert:
               <div v-for="tr of filterRTTranslations(alert.header_text)" :key="tr.text">
                 {{ tr.text }}
@@ -117,8 +127,8 @@
             </tl-msg-warning>
           </div>
 
-          <o-tabs class="tl-tabs" v-model="activeTab" type="boxed" :animated="false" @update:modelValue="setTab">
-            <o-tab-item label="Summary">
+          <o-tabs v-model="activeTab" class="tl-tabs" type="boxed" :animated="false" @update:modelValue="setTab">
+            <o-tab-item id="summary" label="Summary">
               <div v-if="servedRoutes">
                 <h6 class="title is-6">
                   Routes at this stop
@@ -156,10 +166,10 @@
               </div>
             </o-tab-item>
 
-            <o-tab-item v-if="entity.id" label="Departures">
+            <o-tab-item id="departures" label="Departures">
               <client-only placeholder="Departures">
                 <tl-stop-departures
-                  v-if="activeTab == 2"
+                  v-if="entity.id && activeTab == 2"
                   :show-fallback-selector="true"
                   :stop-ids="entityIds"
                   :search-coords="entity.geometry.coordinates"
@@ -168,27 +178,60 @@
             </o-tab-item>
 
             <!-- Data sources -->
-            <o-tab-item label="Sources">
-              <o-table
-                :data="allStops"
-                :striped="true"
-              >
-                <o-table-column v-slot="props" field="feed_onestop_id" label="Feed">
-                  <nuxt-link :to="{name:'feeds-feed', params:{feed:props.row.feed_onestop_id}}">
-                    {{ $filters.shortenName(props.row.feed_onestop_id) }}
-                  </nuxt-link>
-                </o-table-column>
-                <o-table-column v-slot="props" field="feed_version_sha1" label="Version">
-                  <nuxt-link :to="{name:'feeds-feed-versions-version', params:{feed:props.row.feed_onestop_id, version:props.row.feed_version_sha1}}">
-                    {{ $filters.shortenName(props.row.feed_version_sha1, 8) }}
-                  </nuxt-link>
-                </o-table-column>
-                <o-table-column v-slot="props" field="stop_id" label="Stop ID">
-                  <nuxt-link :to="{name:'stops-onestop_id', params:{onestop_id:props.row.onestop_id || 'search'}, query:{feed_onestop_id:props.row.feed_onestop_id, feed_version_sha1:props.row.feed_version_sha1, stop_id:props.row.stop_id}}">
-                    {{ $filters.shortenName(props.row.stop_id) }}
-                  </nuxt-link>
-                </o-table-column>
-              </o-table>
+            <o-tab-item id="sources" label="Sources">
+              <div class="table-container">
+                <table class="table is-striped is-fullwidth">
+                  <thead>
+                    <tr>
+                      <th>Feed</th>
+                      <th>Version</th>
+                      <th>Stop ID</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="row of allStops" :key="row.id">
+                      <td>
+                        <nuxt-link
+                          :to="{
+                            name: 'feeds-feed',
+                            params: { feed: row.feed_onestop_id },
+                          }"
+                        >
+                          {{ $filters.shortenName(row.feed_onestop_id) }}
+                        </nuxt-link>
+                      </td>
+                      <td>
+                        <nuxt-link
+                          :to="{
+                            name: 'feeds-feed-versions-version',
+                            params: {
+                              feed: row.feed_onestop_id,
+                              version: row.feed_version_sha1,
+                            },
+                          }"
+                        >
+                          {{ $filters.shortenName(row.feed_version_sha1, 8) }}
+                        </nuxt-link>
+                      </td>
+                      <td>
+                        <nuxt-link
+                          :to="{
+                            name: 'stops-onestop_id',
+                            params: { onestop_id: row.onestop_id },
+                            query: {
+                              feed_onestop_id: row.feed_onestop_id,
+                              feed_version_sha1: row.feed_version_sha1,
+                              route_id: row.stop_id,
+                            },
+                          }"
+                        >
+                          {{ $filters.shortenName(row.stop_id) }}
+                        </nuxt-link>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </o-tab-item>
           </o-tabs>
         </div>
@@ -320,7 +363,7 @@ export default {
       radius: 1000,
       tabIndex: {
         1: 'summary',
-        2: 'departure',
+        2: 'departures',
         3: 'sources'
       }
     }
