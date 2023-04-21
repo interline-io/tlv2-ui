@@ -1,24 +1,25 @@
 <template>
   <div>
-    <o-field grouped expanded class="controls-group">
-      <o-field label="Trip pattern" class="pr-3">
+    <o-field grouped>
+      <o-field label="Trip pattern" class="pr-4">
         <o-select
-          v-model="selectedPattern"
+          v-model="activePatternId"
           placeholder="Select a trip pattern"
-          class="trip-select mr-4"
+          class="trip-select"
         >
-          <option v-for="pattern of processedPatterns" :key="pattern.stop_pattern_id" :value="pattern.stop_pattern_id">
-            {{ pattern.desc }}
-          </option>
+          <optgroup label="Inbound">
+            <option v-for="pattern of inboundPatterns" :key="pattern.stop_pattern_id" :value="pattern.stop_pattern_id">
+              {{ pattern.desc }}
+            </option>
+          </optgroup>
+          <optgroup label="Outbound">
+            <option v-for="pattern of outboundPatterns" :key="pattern.stop_pattern_id" :value="pattern.stop_pattern_id">
+              {{ pattern.desc }}
+            </option>
+          </optgroup>
         </o-select>
-        <o-checkbox
-          v-model="shadowIncludeNearbyStops"
-          class="adjust-checkbox"
-        >
-          Show transfers
-        </o-checkbox>
       </o-field>
-      <o-field v-if="showTransferRadius" label="Transfer search radius (m)" expanded>
+      <o-field label="Transfers within (m)" expanded>
         <o-slider
           v-model="radius"
           class="radius-select"
@@ -39,7 +40,9 @@
     </o-field>
 
     <tl-loading v-if="$apollo.loading" />
-    <tl-msg-error v-else-if="error">{{ error }}</tl-msg-error>
+    <tl-msg-error v-else-if="error">
+      {{ error }}
+    </tl-msg-error>
     <div v-else-if="processedPatterns.length === 0">
       No trip patterns were found for this route.
     </div>
@@ -52,7 +55,7 @@
             {{ st.stop.stop_name }}
           </nuxt-link>
         </p>
-        <div v-if="shadowIncludeNearbyStops">
+        <div v-if="includeNearbyStops">
           <div
             v-for="(rss,agency) of st.stop.routes"
             :key="agency"
@@ -84,6 +87,7 @@
 <script>
 import haversine from 'haversine'
 import gql from 'graphql-tag'
+
 const q = gql`
 query ($route_ids: [Int!]!, $radius:Float!, $include_nearby_stops:Boolean!) {
   routes(ids: $route_ids) {
@@ -147,20 +151,16 @@ export default {
       type: Array,
       required: true
     },
-    showTransferRadius: {
-      type: Boolean
-    },
-    includeNearbyStops: {
-      type: Boolean,
-      default: false
+    transferRadius: {
+      type: Number,
+      default: 0
     }
   },
   data () {
     return {
       routes: [],
-      selectedPattern: null,
-      shadowIncludeNearbyStops: this.includeNearbyStops,
-      radius: 100,
+      selectedPatternId: null,
+      radius: this.transferRadius,
       error: null
     }
   },
@@ -173,47 +173,15 @@ export default {
         return {
           route_ids: this.routeIds,
           radius: this.radius,
-          include_nearby_stops: this.shadowIncludeNearbyStops
+          include_nearby_stops: this.includeNearbyStops
         }
       }
     }
   },
   computed: {
-    // Attempt to draw a multiple sequent alignment, e.g. MBTA website
-    // alignments () {
-    //   const stops = {}
-    //   const parents = {}
-    //   const children = {}
-    //   for (const pat of this.patterns) {
-    //     const count = pat.count
-    //     const sts = pat.trips[0].stop_times
-    //     for (const st of sts) {
-    //       stops[st.stop.id] = st.stop
-    //     }
-    //     for (let i = 0; i < sts.length - 2; i++) {
-    //       const pid = sts[i].stop.id
-    //       const sid = sts[i + 1].stop.id
-    //       children[pid] = (children[pid] || {})
-    //       children[sid] = (children[sid] || {})
-    //       children[pid][sid] = (children[pid][sid] || 0) + count
-    //       parents[pid] = (parents[pid] || {})
-    //       parents[sid] = (parents[sid] || {})
-    //       parents[sid][pid] = (parents[sid][pid] || 0) + count
-    //     }
-    //   }
-    //   // Attach roots to 0
-    //   children[0] = {}
-    //   let i = 0
-    //   for (const [k, v] of Object.entries(parents)) {
-    //     if (Object.keys(v).length === 0) {
-    //       children[0][k] = i
-    //       i += 1
-    //     }
-    //   }
-    //   return {
-    //     children
-    //   }
-    // },
+    includeNearbyStops () {
+      return this.radius > 0
+    },
     patterns () {
       const pats = []
       for (const route of this.routes) {
@@ -225,9 +193,9 @@ export default {
       }
       return pats
     },
-    activePattern () {
+    activePattern() {
       for (const pat of this.processedPatterns) {
-        if (pat.stop_pattern_id === this.selectedPattern) {
+        if (pat.stop_pattern_id === this.selectedPatternId) {
           return pat
         }
       }
@@ -235,6 +203,20 @@ export default {
         return this.processedPatterns[0]
       }
       return null
+    },
+    activePatternId: {
+      get() {
+        if (this.selectedPatternId) {
+          return this.selectedPatternId
+        }
+        if (this.processedPatterns.length > 0) {
+          return this.processedPatterns[0].stop_pattern_id
+        }
+        return null
+      },
+      set(v) {
+        this.selectedPatternId = v
+      }
     },
     multiAgency () {
       const a = new Set()
@@ -256,19 +238,19 @@ export default {
       }
       const ret = []
       for (const pat of this.patterns) {
-        // Exclude patterns with less than 1% of trips
-        if (pat.count / totalTrips <= 0.01) {
+        // Exclude patterns with less than 10% of trips
+        if (pat.count / totalTrips <= 0.1) {
           continue
         }
         if (!pat.trips || pat.trips.length === 0 || !pat.trips[0].stop_times) {
           continue
         }
         const pt = pat.trips[0]
-        const dirDesc = pt.direction_id === 0 ? 'Inbound' : 'Outbound'
         const p = {
           stop_pattern_id: pat.stop_pattern_id,
           count: pat.count,
-          desc: `${pt.trip_headsign} (${dirDesc})`,
+          desc: pt.trip_headsign,
+          direction_id: pt.direction_id,
           trip: {
             trip_headsign: pt.trip_headsign
           },
@@ -296,6 +278,12 @@ export default {
       }
       ret.sort((a, b) => { return b.count - a.count })
       return ret
+    },
+    inboundPatterns() {
+      return this.processedPatterns.filter((s) => { return s.direction_id === 0 })
+    },
+    outboundPatterns() {
+      return this.processedPatterns.filter((s) => { return s.direction_id !== 0 })
     }
   },
   methods: {
@@ -394,13 +382,10 @@ function hsin (fromPoint, toPoint) {
   margin-top:10px;
   margin-bottom:10px;
 }
-.adjust-checkbox {
-}
+
 .trip-select {
   min-width:400px;
   width:400px;
 }
-.radius-select {
-  width:200px;
-}
+
 </style>
