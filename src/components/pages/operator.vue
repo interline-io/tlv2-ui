@@ -126,9 +126,7 @@
           </slot>
         </div>
 
-        <div class="column is-one-quarter is-full-height">
-          <slot name="edit-operator" :entity="entity" />
-        </div>
+        <slot name="edit-operator" :entity="entity" />
       </div>
 
       <hr>
