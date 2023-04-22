@@ -47,7 +47,13 @@ code {
 }
 
 @media only screen and (max-width: 600px) {
-    .tab-item {
+  .tab-item {
     overflow-x:auto;
+  }
+  .breadcrumb ul {
+    display:block;
+  }
+  .breadcrumb {
+    white-space: inherit;
   }
 }

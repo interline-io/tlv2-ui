@@ -5,8 +5,6 @@
       {{ error }}
     </tl-msg-error>
     <div v-else-if="entity">
-      id {{ entity.id }}
-
       <Title>{{ staticTitle }}</Title>
       <Meta name="description" :content="staticDescription" />
       <Meta name="twitter:title" :content="staticTitle" />
