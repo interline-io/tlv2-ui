@@ -7,7 +7,7 @@
         </div>
       </o-field>
 
-      <o-field label="Filter by fetch status">
+      <o-field label="Fetch status">
         <o-select v-model="fetchError">
           <option value="">
             All
@@ -21,7 +21,7 @@
         </o-select>
       </o-field>
 
-      <o-field label="Filter by import status">
+      <o-field label="Import status">
         <o-select v-model="importStatus">
           <option value="">
             All
@@ -38,7 +38,7 @@
         </o-select>
       </o-field>
 
-      <o-field label="Filter by tag">
+      <o-field label="Tags">
         <div class="pt-2">
           <o-checkbox v-model="tagUnstableUrl" native-value="true" size="medium">
             Unstable URL
@@ -46,13 +46,13 @@
         </div>
       </o-field>
 
-      <o-field label="Filter by data format" class="pl-3">
+      <o-field label="Data format" class="">
         <div class="pt-2">
           <o-checkbox v-model="feedSpecs" native-value="GTFS" size="medium">
             <abbr title="General Transit Feed Specification">GTFS</abbr>
           </o-checkbox>
           <o-checkbox v-model="feedSpecs" native-value="GTFS_RT" size="medium">
-            <abbr title="GTFS Realtime">GTFS-RT</abbr>
+            <abbr title="GTFS Realtime">RT</abbr>
           </o-checkbox>
           <o-checkbox v-model="feedSpecs" native-value="GBFS" size="medium">
             <abbr title="General Bikeshare Feed Specification">GBFS</abbr>
