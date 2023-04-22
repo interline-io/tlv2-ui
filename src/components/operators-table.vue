@@ -11,7 +11,7 @@
           <o-button label="Options" variant="primary" :icon-left="active ? 'menu-up' : 'menu-down'" />
         </template>
 
-        <o-dropdown-item aria-role="menu-item" custom>
+        <div aria-role="menu-item" style="padding:20px">
           <div class="field">
             <o-checkbox v-model="merged">
               Group agencies by operator
@@ -23,7 +23,7 @@
               Show operators without agency matches
             </o-checkbox>
           </div> -->
-        </o-dropdown-item>
+        </div>
       </o-dropdown>
     </o-field>
 
