@@ -1,67 +1,71 @@
 <template>
   <div>
-    <o-field grouped group-multiline>
-      <o-field label="Search by feed name">
-        <div>
-          <tl-search-bar v-model="search" />
+    <o-field grouped label="Search by feed name">
+      <tl-search-bar v-model="search" placeholder="Search" />
+
+      <o-dropdown position="bottom-left" append-to-body aria-role="menu" trap-focus>
+        <template #trigger="{ active }">
+          <o-button label="Options" variant="primary" :icon-left="active ? 'menu-up' : 'menu-down'" />
+        </template>
+
+        <div aria-role="menu-item" style="padding:20px">
+          <o-field label="Fetch status">
+            <o-select v-model="fetchError">
+              <option value="">
+                All
+              </option>
+              <option value="false">
+                No fetch error
+              </option>
+              <option value="true">
+                Has fetch error
+              </option>
+            </o-select>
+          </o-field>
+
+          <o-field label="Import status">
+            <o-select v-model="importStatus">
+              <option value="">
+                All
+              </option>
+              <option value="SUCCESS">
+                Success
+              </option>
+              <option value="ERROR">
+                Error
+              </option>
+              <option value="IN_PROGRESS">
+                In progress
+              </option>
+            </o-select>
+          </o-field>
+
+          <o-field label="Tags">
+            <div class="pt-2">
+              <o-checkbox v-model="tagUnstableUrl" native-value="true" size="medium">
+                Unstable URL
+              </o-checkbox>
+            </div>
+          </o-field>
+
+          <o-field label="Data format">
+            <div class="pt-2">
+              <o-checkbox v-model="feedSpecs" native-value="GTFS" size="medium">
+                <abbr title="General Transit Feed Specification">GTFS</abbr>
+              </o-checkbox>
+              <o-checkbox v-model="feedSpecs" native-value="GTFS_RT" size="medium">
+                <abbr title="GTFS Realtime">RT</abbr>
+              </o-checkbox>
+              <o-checkbox v-model="feedSpecs" native-value="GBFS" size="medium">
+                <abbr title="General Bikeshare Feed Specification">GBFS</abbr>
+              </o-checkbox>
+              <o-checkbox v-model="feedSpecs" native-value="MDS" size="medium">
+                <abbr title="Mobility Data Specification">MDS</abbr>
+              </o-checkbox>
+            </div>
+          </o-field>
         </div>
-      </o-field>
-
-      <o-field label="Filter by fetch status">
-        <o-select v-model="fetchError">
-          <option value="">
-            All
-          </option>
-          <option value="false">
-            No fetch error
-          </option>
-          <option value="true">
-            Has fetch error
-          </option>
-        </o-select>
-      </o-field>
-
-      <o-field label="Filter by import status">
-        <o-select v-model="importStatus">
-          <option value="">
-            All
-          </option>
-          <option value="SUCCESS">
-            Success
-          </option>
-          <option value="ERROR">
-            Error
-          </option>
-          <option value="IN_PROGRESS">
-            In progress
-          </option>
-        </o-select>
-      </o-field>
-
-      <o-field label="Filter by tag">
-        <div class="pt-2">
-          <o-checkbox v-model="tagUnstableUrl" native-value="true" size="medium">
-            Unstable URL
-          </o-checkbox>
-        </div>
-      </o-field>
-
-      <o-field label="Filter by data format" class="pl-3">
-        <div class="pt-2">
-          <o-checkbox v-model="feedSpecs" native-value="GTFS" size="medium">
-            <abbr title="General Transit Feed Specification">GTFS</abbr>
-          </o-checkbox>
-          <o-checkbox v-model="feedSpecs" native-value="GTFS_RT" size="medium">
-            <abbr title="GTFS Realtime">GTFS-RT</abbr>
-          </o-checkbox>
-          <o-checkbox v-model="feedSpecs" native-value="GBFS" size="medium">
-            <abbr title="General Bikeshare Feed Specification">GBFS</abbr>
-          </o-checkbox>
-          <o-checkbox v-model="feedSpecs" native-value="MDS" size="medium">
-            <abbr title="Mobility Data Specification">MDS</abbr>
-          </o-checkbox>
-        </div>
-      </o-field>
+      </o-dropdown>
     </o-field>
 
     <tl-msg-error v-if="error">
@@ -71,7 +75,7 @@
       <table class="table is-striped is-fullwidth">
         <thead>
           <tr>
-            <th>Feed Onestop ID</th>
+            <th>Onestop ID</th>
             <th>Format</th>
             <th>Last Fetched</th>
             <th>Last Imported</th>
@@ -235,3 +239,9 @@ const { result, loading, error } = useQuery(
 const entities = computed(() => result.value?.entities ?? [])
 
 </script>
+
+<style>
+.dropdown-menu {
+  min-width:300px !important;
+}
+</style>

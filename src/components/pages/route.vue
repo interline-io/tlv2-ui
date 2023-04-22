@@ -86,7 +86,7 @@
                     Onestop ID
                   </o-tooltip>
                 </td>
-                <td>{{ entity.onestop_id }}</td>
+                <td><tl-safelink :text="entity.onestop_id" /></td>
               </tr>
               <tr v-if="entity.agency">
                 <td>Operated by</td>

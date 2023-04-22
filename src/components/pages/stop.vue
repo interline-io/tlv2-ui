@@ -48,7 +48,7 @@
                 </td>
                 <td>
                   <div v-for="root of roots" :key="root.id">
-                    {{ root.onestop_id }}
+                    <tl-safelink :text="entity.onestop_id" />
                   </div>
                 </td>
               </tr>
@@ -64,13 +64,7 @@
                 <td>URL</td>
                 <td>
                   <div v-for="stop of stopUrls" :key="stop.id">
-                    {{ stop.stop_url }}
-                    <a
-                      :href="stop.stop_url"
-                      target="_blank"
-                    ><o-icon
-                      icon="link"
-                    /></a>
+                    <tl-safelink :url="stop.stop_url" />
                   </div>
                 </td>
               </tr>

@@ -14,7 +14,7 @@ code {
     padding-right: 20px;
     font-weight: bold;
     text-align: right;
-    width: 200px;
+    width: 160px;
     white-space: nowrap;
     word-wrap: nowrap;
 }
@@ -47,7 +47,13 @@ code {
 }
 
 @media only screen and (max-width: 600px) {
-    .tab-item {
+  .tab-item {
     overflow-x:auto;
+  }
+  .breadcrumb ul {
+    display:block;
+  }
+  .breadcrumb {
+    white-space: inherit;
   }
 }

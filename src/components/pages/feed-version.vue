@@ -94,7 +94,7 @@
       <table class="table is-borderless property-list tl-props">
         <tbody>
           <tr>
-            <td>Feed Onestop ID</td>
+            <td>Feed</td>
             <td>
               <tl-safelink :text="entity.feed.onestop_id" />
             </td>
@@ -155,7 +155,7 @@
           </tr>
 
           <tr>
-            <td>Version info:</td>
+            <td>Details</td>
             <td v-if="entity.feed_infos && entity.feed_infos.length > 0">
               <tl-feed-info :show-dates="true" :feed-info="entity.feed_infos[0]" />
             </td>

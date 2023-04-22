@@ -82,13 +82,13 @@ export default {
       currentBbox: null,
       routeTiles: {
         id: 'routes',
-        url: `${this.$config.tileEndpoint}/routes/tiles/{z}/{x}/{y}.pbf`,
+        url: `${this.$config.public.tileEndpoint}/routes/tiles/{z}/{x}/{y}.pbf`,
         minzoom: 0,
         maxzoom: 14
       },
       stopTiles: {
         id: 'stops',
-        url: `${this.$config.tileEndpoint}/stops/tiles/{z}/{x}/{y}.pbf`,
+        url: `${this.$config.public.tileEndpoint}/stops/tiles/{z}/{x}/{y}.pbf`,
         minzoom: 14,
         maxzoom: 14
       }
@@ -146,11 +146,12 @@ export default {
     padding: 10px;
     top: 10px;
     left: 10px;
-    width: 565px;
+    max-width:90vw;
+    /* width: 565px; */
 }
 
 .tl-map-panel-tabs {
-    background: none;
+    background: rgba(255, 255, 255, 0.0) !important;
 }
 
 .tl-map-panel-tabs div[role=tab] a {
@@ -171,6 +172,8 @@ export default {
     padding-left: 10px;
     padding-right: 10px;
     max-height:80vh;
+    min-width:330px;
+    max-width:80vw;
     overflow-y:auto;
 }
 
