@@ -48,7 +48,7 @@
                 </td>
                 <td>
                   <div v-for="root of roots" :key="root.id">
-                    {{ root.onestop_id }}
+                    <tl-safelink :text="entity.onestop_id" />
                   </div>
                 </td>
               </tr>
