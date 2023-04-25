@@ -1,8 +1,13 @@
 <template>
   <div class="content">
-    <h3 class="is-3 title">
-      Browse Places
-    </h3>
+    <slot name="title">
+      <h1 class="is-1 title">
+        Browse Places
+      </h1>
+    </slot>
+
+    <slot name="description" />
+
     <div class="field">
       <label for="sortBy" class="label">Sort places by</label>
       <o-radio v-model="sortBy" native-value="alphabetical">
