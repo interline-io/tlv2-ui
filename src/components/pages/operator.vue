@@ -66,18 +66,18 @@
               <td>
                 <ul>
                   <li v-for="location of locations" :key="location.name">
-                    <nuxt-link :to="{name:'operators', query:{adm0_name:location.adm0_name}}">
+                    <nuxt-link :to="{name:'places-adm0', params:{adm0: location.adm0_name}}">
                       {{ location.adm0_name }}
                     </nuxt-link>
                     <template v-if="location.adm1_name">
                       /
-                      <nuxt-link :to="{name:'operators', query:{adm1_name:location.adm1_name, adm0_name:location.adm0_name}}">
+                      <nuxt-link :to="{name:'places-adm0-adm1', params:{adm1: location.adm1_name, adm0: location.adm0_name}}">
                         {{ location.adm1_name }}
                       </nuxt-link>
                     </template>
                     <template v-if="location.city_name">
                       /
-                      <nuxt-link :to="{name:'operators', query:{city_name:location.city_name, adm1_name:location.adm1_name, adm0_name:location.adm0_name}}">
+                      <nuxt-link :to="{name:'places-adm0-adm1-city', params:{city: location.city_name, adm1: location.adm1_name, adm0: location.adm0_name}}">
                         {{ location.city_name }}
                       </nuxt-link>
                     </template>
