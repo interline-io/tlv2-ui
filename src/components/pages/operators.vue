@@ -10,7 +10,7 @@
     <slot name="nav" />
 
     <slot name="title">
-      <h1 class="title">
+      <h1 class="is-1 title">
         Operators
       </h1>
     </slot>
