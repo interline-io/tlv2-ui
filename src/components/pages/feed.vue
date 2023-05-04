@@ -33,6 +33,10 @@
         {{ feedSpec }} feed: {{ operatorNames }}
       </h1>
 
+      <div>
+        <tl-admin-feed-permissions :id="entity.id" />
+      </div>
+
       <div class="columns">
         <div class="column">
           <table class="table is-borderless property-list tl-props">
