@@ -1,7 +1,11 @@
 <template>
-  <div style="border:solid 2px;margin:5px;padding:5px;display:inline-block">
-    Name: {{ user.name }} Email: {{ user.email }}
-    <o-button v-if="canRemove" size="small" icon-left="delete" @click="$emit('removeUser', user.id)" />
+  <div class="control">
+    <div class="tags has-addons">
+      <a class="tag is-medium">
+        {{ user.name }} ({{ user.email }})
+      </a>
+      <a class="tag is-medium is-delete is-warning" @click="$emit('removeUser', user.id)" />
+    </div>
   </div>
 </template>
 
@@ -16,3 +20,8 @@ export default {
   ]
 }
 </script>
+
+<style scoped>
+.user {
+}
+</style>

@@ -1,22 +1,5 @@
 <template>
-  <div style="border:solid green 2px;margin:5px;padding:5px">
-    <code>tenant actions: {{ tenant.actions }}</code>
-
-    <div v-if="tenant.actions.can_view">
-      You can view this tenant.
-    </div>
-
-    <div v-if="tenant.actions.can_edit">
-      You can edit this tenant.
-      <o-button size="small" icon-left="pencil">
-        Edit
-      </o-button>
-    </div>
-
-    <div v-if="tenant.actions.can_edit_members">
-      You can edit tenant membership.
-    </div>
-
+  <div>
     <div v-if="tenant.actions.can_create_org">
       You can create groups in this tenant.
       <o-button size="small" icon-left="pencil">
@@ -24,12 +7,12 @@
       </o-button>
     </div>
 
-    <div v-if="tenant.actions.can_delete_org">
-      You can delete groups in this tenant.
+    <div>
+      Tenant Name: {{ tenant.name }}
+      <o-button v-if="tenant.actions.can_edit" size="small" icon-left="pencil">
+        Edit
+      </o-button>
     </div>
-
-    <div>Tenant ID: {{ tenant.id }}</div>
-    <div>Tenant Name: {{ tenant.name }}</div>
 
     <div>
       Tenant Admins:

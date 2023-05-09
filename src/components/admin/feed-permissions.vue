@@ -5,48 +5,25 @@
         {{ error }}
       </tl-msg-error>
       <div v-else>
-        <code>feed actions: {{ perms.actions }}</code>
-
-        <div v-if="perms.actions.can_view">
-          You can view this feed.
-        </div>
-
-        <!-- <div v-if="perms.actions.can_edit">
-          You can edit this feed.
-          <o-button size="small" icon-left="pencil">
-            Edit
-          </o-button>
-        </div> -->
-
-        <div v-if="perms.actions.can_create_feed_version">
+        <p v-if="perms.actions.can_create_feed_version">
           You can upload feed versions to this feed.
           <o-button size="small" icon-left="pencil">
             Upload
           </o-button>
-        </div>
+        </p>
 
-        <div v-if="perms.actions.can_create_feed_version">
-          You can delete feed versions from this feed.
-        </div>
-
-        <div v-if="perms.actions.can_edit">
-          You can assign this feed to a different group.
+        <p v-if="perms.group">
+          This feed currently belongs to a group: {{ perms.group.name || 'Test Group' }}
+          <tl-admin-modal text="Show group" :title="`Group: ${perms.group.name || 'Test Group'}`">
+            <tl-admin-group :group="perms.group" />
+          </tl-admin-modal>
+        </p>
+        <p v-else>
+          This feed does not belong to a group.
           <o-button size="small" icon-left="pencil">
             Assign
           </o-button>
-        </div>
-
-        <div v-if="perms.group">
-          This feed currently belongs to a group:
-          <tl-admin-group :group="perms.group" />
-        </div>
-        <div v-else>
-          This feed does not belong to a group.
-        </div>
-
-        <br>
-        <div>raw response:</div>
-        <div>{{ perms }}</div>
+        </p>
       </div>
     </tl-msg-info>
   </div>

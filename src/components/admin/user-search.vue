@@ -1,34 +1,13 @@
 <template>
   <div>
-    v: {{ showUserSelect }}
-    <o-button size="small" icon-left="plus" @click="showModal(true)" />
-    <o-modal
-      v-model:active="showUserSelect"
-      can-cancel
-      has-modal-card
-      @close="showModal(false)"
-    >
-      <template #default>
-        <div class="modal-card">
-          <header class="modal-card-head">
-            <p class="modal-card-title">
-              {{ title }}
-            </p>
-            <button type="button" class="delete" @click="showModal(false)" />
-          </header>
-          <section class="modal-card-body">
-            <div class="container content">
-              <tl-msg-error v-if="error">
-                {{ error }}
-              </tl-msg-error>
-              <tl-search-bar v-model="search" />
-              <tl-admin-user v-for="user of users || []" :key="user.id" :user="user" @click="selectUser(user.id)" />
-            </div>
-          </section>
-        </div>
-      </template>
-    </o-modal>
+    <tl-msg-error v-if="error">
+      {{ error }}
+    </tl-msg-error>
+    <tl-search-bar v-model="search" />
     <hr>
+    <div class="field is-grouped is-grouped-multiline">
+      <tl-admin-user v-for="user of users || []" :key="user.id" :user="user" @click="selectUser(user.id)" />
+    </div>
   </div>
 </template>
 
@@ -50,11 +29,6 @@ const selectUser = function(userId) {
   showUserSelect.value = false
 }
 
-const showModal = function(v) {
-  console.log('showModal', v)
-  showUserSelect.value = v
-}
-
 const { data: users, error } = await useAsyncData(
   'users',
   () => $fetch('/users', {
@@ -64,7 +38,7 @@ const { data: users, error } = await useAsyncData(
       q: (search.value && search.value.length > 1) ? (search.value + '*') : null
     }
   }), {
-    immediate: false,
+    immediate: true,
     default: () => { return [] },
     watch: [
       search
