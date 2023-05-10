@@ -1,10 +1,10 @@
 <template>
   <div class="control">
     <div class="tags has-addons">
-      <a class="tag is-medium">
+      <a class="tag is-medium desc">
         {{ user.name }} ({{ user.email }})
       </a>
-      <a class="tag is-medium is-delete is-warning" @click="$emit('removeUser', user.id)" />
+      <a v-if="action" :class="actionClass" @click.stop.prevent="$emit('selectUser', user.id)"><o-icon :icon="actionIcon" /></a>
     </div>
   </div>
 </template>
@@ -13,15 +13,35 @@
 export default {
   props: {
     user: { type: Object, default() { return {} }, required: true },
-    canRemove: { type: Boolean, default: false }
+    action: { type: String, default: null }
   },
   emits: [
-    'removeUser'
-  ]
+    'selectUser'
+  ],
+  computed: {
+    actionClass () {
+      if (this.action === 'add') {
+        return 'tag is-medium is-primary'
+      } else if (this.action === 'remove') {
+        return 'tag is-medium is-danger'
+      }
+      return null
+    },
+    actionIcon () {
+      if (this.action === 'add') {
+        return 'plus'
+      } else if (this.action === 'remove') {
+        return 'close'
+      }
+      return null
+    }
+  }
 }
 </script>
 
 <style scoped>
-.user {
+a.desc:hover {
+  text-decoration: none;
+  cursor: default;
 }
 </style>

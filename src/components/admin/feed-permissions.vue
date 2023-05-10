@@ -13,9 +13,9 @@
         </p>
 
         <p v-if="perms.group">
-          This feed currently belongs to a group: {{ perms.group.name || 'Test Group' }}
-          <tl-admin-modal text="Show group" :title="`Group: ${perms.group.name || 'Test Group'}`">
-            <tl-admin-group :group="perms.group" />
+          This feed currently belongs to a group: {{ perms.group.name }}
+          <tl-admin-modal text="Show group" :title="`Group: ${perms.group.name }`">
+            <tl-admin-group :id="perms.group.id" />
           </tl-admin-modal>
         </p>
         <p v-else>
@@ -37,7 +37,7 @@ const config = useRuntimeConfig()
 
 const { data: perms, error } = await useAsyncData(
   'perms',
-  () => $fetch(`/feeds/${props.id}/permissions`, {
+  () => $fetch(`/feeds/${props.id}`, {
     method: 'GET',
     baseURL: config.public.adminEndpoint
   }), {

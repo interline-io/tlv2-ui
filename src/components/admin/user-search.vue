@@ -5,8 +5,10 @@
     </tl-msg-error>
     <tl-search-bar v-model="search" />
     <hr>
-    <div class="field is-grouped is-grouped-multiline">
-      <tl-admin-user v-for="user of users || []" :key="user.id" :user="user" @click="selectUser(user.id)" />
+    <div class="field">
+      <div class="field is-grouped is-grouped-multiline">
+        <tl-admin-user v-for="user of users || []" :key="user.id" :user="user" action="add" @select-user="selectUser" />
+      </div>
     </div>
   </div>
 </template>
@@ -14,7 +16,6 @@
 <script setup>
 const config = useRuntimeConfig()
 const search = ref('')
-const showUserSelect = ref(false)
 
 defineProps({
   title: { type: String, default: '' }
@@ -26,7 +27,6 @@ const emits = defineEmits([
 
 const selectUser = function(userId) {
   emits('selectUser', userId)
-  showUserSelect.value = false
 }
 
 const { data: users, error } = await useAsyncData(

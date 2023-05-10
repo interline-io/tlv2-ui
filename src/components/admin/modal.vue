@@ -1,22 +1,25 @@
 <template>
   <span>
-    <o-button size="small" @click="showModal(true)">{{ text }}</o-button>
+    <o-button size="small" @click.stop="open">
+      {{ text }}
+    </o-button>
     <o-modal
       v-model:active="active"
       can-cancel
-      has-modal-card
-      @close="showModal(false)"
+      @close="close"
     >
       <template #default>
         <div class="modal-card">
           <header class="modal-card-head">
-            <p class="modal-card-title">{{ title }}</p>
-            <button type="button" class="delete" @click="showModal(false)" />
+            <p class="modal-card-title">
+              {{ title }}
+            </p>
+            <button type="button" class="delete" @click="close" />
           </header>
           <section class="modal-card-body">
             <div class="container">
-              <slot />
-              <br><br>
+              <slot :close="close" />
+              <br>
             </div>
           </section>
         </div>
@@ -33,8 +36,12 @@ defineProps({
   title: { type: String, default: '' }
 })
 
-const showModal = function(v) {
-  console.log('showModal', v)
-  active.value = v
+const open = function () {
+  active.value = true
+  console.log('???')
+}
+
+const close = function () {
+  active.value = false
 }
 </script>
