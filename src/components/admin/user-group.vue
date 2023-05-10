@@ -1,13 +1,8 @@
 <template>
-  <div class="user-group">
-    <div class="field">
-      <label class="label">
-        {{ text }}
-      </label>
-      <div class="field is-grouped is-grouped-multiline">
-        <tl-admin-modal v-if="canAdd" v-slot="scope" :title="actionText">
-          <tl-admin-user-search @select-user="emits('addUser', $event); scope.close();" />
-        </tl-admin-modal>
+  <div>
+    <o-field horizontal :label="text" is-grouped-multiline is-grouped-left>
+      <o-button icon-left="plus" size="small" @click="showUserPicker = true" />
+      <o-field grouped group-multiline tags>
         <tl-admin-user
           v-for="user of users || []"
           :key="user.id"
@@ -15,8 +10,11 @@
           :action="canRemove ? 'remove' : null"
           @select-user="emits('removeUser', $event)"
         />
-      </div>
-    </div>
+      </o-field>
+    </o-field>
+    <tl-admin-modal v-if="canAdd" v-slot="scope" v-model="showUserPicker" :title="actionText">
+      <tl-admin-user-search @select-user="emits('addUser', $event); scope.close();" />
+    </tl-admin-modal>
   </div>
 </template>
 
@@ -31,6 +29,8 @@ defineProps({
 })
 
 const emits = defineEmits(['addUser', 'removeUser'])
+
+const showUserPicker = ref(false)
 
 </script>
 

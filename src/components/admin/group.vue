@@ -5,46 +5,54 @@
     </tl-msg-error>
     <div v-else-if="group">
       <tl-loading v-if="pending" />
-      <o-field label="Name">
-        <tl-admin-input :value="group.name" :can-edit="group.actions.can_edit" @save="saveName" />
-      </o-field>
+      <div>
+        <o-field label="Name" horizontal>
+          <tl-admin-input :value="group.name" :can-edit="group.actions.can_edit" @save="saveName" />
+        </o-field>
 
-      <o-field label="Parent">
-        {{ group.tenant.name || 'Test Tenant' }}
-        <tl-admin-modal text="Show tenant" title="Tenant">
-          <tl-admin-tenant :id="group.tenant.id" />
+        <o-field label="Tenant" horizontal>
+          <o-field>
+            <tl-admin-ghost-button :text="group.tenant.name" />
+            <o-button @click="showTenant = true">
+              Show tenant
+            </o-button>
+          </o-field>
+        </o-field>
+
+        <tl-admin-user-group
+          text="Managers"
+          action-text="Add a group manager"
+          :users="group.users.managers"
+          :can-add="group.actions.can_edit_members"
+          :can-remove="group.actions.can_edit_members"
+          @add-user="addMember('manager', $event)"
+          @remove-user="removeMember('manager', $event)"
+        />
+
+        <tl-admin-user-group
+          text="Editors"
+          action-text="Add a group editor"
+          :users="group.users.editors"
+          :can-add="group.actions.can_edit_members"
+          :can-remove="group.actions.can_edit_members"
+          @add-user="addMember('editor', $event)"
+          @remove-user="removeMember('editor', $event)"
+        />
+
+        <tl-admin-user-group
+          text="Viewers"
+          action-text="Add a group viewer"
+          :users="group.users.viewers"
+          :can-add="group.actions.can_edit_members"
+          :can-remove="group.actions.can_edit_members"
+          @add-user="addMember('viewer', $event)"
+          @remove-user="removeMember('viewer', $event)"
+        />
+
+        <tl-admin-modal v-model="showTenant" :title="`Tenant: ${ group.tenant.name }`">
+          <tl-admin-tenant :id="group.tenant.id" @changed="changed" />
         </tl-admin-modal>
-      </o-field>
-
-      <tl-admin-user-group
-        text="Managers"
-        action-text="Add a group manager"
-        :users="group.users.managers"
-        :can-add="group.actions.can_edit_members"
-        :can-remove="group.actions.can_edit_members"
-        @add-user="addMember('manager', $event)"
-        @remove-user="removeMember('manager', $event)"
-      />
-
-      <tl-admin-user-group
-        text="Editors"
-        action-text="Add a group editor"
-        :users="group.users.editors"
-        :can-add="group.actions.can_edit_members"
-        :can-remove="group.actions.can_edit_members"
-        @add-user="addMember('editor', $event)"
-        @remove-user="removeMember('editor', $event)"
-      />
-
-      <tl-admin-user-group
-        text="Viewers"
-        action-text="Add a group viewer"
-        :users="group.users.viewers"
-        :can-add="group.actions.can_edit_members"
-        :can-remove="group.actions.can_edit_members"
-        @add-user="addMember('viewer', $event)"
-        @remove-user="removeMember('viewer', $event)"
-      />
+      </div>
     </div>
   </div>
 </template>
@@ -56,6 +64,10 @@ const props = defineProps({
   id: { type: Number, default: 0, required: true }
 })
 
+const emits = defineEmits(['changed'])
+
+const showTenant = ref(false)
+
 const { data: group, pending, refresh, error } = await useAsyncData(
   'group',
   () => $fetch(`/groups/${props.id}`, {
@@ -66,6 +78,12 @@ const { data: group, pending, refresh, error } = await useAsyncData(
   }
 )
 
+const changed = function() {
+  console.log('group ch')
+  refresh()
+  emits('changed')
+}
+
 const saveName = async function(value) {
   console.log('saveName', value)
   const { error } = await fetch(
@@ -75,7 +93,7 @@ const saveName = async function(value) {
       body: JSON.stringify({ name: value })
     }
   )
-  refresh()
+  changed()
 }
 
 const addMember = async function(relation, user) {

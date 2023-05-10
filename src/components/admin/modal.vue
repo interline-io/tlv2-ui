@@ -1,10 +1,7 @@
 <template>
-  <span>
-    <o-button size="small" @click.stop="open">
-      {{ text }}
-    </o-button>
+  <div>
     <o-modal
-      v-model:active="active"
+      :active="modelValue"
       can-cancel
       @close="close"
     >
@@ -25,23 +22,19 @@
         </div>
       </template>
     </o-modal>
-  </span>
+  </div>
 </template>
 
 <script setup>
-const active = ref(false)
-
 defineProps({
   text: { type: String, default: '+' },
-  title: { type: String, default: '' }
+  title: { type: String, default: '' },
+  modelValue: { type: Boolean, default: false }
 })
 
-const open = function () {
-  active.value = true
-  console.log('???')
-}
+const emits = defineEmits(['update:modelValue', 'close'])
 
 const close = function () {
-  active.value = false
+  emits('update:modelValue', false)
 }
 </script>
