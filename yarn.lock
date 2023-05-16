@@ -1044,12 +1044,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oruga-ui/theme-bulma@npm:^0.2.9":
-  version: 0.2.9
-  resolution: "@oruga-ui/theme-bulma@npm:0.2.9"
+"@oruga-ui/theme-bulma@npm:^0.2.10":
+  version: 0.2.10
+  resolution: "@oruga-ui/theme-bulma@npm:0.2.10"
   dependencies:
     bulma: 0.9.4
-  checksum: 5b961f27bbf86446d41d8f496e810084de99b0db88ef802eadc9d9974083a5dd8bd904a30c0a5ff7bfb072bf0040122ff15ec694459643dea73bf165f7a56c44
+  checksum: ecb2fe6f50ccc435ee2f620e1382d4f0784aa17f61b845be6c9dd91e1f51bbce77f1244bee1bda2d48f6301d4744a939fcbdb269cecec60d90238ac1fa789d54
   languageName: node
   linkType: hard
 
@@ -8046,7 +8046,7 @@ __metadata:
     "@mdi/font": ^7.2.96
     "@nuxtjs/eslint-config-typescript": ^12.0.0
     "@oruga-ui/oruga-next": ^0.6.0
-    "@oruga-ui/theme-bulma": ^0.2.9
+    "@oruga-ui/theme-bulma": ^0.2.10
     "@types/node": ^18.16.3
     "@vue/apollo-composable": ^4.0.0-beta.4
     "@vue/apollo-option": ^4.0.0-beta.4
