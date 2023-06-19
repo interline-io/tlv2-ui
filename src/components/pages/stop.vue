@@ -32,6 +32,8 @@
       <tl-check-fresh :fetched="entity.feed_version.fetched_at" />
       <tl-check-single :feed-onestop-id="feedOnestopId" :feed-version-sha1="feedVersionSha1" />
 
+      <slot name="contentBeforeTable" :entity="entity" />
+
       <!-- Main content -->
       <div class="columns">
         <div class="column is-two-thirds">
@@ -98,13 +100,15 @@
             </tbody>
           </table>
 
-          <tl-msg-info>
-            Learn more about the contents of <code>stops.txt</code> on
-            <a
-              href="https://gtfs.org/reference/static#stopstxt"
-              target="_blank"
-            >gtfs.org</a>.
-          </tl-msg-info>
+          <slot name="contentAfterTable" :entity="entity">
+            <tl-msg-info>
+              Learn more about the contents of <code>stops.txt</code> on
+              <a
+                href="https://gtfs.org/reference/static#stopstxt"
+                target="_blank"
+              >gtfs.org</a>.
+            </tl-msg-info>
+          </slot>
 
           <div v-for="ent of entities" :key="ent.id">
             <tl-msg-warning
