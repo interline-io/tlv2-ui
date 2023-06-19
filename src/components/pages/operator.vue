@@ -173,6 +173,8 @@
             </template>
           </tl-msg-action>
 
+          <slot name="contentBeforeTable" />
+
           <div class="table-container">
             <table class="table is-striped">
               <thead>

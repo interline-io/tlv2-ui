@@ -72,6 +72,8 @@
       <tl-check-fresh :fetched="entity.feed_version.fetched_at" />
       <tl-check-single :feed-onestop-id="feedOnestopId" :feed-version-sha1="feedVersionSha1" />
 
+      <slot name="contentBeforeTable" />
+
       <!-- Main content -->
       <div class="columns">
         <div class="column is-two-thirds">
@@ -147,13 +149,15 @@
             </tbody>
           </table>
 
-          <tl-msg-info no-icon>
-            Learn more about the contents of <code>routes.txt</code> on
-            <a
-              href="https://gtfs.org/reference/static#routestxt"
-              target="_blank"
-            >gtfs.org</a>.
-          </tl-msg-info>
+          <slot name="contentAfterTable">
+            <tl-msg-info no-icon>
+              Learn more about the contents of <code>routes.txt</code> on
+              <a
+                href="https://gtfs.org/reference/static#routestxt"
+                target="_blank"
+              >gtfs.org</a>.
+            </tl-msg-info>
+          </slot>
 
           <div v-for="ent of entities" :key="ent.id">
             <tl-msg-warning
