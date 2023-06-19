@@ -32,7 +32,7 @@
       <tl-check-fresh :fetched="entity.feed_version.fetched_at" />
       <tl-check-single :feed-onestop-id="feedOnestopId" :feed-version-sha1="feedVersionSha1" />
 
-      <slot name="contentBeforeTable" />
+      <slot name="contentBeforeTable" :entity="entity" />
 
       <!-- Main content -->
       <div class="columns">
