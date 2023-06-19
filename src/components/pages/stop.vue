@@ -271,6 +271,9 @@ fragment rs on RouteStop {
     agency {
       agency_name
       id
+      operator {
+        onestop_id
+      }
     }
   }
 }
