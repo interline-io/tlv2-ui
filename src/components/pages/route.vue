@@ -150,12 +150,8 @@
           </table>
 
           <slot name="contentAfterTable" :entity="entity">
-            <tl-msg-info no-icon>
-              Learn more about the contents of <code>routes.txt</code> on
-              <a
-                href="https://gtfs.org/reference/static#routestxt"
-                target="_blank"
-              >gtfs.org</a>.
+            <tl-msg-info>
+              <p>Learn more about <a href="https://www.transit.land/documentation/concepts/routes">routes in the Transitland documentation</a>.</p>
             </tl-msg-info>
           </slot>
 

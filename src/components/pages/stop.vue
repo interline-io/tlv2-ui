@@ -102,11 +102,7 @@
 
           <slot name="contentAfterTable" :entity="entity">
             <tl-msg-info>
-              Learn more about the contents of <code>stops.txt</code> on
-              <a
-                href="https://gtfs.org/reference/static#stopstxt"
-                target="_blank"
-              >gtfs.org</a>.
+              <p>Learn more about <a href="https://www.transit.land/documentation/concepts/stops">stops in the Transitland documentation</a>.</p>
             </tl-msg-info>
           </slot>
 
@@ -173,6 +169,9 @@
                   :search-coords="entity.geometry.coordinates"
                 />
               </client-only>
+              <tl-msg-info>
+                <p><a href="https://www.transit.land/documentation/rest-api/departures" target="_blank">Learn more about Transitland v2 REST API stop departures endpoint</a></p>
+              </tl-msg-info>
             </o-tab-item>
 
             <!-- Data sources -->
