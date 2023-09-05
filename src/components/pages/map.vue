@@ -27,6 +27,9 @@
             :is-component-modal-active="isComponentModalActive"
             @close="isComponentModalActive = false"
           />
+          <p v-if="Object.keys(agencyFeatures).length == 0" class="content block is-small pt-2">
+            <a href="https://www.transit.land/documentation/vector-tiles" target="_blank">Learn more about Transitland v2 Vector Tiles</a>
+          </p>
         </o-tab-item>
         <o-tab-item id="departures" label="Departures">
           <tl-map-search
@@ -41,8 +44,8 @@
             :show-radius-selector="true"
             :search-coords="searchCoords"
           />
-          <p class="content block is-pulled-right is-small">
-            <a href="https://www.transit.land/documentation/rest-api/" target="_blank">Learn more about Transitland APIs</a>
+          <p class="content block is-small pt-2">
+            <a href="https://www.transit.land/documentation/rest-api/departures" target="_blank">Learn more about Transitland v2 REST API stop departures endpoint</a>
           </p>
         </o-tab-item>
         <o-tab-item id="options" label="Options">

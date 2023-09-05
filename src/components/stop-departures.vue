@@ -1,6 +1,8 @@
 <template>
   <div>
-    <tl-msg-error v-if="error">{{ error }}</tl-msg-error>
+    <tl-msg-error v-if="error">
+      {{ error }}
+    </tl-msg-error>
     <div v-else-if="!searchCoords && stopIds.length === 0">
       <h6 class="title is-6">
         Click on the map to select a location
@@ -39,6 +41,10 @@
             Fallback service day
           </o-checkbox>
         </o-field>
+        <div v-if="lastFetched" :key="lastFetchedDisplayKey" class="tags has-addons">
+          <span class="tag is-small">Last checked</span>
+          <span class="tag is-success is-small">{{ $filters.fromNowDate(lastFetched) }}</span>
+        </div>
       </div>
 
       <tl-loading v-if="$apollo.loading && stops.length === 0" />
@@ -87,9 +93,6 @@
           </div>
         </div>
       </div>
-    </div>
-    <div v-if="lastFetched" :key="lastFetchedDisplayKey" class="last-fetched">
-      Last checked: {{ $filters.fromNowDate(lastFetched) }}
     </div>
   </div>
 </template>
@@ -420,11 +423,6 @@ export default {
   display:inline-block;
   width:250px;
   -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1) 90%, rgba(0,0,0,0));
-}
-
-.last-fetched {
-  padding-top:10px;
-  font-size:0.75rem;
 }
 
 .button-like {

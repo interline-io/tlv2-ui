@@ -9,7 +9,7 @@
           Select routes
         </h6>
         <div v-if="currentZoom < 8">
-          Zoom in to select routes.
+          Zoom in to select routes and to see stop points.
         </div>
         <div v-else>
           Use your cursor to highlight routes and see their names here. Click for more details.
