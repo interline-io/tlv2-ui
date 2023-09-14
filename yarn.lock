@@ -51,6 +51,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@auth0/auth0-spa-js@npm:^2.1.2":
+  version: 2.1.2
+  resolution: "@auth0/auth0-spa-js@npm:2.1.2"
+  checksum: b376f4f2e7cbc7ae6197603b05dbef1c919887412b68e2dbc1c054296f2c50ea3bd9028b077d7f256365703e478d96135c3f81cf090157820debf31cc42e4a36
+  languageName: node
+  linkType: hard
+
 "@babel/code-frame@npm:^7.0.0, @babel/code-frame@npm:^7.12.13, @babel/code-frame@npm:^7.18.6, @babel/code-frame@npm:^7.21.4":
   version: 7.21.4
   resolution: "@babel/code-frame@npm:7.21.4"
@@ -8128,6 +8135,7 @@ __metadata:
   resolution: "tlv2-ui@workspace:."
   dependencies:
     "@apollo/client": ^3.7.14
+    "@auth0/auth0-spa-js": ^2.1.2
     "@braintree/sanitize-url": ^6.0.2
     "@mdi/font": ^7.2.96
     "@nuxtjs/eslint-config-typescript": ^12.0.0
@@ -8333,11 +8341,11 @@ __metadata:
 
 "typescript@patch:typescript@^5.0.4#~builtin<compat/typescript>":
   version: 5.0.4
-  resolution: "typescript@patch:typescript@npm%3A5.0.4#~builtin<compat/typescript>::version=5.0.4&hash=85af82"
+  resolution: "typescript@patch:typescript@npm%3A5.0.4#~builtin<compat/typescript>::version=5.0.4&hash=b5f058"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: bb309d320c59a26565fb3793dba550576ab861018ff3fd1b7fccabbe46ae4a35546bc45f342c0a0b6f265c801ccdf64ffd68f548f117ceb7f0eac4b805cd52a9
+  checksum: d26b6ba97b6d163c55dbdffd9bbb4c211667ebebc743accfeb2c8c0154aace7afd097b51165a72a5bad2cf65a4612259344ff60f8e642362aa1695c760d303ac
   languageName: node
   linkType: hard
 

@@ -6,15 +6,18 @@ import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client/core/index
 
 export default defineNuxtPlugin((nuxtApp) => {
   const config = useRuntimeConfig()
+  const cookie = useCookie('jwt')
+  const headers = {
+    referer: config.public.graphqlServerReferer,
+    apikey: config.public.graphqlApikey,
+    authorization: cookie.value ? 'Bearer ' + cookie.value : ''
+  }
+  console.log('headers:', headers)
   const httpLink = new HttpLink({
     uri: config.public.graphqlEndpoint,
-    headers: {
-      apikey: config.public.graphqlApikey,
-      referer: config.public.graphqlServerReferer,
-    }
+    headers
   })
   const cache = new InMemoryCache()
-
   const apolloClient = new ApolloClient({
     link: httpLink,
     cache
@@ -41,10 +44,4 @@ export default defineNuxtPlugin((nuxtApp) => {
   if (process.client && nuxtApp.payload.data[cacheKey]) {
     cache.restore(destr(JSON.stringify(nuxtApp.payload.data[cacheKey])))
   }
-  // nuxtApp.vueApp.provide(DefaultApolloClient, apolloClient)
-  // return {
-  //   provide: {
-  //     apolloClient
-  //   }
-  // }
 })
