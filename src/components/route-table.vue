@@ -4,7 +4,10 @@
       {{ error }}
     </tl-msg-error>
     <div v-else>
-      <tl-search-bar v-model="search" placeholder="Filter Routes" />
+      <o-field expanded grouped>
+        <tl-search-bar v-model="search" placeholder="Filter Routes" />
+        <tl-route-type-select v-model="selectedRouteType" />
+      </o-field>
       <o-loading v-model:active="$apollo.loading" :full-page="false" />
       <div class="table-container">
         <table class="table is-striped is-fullwidth">
@@ -48,8 +51,8 @@ import gql from 'graphql-tag'
 import TableViewerMixin from './table-viewer-mixin'
 
 const q = gql`
-query($after: Int, $limit: Int, $feed_version_sha1: String, $agency_ids: [Int!], $search: String) {
-  entities: routes(after: $after, limit: $limit, where: { serviced: true, search: $search, feed_version_sha1: $feed_version_sha1, agency_ids: $agency_ids }) {
+query($after: Int, $limit: Int, $feed_version_sha1: String, $agency_ids: [Int!], $search: String, $route_type: Int) {
+  entities: routes(after: $after, limit: $limit, where: { serviced: true, search: $search, feed_version_sha1: $feed_version_sha1, agency_ids: $agency_ids, route_type:$route_type }) {
     id
     onestop_id
     feed_version_sha1
@@ -79,6 +82,11 @@ export default {
     showGeometry: { type: Boolean, default: true },
     linkVersion: { type: Boolean, default: false }
   },
+  data() {
+    return {
+      selectedRouteType: null
+    }
+  },
   apollo: {
     entities: {
       client: 'transitland',
@@ -88,7 +96,8 @@ export default {
           limit: this.limit,
           search: this.search,
           feed_version_sha1: this.feedVersionSha1,
-          agency_ids: this.agencyIds
+          agency_ids: this.agencyIds,
+          route_type: this.selectedRouteType
         }
       },
       error (e) { this.error = e }
