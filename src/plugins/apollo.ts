@@ -3,16 +3,17 @@ import { defineNuxtPlugin, useRuntimeConfig } from '#app'
 import { ApolloClients } from '@vue/apollo-composable'
 import { createApolloProvider } from '@vue/apollo-option'
 import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client/core/index.js'
+import { getJwt } from '~/src/plugins/auth0'
 
-export default defineNuxtPlugin((nuxtApp) => {
+export default defineNuxtPlugin(async (nuxtApp) => {
   const config = useRuntimeConfig()
-  const cookie = useCookie('jwt')
+  const token = await getJwt()
+  // console.log('apollo.ts token:', token)
   const headers = {
     referer: config.public.graphqlServerReferer,
     apikey: config.public.graphqlApikey,
-    authorization: cookie.value ? 'Bearer ' + cookie.value : ''
+    authorization: token ? 'Bearer ' + token : ''
   }
-  console.log('headers:', headers)
   const httpLink = new HttpLink({
     uri: config.public.graphqlEndpoint,
     headers
