@@ -316,8 +316,8 @@ fragment ss on Stop {
   }
 }
 
-query ($onestop_id: String, $ids: [Int!], $entity_id: String, $feed_onestop_id: String, $feed_version_sha1: String) {
-  entities: stops(limit: 1, ids: $ids, where: {onestop_id: $onestop_id, feed_onestop_id:$feed_onestop_id, feed_version_sha1:$feed_version_sha1, stop_id:$entity_id}) {
+query ($onestop_id: String, $ids: [Int!], $entity_id: String, $feed_onestop_id: String, $feed_version_sha1: String, $allow_previous_onestop_ids: Boolean = false) {
+  entities: stops(limit: 1, ids: $ids, where: {onestop_id: $onestop_id, feed_onestop_id:$feed_onestop_id, feed_version_sha1:$feed_version_sha1, stop_id:$entity_id, allow_previous_onestop_ids: $allow_previous_onestop_ids}) {
     ...ss
     parent {
       ...ss
@@ -374,7 +374,6 @@ export default {
       for (const stop of this.allStops) {
         for (const alert of stop.alerts || []) {
           ret.push(alert)
-          console.log(alert)
         }
       }
       return ret

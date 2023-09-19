@@ -38,11 +38,13 @@ export default {
       if (kInts.length > 0) {
         return { ids: kInts }
       }
+      const osid = (this.feedOnestopId && this.feedVersionSha1 && this.entityId) ? null : this.pathKey
       return {
-        onestop_id: (this.feedOnestopId && this.feedVersionSha1 && this.entityId) ? null : this.pathKey,
+        onestop_id: osid,
         entity_id: this.entityId,
         feed_onestop_id: this.feedOnestopId,
-        feed_version_sha1: this.feedVersionSha1
+        feed_version_sha1: this.feedVersionSha1,
+        allow_previous_onestop_ids: (!!osid && !this.feedOnestopId && !this.feedVersionSha1)
       }
     },
     advancedMode() {
