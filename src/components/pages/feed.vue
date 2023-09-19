@@ -207,34 +207,8 @@
         <h4 class="title is-4">
           Operator(s) Associated with this Feed
         </h4>
-        <o-tabs class="tl-tabs" type="boxed" :animated="false">
-          <o-tab-item id="operators" label="Operators">
-            <tl-msg-info
-              v-if="!entity.associated_operators || (entity.associated_operators && entity.associated_operators.length === 0)"
-            >
-              There are no operators associated with this feed.
-            </tl-msg-info>
-
-            <tl-msg-action
-              v-for="(operator, i) of entity.associated_operators"
-              :key="i"
-            >
-              <template #desc>
-                This feed is associated with the operator record with Onestop ID of
-                <tl-safelink :text="operator.onestop_id" /> See this operator for more metadata related to this feed and to
-                explore routes, stops, and other data imported from this feed.
-              </template>
-              <template #action>
-                <nuxt-link
-                  class="button is-primary"
-                  :to="{ name: 'operators-onestop_id', params: { onestop_id: operator.onestop_id } }"
-                >
-                  View Operator Record
-                </nuxt-link>
-              </template>
-            </tl-msg-action>
-          </o-tab-item>
-        </o-tabs>
+        <slot name="associatedOperatorsContent" />
+        <tl-associated-operators :associated-operators="entity.associated_operators" />
       </div>
 
       <hr>
@@ -311,6 +285,7 @@ query($onestop_id: String) {
         agency_id
         agency_name
       }
+      # TODO: it would be nice to be able to include the total number of stops, routes, and/or services hours to sort the list of associated operators
     }
     feed_versions {
       id
