@@ -45,7 +45,7 @@
             </tr>
             <tr>
               <td>
-                <o-tooltip dashed multiline label="Matched agencies; see 'Sources' below for full details">
+                <o-tooltip dashed multiline label="Matched agencies; see 'Sources Feed(s)' below for full details">
                   Agencies
                 </o-tooltip>
               </td>
@@ -135,86 +135,56 @@
         Source Feed(s)
       </h4>
 
-      <o-tabs class="tl-tabs" type="boxed" :animated="false">
-        <o-tab-item label="Source Feeds">
-          <tl-msg-info
-            v-for="feedSpec, feedOnestopId in uniqueFeedSourcesOnestopIds"
-            :key="feedOnestopId"
-          >
-            <div class="columns">
-              <div class="column is-8">
-                <p>
-                  This operator includes data from the <strong>{{ feedSpec.replace('_', '-') }}</strong> feed record with Onestop ID of
-                  <tl-safelink :text="feedOnestopId" /> See the feed record for Transitland's archive of fetched versions, as well as URLs for accessing the feed. <!-- TODO: show different text depending upon feed.spec = GTFS, GTFS-RT, or GBFS -->
-                </p>
-              </div>
-              <div class="column is-4 has-text-right">
-                <nuxt-link class="button is-primary" :to="{name:'feeds-feed', params:{feed:feedOnestopId}}">
-                  View Feed Record
+      <slot name="contentBeforeTable" :entity="entity" />
+
+      <div class="table-container">
+        <table class="table is-striped is-fullwidth">
+          <thead>
+            <tr>
+              <th>Source feed Onestop ID</th>
+              <th>Source spec</th>
+              <th>Association type</th>
+              <th>Matched GTFS agency</th>
+              <th class="has-text-right">
+                Links to view
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="row of sources" :key="row.id">
+              <td>
+                <nuxt-link :to="{name:'feeds-feed', params:{feed:row.target_feed}}">
+                  <tl-safelink :text="row.target_feed" />
                 </nuxt-link>
-              </div>
-            </div>
-          </tl-msg-info>
-        </o-tab-item>
-
-        <o-tab-item id="sources_advanced" label="Source Feeds (Advanced View)">
-          <tl-msg-action
-            v-for="feedSpec, feedOnestopId in uniqueFeedSourcesOnestopIds"
-            :key="feedOnestopId"
-          >
-            <template #desc>
-              This operator includes data from the <strong>{{ feedSpec.replace('_', '-') }}</strong> feed record with Onestop ID of
-              <tl-safelink :text="feedOnestopId" />. See the feed record for Transitland's archive of fetched versions, as well as URLs for accessing the feed.
-            </template>
-            <template #action>
-              <nuxt-link class="button is-primary" :to="{name:'feeds-feed', params:{feed:feedOnestopId}}">
-                View Feed Record
-              </nuxt-link>
-            </template>
-          </tl-msg-action>
-
-          <slot name="contentBeforeTable" :entity="entity" />
-
-          <div class="table-container">
-            <table class="table is-striped">
-              <thead>
-                <tr>
-                  <th>Association type</th>
-                  <th>Source feed</th>
-                  <th>Source spec</th>
-                  <th>Matched GTFS Agency</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="row of sources" :key="row.id">
-                  <td>
-                    {{ row.target_type }}
-                  </td>
-                  <td>
-                    <nuxt-link :to="{name:'feeds-feed', params:{feed:row.target_feed}}">
-                      {{ row.target_feed }}
-                    </nuxt-link>
-                  </td>
-                  <td>
-                    {{ row.target_feed_spec }}
-                  </td>
-                  <td>
-                    <template v-if="row.target_match">
-                      <o-icon icon="check" />
-                      {{ row.target_match.agency_name }}
-                    </template>
-                    <template v-else-if="row.feed_spec == 'GTFS'">
-                      <o-tooltip dashed label="The active version of this source feed does not contain a matching agency">
-                        <o-icon icon="alert" />
-                      </o-tooltip>
-                    </template>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </o-tab-item>
-      </o-tabs>
+              </td>
+              <td>
+                {{ formatSpec(row.target_feed_spec) }}
+              </td>
+              <td>
+                {{ row.target_type }}
+              </td>
+              <td>
+                <template v-if="row.target_match">
+                  <o-icon icon="check" />
+                  {{ row.target_match.agency_name }}
+                </template>
+                <template v-else-if="row.feed_spec == 'GTFS'">
+                  <o-tooltip dashed label="The active version of this source feed does not contain a matching agency">
+                    <o-icon icon="alert" />
+                  </o-tooltip>
+                </template>
+              </td>
+              <td class="has-text-right" style="min-width: 250px;">
+                <nuxt-link class="button is-small is-primary" :to="{name:'feeds-feed', params:{feed:row.target_feed}}">
+                  Feed
+                </nuxt-link> <nuxt-link v-if="row.target_feed_spec == 'GTFS'" class="button is-small is-primary" :to="{name:'feeds-feed', params:{feed: row.target_feed}, hash: '#versions'}">
+                  Archived feed versions
+                </nuxt-link>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <hr>
 
@@ -422,6 +392,15 @@ export default {
         .map(l => [l.adm0_name, l.adm1_name, l.city_name].filter(Boolean).join(', '))
         .join('; ')
       return `${this.operatorName} is an operator listed on the Transitland open data platform. Transitland sources data for this operator from ${feedCounts}. ${this.operatorName} provides transit services in the following locations: ${locations}.`
+    }
+  },
+  methods: {
+    formatSpec (raw) {
+      if (raw === 'GTFS_RT') {
+        return 'GTFS Realtime'
+      } else {
+        return raw
+      }
     }
   }
 }
