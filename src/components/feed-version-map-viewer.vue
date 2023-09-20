@@ -1,6 +1,6 @@
 <template>
   <div class="tl-map">
-    <tl-loading v-if="$apollo.loading" />
+    <tl-loading v-if="loading" />
     <tl-msg-error v-else-if="error">
       {{ error }}
     </tl-msg-error>
@@ -34,8 +34,8 @@
 import gql from 'graphql-tag'
 
 const q = gql`
-query ($limit: Int!, $agency_ids: [Int!], $route_ids: [Int!], $feed_version_sha1: String, $include_stops: Boolean! = false) {
-  routes(limit: $limit, ids: $route_ids, where: {agency_ids: $agency_ids, feed_version_sha1: $feed_version_sha1}) {
+query ($limit: Int!, $agency_ids: [Int!], $after:Int!=0, $route_ids: [Int!], $feed_version_sha1: String, $include_stops: Boolean! = false) {
+  routes(after:$after, limit: $limit, ids: $route_ids, where: {agency_ids: $agency_ids, feed_version_sha1: $feed_version_sha1}) {
     id
     onestop_id
     feed_onestop_id
@@ -88,12 +88,21 @@ export default {
           feed_version_sha1: this.feedVersionSha1,
           route_ids: this.routeIds,
           agency_ids: this.agencyIds,
-          limit: 10000
+          limit: this.limit,
+          after: 0
         }
+      },
+      update(data) {
+        nextTick(() => {
+          this.fetchMore()
+        })
+        return data.routes
       }
     }
   },
   props: {
+    limit: { type: Number, default: 1000 },
+    maxLimit: { type: Number, default: 10000 },
     feedVersionSha1: { type: String, default: null },
     includeStops: { type: Boolean, default: false },
     overlay: { type: Boolean, default: false },
@@ -108,6 +117,7 @@ export default {
   },
   data () {
     return {
+      loading: true,
       routes: [],
       error: null,
       isComponentModalActive: false,
@@ -176,7 +186,32 @@ export default {
     }
   },
   methods: {
-    mapClick (e) {
+    fetchMore() {
+      if (this.routes.length > this.maxLimit) {
+        this.loading = false
+        return
+      }
+      if (!this.loading) {
+        return
+      }
+      const lastId = this.routes.length > 0 ? this.routes[this.routes.length - 1].id : 0
+      this.$apollo.queries.routes.fetchMore({
+        variables: {
+          after: lastId,
+          limit: this.limit
+        },
+        updateQuery: (previousResult, { fetchMoreResult }) => {
+          const cur = [...previousResult.routes, ...fetchMoreResult.routes]
+          if (fetchMoreResult.routes.length < this.limit) {
+            this.loading = false
+          }
+          return {
+            routes: cur
+          }
+        }
+      })
+    },
+    mapClick () {
       if (Object.keys(this.agencyFeatures).length > 0) {
         this.isComponentModalActive = true
       }
