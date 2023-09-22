@@ -33,7 +33,9 @@
         <tfoot v-if="associatedOperators.length > associatedOperatorsToDisplay.length">
           <tr>
             <td colspan="3">
-              <a class="button is-primary is-fullwidth" @click="showAllRows = true">List all operators</a>
+              <div style="text-align:center">
+                <a class="button is-primary" @click="showAllRows = true">List all operators</a>
+              </div>
             </td>
           </tr>
         </tfoot>
