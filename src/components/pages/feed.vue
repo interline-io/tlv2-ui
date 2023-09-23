@@ -294,12 +294,7 @@ query($onestop_id: String) {
       fetch_error
       fetched_at
     }
-    feed_versions: feed_versions(limit:100) {
-      id
-      sha1
-      fetched_at
-    }
-    most_recent_fv: feed_versions(limit:1) {
+    feed_versions(limit:100) {
       id
       sha1
       earliest_calendar_date
@@ -376,7 +371,7 @@ export default {
       return this.entity?.spec?.toUpperCase()?.replace('_', '-')
     },
     mostRecentFeedInfo () {
-      return this.entity?.most_recent_fv?.length > 0 ? this.entity.most_recent_fv[0]?.feed_infos[0] : null
+      return this.entity?.feed_versions?.length > 0 ? this.entity.feed_versions[0]?.feed_infos[0] : null
     },
     lastFetch () {
       return first(this.entity.last_fetch)
@@ -431,7 +426,7 @@ export default {
       if (fvCount >= 100) {
         description += ` Transitland has archived over 100 versions of this feed,
         which are available to query by API and to download.`
-      } else if (fvCount > 0) {
+      } else if (fvCount > 1) {
         description += ` Transitland has archived ${fvCount} versions of this feed,
         which are available to query by API and to download.`
       }
