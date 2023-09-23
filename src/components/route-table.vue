@@ -22,7 +22,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="route of entityPage" :key="route.id">
+            <tr v-for="route of entities" :key="route.id">
               <td>
                 <nuxt-link
                   :to="{ name: 'routes-onestop_id', params: { onestop_id: route.onestop_id || 'search' }, query: (linkVersion ? { feed_onestop_id: route.feed_onestop_id, feed_version_sha1: route.feed_version_sha1, entity_id: route.route_id } : {}) }"

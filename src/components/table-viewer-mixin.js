@@ -11,20 +11,13 @@ export default {
       error: null
     }
   },
-  computed: {
-    maxId() {
-      return Math.max(...this.entities.map((s) => { return s.id }))
-    },
-    entityPage() {
-      return this.entities
-    }
-  },
   methods: {
     showAll() {
-      const newLimit = 500
+      const newLimit = 1000
+      const lastId = this.entities.length > 0 ? this.entities[this.entities.length - 1].id : 0
       this.$apollo.queries.entities.fetchMore({
         variables: {
-          after: this.maxId,
+          after: lastId,
           limit: newLimit
         },
         updateQuery: (previousResult, { fetchMoreResult }) => {

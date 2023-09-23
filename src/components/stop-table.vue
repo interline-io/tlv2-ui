@@ -24,7 +24,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="stop of entityPage" :key="stop.id">
+            <tr v-for="stop of entities" :key="stop.id">
               <td>
                 <nuxt-link
                   :to="{ name: 'stops-onestop_id', params: { onestop_id: stop.onestop_id }, query: (linkVersion ? { feed_onestop_id: stop.feed_onestop_id, feed_version_sha1: stop.feed_version_sha1, entity_id: stop.stop_id } : {}) }"

@@ -73,7 +73,7 @@
     </div>
 
     <div v-if="hasMore" style="text-align:center" @click="fetchMore">
-      <a class="button is-primary" @click="showAllRows = true">Show more feed versions</a>
+      <a class="button is-primary">Show more feed versions</a>
     </div>
 
     <tl-feed-version-download-modal
@@ -158,12 +158,10 @@ export default {
   },
   methods: {
     fetchMore() {
-      console.log('fetchMore')
       if (this.entities.length > this.maxLimit) {
         return
       }
       const lastId = this.entities.length > 0 ? this.entities[this.entities.length - 1].id : 0
-      console.log('lastId', lastId)
       this.$apollo.queries.entities.fetchMore({
         variables: {
           after: lastId,
