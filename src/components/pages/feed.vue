@@ -285,23 +285,22 @@ query($onestop_id: String) {
         agency_id
         agency_name
       }
-      # TODO: it would be nice to be able to include the total number of stops, routes, and/or services hours to sort the list of associated operators
+    }    
+    last_fetch: feed_fetches(limit:1) {
+      fetch_error
+      fetched_at
     }
-    feed_versions {
+    last_successful_fetch: feed_fetches(limit:1, where:{success:true}) {
+      fetch_error
+      fetched_at
+    }
+    feed_versions(limit:100) {
       id
       sha1
       earliest_calendar_date
       latest_calendar_date
       fetched_at
       url
-      feed_version_gtfs_import {
-        id
-        success
-        in_progress
-        exception_log
-        schedule_removed
-        # created_at
-      }
       feed_infos {
         feed_publisher_name
         feed_publisher_url
@@ -312,15 +311,7 @@ query($onestop_id: String) {
         feed_end_date
         feed_contact_email
         feed_contact_url
-      }
-    }
-    last_fetch: feed_fetches(limit:1) {
-      fetch_error
-      fetched_at
-    }
-    last_successful_fetch: feed_fetches(limit:1, where:{success:true}) {
-      fetch_error
-      fetched_at
+      }      
     }
     feed_state {
       id
@@ -380,7 +371,7 @@ export default {
       return this.entity?.spec?.toUpperCase()?.replace('_', '-')
     },
     mostRecentFeedInfo () {
-      return this.entity?.feed_versions[0]?.feed_infos[0]
+      return this.entity?.feed_versions?.length > 0 ? this.entity.feed_versions[0]?.feed_infos[0] : null
     },
     lastFetch () {
       return first(this.entity.last_fetch)
@@ -432,10 +423,10 @@ export default {
       const operatorDescription = (this.entity && this.entity.associated_operators) ? ` with data for ${this.entity.name || this.operatorNames}` : ''
       const fvCount = this.entity.feed_versions.length
       let description = `This is a ${this.feedSpec} feed ${operatorDescription} with the Onestop ID of ${this.entity.onestop_id}.`
-      if (fvCount === 1000) {
-        description += ` Transitland has archived over 1,000 versions of this feed,
+      if (fvCount >= 100) {
+        description += ` Transitland has archived over 100 versions of this feed,
         which are available to query by API and to download.`
-      } else if (fvCount > 0) {
+      } else if (fvCount > 1) {
         description += ` Transitland has archived ${fvCount} versions of this feed,
         which are available to query by API and to download.`
       }

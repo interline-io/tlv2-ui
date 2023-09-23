@@ -60,7 +60,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="row of entities" :key="row.id">
+          <tr v-for="row of operatorEntities" :key="row.id">
             <td>
               <nuxt-link :to="{ name: 'operators-onestop_id', params: { onestop_id: row.onestop_id } }">
                 {{ row.name }}
@@ -85,7 +85,7 @@
         </tbody>
       </table>
     </div>
-    <tl-show-more v-if="entities.length >= limit" :limit="entities.length" @click="limit += 100" />
+    <tl-show-more v-if="entities.length >= limit" :limit="entities.length" @click="fetchMoreFn" />
     <o-loading v-model:active="loading" :full-page="false" />
   </div>
 </template>
@@ -162,7 +162,7 @@ watch(adm1Name, (v) => { emit('update:adm1Name', v) })
 watch(cityName, (v) => { emit('update:cityName', v) })
 watch(merged, (v) => { emit('update:merged', v) })
 
-const { result, loading, error } = useQuery(
+const { result, loading, error, fetchMore } = useQuery(
   query,
   () => ({
     search: nullString(search.value),
@@ -181,7 +181,9 @@ const clearQuery = function () {
   emit('clear')
 }
 
-const entities = computed(() => {
+const entities = computed(() => result.value?.entities ?? [])
+
+const operatorEntities = computed(() => {
   return (result.value?.entities ?? []).map((s) => {
     const entity = {
       name: s.name,
@@ -205,4 +207,25 @@ const entities = computed(() => {
     return entity
   })
 })
+
+function fetchMoreFn() {
+  const lastId = entities.value.length > 0 ? entities.value[entities.value.length - 1].id : 0
+  fetchMore({
+    variables: {
+      after: lastId,
+      limit: 100
+    },
+    updateQuery: (previousResult, { fetchMoreResult }) => {
+      if (!fetchMoreResult) { return previousResult }
+      return {
+        ...previousResult,
+        entities: [
+          ...previousResult.entities,
+          ...fetchMoreResult.entities
+        ]
+      }
+    }
+  })
+}
+
 </script>

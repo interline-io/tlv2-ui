@@ -15,7 +15,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="agency of entityPage" :key="agency.id">
+            <tr v-for="agency of entities" :key="agency.id">
               <td>
                 {{ agency.agency_id }}
               </td>

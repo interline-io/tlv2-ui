@@ -129,7 +129,11 @@
         </tbody>
       </table>
     </div>
-    <tl-show-more v-if="entities.length >= limit" :limit="entities.length" @click="limit += 20" />
+    <div style="text-align:center">
+      <a class="button is-primary" @click="fetchMoreFn">
+        Show more feeds
+      </a>
+    </div>
     <o-loading v-model:active="loading" :full-page="false" />
   </div>
 </template>
@@ -225,7 +229,7 @@ watch(feedSpecs, (v) => { emit('update:feedSpecs', v) })
 watch(importStatus, (v) => { emit('update:importStatus', v) })
 watch(tagUnstableUrl, (v) => { emit('update:tagUnstableUrl', v) })
 
-const { result, loading, error } = useQuery(
+const { result, loading, error, fetchMore } = useQuery(
   query,
   () => ({
     search: nullString(search.value),
@@ -237,6 +241,26 @@ const { result, loading, error } = useQuery(
   }))
 
 const entities = computed(() => result.value?.entities ?? [])
+
+function fetchMoreFn() {
+  const lastId = entities.value.length > 0 ? entities.value[entities.value.length - 1].id : 0
+  fetchMore({
+    variables: {
+      after: lastId,
+      limit: 100
+    },
+    updateQuery: (previousResult, { fetchMoreResult }) => {
+      if (!fetchMoreResult) { return previousResult }
+      return {
+        ...previousResult,
+        entities: [
+          ...previousResult.entities,
+          ...fetchMoreResult.entities
+        ]
+      }
+    }
+  })
+}
 
 </script>
 
