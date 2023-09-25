@@ -1,6 +1,6 @@
 <template>
   <div style="text-align:center">
-    <a class="button is-primary" @click="$emit('showMore')">Show more results</a>
+    <a class="button is-primary is-small is-fullwidth" @click="$emit('showMore')">Show more results</a>
   </div>
 </template>
 
