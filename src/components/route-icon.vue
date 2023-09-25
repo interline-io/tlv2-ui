@@ -1,7 +1,7 @@
 <template>
   <div class="tl-route-icon">
     <span class="tl-route-icon-icon">
-      <o-icon :icon="routeTypeIcon" />
+      <o-icon :icon="routeTypeIcon" :title="routeTypeIcon" />
     </span>
     <span v-if="routeShortName" class="tl-route-icon-short-name">{{ routeShortName }}</span>
     <span v-if="nameIcon" class="tl-route-name-icon">
