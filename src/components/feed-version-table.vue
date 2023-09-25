@@ -4,24 +4,20 @@
       <table class="table is-striped is-fullwidth">
         <thead>
           <tr>
-            <th>Fetched</th>
-            <th>SHA1</th>
-            <th>Earliest date</th>
-            <th>Latest date</th>
-            <th>Imported</th>
-            <th>Active</th>
-            <th>Download</th>
+            <th>Feed version fetched</th>
+            <th>SHA1 hash</th>
+            <th>Earliest service date</th>
+            <th>Latest service date</th>
+            <th>Imported into API?</th>
+            <th>Active in API?</th>
+            <th>Links to view or download</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="fv of entities" :key="fv.id">
             <td>{{ $filters.formatDate(fv.fetched_at) }} ({{ $filters.fromNow(fv.fetched_at) }})</td>
             <td>
-              <nuxt-link
-                :to="{ name: 'feeds-feed-versions-version', params: { feed: feed.onestop_id, version: fv.sha1 } }"
-              >
-                {{ fv.sha1.substr(0, 6) }}…
-              </nuxt-link>
+              <tl-safelink :text="fv.sha1" max-width="100px" />
             </td>
             <td> {{ fv.earliest_calendar_date.substr(0, 10) }}</td>
             <td> {{ fv.latest_calendar_date.substr(0, 10) }}</td>
@@ -54,9 +50,19 @@
                 icon="check"
               />
             </td>
-            <td>
+            <td class="has-text-right">
               <template v-if="feed.license.redistribution_allowed !== 'no'">
-                <a @click="showDownloadInstructions(fv.sha1)">
+                <nuxt-link
+                  :to="{ name: 'feeds-feed-versions-version', params: { feed: feed.onestop_id, version: fv.sha1, hash: '#files' } }"
+                  class="button is-primary is-small"
+                >
+                  Files
+                </nuxt-link> <nuxt-link
+                  :to="{ name: 'feeds-feed-versions-version', params: { feed: feed.onestop_id, version: fv.sha1, hash: '#service' } }"
+                  class="button is-primary is-small"
+                >
+                  Service levels
+                </nuxt-link> <a class="button is-small" @click="showDownloadInstructions(fv.sha1)">
                   <o-icon
                     v-if="fv.sha1 === latestFeedVersionSha1"
                     icon="download"
