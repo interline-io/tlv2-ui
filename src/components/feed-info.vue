@@ -1,38 +1,44 @@
 <template>
-  <div>
-    <ul>
-      <li v-if="feedPublisherName">
-        Publisher:
+  <dl class="content">
+    <template v-if="feedPublisherName">
+      <dt>Publisher</dt>
+      <dd>
         {{ feedPublisherName }}
-        <template v-if="feedPublisherUrl">
+        <div v-if="feedPublisherUrl">
           <tl-safelink :url="feedPublisherUrl" />
-        </template>
-      </li>
-      <li v-if="feedContactEmail || feedContactUrl">
-        Contact:
-        <template v-if="feedContactEmail">
+        </div>
+      </dd>
+    </template>
+    <template v-if="feedContactEmail || feedContactUrl">
+      <dt>Contact</dt>
+      <dd>
+        <div v-if="feedContactEmail" class="pb-1">
           <tl-safelink :url="feedContactEmail" />
-        </template>
-        <template v-if="feedContactUrl">
+        </div>
+        <div v-if="feedContactUrl" class="pt-1">
           <tl-safelink :url="feedContactUrl" />
-        </template>
-      </li>
-      <li v-if="feedLang">
-        Language: {{ feedLang }}
-      </li>
-      <template v-if="showDates">
-        <li v-if="feedVersion">
-          Version name: {{ feedVersion }}
-        </li>
-        <li v-if="feedStartDate">
-          Start date: {{ $filters.formatDate(feedStartDate) }}
-        </li>
-        <li v-if="feedEndDate">
-          End date: {{ $filters.formatDate(feedEndDate) }}
-        </li>
+        </div>
+      </dd>
+    </template>
+    <template v-if="feedLang">
+      <dt>Language</dt>
+      <dd>{{ feedLang }}</dd>
+    </template>
+    <template v-if="showDates">
+      <template v-if="feedVersion">
+        <dt>Version name</dt>
+        <dd>{{ feedVersion }}</dd>
       </template>
-    </ul>
-  </div>
+      <template v-if="feedStartDate">
+        <dt>Start date</dt>
+        <dd>{{ $filters.formatDate(feedStartDate) }}</dd>
+      </template>
+      <template v-if="feedEndDate">
+        <dt>End date</dt>
+        <dd>{{ $filters.formatDate(feedEndDate) }}</dd>
+      </template>
+    </template>
+  </dl>
 </template>
 
 <script>
