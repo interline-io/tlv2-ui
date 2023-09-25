@@ -73,7 +73,7 @@
     </div>
 
     <div v-if="hasMore" style="text-align:center" @click="fetchMore">
-      <a class="button is-primary">Show more feed versions</a>
+      <a class="button is-primary is-small is-fullwidth">Show more feed versions</a>
     </div>
 
     <tl-feed-version-download-modal

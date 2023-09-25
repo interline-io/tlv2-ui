@@ -34,7 +34,7 @@
           <tr>
             <td colspan="3">
               <div style="text-align:center">
-                <a class="button is-primary" @click="showAllRows = true">List all operators</a>
+                <a class="button is-primary is-small is-fullwidth" @click="showAllRows = true">Show all operators</a>
               </div>
             </td>
           </tr>

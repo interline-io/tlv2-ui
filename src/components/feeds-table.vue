@@ -130,7 +130,7 @@
       </table>
     </div>
     <div style="text-align:center">
-      <a class="button is-primary" @click="fetchMoreFn">
+      <a class="button is-primary is-small is-fullwidth" @click="fetchMoreFn">
         Show more feeds
       </a>
     </div>
