@@ -91,5 +91,12 @@ export async function checkLogin() {
     // console.log('set cookie jwt to:', token)
   }
   const user = await auth.getUser()
-  useState('user', () => { return { id: user?.sub } })
+  console.log('user:', user)
+  useState('user', () => {
+    return {
+      id: user?.email,
+      name: user?.name,
+      email: user?.email
+    }
+  })
 }
