@@ -5,9 +5,8 @@ import { createApolloProvider } from '@vue/apollo-option'
 import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client/core/index.js'
 import { getJwt } from '~/src/plugins/auth0'
 
-export default defineNuxtPlugin(async (nuxtApp) => {
+export function getApolloClient(token: string) {
   const config = useRuntimeConfig()
-  const token = await getJwt()
   // console.log('apollo.ts token:', token)
   const headers = {
     referer: config.public.graphqlServerReferer,
@@ -23,6 +22,12 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     link: httpLink,
     cache
   })
+  return apolloClient
+}
+
+export default defineNuxtPlugin(async (nuxtApp) => {
+  const token = await getJwt()
+  const apolloClient = getApolloClient(token)
 
   // options api
   const apolloProvider = createApolloProvider({
@@ -40,9 +45,9 @@ export default defineNuxtPlugin(async (nuxtApp) => {
   // handle cache
   const cacheKey = '_apollo:transitland'
   nuxtApp.hook('app:rendered', () => {
-    nuxtApp.payload.data[cacheKey] = cache.extract()
+    nuxtApp.payload.data[cacheKey] = apolloClient.cache.extract()
   })
   if (process.client && nuxtApp.payload.data[cacheKey]) {
-    cache.restore(destr(JSON.stringify(nuxtApp.payload.data[cacheKey])))
+    apolloClient.cache.restore(destr(JSON.stringify(nuxtApp.payload.data[cacheKey])))
   }
 })

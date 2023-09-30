@@ -1,4 +1,6 @@
 import { Auth0Client } from '@auth0/auth0-spa-js'
+import gql from 'graphql-tag'
+import { getApolloClient } from '~/src/plugins/apollo'
 
 let init = false
 let auth: Auth0Client
@@ -73,6 +75,7 @@ export async function logout() {
 }
 
 export async function checkLogin() {
+  console.log('checkLogin')
   const a = getAuth0Client()
   if (!a) {
     return
@@ -90,13 +93,24 @@ export async function checkLogin() {
     cookie.value = token
     // console.log('set cookie jwt to:', token)
   }
+
+  const apolloClient = getApolloClient(token)
+  const meData = await apolloClient.query({
+    query: gql`query{me{id name email external_data}}`
+  }).then((data) => {
+    console.log('me graphql response:', data.data.me)
+    return data.data.me
+  })
+  console.log('externalData:', meData.external_data)
+
   const user = await auth.getUser()
   console.log('user:', user)
   useState('user', () => {
     return {
       id: user?.email,
       name: user?.name,
-      email: user?.email
+      email: user?.email,
+      externalData: meData?.external_data
     }
   })
 }
