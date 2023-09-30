@@ -14,7 +14,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="fv of feed.feed_versions.slice((page - 1) * perPage, page * perPage)" :key="fv.id">
+          <tr v-for="fv of entities" :key="fv.id">
             <td>{{ $filters.formatDate(fv.fetched_at) }} ({{ $filters.fromNow(fv.fetched_at) }})</td>
             <td>
               <nuxt-link
@@ -71,16 +71,10 @@
         </tbody>
       </table>
     </div>
-    <o-pagination
-      v-model:current="page"
-      :total="feed.feed_versions.length"
-      :simple="true"
-      :per-page="perPage"
-      aria-next-label="Next page"
-      aria-previous-label="Previous page"
-      aria-page-label="Page"
-      aria-current-label="Current page"
-    />
+
+    <div v-if="hasMore" style="text-align:center" @click="fetchMore">
+      <a class="button is-primary is-small is-fullwidth">Show more feed versions</a>
+    </div>
 
     <tl-feed-version-download-modal
       v-model="displayDownloadInstructions"
@@ -91,21 +85,71 @@
 </template>
 
 <script>
+import gql from 'graphql-tag'
+
+const fvQuery = gql`
+query ($limit:Int, $onestop_id: String, $after:Int) {
+  entities: feed_versions(limit:$limit, after:$after, where: {feed_onestop_id: $onestop_id}) {
+    id
+    sha1
+    earliest_calendar_date
+    latest_calendar_date
+    fetched_at
+    url
+    feed_version_gtfs_import {
+      id
+      success
+      in_progress
+      exception_log
+      schedule_removed
+    }
+    feed_infos {
+      feed_publisher_name
+      feed_publisher_url
+      feed_lang
+      default_lang
+      feed_version
+      feed_start_date
+      feed_end_date
+      feed_contact_email
+      feed_contact_url
+    }
+  }
+}
+`
+
 export default {
   props: {
     feed: { type: Object, default () { return {} } }
   },
+  apollo: {
+    entities: {
+      client: 'transitland',
+      query: fvQuery,
+      variables () {
+        return {
+          after: 0,
+          onestop_id: this.feed.onestop_id,
+          limit: this.limit
+        }
+      }
+    }
+  },
   data() {
     return {
-      page: 1,
-      perPage: 20,
+      entities: [],
+      limit: 100,
+      maxLimit: 10000,
       displayDownloadInstructions: false,
       displayDownloadSha1: ''
     }
   },
   computed: {
+    hasMore() {
+      return (this.entities.length % this.limit) === 0
+    },
     latestFeedVersionSha1 () {
-      const s = this.feed?.feed_versions.slice(0).sort((a, b) => { return a.fetched_at - b.fetched_at })
+      const s = this.entities.slice(0).sort((a, b) => { return a.fetched_at - b.fetched_at })
       if (s.length > 0) {
         return s[0].sha1
       }
@@ -113,6 +157,24 @@ export default {
     }
   },
   methods: {
+    fetchMore() {
+      if (this.entities.length > this.maxLimit) {
+        return
+      }
+      const lastId = this.entities.length > 0 ? this.entities[this.entities.length - 1].id : 0
+      this.$apollo.queries.entities.fetchMore({
+        variables: {
+          after: lastId,
+          limit: this.limit
+        },
+        updateQuery: (previousResult, { fetchMoreResult }) => {
+          const cur = [...previousResult.entities, ...fetchMoreResult.entities]
+          return {
+            entities: cur
+          }
+        }
+      })
+    },
     showDownloadInstructions (sha1) {
       this.displayDownloadSha1 = sha1
       this.displayDownloadInstructions = true

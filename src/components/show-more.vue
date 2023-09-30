@@ -1,6 +1,6 @@
 <template>
-  <div class="pt-6 pb-6">
-    <a class="button is-primary is-outlined is-fullwidth" @click="$emit('showMore')">First {{ limit.toLocaleString() }} results shown. Click to load more.</a>
+  <div style="text-align:center">
+    <a class="button is-primary is-small is-fullwidth" @click="$emit('showMore')">Show more results</a>
   </div>
 </template>
 
@@ -8,6 +8,7 @@
 export default {
   props: {
     limit: { type: Number, default: 0 }
-  }
+  },
+  emits: ['showMore']
 }
 </script>

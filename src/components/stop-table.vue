@@ -4,7 +4,10 @@
       {{ error }}
     </tl-msg-error>
     <div v-else>
-      <tl-search-bar v-model="search" placeholder="Filter Stops" />
+      <o-field expanded grouped>
+        <tl-search-bar v-model="search" expanded placeholder="Filter Stops" />
+        <tl-route-type-select v-model="selectedRouteType" />
+      </o-field>
       <o-loading v-model:active="$apollo.loading" :full-page="false" />
       <div class="table-container">
         <table class="table is-striped is-fullwidth">
@@ -21,7 +24,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="stop of entityPage" :key="stop.id">
+            <tr v-for="stop of entities" :key="stop.id">
               <td>
                 <nuxt-link
                   :to="{ name: 'stops-onestop_id', params: { onestop_id: stop.onestop_id }, query: (linkVersion ? { feed_onestop_id: stop.feed_onestop_id, feed_version_sha1: stop.feed_version_sha1, entity_id: stop.stop_id } : {}) }"
@@ -50,8 +53,8 @@ import gql from 'graphql-tag'
 import TableViewerMixin from './table-viewer-mixin'
 
 const q = gql`
-query ($feed_version_sha1: String, $agency_ids: [Int!], $limit: Int, $after: Int, $search: String) {
-  entities: stops(after: $after, limit: $limit, where: {serviced: true, agency_ids: $agency_ids, feed_version_sha1: $feed_version_sha1, search: $search}) {
+query ($feed_version_sha1: String, $agency_ids: [Int!], $limit: Int, $after: Int, $search: String, $route_type:Int) {
+  entities: stops(after: $after, limit: $limit, where: {serviced: true, agency_ids: $agency_ids, feed_version_sha1: $feed_version_sha1, search: $search, served_by_route_type:$route_type}) {
     id
     feed_onestop_id
     feed_version_sha1
@@ -87,7 +90,8 @@ export default {
   data () {
     return {
       sortField: 'stop_id',
-      sortOrder: 'asc'
+      sortOrder: 'asc',
+      selectedRouteType: null
     }
   },
   apollo: {
@@ -99,7 +103,8 @@ export default {
           search: this.search,
           limit: this.limit,
           feed_version_sha1: this.feedVersionSha1,
-          agency_ids: this.agencyIds
+          agency_ids: this.agencyIds,
+          route_type: this.selectedRouteType
         }
       },
       error (e) { this.error = e }
