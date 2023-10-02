@@ -1,4 +1,4 @@
-import { checkLogin, handleRedirectCallback } from '~/src/plugins/auth0'
+import { checkLogin, handleRedirectCallback } from '~/src/plugins/auth'
 
 export default defineNuxtRouteMiddleware(async (to, _) => {
   const query = to?.query

@@ -10,7 +10,7 @@ export default defineNuxtModule({
     } else {
       nuxt.options.css.push(resolve('../src/assets/bulma.scss'))
     }
-    addPlugin(resolve('../src/plugins/auth0.ts'))
+    addPlugin(resolve('../src/plugins/auth.ts'))
     addPlugin(resolve('../src/plugins/apollo.ts'))
     addPlugin(resolve('../src/plugins/oruga.ts'))
     addPlugin(resolve('../src/plugins/filters.ts'))
