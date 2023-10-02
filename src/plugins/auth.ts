@@ -75,44 +75,44 @@ export async function logout() {
 }
 
 export async function checkLogin() {
-  // console.log('checkLogin')
-  // const a = getAuth0Client()
-  // if (!a) {
-  //   return
-  // }
-  // const isAuthenticated = await auth.isAuthenticated()
-  // if (!isAuthenticated) {
-  //   return
-  // }
-  // const token = await auth.getTokenSilently()
-  // const cookie = useCookie('jwt', {
-  //   // httpOnly: true
-  //   // sameSite: true
-  // })
-  // if (cookie.value !== token) {
-  //   cookie.value = token
-  //   // console.log('set cookie jwt to:', token)
-  // }
+  console.log('checkLogin')
+  const a = getAuth0Client()
+  if (!a) {
+    return
+  }
+  const isAuthenticated = await auth.isAuthenticated()
+  if (!isAuthenticated) {
+    return
+  }
+  const token = await auth.getTokenSilently()
+  const cookie = useCookie('jwt', {
+    // httpOnly: true
+    // sameSite: true
+  })
+  if (cookie.value !== token) {
+    cookie.value = token
+    // console.log('set cookie jwt to:', token)
+  }
 
-  // const apolloClient = getApolloClient(token)
-  // const meData = await apolloClient.query({
-  //   query: gql`query{me{id name email external_data}}`
-  // }).then((data) => {
-  //   console.log('me graphql response:', data.data.me)
-  //   return data.data.me
-  // })
-  // console.log('externalData:', meData.external_data)
+  const apolloClient = getApolloClient(token)
+  const meData = await apolloClient.query({
+    query: gql`query{me{id name email external_data}}`
+  }).then((data) => {
+    console.log('me graphql response:', data.data.me)
+    return data.data.me
+  })
+  console.log('externalData:', meData.external_data)
 
-  // const user = await auth.getUser()
-  // console.log('user:', user)
-  // useState('user', () => {
-  //   return {
-  //     id: user?.email,
-  //     name: user?.name,
-  //     email: user?.email,
-  //     externalData: meData?.external_data
-  //   }
-  // })
+  const user = await auth.getUser()
+  console.log('user:', user)
+  useState('user', () => {
+    return {
+      id: user?.email,
+      name: user?.name,
+      email: user?.email,
+      externalData: meData?.external_data
+    }
+  })
 }
 
 export default defineNuxtPlugin(() => {
