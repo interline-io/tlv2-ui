@@ -30,6 +30,10 @@
         </nuxt-link>
       </div>
 
+      <div class="navbar-item">
+        <tl-user-icon />
+      </div>
+
       <div class="navbar-end">
         <div class="navbar-item">
           <tl-nav-search-bar
