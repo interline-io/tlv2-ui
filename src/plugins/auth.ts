@@ -1,77 +1,77 @@
-import { defineNuxtPlugin, addRouteMiddleware } from '#app'
-// import { Auth0Client } from '@auth0/auth0-spa-js'
+import { defineNuxtPlugin, addRouteMiddleware, useCookie } from '#app'
+import { Auth0Client } from '@auth0/auth0-spa-js'
 // import gql from 'graphql-tag'
 // import { getApolloClient } from './apollo'
 
-// let init = false
-// let auth: Auth0Client
+let init = false
+let auth: Auth0Client
 
 export function getAuth0Client() {
-  // if (process.server) {
-  //   return
-  // }
-  // if (init) {
-  //   return auth
-  // }
-  // init = true
-  // const config = useRuntimeConfig()
-  // auth = new Auth0Client({
-  //   domain: config.public.auth0Domain,
-  //   clientId: config.public.auth0ClientId,
-  //   cacheLocation: 'localstorage',
-  //   authorizationParams: {
-  //     redirect_uri: config.public.auth0RedirectUri,
-  //     audience: config.public.auth0Audience,
-  //     scope: config.public.auth0Scope
-  //   }
-  // })
-  // return auth
+  if (process.server) {
+    return
+  }
+  if (init) {
+    return auth
+  }
+  init = true
+  const config = useRuntimeConfig()
+  auth = new Auth0Client({
+    domain: config.public.auth0Domain,
+    clientId: config.public.auth0ClientId,
+    cacheLocation: 'localstorage',
+    authorizationParams: {
+      redirect_uri: config.public.auth0RedirectUri,
+      audience: config.public.auth0Audience,
+      scope: config.public.auth0Scope
+    }
+  })
+  return auth
 }
 
 export async function getJwt() {
-  // const cookie = useCookie('jwt')
-  // if (cookie && cookie.value) {
-  //   return cookie.value
-  // }
-  // const a = getAuth0Client()
-  // if (!a) {
-  //   return ''
-  // }
-  // const isAuthenticated = await auth.isAuthenticated()
-  // // console.log('getJwt isAuthenticated:', isAuthenticated)
-  // if (!isAuthenticated) {
-  //   return ''
-  // }
-  // const token = await auth.getTokenSilently()
-  // // console.log('getJwt token:', token)
-  // return token
+  const cookie = useCookie('jwt')
+  if (cookie && cookie.value) {
+    return cookie.value
+  }
+  const a = getAuth0Client()
+  if (!a) {
+    return ''
+  }
+  const isAuthenticated = await auth.isAuthenticated()
+  // console.log('getJwt isAuthenticated:', isAuthenticated)
+  if (!isAuthenticated) {
+    return ''
+  }
+  const token = await auth.getTokenSilently()
+  // console.log('getJwt token:', token)
+  return token
 }
 
 export async function handleRedirectCallback() {
-  // const a = getAuth0Client()
-  // if (!a) {
-  //   return
-  // }
-  // console.log('auth handleRedirectCallback()')
-  // await a.handleRedirectCallback()
+  const a = getAuth0Client()
+  if (!a) {
+    return
+  }
+  console.log('auth handleRedirectCallback()')
+  await a.handleRedirectCallback()
 }
 
 export async function login() {
-  // const a = getAuth0Client()
-  // if (!a) {
-  //   return
-  // }
-  // console.log('auth loginWithRedirect()')
-  // await a.loginWithRedirect()
+  const a = getAuth0Client()
+  if (!a) {
+    return
+  }
+  console.log('auth loginWithRedirect()')
+  await a.loginWithRedirect()
 }
 
 export async function logout() {
-  // const a = getAuth0Client()
-  // if (!a || !a.isAuthenticated) {
-  //   return
-  // }
-  // console.log('auth logout()')
-  // await a.logout()
+  const a = getAuth0Client()
+  if (!a || !a.isAuthenticated) {
+    return
+  }
+  console.log('auth logout()')
+  await a.logout()
 }
 
 export async function checkLogin() {
