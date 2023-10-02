@@ -5,6 +5,8 @@ import { getApolloClient } from './apollo'
 let init = false
 let auth: Auth0Client
 
+export default function () {}
+
 export function getAuth0Client() {
   if (process.server) {
     return
