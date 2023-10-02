@@ -1,4 +1,4 @@
-import { defineNuxtPlugin } from '#app'
+import { defineNuxtPlugin, addRouteMiddleware } from '#app'
 // import { Auth0Client } from '@auth0/auth0-spa-js'
 // import gql from 'graphql-tag'
 // import { getApolloClient } from './apollo'
