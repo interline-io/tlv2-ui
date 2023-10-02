@@ -8,13 +8,11 @@
     </div>
   </template>
   <template v-else>
-    <div class="navbar-item">
-      <em>Unlock more functionality with a free account:</em>
-    </div>
+    <div class="navbar-item" />
     <div class="navbar-item">
       <div class="field has-addons">
         <span class="button is-primary" @click="login">Sign in</span>
-        <a href="https://app.interline.io/products/tlv2_api/orders/new" class="button is-secondary">Sign up</a>
+        <!-- NOTE: "sign up" button can go here if it's relevant to a given deployment -->
       </div>
     </div>
   </template>
