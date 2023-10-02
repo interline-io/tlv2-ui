@@ -1,9 +1,9 @@
 import destr from 'destr'
-import { defineNuxtPlugin, useRuntimeConfig } from '#app'
 import { ApolloClients } from '@vue/apollo-composable'
 import { createApolloProvider } from '@vue/apollo-option'
 import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client/core/index.js'
-import { getJwt } from './auth0'
+import { defineNuxtPlugin, useRuntimeConfig } from '#app'
+import { getJwt } from './auth'
 
 export function getApolloClient(token: string) {
   const config = useRuntimeConfig()
