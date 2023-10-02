@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { login, logout } from '~/src/plugins/auth0'
+import { login, logout } from '~/src/plugins/auth'
 export default {
   data() {
     const user = useState('user')

@@ -5,8 +5,6 @@ import { getApolloClient } from './apollo'
 let init = false
 let auth: Auth0Client
 
-export default function () {}
-
 export function getAuth0Client() {
   if (process.server) {
     return
@@ -77,7 +75,6 @@ export async function logout() {
 }
 
 export async function checkLogin() {
-  console.log('checkLogin')
   const a = getAuth0Client()
   if (!a) {
     return
@@ -116,3 +113,13 @@ export async function checkLogin() {
     }
   })
 }
+
+export default defineNuxtPlugin(() => {
+  addRouteMiddleware('global-auth', async (to, _) => {
+    const query = to?.query
+    if (query && query.code && query.state) {
+      await handleRedirectCallback()
+    }
+    await checkLogin()
+  }, { global: true })
+})
