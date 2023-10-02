@@ -75,6 +75,7 @@ export async function logout() {
 }
 
 export async function checkLogin() {
+  console.log('checkLogin')
   const a = getAuth0Client()
   if (!a) {
     return

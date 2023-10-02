@@ -1,5 +1,5 @@
 import { formatDistanceToNow, parseISO, format } from 'date-fns'
-import { defineNuxtPlugin } from '#imports'
+import { defineNuxtPlugin } from '#app'
 
 function parseHMS(value) {
   const a = (value || '').split(':').map((s) => {
