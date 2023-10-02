@@ -1,9 +1,11 @@
 import { Auth0Client } from '@auth0/auth0-spa-js'
 import gql from 'graphql-tag'
-import { getApolloClient } from '~/src/plugins/apollo'
+import { getApolloClient } from './apollo'
 
 let init = false
 let auth: Auth0Client
+
+export default function () {}
 
 export function getAuth0Client() {
   if (process.server) {

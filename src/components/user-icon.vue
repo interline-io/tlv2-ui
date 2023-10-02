@@ -1,7 +1,7 @@
 <template>
   <template v-if="user && user.id">
     <div class="navbar-item">
-      <em>You're browsing as <strong>{{ user.name }}</strong></em> <!-- TODO: replace with user's name and/or email -->
+      <em>You're browsing as <strong>{{ user.name }}</strong></em>
     </div>
     <div class="navbar-item">
       <span class="button is-primary" @click="logout">Sign out</span>
