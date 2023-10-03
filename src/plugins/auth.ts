@@ -1,3 +1,4 @@
+import { defineNuxtPlugin, addRouteMiddleware, useCookie, useState, useRuntimeConfig } from '#app'
 import { Auth0Client } from '@auth0/auth0-spa-js'
 import gql from 'graphql-tag'
 import { getApolloClient } from './apollo'
@@ -30,7 +31,6 @@ export function getAuth0Client() {
 export async function getJwt() {
   const cookie = useCookie('jwt')
   if (cookie && cookie.value) {
-    // console.log('getJwt cookie:', cookie.value)
     return cookie.value
   }
   const a = getAuth0Client()
