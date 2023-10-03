@@ -1,8 +1,8 @@
-import { defineNuxtPlugin } from "#app";
 import { formatDistanceToNow, parseISO, format } from 'date-fns'
+import { defineNuxtPlugin } from '#app'
 
 function parseHMS(value) {
-  const a = (value || '').split(':').map(s => {
+  const a = (value || '').split(':').map((s) => {
     return parseInt(s)
   })
   if (a.length !== 3) {
@@ -54,7 +54,7 @@ function formatDuration(seconds) {
   return '-'
 }
 
-export default defineNuxtPlugin(nuxtApp => {
+export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.config.globalProperties.$filters = {
     formatHeadway(hw, tod) {
       if (!hw) {
@@ -138,7 +138,7 @@ export default defineNuxtPlugin(nuxtApp => {
     capitalize(value) {
       return value
         .split(' ')
-        .map(w => {
+        .map((w) => {
           return (
             w.substr(0, 1).toUpperCase() +
             w.substr(1, w.length - 1).toLowerCase()

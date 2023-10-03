@@ -1,5 +1,4 @@
 import destr from 'destr'
-import { defineNuxtPlugin, useRuntimeConfig } from '#app'
 import { ApolloClients } from '@vue/apollo-composable'
 import { createApolloProvider } from '@vue/apollo-option'
 import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client/core/index.js'
