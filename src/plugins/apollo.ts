@@ -3,11 +3,10 @@ import { ApolloClients } from '@vue/apollo-composable'
 import { createApolloProvider } from '@vue/apollo-option'
 import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client/core/index.js'
 import { defineNuxtPlugin, useRuntimeConfig } from '#app'
-import { getJwt } from './auth'
+import { useJwt } from './auth'
 
 export function getApolloClient(token: string) {
   const config = useRuntimeConfig()
-  // console.log('apollo.ts token:', token)
   const headers = {
     referer: config.public.graphqlServerReferer,
     apikey: config.public.graphqlApikey,
@@ -25,8 +24,8 @@ export function getApolloClient(token: string) {
   return apolloClient
 }
 
-export default defineNuxtPlugin(async (nuxtApp) => {
-  const token = await getJwt()
+export default defineNuxtPlugin((nuxtApp) => {
+  const token = useJwt()
   const apolloClient = getApolloClient(token)
 
   // options api
