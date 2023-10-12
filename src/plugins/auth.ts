@@ -1,4 +1,4 @@
-import { defineNuxtPlugin, addRouteMiddleware, useCookie, useRuntimeConfig } from '#app'
+import { defineNuxtPlugin, addRouteMiddleware, useCookie, useRuntimeConfig, navigateTo } from '#app'
 import { useLocalStorage } from '@vueuse/core'
 import { Auth0Client } from '@auth0/auth0-spa-js'
 import gql from 'graphql-tag'
