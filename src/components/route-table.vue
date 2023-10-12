@@ -5,7 +5,7 @@
     </tl-msg-error>
     <div v-else>
       <o-field expanded grouped>
-        <tl-search-bar v-model="search" placeholder="Filter Routes" />
+        <tl-search-bar v-model="search" placeholder="Filter routes..." />
         <tl-route-type-select v-model="selectedRouteType" />
       </o-field>
       <o-loading v-model:active="$apollo.loading" :full-page="false" />
@@ -18,7 +18,7 @@
               </th>
               <th>Onestop ID</th>
               <th>ID in source feed</th>
-              <th>Vehicle Type</th>
+              <th>Vehicle type</th>
               <th v-if="showAgency">
                 Agency
               </th>

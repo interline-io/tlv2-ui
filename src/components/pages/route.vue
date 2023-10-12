@@ -187,30 +187,38 @@
             </o-tab-item>
 
             <!-- Data sources -->
-            <o-tab-item id="sources" label="Sources">
+            <o-tab-item id="sources" label="Source feed(s)">
               <div class="table-container">
                 <table class="table is-striped is-fullwidth">
                   <thead>
                     <tr>
-                      <th>Feed</th>
-                      <th>Version</th>
+                      <th>Source feed Onestop ID</th>
+                      <th>Feed version hash</th>
                       <th>Route ID</th>
+                      <th>Links to view</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-for="row of entities" :key="row.id">
+                      <td>
+                        <tl-safelink :text="row.feed_onestop_id" />
+                      </td>
+                      <td>
+                        <tl-safelink :text="row.feed_version_sha1" max-width="100px" />
+                      </td>
+                      <td>
+                        <tl-safelink :text="$filters.shortenName(row.route_id)" />
+                      </td>
                       <td>
                         <nuxt-link
                           :to="{
                             name: 'feeds-feed',
                             params: { feed: row.feed_onestop_id },
                           }"
+                          class="button is-primary is-small"
                         >
-                          {{ $filters.shortenName(row.feed_onestop_id) }}
-                        </nuxt-link>
-                      </td>
-                      <td>
-                        <nuxt-link
+                          Feed
+                        </nuxt-link> <nuxt-link
                           :to="{
                             name: 'feeds-feed-versions-version',
                             params: {
@@ -218,12 +226,10 @@
                               version: row.feed_version_sha1,
                             },
                           }"
+                          class="button is-primary is-small"
                         >
-                          {{ $filters.shortenName(row.feed_version_sha1, 8) }}
-                        </nuxt-link>
-                      </td>
-                      <td>
-                        <nuxt-link
+                          Feed version
+                        </nuxt-link> <nuxt-link
                           :to="{
                             name: 'routes-onestop_id',
                             params: { onestop_id: row.onestop_id },
@@ -233,8 +239,9 @@
                               route_id: row.route_id,
                             },
                           }"
+                          class="button is-primary is-small"
                         >
-                          {{ $filters.shortenName(row.route_id) }}
+                          Route
                         </nuxt-link>
                       </td>
                     </tr>

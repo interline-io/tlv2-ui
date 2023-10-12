@@ -1,5 +1,5 @@
 <template>
-  <o-select v-model="modelValue" placeholder="Route type">
+  <o-select v-model="modelValue" placeholder="Filter by route type">
     <option :value="null">
       All
     </option>
