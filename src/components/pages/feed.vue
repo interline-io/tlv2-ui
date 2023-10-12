@@ -218,23 +218,8 @@
           Archived Feed Versions
         </h4>
 
-        <o-tabs v-model="activeTab" class="tl-tabs" type="boxed" :animated="false" @update:modelValue="setTab">
-          <o-tab-item id="versions" label="Versions">
-            <tl-feed-version-table :feed="entity" />
-
-            <slot name="add-feed-version" :entity="entity" />
-          </o-tab-item>
-
-          <o-tab-item id="service" label="Service Levels">
-            <div v-if="activeTab === 2">
-              <tl-multi-service-levels
-                :max-weeks="52"
-                :week-agg="true"
-                :fvids="entity.feed_versions.map((s) => { return s.id }).slice(0, 20)"
-              />
-            </div>
-          </o-tab-item>
-        </o-tabs>
+        <tl-feed-version-table :feed="entity" />
+        <slot name="add-feed-version" :entity="entity" />
       </div>
     </div>
   </div>
