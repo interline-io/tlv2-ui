@@ -2,6 +2,16 @@ import { fileURLToPath } from 'node:url'
 import { defineNuxtModule, addPlugin, createResolver } from '@nuxt/kit'
 
 export default defineNuxtModule({
+  meta: {
+    name: 'tlv2-ui',
+    configKey: 'tlv2-ui',
+    compatibility: {
+      nuxt: '^3.4.0'
+    }
+  },
+  defaults: {
+    bulma: false
+  },
   setup (options, nuxt) {
     // Create resolver to resolve relative paths
     const { resolve } = createResolver(import.meta.url)
@@ -10,6 +20,7 @@ export default defineNuxtModule({
     } else {
       nuxt.options.css.push(resolve('../src/assets/bulma.scss'))
     }
+    addPlugin(resolve('../src/plugins/auth.ts'))
     addPlugin(resolve('../src/plugins/apollo.ts'))
     addPlugin(resolve('../src/plugins/oruga.ts'))
     addPlugin(resolve('../src/plugins/filters.ts'))

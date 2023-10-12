@@ -51,6 +51,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@auth0/auth0-spa-js@npm:^2.1.2":
+  version: 2.1.2
+  resolution: "@auth0/auth0-spa-js@npm:2.1.2"
+  checksum: b376f4f2e7cbc7ae6197603b05dbef1c919887412b68e2dbc1c054296f2c50ea3bd9028b077d7f256365703e478d96135c3f81cf090157820debf31cc42e4a36
+  languageName: node
+  linkType: hard
+
 "@babel/code-frame@npm:^7.0.0, @babel/code-frame@npm:^7.12.13, @babel/code-frame@npm:^7.18.6, @babel/code-frame@npm:^7.21.4":
   version: 7.21.4
   resolution: "@babel/code-frame@npm:7.21.4"
@@ -1078,21 +1085,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oruga-ui/oruga-next@npm:^0.6.0":
-  version: 0.6.0
-  resolution: "@oruga-ui/oruga-next@npm:0.6.0"
+"@oruga-ui/oruga-next@npm:^0.7.0":
+  version: 0.7.0
+  resolution: "@oruga-ui/oruga-next@npm:0.7.0"
   peerDependencies:
     vue: ^3.0.0
-  checksum: b00ec4739b819a880c7cffe246676679768ee96112b4b305c4efaa9e847e2a7f8516f5723e9cf7cc50069aee888c7f6636a419733dca46885dcba19cbdf17f74
+  checksum: d0b0db5b464bac1fa3fed917344af8d90bb5b0765b022ee87c6150a0c3ba1aef20b677116312462f9b2546d3c05ccccd6bedadf8618d1c66fc4c6be2a403a9e0
   languageName: node
   linkType: hard
 
-"@oruga-ui/theme-bulma@npm:^0.2.10":
-  version: 0.2.10
-  resolution: "@oruga-ui/theme-bulma@npm:0.2.10"
+"@oruga-ui/theme-bulma@npm:^0.2.11":
+  version: 0.2.11
+  resolution: "@oruga-ui/theme-bulma@npm:0.2.11"
   dependencies:
     bulma: 0.9.4
-  checksum: ecb2fe6f50ccc435ee2f620e1382d4f0784aa17f61b845be6c9dd91e1f51bbce77f1244bee1bda2d48f6301d4744a939fcbdb269cecec60d90238ac1fa789d54
+  checksum: dd12d2b9b410d7270aa3defa5c66de43b0c3d2576efe834156e6a740ec0578b22efc50e8f2be44bf94aeb1084328edf24a93bfb9f2d61790d9d0995749813b18
   languageName: node
   linkType: hard
 
@@ -8128,11 +8135,12 @@ __metadata:
   resolution: "tlv2-ui@workspace:."
   dependencies:
     "@apollo/client": ^3.7.14
+    "@auth0/auth0-spa-js": ^2.1.2
     "@braintree/sanitize-url": ^6.0.2
     "@mdi/font": ^7.2.96
     "@nuxtjs/eslint-config-typescript": ^12.0.0
-    "@oruga-ui/oruga-next": ^0.6.0
-    "@oruga-ui/theme-bulma": ^0.2.10
+    "@oruga-ui/oruga-next": ^0.7.0
+    "@oruga-ui/theme-bulma": ^0.2.11
     "@types/node": ^18.16.3
     "@vue/apollo-composable": ^4.0.0-beta.5
     "@vue/apollo-option": ^4.0.0-beta.5
@@ -8144,6 +8152,7 @@ __metadata:
     graphql: ^16.6.0
     graphql-tag: ^2.12.6
     haversine: ^1.1.1
+    lodash: ^4.17.21
     maplibre-gl: ^2.4.0
     nuxt: 3.4.3
     prettier: ^2.8.8

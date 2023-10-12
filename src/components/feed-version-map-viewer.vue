@@ -31,6 +31,7 @@
 </template>
 
 <script>
+import { nextTick } from 'vue'
 import gql from 'graphql-tag'
 
 const q = gql`

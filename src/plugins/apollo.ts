@@ -1,24 +1,37 @@
 import destr from 'destr'
-import { defineNuxtPlugin, useRuntimeConfig } from '#app'
 import { ApolloClients } from '@vue/apollo-composable'
 import { createApolloProvider } from '@vue/apollo-option'
-import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client/core/index.js'
+import { ApolloClient, ApolloLink, concat, HttpLink, InMemoryCache } from '@apollo/client/core/index.js'
+import { defineNuxtPlugin, useRuntimeConfig } from '#app'
+import { useJwt } from './auth'
 
-export default defineNuxtPlugin((nuxtApp) => {
+export function getApolloClient() {
   const config = useRuntimeConfig()
   const httpLink = new HttpLink({
-    uri: config.public.graphqlEndpoint,
-    headers: {
-      apikey: config.public.graphqlApikey,
-      referer: config.public.graphqlServerReferer,
-    }
+    uri: config.public.graphqlEndpoint
+  })
+  const authMiddleware = new ApolloLink(async(operation, forward) => {
+    // add the authorization to the headers
+    const token = await useJwt()
+    operation.setContext({
+      headers: {
+        referer: config.public.graphqlServerReferer,
+        authorization: token ? `Bearer ${token}` : '',
+        apikey: config.public.graphqlApikey
+      }
+    })
+    return forward(operation)
   })
   const cache = new InMemoryCache()
-
   const apolloClient = new ApolloClient({
-    link: httpLink,
+    link: concat(authMiddleware, httpLink),
     cache
   })
+  return apolloClient
+}
+
+export default defineNuxtPlugin((nuxtApp) => {
+  const apolloClient = getApolloClient()
 
   // options api
   const apolloProvider = createApolloProvider({
@@ -36,15 +49,9 @@ export default defineNuxtPlugin((nuxtApp) => {
   // handle cache
   const cacheKey = '_apollo:transitland'
   nuxtApp.hook('app:rendered', () => {
-    nuxtApp.payload.data[cacheKey] = cache.extract()
+    nuxtApp.payload.data[cacheKey] = apolloClient.cache.extract()
   })
   if (process.client && nuxtApp.payload.data[cacheKey]) {
-    cache.restore(destr(JSON.stringify(nuxtApp.payload.data[cacheKey])))
+    apolloClient.cache.restore(destr(JSON.stringify(nuxtApp.payload.data[cacheKey])))
   }
-  // nuxtApp.vueApp.provide(DefaultApolloClient, apolloClient)
-  // return {
-  //   provide: {
-  //     apolloClient
-  //   }
-  // }
 })
