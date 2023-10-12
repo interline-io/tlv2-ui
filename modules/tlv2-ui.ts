@@ -1,5 +1,5 @@
 import { fileURLToPath } from 'node:url'
-import { defineNuxtModule, addPlugin, createResolver } from '@nuxt/kit'
+import { defineNuxtModule, addPlugin, addImportsDir, createResolver } from '@nuxt/kit'
 
 export default defineNuxtModule({
   meta: {
@@ -10,7 +10,7 @@ export default defineNuxtModule({
     }
   },
   defaults: {
-    bulma: false
+    bulma: ''
   },
   setup (options, nuxt) {
     // Create resolver to resolve relative paths
@@ -25,6 +25,7 @@ export default defineNuxtModule({
     addPlugin(resolve('../src/plugins/oruga.ts'))
     addPlugin(resolve('../src/plugins/filters.ts'))
     nuxt.options.css.push(resolve('../src/assets/main.css'))
+    addImportsDir(resolve('../src/composables'))
   },
   hooks: {
     'components:dirs'(dirs) {
