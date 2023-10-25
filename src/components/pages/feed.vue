@@ -218,7 +218,7 @@
           Archived Feed Versions
         </h4>
 
-        <tl-feed-version-table :feed="entity" :show-download-column="showDownloadColumn" :show-download-instructions="showDownloadInstructions" @download-triggered="(sha1) => $emit('downloadTriggered', sha1)" />
+        <tl-feed-version-table :feed="entity" :show-download-column="showDownloadColumn" :show-download-instructions="showDownloadInstructions" @download-triggered="(sha1, isLatest) => $emit('downloadTriggered', sha1, isLatest)" />
         <slot name="add-feed-version" :entity="entity" />
       </div>
     </div>

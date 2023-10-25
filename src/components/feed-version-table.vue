@@ -181,7 +181,8 @@ export default {
       })
     },
     triggerDownload (sha1) {
-      this.$emit('downloadTriggered', sha1)
+      const isLatest = (sha1 === this.latestFeedVersionSha1)
+      this.$emit('downloadTriggered', sha1, isLatest)
       if (this.showDownloadInstructions) {
         this.displayDownloadSha1 = sha1
         this.displayDownloadInstructions = true
