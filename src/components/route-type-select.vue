@@ -1,5 +1,9 @@
 <template>
-  <o-select v-model="modelValue" placeholder="Route type">
+  <o-select
+    :value="modelValue"
+    placeholder="Route type"
+    @update:model-value="$emit('update:modelValue', $event)"
+  >
     <option :value="null">
       All
     </option>
@@ -24,6 +28,10 @@ const routeTypes = {
 }
 
 export default {
+  props: {
+    modelValue: { type: [String, Number], default: 0 }
+  },
+  emits: ['update:modelValue'],
   data () {
     return {
       routeTypes
