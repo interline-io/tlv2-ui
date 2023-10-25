@@ -32,7 +32,8 @@ export default defineNuxtConfig({
       auth0ClientId: '',
       auth0RedirectUri: '',
       auth0Audience: '',
-      auth0Scope: ''
+      auth0Scope: '',
+      loginGate: 'false'
     }
   }
 })
