@@ -218,7 +218,7 @@
           Archived Feed Versions
         </h4>
 
-        <tl-feed-version-table :feed="entity" />
+        <tl-feed-version-table :feed="entity" :show-download-column="showDownloadColumn" :show-download-instructions="showDownloadInstructions" @download-triggered="$emit('downloadTriggered')" />
         <slot name="add-feed-version" :entity="entity" />
       </div>
     </div>
@@ -339,8 +339,10 @@ export default {
   },
   props: {
     showDownloadColumn: { type: Boolean, default: true },
+    showDownloadInstructions: { type: Boolean, default: true },
     showOperators: { type: Boolean, default: true }
   },
+  emits: ['downloadTriggered'],
   data () {
     return {
       page: 1,
