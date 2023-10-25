@@ -176,7 +176,7 @@ export default {
       const isLatest = (sha1 === this.latestFeedVersionSha1)
       this.$emit('downloadTriggered', sha1, isLatest)
       if (this.issueDownloadRequest) {
-        // TODO: issue HTTP request to download fv from an unauth'ed tlserver endpoint
+        window.open(`${config.public.apiBase}/rest/feed_versions/${sha1}/download`, '_blank')
       }
     }
   }
