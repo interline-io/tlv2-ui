@@ -182,7 +182,7 @@ export default {
     },
     triggerDownload (sha1) {
       this.$emit('downloadTriggered', sha1)
-      if (this.triggerDownload) {
+      if (this.showDownloadInstructions) {
         this.displayDownloadSha1 = sha1
         this.displayDownloadInstructions = true
       }
