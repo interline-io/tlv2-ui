@@ -10,7 +10,9 @@
             <th>Latest date</th>
             <th>Imported</th>
             <th>Active</th>
-            <th>Download</th>
+            <th v-if="showDownloadColumn">
+              Download
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -54,9 +56,9 @@
                 icon="check"
               />
             </td>
-            <td>
+            <td v-if="showDownloadColumn">
               <template v-if="feed.license.redistribution_allowed !== 'no'">
-                <a @click="showDownloadInstructions(fv.sha1)">
+                <a @click="triggerDownload(fv.sha1)">
                   <o-icon
                     v-if="fv.sha1 === latestFeedVersionSha1"
                     icon="download"
@@ -75,12 +77,6 @@
     <div v-if="hasMore" style="text-align:center" @click="fetchMore">
       <a class="button is-primary is-small is-fullwidth">Show more feed versions</a>
     </div>
-
-    <tl-feed-version-download-modal
-      v-model="displayDownloadInstructions"
-      :sha1="displayDownloadSha1"
-      :latest-feed-version-sha1="latestFeedVersionSha1"
-    />
   </div>
 </template>
 
@@ -120,8 +116,11 @@ query ($limit:Int, $onestop_id: String, $after:Int) {
 
 export default {
   props: {
-    feed: { type: Object, default () { return {} } }
+    feed: { type: Object, default () { return {} } },
+    showDownloadColumn: { type: Boolean, default: true },
+    issueDownloadRequest: { type: Boolean, default: true }
   },
+  emits: ['downloadTriggered'],
   apollo: {
     entities: {
       client: 'transitland',
@@ -139,9 +138,7 @@ export default {
     return {
       entities: [],
       limit: 100,
-      maxLimit: 10000,
-      displayDownloadInstructions: false,
-      displayDownloadSha1: ''
+      maxLimit: 10000
     }
   },
   computed: {
@@ -175,9 +172,12 @@ export default {
         }
       })
     },
-    showDownloadInstructions (sha1) {
-      this.displayDownloadSha1 = sha1
-      this.displayDownloadInstructions = true
+    triggerDownload (sha1) {
+      const isLatest = (sha1 === this.latestFeedVersionSha1)
+      this.$emit('downloadTriggered', sha1, isLatest)
+      if (this.issueDownloadRequest) {
+        window.open(`${config.public.apiBase}/rest/feed_versions/${sha1}/download`, '_blank')
+      }
     }
   }
 }
