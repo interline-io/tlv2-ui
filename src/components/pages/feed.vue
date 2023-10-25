@@ -218,7 +218,7 @@
           Archived Feed Versions
         </h4>
 
-        <tl-feed-version-table :feed="entity" :show-download-column="showDownloadColumn" :show-download-instructions="showDownloadInstructions" @download-triggered="(sha1, isLatest) => $emit('downloadTriggered', sha1, isLatest)" />
+        <tl-feed-version-table :feed="entity" :show-download-column="showDownloadColumn" :issue-download-request="issueDownloadRequest" @download-triggered="(sha1, isLatest) => $emit('downloadTriggered', sha1, isLatest)" />
         <slot name="add-feed-version" :entity="entity" />
       </div>
     </div>
@@ -339,7 +339,7 @@ export default {
   },
   props: {
     showDownloadColumn: { type: Boolean, default: true },
-    showDownloadInstructions: { type: Boolean, default: true },
+    issueDownloadRequest: { type: Boolean, default: true },
     showOperators: { type: Boolean, default: true }
   },
   emits: ['downloadTriggered'],

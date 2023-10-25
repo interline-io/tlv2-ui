@@ -77,12 +77,6 @@
     <div v-if="hasMore" style="text-align:center" @click="fetchMore">
       <a class="button is-primary is-small is-fullwidth">Show more feed versions</a>
     </div>
-
-    <tl-feed-version-download-modal
-      v-model="displayDownloadInstructions"
-      :sha1="displayDownloadSha1"
-      :latest-feed-version-sha1="latestFeedVersionSha1"
-    />
   </div>
 </template>
 
@@ -124,7 +118,7 @@ export default {
   props: {
     feed: { type: Object, default () { return {} } },
     showDownloadColumn: { type: Boolean, default: true },
-    showDownloadInstructions: { type: Boolean, default: true }
+    issueDownloadRequest: { type: Boolean, default: true }
   },
   emits: ['downloadTriggered'],
   apollo: {
@@ -144,9 +138,7 @@ export default {
     return {
       entities: [],
       limit: 100,
-      maxLimit: 10000,
-      displayDownloadInstructions: false,
-      displayDownloadSha1: ''
+      maxLimit: 10000
     }
   },
   computed: {
@@ -183,9 +175,8 @@ export default {
     triggerDownload (sha1) {
       const isLatest = (sha1 === this.latestFeedVersionSha1)
       this.$emit('downloadTriggered', sha1, isLatest)
-      if (this.showDownloadInstructions) {
-        this.displayDownloadSha1 = sha1
-        this.displayDownloadInstructions = true
+      if (this.issueDownloadRequest) {
+        // TODO: issue HTTP request to download fv from an unauth'ed tlserver endpoint
       }
     }
   }
