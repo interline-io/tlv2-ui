@@ -10,7 +10,9 @@
             <th>Latest date</th>
             <th>Imported</th>
             <th>Active</th>
-            <th>Download</th>
+            <th v-if="showDownloadColumn">
+              Download
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -54,9 +56,9 @@
                 icon="check"
               />
             </td>
-            <td>
+            <td v-if="showDownloadColumn">
               <template v-if="feed.license.redistribution_allowed !== 'no'">
-                <a @click="showDownloadInstructions(fv.sha1)">
+                <a @click="triggerDownload(fv.sha1)">
                   <o-icon
                     v-if="fv.sha1 === latestFeedVersionSha1"
                     icon="download"
@@ -120,8 +122,11 @@ query ($limit:Int, $onestop_id: String, $after:Int) {
 
 export default {
   props: {
-    feed: { type: Object, default () { return {} } }
+    feed: { type: Object, default () { return {} } },
+    showDownloadColumn: { type: Boolean, default: true },
+    showDownloadInstructions: { type: Boolean, default: true }
   },
+  emits: ['downloadTriggered'],
   apollo: {
     entities: {
       client: 'transitland',
@@ -175,9 +180,12 @@ export default {
         }
       })
     },
-    showDownloadInstructions (sha1) {
-      this.displayDownloadSha1 = sha1
-      this.displayDownloadInstructions = true
+    triggerDownload (sha1) {
+      this.$emit('downloadTriggered', sha1)
+      if (this.triggerDownload) {
+        this.displayDownloadSha1 = sha1
+        this.displayDownloadInstructions = true
+      }
     }
   }
 }
