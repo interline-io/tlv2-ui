@@ -20,10 +20,10 @@ export default defineNuxtModule({
     } else {
       nuxt.options.css.push(resolve('assets/bulma.scss'))
     }
-    addPlugin(resolve('~/plugins/auth.ts'))
-    addPlugin(resolve('~/plugins/apollo.ts'))
-    addPlugin(resolve('~/plugins/oruga.ts'))
-    addPlugin(resolve('~/plugins/filters.ts'))
+    addPlugin(resolve('plugins/auth.ts'))
+    addPlugin(resolve('plugins/apollo.ts'))
+    addPlugin(resolve('plugins/oruga.ts'))
+    addPlugin(resolve('plugins/filters.ts'))
     nuxt.options.css.push(resolve('assets/main.css'))
     addImportsDir(resolve('composables'))
 

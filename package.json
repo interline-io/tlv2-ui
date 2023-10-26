@@ -20,7 +20,7 @@
   "main": "./dist/module.cjs",
   "types": "./dist/types.d.ts",
   "files": [
-    "dist", "src"
+    "dist"
   ],
   "dependencies": {
     "@apollo/client": "^3.8.6",
