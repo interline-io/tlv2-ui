@@ -4,6 +4,7 @@
   "repository": "https://github.com/interline-io/tlv2-ui",
   "license": "SEE LICENSE IN LICENSE.md",
   "scripts": {
+    "prepack": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build",
     "dev": "nuxi dev playground",
     "dev:build": "nuxi build playground",
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
