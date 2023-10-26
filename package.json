@@ -26,6 +26,7 @@
     "@auth0/auth0-spa-js": "^2.1.2",
     "@braintree/sanitize-url": "^6.0.4",
     "@mdi/font": "^7.2.96",
+    "@nuxt/kit": "^3.8.0",
     "@nuxt/types": "^2.17.2",
     "@nuxtjs/eslint-config-typescript": "^12.1.0",
     "@oruga-ui/oruga-next": "^0.7.0",
