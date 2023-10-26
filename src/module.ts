@@ -1,4 +1,3 @@
-import { fileURLToPath } from 'node:url'
 import { defineNuxtModule, addPlugin, addImportsDir, createResolver } from '@nuxt/kit'
 
 export default defineNuxtModule({
@@ -15,23 +14,25 @@ export default defineNuxtModule({
   setup (options, nuxt) {
     // Create resolver to resolve relative paths
     const { resolve } = createResolver(import.meta.url)
+    const resolveRuntimeModule = (path: string) => resolve('./runtime', path)
+
     if (options.bulma) {
       nuxt.options.css.push(options.bulma)
     } else {
-      nuxt.options.css.push(resolve('assets/bulma.scss'))
+      nuxt.options.css.push(resolveRuntimeModule('assets/bulma.scss'))
     }
-    addPlugin(resolve('plugins/auth.ts'))
-    addPlugin(resolve('plugins/apollo.ts'))
-    addPlugin(resolve('plugins/oruga.ts'))
-    addPlugin(resolve('plugins/filters.ts'))
-    nuxt.options.css.push(resolve('assets/main.css'))
-    addImportsDir(resolve('composables'))
+    addPlugin(resolveRuntimeModule('plugins/auth.ts'))
+    addPlugin(resolveRuntimeModule('plugins/apollo.ts'))
+    addPlugin(resolveRuntimeModule('plugins/oruga.ts'))
+    addPlugin(resolveRuntimeModule('plugins/filters.ts'))
+    nuxt.options.css.push(resolveRuntimeModule('assets/main.css'))
+    addImportsDir(resolveRuntimeModule('composables'))
 
     // Add assets
     nuxt.hook('nitro:config', (nitroConfig) => {
       nitroConfig.publicAssets ||= []
       nitroConfig.publicAssets.push({
-        dir: resolve('public'),
+        dir: resolveRuntimeModule('public'),
         maxAge: 60 * 60 * 24 * 365 // 1 year
       })
     })
@@ -39,7 +40,7 @@ export default defineNuxtModule({
     // Add components
     nuxt.hook('components:dirs', (dirs) => {
       dirs.push({
-        path: fileURLToPath(new URL('components', import.meta.url)),
+        path: resolveRuntimeModule('components'),
         prefix: 'tl'
       })
     })
