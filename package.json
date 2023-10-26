@@ -4,11 +4,10 @@
   "repository": "https://github.com/interline-io/tlv2-ui",
   "license": "SEE LICENSE IN LICENSE.md",
   "scripts": {
-    "build": "nuxt build",
-    "dev": "nuxt dev",
-    "generate": "nuxt generate",
-    "preview": "nuxt preview",
-    "prepack": "nuxt-module-build",
+    "prepack": "nuxt-module-build build",
+    "dev": "nuxi dev playground",
+    "dev:build": "nuxi build playground",
+    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
     "lint": "eslint --ext .js,.ts,.vue --ignore-path .eslintignore ."
   },
   "exports": {

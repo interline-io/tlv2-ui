@@ -18,23 +18,30 @@ export default defineNuxtModule({
     if (options.bulma) {
       nuxt.options.css.push(options.bulma)
     } else {
-      nuxt.options.css.push(resolve('../src/assets/bulma.scss'))
+      nuxt.options.css.push(resolve('assets/bulma.scss'))
     }
-    addPlugin(resolve('../src/plugins/auth.ts'))
-    addPlugin(resolve('../src/plugins/apollo.ts'))
-    addPlugin(resolve('../src/plugins/oruga.ts'))
-    addPlugin(resolve('../src/plugins/filters.ts'))
-    nuxt.options.css.push(resolve('../src/assets/main.css'))
-    addImportsDir(resolve('../src/composables'))
-  },
-  hooks: {
-    'components:dirs'(dirs) {
-      // Add ../src/components dir to the list
+    addPlugin(resolve('plugins/auth.ts'))
+    addPlugin(resolve('plugins/apollo.ts'))
+    addPlugin(resolve('plugins/oruga.ts'))
+    addPlugin(resolve('plugins/filters.ts'))
+    nuxt.options.css.push(resolve('assets/main.css'))
+    addImportsDir(resolve('composables'))
+
+    // Add assets
+    nuxt.hook('nitro:config', (nitroConfig) => {
+      nitroConfig.publicAssets ||= []
+      nitroConfig.publicAssets.push({
+        dir: resolve('public'),
+        maxAge: 60 * 60 * 24 * 365 // 1 year
+      })
+    })
+
+    // Add components
+    nuxt.hook('components:dirs', (dirs) => {
       dirs.push({
-        // global: true,
-        path: fileURLToPath(new URL('../src/components', import.meta.url)),
+        path: fileURLToPath(new URL('components', import.meta.url)),
         prefix: 'tl'
       })
-    }
+    })
   }
 })

@@ -14,14 +14,6 @@
   </div>
 </template>
 
-<script setup>
-useHead({
-  titleTemplate: (titleChunk) => {
-    return titleChunk ? `Transitland • ${titleChunk}` : 'Transitland'
-  }
-})
-</script>
-
 <style scoped>
 .outer {
   display:flex;

@@ -7,7 +7,7 @@ const isDev = process.env.NODE_ENV === 'development'
 export default defineNuxtConfig({
   ssr: true,
   modules: [
-    './modules/tlv2-ui'
+    '../src/module'
   ],
   build: {
     transpile: ['@vue/apollo-composable', '@apollo/client', 'protomaps-themes-base']
