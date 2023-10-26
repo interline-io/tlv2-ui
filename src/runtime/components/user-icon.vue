@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { login, logout, useUser } from '../src/plugins/auth'
+import { login, logout, useUser } from '../plugins/auth'
 export default {
   data() {
     return {
