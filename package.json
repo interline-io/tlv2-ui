@@ -8,13 +8,26 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
+    "prepack": "nuxt-module-build",
     "lint": "eslint --ext .js,.ts,.vue --ignore-path .eslintignore ."
   },
+  "exports": {
+    ".": {
+      "import": "./dist/module.mjs",
+      "require": "./dist/module.cjs"
+    }
+  },
+  "main": "./dist/module.cjs",
+  "types": "./dist/types.d.ts",
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "@apollo/client": "^3.8.6",
     "@auth0/auth0-spa-js": "^2.1.2",
     "@braintree/sanitize-url": "^6.0.4",
     "@mdi/font": "^7.2.96",
+    "@nuxt/types": "^2.17.2",
     "@nuxtjs/eslint-config-typescript": "^12.1.0",
     "@oruga-ui/oruga-next": "^0.7.0",
     "@oruga-ui/theme-bulma": "^0.2.11",
@@ -38,6 +51,9 @@
     "typescript": "^5.2.2",
     "typescript-eslint": "^0.0.1-alpha.0",
     "vue": "^3.3.7"
+  },
+  "devDependencies": {
+    "@nuxt/module-builder": "latest"
   },
   "packageManager": "yarn@3.6.0"
 }
