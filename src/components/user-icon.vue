@@ -20,19 +20,19 @@
 </template>
 
 <script>
-// import { login, logout, useUser } from '@tlv2-ui/auth'
+import { login, logout, useUser } from '../src/plugins/auth'
 export default {
   data() {
     return {
-      user: {} // useUser()
+      user: useUser()
     }
   },
   methods: {
     async login() {
-      //   await login()
+      await login()
     },
     async logout() {
-      // await logout()
+      await logout()
     }
   }
 }
