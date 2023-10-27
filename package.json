@@ -51,6 +51,7 @@
     "sass": "^1.69.4",
     "typescript": "^5.2.2",
     "typescript-eslint": "^0.0.1-alpha.0",
+    "unstorage": "^1.9.0",
     "vue": "^3.3.7"
   },
   "devDependencies": {
