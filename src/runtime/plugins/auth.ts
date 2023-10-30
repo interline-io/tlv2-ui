@@ -4,6 +4,34 @@ import gql from 'graphql-tag'
 import { getApolloClient } from './apollo'
 import { defineNuxtPlugin, addRouteMiddleware, useCookie, useRuntimeConfig, navigateTo } from '#app'
 
+const RECHECK_INTERVAL = 600_000
+
+class User {
+  loggedIn = false
+  id = ''
+  name = ''
+  email = ''
+  roles = []
+  externalData = {}
+  checked = 0
+  constructor(v: any) {
+    Object.assign(this, v)
+  }
+
+  hasRole(v: string): boolean {
+    for (const s of this.roles) {
+      if (s === v) {
+        return true
+      }
+    }
+    return false
+  }
+}
+
+function defaultUser() {
+  return new User({})
+}
+
 export async function login() {
   console.log('auth: login')
   const authClient = getAuth0Client()
@@ -25,7 +53,8 @@ export async function logout() {
 }
 
 export const useUser = () => {
-  return useLocalStorage('user', defaultUser())
+  const user = useLocalStorage('user', defaultUser())
+  return new User(user?.value || {})
 }
 
 export const useJwt = async() => {
@@ -53,9 +82,10 @@ export const useJwt = async() => {
 export default defineNuxtPlugin(() => {
   addRouteMiddleware('global-auth', async (to, _) => {
     const query = to?.query
+    const authClient = getAuth0Client()
     if (query && query.code && query.state) {
-      const authClient = getAuth0Client()
       if (authClient) {
+        console.log('auth mw: handle login')
         await authClient.handleRedirectCallback()
         await useJwt()
         await buildUser(authClient)
@@ -64,6 +94,15 @@ export default defineNuxtPlugin(() => {
           query: {}
         })
       }
+    }
+
+    // Recheck user every 10 minutes
+    const user = useUser()
+    const lastChecked = Date.now() - (user?.checked || 0)
+    if (authClient && user?.loggedIn && lastChecked > RECHECK_INTERVAL) {
+      console.log('auth mw: recheck user')
+      await useJwt()
+      await buildUser(authClient)
     }
   }, { global: true })
 })
@@ -74,7 +113,7 @@ async function buildUser(authClient: Auth0Client) {
   console.log('buildUser: await me response')
   const apolloClient = getApolloClient()
   const meData = await apolloClient.query({
-    query: gql`query{me{id name email external_data}}`
+    query: gql`query{me{id name email external_data roles}}`
   }).then((data) => {
     console.log('buildUser: me graphql response:', data.data.me)
     return data.data.me
@@ -84,23 +123,15 @@ async function buildUser(authClient: Auth0Client) {
   const checkUser = useLocalStorage('user', defaultUser())
   console.log('buildUser: set user state')
   const auth0user = await authClient.getUser()
-  checkUser.value = {
+  checkUser.value = new User({
     loggedIn: true,
     id: meData?.id || '',
     name: auth0user?.name || '',
     email: auth0user?.email || '',
-    externalData: meData?.external_data || {}
-  }
-}
-
-function defaultUser() {
-  return {
-    loggedIn: false,
-    id: '',
-    name: '',
-    email: '',
-    externalData: {}
-  }
+    externalData: meData?.external_data || {},
+    roles: meData?.roles || [],
+    checked: Date.now()
+  })
 }
 
 let init = false
