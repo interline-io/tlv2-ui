@@ -1,6 +1,6 @@
 <template>
   <client-only>
-    asdf
+    notOk: {{ notOk }} loggedIn: {{ loggedIn }} role: {{ role }}
     <div v-if="notOk">
       <div v-if="loggedIn">
         <slot name="roleText">
