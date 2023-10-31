@@ -9,7 +9,7 @@ export const useLoginGate = (role?: string):boolean => {
     // console.log('useLoginGate: config is true')
     const user = useUser()
     if (user?.loggedIn) {
-      // console.log('user??', user, 'role:', role, 'has role:', user.hasRole(role))
+      console.log('user??', user, 'role:', role, 'has role:', user.hasRole(role))
       // console.log('useLoginGate: user is logged in')
       if (role) {
         return !user.hasRole(role)
