@@ -1,5 +1,6 @@
 <template>
   <client-only>
+    asdf
     <div v-if="notOk">
       <div v-if="loggedIn">
         <slot name="roleText">
