@@ -10,7 +10,12 @@ export default defineNuxtConfig({
     '../src/module'
   ],
   build: {
-    transpile: ['@vue/apollo-composable', '@apollo/client', 'protomaps-themes-base']
+    transpile: [
+      'tslib', // https://github.com/nuxt/nuxt/issues/19265#issuecomment-1702014262
+      '@vue/apollo-composable',
+      '@apollo/client',
+      'protomaps-themes-base'
+    ]
   },
   vite: {
     // bug https://github.com/apollographql/apollo-client/issues/9756
