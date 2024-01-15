@@ -137,7 +137,7 @@
               <tr>
                 <td>GTFS ID</td>
                 <td>
-                  {{ entity.route_id }}
+                  <tl-safelink :text="entity.route_id" />
                 </td>
               </tr>
               <tr v-if="entity.entity_desc">
