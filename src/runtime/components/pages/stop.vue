@@ -77,13 +77,13 @@
                     <template v-if="(root.children || []).length > 0">
                       Station:
                     </template>
-                    {{ root.stop_id }}
+                    <tl-safelink :text="root.stop_id" />
                     <div v-for="child of root.children || []" :key="child.id" class="child-stop-id">
                       <template v-if="child.location_type === 0">
-                        Platform: {{ child.stop_id }}
+                        Platform: <tl-safelink :text="child.stop_id" />
                       </template>
                       <template v-if="child.location_type === 2">
-                        Entrance: {{ child.stop_id }}
+                        Entrance: <tl-safelink :text="child.stop_id" />
                       </template>
                     </div>
                   </div>
