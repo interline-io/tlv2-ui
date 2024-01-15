@@ -23,12 +23,10 @@ const { oruga } = useProgrammatic()
 export default {
   props: {
     url: { type: String, default: null },
-    text: { type: String, default: null }
+    text: { type: String, default: null },
+    maxWidth: { type: String, default: '400px' }
   },
   computed: {
-    sanitizedText() {
-      return ''
-    },
     sanitizedUrl() {
       return sanitizeUrl(this.url)
     }
@@ -69,7 +67,7 @@ export default {
     padding-bottom:3px;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width:400px;
+    max-width: v-bind(maxWidth);
     white-space: nowrap;
     word-wrap: nowrap;
 }

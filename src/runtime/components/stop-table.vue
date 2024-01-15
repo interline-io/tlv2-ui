@@ -5,7 +5,7 @@
     </tl-msg-error>
     <div v-else>
       <o-field expanded grouped>
-        <tl-search-bar v-model="search" expanded placeholder="Filter Stops" />
+        <tl-search-bar v-model="search" expanded placeholder="Filter stops by name..." />
         <tl-route-type-select v-model="selectedRouteType" />
       </o-field>
       <o-loading v-model:active="$apollo.loading" :full-page="false" />
@@ -13,31 +13,38 @@
         <table class="table is-striped is-fullwidth">
           <thead>
             <tr>
-              <th>Stop ID</th>
-              <th>Name</th>
+              <th>Stop name</th>
+              <th>Onestop ID</th>
+              <th>ID in source feed</th>
               <th v-if="showAgencies">
                 Agencies
               </th>
               <th v-if="showRoutes">
-                Routes
+                Served by routes
+              </th>
+              <th class="has-text-right">
+                Links to view
               </th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="stop of entities" :key="stop.id">
-              <td>
-                <nuxt-link
-                  :to="{ name: 'stops-onestop_id', params: { onestop_id: stop.onestop_id }, query: (linkVersion ? { feed_onestop_id: stop.feed_onestop_id, feed_version_sha1: stop.feed_version_sha1, entity_id: stop.stop_id } : {}) }"
-                >
-                  {{ stop.stop_id }}
-                </nuxt-link>
-              </td>
               <td>{{ stop.stop_name }}</td>
+              <td><tl-safelink :text="stop.onestop_id" max-width="100px" /></td>
+              <td><tl-safelink :text="stop.stop_id" max-width="100px" /></td>
               <td v-if="showAgencies">
                 {{ $filters.joinUnique(props.row.route_stops.map((s) => { return s.agency.agency_name })) }}
               </td>
               <td v-if="showRoutes">
                 {{ $filters.joinUnique(stop.route_stops.map((s) => { return s.route.route_short_name })) }}
+              </td>
+              <td class="has-text-right">
+                <nuxt-link
+                  :to="{ name: 'stops-onestop_id', params: { onestop_id: stop.onestop_id }, query: (linkVersion ? { feed_onestop_id: stop.feed_onestop_id, feed_version_sha1: stop.feed_version_sha1, entity_id: stop.stop_id } : {}) }"
+                  class="button is-primary is-small"
+                >
+                  Stop
+                </nuxt-link>
               </td>
             </tr>
           </tbody>

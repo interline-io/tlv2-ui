@@ -6,16 +6,16 @@
           <th>Filename</th>
           <th>Rows</th>
           <th>Size</th>
-          <th>SHA1</th>
+          <th>SHA1 hash</th>
           <th>CSV</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="f of files" :key="f.name">
-          <td>{{ f.name }}</td>
+          <td><code>{{ f.name }}</code></td>
           <td>{{ f.rows }}</td>
           <td>{{ $filters.prettyBytes(f.size) }}</td>
-          <td>{{ $filters.shortenName(f.sha1, 8) }}</td>
+          <td><tl-safelink :text="f.sha1" max-width="100px" /></td>
           <td>
             <o-tooltip v-if="f.csv_like" dashed>
               <template #content>

@@ -153,9 +153,7 @@
           <tbody>
             <tr v-for="row of sources" :key="row.id">
               <td>
-                <nuxt-link :to="{name:'feeds-feed', params:{feed:row.target_feed}}">
-                  <tl-safelink :text="row.target_feed" />
-                </nuxt-link>
+                <tl-safelink :text="row.target_feed" />
               </td>
               <td>
                 {{ formatSpec(row.target_feed_spec) }}

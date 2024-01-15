@@ -5,7 +5,7 @@
     </tl-msg-error>
     <div v-else>
       <o-field expanded grouped>
-        <tl-search-bar v-model="search" placeholder="Filter Routes" />
+        <tl-search-bar v-model="search" placeholder="Filter routes by name..." />
         <tl-route-type-select v-model="selectedRouteType" />
       </o-field>
       <o-loading v-model:active="$apollo.loading" :full-page="false" />
@@ -13,29 +13,46 @@
         <table class="table is-striped is-fullwidth">
           <thead>
             <tr>
-              <th>Route ID</th>
-              <th>Name</th>
-              <th />
+              <th colspan="2">
+                Route name
+              </th>
+              <th>Onestop ID</th>
+              <th>ID in source feed</th>
+              <th>Vehicle type</th>
               <th v-if="showAgency">
                 Agency
               </th>
+              <th>Links to view</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="route of entities" :key="route.id">
               <td>
-                <nuxt-link
-                  :to="{ name: 'routes-onestop_id', params: { onestop_id: route.onestop_id || 'search' }, query: (linkVersion ? { feed_onestop_id: route.feed_onestop_id, feed_version_sha1: route.feed_version_sha1, entity_id: route.route_id } : {}) }"
-                >
-                  {{ route.route_id }}
-                </nuxt-link>
-              </td>
-              <td>
                 {{ route.route_short_name }}
               </td>
               <td>{{ route.route_long_name }}</td>
+              <td>
+                <tl-safelink :text="route.onestop_id" />
+              </td>
+              <td>
+                <tl-safelink :text="route.route_id" />
+              </td>
+              <td>
+                <tl-route-icon
+                  :key="'icon'+route.onestop_id"
+                  :route-type="route.route_type"
+                />
+              </td>
               <td v-if="showAgency">
                 {{ route.agency.agency_name }}
+              </td>
+              <td class="has-text-right">
+                <nuxt-link
+                  class="button is-small is-primary"
+                  :to="{ name: 'routes-onestop_id', params: { onestop_id: route.onestop_id || 'search' }, query: (linkVersion ? { feed_onestop_id: route.feed_onestop_id, feed_version_sha1: route.feed_version_sha1, entity_id: route.route_id } : {}) }"
+                >
+                  Route
+                </nuxt-link>
               </td>
             </tr>
           </tbody>

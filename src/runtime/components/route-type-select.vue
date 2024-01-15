@@ -1,7 +1,7 @@
 <template>
   <o-select
     :value="modelValue"
-    placeholder="Route type"
+    placeholder="Route vehicle type"
     @update:model-value="$emit('update:modelValue', $event)"
   >
     <option :value="null">

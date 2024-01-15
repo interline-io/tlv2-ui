@@ -94,7 +94,7 @@
       <table class="table is-borderless property-list tl-props">
         <tbody>
           <tr>
-            <td>Feed</td>
+            <td>Feed Onestop ID</td>
             <td>
               <tl-safelink :text="entity.feed.onestop_id" />
             </td>
@@ -261,7 +261,7 @@
               </tr>
             </thead><tbody>
               <tr v-for="(v,fn) of mergedCount(entity.feed_version_gtfs_import)" :key="fn">
-                <td>{{ fn }}</td>
+                <td><code>{{ fn }}</code></td>
                 <td>{{ rowCount[fn] }}</td>
                 <td>{{ v.count }}</td>
                 <td />
