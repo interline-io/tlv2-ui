@@ -7,10 +7,15 @@ const isDev = process.env.NODE_ENV === 'development'
 export default defineNuxtConfig({
   ssr: true,
   modules: [
-    './modules/tlv2-ui'
+    '../src/module'
   ],
   build: {
-    transpile: ['@vue/apollo-composable', '@apollo/client', 'protomaps-themes-base']
+    transpile: [
+      'tslib', // https://github.com/nuxt/nuxt/issues/19265#issuecomment-1702014262
+      '@vue/apollo-composable',
+      '@apollo/client',
+      'protomaps-themes-base'
+    ]
   },
   vite: {
     // bug https://github.com/apollographql/apollo-client/issues/9756
@@ -32,7 +37,8 @@ export default defineNuxtConfig({
       auth0ClientId: '',
       auth0RedirectUri: '',
       auth0Audience: '',
-      auth0Scope: ''
+      auth0Scope: '',
+      loginGate: 'false'
     }
   }
 })

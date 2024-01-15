@@ -4,20 +4,26 @@
       <table class="table is-striped is-fullwidth">
         <thead>
           <tr>
-            <th>Feed version fetched</th>
-            <th>SHA1 hash</th>
-            <th>Earliest service date</th>
-            <th>Latest service date</th>
-            <th>Imported into API?</th>
-            <th>Active in API?</th>
-            <th>Links to view or download</th>
+            <th>Fetched</th>
+            <th>SHA1</th>
+            <th>Earliest date</th>
+            <th>Latest date</th>
+            <th>Imported</th>
+            <th>Active</th>
+            <th v-if="showDownloadColumn">
+              Download
+            </th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="fv of entities" :key="fv.id">
             <td>{{ $filters.formatDate(fv.fetched_at) }} ({{ $filters.fromNow(fv.fetched_at) }})</td>
             <td>
-              <tl-safelink :text="fv.sha1" max-width="100px" />
+              <nuxt-link
+                :to="{ name: 'feeds-feed-versions-version', params: { feed: feed.onestop_id, version: fv.sha1 } }"
+              >
+                {{ fv.sha1.substr(0, 6) }}…
+              </nuxt-link>
             </td>
             <td> {{ fv.earliest_calendar_date.substr(0, 10) }}</td>
             <td> {{ fv.latest_calendar_date.substr(0, 10) }}</td>
@@ -50,19 +56,9 @@
                 icon="check"
               />
             </td>
-            <td class="has-text-right">
+            <td v-if="showDownloadColumn">
               <template v-if="feed.license.redistribution_allowed !== 'no'">
-                <nuxt-link
-                  :to="{ name: 'feeds-feed-versions-version', params: { feed: feed.onestop_id, version: fv.sha1, hash: '#files' } }"
-                  class="button is-primary is-small"
-                >
-                  Files
-                </nuxt-link> <nuxt-link
-                  :to="{ name: 'feeds-feed-versions-version', params: { feed: feed.onestop_id, version: fv.sha1, hash: '#service' } }"
-                  class="button is-primary is-small"
-                >
-                  Service levels
-                </nuxt-link> <a class="button is-small" @click="showDownloadInstructions(fv.sha1)">
+                <a @click="triggerDownload(fv.sha1)">
                   <o-icon
                     v-if="fv.sha1 === latestFeedVersionSha1"
                     icon="download"
@@ -81,12 +77,6 @@
     <div v-if="hasMore" style="text-align:center" @click="fetchMore">
       <a class="button is-primary is-small is-fullwidth">Show more feed versions</a>
     </div>
-
-    <tl-feed-version-download-modal
-      v-model="displayDownloadInstructions"
-      :sha1="displayDownloadSha1"
-      :latest-feed-version-sha1="latestFeedVersionSha1"
-    />
   </div>
 </template>
 
@@ -126,8 +116,11 @@ query ($limit:Int, $onestop_id: String, $after:Int) {
 
 export default {
   props: {
-    feed: { type: Object, default () { return {} } }
+    feed: { type: Object, default () { return {} } },
+    showDownloadColumn: { type: Boolean, default: true },
+    issueDownloadRequest: { type: Boolean, default: true }
   },
+  emits: ['downloadTriggered'],
   apollo: {
     entities: {
       client: 'transitland',
@@ -145,9 +138,7 @@ export default {
     return {
       entities: [],
       limit: 100,
-      maxLimit: 10000,
-      displayDownloadInstructions: false,
-      displayDownloadSha1: ''
+      maxLimit: 10000
     }
   },
   computed: {
@@ -181,9 +172,12 @@ export default {
         }
       })
     },
-    showDownloadInstructions (sha1) {
-      this.displayDownloadSha1 = sha1
-      this.displayDownloadInstructions = true
+    triggerDownload (sha1) {
+      const isLatest = (sha1 === this.latestFeedVersionSha1)
+      this.$emit('downloadTriggered', sha1, isLatest)
+      if (this.issueDownloadRequest) {
+        window.open(`${config.public.apiBase}/rest/feed_versions/${sha1}/download`, '_blank')
+      }
     }
   }
 }

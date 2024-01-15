@@ -3,11 +3,11 @@
 </template>
 
 <script>
-import { useRuntimeConfig } from '#app'
 import maplibre from 'maplibre-gl'
 import { noLabels, labels } from 'protomaps-themes-base'
 import { nextTick } from 'vue'
-import mapLayers from './map-layers.js'
+import mapLayers from './map-layers'
+import { useRuntimeConfig } from '#app'
 
 export default {
   props: {

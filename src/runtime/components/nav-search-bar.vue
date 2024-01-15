@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import SearchBarMixin from './search-bar-mixin.js'
+import SearchBarMixin from './search-bar-mixin'
 export default {
   mixins: [SearchBarMixin],
   data () {
