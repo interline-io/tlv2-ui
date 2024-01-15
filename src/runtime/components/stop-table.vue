@@ -5,7 +5,7 @@
     </tl-msg-error>
     <div v-else>
       <o-field expanded grouped>
-        <tl-search-bar v-model="search" expanded placeholder="Filter stops..." />
+        <tl-search-bar v-model="search" expanded placeholder="Filter stops by name..." />
         <tl-route-type-select v-model="selectedRouteType" />
       </o-field>
       <o-loading v-model:active="$apollo.loading" :full-page="false" />
