@@ -64,11 +64,11 @@
                       Current Static GTFS: <tl-safelink :url="entity.urls.static_current" />
                     </li>
                     <li v-if="entity.urls.static_planned && entity.urls.static_planned.length > 0">
-                      Future Static GTFS: Current Static GTFS: <tl-safelink :url="entity.urls.static_planned" />
+                      Future Static GTFS: <tl-safelink :url="entity.urls.static_planned" />
                     </li>
                     <li v-if="entity.urls.static_historic">
                       <div v-for="(k, i) of entity.urls.static_historic" :key="i">
-                        Historic GTFS: Current Static GTFS: <tl-safelink :url="k" />
+                        Historic GTFS: <tl-safelink :url="k" />
                       </div>
                     </li>
                     <li v-if="entity.urls.realtime_vehicle_positions">
