@@ -106,7 +106,7 @@
 <script>
 import haversine from 'haversine'
 import { PathwayModes } from './basemaps'
-import { Pathway } from '~/../src/runtime/components/editor/station'
+import { Pathway } from './station'
 
 export default {
   props: {

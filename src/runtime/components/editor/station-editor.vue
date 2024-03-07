@@ -74,7 +74,7 @@
 </template>
 
 <script>
-import { Station } from '~/../src/runtime/components/editor/station'
+import { Station } from './station'
 
 export default {
   props: {

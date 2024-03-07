@@ -156,7 +156,7 @@
 
 <script>
 import { LocationTypes, PathwayModeIcons } from './basemaps'
-import { Stop } from '~/../src/runtime/components/editor/station'
+import { Stop } from './station'
 
 export default {
   props: {
