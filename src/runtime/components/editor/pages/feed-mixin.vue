@@ -35,7 +35,7 @@ export default {
       },
       variables () {
         return {
-          feed_onestop_id: this.$route.params.feedKey,
+          feed_onestop_id: this.feedKey,
           feed_version_file: this.feedVersionKey
         }
       }

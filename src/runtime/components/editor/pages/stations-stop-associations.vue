@@ -95,7 +95,7 @@
 
 <script>
 import { gql } from 'graphql-tag'
-import FeedMixin from '../feed-mixin'
+import FeedMixin from './feed-mixin'
 
 const q = gql`
   query ($feed_onestop_id: String!, $after: Int!) {

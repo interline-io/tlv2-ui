@@ -1,6 +1,6 @@
 <script>
 import { gql } from 'graphql-tag'
-import { Stop, Station, stationQuery, stationStopQuery } from './station'
+import { Stop, Station, stationQuery, stationStopQuery } from '../station'
 
 const currentFeeds = gql`
 query currentFeeds ($feed_onestop_id: String, $feed_version_file: String) {
@@ -55,7 +55,7 @@ export default {
       },
       variables () {
         return {
-          feed_onestop_id: this.$route.params.feedKey,
+          feed_onestop_id: this.feedKey,
           feed_version_file: this.$route.params.feedVersionKey
         }
       }
@@ -137,8 +137,8 @@ export default {
     stationName () {
       return this.station ? this.station.stop.stop_name : null
     },
-    level_key () {
-      return this.$route.params.level_key
+    levelKey () {
+      return this.$route.params.levelKey
     },
     station_has_at_least_one_stop_assigned () {
       return this.station.levels.length > 0

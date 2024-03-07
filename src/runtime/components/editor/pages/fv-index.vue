@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import FeedMixin from '../feed-mixin'
+import FeedMixin from './feed-mixin'
 
 export default {
   mixins: [FeedMixin],

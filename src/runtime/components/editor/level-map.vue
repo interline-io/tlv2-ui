@@ -9,6 +9,7 @@ import { Map, AttributionControl } from 'maplibre-gl'
 import MapboxDraw from '@mapbox/mapbox-gl-draw'
 import { getBasemapLayers, PeliasIcons } from './basemaps'
 
+// https:// github.com/maplibre/maplibre-gl-js/issues/2601
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl'
 MapboxDraw.constants.classes.CONTROL_PREFIX = 'maplibregl-ctrl-'
 MapboxDraw.constants.classes.CONTROL_GROUP = 'maplibregl-ctrl-group'

@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import StationMixin from '../station-mixin'
+import StationMixin from './station-mixin'
 import { navigateTo } from '#app'
 
 export default {

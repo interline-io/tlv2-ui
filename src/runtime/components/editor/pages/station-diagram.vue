@@ -90,7 +90,7 @@
 <script>
 import fcose from 'cytoscape-fcose'
 import { schemeRdGy, schemeDark2 } from 'd3-scale-chromatic'
-import StationMixin from '../station-mixin'
+import StationMixin from './station-mixin'
 import { navigateTo } from '#app'
 
 const CYTOSCAPE_CONFIG = {

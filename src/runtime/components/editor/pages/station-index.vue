@@ -66,7 +66,7 @@
 </template>
 
 <script>
-import StationMixin from '../station-mixin'
+import StationMixin from './station-mixin'
 export default {
   mixins: [StationMixin]
 }

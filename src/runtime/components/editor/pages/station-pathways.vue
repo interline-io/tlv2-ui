@@ -280,8 +280,8 @@
 
 <script>
 import { PathwayModes, LocationTypes } from '../basemaps'
-import StationMixin from '../station-mixin'
 import { Stop, Pathway } from '../station'
+import StationMixin from './station-mixin'
 
 export default {
   mixins: [StationMixin],

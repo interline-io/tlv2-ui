@@ -43,7 +43,7 @@
           <div class="column is-3 has-text-right">
             <nuxt-link
               v-if="level.id"
-              :to="{name:'editor-feedKey-feedVersionKey-stations-stationKey-levels-level_key-edit', params: {feedKey:station.stop.feed_version.feed.onestop_id,feedVersionKey:station.stop.feed_version.file,stationKey:station.stop.stop_id,level_key:level.level_id}}"
+              :to="{name:'editor-feedKey-feedVersionKey-stations-stationKey-levels-levelKey-edit', params: {feedKey:station.stop.feed_version.feed.onestop_id,feedVersionKey:station.stop.feed_version.file,stationKey:station.stop.stop_id,levelKey:level.level_id}}"
               class="button is-primary is-outlined"
             >
               Edit Level

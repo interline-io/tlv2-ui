@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import StationMixin from '../station-mixin'
+import StationMixin from './station-mixin'
 import { navigateTo } from '#app'
 
 export default {
@@ -41,7 +41,7 @@ export default {
     level () {
       const levels = this.station.levels
       for (const level of levels) {
-        if (level.level_id === this.level_key) {
+        if (level.level_id === this.levelKey) {
           return level
         }
       }
