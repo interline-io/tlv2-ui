@@ -14,11 +14,6 @@
               Editor
             </nuxt-link>
           </li>
-          <li v-if="name.startsWith('analyst') || forceAnalyst" :class="name === 'analyst' ? 'is-active' : ''">
-            <nuxt-link :to="{name:'analyst'}">
-              Analyst
-            </nuxt-link>
-          </li>
           <!-- feed -->
           <li v-if="feedKey">
             <span class="tag">Feed</span>
@@ -30,14 +25,6 @@
               :to="{name:'editor-feedKey-feedVersionKey-stations',params:{feedKey:feedKey,feedVersionKey:feedVersionKey}}"
             >
               {{ feedVersionName || feedVersionKey.substr(0,8) }}
-            </nuxt-link>
-          </li>
-          <!-- editor: fares -->
-          <li v-if="showFares">
-            <nuxt-link
-              :to="{name:'editor-feedKey-feedVersionKey-fares', params: {feedKey:feedKey,feedVersionKey:feedVersionKey}}"
-            >
-              Fares
             </nuxt-link>
           </li>
           <!-- editor: stations -->
@@ -65,10 +52,6 @@
 <script>
 export default {
   props: {
-    forceAnalyst: {
-      type: Boolean,
-      default: false
-    },
     feedKey: {
       type: String,
       default: ''
@@ -88,10 +71,6 @@ export default {
     stationKey: {
       type: String,
       default: ''
-    },
-    showFares: {
-      type: Boolean,
-      default: false
     },
     stationName: {
       type: String,
