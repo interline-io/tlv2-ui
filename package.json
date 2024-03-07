@@ -29,10 +29,15 @@
     "@mapbox/mapbox-gl-draw": "^1.4.3",
     "@mdi/font": "^7.4.47",
     "@nuxt/kit": "^3.9.1",
+    "@nuxt/module-builder": "latest",
     "@nuxt/types": "^2.17.3",
     "@nuxtjs/eslint-config-typescript": "^12.1.0",
     "@oruga-ui/oruga-next": "^0.7.0",
     "@oruga-ui/theme-bulma": "^0.2.11",
+    "@types/cytoscape-fcose": "^2",
+    "@types/d3-scale-chromatic": "^3",
+    "@types/lodash.groupby": "^4",
+    "@types/mapbox__mapbox-gl-draw": "^1",
     "@types/node": "^20.11.3",
     "@vue/apollo-composable": "^4.0.0",
     "@vue/apollo-option": "^4.0.0",
@@ -57,13 +62,6 @@
     "typescript-eslint": "^0.0.1-alpha.0",
     "unstorage": "^1.10.1",
     "vue": "^3.4.14"
-  },
-  "devDependencies": {
-    "@nuxt/module-builder": "latest",
-    "@types/cytoscape-fcose": "^2",
-    "@types/d3-scale-chromatic": "^3",
-    "@types/lodash.groupby": "^4",
-    "@types/mapbox__mapbox-gl-draw": "^1"
   },
   "packageManager": "yarn@4.0.2"
 }
