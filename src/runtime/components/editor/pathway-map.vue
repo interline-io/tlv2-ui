@@ -583,8 +583,7 @@ export default {
       // Load images, defer drawing map until loaded
       loadImages(this.map, PathwayModeIcons, (icons) => {
         for (const [icon, image] of Object.entries(icons)) {
-          console.log(icon, image)
-          // this.map.addImage(icon, image)
+          this.map.addImage(icon, image)
         }
         this.map.on('load', this.drawMap)
       })

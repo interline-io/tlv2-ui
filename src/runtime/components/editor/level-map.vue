@@ -185,7 +185,6 @@ export default {
       this.map.on('draw.update', this.changed)
       loadImages(this.map, PeliasIcons, (icons) => {
         for (const [icon, image] of Object.entries(icons)) {
-          console.log(icon, image)
           this.map.addImage(icon, image)
         }
         this.map.on('load', () => {
