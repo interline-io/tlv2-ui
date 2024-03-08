@@ -69,7 +69,7 @@ export default {
     groupedSortedStationLevels () {
       const levelsObjByIndex = {}
       for (const lvl of this.station.levels) {
-        a = levelsObjByIndex[lvl.level_index] || []
+        const a = levelsObjByIndex[lvl.level_index] || []
         a.push(lvl)
         levelsObjByIndex[lvl.level_index] = a
       }
