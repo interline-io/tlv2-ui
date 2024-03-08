@@ -1,5 +1,5 @@
-import debounce from 'lodash/debounce'
 import gql from 'graphql-tag'
+import { useDebounceFn } from '@vueuse/core'
 
 const q = gql`
 query ($search: String!) {
@@ -63,7 +63,7 @@ export default {
       this.$emit('blur')
       this.search = ''
     },
-    getAsyncData: debounce(function (name) {
+    getAsyncData: useDebounceFn(function (name) {
       if (!name.length) {
         this.data = []
         return
