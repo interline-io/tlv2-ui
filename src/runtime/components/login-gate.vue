@@ -1,5 +1,5 @@
 <template>
-  <client-only>
+  <client-only placeholder="Login">
     <div v-if="notOk">
       <div v-if="loggedIn">
         <slot name="roleText">

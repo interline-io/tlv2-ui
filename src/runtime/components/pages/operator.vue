@@ -194,9 +194,7 @@
         </h4>
         <o-tabs v-model="activeTab" class="tl-tabs" type="boxed" :animated="false" @update:model-value="setTab">
           <o-tab-item id="map" label="Map">
-            <client-only placeholder="Map">
-              <tl-feed-version-map-viewer v-if="activeTab === 1" :agency-ids="agencyIds" :overlay="true" :link-version="linkVersion" />
-            </client-only>
+            <tl-feed-version-map-viewer v-if="activeTab === 1" :agency-ids="agencyIds" :overlay="true" :link-version="linkVersion" />
           </o-tab-item>
 
           <o-tab-item id="routes" label="Routes">

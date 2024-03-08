@@ -1,5 +1,5 @@
 <template>
-  <client-only>
+  <client-only placeholder="Map">
     <div id="mapelem" ref="mapelem" :class="mapClass" />
   </client-only>
 </template>

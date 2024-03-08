@@ -178,9 +178,7 @@
             @update:model-value="setTab"
           >
             <o-tab-item id="summary" label="Connections">
-              <client-only>
-                <tl-rsp-viewer v-if="activeTab === 1" :route-ids="entityIds" />
-              </client-only>
+              <tl-rsp-viewer v-if="activeTab === 1" :route-ids="entityIds" />
             </o-tab-item>
             <o-tab-item id="headways" label="Headways">
               <tl-headway-viewer :headways="entity.headways" />
@@ -251,16 +249,14 @@
             </o-tab-item>
 
             <o-tab-item id="export" label="Export">
-              <client-only placeholder="Export">
-                <tl-data-export
-                  v-if="activeTab === 4"
-                  :route-name="routeName"
-                  :route-features="routeFeatures"
-                  :stop-features="stopFeatures"
-                  :route-ids="[entity.id]"
-                  @set-features="features = $event"
-                />
-              </client-only>
+              <tl-data-export
+                v-if="activeTab === 4"
+                :route-name="routeName"
+                :route-features="routeFeatures"
+                :stop-features="stopFeatures"
+                :route-ids="[entity.id]"
+                @set-features="features = $event"
+              />
             </o-tab-item>
           </o-tabs>
         </div>

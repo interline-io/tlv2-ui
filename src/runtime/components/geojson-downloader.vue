@@ -1,5 +1,5 @@
 <template>
-  <client-only>
+  <client-only placeholder="">
     <button class="button mr-2" @click="saveFile">
       {{ label }}
     </button>
