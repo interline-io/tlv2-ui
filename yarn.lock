@@ -6483,13 +6483,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.groupby@npm:^4.6.0":
-  version: 4.6.0
-  resolution: "lodash.groupby@npm:4.6.0"
-  checksum: 98bd04e58ce4cebb2273010352508b5ea12025e94fcfd70c84c8082ef3b0689178e8e6dd53bff919f525fae9bd67b4aba228d606b75a967f30e84ec9610b5de1
-  languageName: node
-  linkType: hard
-
 "lodash.isarguments@npm:^3.1.0":
   version: 3.1.0
   resolution: "lodash.isarguments@npm:3.1.0"
@@ -9538,8 +9531,6 @@ __metadata:
     graphql: "npm:^16.8.1"
     graphql-tag: "npm:^2.12.6"
     haversine: "npm:^1.1.1"
-    lodash: "npm:^4.17.21"
-    lodash.groupby: "npm:^4.6.0"
     maplibre-gl: "npm:^2.4.0"
     nuxt: "npm:3.9.1"
     protomaps-themes-base: "npm:^1.3.1"
