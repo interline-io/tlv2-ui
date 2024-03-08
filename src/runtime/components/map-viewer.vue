@@ -1,5 +1,7 @@
 <template>
-  <div id="mapelem" ref="mapelem" :class="mapClass" />
+  <client-only placeholder="Map">
+    <div id="mapelem" ref="mapelem" :class="mapClass" />
+  </client-only>
 </template>
 
 <script>
@@ -66,7 +68,7 @@ export default {
   },
   mounted () {
     if (this.features) {
-      this.initMap()
+      nextTick(() => { this.initMap() })
     }
   },
   methods: {

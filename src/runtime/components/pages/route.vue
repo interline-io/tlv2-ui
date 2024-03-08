@@ -175,12 +175,10 @@
             class="tl-tabs"
             type="boxed"
             :animated="false"
-            @update:modelValue="setTab"
+            @update:model-value="setTab"
           >
             <o-tab-item id="summary" label="Connections">
-              <client-only>
-                <tl-rsp-viewer v-if="activeTab === 1" :route-ids="entityIds" />
-              </client-only>
+              <tl-rsp-viewer v-if="activeTab === 1" :route-ids="entityIds" />
             </o-tab-item>
             <o-tab-item id="headways" label="Headways">
               <tl-headway-viewer :headways="entity.headways" />
@@ -251,29 +249,25 @@
             </o-tab-item>
 
             <o-tab-item id="export" label="Export">
-              <client-only placeholder="Export">
-                <tl-data-export
-                  v-if="activeTab === 4"
-                  :route-name="routeName"
-                  :route-features="routeFeatures"
-                  :stop-features="stopFeatures"
-                  :route-ids="[entity.id]"
-                  @setFeatures="features = $event"
-                />
-              </client-only>
+              <tl-data-export
+                v-if="activeTab === 4"
+                :route-name="routeName"
+                :route-features="routeFeatures"
+                :stop-features="stopFeatures"
+                :route-ids="[entity.id]"
+                @set-features="features = $event"
+              />
             </o-tab-item>
           </o-tabs>
         </div>
         <div class="column is-one-third">
-          <client-only>
-            <tl-feed-version-map-viewer
-              :route-ids="entityIds"
-              :overlay="false"
-              :include-stops="true"
-              :link-version="linkVersion"
-              :features="activeTab === 4 ? features : []"
-            />
-          </client-only>
+          <tl-feed-version-map-viewer
+            :route-ids="entityIds"
+            :overlay="false"
+            :include-stops="true"
+            :link-version="linkVersion"
+            :features="activeTab === 4 ? features : []"
+          />
         </div>
       </div>
     </div>
@@ -281,9 +275,9 @@
 </template>
 
 <script>
-import { useRuntimeConfig } from '#app'
 import gql from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
+import { useRuntimeConfig } from '#app'
 
 const q = gql`
 query ($onestop_id: String, $ids: [Int!], $entity_id: String, $feed_onestop_id: String, $feed_version_sha1: String, $include_stops: Boolean! = true, $allow_previous_onestop_ids: Boolean = false) {

@@ -207,25 +207,21 @@
 
       <slot name="download" :entity="entity" />
 
-      <o-tabs v-model="activeTab" class="tl-tabs" type="boxed" :animated="false" @update:modelValue="setTab">
+      <o-tabs v-model="activeTab" class="tl-tabs" type="boxed" :animated="false" @update:model-value="setTab">
         <o-tab-item id="files" label="Files">
           <tl-file-info-table :files="entity.files" />
         </o-tab-item>
 
         <o-tab-item id="service" label="Service levels">
           <template v-if="activeTab === 2">
-            <client-only placeholder="Service levels">
-              <tl-multi-service-levels :show-group-info="false" :show-service-relative="false" :fvids="[entity.id]" :week-agg="false" />
-            </client-only>
+            <tl-multi-service-levels :show-group-info="false" :show-service-relative="false" :fvids="[entity.id]" :week-agg="false" />
           </template>
         </o-tab-item>
 
         <o-tab-item id="map" label="Map">
           <template v-if="activeTab === 3">
             <div v-if="imported">
-              <client-only placeholder="Map">
-                <tl-feed-version-map-viewer :feed-version-sha1="entity.sha1" :overlay="true" :link-version="true" />
-              </client-only>
+              <tl-feed-version-map-viewer :feed-version-sha1="entity.sha1" :overlay="true" :link-version="true" />
             </div>
             <tl-msg-info v-else>
               Map is only available for successfully imported feed versions.

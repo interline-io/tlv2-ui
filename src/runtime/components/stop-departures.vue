@@ -1,100 +1,102 @@
 <template>
-  <div>
-    <tl-msg-error v-if="error">
-      {{ error }}
-    </tl-msg-error>
-    <div v-else-if="!searchCoords && stopIds.length === 0">
-      <h6 class="title is-6">
-        Click on the map to select a location
-      </h6>
-    </div>
-    <div v-else>
-      <div class="search-options mb-2">
-        <o-field grouped>
-          <o-field v-if="showDateSelector">
-            <o-datetimepicker
-              v-model="displayStartDate"
-              horizontal-time-picker
-              placeholder="Now"
-              icon="calendar-today"
-              trap-focus
-              size="small"
-            />
-          </o-field>
-
-          <o-field v-if="showRadiusSelector">
-            <o-select v-model="radius" size="small">
-              <option v-for="r of allowedRadius" :key="r" :value="r">
-                {{ r }}m
-              </option>
-            </o-select>
-            <p class="control button-like-small">
-              Radius
-            </p>
-          </o-field>
-
-          <o-checkbox v-if="showAutoRefresh" v-model="autoRefresh" size="small">
-            Auto-refresh
-          </o-checkbox>
-
-          <o-checkbox v-if="showFallbackSelector" v-model="useServiceWindow" size="small">
-            Fallback service day
-          </o-checkbox>
-        </o-field>
-        <div v-if="lastFetched" :key="lastFetchedDisplayKey" class="tags has-addons">
-          <span class="tag is-small">Last checked</span>
-          <span class="tag is-success is-small">{{ $filters.fromNowDate(lastFetched) }}</span>
-        </div>
-      </div>
-
-      <tl-loading v-if="$apollo.loading && stops.length === 0" />
-      <div v-else-if="filteredStopsGroupRoutes.length === 0">
+  <client-only placeholder="Departures">
+    <div>
+      <tl-msg-error v-if="error">
+        {{ error }}
+      </tl-msg-error>
+      <div v-else-if="!searchCoords && stopIds.length === 0">
         <h6 class="title is-6">
-          No results
+          Click on the map to select a location
         </h6>
-        <div>Unfortunately, no departures were found at this location for the selected location and time. Try increasing the search radius or selecting the "fallback service day" option.</div>
       </div>
       <div v-else>
-        <div v-for="(ss, sskey) of filteredStopsGroupRoutes" :key="sskey">
-          <h6 class="title is-6">
-            {{ ss.agency.agency_name }}
-          </h6>
-          <div v-for="(sr,srkey) of ss.routes.slice(0,routesPerAgencyShadow)" :key="srkey" class="is-clearfix">
-            <div
-              class="is-pulled-left tl-route-icon-fade-out"
-            >
-              <nuxt-link
-                :to="{name:'routes-onestop_id', params:{onestop_id:sr.route.onestop_id}}"
-              >
-                <tl-route-icon
-                  :key="'icon'+sr.route.id"
-                  :name-icon="(sr.direction_id === 0 ? 'arrow-left' : 'arrow-right')"
-                  :route-type="sr.route.route_type"
-                  :route-short-name="sr.route.route_short_name"
-                  :route-long-name="sr.trip_headsign || sr.route.route_long_name"
-                  :route-link="sr.route.route_url"
-                />
-              </nuxt-link>
-            </div>
-            <div class="tl-route-icon-departures">
-              <o-field grouped>
-                <tl-tag v-for="st of sr.departures.slice(0,3)" :key="st.trip.id">
-                  <template v-if="st.departure.estimated">
-                    {{ $filters.reformatHMS(st.departure.estimated) }} &nbsp;<o-icon variant="success" size="small" icon="wifi" />
-                  </template><template v-else>
-                    {{ $filters.reformatHMS(st.departure.scheduled) }} &nbsp;<o-icon variant="success" size="small" icon="blank" />
-                  </template>
-                </tl-tag>
-              </o-field>
-            </div>
+        <div class="search-options mb-2">
+          <o-field grouped>
+            <o-field v-if="showDateSelector">
+              <o-datetimepicker
+                v-model="displayStartDate"
+                horizontal-time-picker
+                placeholder="Now"
+                icon="calendar-today"
+                trap-focus
+                size="small"
+              />
+            </o-field>
+
+            <o-field v-if="showRadiusSelector">
+              <o-select v-model="radius" size="small">
+                <option v-for="r of allowedRadius" :key="r" :value="r">
+                  {{ r }}m
+                </option>
+              </o-select>
+              <p class="control button-like-small">
+                Radius
+              </p>
+            </o-field>
+
+            <o-checkbox v-if="showAutoRefresh" v-model="autoRefresh" size="small">
+              Auto-refresh
+            </o-checkbox>
+
+            <o-checkbox v-if="showFallbackSelector" v-model="useServiceWindow" size="small">
+              Fallback service day
+            </o-checkbox>
+          </o-field>
+          <div v-if="lastFetched" :key="lastFetchedDisplayKey" class="tags has-addons">
+            <span class="tag is-small">Last checked</span>
+            <span class="tag is-success is-small">{{ $filters.fromNowDate(lastFetched) }}</span>
           </div>
-          <div v-if="ss.routes.length > routesPerAgencyShadow" class="is-clearfix">
-            <span class="button small ml-5" @click="expandRoutesPerAgency">Click to show {{ ss.routes.length - routesPerAgencyShadow }} additional rows</span>
+        </div>
+
+        <tl-loading v-if="$apollo.loading && stops.length === 0" />
+        <div v-else-if="filteredStopsGroupRoutes.length === 0">
+          <h6 class="title is-6">
+            No results
+          </h6>
+          <div>Unfortunately, no departures were found at this location for the selected location and time. Try increasing the search radius or selecting the "fallback service day" option.</div>
+        </div>
+        <div v-else>
+          <div v-for="(ss, sskey) of filteredStopsGroupRoutes" :key="sskey">
+            <h6 class="title is-6">
+              {{ ss.agency.agency_name }}
+            </h6>
+            <div v-for="(sr,srkey) of ss.routes.slice(0,routesPerAgencyShadow)" :key="srkey" class="is-clearfix">
+              <div
+                class="is-pulled-left tl-route-icon-fade-out"
+              >
+                <nuxt-link
+                  :to="{name:'routes-onestop_id', params:{onestop_id:sr.route.onestop_id}}"
+                >
+                  <tl-route-icon
+                    :key="'icon'+sr.route.id"
+                    :name-icon="(sr.direction_id === 0 ? 'arrow-left' : 'arrow-right')"
+                    :route-type="sr.route.route_type"
+                    :route-short-name="sr.route.route_short_name"
+                    :route-long-name="sr.trip_headsign || sr.route.route_long_name"
+                    :route-link="sr.route.route_url"
+                  />
+                </nuxt-link>
+              </div>
+              <div class="tl-route-icon-departures">
+                <o-field grouped>
+                  <tl-tag v-for="st of sr.departures.slice(0,3)" :key="st.trip.id">
+                    <template v-if="st.departure.estimated">
+                      {{ $filters.reformatHMS(st.departure.estimated) }} &nbsp;<o-icon variant="success" size="small" icon="wifi" />
+                    </template><template v-else>
+                      {{ $filters.reformatHMS(st.departure.scheduled) }} &nbsp;<o-icon variant="success" size="small" icon="blank" />
+                    </template>
+                  </tl-tag>
+                </o-field>
+              </div>
+            </div>
+            <div v-if="ss.routes.length > routesPerAgencyShadow" class="is-clearfix">
+              <span class="button small ml-5" @click="expandRoutesPerAgency">Click to show {{ ss.routes.length - routesPerAgencyShadow }} additional rows</span>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </client-only>
 </template>
 
 <script>

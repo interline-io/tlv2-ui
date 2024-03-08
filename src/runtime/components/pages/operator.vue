@@ -192,11 +192,9 @@
         <h4 class="title is-4">
           Operator Service
         </h4>
-        <o-tabs v-model="activeTab" class="tl-tabs" type="boxed" :animated="false" @update:modelValue="setTab">
+        <o-tabs v-model="activeTab" class="tl-tabs" type="boxed" :animated="false" @update:model-value="setTab">
           <o-tab-item id="map" label="Map">
-            <client-only placeholder="Map">
-              <tl-feed-version-map-viewer v-if="activeTab === 1" :agency-ids="agencyIds" :overlay="true" :link-version="linkVersion" />
-            </client-only>
+            <tl-feed-version-map-viewer v-if="activeTab === 1" :agency-ids="agencyIds" :overlay="true" :link-version="linkVersion" />
           </o-tab-item>
 
           <o-tab-item id="routes" label="Routes">
@@ -209,9 +207,7 @@
 
           <o-tab-item v-if="advancedMode" id="export" label="Export">
             <template v-if="activeTab === 4 && agencyIds.length === 1">
-              <client-only>
-                <tl-agency-export :agency-ids="agencyIds" />
-              </client-only>
+              <tl-agency-export :agency-ids="agencyIds" />
             </template>
             <template v-else>
               Currently this feature is only available when a single agency is returned for this query.

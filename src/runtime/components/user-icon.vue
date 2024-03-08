@@ -1,5 +1,5 @@
 <template>
-  <client-only>
+  <client-only placeholder="User">
     <template v-if="user && user.id">
       <div class="navbar-item">
         <em>You're browsing as <strong>{{ user.name }}</strong></em>

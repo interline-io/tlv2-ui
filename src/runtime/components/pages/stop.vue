@@ -121,7 +121,7 @@
             </tl-msg-warning>
           </div>
 
-          <o-tabs v-model="activeTab" class="tl-tabs" type="boxed" :animated="false" @update:modelValue="setTab">
+          <o-tabs v-model="activeTab" class="tl-tabs" type="boxed" :animated="false" @update:model-value="setTab">
             <o-tab-item id="summary" label="Summary">
               <div v-if="servedRoutes">
                 <h6 class="title is-6">
@@ -161,14 +161,12 @@
             </o-tab-item>
 
             <o-tab-item id="departures" label="Departures">
-              <client-only placeholder="Departures">
-                <tl-stop-departures
-                  v-if="entity.id && activeTab == 2"
-                  :show-fallback-selector="true"
-                  :stop-ids="entityIds"
-                  :search-coords="entity.geometry.coordinates"
-                />
-              </client-only>
+              <tl-stop-departures
+                v-if="entity.id && activeTab == 2"
+                :show-fallback-selector="true"
+                :stop-ids="entityIds"
+                :search-coords="entity.geometry.coordinates"
+              />
               <tl-msg-info>
                 <p><a href="https://www.transit.land/documentation/rest-api/departures" target="_blank">Learn more about Transitland v2 REST API stop departures endpoint</a></p>
               </tl-msg-info>
@@ -233,18 +231,16 @@
           </o-tabs>
         </div>
         <div class="column is-one-third">
-          <client-only>
-            <tl-map-viewer
-              :stop-features="stopFeatures"
-              :route-features="routeFeatures"
-              :features="features"
-              :auto-fit="false"
-              :center="entity.geometry.coordinates"
-              :circle-radius="20"
-              :zoom="15"
-              :overlay="true"
-            />
-          </client-only>
+          <tl-map-viewer
+            :stop-features="stopFeatures"
+            :route-features="routeFeatures"
+            :features="features"
+            :auto-fit="false"
+            :center="entity.geometry.coordinates"
+            :circle-radius="20"
+            :zoom="15"
+            :overlay="true"
+          />
         </div>
       </div>
     </div>

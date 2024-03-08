@@ -15,8 +15,6 @@
 </template>
 
 <script>
-import { sanitizeUrl } from '@braintree/sanitize-url'
-
 import { useProgrammatic } from '@oruga-ui/oruga-next/dist/oruga.mjs'
 const { oruga } = useProgrammatic()
 
@@ -28,7 +26,7 @@ export default {
   },
   computed: {
     sanitizedUrl() {
-      return sanitizeUrl(this.url)
+      return this.$filters.sanitizeUrl(this.url)
     }
   },
   methods: {
