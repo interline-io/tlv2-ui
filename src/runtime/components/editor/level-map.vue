@@ -5,6 +5,7 @@
 </template>
 
 <script>
+import { nextTick } from 'vue'
 import { Map, AttributionControl } from 'maplibre-gl'
 import MapboxDraw from '@mapbox/mapbox-gl-draw'
 import { getBasemapLayers, PeliasIcons } from './basemaps'
@@ -125,7 +126,7 @@ export default {
     }
   },
   mounted () {
-    this.initMap()
+    nextTick(() => { this.initMap() })
   },
   methods: {
     changed () {

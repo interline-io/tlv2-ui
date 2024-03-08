@@ -68,7 +68,7 @@ export default {
   },
   mounted () {
     if (this.features) {
-      this.initMap()
+      nextTick(() => { this.initMap() })
     }
   },
   methods: {

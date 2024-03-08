@@ -8,6 +8,7 @@
 
 <script>
 import { Map as MaplibreMap } from 'maplibre-gl'
+import { nextTick } from 'vue'
 import { PathwayModeIcons, getBasemapLayers } from './basemaps'
 
 function distance (p1, p2) {
@@ -168,7 +169,7 @@ export default {
     }
   },
   mounted () {
-    this.initMap()
+    nextTick(() => { this.initMap() })
   },
   methods: {
     addLevelLayer (levelId, layer) {
@@ -544,6 +545,9 @@ export default {
     },
     ///
     initMap () {
+      if (this.map) {
+        return
+      }
       const sources = {}
       const layers = []
       for (const [k, v] of Object.entries(getBasemapLayers())) {

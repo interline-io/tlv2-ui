@@ -90,6 +90,7 @@
 <script>
 import fcose from 'cytoscape-fcose'
 import { schemeRdGy, schemeDark2 } from 'd3-scale-chromatic'
+import { nextTick } from 'vue'
 import StationMixin from './station-mixin'
 import { navigateTo } from '#app'
 
@@ -181,7 +182,7 @@ export default {
       })
     },
     cytoscapeAfterCreated (cy) {
-      this.$nextTick(() => {
+      nextTick(() => {
         cy.layout(this.cytoscapeConfig.layout).run()
         cy.fit(null, 200)
         cy.on('select', 'node', this.elementSelected)
