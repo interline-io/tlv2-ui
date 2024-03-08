@@ -175,7 +175,7 @@
             class="tl-tabs"
             type="boxed"
             :animated="false"
-            @update:modelValue="setTab"
+            @update:model-value="setTab"
           >
             <o-tab-item id="summary" label="Connections">
               <client-only>
@@ -258,22 +258,20 @@
                   :route-features="routeFeatures"
                   :stop-features="stopFeatures"
                   :route-ids="[entity.id]"
-                  @setFeatures="features = $event"
+                  @set-features="features = $event"
                 />
               </client-only>
             </o-tab-item>
           </o-tabs>
         </div>
         <div class="column is-one-third">
-          <client-only>
-            <tl-feed-version-map-viewer
-              :route-ids="entityIds"
-              :overlay="false"
-              :include-stops="true"
-              :link-version="linkVersion"
-              :features="activeTab === 4 ? features : []"
-            />
-          </client-only>
+          <tl-feed-version-map-viewer
+            :route-ids="entityIds"
+            :overlay="false"
+            :include-stops="true"
+            :link-version="linkVersion"
+            :features="activeTab === 4 ? features : []"
+          />
         </div>
       </div>
     </div>
@@ -281,9 +279,9 @@
 </template>
 
 <script>
-import { useRuntimeConfig } from '#app'
 import gql from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
+import { useRuntimeConfig } from '#app'
 
 const q = gql`
 query ($onestop_id: String, $ids: [Int!], $entity_id: String, $feed_onestop_id: String, $feed_version_sha1: String, $include_stops: Boolean! = true, $allow_previous_onestop_ids: Boolean = false) {

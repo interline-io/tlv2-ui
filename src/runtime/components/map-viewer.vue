@@ -1,5 +1,7 @@
 <template>
-  <div id="mapelem" ref="mapelem" :class="mapClass" />
+  <client-only>
+    <div id="mapelem" ref="mapelem" :class="mapClass" />
+  </client-only>
 </template>
 
 <script>

@@ -61,15 +61,18 @@
 </template>
 
 <script>
-import groupBy from 'lodash.groupby'
-
 export default {
   props: {
     station: { type: Object, default () { return {} } }
   },
   computed: {
     groupedSortedStationLevels () {
-      const levelsObjByIndex = groupBy(this.station.levels, l => l.level_index)
+      const levelsObjByIndex = {}
+      for (const lvl of this.station.levels) {
+        a = levelsObjByIndex[lvl.level_index] || []
+        a.push(lvl)
+        levelsObjByIndex[lvl.level_index] = a
+      }
       const levelIndexes = Object.keys(levelsObjByIndex).map(i => parseInt(i)).sort((a, b) => b - a)
       const levelsArrByIndex = levelIndexes.map(i => levelsObjByIndex[i])
       return levelsArrByIndex

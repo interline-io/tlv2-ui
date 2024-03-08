@@ -1,11 +1,12 @@
 <template>
-  <button class="button mr-2" @click="saveFile">
-    {{ label }}
-  </button>
+  <client-only>
+    <button class="button mr-2" @click="saveFile">
+      {{ label }}
+    </button>
+  </client-only>
 </template>
 
 <script>
-import sanitize from 'sanitize-filename'
 
 export default {
   props: {
@@ -24,7 +25,7 @@ export default {
       const blob = new Blob([data], { type: 'text/json' })
       const e = document.createEvent('MouseEvents')
       const a = document.createElement('a')
-      a.download = sanitize(this.filename + '.geojson')
+      a.download = this.$filters.sanitizeFilename(this.filename + '.geojson')
       a.href = window.URL.createObjectURL(blob)
       a.dataset.downloadurl = ['text/json', a.download, a.href].join(':')
       e.initEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null)
