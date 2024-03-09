@@ -16,18 +16,18 @@
         {{ feed.feed.onestop_id }}
       </o-field>
 
-      <o-field
+      <!-- <o-field
         v-if="feed.actions.can_create_feed_version"
         label="Upload"
         horizontal
       >
         <nuxt-link
-          :to="{ name: 'analyst-feeds-feed-upload', params: { feed: feed.feed?.onestop_id } }"
+          :to="{ name: 'feeds-feed-upload', params: { feed: feed.feed?.onestop_id } }"
           class="button is-small is-primary"
         >
           Upload Feed Version
         </nuxt-link>
-      </o-field>
+      </o-field> -->
 
       <o-field
         label="Group"
