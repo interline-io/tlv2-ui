@@ -1,8 +1,8 @@
 import { useLocalStorage } from '@vueuse/core'
 import { Auth0Client } from '@auth0/auth0-spa-js'
 import gql from 'graphql-tag'
-import { getApolloClient } from './apollo'
 import { defineNuxtPlugin, addRouteMiddleware, useCookie, useRuntimeConfig, navigateTo } from '#app'
+import { getApolloClient } from './apollo'
 
 const RECHECK_INTERVAL = 600_000
 
