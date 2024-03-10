@@ -28,7 +28,11 @@
             </td>
             <td>
               <nuxt-link
-                :to="{name:'editor-feedKey-feedVersionKey-stations', params: {feedKey:feed.onestop_id,feedVersionKey:feed_version.file}}"
+                v-if="feed_version.file "
+                :to="{name:'editor-feedKey-feedVersionKey-stations', params: {
+                  feedKey:feed.onestop_id,
+                  feedVersionKey:feed_version.file
+                }}"
               >
                 Edit {{ feed_version.stations ? feed_version.stations.length : '' }} Stations
               </nuxt-link>

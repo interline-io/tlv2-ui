@@ -1,0 +1,416 @@
+<template>
+  <div>
+    <Head>
+      <Title>Station Assign Stops: {{ station ? station.stop_name : '' }}</Title>
+    </Head>
+    <tl-editor-breadcrumbs
+      :feed-key="feedKey"
+      :feed-name="feedName"
+      :feed-version-key="feedVersionKey"
+      :station-key="stationKey"
+      :station-name="stationName"
+    >
+      <li class="is-active">
+        <a href="#">Assign Stops</a>
+      </li>
+    </tl-editor-breadcrumbs>
+    <tl-editor-station-mode-tabs :station="station" :feed-key="feedKey" :feed-version-key="feedVersionKey" :station-key="stationKey" />
+    <div v-if="station" class="columns">
+      <div class="column is-narrow">
+        <div style="width:460px">
+          <o-collapse class="card">
+            <template #trigger>
+              <div
+                class="card-header"
+                role="button"
+              >
+                <p class="card-header-title">
+                  Node
+                </p>
+              </div>
+            </template>
+            <div class="card-content">
+              <template v-if="selectedStop && selectedStop.parent && selectedStop.parent.id === station.id">
+                <tl-editor-stop-editor
+                  :value="selectedStop"
+                  :stop-ext="selectedStop.stop_ext"
+                  :station="station"
+                  @update="updateStopHandler"
+                  @delete="deleteStopHandler"
+                />
+              </template>
+              <div v-else-if="selectedStop">
+                <o-field label="Stop ID">
+                  <o-input v-model="selectedStop.stop_id" :disabled="true" />
+                </o-field>
+                <o-field label="Name">
+                  <o-input v-model="selectedStop.stop_name" :disabled="true" />
+                </o-field>
+                <o-field label="Import to Level">
+                  <o-select v-model="selectedStop.level.id">
+                    <option v-for="level of station.levels" :key="level.id" :value="level.id">
+                      {{ level.level_name }}
+                    </option>
+                  </o-select>
+                </o-field>
+                <o-field label="Routes">
+                  <ul>
+                    <li v-for="rt of selectedStop.route_stops" :key="rt.route.id">
+                      {{ rt.route.agency.agency_id }}: {{ rt.route.route_short_name || rt.route.route_long_name }}
+                    </li>
+                  </ul>
+                </o-field>
+
+                <span class="button is-primary" :disabled="selectedStop.level?.id === null" @click="importStopHandler(selectedStop)">
+                  Import Node
+                </span>
+              </div>
+              <template v-else>
+                Click to select a stop
+              </template>
+            </div>
+          </o-collapse>
+
+          <br>
+          <o-collapse class="card">
+            <template #trigger>
+              <div
+                class="card-header"
+                role="button"
+              >
+                <p class="card-header-title">
+                  Help
+                </p>
+              </div>
+            </template>
+            <div class="card-content">
+              <ul class="help">
+                <!-- <li><span style="color:#e69320">Stops in station</span></li> -->
+                <li><span style="color:#87a9ff">Stops not in station</span></li>
+                <li>Select a node to import into station</li>
+                <li>You must select a level before importing</li>
+                <li>Click the selected item again to unselect</li>
+              </ul>
+            </div>
+          </o-collapse>
+        </div>
+      </div>
+
+      <div class="column">
+        <o-field>
+          <o-dropdown
+            v-model="selectedAgencies"
+            :width="300"
+            aria-role="list"
+            multiple
+          >
+            <template #trigger>
+              <button class="button" type="button">
+                Agencies &nbsp;
+                <o-icon icon="menu-down" />
+              </button>
+            </template>
+            <o-dropdown-item v-for="(agency,key) of agencies" :key="key" :value="key" aria-role="listitem">
+              <div class="media">
+                {{ key }} {{ agency }}
+              </div>
+            </o-dropdown-item>
+          </o-dropdown>
+          <o-dropdown
+            v-model="selectedLevels"
+            style="margin-left:30px"
+            :width="300"
+            aria-role="list"
+            multiple
+          >
+            <template #trigger>
+              <button class="button" type="button">
+                Levels &nbsp;
+                <o-icon icon="menu-down" />
+              </button>
+            </template>
+            <o-dropdown-item v-for="level of station.levels" :key="level.id" :value="level.id" aria-role="listitem">
+              <div class="media">
+                <div class="media-left">
+                  {{ level.level_index }}
+                </div>
+                <div class="media-content">
+                  <h3>{{ level.level_name }}</h3>
+                  <small>{{ level.stops.length }} nodes </small>
+                </div>
+              </div>
+            </o-dropdown-item>
+            <o-dropdown-item :value="null" aria-role="listitem">
+              <div class="media">
+                <div class="media-left">
+  &nbsp;
+                </div>
+                <div class="media-content">
+                  <h3>Unimported stops</h3>
+                  <small>&nbsp;</small>
+                </div>
+              </div>
+            </o-dropdown-item>
+          </o-dropdown>
+
+          <tl-editor-basemap-control v-model="basemap" />
+        </o-field>
+
+        <tl-editor-pathway-map
+          :center="station.geometry.coordinates"
+          :other-stops="filteredNearbyStops"
+          :basemap="basemap"
+          :station="stationFiltered"
+          :selected-stops="selectedStops"
+          :selected-levels="selectedLevels"
+          :selected-agencies="selectedAgencies"
+          @select-stop="selectStop"
+        />
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { gql } from 'graphql-tag'
+import { navigateTo } from '#app'
+import { Stop } from '../station'
+import StationMixin from './station-mixin'
+
+function intersection (setA, setB) {
+  const _intersection = new Set()
+  for (const elem of setB) {
+    if (setA.has(elem)) {
+      _intersection.add(elem)
+    }
+  }
+  return _intersection
+}
+
+// TODO
+const nearbyStopsQuery = gql`
+  query nearbyStopsQuery($lon:Float!, $lat:Float!) {
+    stops(
+      limit: 1000,
+      where: {near:{lon:$lon, lat:$lat, radius:1000}}
+    ) {
+      id
+      stop_id
+      stop_name
+      geometry
+      location_type
+      level {
+        id
+      }
+      feed_version {
+        id
+        feed {
+          id
+          onestop_id
+        }
+      }
+      parent {
+        id
+      }
+      route_stops {
+        route {
+          id
+          route_short_name
+          route_long_name
+          agency {
+            id
+            agency_id
+            agency_name
+          }
+        }
+      }
+      stop_ext: external_reference {
+        id
+        target_stop_id
+        target_feed_onestop_id
+        target_active_stop {
+          id
+          stop_id
+          stop_name
+          geometry
+          route_stops {
+            route {
+              id
+              route_short_name
+              route_long_name
+              agency {
+                id
+                agency_id
+                agency_name
+              }            
+            }
+          }
+        }
+      }
+      feed_version {
+        id
+        feed {
+          id
+          onestop_id
+        }
+      }
+    }
+  }
+  `
+
+export default {
+  mixins: [StationMixin],
+  apollo: {
+    nearbyStopsQuery: {
+      client: 'transitland',
+      query: nearbyStopsQuery,
+      skip () { return !this.station }, // run after stations
+      error (e) {
+        this.error(e)
+      },
+      variables () {
+        return {
+          lon: this.station.geometry.coordinates[0],
+          lat: this.station.geometry.coordinates[1]
+        }
+      },
+      update (data) {
+        this.nearbyStops = (data.stops || []).map((s) => { return new Stop(s) })
+      }
+    }
+  },
+  data () {
+    return {
+      nearbyStops: [],
+      selectMode: 'select',
+      selectedAgencies: [],
+      selectedLevels: [],
+      basemap: 'carto'
+    }
+  },
+  computed: {
+    filteredNearbyStops () {
+      // Get nearby stops that are NOT associated with the station and NOT in the excluded feed list.
+      // Also apply agency selection.
+      if (!this.station) {
+        return []
+      }
+      const excludeFeeds = []
+      const excludeStops = new Set()
+      for (const stop of this.station.stops) {
+        if (stop.stop_ext) {
+          const key = stop.stop_ext.target_feed_onestop_id + ':' + stop.stop_ext.target_stop_id
+          excludeStops.add(key, true)
+        }
+      }
+      let filtered = this.nearbyStops.filter((stop) => {
+        const key = stop.feed_version.feed.onestop_id + ':' + stop.stop_id
+        if (excludeStops.has(key)) {
+          return false
+        }
+        if (excludeFeeds.includes(stop.feed_version.feed.onestop_id)) {
+          return false
+        }
+        return true
+      })
+      if (this.selectedAgencies && this.selectedAgencies.length > 0) {
+        const check = new Set(this.selectedAgencies)
+        filtered = filtered.filter((stop) => {
+          let rss = stop.route_stops || []
+          if (stop.stop_ext && stop.stop_ext.target_active_stop) {
+            rss = stop.stop_ext.target_active_stop.route_stops
+          }
+          const stopAgencies = []
+          for (const rs of rss) {
+            if (rs.route && rs.route.agency) {
+              stopAgencies.push(rs.route.agency.agency_id)
+            }
+          }
+          return intersection(check, stopAgencies).size > 0
+        })
+      }
+      return filtered
+    },
+    stationFiltered () {
+      return {
+        id: this.station.id,
+        geometry: this.station.geometry,
+        levels: this.station.levels,
+        pathways: [],
+        stops: this.station.stops.filter((s) => { return s.location_type === 0 || s.location_type === 2 })
+      }
+    },
+    agencies () {
+      const ret = {}
+      for (const stop of this.station.stops) {
+        if (stop.stop_ext && stop.stop_ext.target_active_stop && stop.stop_ext.target_active_stop.route_stops) {
+          for (const rs of stop.stop_ext.target_active_stop.route_stops || []) {
+            ret[rs.route.agency.agency_id] = rs.route.agency.agency_name
+          }
+        }
+      }
+      for (const stop of this.nearbyStops || []) {
+        for (const rs of stop.route_stops || []) {
+          ret[rs.route.agency.agency_id] = rs.route.agency.agency_name
+        }
+      }
+      return ret
+    },
+    selectedStops () {
+      if (this.selectedStop) { return [this.selectedStop] }
+      return []
+    },
+    selectedStop () {
+      if (!this.station) {
+        return null
+      }
+      const s = this.$route.query.selectedStop
+      if (!s) {
+        return null
+      }
+      const si = parseInt(s)
+      for (const stop of this.station.stops) {
+        if (stop.id === si) {
+          return stop
+        }
+      }
+      for (const stop of this.nearbyStops) {
+        if (stop.id === si) {
+          return stop
+        }
+      }
+      return null
+    }
+  },
+  watch: {
+    'station.levels' () {
+      if ((this.selectedLevels || []).filter((s) => { return s }).length === 0) {
+        this.selectedLevels = this.station.levels.map((s) => { return s.id })
+        this.selectedLevels.push(null)
+      }
+    }
+  },
+  methods: {
+    updateStopHandler (ent) {
+      this.station.updateStop(this.$apollo, ent).then(() => { console.log('start refetch'); return this.refetch() }).then(() => { this.selectStop(node.id) }).catch(this.error)
+    },
+    importStopHandler (ent) {
+      this.station.importStop(this.$apollo, ent).then(() => { return this.refetch() }).then((data) => { this.selectStop(data.id) }).catch(this.error)
+    },
+    deleteStopHandler (entId) {
+      return this.station.deleteStop(this.$apollo, entId).then(() => { return this.refetch() }).then(() => { this.selectStop(null) }).catch(this.error)
+    },
+    selectStop (stopid) {
+      navigateTo({
+        query: { ...route.query, selectedStop: stopid }
+      })
+    }
+  }
+}
+</script>
+
+  <style scoped>
+  .help li {
+    margin-bottom:10px;
+  }
+  </style>
