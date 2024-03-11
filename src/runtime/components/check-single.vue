@@ -1,24 +1,28 @@
 <template>
-    <div>
+  <div>
     <tl-msg-info v-if="feedVersionSha1">
-        You are viewing the version of this entity defined by feed
-        <nuxt-link :to="{
-            name: 'feeds-feed',
-            params: { feed: feedOnestopId },
-        }">
-            {{ $filters.shortenName(feedOnestopId) }}
-        </nuxt-link>
-        version
-        <nuxt-link :to="{
-            name: 'feeds-feed-versions-version',
-            params: {
-                feed: feedOnestopId,
-                version: feedVersionSha1,
-            },
-        }">
-            {{ $filters.shortenName(feedVersionSha1, 8) }}
-        </nuxt-link>.<br>
-        <!-- <template v-if="!search">
+      You are viewing the version of this entity defined by feed
+      <nuxt-link
+        :to="{
+          name: 'feeds-feed',
+          params: { feed: feedOnestopId },
+        }"
+      >
+        {{ $filters.shortenName(feedOnestopId) }}
+      </nuxt-link>
+      version
+      <nuxt-link
+        :to="{
+          name: 'feeds-feed-versions-version',
+          params: {
+            feed: feedOnestopId,
+            version: feedVersionSha1,
+          },
+        }"
+      >
+        {{ $filters.shortenName(feedVersionSha1, 8) }}
+      </nuxt-link>.<br>
+      <!-- <template v-if="!search">
             Click
             <nuxt-link :to="{
                 name: 'stops-onestop_id',
@@ -29,14 +33,14 @@
             to return to the main view.
         </template> -->
     </tl-msg-info>
-    </div>
+  </div>
 </template>
 
 <script>
 export default {
-    props: {
-        feedOnestopId: { type: String },
-        feedVersionSha1: { type: String }
-    }
+  props: {
+    feedOnestopId: { type: String },
+    feedVersionSha1: { type: String }
+  }
 }
 </script>

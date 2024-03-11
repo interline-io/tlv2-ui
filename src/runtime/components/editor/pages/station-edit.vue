@@ -1,38 +1,17 @@
 <template>
-  <div>
-    <Head>
-      <Title>Edit Station: {{ station?.stop_name }}</Title>
-    </Head>
-    <tl-editor-breadcrumbs
-      :feed-key="feedKey"
-      :feed-name="feedName"
-      :feed-version-key="feedVersionKey"
-      :station-key="stationKey"
-      :station-name="stationName"
-    >
-      <li class="is-active">
-        <a href="#">Edit Station</a>
-      </li>
-    </tl-editor-breadcrumbs>
-
-    <div v-if="station" class="content">
-      <h2 class="title is-2">
-        Edit Station
-      </h2>
-
-      <tl-editor-station-editor
-        :center="station.geometry.coordinates"
-        :value="station"
-        @update="updateStationHandler"
-        @delete="deleteStationCheck"
-      />
-    </div>
+  <div v-if="station">
+    <tl-editor-station-editor
+      :center="station.geometry.coordinates"
+      :value="station"
+      @update="updateStationHandler"
+      @delete="deleteStationCheck"
+    />
   </div>
 </template>
 
 <script>
-import StationMixin from './station-mixin'
 import { navigateTo } from '#app'
+import StationMixin from './station-mixin'
 
 export default {
   mixins: [StationMixin],

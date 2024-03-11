@@ -1,15 +1,6 @@
 <template>
   <div>
-    <tl-editor-breadcrumbs />
     <div class="content">
-      <h2 class="title is-2">
-        Editor
-      </h2>
-
-      <p class="content is-medium">
-        Or select a feed and an editing mode:
-      </p>
-
       <table v-if="feeds" cellspacing="10">
         <thead>
           <tr>
@@ -28,10 +19,10 @@
             </td>
             <td>
               <nuxt-link
-                v-if="feed_version.file "
+                v-if="feed_version.file"
                 :to="{name:'editor-feedKey-feedVersionKey-stations', params: {
-                  feedKey:feed.onestop_id,
-                  feedVersionKey:feed_version.file
+                  feedKey:feed.onestop_id || 'unknown',
+                  feedVersionKey:feed_version.file || 'unknown'
                 }}"
               >
                 Edit {{ feed_version.stations ? feed_version.stations.length : '' }} Stations

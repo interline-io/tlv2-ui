@@ -1,33 +1,16 @@
 <template>
-  <div v-if="!$apollo.loading">
-    <tl-editor-breadcrumbs
-      :feed-key="feedKey"
-      :feed-name="feedName"
-      :feed-version-key="feedVersionKey"
-      :station-key="stationKey"
-      :station-name="stationName"
-    >
-      <li class="is-active">
-        <a href="#">New Level</a>
-      </li>
-    </tl-editor-breadcrumbs>
-    <div class="content">
-      <h2 class="title is-2">
-        New Level
-      </h2>
-
-      <tl-editor-level-editor
-        :station="station"
-        :center="station.geometry.coordinates"
-        @create="createLevelHandler"
-      />
-    </div>
+  <div v-if="station">
+    <tl-editor-level-editor
+      :station="station"
+      :center="station.geometry.coordinates"
+      @create="createLevelHandler"
+    />
   </div>
 </template>
 
 <script>
-import StationMixin from './station-mixin'
 import { navigateTo } from '#app'
+import StationMixin from './station-mixin'
 
 export default {
   mixins: [StationMixin],

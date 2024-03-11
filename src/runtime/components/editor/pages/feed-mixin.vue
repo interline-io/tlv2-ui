@@ -41,18 +41,16 @@ export default {
       }
     }
   },
+  props: {
+    feedKey: { type: String, default: null },
+    feedVersionKey: { type: String, default: null }
+  },
   data () {
     return {
       feeds: []
     }
   },
   computed: {
-    feedKey () {
-      return this.$route.params.feedKey
-    },
-    feedVersionKey () {
-      return this.$route.params.feedVersionKey
-    },
     feed_version () {
       return this.feed && this.feed.feed_versions ? this.feed.feed_versions[0] : null
     },
@@ -63,7 +61,7 @@ export default {
       return this.feed ? this.feed.name : null
     },
     stations () {
-      return this.feed && this.feed.feed_versions ? this.feed.feed_versions[0].stations : null
+      return this.feed_version ? this.feed_version.stations : null
     }
   },
   methods: {

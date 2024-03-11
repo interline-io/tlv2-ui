@@ -1,34 +1,17 @@
 <template>
-  <div>
-    <tl-editor-breadcrumbs
-      :feed-key="feedKey"
-      :feed-name="feedName"
-      :feed-version-key="feedVersionKey"
-    >
-      <li class="is-active">
-        <a href="#">New Station</a>
-      </li>
-    </tl-editor-breadcrumbs>
-
-    <div v-if="feed_version" class="content">
-      <h2 class="title is-2">
-        New Station
-      </h2>
-      station: {{ station }}
-
-      <tl-editor-station-editor
-        :value="newStation()"
-        @create="createStationHandler"
-      />
-    </div>
+  <div v-if="feed_version">
+    <tl-editor-station-editor
+      :value="newStation()"
+      @create="createStationHandler"
+    />
   </div>
 </template>
 
 <script>
 // Note: this uses FeedMixin, not station mixin.
+import { navigateTo } from '#app'
 import { Station, Stop } from '../station'
 import FeedMixin from './feed-mixin'
-import { navigateTo } from '#app'
 
 export default {
   mixins: [FeedMixin],

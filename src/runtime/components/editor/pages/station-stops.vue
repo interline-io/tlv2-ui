@@ -1,21 +1,13 @@
 <template>
-  <div>
-    <Head>
-      <Title>Station Assign Stops: {{ station ? station.stop_name : '' }}</Title>
-    </Head>
-    <tl-editor-breadcrumbs
+  <div v-if="station">
+    <tl-editor-station-mode-tabs
+      :station="station"
       :feed-key="feedKey"
-      :feed-name="feedName"
       :feed-version-key="feedVersionKey"
       :station-key="stationKey"
-      :station-name="stationName"
-    >
-      <li class="is-active">
-        <a href="#">Assign Stops</a>
-      </li>
-    </tl-editor-breadcrumbs>
-    <tl-editor-station-mode-tabs :station="station" :feed-key="feedKey" :feed-version-key="feedVersionKey" :station-key="stationKey" />
-    <div v-if="station" class="columns">
+    />
+
+    <div class="columns">
       <div class="column is-narrow">
         <div style="width:460px">
           <o-collapse class="card">
@@ -402,7 +394,7 @@ export default {
     },
     selectStop (stopid) {
       navigateTo({
-        query: { ...route.query, selectedStop: stopid }
+        query: { ...this.$route.query, selectedStop: stopid }
       })
     }
   }

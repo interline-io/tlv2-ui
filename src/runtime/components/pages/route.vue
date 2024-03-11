@@ -5,7 +5,6 @@
       {{ error }}
     </tl-msg-error>
     <div v-else-if="entity">
-      <Title>{{ staticTitle }}</Title>
       <Meta name="description" :content="staticDescription" />
       <Meta name="twitter:title" :content="staticTitle" />
       <Meta name="twitter:description" :content="staticDescription" />
@@ -58,15 +57,19 @@
         </nav>
       </slot>
 
-      <h1 v-for="ent of routeNames" :key="ent.id" class="title">
-        {{ ent.agency.agency_name }} <br>
-        <tl-route-icon
-          :route-link="ent.route_url"
-          :route-type="ent.route_type"
-          :route-short-name="ent.route_short_name"
-          :route-long-name="ent.route_long_name"
-        />
-      </h1>
+      <slot name="title">
+        <tl-title :title="staticTitle">
+          <div v-for="ent of routeNames" :key="ent.id" class="title">
+            {{ ent.agency.agency_name }} <br>
+            <tl-route-icon
+              :route-link="ent.route_url"
+              :route-type="ent.route_type"
+              :route-short-name="ent.route_short_name"
+              :route-long-name="ent.route_long_name"
+            />
+          </div>
+        </tl-title>
+      </slot>
 
       <!-- Warnings for freshness and viewing a specific version -->
       <tl-check-fresh :fetched="entity.feed_version.fetched_at" />
@@ -276,8 +279,8 @@
 
 <script>
 import gql from 'graphql-tag'
-import EntityPageMixin from './entity-page-mixin'
 import { useRuntimeConfig } from '#app'
+import EntityPageMixin from './entity-page-mixin'
 
 const q = gql`
 query ($onestop_id: String, $ids: [Int!], $entity_id: String, $feed_onestop_id: String, $feed_version_sha1: String, $include_stops: Boolean! = true, $allow_previous_onestop_ids: Boolean = false) {

@@ -1,20 +1,5 @@
 <template>
   <div>
-    <Head>
-      <Title>Stop ID associations</Title>
-    </Head>
-    <tl-editor-breadcrumbs
-      :feed-key="feedKey"
-      :feed-name="feedName"
-      :feed-version-key="feedVersionKey"
-    >
-      <li class="is-active">
-        <a href="#">Stop ID associations</a>
-      </li>
-    </tl-editor-breadcrumbs>
-    <h2 class="title is-2">
-      Stop ID associations
-    </h2>
     <o-loading v-model="$apollo.loading" :is-full-page="false" />
     <o-table
       :data="stopsWithRefs"

@@ -1,20 +1,12 @@
 <template>
-  <div>
-    <Head>
-      <Title>Station Pathways: {{ station?.stop_name }}</Title>
-    </Head>
-    <tl-editor-breadcrumbs
+  <div v-if="station">
+    <tl-editor-station-mode-tabs
+      :station="station"
       :feed-key="feedKey"
-      :feed-name="feedName"
       :feed-version-key="feedVersionKey"
       :station-key="stationKey"
-      :station-name="stationName"
-    >
-      <li class="is-active">
-        <a href="#">Edit Pathways</a>
-      </li>
-    </tl-editor-breadcrumbs>
-    <tl-editor-station-mode-tabs :station="station" :feed-key="feedKey" :feed-version-key="feedVersionKey" :station-key="stationKey" />
+    />
+
     <div v-if="ready" class="columns">
       <div class="column is-narrow">
         <div class="block" style="width: 540px;">

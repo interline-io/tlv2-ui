@@ -1,6 +1,5 @@
 <template>
   <div class="container">
-    <Title>{{ staticTitle }}</Title>
     <Meta name="description" :content="staticDescription" />
     <Meta name="twitter:title" :content="staticTitle" />
     <Meta name="twitter:description" :content="staticDescription" />
@@ -10,9 +9,7 @@
     <slot name="nav" />
 
     <slot name="title">
-      <h1 class="is-1 title">
-        Operators
-      </h1>
+      <tl-title :title="staticTitle" />
     </slot>
 
     <slot name="description" />

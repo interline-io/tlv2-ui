@@ -1,6 +1,5 @@
 <template>
   <div>
-    <Title>{{ staticTitle }}</Title>
     <Meta name="description" :content="staticDescription" />
     <Meta name="twitter:title" :content="staticTitle" />
     <Meta name="twitter:description" :content="staticDescription" />
@@ -8,10 +7,9 @@
     <Meta name="og:description" :content="staticDescription" />
 
     <slot name="nav" />
+
     <slot name="title">
-      <h1 class="title">
-        Feeds
-      </h1>
+      <tl-title :title="staticTitle" />
     </slot>
 
     <slot name="description" />
