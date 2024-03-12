@@ -3,7 +3,7 @@
     <slot name="nav">
       <nav class="breadcrumb box" aria-label="breadcrumbs">
         <ul>
-          <li>
+          <li class="is-active">
             <a href="#">Editor</a>
           </li>
         </ul>

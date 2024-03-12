@@ -12,7 +12,7 @@
             <span class="tag">Feed</span>
             <a href="#">{{ feedName }}</a>
           </li>
-          <li>
+          <li class="is-active">
             <span class="tag">Version</span>
             <nuxt-link
               :to="{name:'editor-feedKey-feedVersionKey-stations',params:{feedKey,feedVersionKey}}"

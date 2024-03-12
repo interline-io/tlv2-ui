@@ -3,8 +3,10 @@
     <slot name="nav">
       <nav class="breadcrumb box" aria-label="breadcrumbs">
         <ul>
-          <li>
-            <a href="#">Admin</a>
+          <li class="is-active">
+            <nuxt-link :to="{name:'admin'}">
+              Admin
+            </nuxt-link>
           </li>
         </ul>
       </nav>
