@@ -29,7 +29,7 @@
         <nuxt-link
           :to="{name:routeKeys['diagram'], params: {feedKey:feedKey,feedVersionKey:feedVersionKey,stationKey:stationKey}}"
         >
-          <i class="mdi mdi-chart-timeline mdi-16px" /> &nbsp; View Diagram
+          <i class="mdi mdi-chart-timeline mdi-16px" /> &nbsp; Station Diagram
         </nuxt-link>
       </li>
     </ul>

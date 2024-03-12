@@ -123,11 +123,14 @@ export default {
     feedName () {
       return this.feed ? this.feed.name : null
     },
-    feed_version() {
-      return this.feed?.feed_versions[0]
-    },
     stationName () {
-      return this.station ? this.station.stop.stop_name : null
+      return this.station?.stop.stop_name
+    },
+    feedVersion () {
+      return this.feed && this.feed.feed_versions ? this.feed.feed_versions[0] : null
+    },
+    feedVersionName() {
+      return (this.feedVersion?.file || this.feedVersionKey || '').substr(0, 8)
     },
     stopIndex () {
       const a = new Map()

@@ -1,5 +1,19 @@
 <template>
   <div>
+    <slot name="nav">
+      <nav class="breadcrumb box" aria-label="breadcrumbs">
+        <ul>
+          <li>
+            <a href="#">Editor</a>
+          </li>
+        </ul>
+      </nav>
+    </slot>
+
+    <slot name="title">
+      <tl-title title="Editor" />
+    </slot>
+
     <div class="content">
       <table v-if="feeds" cellspacing="10">
         <thead>

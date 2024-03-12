@@ -51,7 +51,7 @@ export default {
     }
   },
   computed: {
-    feed_version () {
+    feedVersion () {
       return this.feed && this.feed.feed_versions ? this.feed.feed_versions[0] : null
     },
     feed () {
@@ -60,8 +60,11 @@ export default {
     feedName () {
       return this.feed ? this.feed.name : null
     },
+    feedVersionName() {
+      return (this.feedVersion?.file || this.feedVersionKey || '').substr(0, 8)
+    },
     stations () {
-      return this.feed_version ? this.feed_version.stations : null
+      return this.feedVersion ? this.feedVersion.stations : null
     }
   },
   methods: {

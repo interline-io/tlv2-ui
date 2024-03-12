@@ -29,9 +29,9 @@ query stationQuery ($stop_id: String, $feed_onestop_id: String!, $feed_version_f
       level {
         ...level
       }
-      child_levels {
-        ...level
-      }
+      # child_levels {
+      #   ...level
+      # }
       feed_version {
         id
         sha1

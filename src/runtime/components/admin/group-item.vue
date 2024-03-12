@@ -4,7 +4,7 @@
       <nuxt-link
         target="_blank"
         class="tag is-medium desc"
-        :to="{name:'admin-groups-group', params:{tenant: '1', group:value.id}}"
+        :to="{name:'admin-groups-groupKey', params:{groupKey:value.id}}"
       >
         <o-icon
           icon="account-group"

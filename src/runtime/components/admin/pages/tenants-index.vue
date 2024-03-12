@@ -1,12 +1,31 @@
 <template>
-  <div class="content">
-    <h2 class="title is-2">
-      Tenants
-    </h2>
+  <div>
+    <slot name="nav">
+      <nav class="breadcrumb box" aria-label="breadcrumbs">
+        <ul>
+          <li>
+            <nuxt-link :to="{ name: 'admin'}">
+              Admin
+            </nuxt-link>
+          </li>
+          <li class="is-active">
+            <nuxt-link :to="{ name: 'admin-tenants'}">
+              Tenants
+            </nuxt-link>
+          </li>
+        </ul>
+      </nav>
+    </slot>
 
-    <p class="content is-medium">
-      Tenants are used by system administrators to organize groups and additional authorization information.
-    </p>
+    <slot name="title">
+      <tl-title title="Tenants" />
+    </slot>
+
+    <slot name="description">
+      <p class="content is-medium">
+        Tenants are used by system administrators to organize groups and additional authorization information.
+      </p>
+    </slot>
 
     <o-loading v-model:active="loading" :full-page="false" />
 
@@ -22,8 +41,8 @@
         v-for="tenant of nameSorted(tenants)"
         :key="tenant.id"
       >
-        <nuxt-link :to="{ name: 'admin-tenants-tenant', params: { tenant: tenant.id } }">
-          {{ tenant.id }} <span v-if="tenant.name">: {{ tenant.name }}</span>
+        <nuxt-link :to="{ name: 'admin-tenants-tenantKey', params: { tenantKey: tenant.id } }">
+          <span v-if="tenant.name">{{ tenant.name }}</span>
         </nuxt-link>
       </li>
     </ul>

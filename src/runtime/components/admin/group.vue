@@ -31,7 +31,7 @@
               <nuxt-link
                 v-if="group.tenant"
                 class="button mr-2 is-small"
-                :to="{ name: 'admin-tenants-tenant', params: { tenant: group.tenant.id }}"
+                :to="{ name: 'admin-tenants-tenantKey', params: { tenantKey: group.tenant.id }}"
               >
                 View tenant
               </nuxt-link>

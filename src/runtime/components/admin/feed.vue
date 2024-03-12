@@ -38,7 +38,7 @@
           <o-field>
             <nuxt-link
               class="button is-small mr-2"
-              :to="{ name: 'admin-groups-group', params: { group: feed.group.id }}"
+              :to="{ name: 'admin-groups-groupKey', params: { groupKey: feed.group.id }}"
             >
               Show group
             </nuxt-link>
