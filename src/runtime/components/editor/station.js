@@ -1,5 +1,4 @@
 import { gql } from 'graphql-tag'
-import haversine from 'haversine'
 import { RoutingGraph } from './graph'
 
 export const stationQuery = gql`
@@ -15,7 +14,6 @@ query stationQuery ($stop_id: String, $feed_onestop_id: String!, $feed_version_f
   feed_versions(where: {file: $feed_version_file, feed_onestop_id: $feed_onestop_id}) {
     stops(limit: 1, where: {stop_id: $stop_id}) {
       id
-      # onestop_id
       stop_id
       stop_name
       location_type
@@ -31,9 +29,9 @@ query stationQuery ($stop_id: String, $feed_onestop_id: String!, $feed_version_f
       level {
         ...level
       }
-      child_levels {
-        ...level
-      }
+      # child_levels {
+      #   ...level
+      # }
       feed_version {
         id
         sha1
@@ -191,6 +189,13 @@ function def (v, d) {
     return d
   }
   return v
+}
+
+export const routeKeys = {
+  levels: 'editor-feedKey-feedVersionKey-stations-stationKey',
+  stops: 'editor-feedKey-feedVersionKey-stations-stationKey-stops',
+  pathways: 'editor-feedKey-feedVersionKey-stations-stationKey-pathways',
+  diagram: 'editor-feedKey-feedVersionKey-stations-stationKey-diagram'
 }
 
 export class FeedVersion {

@@ -3,7 +3,7 @@
     <ul>
       <li :class="(activeTab === 'levels') ? 'is-active' : ''">
         <nuxt-link
-          :to="{name:'editor-feedKey-feedVersionKey-stations-stationKey', params: {feedKey:feedKey,feedVersionKey:feedVersionKey,stationKey:stationKey}}"
+          :to="{name:routeKeys['levels'], params: {feedKey:feedKey,feedVersionKey:feedVersionKey,stationKey:stationKey}}"
         >
           <i class="mdi mdi-layers mdi-16px" /> &nbsp; Draw Levels
         </nuxt-link>
@@ -11,14 +11,14 @@
       <li :class="(activeTab === 'stops') ? 'is-active' : ''">
         <span>
           <nuxt-link
-            :to="{name:'editor-feedKey-feedVersionKey-stations-stationKey-stops', params: {feedKey:feedKey,feedVersionKey:feedVersionKey,stationKey:stationKey}}"
+            :to="{name:routeKeys['stops'], params: {feedKey:feedKey,feedVersionKey:feedVersionKey,stationKey:stationKey}}"
           >
             <i class="mdi mdi-map-marker mdi-16px" /> &nbsp; Assign Stops to Platforms
           </nuxt-link></span>
       </li>
       <li :class="(activeTab === 'pathways') ? 'is-active' : ''">
         <nuxt-link
-          :to="{name:'editor-feedKey-feedVersionKey-stations-stationKey-pathways', params: {feedKey:feedKey,feedVersionKey:feedVersionKey,stationKey:stationKey}}"
+          :to="{name:routeKeys['pathways'], params: {feedKey:feedKey,feedVersionKey:feedVersionKey,stationKey:stationKey}}"
           :event="pathwaysModeEnabled ? 'click' : ''"
           :class="pathwaysModeEnabled ? '' : 'disabled'"
         >
@@ -27,9 +27,9 @@
       </li>
       <li :class="(activeTab === 'diagram') ? 'is-active' : ''">
         <nuxt-link
-          :to="{name:'editor-feedKey-feedVersionKey-stations-stationKey-diagram', params: {feedKey:feedKey,feedVersionKey:feedVersionKey,stationKey:stationKey}}"
+          :to="{name:routeKeys['diagram'], params: {feedKey:feedKey,feedVersionKey:feedVersionKey,stationKey:stationKey}}"
         >
-          <i class="mdi mdi-chart-timeline mdi-16px" /> &nbsp; View Diagram
+          <i class="mdi mdi-chart-timeline mdi-16px" /> &nbsp; Station Diagram
         </nuxt-link>
       </li>
     </ul>
@@ -37,6 +37,8 @@
 </template>
 
 <script>
+import { routeKeys } from './station'
+
 export default {
   props: {
     station: {
@@ -56,19 +58,19 @@ export default {
       default: null
     }
   },
+  data () { return { routeKeys } },
   computed: {
     pathwaysModeEnabled () {
       return (this.station && this.station.stops && this.station.stops.length > 0)
     },
+    currentRoute () {
+      return this.$route.name
+    },
     activeTab () {
-      if (this.$route.name === 'editor-feedKey-feedVersionKey-stations-stationKey') {
-        return 'levels'
-      } else if (this.$route.name === 'editor-feedKey-feedVersionKey-stations-stationKey-stops') {
-        return 'stops'
-      } else if (this.$route.name === 'editor-feedKey-feedVersionKey-stations-stationKey-pathways') {
-        return 'pathways'
-      } else if (this.$route.name === 'editor-feedKey-feedVersionKey-stations-stationKey-diagram') {
-        return 'diagram'
+      for (const [k, r] of Object.entries(routeKeys)) {
+        if (this.currentRoute === r) {
+          return k
+        }
       }
       return ''
     }

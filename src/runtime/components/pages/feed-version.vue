@@ -5,7 +5,6 @@
       {{ error }}
     </tl-msg-error>
     <div v-else-if="entity">
-      <Title>{{ staticTitle }}</Title>
       <Meta name="description" :content="staticDescription" />
       <Meta name="twitter:title" :content="staticTitle" />
       <Meta name="twitter:description" :content="staticDescription" />
@@ -34,9 +33,11 @@
         </nav>
       </slot>
 
-      <h1 class="title">
-        GTFS feed: {{ operatorOrAgencyNames }} version fetched {{ $filters.formatDate(entity.fetched_at) }} ({{ $filters.fromNow(entity.fetched_at) }})
-      </h1>
+      <slot name="title">
+        <tl-title :title="staticTitle">
+          GTFS feed: {{ operatorOrAgencyNames }} version fetched {{ $filters.formatDate(entity.fetched_at) }} ({{ $filters.fromNow(entity.fetched_at) }})
+        </tl-title>
+      </slot>
 
       <nav class="level">
         <div class="level-item has-text-centered">

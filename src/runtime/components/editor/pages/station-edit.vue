@@ -1,38 +1,58 @@
 <template>
-  <div>
-    <Head>
-      <Title>Edit Station: {{ station?.stop_name }}</Title>
-    </Head>
-    <tl-editor-breadcrumbs
-      :feed-key="feedKey"
-      :feed-name="feedName"
-      :feed-version-key="feedVersionKey"
-      :station-key="stationKey"
-      :station-name="stationName"
-    >
-      <li class="is-active">
-        <a href="#">Edit Station</a>
-      </li>
-    </tl-editor-breadcrumbs>
+  <div v-if="station">
+    <slot name="nav">
+      <nav class="breadcrumb box" aria-label="breadcrumbs">
+        <ul>
+          <li>
+            <nuxt-link :to="{name:'editor'}">
+              Editor
+            </nuxt-link>
+          </li>
+          <li>
+            <span class="tag">Feed</span>
+            <a href="#">{{ feedName }}</a>
+          </li>
+          <li>
+            <span class="tag">Version</span>
+            <nuxt-link
+              :to="{name:'editor-feedKey-feedVersionKey-stations',params:{feedKey,feedVersionKey}}"
+            >
+              {{ feedVersionName }}
+            </nuxt-link>
+          </li>
+          <li>
+            <span class="tag">Station</span>
+            <nuxt-link
+              :to="{name:'editor-feedKey-feedVersionKey-stations-stationKey',params:{feedKey,feedVersionKey,stationKey}}"
+            >
+              {{ stationName }}
+            </nuxt-link>
+          </li>
+          <li class="is-active">
+            <a href="#">Edit Station</a>
+          </li>
+        </ul>
+      </nav>
+    </slot>
 
-    <div v-if="station" class="content">
-      <h2 class="title is-2">
-        Edit Station
-      </h2>
+    <slot name="title">
+      <tl-title title="Edit Station">
+        Edit Station: {{ stationName }}
+      </tl-title>
+    </slot>
 
-      <tl-editor-station-editor
-        :center="station.geometry.coordinates"
-        :value="station"
-        @update="updateStationHandler"
-        @delete="deleteStationCheck"
-      />
-    </div>
+    <tl-editor-station-editor
+      :center="station.geometry.coordinates"
+      :value="station"
+      @update="updateStationHandler"
+      @delete="deleteStationCheck"
+    />
   </div>
 </template>
 
 <script>
-import StationMixin from './station-mixin'
 import { navigateTo } from '#app'
+import StationMixin from './station-mixin'
 
 export default {
   mixins: [StationMixin],

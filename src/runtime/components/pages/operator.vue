@@ -2,7 +2,6 @@
   <div>
     <div v-if="$apollo.loading" class="is-loading" />
     <div v-else-if="entity">
-      <Title>{{ staticTitle }}</Title>
       <Meta name="description" :content="staticDescription" />
       <Meta name="twitter:title" :content="staticTitle" />
       <Meta name="twitter:description" :content="staticDescription" />
@@ -23,9 +22,9 @@
         </ul>
       </nav>
 
-      <h1 class="title">
+      <tl-title :title="staticTitle">
         {{ operatorName }}
-      </h1>
+      </tl-title>
 
       <!-- Warnings for freshness and viewing a specific version -->
       <tl-check-fresh :fetched="dataFreshness" />

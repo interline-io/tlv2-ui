@@ -24,14 +24,6 @@ query currentFeeds ($feed_onestop_id: String, $feed_version_file: String) {
   }
 }`
 
-// function difference (setA, setB) {
-//   const _difference = new Set(setA)
-//   for (const elem of setB) {
-//     _difference.delete(elem)
-//   }
-//   return _difference
-// }
-
 function symmetricDifference (setA, setB) {
   const _difference = new Set(setA)
   for (const elem of setB) {
@@ -56,7 +48,7 @@ export default {
       variables () {
         return {
           feed_onestop_id: this.feedKey,
-          feed_version_file: this.$route.params.feedVersionKey
+          feed_version_file: this.feedVersionKey
         }
       }
     },
@@ -110,6 +102,12 @@ export default {
       }
     }
   },
+  props: {
+    feedKey: { type: String, default: '', required: true },
+    feedVersionKey: { type: String, default: '', required: true },
+    stationKey: { type: String, default: '' },
+    levelKey: { type: String, default: '' }
+  },
   data () {
     return {
       ready: false,
@@ -119,29 +117,20 @@ export default {
     }
   },
   computed: {
-    feedKey () {
-      return this.$route.params.feedKey
-    },
     feed () {
       return this.feeds && this.feeds.length === 1 ? this.feeds[0] : null
     },
     feedName () {
       return this.feed ? this.feed.name : null
     },
-    feedVersionKey () {
-      return this.$route.params.feedVersionKey
-    },
-    stationKey () {
-      return this.$route.params.stationKey
-    },
     stationName () {
-      return this.station ? this.station.stop.stop_name : null
+      return this.station?.stop.stop_name
     },
-    levelKey () {
-      return this.$route.params.levelKey
+    feedVersion () {
+      return this.feed && this.feed.feed_versions ? this.feed.feed_versions[0] : null
     },
-    station_has_at_least_one_stop_assigned () {
-      return this.station.levels.length > 0
+    feedVersionName() {
+      return (this.feedVersion?.file || this.feedVersionKey || '').substr(0, 8)
     },
     stopIndex () {
       const a = new Map()

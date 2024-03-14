@@ -5,7 +5,6 @@
       {{ error }}
     </tl-msg-error>
     <div v-else-if="entity">
-      <Title>{{ staticTitle }}</Title>
       <Meta name="description" :content="staticDescription" />
       <Meta name="twitter:title" :content="staticTitle" />
       <Meta name="twitter:description" :content="staticDescription" />
@@ -15,7 +14,7 @@
       <nav class="breadcrumb">
         <ul>
           <li>
-            <a href="#">Stops            </a>
+            <a href="#">Stops</a>
           </li>
           <li>
             <nuxt-link :to="{name: 'stops-onestop_id', params:{onestop_id:$route.params.onestop_id}}">
@@ -24,9 +23,12 @@
           </li>
         </ul>
       </nav>
-      <h1 class="title">
-        {{ entity.stop_name }}
-      </h1>
+
+      <slot name="title">
+        <tl-title :title="entity.stop_name">
+          {{ entity.stop_name }}
+        </tl-title>
+      </slot>
 
       <!-- Warnings for freshness and viewing a specific version -->
       <tl-check-fresh :fetched="entity.feed_version.fetched_at" />

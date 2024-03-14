@@ -5,7 +5,6 @@
       {{ error }}
     </tl-msg-error>
     <div v-else-if="entity">
-      <Title>{{ staticTitle }}</Title>
       <Meta name="description" :content="staticDescription" />
       <Meta name="twitter:title" :content="staticTitle" />
       <Meta name="twitter:description" :content="staticDescription" />
@@ -29,9 +28,11 @@
         </nav>
       </slot>
 
-      <h1 class="title">
-        {{ feedSpec }} feed: {{ operatorNames }}
-      </h1>
+      <slot name="title">
+        <tl-title :title="staticTitle">
+          {{ feedSpec }} feed: {{ operatorNames }}
+        </tl-title>
+      </slot>
 
       <div class="columns">
         <div class="column">

@@ -1,34 +1,48 @@
 <template>
-  <div>
-    <tl-editor-breadcrumbs
-      :feed-key="feedKey"
-      :feed-name="feedName"
-      :feed-version-key="feedVersionKey"
-    >
-      <li class="is-active">
-        <a href="#">New Station</a>
-      </li>
-    </tl-editor-breadcrumbs>
+  <div v-if="feedVersion">
+    <slot name="nav">
+      <nav class="breadcrumb box" aria-label="breadcrumbs">
+        <ul>
+          <li>
+            <nuxt-link :to="{name:'editor'}">
+              Editor
+            </nuxt-link>
+          </li>
+          <li>
+            <span class="tag">Feed</span>
+            <a href="#">{{ feedName }}</a>
+          </li>
+          <li>
+            <span class="tag">Version</span>
+            <nuxt-link
+              :to="{name:'editor-feedKey-feedVersionKey-stations',params:{feedKey,feedVersionKey}}"
+            >
+              {{ feedVersionName }}
+            </nuxt-link>
+          </li>
+          <li class="is-active">
+            <a href="#">New Station</a>
+          </li>
+        </ul>
+      </nav>
+    </slot>
 
-    <div v-if="feed_version" class="content">
-      <h2 class="title is-2">
-        New Station
-      </h2>
-      station: {{ station }}
+    <slot name="title">
+      <tl-title title="New Station" />
+    </slot>
 
-      <tl-editor-station-editor
-        :value="newStation()"
-        @create="createStationHandler"
-      />
-    </div>
+    <tl-editor-station-editor
+      :value="newStation()"
+      @create="createStationHandler"
+    />
   </div>
 </template>
 
 <script>
 // Note: this uses FeedMixin, not station mixin.
+import { navigateTo } from '#app'
 import { Station, Stop } from '../station'
 import FeedMixin from './feed-mixin'
-import { navigateTo } from '#app'
 
 export default {
   mixins: [FeedMixin],
@@ -37,7 +51,7 @@ export default {
   },
   methods: {
     newStation () {
-      return new Station(new Stop({ feed_version: { id: this.feed_version.id } })).setDefaults()
+      return new Station(new Stop({ feedVersion: { id: this.feedVersion.id } })).setDefaults()
     },
     createStationHandler (station) {
       station.createStation(this.$apollo, station.stop).then(() => {

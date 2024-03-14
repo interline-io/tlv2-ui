@@ -1,20 +1,53 @@
 <template>
-  <div>
-    <Head>
-      <Title>View Diagram: {{ station?.stop_name }}</Title>
-    </Head>
-    <tl-editor-breadcrumbs
+  <div v-if="station">
+    <slot name="nav">
+      <nav class="breadcrumb box" aria-label="breadcrumbs">
+        <ul>
+          <li>
+            <nuxt-link :to="{name:'editor'}">
+              Editor
+            </nuxt-link>
+          </li>
+          <li>
+            <span class="tag">Feed</span>
+            <a href="#">{{ feedName }}</a>
+          </li>
+          <li>
+            <span class="tag">Version</span>
+            <nuxt-link
+              :to="{name:'editor-feedKey-feedVersionKey-stations',params:{feedKey,feedVersionKey}}"
+            >
+              {{ feedVersionName }}
+            </nuxt-link>
+          </li>
+          <li>
+            <span class="tag">Station</span>
+            <nuxt-link
+              :to="{name:'editor-feedKey-feedVersionKey-stations-stationKey',params:{feedKey,feedVersionKey,stationKey}}"
+            >
+              {{ stationName }}
+            </nuxt-link>
+          </li>
+          <li class="is-active">
+            <a href="#">Station Diagram</a>
+          </li>
+        </ul>
+      </nav>
+    </slot>
+
+    <slot name="title">
+      <tl-title title="Edit Station">
+        Station Diagram: {{ stationName }}
+      </tl-title>
+    </slot>
+
+    <tl-editor-station-mode-tabs
+      :station="station"
       :feed-key="feedKey"
-      :feed-name="feedName"
       :feed-version-key="feedVersionKey"
       :station-key="stationKey"
-      :station-name="stationName"
-    >
-      <li class="is-active">
-        <a href="#">Station Diagram</a>
-      </li>
-    </tl-editor-breadcrumbs>
-    <tl-editor-station-mode-tabs :station="station" :feed-key="feedKey" :feed-version-key="feedVersionKey" :station-key="stationKey" />
+    />
+
     <div v-if="ready" class="columns">
       <div class="column is-narrow">
         <div class="block" style="width: 540px;">
@@ -91,8 +124,8 @@
 import fcose from 'cytoscape-fcose'
 import { schemeRdGy, schemeDark2 } from 'd3-scale-chromatic'
 import { nextTick } from 'vue'
-import StationMixin from './station-mixin'
 import { navigateTo } from '#app'
+import StationMixin from './station-mixin'
 
 const CYTOSCAPE_CONFIG = {
   style: [

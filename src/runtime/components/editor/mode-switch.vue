@@ -3,23 +3,23 @@
     <label class="label pr-2">View this stop in:</label>
     <nuxt-link
       :to="{
-        name: 'editor-feedKey-feedVersionKey-stations-stationKey-pathways',
+        name: routeKeys['pathways'],
         params: params,
         query: query
       }"
       class="button is-primary is-expanded is-small"
-      :class="$route.name === 'editor-feedKey-feedVersionKey-stations-stationKey-pathways' ? 'is-active' : 'is-outlined'"
+      :class="selectedMode === 'pathways' ? 'is-active' : 'is-outlined'"
     >
       Pathways Editor
     </nuxt-link>
     <nuxt-link
       :to="{
-        name: 'editor-feedKey-feedVersionKey-stations-stationKey-diagram',
+        name: routeKeys['diagram'],
         params: params,
         query: query
       }"
       class="button is-primary is-expanded is-small"
-      :class="$route.name === 'editor-feedKey-feedVersionKey-stations-stationKey-diagram' ? 'is-active' : 'is-outlined'"
+      :class="selectedMode === 'diagram' ? 'is-active' : 'is-outlined'"
     >
       Diagram Viewer
     </nuxt-link>
@@ -27,6 +27,8 @@
 </template>
 
 <script>
+import { routeKeys } from './station'
+
 export default {
   props: {
     params: {
@@ -36,6 +38,19 @@ export default {
     query: {
       type: Object,
       default: () => {}
+    }
+  },
+  data() { return { routeKeys } },
+  computed: {
+    selectedMode() {
+      // TODO: pass this in?
+      const currentRoute = this.$route.name
+      for (const [k, r] in Object.entries(routeKeys)) {
+        if (currentRoute === r) {
+          return k
+        }
+      }
+      return ''
     }
   }
 }

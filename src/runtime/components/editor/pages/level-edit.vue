@@ -1,36 +1,59 @@
 <template>
-  <div v-if="!$apollo.loading">
-    <tl-editor-breadcrumbs
-      :feed-key="feedKey"
-      :feed-name="feedName"
-      :feed-version-key="feedVersionKey"
-      :station-key="stationKey"
-      :station-name="stationName"
-      :level-id="level.level_id"
-      :level-name="level.level_name"
-    >
-      <li class="is-active">
-        <a href="#">Edit Level</a>
-      </li>
-    </tl-editor-breadcrumbs>
-    <div v-if="station" class="content">
-      <h2 class="title is-2">
+  <div v-if="station && level">
+    <slot name="nav">
+      <nav class="breadcrumb box" aria-label="breadcrumbs">
+        <ul>
+          <li>
+            <nuxt-link :to="{name:'editor'}">
+              Editor
+            </nuxt-link>
+          </li>
+          <li>
+            <span class="tag">Feed</span>
+            <a href="#">{{ feedName }}</a>
+          </li>
+          <li>
+            <span class="tag">Version</span>
+            <nuxt-link
+              :to="{name:'editor-feedKey-feedVersionKey-stations',params:{feedKey,feedVersionKey}}"
+            >
+              {{ feedVersionName }}
+            </nuxt-link>
+          </li>
+          <li>
+            <span class="tag">Station</span>
+            <nuxt-link
+              :to="{name:'editor-feedKey-feedVersionKey-stations-stationKey',params:{feedKey,feedVersionKey,stationKey}}"
+            >
+              {{ stationName }}
+            </nuxt-link>
+          </li>
+          <li class="is-active">
+            <a href="#">Edit Level</a>
+          </li>
+        </ul>
+      </nav>
+    </slot>
+
+    <slot name="title">
+      <tl-title title="Edit Station">
         Edit Level
-      </h2>
-      <tl-editor-level-editor
-        :station="station"
-        :value="level"
-        :center="station.geometry.coordinates"
-        @update="updateLevelHandler"
-        @delete="deleteLevelHandler"
-      />
-    </div>
+      </tl-title>
+    </slot>
+
+    <tl-editor-level-editor
+      :station="station"
+      :value="level"
+      :center="station.geometry.coordinates"
+      @update="updateLevelHandler"
+      @delete="deleteLevelHandler"
+    />
   </div>
 </template>
 
 <script>
-import StationMixin from './station-mixin'
 import { navigateTo } from '#app'
+import StationMixin from './station-mixin'
 
 export default {
   mixins: [StationMixin],
@@ -39,7 +62,7 @@ export default {
   },
   computed: {
     level () {
-      const levels = this.station.levels
+      const levels = this.station?.levels
       for (const level of levels) {
         if (level.level_id === this.levelKey) {
           return level

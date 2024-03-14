@@ -1,33 +1,57 @@
 <template>
-  <div v-if="!$apollo.loading">
-    <tl-editor-breadcrumbs
-      :feed-key="feedKey"
-      :feed-name="feedName"
-      :feed-version-key="feedVersionKey"
-      :station-key="stationKey"
-      :station-name="stationName"
-    >
-      <li class="is-active">
-        <a href="#">New Level</a>
-      </li>
-    </tl-editor-breadcrumbs>
-    <div class="content">
-      <h2 class="title is-2">
-        New Level
-      </h2>
+  <div v-if="station">
+    <slot name="nav">
+      <nav class="breadcrumb box" aria-label="breadcrumbs">
+        <ul>
+          <li>
+            <nuxt-link :to="{name:'editor'}">
+              Editor
+            </nuxt-link>
+          </li>
+          <li>
+            <span class="tag">Feed</span>
+            <a href="#">{{ feedName }}</a>
+          </li>
+          <li>
+            <span class="tag">Version</span>
+            <nuxt-link
+              :to="{name:'editor-feedKey-feedVersionKey-stations',params:{feedKey,feedVersionKey}}"
+            >
+              {{ feedVersionName }}
+            </nuxt-link>
+          </li>
+          <li>
+            <span class="tag">Station</span>
+            <nuxt-link
+              :to="{name:'editor-feedKey-feedVersionKey-stations-stationKey',params:{feedKey,feedVersionKey,stationKey}}"
+            >
+              {{ stationName }}
+            </nuxt-link>
+          </li>
+          <li class="is-active">
+            <a href="#">New Level</a>
+          </li>
+        </ul>
+      </nav>
+    </slot>
 
-      <tl-editor-level-editor
-        :station="station"
-        :center="station.geometry.coordinates"
-        @create="createLevelHandler"
-      />
-    </div>
+    <slot name="title">
+      <tl-title title="Edit Station">
+        New Level
+      </tl-title>
+    </slot>
+
+    <tl-editor-level-editor
+      :station="station"
+      :center="station.geometry.coordinates"
+      @create="createLevelHandler"
+    />
   </div>
 </template>
 
 <script>
-import StationMixin from './station-mixin'
 import { navigateTo } from '#app'
+import StationMixin from './station-mixin'
 
 export default {
   mixins: [StationMixin],

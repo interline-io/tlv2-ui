@@ -1,9 +1,7 @@
 <template>
   <div class="content">
     <slot name="title">
-      <h1 class="is-1 title">
-        Browse Places
-      </h1>
+      <tl-title title="Browse places" />
     </slot>
 
     <slot name="description" />
