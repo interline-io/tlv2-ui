@@ -84,7 +84,7 @@
 import gql from 'graphql-tag'
 
 const fvQuery = gql`
-query ($limit:Int, $onestop_id: String, $after:Int) {
+query ($limit:Int=100, $onestop_id: String, $after:Int) {
   entities: feed_versions(limit:$limit, after:$after, where: {feed_onestop_id: $onestop_id}) {
     id
     sha1

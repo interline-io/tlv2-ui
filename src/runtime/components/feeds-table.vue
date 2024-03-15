@@ -144,7 +144,7 @@ import { useQuery } from '@vue/apollo-composable'
 import { ref, watch, computed } from 'vue'
 
 const query = gql`
-query($specs: [FeedSpecTypes!], $after: Int, $limit:Int, $search: String, $fetch_error: Boolean, $import_status: ImportStatus, $tags: Tags) {
+query($specs: [FeedSpecTypes!], $after: Int, $limit:Int=100, $search: String, $fetch_error: Boolean, $import_status: ImportStatus, $tags: Tags) {
   entities: feeds(after: $after, limit:$limit, where: {search: $search, spec: $specs, fetch_error: $fetch_error, import_status: $import_status, tags: $tags}) {
     id
     onestop_id
@@ -200,7 +200,7 @@ const nullString = function (v) {
 
 const props = defineProps({
   search: String,
-  limit: { type: Number, default: 5 },
+  limit: { type: Number, default: 100 },
   fetchError: String,
   importStatus: String,
   tagUnstableUrl: String,

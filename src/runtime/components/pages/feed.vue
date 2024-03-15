@@ -347,7 +347,6 @@ export default {
   data () {
     return {
       page: 1,
-      perPage: 20,
       tabIndex: {
         1: 'versions',
         2: 'service'

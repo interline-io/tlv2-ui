@@ -13,9 +13,9 @@
         :center="center"
         :auto-fit="true"
         :zoom="zoom ? zoom : null"
-        @setAgencyFeatures="agencyFeatures = $event"
-        @mapClick="mapClick"
-        @setZoom="currentZoom = $event"
+        @set-agency-features="agencyFeatures = $event"
+        @map-click="mapClick"
+        @set-zoom="currentZoom = $event"
       />
       <div v-if="overlay" class="tl-map-panel">
         <tl-map-route-list
@@ -35,7 +35,7 @@ import { nextTick } from 'vue'
 import gql from 'graphql-tag'
 
 const q = gql`
-query ($limit: Int!, $agency_ids: [Int!], $after:Int!=0, $route_ids: [Int!], $feed_version_sha1: String, $include_stops: Boolean! = false) {
+query ($limit: Int=100, $agency_ids: [Int!], $after:Int!=0, $route_ids: [Int!], $feed_version_sha1: String, $include_stops: Boolean! = false) {
   routes(after:$after, limit: $limit, ids: $route_ids, where: {agency_ids: $agency_ids, feed_version_sha1: $feed_version_sha1}) {
     id
     onestop_id

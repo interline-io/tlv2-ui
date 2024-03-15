@@ -30,7 +30,7 @@
 <script>
 export default {
   props: {
-    limit: { type: Number, default: 20 }
+    limit: { type: Number, default: 100 }
   },
   computed: {
     staticTitle() {

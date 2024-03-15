@@ -223,8 +223,8 @@ import gql from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
 
 const q = gql`
-query ($onestop_id: String, $feed_onestop_id: String) {
-  entities: operators(limit: 10, where: {feed_onestop_id: $feed_onestop_id, onestop_id: $onestop_id, merged: true}) {
+query ($onestop_id: String, $feed_onestop_id: String, $limit: Int=10) {
+  entities: operators(limit: $limit, where: {feed_onestop_id: $feed_onestop_id, onestop_id: $onestop_id, merged: true}) {
     id
     onestop_id
     generated

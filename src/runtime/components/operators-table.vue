@@ -96,7 +96,7 @@ import { useQuery } from '@vue/apollo-composable'
 import { ref, watch, computed } from 'vue'
 
 const query = gql`
-query ($limit: Int, $after: Int, $search: String, $merged: Boolean, $adm0_name: String, $adm1_name: String, $city_name: String) {
+query ($limit: Int=100, $after: Int, $search: String, $merged: Boolean, $adm0_name: String, $adm1_name: String, $city_name: String) {
   entities: operators(after: $after, limit: $limit, where: {search: $search, merged: $merged, adm0_name: $adm0_name, adm1_name: $adm1_name, city_name: $city_name}) {
     id
     onestop_id
@@ -132,7 +132,7 @@ const nullBool = function (v) {
 
 const props = defineProps({
   search: { type: String, default: null },
-  limit: { type: Number, default: 20 },
+  limit: { type: Number, default: 100 },
   adm0Name: { type: String, default: null },
   adm1Name: { type: String, default: null },
   cityName: { type: String, default: null },

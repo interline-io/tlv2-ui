@@ -68,7 +68,7 @@ import gql from 'graphql-tag'
 import TableViewerMixin from './table-viewer-mixin'
 
 const q = gql`
-query($after: Int, $limit: Int, $feed_version_sha1: String, $agency_ids: [Int!], $search: String, $route_type: Int) {
+query($after: Int, $limit: Int=100, $feed_version_sha1: String, $agency_ids: [Int!], $search: String, $route_type: Int) {
   entities: routes(after: $after, limit: $limit, where: { serviced: true, search: $search, feed_version_sha1: $feed_version_sha1, agency_ids: $agency_ids, route_type:$route_type }) {
     id
     onestop_id

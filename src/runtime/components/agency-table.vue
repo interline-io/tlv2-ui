@@ -36,7 +36,7 @@ import gql from 'graphql-tag'
 import TableViewerMixin from './table-viewer-mixin'
 
 const q = gql`
-query ($feed_version_sha1: String, $limit: Int, $after: Int, $search: String) {
+query ($feed_version_sha1: String, $limit: Int=100, $after: Int, $search: String) {
   entities: agencies(after: $after, limit: $limit, where: {feed_version_sha1: $feed_version_sha1, search: $search}) {
     id
     agency_id
