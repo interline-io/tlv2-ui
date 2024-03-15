@@ -46,6 +46,10 @@ code {
     overflow-x:auto;
 }
 
+nav .tag {
+  margin-left:10px;
+}
+
 @media only screen and (max-width: 600px) {
   .tab-item {
     overflow-x:auto;

@@ -82,6 +82,8 @@
 
 <script>
 import gql from 'graphql-tag'
+import { useRuntimeConfig } from '#app'
+const config = useRuntimeConfig()
 
 const fvQuery = gql`
 query ($limit:Int=100, $onestop_id: String, $after:Int) {

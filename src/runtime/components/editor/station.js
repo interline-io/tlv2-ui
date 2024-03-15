@@ -521,14 +521,14 @@ export class Station {
   createStation ($apollo, ent) {
     ent.feed_version = { id: this.stop.feed_version.id }
     ent.setDefaults()
-    return this.createStop($apollo, ent)
+    return this.createStop($apollo, ent.stop)
   }
 
   updateStation ($apollo, ent) {
     if (ent.id === this.stop.id) {
       ent.parent = { id: null }
     }
-    return this.updateStop($apollo, ent)
+    return this.updateStop($apollo, ent.stop)
   }
 
   deleteStation ($apollo, ent) {

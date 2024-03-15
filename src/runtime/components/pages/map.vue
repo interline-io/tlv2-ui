@@ -12,10 +12,10 @@
       :hash="true"
       :marker-coords="searchCoords"
       map-class="tall"
-      @setZoom="setZoom"
-      @setAgencyFeatures="setAgencyFeatures"
-      @mapClick="mapClick"
-      @mapMove="mapMove"
+      @set-zoom="setZoom"
+      @set-agency-features="setAgencyFeatures"
+      @map-click="mapClick"
+      @map-move="mapMove"
     />
     <div class="tl-map-panel tl-map-panel-tabs">
       <o-tabs v-model="activeTab" class="tl-tabs block" position="centered" type="boxed">
@@ -35,7 +35,7 @@
           <tl-map-search
             :zoom="currentZoom"
             :bbox="currentBbox"
-            @setGeolocation="setGeolocation"
+            @set-geolocation="setGeolocation"
           />
           <tl-stop-departures
             v-if="activeTab === 2"
@@ -70,6 +70,9 @@
 </template>
 
 <script>
+import { useRuntimeConfig } from '#app'
+const config = useRuntimeConfig()
+
 export default {
   data () {
     return {
@@ -85,13 +88,13 @@ export default {
       currentBbox: null,
       routeTiles: {
         id: 'routes',
-        url: `${this.$config.public.tileEndpoint}/routes/tiles/{z}/{x}/{y}.pbf`,
+        url: `${config.public.apiBase}/tiles/routes/tiles/{z}/{x}/{y}.pbf`,
         minzoom: 0,
         maxzoom: 14
       },
       stopTiles: {
         id: 'stops',
-        url: `${this.$config.public.tileEndpoint}/stops/tiles/{z}/{x}/{y}.pbf`,
+        url: `${config.public.apiBase}/tiles/stops/tiles/{z}/{x}/{y}.pbf`,
         minzoom: 14,
         maxzoom: 14
       }

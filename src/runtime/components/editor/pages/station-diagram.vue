@@ -108,13 +108,8 @@
         </div>
       </div>
       <div class="column">
-        <cytoscape ref="cy" :pre-config="cytoscapePreConfig" :config="cytoscapeConfig" :after-created="cytoscapeAfterCreated">
-          <cy-element
-            v-for="def in cytoscapeElements"
-            :key="`${def.data.id}`"
-            :definition="def"
-          />
-        </cytoscape>
+        <span class="button" @click="cytoscapeInit">Redraw</span>
+        <div id="cy" />
       </div>
     </div>
   </div>
@@ -125,9 +120,10 @@ import fcose from 'cytoscape-fcose'
 import { schemeRdGy, schemeDark2 } from 'd3-scale-chromatic'
 import { nextTick } from 'vue'
 import { navigateTo } from '#app'
+import cytoscape from 'cytoscape'
 import StationMixin from './station-mixin'
 
-const CYTOSCAPE_CONFIG = {
+const cytoscapeConfig = {
   style: [
     {
       selector: 'node',
@@ -167,7 +163,7 @@ export default {
     return {
       id: undefined,
       selectedElements: [],
-      cytoscapeConfig: CYTOSCAPE_CONFIG
+      cy: null
     }
   },
   computed: {
@@ -181,14 +177,30 @@ export default {
       if (this.station) {
         this.sortedLevels.forEach((l) => {
           const levelId = `l-${l.id}`
-          const levelColor = levelColors[l.level_index]
-          arr.push({ group: 'nodes', data: { id: levelId, name: l.level_name, bgcolor: levelColor }, selectable: false })
+          const levelColor = levelColors[l.level_index] || '#ccc'
+          arr.push({
+            group: 'nodes',
+            data: {
+              id: levelId,
+              name: l.level_name,
+              bgcolor: levelColor
+            },
+            selectable: false
+          })
           this.station.stops.forEach((s) => {
             if (s.level?.id === l.id) {
               const stopId = `s-${s.id}`
               const stopName = s.stop_name || s.stop_id
               const stopColor = stopColors[Number(s.location_type)]
-              arr.push({ group: 'nodes', data: { id: stopId, parent: levelId, name: stopName, bgcolor: stopColor } })
+              arr.push({
+                group: 'nodes',
+                data: {
+                  id: stopId,
+                  parent: levelId,
+                  name: stopName,
+                  bgcolor: stopColor
+                }
+              })
             }
           })
         })
@@ -196,7 +208,16 @@ export default {
           const fromStopId = `s-${p.from_stop.id}`
           const toStopId = `s-${p.to_stop.id}`
           const pathwayColor = '#999'
-          arr.push({ group: 'edges', data: { id: `p-${p.id}`, source: fromStopId, target: toStopId, bidirectional: (p.is_bidirectional === 1), lineColor: pathwayColor } })
+          arr.push({
+            group: 'edges',
+            data: {
+              id: `p-${p.id}`,
+              source: fromStopId,
+              target: toStopId,
+              bidirectional: (p.is_bidirectional === 1),
+              lineColor: pathwayColor
+            }
+          })
         })
       }
       return arr
@@ -208,15 +229,29 @@ export default {
       return this.selectedElements.filter(id => id.startsWith('p'))
     }
   },
+  watch: {
+    // cytoscapeElements () {
+    //   this.cytoscapeInit()
+    // }
+  },
   methods: {
-    cytoscapePreConfig (cy) {
-      cy.use(fcose, {
+    cytoscapeInit() {
+      console.log(this.cytoscapeElements)
+      if (this.cytoscapeElements.length === 0) {
+        console.log('cytoscape not ready')
+        return
+      }
+      console.log('cytoscape init')
+      const cy = cytoscape({
+        container: document.getElementById('cy'),
+        elements: this.cytoscapeElements,
+        style: cytoscapeConfig.style
+      })
+      cytoscape.use(fcose, {
         // fixedNodeConstraint
       })
-    },
-    cytoscapeAfterCreated (cy) {
       nextTick(() => {
-        cy.layout(this.cytoscapeConfig.layout).run()
+        cy.layout(cytoscapeConfig.layout).run()
         cy.fit(null, 200)
         cy.on('select', 'node', this.elementSelected)
         cy.on('unselect', 'node', this.elementUnselected)
@@ -272,8 +307,8 @@ export default {
 </script>
 
   <style scss>
-  #cytoscape-div {
+#cy {
     height: 100%;
-    min-height: 1000px;
+    height: 1000px;
   }
   </style>

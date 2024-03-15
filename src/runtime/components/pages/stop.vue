@@ -315,7 +315,7 @@ fragment ss on Stop {
 }
 
 query ($onestop_id: String, $ids: [Int!], $entity_id: String, $feed_onestop_id: String, $feed_version_sha1: String, $limit: Int=10, $allow_previous_onestop_ids: Boolean = false) {
-  entities: stops(limit: 10, ids: $ids, where: {onestop_id: $onestop_id, feed_onestop_id:$feed_onestop_id, feed_version_sha1:$feed_version_sha1, stop_id:$entity_id, allow_previous_onestop_ids: $allow_previous_onestop_ids}) {
+  entities: stops(limit: $limit, ids: $ids, where: {onestop_id: $onestop_id, feed_onestop_id:$feed_onestop_id, feed_version_sha1:$feed_version_sha1, stop_id:$entity_id, allow_previous_onestop_ids: $allow_previous_onestop_ids}) {
     ...ss
     parent {
       ...ss

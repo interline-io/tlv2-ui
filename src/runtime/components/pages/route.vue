@@ -284,7 +284,7 @@ import EntityPageMixin from './entity-page-mixin'
 
 const q = gql`
 query ($onestop_id: String, $ids: [Int!], $entity_id: String, $feed_onestop_id: String, $feed_version_sha1: String, $include_stops: Boolean! = true, $limit: Int=10, $allow_previous_onestop_ids: Boolean = false) {
-  entities: routes(limit:10, $limit, ids: $ids, where: {onestop_id: $onestop_id, feed_onestop_id: $feed_onestop_id, feed_version_sha1: $feed_version_sha1, route_id: $entity_id, allow_previous_onestop_ids: $allow_previous_onestop_ids}) {
+  entities: routes(limit:$limit, ids: $ids, where: {onestop_id: $onestop_id, feed_onestop_id: $feed_onestop_id, feed_version_sha1: $feed_version_sha1, route_id: $entity_id, allow_previous_onestop_ids: $allow_previous_onestop_ids}) {
     id
     onestop_id
     feed_onestop_id

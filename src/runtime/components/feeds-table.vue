@@ -3,7 +3,7 @@
     <o-field grouped label="Search by feed name">
       <tl-search-bar v-model="search" placeholder="Search" />
 
-      <o-dropdown position="bottom-left" append-to-body aria-role="menu" trap-focus>
+      <o-dropdown position="bottom-left" append-to-body aria-role="menu" trap-focus menu-class="tl-feeds-table">
         <template #trigger="{ active }">
           <o-button label="Options" variant="primary" :icon-left="active ? 'menu-up' : 'menu-down'" />
         </template>
@@ -265,7 +265,7 @@ function fetchMoreFn() {
 </script>
 
 <style>
-.dropdown-menu {
+.tl-feeds-table {
   min-width:300px !important;
 }
 </style>

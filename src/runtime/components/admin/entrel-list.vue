@@ -95,11 +95,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.user-list {
-  margin-top:20px;
-  padding-top:20px;
-  border-top:solid 1px #ccc;
-}
-</style>

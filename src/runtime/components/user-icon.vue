@@ -1,21 +1,25 @@
 <template>
-  <client-only placeholder="User">
-    <template v-if="user && user.id">
-      <div class="navbar-item">
-        <em>You're browsing as <strong>{{ user.name }}</strong></em>
-      </div>
+  <client-only placeholder="">
+    <div v-if="user && user.id" class="tl-navbar-user navbar-item has-dropdown is-hoverable">
       <div class="navbar-item" style="margin:0px;padding:0px">
-        <span class="button is-primary is-small" @click="logout">Sign out</span>
+        <o-icon icon="account" />
       </div>
-    </template>
-    <template v-else>
-      <div class="navbar-item" style="margin:0px;padding:0px">
-        <div class="field has-addons">
-          <span class="button is-primary is-small" @click="login">Sign in</span>
-        <!-- NOTE: "sign up" button can go here if it's relevant to a given deployment -->
+      <div class="navbar-dropdown is-right">
+        <div class="navbar-item">
+          You are signed in as<br>
+          {{ user.email }}
+        </div>
+        <div class="navbar-item">
+          <span class="button is-primary " @click="logout">Sign out</span>
         </div>
       </div>
-    </template>
+    </div>
+    <div v-else class="tl-navbar-user navbar-item">
+      <div class="field has-addons">
+        <span class="button is-primary" @click="login">Sign in</span>
+        <!-- NOTE: "sign up" button can go here if it's relevant to a given deployment -->
+      </div>
+    </div>
   </client-only>
 </template>
 
@@ -37,3 +41,10 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.tl-navbar-user {
+  padding-left:0px;
+  padding-right:10px;
+}
+</style>

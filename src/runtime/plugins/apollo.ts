@@ -8,16 +8,16 @@ import { useJwt } from './auth'
 export function getApolloClient() {
   const config = useRuntimeConfig()
   const httpLink = new HttpLink({
-    uri: config.public.graphqlEndpoint
+    uri: config.public.apiBase + '/query'
   })
   const authMiddleware = new ApolloLink(async(operation, forward) => {
     // add the authorization to the headers
     const token = await useJwt()
     operation.setContext({
       headers: {
-        referer: config.public.graphqlServerReferer,
+        referer: config.graphqlServerReferer,
         authorization: token ? `Bearer ${token}` : '',
-        apikey: config.public.graphqlApikey
+        apikey: config.graphqlApikey
       }
     })
     return forward(operation)

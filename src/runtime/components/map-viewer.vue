@@ -8,8 +8,9 @@
 import maplibre from 'maplibre-gl'
 import { noLabels, labels } from 'protomaps-themes-base'
 import { nextTick } from 'vue'
-import mapLayers from './map-layers'
 import { useRuntimeConfig } from '#app'
+import mapLayers from './map-layers'
+const config = useRuntimeConfig()
 
 export default {
   props: {
@@ -98,22 +99,13 @@ export default {
         interactive: this.interactive,
         preserveDrawingBuffer: true,
         container: this.$refs.mapelem,
-        transformRequest: (url, resourceType) => {
-          if (resourceType === 'Tile' && url.startsWith('https://transit.land')) {
-            const config = useRuntimeConfig()
-            return {
-              url,
-              headers: { apikey: config.public.tileApikey }
-            }
-          }
-        },
         style: {
           glyphs: 'https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf',
           version: 8,
           sources: {
             'protomaps-base': {
               type: 'vector',
-              tiles: [`https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf?key=${this.$config.public.protomapsApikey}`],
+              tiles: [`https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf?key=${config.public.protomapsApikey}`],
               maxzoom: 14,
               attribution: '<a href="https://www.transit.land/terms">Transitland</a> | <a href="https://protomaps.com">Protomaps</a> | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             }
