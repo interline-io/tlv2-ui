@@ -85,7 +85,7 @@
           <div v-for="(cell,i) of colGroups.rowinfo" :key="i">
             <span v-for="(dow,j) of daysOfWeek" :key="j" class="cell rowlabel">
               <template v-if="showGroupInfo">.
-                <nuxt-link :to="{name:'feeds-feed-versions-version', hash: '#service', params:{feed: cell.feed_onestop_id, version: cell.feed_version_sha1}}">
+                <nuxt-link :to="{name:'feeds-feedKey-versions-feedVersionKey', hash: '#service', params:{feedKey: cell.feed_onestop_id, feedVersionKey: cell.feed_version_sha1}}">
                   Fetched {{ $filters.formatDate(cell.fetched_at) }}
                 </nuxt-link>
               </template>

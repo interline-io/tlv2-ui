@@ -1,5 +1,5 @@
 <template>
-  <div v-if="feedVersion">
+  <div v-if="feedVersion && feedVersion.id">
     <slot name="nav">
       <nav class="breadcrumb box" aria-label="breadcrumbs">
         <ul>
@@ -31,6 +31,8 @@
       <tl-title title="New Station" />
     </slot>
 
+    {{ newStation () }}
+
     <tl-editor-station-editor
       :value="newStation()"
       @create="createStationHandler"
@@ -51,19 +53,24 @@ export default {
   },
   methods: {
     newStation () {
-      return new Station(new Stop({ feedVersion: { id: this.feedVersion.id } })).setDefaults()
+      const newStop = new Stop({ feed_version: { id: this.feedVersion.id } })
+      const newStation = new Station(newStop).setDefaults()
+      return newStation
     },
     createStationHandler (station) {
-      station.createStation(this.$apollo, station.stop).then(() => {
-        navigateTo({
-          name: 'editor-feedKey-feedVersionKey-stations-stationKey',
-          params: {
-            feedKey: this.feedKey,
-            feedVersionKey: this.feedVersionKey,
-            stationKey: station.stop.stop_id
-          }
+      station.createStation(this.$apollo, station.stop)
+        .then(this.handleError)
+        .then(() => {
+          navigateTo({
+            name: 'editor-feedKey-feedVersionKey-stations-stationKey',
+            params: {
+              feedKey: this.feedKey,
+              feedVersionKey: this.feedVersionKey,
+              stationKey: station.stop.stop_id
+            }
+          })
         })
-      }).catch(this.error)
+        .catch(this.setError)
     }
   }
 }

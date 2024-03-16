@@ -108,7 +108,6 @@
         </div>
       </div>
       <div class="column">
-        <span class="button" @click="cytoscapeInit">Redraw</span>
         <div id="cy" />
       </div>
     </div>
@@ -230,13 +229,14 @@ export default {
     }
   },
   watch: {
-    // cytoscapeElements () {
-    //   this.cytoscapeInit()
-    // }
+    ready() {
+      if (this.ready) {
+        nextTick(() => { this.cytoscapeInit() })
+      }
+    }
   },
   methods: {
     cytoscapeInit() {
-      console.log(this.cytoscapeElements)
       if (this.cytoscapeElements.length === 0) {
         console.log('cytoscape not ready')
         return

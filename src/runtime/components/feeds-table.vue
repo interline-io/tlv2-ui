@@ -88,7 +88,7 @@
         <tbody>
           <tr v-for="row of entities" :key="row.id">
             <td>
-              <nuxt-link :to="{ name: 'feeds-feed', params: { feed: row.onestop_id } }">
+              <nuxt-link :to="{ name: 'feeds-feedKey', params: { feedKey: row.onestop_id } }">
                 {{ row.onestop_id }}
               </nuxt-link>
             </td>

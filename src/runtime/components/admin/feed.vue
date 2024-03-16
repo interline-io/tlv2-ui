@@ -22,7 +22,7 @@
         horizontal
       >
         <nuxt-link
-          :to="{ name: 'feeds-feed-upload', params: { feed: feed.feed?.onestop_id } }"
+          :to="{ name: 'feeds-feedKey-upload', params: { feedKey: feed.feed?.onestop_id } }"
           class="button is-small is-primary"
         >
           Upload Feed Version
@@ -109,9 +109,7 @@ export default {
         .then((data) => {
           this.feed = data
         })
-        .catch((e) => {
-          this.error = e
-        })
+        .catch(this.setError)
       this.loading = false
     },
     async setGroup (value) {

@@ -61,6 +61,8 @@
         </o-button>
       </template>
       <template v-else>
+        val: {{ value.stop }} <br><br>
+        ent: {{ station.stop }}
         <o-button
           class="button is-primary"
           :disabled="!valid"

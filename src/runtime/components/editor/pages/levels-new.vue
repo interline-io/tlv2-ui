@@ -69,7 +69,7 @@ export default {
             stationKey: this.stationKey
           }
         })
-      }).catch(this.error)
+      }).catch(this.setError)
     }
   }
 }

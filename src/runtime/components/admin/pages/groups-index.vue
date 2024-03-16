@@ -27,6 +27,13 @@
       </p>
     </slot>
 
+    <o-notification
+      v-if="error"
+      variant="danger"
+    >
+      Error: {{ error }}
+    </o-notification>
+
     <div v-for="v of groups" :key="v.id">
       <tl-msg-info no-icon :title="v.name" variant="light">
         <tl-admin-group :id="v.id" />
@@ -52,11 +59,12 @@ export default {
       this.loading = true
       await fetch(`${this.apiBase()}/admin/groups`, {
         headers: { authorization: await this.getAuthToken() }
-      }).then((data) => {
-        return data.json()
-      }).then((data) => {
-        this.groups = data.groups
       })
+        .then(this.handleError)
+        .then((data) => {
+          this.groups = data.groups
+        })
+        .catch(this.setError)
       this.loading = false
     }
   }

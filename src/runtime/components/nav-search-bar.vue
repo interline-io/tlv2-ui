@@ -50,20 +50,20 @@ export default {
         return
       }
       if (key === 'Feed') {
-        this.$router.push({ name: 'feeds-feed', params: { feed: ent.onestop_id } })
+        this.$router.push({ name: 'feeds-feedKey', params: { feedKey: ent.onestop_id } })
       } else if (key === 'Operator') {
-        this.$router.push({ name: 'operators-onestop_id', params: { onestop_id: ent.onestop_id } })
+        this.$router.push({ name: 'operators-operatorKey', params: { operatorKey: ent.onestop_id } })
       } else if (key === 'Route') {
         if (ent.onestop_id) {
-          this.$router.push({ name: 'routes-onestop_id', params: { onestop_id: ent.onestop_id } })
+          this.$router.push({ name: 'routes-routeKey', params: { routeKey: ent.onestop_id } })
         } else {
-          this.$router.push({ name: 'routes-onestop_id', params: { onestop_id: 'search' }, query: { feed_onestop_id: ent.feed_onestop_id, feed_version_sha1: ent.feed_version_sha1, route_id: ent.route_id } })
+          this.$router.push({ name: 'routes-routeKey', params: { routeKey: 'search' }, query: { feed_onestop_id: ent.feed_onestop_id, feed_version_sha1: ent.feed_version_sha1, route_id: ent.route_id } })
         }
       } else if (key === 'Stop') {
         if (ent.onestop_id) {
-          this.$router.push({ name: 'stops-onestop_id', params: { onestop_id: ent.onestop_id } })
+          this.$router.push({ name: 'stops-stopKey', params: { stopKey: ent.onestop_id } })
         } else {
-          this.$router.push({ name: 'stops-onestop_id', params: { onestop_id: 'search' }, query: { feed_onestop_id: ent.feed_onestop_id, feed_version_sha1: ent.feed_version_sha1, route_id: ent.route_id } })
+          this.$router.push({ name: 'stops-stopKey', params: { stopKey: 'search' }, query: { feed_onestop_id: ent.feed_onestop_id, feed_version_sha1: ent.feed_version_sha1, route_id: ent.route_id } })
         }
       }
     }

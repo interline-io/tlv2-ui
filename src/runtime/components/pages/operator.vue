@@ -15,7 +15,7 @@
               Operators
             </nuxt-link>
           </li><li>
-            <nuxt-link :to="{name:'operators-onestop_id', params:{onestop_id:$route.params.onestop_id}}">
+            <nuxt-link :to="{name:'operators-operatorKey', params:{operatorKey:$route.params.operatorKey}}">
               {{ operatorName }}
             </nuxt-link>
           </li>
@@ -172,9 +172,9 @@
                 </template>
               </td>
               <td class="has-text-right" style="min-width: 250px;">
-                <nuxt-link class="button is-small is-primary" :to="{name:'feeds-feed', params:{feed:row.target_feed}}">
+                <nuxt-link class="button is-small is-primary" :to="{name:'feeds-feedKey', params:{feedKey:row.target_feed}}">
                   Feed
-                </nuxt-link> <nuxt-link v-if="row.target_feed_spec == 'GTFS'" class="button is-small is-primary" :to="{name:'feeds-feed', params:{feed: row.target_feed}, hash: '#versions'}">
+                </nuxt-link> <nuxt-link v-if="row.target_feed_spec == 'GTFS'" class="button is-small is-primary" :to="{name:'feeds-feedKey', params:{feedKey: row.target_feed}, hash: '#versions'}">
                   Archived feed versions
                 </nuxt-link>
               </td>

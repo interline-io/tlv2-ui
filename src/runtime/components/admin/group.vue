@@ -166,9 +166,7 @@ export default {
         .then((data) => {
           this.group = data
         })
-        .catch((e) => {
-          this.error = e
-        })
+        .catch(this.setError)
       this.loading = false
     },
     async saveName (value) {
@@ -202,9 +200,7 @@ export default {
         }
       )
         .then(this.handleError)
-        .catch((e) => {
-          this.error = e
-        })
+        .catch(this.setError)
       this.getData()
     },
     async removePermissions (relation, value) {
@@ -223,9 +219,7 @@ export default {
         }
       )
         .then(this.handleError)
-        .catch((e) => {
-          this.error = e
-        })
+        .catch(this.setError)
       this.getData()
     },
     async setTenant (value) {
@@ -239,9 +233,7 @@ export default {
         }
       )
         .then(this.handleError)
-        .catch((e) => {
-          this.error = e
-        })
+        .catch(this.setError)
       this.getData()
     },
     changed () {

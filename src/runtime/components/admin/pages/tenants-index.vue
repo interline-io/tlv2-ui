@@ -66,11 +66,12 @@ export default {
       this.loading = true
       await fetch(`${this.apiBase()}/admin/tenants`, {
         headers: { authorization: await this.getAuthToken() }
-      }).then((data) => {
-        return data.json()
-      }).then((data) => {
-        this.tenants = data.tenants
       })
+        .then(this.handleError)
+        .then((data) => {
+          this.tenants = data.tenants
+        })
+        .catch(this.setError)
       this.loading = false
     }
   }

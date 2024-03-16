@@ -45,7 +45,7 @@
       :center="station.geometry.coordinates"
       :value="station"
       @update="updateStationHandler"
-      @delete="deleteStationCheck"
+      @delete="deleteStationHandler"
     />
   </div>
 </template>
@@ -58,7 +58,7 @@ export default {
   mixins: [StationMixin],
   methods: {
     updateStationHandler (station) {
-      this.station.updateStation(this.$apollo, station).then(() => {
+      this.station.updateStation(this.$apollo, station.stop).then(this.handleError).then(() => {
         navigateTo({
           name: 'editor-feedKey-feedVersionKey-stations-stationKey',
           params: {
@@ -67,7 +67,7 @@ export default {
             stationKey: station.stop.stop_id
           }
         })
-      }).catch(this.error)
+      }).catch(this.setError)
     },
     deleteStationCheck (station) {
       this.$buefy.dialog.confirm({
@@ -80,7 +80,7 @@ export default {
       })
     },
     deleteStationHandler (station) {
-      this.station.deleteStation(this.$apollo, station).then(() => {
+      this.station.deleteStation(this.$apollo, station).then(this.handleError).then(() => {
         navigateTo({
           name: 'editor-feedKey-feedVersionKey-stations',
           params: {
@@ -88,7 +88,7 @@ export default {
             feedVersionKey: this.feedVersionKey
           }
         })
-      }).catch(this.error)
+      }).catch(this.setError)
     }
   }
 }

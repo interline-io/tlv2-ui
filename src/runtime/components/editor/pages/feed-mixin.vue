@@ -52,13 +52,13 @@ export default {
   },
   computed: {
     feedVersion () {
-      return this.feed && this.feed.feed_versions ? this.feed.feed_versions[0] : null
+      return this.feed && this.feed.feed_versions ? this.feed.feed_versions[0] : this.feedVersionKey
     },
     feed () {
       return (this.feeds && this.feeds.length === 1) ? this.feeds[0] : null
     },
     feedName () {
-      return this.feed ? this.feed.name : null
+      return this.feed ? (this.feed.name || this.feed.onestop_id) : this.feedKey
     },
     feedVersionName() {
       return (this.feedVersion?.file || this.feedVersionKey || '').substr(0, 8)

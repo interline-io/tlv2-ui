@@ -65,7 +65,7 @@
                 class="is-pulled-left tl-route-icon-fade-out"
               >
                 <nuxt-link
-                  :to="{name:'routes-onestop_id', params:{onestop_id:sr.route.onestop_id}}"
+                  :to="{name:'routes-routeKey', params:{routeKey:sr.route.onestop_id}}"
                 >
                   <tl-route-icon
                     :key="'icon'+sr.route.id"

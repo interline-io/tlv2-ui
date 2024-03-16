@@ -11,7 +11,7 @@
         <div v-for="route in routes" :key="route.id">
           <nuxt-link
             v-if="link"
-            :to="{name: 'routes-onestop_id', params:{onestop_id:route.onestop_id || 'search' }, query:( (linkVersion || !route.onestop_id) ? {feed_onestop_id:route.feed_onestop_id,feed_version_sha1:route.feed_version_sha1,route_id:route.route_id} : {})}"
+            :to="{name: 'routes-routeKey', params:{routeKey:route.onestop_id || 'search' }, query:( (linkVersion || !route.onestop_id) ? {feed_onestop_id:route.feed_onestop_id,feed_version_sha1:route.feed_version_sha1,route_id:route.route_id} : {})}"
           >
             <tl-route-icon
               :key="route.id"

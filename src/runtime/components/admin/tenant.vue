@@ -113,9 +113,7 @@ export default {
         .then((data) => {
           this.tenant = data
         })
-        .catch((e) => {
-          this.error = e
-        })
+        .catch(this.setError)
       this.loading = false
     },
     async saveName (value) {

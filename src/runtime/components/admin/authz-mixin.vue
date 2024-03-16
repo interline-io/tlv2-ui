@@ -48,12 +48,16 @@ export default {
     },
     handleError (response) {
       if (!response.ok) {
-        console.log('request failed')
+        console.log('request failed', response.statusText)
         throw new Error(response.statusText)
       } else {
         // console.log('request ok')
         return response.json()
       }
+    },
+    setError (e) {
+      this.error = e
+      this.loading = false
     },
     ObjectTypes (v) {
       return OBJECTTYPES[v]

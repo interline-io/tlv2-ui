@@ -410,13 +410,22 @@ export default {
   methods: {
     // stops
     createStopHandler (node) {
-      this.station.createStop(this.$apollo, node).then(() => { return this.refetch() }).then(() => { this.selectStop(null) }).catch(this.error)
+      this.station.createStop(this.$apollo, node)
+        .then(() => { return this.refetch() })
+        .then(() => { this.selectStop(null) })
+        .catch(this.setError)
     },
     updateStopHandler (node) {
-      this.station.updateStop(this.$apollo, node).then(() => { return this.refetch() }).then(() => { this.selectStop(node.id) }).catch(this.error)
+      this.station.updateStop(this.$apollo, node)
+        .then(() => { return this.refetch() })
+        .then(() => { this.selectStop(node.id) })
+        .catch(this.setError)
     },
     deleteStopHandler (nodeId) {
-      return this.station.deleteStop(this.$apollo, nodeId).then(() => { return this.refetch() }).then(() => { this.selectStop(null) }).catch(this.error)
+      return this.station.deleteStop(this.$apollo, nodeId)
+        .then(() => { return this.refetch() })
+        .then(() => { this.selectStop(null) })
+        .catch(this.setError)
     },
     moveStopSave (stopid, e) {
       if (stopid === null) {
@@ -431,10 +440,16 @@ export default {
     },
     // node associations
     createAssociationHandler (node) {
-      this.station.createAssociation(this.$apollo, node).then(() => { return this.refetch() }).then(() => { this.selectStop(null) }).catch(this.error)
+      this.station.createAssociation(this.$apollo, node)
+        .then(() => { return this.refetch() })
+        .then(() => { this.selectStop(null) })
+        .catch(this.setError)
     },
     deleteAssociationHandler (node) {
-      this.station.deleteAssociation(this.$apollo, node).then(() => { return this.refetch() }).then(() => { this.selectStop(null) }).catch(this.error)
+      this.station.deleteAssociation(this.$apollo, node)
+        .then(() => { return this.refetch() })
+        .then(() => { this.selectStop(null) })
+        .catch(this.setError)
     },
     // pathways
     newPathway () {
@@ -448,14 +463,23 @@ export default {
       }).setDefaults()
     },
     createPathwayHandler (pw) {
-      this.station.createPathway(this.$apollo, pw).then(() => { return this.refetch() }).then(() => { this.selectPathway(null) }).catch(this.error) // todo: select
+      this.station.createPathway(this.$apollo, pw)
+        .then(() => { return this.refetch() })
+        .then(() => { this.selectPathway(null) })
+        .catch(this.setError) // todo: select
     },
     updatePathwayHandler (pw) {
-      this.station.updatePathway(this.$apollo, pw).then(() => { return this.refetch() }).then(() => { this.selectPathway(null) }).catch(this.error)
+      this.station.updatePathway(this.$apollo, pw)
+        .then(() => { return this.refetch() })
+        .then(() => { this.selectPathway(null) })
+        .catch(this.setError)
     },
     deletePathwayHandler (pw) {
       this.selectPathway(null)
-      this.station.deletePathway(this.$apollo, pw).then(() => { return this.refetch() }).then(() => { this.selectPathway(null) }).catch(this.error)
+      this.station.deletePathway(this.$apollo, pw)
+        .then(() => { return this.refetch() })
+        .then(() => { this.selectPathway(null) })
+        .catch(this.setError)
     },
     // select tools
     selectStop (stopid) {

@@ -73,28 +73,34 @@ export default {
   },
   methods: {
     updateLevelHandler (level) {
-      this.station.updateLevel(this.$apollo, level).then(() => {
-        navigateTo({
-          name: 'editor-feedKey-feedVersionKey-stations-stationKey',
-          params: {
-            feedKey: this.feedKey,
-            feedVersionKey: this.feedVersionKey,
-            stationKey: this.stationKey
-          }
+      this.station.updateLevel(this.$apollo, level)
+        .then(this.handleError)
+        .then(() => {
+          navigateTo({
+            name: 'editor-feedKey-feedVersionKey-stations-stationKey',
+            params: {
+              feedKey: this.feedKey,
+              feedVersionKey: this.feedVersionKey,
+              stationKey: this.stationKey
+            }
+          })
         })
-      }).catch(this.error)
+        .catch(this.setError)
     },
     deleteLevelHandler (levelId) {
-      this.station.deleteLevel(this.$apollo, levelId).then(() => {
-        navigateTo({
-          name: 'editor-feedKey-feedVersionKey-stations-stationKey',
-          params: {
-            feedKey: this.feedKey,
-            feedVersionKey: this.feedVersionKey,
-            stationKey: this.stationKey
-          }
+      this.station.deleteLevel(this.$apollo, levelId)
+        .then(this.handleError)
+        .then(() => {
+          navigateTo({
+            name: 'editor-feedKey-feedVersionKey-stations-stationKey',
+            params: {
+              feedKey: this.feedKey,
+              feedVersionKey: this.feedVersionKey,
+              stationKey: this.stationKey
+            }
+          })
         })
-      }).catch(this.error)
+        .catch(this.setError)
     }
   }
 }

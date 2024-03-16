@@ -419,13 +419,21 @@ export default {
   },
   methods: {
     updateStopHandler (ent) {
-      this.station.updateStop(this.$apollo, ent).then(() => { console.log('start refetch'); return this.refetch() }).then(() => { this.selectStop(node.id) }).catch(this.error)
+      this.station.updateStop(this.$apollo, ent)
+        .then(() => { console.log('start refetch'); return this.refetch() })
+        .then(() => { this.selectStop(node.id) })
+        .catch(this.setError)
     },
     importStopHandler (ent) {
-      this.station.importStop(this.$apollo, ent).then(() => { return this.refetch() }).then((data) => { this.selectStop(data.id) }).catch(this.error)
+      this.station.importStop(this.$apollo, ent).then(() => { return this.refetch() })
+        .then((data) => { this.selectStop(data.id) })
+        .catch(this.setError)
     },
     deleteStopHandler (entId) {
-      return this.station.deleteStop(this.$apollo, entId).then(() => { return this.refetch() }).then(() => { this.selectStop(null) }).catch(this.error)
+      return this.station.deleteStop(this.$apollo, entId)
+        .then(() => { return this.refetch() })
+        .then(() => { this.selectStop(null) })
+        .catch(this.setError)
     },
     selectStop (stopid) {
       navigateTo({

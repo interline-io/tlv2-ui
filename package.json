@@ -41,6 +41,7 @@
     "@vue/apollo-option": "^4.0.0",
     "@vueuse/core": "^10.7.2",
     "bulma": "^0.9.4",
+    "cytoscape": "^3.28.1",
     "cytoscape-fcose": "^2.2.0",
     "d3-scale-chromatic": "^3.0.0",
     "date-fns": "^3.2.0",
@@ -58,5 +59,8 @@
     "unstorage": "^1.10.1",
     "vue": "^3.4.14"
   },
-  "packageManager": "yarn@4.0.2"
+  "packageManager": "yarn@4.0.2",
+  "devDependencies": {
+    "@types/cytoscape": "^3"
+  }
 }

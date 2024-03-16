@@ -118,16 +118,16 @@ export default {
   },
   computed: {
     feed () {
-      return this.feeds && this.feeds.length === 1 ? this.feeds[0] : null
+      return this.feeds?.length > 0 ? this.feeds[0] : null
     },
     feedName () {
-      return this.feed ? this.feed.name : null
+      return this.feed?.name || this.feed?.onestop_id || this.feedKey
     },
     stationName () {
-      return this.station?.stop.stop_name
+      return this.station?.stop?.stop_name
     },
     feedVersion () {
-      return this.feed && this.feed.feed_versions ? this.feed.feed_versions[0] : null
+      return this.feed?.feed_versions?.length > 0 ? this.feed.feed_versions[0] : null
     },
     feedVersionName() {
       return (this.feedVersion?.file || this.feedVersionKey || '').substr(0, 8)
@@ -144,6 +144,18 @@ export default {
     }
   },
   methods: {
+    handleError (response) {
+      if (!response.ok) {
+        console.log('request failed', response.statusText)
+        throw new Error(response.statusText)
+      } else {
+        // console.log('request ok')
+        return response.json()
+      }
+    },
+    setError (e) {
+      this.error(e)
+    },
     error (error) {
       const msg = error.message ? error.message : JSON.stringify(error)
       this.$oruga.notification.open({

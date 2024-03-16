@@ -4,8 +4,8 @@
       You are viewing the version of this entity defined by feed
       <nuxt-link
         :to="{
-          name: 'feeds-feed',
-          params: { feed: feedOnestopId },
+          name: 'feeds-feedKey',
+          params: { feedKey: feedOnestopId },
         }"
       >
         {{ $filters.shortenName(feedOnestopId) }}
@@ -13,10 +13,10 @@
       version
       <nuxt-link
         :to="{
-          name: 'feeds-feed-versions-version',
+          name: 'feeds-feedKey-versions-feedVersionKey',
           params: {
-            feed: feedOnestopId,
-            version: feedVersionSha1,
+            feedKey: feedOnestopId,
+            feedVersionKey: feedVersionSha1,
           },
         }"
       >
@@ -25,8 +25,8 @@
       <!-- <template v-if="!search">
             Click
             <nuxt-link :to="{
-                name: 'stops-onestop_id',
-                params: { onestop_id: searchKey.onestop_id },
+                name: 'stops-stopKey',
+                params: { stopKey: searchKey.onestop_id },
             }">
                 here
             </nuxt-link>

@@ -20,7 +20,7 @@
             <td>{{ $filters.formatDate(fv.fetched_at) }} ({{ $filters.fromNow(fv.fetched_at) }})</td>
             <td>
               <nuxt-link
-                :to="{ name: 'feeds-feed-versions-version', params: { feed: feed.onestop_id, version: fv.sha1 } }"
+                :to="{ name: 'feeds-feedKey-versions-feedVersionKey', params: { feedKey: feed.onestop_id, feedVersionKey: fv.sha1 } }"
               >
                 {{ fv.sha1.substr(0, 6) }}…
               </nuxt-link>
