@@ -1,89 +1,87 @@
 <template>
-  <client-only placeholder="Service patterns">
-    <div>
-      <o-field grouped>
-        <o-field label="Trip pattern" class="pr-4">
-          <o-select
-            v-model="activePatternId"
-            placeholder="Select a trip pattern"
-            class="trip-select"
-          >
-            <optgroup label="Inbound">
-              <option v-for="pattern of inboundPatterns" :key="pattern.stop_pattern_id" :value="pattern.stop_pattern_id">
-                {{ pattern.desc }}
-              </option>
-            </optgroup>
-            <optgroup label="Outbound">
-              <option v-for="pattern of outboundPatterns" :key="pattern.stop_pattern_id" :value="pattern.stop_pattern_id">
-                {{ pattern.desc }}
-              </option>
-            </optgroup>
-          </o-select>
-        </o-field>
-        <o-field label="Transfers within (m)" expanded>
-          <o-slider
-            v-model="radius"
-            class="radius-select"
-            size="medium"
-            :min="0"
-            :max="500"
-            :step="100"
-            ticks
-            lazy
-          >
-            <template v-for="val in [0,100,250,500]" :key="val">
-              <o-slider-tick :value="val">
-                {{ val }}
-              </o-slider-tick>
-            </template>
-          </o-slider>
-        </o-field>
+  <div>
+    <o-field grouped>
+      <o-field label="Trip pattern" class="pr-4">
+        <o-select
+          v-model="activePatternId"
+          placeholder="Select a trip pattern"
+          class="trip-select"
+        >
+          <optgroup label="Inbound">
+            <option v-for="pattern of inboundPatterns" :key="pattern.stop_pattern_id" :value="pattern.stop_pattern_id">
+              {{ pattern.desc }}
+            </option>
+          </optgroup>
+          <optgroup label="Outbound">
+            <option v-for="pattern of outboundPatterns" :key="pattern.stop_pattern_id" :value="pattern.stop_pattern_id">
+              {{ pattern.desc }}
+            </option>
+          </optgroup>
+        </o-select>
       </o-field>
+      <o-field label="Transfers within (m)" expanded>
+        <o-slider
+          v-model="radius"
+          class="radius-select"
+          size="medium"
+          :min="0"
+          :max="500"
+          :step="100"
+          ticks
+          lazy
+        >
+          <template v-for="val in [0,100,250,500]" :key="val">
+            <o-slider-tick :value="val">
+              {{ val }}
+            </o-slider-tick>
+          </template>
+        </o-slider>
+      </o-field>
+    </o-field>
 
-      <tl-loading v-if="$apollo.loading" />
-      <tl-msg-error v-else-if="error">
-        {{ error }}
-      </tl-msg-error>
-      <div v-else-if="processedPatterns.length === 0">
-        No trip patterns were found for this route.
-      </div>
-      <ul v-else-if="activePattern" class="stop-list">
-        <li v-for="(st) of activePattern.stop_times" :key="st.stop_sequence">
-          <p class="route-stop-name">
-            <nuxt-link
-              :to="{name:'stops-stopKey', params:{stopKey:st.stop.onestop_id}}"
-            >
-              {{ st.stop.stop_name }}
-            </nuxt-link>
-          </p>
-          <div v-if="includeNearbyStops">
-            <div
-              v-for="(rss,agency) of st.stop.routes"
-              :key="agency"
-              class="route-link"
-            >
-              <div v-if="multiAgency" class="agency-name">
-                {{ agency }}
-              </div>
-              <div v-for="rs of rss" :key="rs.id">
-                <nuxt-link
-                  :to="{name:'routes-routeKey', params:{routeKey:rs.onestop_id}}"
-                >
-                  <tl-route-icon
+    <tl-loading v-if="$apollo.loading" />
+    <tl-msg-error v-else-if="error">
+      {{ error }}
+    </tl-msg-error>
+    <div v-else-if="processedPatterns.length === 0">
+      No trip patterns were found for this route.
+    </div>
+    <ul v-else-if="activePattern" class="stop-list">
+      <li v-for="(st) of activePattern.stop_times" :key="st.stop_sequence">
+        <p class="route-stop-name">
+          <nuxt-link
+            :to="{name:'stops-stopKey', params:{stopKey:st.stop.onestop_id}}"
+          >
+            {{ st.stop.stop_name }}
+          </nuxt-link>
+        </p>
+        <div v-if="includeNearbyStops">
+          <div
+            v-for="(rss,agency) of st.stop.routes"
+            :key="agency"
+            class="route-link"
+          >
+            <div v-if="multiAgency" class="agency-name">
+              {{ agency }}
+            </div>
+            <div v-for="rs of rss" :key="rs.id">
+              <nuxt-link
+                :to="{name:'routes-routeKey', params:{routeKey:rs.onestop_id}}"
+              >
+                <tl-route-icon
 
-                    :agency-name="rs.agency_name"
-                    :route-short-name="rs.route_short_name"
-                    :route-type="rs.route_type"
-                    :route-long-name="rs.route_long_name"
-                  />
-                </nuxt-link>
-              </div>
+                  :agency-name="rs.agency_name"
+                  :route-short-name="rs.route_short_name"
+                  :route-type="rs.route_type"
+                  :route-long-name="rs.route_long_name"
+                />
+              </nuxt-link>
             </div>
           </div>
-        </li>
-      </ul>
-    </div>
-  </client-only>
+        </div>
+      </li>
+    </ul>
+  </div>
 </template>
 
 <script>

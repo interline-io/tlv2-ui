@@ -12,7 +12,7 @@
           lazy
         >
           <template v-for="val in [400,1000,2000]" :key="val">
-            <o-slider-tick  :value="val">
+            <o-slider-tick :value="val">
               {{ val }}
             </o-slider-tick>
           </template>
@@ -67,8 +67,8 @@
       </o-field>
     </div>
 
-    <tl-buffer-viewer :route-ids="routeIds" :agency-ids="agencyIds" :radius="radius" @setBufferFeatures="bufferFeatures = $event" @setHullFeatures="hullFeatures = $event" />
-    <tl-census-viewer :route-ids="routeIds" :agency-ids="agencyIds" :radius="radius" :layer="layer" @setFeatures="censusFeatures = $event" />
+    <tl-buffer-viewer :route-ids="routeIds" :agency-ids="agencyIds" :radius="radius" @set-buffer-features="bufferFeatures = $event" @set-hull-features="hullFeatures = $event" />
+    <tl-census-viewer :route-ids="routeIds" :agency-ids="agencyIds" :radius="radius" :layer="layer" @set-features="censusFeatures = $event" />
   </div>
 </template>
 

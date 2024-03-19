@@ -181,8 +181,11 @@
             @update:model-value="setTab"
           >
             <o-tab-item id="summary" label="Connections">
-              <tl-rsp-viewer v-if="activeTab === 1" :route-ids="entityIds" />
+              <client-only placeholder="Service patterns">
+                <tl-rsp-viewer v-if="activeTab === 1" :route-ids="entityIds" />
+              </client-only>
             </o-tab-item>
+
             <o-tab-item id="headways" label="Headways">
               <tl-headway-viewer :headways="entity.headways" />
             </o-tab-item>
@@ -252,25 +255,29 @@
             </o-tab-item>
 
             <o-tab-item id="export" label="Export">
-              <tl-data-export
-                v-if="activeTab === 4"
-                :route-name="routeName"
-                :route-features="routeFeatures"
-                :stop-features="stopFeatures"
-                :route-ids="[entity.id]"
-                @set-features="features = $event"
-              />
+              <client-only placeholder="Export">
+                <tl-data-export
+                  v-if="activeTab === 4"
+                  :route-name="routeName"
+                  :route-features="routeFeatures"
+                  :stop-features="stopFeatures"
+                  :route-ids="[entity.id]"
+                  @set-features="features = $event"
+                />
+              </client-only>
             </o-tab-item>
           </o-tabs>
         </div>
         <div class="column is-one-third">
-          <tl-feed-version-map-viewer
-            :route-ids="entityIds"
-            :overlay="false"
-            :include-stops="true"
-            :link-version="linkVersion"
-            :features="activeTab === 4 ? features : []"
-          />
+          <client-only placeholder="Map">
+            <tl-feed-version-map-viewer
+              :route-ids="entityIds"
+              :overlay="false"
+              :include-stops="true"
+              :link-version="linkVersion"
+              :features="activeTab === 4 ? features : []"
+            />
+          </client-only>
         </div>
       </div>
     </div>

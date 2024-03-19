@@ -1,101 +1,99 @@
 <template>
-  <client-only placeholder="Service levels">
-    <div>
-      <div v-if="showFilters" class="block">
-        <o-field grouped expanded>
-          <o-field v-if="showServiceRelative" label="Service relative to">
-            <o-select v-model="maxAggMode">
-              <option value="all">
-                All cells
-              </option>
-              <option value="group">
-                Within group
-              </option>
-            </o-select>
-          </o-field>
-
-          <o-field v-if="showDateSelector" label="Start date">
-            <o-datepicker
-              v-model="displayStartDate"
-              :unselectable-days-of-week="[0,2,3,4,5,6]"
-              placeholder="Click to select..."
-              icon="calendar-today"
-              trap-focus
-            />
-          </o-field>
-
-          <o-field v-if="showDateSelector" label="End date">
-            <o-datepicker
-              v-model="displayEndDate"
-              :unselectable-days-of-week="[1,2,3,4,5,6]"
-              placeholder="Click to select..."
-              icon="calendar-today"
-              trap-focus
-            />
-          </o-field>
-
-          <!-- label is zero width joiner -->
-          <o-field label="‍">
-            <span v-if="maxWeeks && displayWeeks.length >= maxWeeks" class="tag">Note: only {{ maxWeeks }} weeks are displayed</span>
-          </o-field>
+  <div>
+    <div v-if="showFilters" class="block">
+      <o-field grouped expanded>
+        <o-field v-if="showServiceRelative" label="Service relative to">
+          <o-select v-model="maxAggMode">
+            <option value="all">
+              All cells
+            </option>
+            <option value="group">
+              Within group
+            </option>
+          </o-select>
         </o-field>
-      </div>
 
-      <div class="clearfix">
-        <div v-if="!weekAgg" class="col daylabel">
-          <span class="cell month">&nbsp;</span>
-          <div>
-            <div v-for="(row,i) of colGroups.rowinfo" :key="i">
-              <span v-for="(dow,j) of daysOfWeek" :key="j" class="cell rowlabel">
-                <template v-if="!weekAgg">
-                  {{ dow }}
-                </template>
-              </span>
-              <span v-if="!weekAgg" class="cell break">&nbsp;</span>
-            </div>
-          </div>
-        </div>
+        <o-field v-if="showDateSelector" label="Start date">
+          <o-datepicker
+            v-model="displayStartDate"
+            :unselectable-days-of-week="[0,2,3,4,5,6]"
+            placeholder="Click to select..."
+            icon="calendar-today"
+            trap-focus
+          />
+        </o-field>
 
-        <div v-for="col of colGroups.cols" :key="col.key" class="col">
-          <span class="cell month">{{ formatMonth(col.key) }}</span>
-          <div v-for="(cell,i) of col.rows" :key="i">
-            <span v-for="(dayval,j) of cell.vals" :key="j" class="cell value" :style="cmap(dayval / cell.max)">
-              <span v-if="cell.feed_version_sha1" class="tt">
-                <template v-if="weekAgg">
-                  Week of
-                </template>
-                {{ formatDay(col.key, j) }}<br>
-                Feed: {{ $filters.shortenName(cell.feed_onestop_id,16) }} ({{ $filters.shortenName(cell.feed_version_sha1,6) }})<br>
-                Fetched: {{ $filters.formatDate(cell.fetched_at) }}<br>
-                {{ Math.ceil(dayval / 3600) }} service hours <br>
-                <template v-if="maxAggMode === 'all'">
-                  {{ Math.ceil((dayval / cell.max) * 100) }}% of max (all groups)
-                </template>
-                <template v-else-if="maxAggMode === 'group'">
-                  {{ Math.ceil((dayval / cell.max) * 100) }}% of max (within group)
-                </template>
-              </span>
-            </span>
-            <span v-if="!weekAgg" class="cell break">&nbsp;</span>
-          </div>
-        </div>
+        <o-field v-if="showDateSelector" label="End date">
+          <o-datepicker
+            v-model="displayEndDate"
+            :unselectable-days-of-week="[1,2,3,4,5,6]"
+            placeholder="Click to select..."
+            icon="calendar-today"
+            trap-focus
+          />
+        </o-field>
 
-        <div class="col rowlabel">
-          <span class="cell month">&nbsp;</span>
-          <div v-for="(cell,i) of colGroups.rowinfo" :key="i">
+        <!-- label is zero width joiner -->
+        <o-field label="‍">
+          <span v-if="maxWeeks && displayWeeks.length >= maxWeeks" class="tag">Note: only {{ maxWeeks }} weeks are displayed</span>
+        </o-field>
+      </o-field>
+    </div>
+
+    <div class="clearfix">
+      <div v-if="!weekAgg" class="col daylabel">
+        <span class="cell month">&nbsp;</span>
+        <div>
+          <div v-for="(row,i) of colGroups.rowinfo" :key="i">
             <span v-for="(dow,j) of daysOfWeek" :key="j" class="cell rowlabel">
-              <template v-if="showGroupInfo">.
-                <nuxt-link :to="{name:'feeds-feedKey-versions-feedVersionKey', hash: '#service', params:{feedKey: cell.feed_onestop_id, feedVersionKey: cell.feed_version_sha1}}">
-                  Fetched {{ $filters.formatDate(cell.fetched_at) }}
-                </nuxt-link>
+              <template v-if="!weekAgg">
+                {{ dow }}
               </template>
             </span>
             <span v-if="!weekAgg" class="cell break">&nbsp;</span>
           </div>
         </div>
       </div>
+
+      <div v-for="col of colGroups.cols" :key="col.key" class="col">
+        <span class="cell month">{{ formatMonth(col.key) }}</span>
+        <div v-for="(cell,i) of col.rows" :key="i">
+          <span v-for="(dayval,j) of cell.vals" :key="j" class="cell value" :style="cmap(dayval / cell.max)">
+            <span v-if="cell.feed_version_sha1" class="tt">
+              <template v-if="weekAgg">
+                Week of
+              </template>
+              {{ formatDay(col.key, j) }}<br>
+              Feed: {{ $filters.shortenName(cell.feed_onestop_id,16) }} ({{ $filters.shortenName(cell.feed_version_sha1,6) }})<br>
+              Fetched: {{ $filters.formatDate(cell.fetched_at) }}<br>
+              {{ Math.ceil(dayval / 3600) }} service hours <br>
+              <template v-if="maxAggMode === 'all'">
+                {{ Math.ceil((dayval / cell.max) * 100) }}% of max (all groups)
+              </template>
+              <template v-else-if="maxAggMode === 'group'">
+                {{ Math.ceil((dayval / cell.max) * 100) }}% of max (within group)
+              </template>
+            </span>
+          </span>
+          <span v-if="!weekAgg" class="cell break">&nbsp;</span>
+        </div>
+      </div>
+
+      <div class="col rowlabel">
+        <span class="cell month">&nbsp;</span>
+        <div v-for="(cell,i) of colGroups.rowinfo" :key="i">
+          <span v-for="(dow,j) of daysOfWeek" :key="j" class="cell rowlabel">
+            <template v-if="showGroupInfo">.
+              <nuxt-link :to="{name:'feeds-feedKey-versions-feedVersionKey', hash: '#service', params:{feedKey: cell.feed_onestop_id, feedVersionKey: cell.feed_version_sha1}}">
+                Fetched {{ $filters.formatDate(cell.fetched_at) }}
+              </nuxt-link>
+            </template>
+          </span>
+          <span v-if="!weekAgg" class="cell break">&nbsp;</span>
+        </div>
+      </div>
     </div>
-  </client-only>
+  </div>
 </template>
 
 <script>

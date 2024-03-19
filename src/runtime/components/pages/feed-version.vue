@@ -214,15 +214,19 @@
         </o-tab-item>
 
         <o-tab-item id="service" label="Service levels">
-          <template v-if="activeTab === 2">
-            <tl-multi-service-levels :show-group-info="false" :show-service-relative="false" :fvids="[entity.id]" :week-agg="false" />
-          </template>
+          <client-only placeholder="Service levels">
+            <template v-if="activeTab === 2">
+              <tl-multi-service-levels :show-group-info="false" :show-service-relative="false" :fvids="[entity.id]" :week-agg="false" />
+            </template>
+          </client-only>
         </o-tab-item>
 
         <o-tab-item id="map" label="Map">
           <template v-if="activeTab === 3">
             <div v-if="imported">
-              <tl-feed-version-map-viewer :feed-version-sha1="entity.sha1" :overlay="true" :link-version="true" />
+              <client-only placeholder="Map">
+                <tl-feed-version-map-viewer :feed-version-sha1="entity.sha1" :overlay="true" :link-version="true" />
+              </client-only>
             </div>
             <tl-msg-info v-else>
               Map is only available for successfully imported feed versions.

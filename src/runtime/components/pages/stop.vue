@@ -163,12 +163,14 @@
             </o-tab-item>
 
             <o-tab-item id="departures" label="Departures">
-              <tl-stop-departures
-                v-if="entity.id && activeTab == 2"
-                :show-fallback-selector="true"
-                :stop-ids="entityIds"
-                :search-coords="entity.geometry.coordinates"
-              />
+              <client-only placeholder="Departures">
+                <tl-stop-departures
+                  v-if="entity.id && activeTab == 2"
+                  :show-fallback-selector="true"
+                  :stop-ids="entityIds"
+                  :search-coords="entity.geometry.coordinates"
+                />
+              </client-only>
               <tl-msg-info>
                 <p><a href="https://www.transit.land/documentation/rest-api/departures" target="_blank">Learn more about Transitland v2 REST API stop departures endpoint</a></p>
               </tl-msg-info>
@@ -233,16 +235,18 @@
           </o-tabs>
         </div>
         <div class="column is-one-third">
-          <tl-map-viewer
-            :stop-features="stopFeatures"
-            :route-features="routeFeatures"
-            :features="features"
-            :auto-fit="false"
-            :center="entity.geometry.coordinates"
-            :circle-radius="20"
-            :zoom="15"
-            :overlay="true"
-          />
+          <client-only placeholder="Map">
+            <tl-map-viewer
+              :stop-features="stopFeatures"
+              :route-features="routeFeatures"
+              :features="features"
+              :auto-fit="false"
+              :center="entity.geometry.coordinates"
+              :circle-radius="20"
+              :zoom="15"
+              :overlay="true"
+            />
+          </client-only>
         </div>
       </div>
     </div>

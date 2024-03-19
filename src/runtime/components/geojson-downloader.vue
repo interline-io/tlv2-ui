@@ -1,9 +1,7 @@
 <template>
-  <client-only placeholder="">
-    <button class="button mr-2" @click="saveFile">
-      {{ label }}
-    </button>
-  </client-only>
+  <button class="button mr-2" @click="saveFile">
+    {{ label }}
+  </button>
 </template>
 
 <script>
