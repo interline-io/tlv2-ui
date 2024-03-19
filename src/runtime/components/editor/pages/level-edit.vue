@@ -74,7 +74,6 @@ export default {
   methods: {
     updateLevelHandler (level) {
       this.station.updateLevel(this.$apollo, level)
-        .then(this.handleError)
         .then(() => {
           navigateTo({
             name: 'editor-feedKey-feedVersionKey-stations-stationKey',
@@ -89,7 +88,6 @@ export default {
     },
     deleteLevelHandler (levelId) {
       this.station.deleteLevel(this.$apollo, levelId)
-        .then(this.handleError)
         .then(() => {
           navigateTo({
             name: 'editor-feedKey-feedVersionKey-stations-stationKey',

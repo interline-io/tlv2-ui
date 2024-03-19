@@ -31,8 +31,6 @@
       <tl-title title="New Station" />
     </slot>
 
-    {{ newStation () }}
-
     <tl-editor-station-editor
       :value="newStation()"
       @create="createStationHandler"
@@ -59,7 +57,6 @@ export default {
     },
     createStationHandler (station) {
       station.createStation(this.$apollo, station.stop)
-        .then(this.handleError)
         .then(() => {
           navigateTo({
             name: 'editor-feedKey-feedVersionKey-stations-stationKey',

@@ -378,7 +378,7 @@ export default {
       // only call once
       if (this.selectedLevels.length === 0) {
         this.selectedLevels = this.station.levels.map((s) => { return s.id })
-        this.selectedLevel = null
+        this.selectedLevel = this.selectedLevels.length > 0 ? this.selectedLevels[0] : null
       }
     },
     'station.stops' () {
@@ -546,7 +546,7 @@ export default {
             type: 'Point',
             coordinates: [ll.lng, ll.lat]
           },
-          level_id: this.selectedLevel
+          level: { id: this.selectedLevel }
         }).setDefaults()
         this.createStopHandler(stop)
       }

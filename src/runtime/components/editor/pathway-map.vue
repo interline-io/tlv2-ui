@@ -254,21 +254,25 @@ export default {
       if (!this.ready || !this.station) {
         return
       }
-      const lc = {}
-      for (const [i, level] of this.station.levels.entries()) {
-        lc[level.id] = LEVEL_COLORS[i % LEVEL_COLORS.length]
-      }
       // filter stops based on agency
       const allStops = [...this.station.stops, ...this.otherStops]
-      // get layers
+
+      // get geoms
       const geoms = {}
-      const levelColors = new Map()
       for (const stop of allStops) {
         geoms[stop.id] = stop.geometry.coordinates
-        const levelId = stop.level?.id
-        const color = lc[levelId] || '#87a9ff'
-        levelColors.set(levelId, color)
       }
+
+      // get layers
+      const levelColors = new Map()
+      levelColors.set(0, '#87a9ff')
+      for (const [i, level] of this.station.levels.entries()) {
+        levelColors.set(
+          level.id,
+          LEVEL_COLORS[i % LEVEL_COLORS.length]
+        )
+      }
+
       for (const [levelId, color] of levelColors) {
         this.addLevelLayer(
           levelId,
@@ -357,7 +361,7 @@ export default {
             type: 'Feature',
             id: s.id,
             properties: {
-              level_id: s.level?.id,
+              level_id: s.level?.id || 0,
               level_index: s.level?.level_index,
               stop_name: s.stop_name
             },
@@ -373,7 +377,7 @@ export default {
           type: 'Feature',
           id: s.id,
           properties: {
-            level_id: s.level?.id,
+            level_id: s.level?.id || 0,
             level_index: s.level?.level_index,
             stop_name: s.stop_name
           },

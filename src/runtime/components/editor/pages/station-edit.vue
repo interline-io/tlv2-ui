@@ -58,16 +58,18 @@ export default {
   mixins: [StationMixin],
   methods: {
     updateStationHandler (station) {
-      this.station.updateStation(this.$apollo, station.stop).then(this.handleError).then(() => {
-        navigateTo({
-          name: 'editor-feedKey-feedVersionKey-stations-stationKey',
-          params: {
-            feedKey: this.feedKey,
-            feedVersionKey: this.feedVersionKey,
-            stationKey: station.stop.stop_id
-          }
+      this.station.updateStation(this.$apollo, station.stop)
+        .then(() => {
+          navigateTo({
+            name: 'editor-feedKey-feedVersionKey-stations-stationKey',
+            params: {
+              feedKey: this.feedKey,
+              feedVersionKey: this.feedVersionKey,
+              stationKey: station.stop.stop_id
+            }
+          })
         })
-      }).catch(this.setError)
+        .catch(this.setError)
     },
     deleteStationCheck (station) {
       this.$buefy.dialog.confirm({
@@ -80,15 +82,17 @@ export default {
       })
     },
     deleteStationHandler (station) {
-      this.station.deleteStation(this.$apollo, station).then(this.handleError).then(() => {
-        navigateTo({
-          name: 'editor-feedKey-feedVersionKey-stations',
-          params: {
-            feedKey: this.feedKey,
-            feedVersionKey: this.feedVersionKey
-          }
+      this.station.deleteStation(this.$apollo, station)
+        .then(() => {
+          navigateTo({
+            name: 'editor-feedKey-feedVersionKey-stations',
+            params: {
+              feedKey: this.feedKey,
+              feedVersionKey: this.feedVersionKey
+            }
+          })
         })
-      }).catch(this.setError)
+        .catch(this.setError)
     }
   }
 }

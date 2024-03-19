@@ -56,15 +56,12 @@
                 </p>
               </div>
             </template>
-            <div class="card-content">
-              <template v-if="selectedStop && selectedStop.parent && selectedStop.parent.id === station.id">
-                <tl-editor-stop-editor
-                  :value="selectedStop"
-                  :stop-ext="selectedStop.stop_ext"
-                  :station="station"
-                  @update="updateStopHandler"
-                  @delete="deleteStopHandler"
-                />
+            <div v-if="selectedStop" :key="selectedStop" class="card-content">
+              <template v-if="selectedStop.id === station.id">
+                This is the station.
+              </template>
+              <template v-else-if="selectedStop.parent?.id === station.id">
+                This stop is already associated with the station. Use the pathways editor.
               </template>
               <div v-else-if="selectedStop">
                 <o-field label="Stop ID">
@@ -87,14 +84,13 @@
                     </li>
                   </ul>
                 </o-field>
-
-                <span class="button is-primary" :disabled="selectedStop.level?.id === null" @click="importStopHandler(selectedStop)">
+                <span class="button is-primary" @click="importStopHandler(selectedStop)">
                   Import Node
                 </span>
               </div>
-              <template v-else>
-                Click to select a stop
-              </template>
+            </div>
+            <div v-else class="card-content">
+              Click to select a stop
             </div>
           </o-collapse>
 
@@ -113,7 +109,7 @@
             <div class="card-content">
               <ul class="help">
                 <!-- <li><span style="color:#e69320">Stops in station</span></li> -->
-                <li><span style="color:#87a9ff">Stops not in station</span></li>
+                <!-- <li><span style="color:#87a9ff">Stops not in station</span></li> -->
                 <li>Select a node to import into station</li>
                 <li>You must select a level before importing</li>
                 <li>Click the selected item again to unselect</li>
@@ -159,22 +155,13 @@
             <o-dropdown-item v-for="level of station.levels" :key="level.id" :value="level.id" aria-role="listitem">
               <div class="media">
                 <div class="media-left">
-                  {{ level.level_index }}
+                  {{ level.level_index !== undefined ? level.level_index : ' ' }}
                 </div>
                 <div class="media-content">
-                  <h3>{{ level.level_name }}</h3>
+                  <h3>
+                    {{ level.level_name !== undefined ? level.level_name : 'Unassigned' }}
+                  </h3>
                   <small>{{ level.stops.length }} nodes </small>
-                </div>
-              </div>
-            </o-dropdown-item>
-            <o-dropdown-item :value="null" aria-role="listitem">
-              <div class="media">
-                <div class="media-left">
-  &nbsp;
-                </div>
-                <div class="media-content">
-                  <h3>Unimported stops</h3>
-                  <small>&nbsp;</small>
                 </div>
               </div>
             </o-dropdown-item>
@@ -331,6 +318,9 @@ export default {
         }
       }
       let filtered = this.nearbyStops.filter((stop) => {
+        if (stop.location_type !== 0 && stop.location_type !== 1) {
+          return false
+        }
         const key = stop.feed_version.feed.onestop_id + ':' + stop.stop_id
         if (excludeStops.has(key)) {
           return false
@@ -340,7 +330,7 @@ export default {
         }
         return true
       })
-      if (this.selectedAgencies && this.selectedAgencies.length > 0) {
+      if (this.selectedAgencies?.length > 0) {
         const check = new Set(this.selectedAgencies)
         filtered = filtered.filter((stop) => {
           let rss = stop.route_stops || []
@@ -364,7 +354,7 @@ export default {
         geometry: this.station.geometry,
         levels: this.station.levels,
         pathways: [],
-        stops: this.station.stops.filter((s) => { return s.location_type === 0 || s.location_type === 2 })
+        stops: []
       }
     },
     agencies () {
@@ -418,21 +408,10 @@ export default {
     }
   },
   methods: {
-    updateStopHandler (ent) {
-      this.station.updateStop(this.$apollo, ent)
-        .then(() => { console.log('start refetch'); return this.refetch() })
-        .then(() => { this.selectStop(node.id) })
-        .catch(this.setError)
-    },
     importStopHandler (ent) {
-      this.station.importStop(this.$apollo, ent).then(() => { return this.refetch() })
-        .then((data) => { this.selectStop(data.id) })
-        .catch(this.setError)
-    },
-    deleteStopHandler (entId) {
-      return this.station.deleteStop(this.$apollo, entId)
+      this.station.importStop(this.$apollo, ent)
         .then(() => { return this.refetch() })
-        .then(() => { this.selectStop(null) })
+        .then((data) => { this.selectStop(data.id) })
         .catch(this.setError)
     },
     selectStop (stopid) {

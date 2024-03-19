@@ -29,9 +29,9 @@ query stationQuery ($stop_id: String, $feed_onestop_id: String!, $feed_version_f
       level {
         ...level
       }
-      # child_levels {
-      #   ...level
-      # }
+      child_levels {
+        ...level
+      }
       feed_version {
         id
         sha1
@@ -637,31 +637,13 @@ export class Station {
   }
 
   // Associations
-  importStop ($apollo, node, _cb) {
-    if (node.feed_version.id === this.stop.feed_version.id) {
-      return new Promise(() => {
-        throw new Error('cannot import from same feed version')
-      })
+  importStop ($apollo, ent, _cb) {
+    console.log('node:', ent, 'this.stop:', this.stop)
+    if (ent.feed_version?.id === this.stop.feed_version?.id) {
+      ent.parent = { id: this.stop.id }
+      return this.updateStop($apollo, ent)
     }
-    // node.parent_station = def(node.parent_station, this.stop.id)
-    node.setDefaults()
-    console.log('import node:', node.value())
-    const fosid = node.feed_version.feed.onestop_id
-    const data = node.value()
-    return $apollo.mutate({
-      mutation: require('~/graphql/editor/import-node.gql'),
-      variables: {
-        target_stop_id: data.stop_id,
-        target_feed_onestop_id: fosid,
-        feed_version_id: this.stop.feed_version.id,
-        stop_id: `${fosid}-${data.stop_id}-${Date.now()}`,
-        location_type: data.location_type,
-        stop_name: data.stop_name,
-        geometry: data.geometry,
-        level_id: data.level_id,
-        parent_station: this.stop.id
-      }
-    })
+    throw new Error('temporarily unsupported')
   }
 
   createAssociation ($apollo, ent) {
