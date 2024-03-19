@@ -118,9 +118,9 @@
 import fcose from 'cytoscape-fcose'
 import { schemeRdGy, schemeDark2 } from 'd3-scale-chromatic'
 import { nextTick } from 'vue'
-import { navigateTo } from '#app'
 import cytoscape from 'cytoscape'
 import StationMixin from './station-mixin'
+import { navigateTo } from '#imports'
 
 const cytoscapeConfig = {
   style: [

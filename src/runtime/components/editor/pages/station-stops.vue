@@ -187,9 +187,9 @@
 
 <script>
 import { gql } from 'graphql-tag'
-import { navigateTo } from '#app'
 import { Stop } from '../station'
 import StationMixin from './station-mixin'
+import { navigateTo } from '#imports'
 
 function intersection (setA, setB) {
   const _intersection = new Set()

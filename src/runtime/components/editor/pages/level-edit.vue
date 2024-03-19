@@ -52,8 +52,8 @@
 </template>
 
 <script>
-import { navigateTo } from '#app'
 import StationMixin from './station-mixin'
+import { navigateTo } from '#imports'
 
 export default {
   mixins: [StationMixin],

@@ -1,5 +1,4 @@
 <script>
-import { useRuntimeConfig } from '#app'
 import { useUser, useJwt } from '../../plugins/auth'
 
 const OBJECTTYPES = {
@@ -21,8 +20,6 @@ const RELATIONS = {
   parent: 6
 }
 
-const config = useRuntimeConfig()
-
 export default {
   data () {
     return {
@@ -41,7 +38,7 @@ export default {
       return 'Bearer ' + token
     },
     apiBase () {
-      return config.public.apiBase
+      return this.$config.public.apiBase
     },
     nameSorted (v) {
       return (v || []).slice(0).sort((a, b) => { return (a.name || '').localeCompare(b.name || '') })

@@ -1,4 +1,4 @@
-import { useRuntimeConfig } from '#app'
+import { useRuntimeConfig } from '#imports'
 
 export function getBasemapLayers() {
   const config = useRuntimeConfig()

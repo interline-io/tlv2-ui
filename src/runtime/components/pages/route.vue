@@ -279,7 +279,6 @@
 
 <script>
 import gql from 'graphql-tag'
-import { useRuntimeConfig } from '#app'
 import EntityPageMixin from './entity-page-mixin'
 
 const q = gql`
@@ -449,8 +448,7 @@ export default {
       }
     },
     staticImage () {
-      const config = useRuntimeConfig()
-      return `${config.public.apiBase}/rest/routes/${this.pathKey}.png`
+      return `${this.$config.public.apiBase}/rest/routes/${this.pathKey}.png`
     },
     staticTitle () {
       return `${this.routeName} • ${this.routeType} route`

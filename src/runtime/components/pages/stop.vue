@@ -153,7 +153,7 @@
                   </div>
                   <div v-for="rs of rss" :key="rs.route.id">
                     <nuxt-link
-                      :to="{name:'routes-stopKey', params:{stopKey:rs.route.onestop_id}}"
+                      :to="{name:'routes-routeKey', params:{routeKey:rs.route.onestop_id}}"
                     >
                       <tl-route-icon :route-type="rs.route.route_type" :route-short-name="rs.route.route_short_name" :route-long-name="rs.route.route_long_name" :route-link="rs.route.route_url" />
                     </nuxt-link>
