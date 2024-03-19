@@ -20,7 +20,7 @@
             <td>{{ $filters.formatDate(fv.fetched_at) }} ({{ $filters.fromNow(fv.fetched_at) }})</td>
             <td>
               <nuxt-link
-                :to="{ name: 'feeds-feed-versions-version', params: { feed: feed.onestop_id, version: fv.sha1 } }"
+                :to="{ name: 'feeds-feedKey-versions-feedVersionKey', params: { feedKey: feed.onestop_id, feedVersionKey: fv.sha1 } }"
               >
                 {{ fv.sha1.substr(0, 6) }}…
               </nuxt-link>
@@ -82,8 +82,6 @@
 
 <script>
 import gql from 'graphql-tag'
-import { useRuntimeConfig } from '#app'
-const config = useRuntimeConfig()
 
 const fvQuery = gql`
 query ($limit:Int=100, $onestop_id: String, $after:Int) {
@@ -178,7 +176,7 @@ export default {
       const isLatest = (sha1 === this.latestFeedVersionSha1)
       this.$emit('downloadTriggered', sha1, isLatest)
       if (this.issueDownloadRequest) {
-        window.open(`${config.public.apiBase}/rest/feed_versions/${sha1}/download`, '_blank')
+        window.open(`${this.$config.public.apiBase}/rest/feed_versions/${sha1}/download`, '_blank')
       }
     }
   }

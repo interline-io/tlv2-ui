@@ -85,32 +85,32 @@ export default {
               name = name + ': ' + i.name
             }
             ret.push({
-              route: 'feeds-feed',
+              route: 'feeds-feedKey',
               entity: i,
               type: 'Feed',
               name,
               rank: (1 + i.search_rank) * 1000,
-              link: { name: 'feeds-feed', params: { feed: i.onestop_id } }
+              link: { name: 'feeds-feedKey', params: { feedKey: i.onestop_id } }
             })
           }
           for (const i of data.operators || []) {
             ret.push({
-              route: 'operators-operator',
+              route: 'operators-operatorKey',
               entity: i,
               type: 'Operator',
               name: i.name || i.short_name,
               rank: (1 + i.search_rank) * 100,
-              link: { name: 'operators-onestop_id', params: { onestop_id: i.onestop_id } }
+              link: { name: 'operators-operatorKey', params: { operatorKey: i.onestop_id } }
             })
           }
           for (const i of data.routes || []) {
             ret.push({
-              route: 'routes-route',
+              route: 'routes-routeKey',
               entity: i,
               type: 'Route',
               name: `${i.agency.agency_name}: ${i.route_short_name} ${i.route_long_name}`,
               rank: (1 + i.search_rank) * 10,
-              link: { name: 'routes-onestop_id', params: { onestop_id: i.onestop_id } }
+              link: { name: 'routes-routeKey', params: { routeKey: i.onestop_id } }
             })
           }
           for (const i of data.stops || []) {
@@ -126,7 +126,7 @@ export default {
               type: 'Stop',
               name,
               rank: (1 + i.search_rank),
-              link: { name: 'stops-onestop_id', params: { onestop_id: i.onestop_id } }
+              link: { name: 'stops-stopKey', params: { stopKey: i.onestop_id } }
             })
           }
           this.data = ret.sort(function (a, b) { return b.rank - a.rank })

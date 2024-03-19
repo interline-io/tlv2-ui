@@ -65,7 +65,7 @@
         :key="operator.onestop_id"
         class="pl-4"
       >
-        <nuxt-link :to="{ name: 'operators-onestop_id', params: { onestop_id: operator.onestop_id } }">
+        <nuxt-link :to="{ name: 'operators-operatorKey', params: { operatorKey: operator.onestop_id } }">
           {{ operator.name }}
           <template v-if="operator.short_name">
             ({{ operator.short_name }})

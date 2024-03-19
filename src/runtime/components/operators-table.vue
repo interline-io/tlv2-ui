@@ -62,7 +62,7 @@
         <tbody>
           <tr v-for="row of operatorEntities" :key="row.id">
             <td>
-              <nuxt-link :to="{ name: 'operators-onestop_id', params: { onestop_id: row.onestop_id } }">
+              <nuxt-link :to="{ name: 'operators-operatorKey', params: { operatorKey: row.onestop_id } }">
                 {{ row.name }}
               </nuxt-link>
               <span v-if="row.short_name">&nbsp;({{ row.short_name }})</span>

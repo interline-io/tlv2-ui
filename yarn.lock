@@ -1970,7 +1970,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/cytoscape@npm:*":
+"@types/cytoscape@npm:*, @types/cytoscape@npm:^3":
   version: 3.19.16
   resolution: "@types/cytoscape@npm:3.19.16"
   checksum: 8d2dafc2e7771b9cc8b9e2a0323ea6fc3aa2ee58be7042d4da03d3c3688567f2695e9f70eec5a9dd60cd45023aaf80519c6bd35e6f63911205216b8ba30a3eb4
@@ -3849,6 +3849,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cytoscape@npm:^3.28.1":
+  version: 3.28.1
+  resolution: "cytoscape@npm:3.28.1"
+  dependencies:
+    heap: "npm:^0.2.6"
+    lodash: "npm:^4.17.21"
+  checksum: 3f7adf3675e26bf4e14dadf3932f68b7fe9a4aef2f5598251d57369dc86d94db587036dbef26954c5e92d8ec6a1c2a0af888dc18d9acd9b0a8a01c7eddf11775
+  languageName: node
+  linkType: hard
+
 "d3-color@npm:1 - 3":
   version: 3.1.0
   resolution: "d3-color@npm:3.1.0"
@@ -5548,6 +5558,13 @@ __metadata:
   version: 1.1.1
   resolution: "haversine@npm:1.1.1"
   checksum: 4c2393d7dc32d75859bf3927f0432407ac7f6c95728c7543022a841c1a3e6e22eb6ed1e010024a27716b4c8972045549407ca152aaa7d078b490186863bf7ac4
+  languageName: node
+  linkType: hard
+
+"heap@npm:^0.2.6":
+  version: 0.2.7
+  resolution: "heap@npm:0.2.7"
+  checksum: 6374f6510af79bf47f2cfcee265bf608e6ed2b2694875974d1cb5654ddc98af05347dcf3a42ee9a7de318b576022d6f4d00fe06fa65a4a65c4c60638375eabfe
   languageName: node
   linkType: hard
 
@@ -9515,6 +9532,7 @@ __metadata:
     "@nuxtjs/eslint-config-typescript": "npm:^12.1.0"
     "@oruga-ui/oruga-next": "npm:^0.7.0"
     "@oruga-ui/theme-bulma": "npm:^0.2.11"
+    "@types/cytoscape": "npm:^3"
     "@types/cytoscape-fcose": "npm:^2"
     "@types/d3-scale-chromatic": "npm:^3"
     "@types/mapbox__mapbox-gl-draw": "npm:^1"
@@ -9523,6 +9541,7 @@ __metadata:
     "@vue/apollo-option": "npm:^4.0.0"
     "@vueuse/core": "npm:^10.7.2"
     bulma: "npm:^0.9.4"
+    cytoscape: "npm:^3.28.1"
     cytoscape-fcose: "npm:^2.2.0"
     d3-scale-chromatic: "npm:^3.0.0"
     date-fns: "npm:^3.2.0"

@@ -30,8 +30,8 @@
               <nuxt-link
                 v-if="entity.agency.onestop_id"
                 :to="{
-                  name: 'operators-onestop_id',
-                  params: { onestop_id: entity.agency.onestop_id },
+                  name: 'operators-operatorKey',
+                  params: { operatorKey: entity.agency.onestop_id },
                 }"
               >
                 {{ entity.agency.agency_name }}
@@ -41,8 +41,8 @@
             <li>
               <nuxt-link
                 :to="{
-                  name: 'routes-onestop_id',
-                  params: { onestop_id: pathKey },
+                  name: 'routes-routeKey',
+                  params: { routeKey: pathKey },
                 }"
               >
                 {{ entity.route_short_name }}
@@ -99,8 +99,8 @@
                   <nuxt-link
                     v-if="entity.agency.onestop_id"
                     :to="{
-                      name: 'operators-onestop_id',
-                      params: { onestop_id: entity.agency.onestop_id },
+                      name: 'operators-operatorKey',
+                      params: { operatorKey: entity.agency.onestop_id },
                     }"
                   >
                     {{ entity.agency.agency_name }}
@@ -213,18 +213,18 @@
                       <td>
                         <nuxt-link
                           :to="{
-                            name: 'feeds-feed',
-                            params: { feed: row.feed_onestop_id },
+                            name: 'feeds-feedKey',
+                            params: { feedKey: row.feed_onestop_id },
                           }"
                           class="button is-primary is-small"
                         >
                           Feed
                         </nuxt-link> <nuxt-link
                           :to="{
-                            name: 'feeds-feed-versions-version',
+                            name: 'feeds-feedKey-versions-feedVersionKey',
                             params: {
-                              feed: row.feed_onestop_id,
-                              version: row.feed_version_sha1,
+                              feedKey: row.feed_onestop_id,
+                              feedVersionKey: row.feed_version_sha1,
                             },
                           }"
                           class="button is-primary is-small"
@@ -232,8 +232,8 @@
                           Feed version
                         </nuxt-link> <nuxt-link
                           :to="{
-                            name: 'routes-onestop_id',
-                            params: { onestop_id: row.onestop_id },
+                            name: 'routes-routeKey',
+                            params: { routeKey: row.onestop_id },
                             query: {
                               feed_onestop_id: row.feed_onestop_id,
                               feed_version_sha1: row.feed_version_sha1,
@@ -279,7 +279,6 @@
 
 <script>
 import gql from 'graphql-tag'
-import { useRuntimeConfig } from '#app'
 import EntityPageMixin from './entity-page-mixin'
 
 const q = gql`
@@ -449,8 +448,7 @@ export default {
       }
     },
     staticImage () {
-      const config = useRuntimeConfig()
-      return `${config.public.apiBase}/rest/routes/${this.pathKey}.png`
+      return `${this.$config.public.apiBase}/rest/routes/${this.pathKey}.png`
     },
     staticTitle () {
       return `${this.routeName} • ${this.routeType} route`

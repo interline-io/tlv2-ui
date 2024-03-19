@@ -34,11 +34,11 @@ export default {
       this.loading = true
       await fetch(`${this.apiBase()}/admin/groups/${this.id}`, {
         headers: { authorization: await this.getAuthToken() }
-      }).then((data) => {
-        return data.json()
-      }).then((data) => {
-        this.group = data
       })
+        .then(this.handleError)
+        .then((data) => {
+          this.group = data
+        })
       this.loading = false
     }
   }

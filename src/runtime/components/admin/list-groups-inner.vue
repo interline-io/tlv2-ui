@@ -8,7 +8,7 @@
       <tbody>
         <tr v-for="feed of feeds" :key="feed.id">
           <td>
-            <nuxt-link :to="{name:'feeds-feed', params:{feed:feed.onestop_id}}">
+            <nuxt-link :to="{name:'feeds-feedKey', params:{feedKey:feed.onestop_id}}">
               {{ feed.onestop_id }} <span v-if="feed.name">: {{ feed.name }}</span>
             </nuxt-link>
           </td>

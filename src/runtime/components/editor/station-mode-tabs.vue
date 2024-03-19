@@ -61,7 +61,8 @@ export default {
   data () { return { routeKeys } },
   computed: {
     pathwaysModeEnabled () {
-      return (this.station && this.station.stops && this.station.stops.length > 0)
+      return true
+      // return (this.station && this.station.stops && this.station.stops.length > 0)
     },
     currentRoute () {
       return this.$route.name

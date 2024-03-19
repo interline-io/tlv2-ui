@@ -50,8 +50,8 @@
 </template>
 
 <script>
-import { navigateTo } from '#app'
 import StationMixin from './station-mixin'
+import { navigateTo } from '#imports'
 
 export default {
   mixins: [StationMixin],
@@ -69,7 +69,7 @@ export default {
             stationKey: this.stationKey
           }
         })
-      }).catch(this.error)
+      }).catch(this.setError)
     }
   }
 }

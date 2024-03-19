@@ -51,7 +51,7 @@
         <li v-for="(st) of activePattern.stop_times" :key="st.stop_sequence">
           <p class="route-stop-name">
             <nuxt-link
-              :to="{name:'stops-onestop_id', params:{onestop_id:st.stop.onestop_id}}"
+              :to="{name:'stops-stopKey', params:{stopKey:st.stop.onestop_id}}"
             >
               {{ st.stop.stop_name }}
             </nuxt-link>
@@ -67,7 +67,7 @@
               </div>
               <div v-for="rs of rss" :key="rs.id">
                 <nuxt-link
-                  :to="{name:'routes-onestop_id', params:{onestop_id:rs.onestop_id}}"
+                  :to="{name:'routes-routeKey', params:{routeKey:rs.onestop_id}}"
                 >
                   <tl-route-icon
 

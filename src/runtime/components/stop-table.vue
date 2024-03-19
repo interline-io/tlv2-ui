@@ -40,7 +40,7 @@
               </td>
               <td class="has-text-right">
                 <nuxt-link
-                  :to="{ name: 'stops-onestop_id', params: { onestop_id: stop.onestop_id }, query: (linkVersion ? { feed_onestop_id: stop.feed_onestop_id, feed_version_sha1: stop.feed_version_sha1, entity_id: stop.stop_id } : {}) }"
+                  :to="{ name: 'stops-stopKey', params: { stopKey: stop.onestop_id }, query: (linkVersion ? { feed_onestop_id: stop.feed_onestop_id, feed_version_sha1: stop.feed_version_sha1, entity_id: stop.stop_id } : {}) }"
                   class="button is-primary is-small"
                 >
                   Stop

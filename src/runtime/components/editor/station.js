@@ -29,9 +29,9 @@ query stationQuery ($stop_id: String, $feed_onestop_id: String!, $feed_version_f
       level {
         ...level
       }
-      # child_levels {
-      #   ...level
-      # }
+      child_levels {
+        ...level
+      }
       feed_version {
         id
         sha1
@@ -519,20 +519,15 @@ export class Station {
 
   // STATION
   createStation ($apollo, ent) {
-    ent.feed_version = { id: this.stop.feed_version.id }
-    ent.setDefaults()
-    return this.createStop($apollo, ent.stop)
+    return this.createStop($apollo, ent)
   }
 
   updateStation ($apollo, ent) {
-    if (ent.id === this.stop.id) {
-      ent.parent = { id: null }
-    }
-    return this.updateStop($apollo, ent.stop)
+    return this.updateStop($apollo, ent)
   }
 
   deleteStation ($apollo, ent) {
-    return deleteStop($apollo, ent)
+    return this.deleteStop($apollo, ent.stop)
   }
 
   // LEVELS
@@ -540,9 +535,9 @@ export class Station {
     ent.feed_version = { id: this.stop.feed_version.id }
     ent.parent = { id: this.stop.id }
     ent.setDefaults()
-    const vars = { ent: ent.value() }
+    const vars = { set: ent.value() }
     console.log('create level:', vars)
-    const q = gql`mutation ($ent: LevelInput!) {create_level(level:$ent) {id}}`
+    const q = gql`mutation ($set: LevelSetInput!) {level_create(set:$set) {id}}`
     return $apollo.mutate({
       mutation: q,
       variables: vars
@@ -552,9 +547,9 @@ export class Station {
   updateLevel ($apollo, ent) {
     ent.feed_version = { id: this.stop.feed_version.id }
     ent.parent = { id: this.stop.id }
-    const vars = { ent: ent.value() }
+    const vars = { set: ent.value() }
     console.log('update level:', vars)
-    const q = gql`mutation ($ent: LevelInput!) {update_level(level:$ent) {id}}`
+    const q = gql`mutation ($set: LevelSetInput!) {level_update(set:$set) {id}}`
     return $apollo.mutate({
       mutation: q,
       variables: vars
@@ -563,7 +558,7 @@ export class Station {
 
   deleteLevel ($apollo, ent) {
     console.log('delete level:', ent)
-    const q = gql`mutation ($id: Int!) {delete_level(id:$id) {id}}`
+    const q = gql`mutation ($id: Int!) {level_delete(id:$id) {id}}`
     return $apollo.mutate({
       mutation: q,
       variables: { id: ent.id }
@@ -574,9 +569,9 @@ export class Station {
   createPathway ($apollo, ent) {
     ent.feed_version = { id: this.stop.feed_version.id }
     ent.setDefaults()
-    const vars = { ent: ent.value() }
+    const vars = { set: ent.value() }
     console.log('create pathway:', vars)
-    const q = gql`mutation ($ent: PathwayInput!) {create_pathway(pathway:$ent) {id}}`
+    const q = gql`mutation ($set: PathwaySetInput!) {pathway_create(set:$set) {id}}`
     return $apollo.mutate({
       mutation: q,
       variables: vars
@@ -584,9 +579,9 @@ export class Station {
   }
 
   updatePathway ($apollo, ent) {
-    const vars = { ent: ent.value() }
+    const vars = { set: ent.value() }
     console.log('update pathway:', vars)
-    const q = gql`mutation ($ent: PathwayInput!) {update_pathway(pathway:$ent) {id}}`
+    const q = gql`mutation ($set: PathwaySetInput!) {pathway_update(set:$set) {id}}`
     return $apollo.mutate({
       mutation: q,
       variables: vars
@@ -595,7 +590,7 @@ export class Station {
 
   deletePathway ($apollo, pw) {
     console.log('delete pathway:', pw.value())
-    const q = gql`mutation ($id: Int!) {delete_pathway(id:$id) {id}}`
+    const q = gql`mutation ($id: Int!) {pathway_delete(id:$id) {id}}`
     return $apollo.mutate({
       mutation: q,
       variables: { id: pw.id }
@@ -604,12 +599,15 @@ export class Station {
 
   // STOPS
   createStop ($apollo, ent) {
-    ent.feed_version = { id: this.stop.feed_version.id }
-    ent.parent = { id: this.stop.id }
+    console.log('create stop raw:', ent)
+    if (!this.feed_version?.id) {
+      ent.feed_version = { id: this.stop.feed_version.id }
+      ent.parent = { id: this.stop.id }
+    }
     ent.setDefaults()
-    const vars = { ent: ent.value() }
+    const vars = { set: ent.value() }
     console.log('create stop:', vars)
-    const q = gql`mutation ($ent: StopInput!) {create_stop(stop:$ent) {id}}`
+    const q = gql`mutation ($set: StopSetInput!) {stop_create(set:$set) {id}}`
     return $apollo.mutate({
       mutation: q,
       variables: vars
@@ -620,9 +618,9 @@ export class Station {
     if (ent.id === this.stop.id) {
       ent.parent = { id: null }
     }
-    const vars = { ent: ent.value() }
+    const vars = { set: ent.value() }
     console.log('update stop:', vars)
-    const q = gql`mutation ($ent: StopInput!) {update_stop(stop:$ent) {id}}`
+    const q = gql`mutation ($set: StopSetInput!) {stop_update(set:$set) {id}}`
     return $apollo.mutate({
       mutation: q,
       variables: vars
@@ -631,7 +629,7 @@ export class Station {
 
   deleteStop ($apollo, ent) {
     console.log('delete stop:', ent.value())
-    const q = gql`mutation ($id: Int!) {delete_stop(id:$id) {id}}`
+    const q = gql`mutation ($id: Int!) {stop_delete(id:$id) {id}}`
     return $apollo.mutate({
       mutation: q,
       variables: { id: ent.id }
@@ -639,31 +637,13 @@ export class Station {
   }
 
   // Associations
-  importStop ($apollo, node, _cb) {
-    if (node.feed_version.id === this.stop.feed_version.id) {
-      return new Promise(() => {
-        throw new Error('cannot import from same feed version')
-      })
+  importStop ($apollo, ent, _cb) {
+    console.log('node:', ent, 'this.stop:', this.stop)
+    if (ent.feed_version?.id === this.stop.feed_version?.id) {
+      ent.parent = { id: this.stop.id }
+      return this.updateStop($apollo, ent)
     }
-    // node.parent_station = def(node.parent_station, this.stop.id)
-    node.setDefaults()
-    console.log('import node:', node.value())
-    const fosid = node.feed_version.feed.onestop_id
-    const data = node.value()
-    return $apollo.mutate({
-      mutation: require('~/graphql/editor/import-node.gql'),
-      variables: {
-        target_stop_id: data.stop_id,
-        target_feed_onestop_id: fosid,
-        feed_version_id: this.stop.feed_version.id,
-        stop_id: `${fosid}-${data.stop_id}-${Date.now()}`,
-        location_type: data.location_type,
-        stop_name: data.stop_name,
-        geometry: data.geometry,
-        level_id: data.level_id,
-        parent_station: this.stop.id
-      }
-    })
+    throw new Error('temporarily unsupported')
   }
 
   createAssociation ($apollo, ent) {

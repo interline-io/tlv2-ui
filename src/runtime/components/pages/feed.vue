@@ -20,8 +20,8 @@
               </nuxt-link>
             </li>
             <li>
-              <nuxt-link :to="{ name: 'feeds-feed', params: { feed: $route.params.feed } }">
-                {{ $route.params.feed }}
+              <nuxt-link :to="{ name: 'feeds-feedKey', params: { feedKey: $route.params.feedKey } }">
+                {{ $route.params.feedKey }}
               </nuxt-link>
             </li>
           </ul>

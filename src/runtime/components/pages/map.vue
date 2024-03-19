@@ -70,9 +70,6 @@
 </template>
 
 <script>
-import { useRuntimeConfig } from '#app'
-const config = useRuntimeConfig()
-
 export default {
   data () {
     return {
@@ -88,13 +85,13 @@ export default {
       currentBbox: null,
       routeTiles: {
         id: 'routes',
-        url: `${config.public.apiBase}/tiles/routes/tiles/{z}/{x}/{y}.pbf`,
+        url: `${this.$config.public.apiBase}/tiles/routes/tiles/{z}/{x}/{y}.pbf`,
         minzoom: 0,
         maxzoom: 14
       },
       stopTiles: {
         id: 'stops',
-        url: `${config.public.apiBase}/tiles/stops/tiles/{z}/{x}/{y}.pbf`,
+        url: `${this.$config.public.apiBase}/tiles/stops/tiles/{z}/{x}/{y}.pbf`,
         minzoom: 14,
         maxzoom: 14
       }

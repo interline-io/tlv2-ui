@@ -130,11 +130,12 @@ export default {
       if (search && search.length > 1) {
         await fetch(`${this.apiBase()}/admin/users?q=` + search, {
           headers: { authorization: await this.getAuthToken() }
-        }).then((data) => {
-          return data.json()
-        }).then((data) => {
-          this.users = (data?.users || []).slice(0, 10)
         })
+          .then(this.handleError)
+          .then((data) => {
+            this.users = (data?.users || []).slice(0, 10)
+          })
+          .catch(this.setError)
       } else {
         this.users = []
       }
@@ -142,20 +143,22 @@ export default {
       // groups
       await fetch(`${this.apiBase()}/admin/groups`, {
         headers: { authorization: await this.getAuthToken() }
-      }).then((data) => {
-        return data.json()
-      }).then((data) => {
-        this.groups = (data?.groups || []).slice(0, 100)
       })
+        .then(this.handleError)
+        .then((data) => {
+          this.groups = (data?.groups || []).slice(0, 100)
+        })
+        .catch(this.setError)
 
       // tenants
       await fetch(`${this.apiBase()}/admin/tenants`, {
         headers: { authorization: await this.getAuthToken() }
-      }).then((data) => {
-        return data.json()
-      }).then((data) => {
-        this.tenants = (data?.tenants || []).slice(0, 100)
       })
+        .then(this.handleError)
+        .then((data) => {
+          this.tenants = (data?.tenants || []).slice(0, 100)
+        })
+        .catch(this.setError)
 
       this.loading = false
     }

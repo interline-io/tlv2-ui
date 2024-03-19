@@ -18,13 +18,13 @@
               <tl-safelink :text="operator.onestop_id" />
             </td>
             <td class="has-text-right" style="min-width: 300px;">
-              <nuxt-link class="button is-primary is-small" :to="{ name: 'operators-onestop_id', params: { onestop_id: operator.onestop_id } }">
+              <nuxt-link class="button is-primary is-small" :to="{ name: 'operators-operatorKey', params: { operatorKey: operator.onestop_id } }">
                 Operator
-              </nuxt-link> <nuxt-link class="button is-primary is-small" :to="{ name: 'operators-onestop_id', hash: '#map', params: { onestop_id: operator.onestop_id } }">
+              </nuxt-link> <nuxt-link class="button is-primary is-small" :to="{ name: 'operators-operatorKey', hash: '#map', params: { operatorKey: operator.onestop_id } }">
                 Map
-              </nuxt-link> <nuxt-link class="button is-primary is-small" :to="{ name: 'operators-onestop_id', hash: '#routes', params: { onestop_id: operator.onestop_id } }">
+              </nuxt-link> <nuxt-link class="button is-primary is-small" :to="{ name: 'operators-operatorKey', hash: '#routes', params: { operatorKey: operator.onestop_id } }">
                 Routes
-              </nuxt-link> <nuxt-link class="button is-primary is-small" :to="{ name: 'operators-onestop_id', hash: '#stops', params: { onestop_id: operator.onestop_id } }">
+              </nuxt-link> <nuxt-link class="button is-primary is-small" :to="{ name: 'operators-operatorKey', hash: '#stops', params: { operatorKey: operator.onestop_id } }">
                 Stops
               </nuxt-link>
             </td>

@@ -74,7 +74,7 @@ export default {
         // console.log('station query result:', data.stops)
         this.station = new Station(fv.stops[0])
         const initialStop = new Stop(fv.stops[0])
-        this.stopList = [...initialStop.children.map((s) => { return s.id })]
+        this.stopList = [initialStop.id, ...initialStop.children.map((s) => { return s.id })]
         this.$apollo.queries.stationStopsQuery.refetch({ stop_ids: this.stopList })
       }
     },
@@ -92,6 +92,8 @@ export default {
         const a = new Set(this.stopList)
         const newStops = this.station.addStops(data.stops.map((s) => { return new Stop(s) }))
         const b = new Set(newStops)
+        a.add(this.station.stop.id)
+        b.add(this.station.stop.id)
         if (symmetricDifference(a, b).size === 0) {
           // console.log('READY!')
           this.ready = true
@@ -118,16 +120,16 @@ export default {
   },
   computed: {
     feed () {
-      return this.feeds && this.feeds.length === 1 ? this.feeds[0] : null
+      return this.feeds?.length > 0 ? this.feeds[0] : null
     },
     feedName () {
-      return this.feed ? this.feed.name : null
+      return this.feed?.name || this.feed?.onestop_id || this.feedKey
     },
     stationName () {
-      return this.station?.stop.stop_name
+      return this.station?.stop?.stop_name
     },
     feedVersion () {
-      return this.feed && this.feed.feed_versions ? this.feed.feed_versions[0] : null
+      return this.feed?.feed_versions?.length > 0 ? this.feed.feed_versions[0] : null
     },
     feedVersionName() {
       return (this.feedVersion?.file || this.feedVersionKey || '').substr(0, 8)
@@ -144,6 +146,18 @@ export default {
     }
   },
   methods: {
+    handleError (response) {
+      if (!response.ok) {
+        console.log('request failed', response)
+        throw new Error(response.statusText)
+      } else {
+        // console.log('request ok')
+        return response.json()
+      }
+    },
+    setError (e) {
+      this.error(e)
+    },
     error (error) {
       const msg = error.message ? error.message : JSON.stringify(error)
       this.$oruga.notification.open({

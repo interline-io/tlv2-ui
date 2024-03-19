@@ -54,12 +54,12 @@ export default {
       return false
     },
     linkVersion() {
-      if (this.searchKey.feed_version_sha1) {
+      if (this.searchKey.feedVersionSha1) {
         return true
       }
     },
     search() {
-      return this.pathKey.onestop_id === 'search'
+      return this.searchKey.onestop_id === 'search'
     },
     entity() {
       return (this.entities && this.entities.length > 0) ? this.entities[0] : null

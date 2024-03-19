@@ -20,13 +20,13 @@
               </nuxt-link>
             </li>
             <li>
-              <nuxt-link :to="{name: 'feeds-feed', params:{feed:$route.params.feed}}">
-                {{ $route.params.feed }}
+              <nuxt-link :to="{name: 'feeds-feedKey', params:{feedKey:$route.params.feedKey}}">
+                {{ $route.params.feedKey }}
               </nuxt-link>
             </li>
             <li>
-              <nuxt-link :to="{name: 'feeds-feed-versions-version', params:{feed:$route.params.feed, version:$route.params.version}}">
-                {{ $filters.shortenName($route.params.version,8) }}
+              <nuxt-link :to="{name: 'feeds-feedKey-versions-feedVersionKey', params:{feedKey:$route.params.feedKey, feedVersionKey:$route.params.feedVersionKey}}">
+                {{ $filters.shortenName($route.params.feedVersionKey,8) }}
               </nuxt-link>
             </li>
           </ul>
@@ -370,14 +370,14 @@ export default {
       query: q,
       variables () {
         return {
-          feed_version_sha1: this.feedVersionSha1
+          feed_version_sha1: this.feedVersionKey
         }
       }
     }
   },
   props: {
     canEdit: { type: Boolean, default: false },
-    feedVersionSha1: { type: String, default: null },
+    feedVersionKey: { type: String, default: null },
     showUserInformation: { type: Boolean, default: false }
   },
   data () {
@@ -427,7 +427,7 @@ export default {
       return `${this.entity.feed.onestop_id} • ${this.entity.sha1} • Feed version`
     },
     staticDescription () {
-      return `An archived GTFS feed version for ${this.operatorOrAgencyNames} from the feed with a Onestop ID of ${this.$route.params.feed} first fetched at ${this.entity.fetched_at}. This feed version contains ${this.rowCount['agency.txt'] ? this.rowCount['agency.txt'].toLocaleString() : '-'} agencies, ${this.rowCount['routes.txt'] ? this.rowCount['routes.txt'].toLocaleString() : '-'} routes, and ${this.rowCount['stops.txt'] ? this.rowCount['stops.txt'].toLocaleString() : '-'} stops.`
+      return `An archived GTFS feed version for ${this.operatorOrAgencyNames} from the feed with a Onestop ID of ${this.$route.params.feedKey} first fetched at ${this.entity.fetched_at}. This feed version contains ${this.rowCount['agency.txt'] ? this.rowCount['agency.txt'].toLocaleString() : '-'} agencies, ${this.rowCount['routes.txt'] ? this.rowCount['routes.txt'].toLocaleString() : '-'} routes, and ${this.rowCount['stops.txt'] ? this.rowCount['stops.txt'].toLocaleString() : '-'} stops.`
     }
   },
   methods: {

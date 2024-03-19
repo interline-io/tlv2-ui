@@ -134,11 +134,12 @@ export default {
       this.loading = true
       await fetch(`${this.apiBase()}/admin/feed_versions/${this.id}`, {
         headers: { authorization: await this.getAuthToken() }
-      }).then((data) => {
-        return data.json()
-      }).then((data) => {
-        this.perms = data
       })
+        .then(this.handleError)
+        .then((data) => {
+          this.perms = data
+        })
+        .catch(this.setError)
       this.loading = false
     },
     update (update) {
@@ -156,10 +157,7 @@ export default {
             this.$apollo.queries.fvs.refetch()
             this.$emit('changed')
           }
-        }).catch((error) => {
-          this.loading = false
-          this.error = error
-        })
+        }).catch(this.setError)
     },
     async addPermissions (relation, value) {
       console.log('addPermissions:', relation, value)

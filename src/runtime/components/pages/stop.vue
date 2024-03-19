@@ -17,7 +17,7 @@
             <a href="#">Stops</a>
           </li>
           <li>
-            <nuxt-link :to="{name: 'stops-onestop_id', params:{onestop_id:$route.params.onestop_id}}">
+            <nuxt-link :to="{name: 'stops-stopKey', params:{stopKey:$route.params.stopKey}}">
               {{ entity.stop_name }}
             </nuxt-link>
           </li>
@@ -135,7 +135,7 @@
                   </div>
                   <div v-for="rs of rss" :key="rs.route.id">
                     <nuxt-link
-                      :to="{name:'routes-onestop_id', params:{onestop_id:rs.route.onestop_id}}"
+                      :to="{name:'routes-routeKey', params:{routeKey:rs.route.onestop_id}}"
                     >
                       <tl-route-icon :route-type="rs.route.route_type" :route-short-name="rs.route.route_short_name" :route-long-name="rs.route.route_long_name" :route-link="rs.route.route_url" />
                     </nuxt-link>
@@ -153,7 +153,7 @@
                   </div>
                   <div v-for="rs of rss" :key="rs.route.id">
                     <nuxt-link
-                      :to="{name:'routes-onestop_id', params:{onestop_id:rs.route.onestop_id}}"
+                      :to="{name:'routes-routeKey', params:{routeKey:rs.route.onestop_id}}"
                     >
                       <tl-route-icon :route-type="rs.route.route_type" :route-short-name="rs.route.route_short_name" :route-long-name="rs.route.route_long_name" :route-link="rs.route.route_url" />
                     </nuxt-link>
@@ -190,8 +190,8 @@
                       <td>
                         <nuxt-link
                           :to="{
-                            name: 'feeds-feed',
-                            params: { feed: row.feed_onestop_id },
+                            name: 'feeds-feedKey',
+                            params: { feedKey: row.feed_onestop_id },
                           }"
                         >
                           {{ $filters.shortenName(row.feed_onestop_id) }}
@@ -200,10 +200,10 @@
                       <td>
                         <nuxt-link
                           :to="{
-                            name: 'feeds-feed-versions-version',
+                            name: 'feeds-feedKey-versions-feedVersionKey',
                             params: {
-                              feed: row.feed_onestop_id,
-                              version: row.feed_version_sha1,
+                              feedKey: row.feed_onestop_id,
+                              feedVersionKey: row.feed_version_sha1,
                             },
                           }"
                         >
@@ -213,8 +213,8 @@
                       <td>
                         <nuxt-link
                           :to="{
-                            name: 'stops-onestop_id',
-                            params: { onestop_id: row.onestop_id },
+                            name: 'stops-stopKey',
+                            params: { stopKey: row.onestop_id },
                             query: {
                               feed_onestop_id: row.feed_onestop_id,
                               feed_version_sha1: row.feed_version_sha1,

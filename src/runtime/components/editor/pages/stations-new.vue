@@ -1,5 +1,5 @@
 <template>
-  <div v-if="feedVersion">
+  <div v-if="feedVersion && feedVersion.id">
     <slot name="nav">
       <nav class="breadcrumb box" aria-label="breadcrumbs">
         <ul>
@@ -40,9 +40,9 @@
 
 <script>
 // Note: this uses FeedMixin, not station mixin.
-import { navigateTo } from '#app'
 import { Station, Stop } from '../station'
 import FeedMixin from './feed-mixin'
+import { navigateTo } from '#imports'
 
 export default {
   mixins: [FeedMixin],
@@ -51,19 +51,23 @@ export default {
   },
   methods: {
     newStation () {
-      return new Station(new Stop({ feedVersion: { id: this.feedVersion.id } })).setDefaults()
+      const newStop = new Stop({ feed_version: { id: this.feedVersion.id } })
+      const newStation = new Station(newStop).setDefaults()
+      return newStation
     },
     createStationHandler (station) {
-      station.createStation(this.$apollo, station.stop).then(() => {
-        navigateTo({
-          name: 'editor-feedKey-feedVersionKey-stations-stationKey',
-          params: {
-            feedKey: this.feedKey,
-            feedVersionKey: this.feedVersionKey,
-            stationKey: station.stop.stop_id
-          }
+      station.createStation(this.$apollo, station.stop)
+        .then(() => {
+          navigateTo({
+            name: 'editor-feedKey-feedVersionKey-stations-stationKey',
+            params: {
+              feedKey: this.feedKey,
+              feedVersionKey: this.feedVersionKey,
+              stationKey: station.stop.stop_id
+            }
+          })
         })
-      }).catch(this.error)
+        .catch(this.setError)
     }
   }
 }

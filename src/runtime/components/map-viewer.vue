@@ -8,9 +8,7 @@
 import maplibre from 'maplibre-gl'
 import { noLabels, labels } from 'protomaps-themes-base'
 import { nextTick } from 'vue'
-import { useRuntimeConfig } from '#app'
 import mapLayers from './map-layers'
-const config = useRuntimeConfig()
 
 export default {
   props: {
@@ -105,7 +103,7 @@ export default {
           sources: {
             'protomaps-base': {
               type: 'vector',
-              tiles: [`https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf?key=${config.public.protomapsApikey}`],
+              tiles: [`https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf?key=${this.$config.public.protomapsApikey}`],
               maxzoom: 14,
               attribution: '<a href="https://www.transit.land/terms">Transitland</a> | <a href="https://protomaps.com">Protomaps</a> | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             }

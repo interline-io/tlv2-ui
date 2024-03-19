@@ -45,29 +45,31 @@
       :center="station.geometry.coordinates"
       :value="station"
       @update="updateStationHandler"
-      @delete="deleteStationCheck"
+      @delete="deleteStationHandler"
     />
   </div>
 </template>
 
 <script>
-import { navigateTo } from '#app'
 import StationMixin from './station-mixin'
+import { navigateTo } from '#imports'
 
 export default {
   mixins: [StationMixin],
   methods: {
     updateStationHandler (station) {
-      this.station.updateStation(this.$apollo, station).then(() => {
-        navigateTo({
-          name: 'editor-feedKey-feedVersionKey-stations-stationKey',
-          params: {
-            feedKey: this.feedKey,
-            feedVersionKey: this.feedVersionKey,
-            stationKey: station.stop.stop_id
-          }
+      this.station.updateStation(this.$apollo, station.stop)
+        .then(() => {
+          navigateTo({
+            name: 'editor-feedKey-feedVersionKey-stations-stationKey',
+            params: {
+              feedKey: this.feedKey,
+              feedVersionKey: this.feedVersionKey,
+              stationKey: station.stop.stop_id
+            }
+          })
         })
-      }).catch(this.error)
+        .catch(this.setError)
     },
     deleteStationCheck (station) {
       this.$buefy.dialog.confirm({
@@ -80,15 +82,17 @@ export default {
       })
     },
     deleteStationHandler (station) {
-      this.station.deleteStation(this.$apollo, station).then(() => {
-        navigateTo({
-          name: 'editor-feedKey-feedVersionKey-stations',
-          params: {
-            feedKey: this.feedKey,
-            feedVersionKey: this.feedVersionKey
-          }
+      this.station.deleteStation(this.$apollo, station)
+        .then(() => {
+          navigateTo({
+            name: 'editor-feedKey-feedVersionKey-stations',
+            params: {
+              feedKey: this.feedKey,
+              feedVersionKey: this.feedVersionKey
+            }
+          })
         })
-      }).catch(this.error)
+        .catch(this.setError)
     }
   }
 }

@@ -1,9 +1,9 @@
 import destr from 'destr'
-import { ApolloClients } from '@vue/apollo-composable'
+import { ApolloClients, provideApolloClients } from '@vue/apollo-composable'
 import { createApolloProvider } from '@vue/apollo-option'
 import { ApolloClient, ApolloLink, concat, HttpLink, InMemoryCache } from '@apollo/client/core/index.js'
-import { defineNuxtPlugin, useRuntimeConfig } from '#app'
 import { useJwt } from './auth'
+import { defineNuxtPlugin, useRuntimeConfig } from '#imports'
 
 export function getApolloClient() {
   const config = useRuntimeConfig()
@@ -45,6 +45,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 
   // composition api
   nuxtApp.vueApp.provide(ApolloClients, { default: apolloClient, transitland: apolloClient })
+  provideApolloClients({ default: apolloClient, transitland: apolloClient })
 
   // handle cache
   const cacheKey = '_apollo:transitland'
