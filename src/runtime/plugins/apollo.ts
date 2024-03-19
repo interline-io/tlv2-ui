@@ -7,6 +7,7 @@ import { defineNuxtPlugin, useRuntimeConfig } from '#imports'
 
 export function getApolloClient() {
   const config = useRuntimeConfig()
+  console.log('config??', config)
   const httpLink = new HttpLink({
     uri: config.public.apiBase + '/query'
   })
