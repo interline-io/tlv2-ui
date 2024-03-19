@@ -2,12 +2,11 @@ import destr from 'destr'
 import { ApolloClients, provideApolloClients } from '@vue/apollo-composable'
 import { createApolloProvider } from '@vue/apollo-option'
 import { ApolloClient, ApolloLink, concat, HttpLink, InMemoryCache } from '@apollo/client/core/index.js'
-import { defineNuxtPlugin, useRuntimeConfig } from '#app'
 import { useJwt } from './auth'
+import { defineNuxtPlugin, useRuntimeConfig } from '#imports'
 
 export function getApolloClient() {
   const config = useRuntimeConfig()
-  console.log('config??', config)
   const httpLink = new HttpLink({
     uri: config.public.apiBase + '/query'
   })
