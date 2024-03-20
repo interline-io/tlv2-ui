@@ -80,7 +80,7 @@ export default defineNuxtPlugin(() => {
       if (authClient) {
         console.log('auth mw: handle login')
         await authClient.handleRedirectCallback()
-        buildUser(authClient)
+        await buildUser(authClient)
         return navigateTo({
           name: 'index',
           query: {}
