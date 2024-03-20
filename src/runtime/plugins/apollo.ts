@@ -15,7 +15,10 @@ export function getApolloClient() {
     const token = await useJwt()
     operation.setContext({
       headers: {
-        authorization: token ? `Bearer ${token}` : ''
+        // Set Authoriation header
+        authorization: token ? `Bearer ${token}` : '',
+        // Needed for SSR
+        referer: config.allowedReferer
       }
     })
     return forward(operation)
