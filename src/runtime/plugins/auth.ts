@@ -129,57 +129,46 @@ let init = false
 let auth: Auth0Client
 
 function getAuth0Client() {
-  if (process.server) {
-    return
-  }
   if (init) {
     return auth
+  }
+  if (process.server) {
+    return
   }
   const config = useRuntimeConfig()
   if (!config.public.auth0ClientId) {
     console.log('no auth config')
     return
   }
+  return initAuth0Client(
+    String(config.public.auth0ClientId),
+    String(config.public.auth0Domain),
+    String(config.public.auth0RedirectUri),
+    String(config.public.auth0Audience),
+    String(config.public.auth0Scope)
+  )
+}
 
+function initAuth0Client(
+  auth0ClientId: string,
+  auth0Domain: string,
+  auth0RedirectUri: string,
+  auth0Audience: string,
+  auth0Scope: string
+) {
+  if (init) {
+    return auth
+  }
   init = true
   auth = new Auth0Client({
-    domain: String(config.public.auth0Domain),
-    clientId: String(config.public.auth0ClientId),
+    domain: auth0Domain,
+    clientId: auth0ClientId,
     cacheLocation: 'localstorage',
     authorizationParams: {
-      redirect_uri: String(config.public.auth0RedirectUri),
-      audience: String(config.public.auth0Audience),
-      scope: String(config.public.auth0Scope)
+      redirect_uri: auth0RedirectUri,
+      audience: auth0Audience,
+      scope: auth0Scope
     }
   })
   return auth
 }
-
-// function initAuth0Client(
-//   auth0ClientId: string,
-//   auth0Domain: string,
-//   auth0RedirectUri: string,
-//   auth0Audience: string,
-//   auth0Scope: string
-// ) {
-//   if (process.server) {
-//     return
-//   }
-//   if (init) {
-//     return auth
-//   }
-//   if (!auth0ClientId) {
-//     console.log('no auth config')
-//     return
-//   }
-//   auth = new Auth0Client({
-//     domain: auth0Domain,
-//     clientId: auth0ClientId,
-//     cacheLocation: 'localstorage',
-//     authorizationParams: {
-//       redirect_uri: auth0RedirectUri,
-//       audience: auth0Audience,
-//       scope: auth0Scope
-//     }
-//   })
-// }
