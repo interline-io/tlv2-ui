@@ -136,7 +136,6 @@ function getAuth0Client() {
     return auth
   }
   const config = useRuntimeConfig()
-  console.log(config)
   if (!config.public.auth0ClientId) {
     console.log('no auth config')
     return
