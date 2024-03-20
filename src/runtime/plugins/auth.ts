@@ -1,8 +1,8 @@
 import { useLocalStorage } from '@vueuse/core'
 import { Auth0Client } from '@auth0/auth0-spa-js'
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 import { getApolloClient } from './apollo'
-import { defineNuxtPlugin, addRouteMiddleware, useCookie, useRuntimeConfig, navigateTo } from '#imports'
+import { defineNuxtPlugin, addRouteMiddleware, useRuntimeConfig, navigateTo } from '#imports'
 
 const RECHECK_INTERVAL = 600_000
 
@@ -44,8 +44,6 @@ export async function logout() {
   console.log('auth: logout')
   const checkUser = useLocalStorage('user', defaultUser())
   checkUser.value = defaultUser()
-  const cookie = useCookie('jwt')
-  cookie.value = null
   const authClient = getAuth0Client()
   if (authClient) {
     await authClient.logout()
@@ -58,8 +56,7 @@ export const useUser = () => {
 }
 
 export const useJwt = async() => {
-  const cookie = useCookie('jwt')
-  let token = cookie.value || ''
+  let token = ''
 
   // Client side only
   const authClient = getAuth0Client()
@@ -68,11 +65,7 @@ export const useJwt = async() => {
       token = await authClient.getTokenSilently()
     } catch (error) {
       console.log('useJwt: error in getTokenSilently; log in again')
-      await login()
-    }
-    if (cookie && cookie.value !== token) {
-      console.log('useJwt: set cookie')
-      cookie.value = token
+      login()
     }
   }
   // console.log('useJwt: return', token)
@@ -87,8 +80,7 @@ export default defineNuxtPlugin(() => {
       if (authClient) {
         console.log('auth mw: handle login')
         await authClient.handleRedirectCallback()
-        await useJwt()
-        await buildUser(authClient)
+        buildUser(authClient)
         return navigateTo({
           name: 'index',
           query: {}
@@ -101,8 +93,7 @@ export default defineNuxtPlugin(() => {
     const lastChecked = Date.now() - (user?.checked || 0)
     if (authClient && user?.loggedIn && lastChecked > RECHECK_INTERVAL) {
       console.log('auth mw: recheck user')
-      await useJwt()
-      await buildUser(authClient)
+      buildUser(authClient) // don't await
     }
   }, { global: true })
 })
@@ -145,20 +136,51 @@ function getAuth0Client() {
     return auth
   }
   const config = useRuntimeConfig()
+  console.log(config)
   if (!config.public.auth0ClientId) {
+    console.log('no auth config')
     return
   }
+
   init = true
   auth = new Auth0Client({
-    domain: config.public.auth0Domain,
-    clientId: config.public.auth0ClientId,
+    domain: String(config.public.auth0Domain),
+    clientId: String(config.public.auth0ClientId),
     cacheLocation: 'localstorage',
-    // useRefreshTokens: true,
     authorizationParams: {
-      redirect_uri: config.public.auth0RedirectUri,
-      audience: config.public.auth0Audience,
-      scope: config.public.auth0Scope
+      redirect_uri: String(config.public.auth0RedirectUri),
+      audience: String(config.public.auth0Audience),
+      scope: String(config.public.auth0Scope)
     }
   })
   return auth
 }
+
+// function initAuth0Client(
+//   auth0ClientId: string,
+//   auth0Domain: string,
+//   auth0RedirectUri: string,
+//   auth0Audience: string,
+//   auth0Scope: string
+// ) {
+//   if (process.server) {
+//     return
+//   }
+//   if (init) {
+//     return auth
+//   }
+//   if (!auth0ClientId) {
+//     console.log('no auth config')
+//     return
+//   }
+//   auth = new Auth0Client({
+//     domain: auth0Domain,
+//     clientId: auth0ClientId,
+//     cacheLocation: 'localstorage',
+//     authorizationParams: {
+//       redirect_uri: auth0RedirectUri,
+//       audience: auth0Audience,
+//       scope: auth0Scope
+//     }
+//   })
+// }
