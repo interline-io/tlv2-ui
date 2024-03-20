@@ -1,15 +1,18 @@
 import { defineNuxtModule, addPlugin, addImportsDir, createResolver } from '@nuxt/kit'
 
-export default defineNuxtModule({
+export { proxyHandler } from './proxy'
+
+export interface ModuleOptions{
+  bulma: string,
+}
+
+export default defineNuxtModule<ModuleOptions>({
   meta: {
     name: 'tlv2-ui',
     configKey: 'tlv2-ui',
     compatibility: {
       nuxt: '^3.4.0'
     }
-  },
-  defaults: {
-    bulma: ''
   },
   setup (options, nuxt) {
     // Create resolver to resolve relative paths
@@ -44,5 +47,16 @@ export default defineNuxtModule({
         prefix: 'tl'
       })
     })
+
+    // Setup auth
+    // if (options.auth0ClientId) {
+    //   initAuth0Client(
+    //     options.auth0ClientId,
+    //     options.auth0Domain,
+    //     options.auth0RedirectUri,
+    //     options.auth0Audience,
+    //     options.auth0Scope
+    //   )
+    // }
   }
 })
