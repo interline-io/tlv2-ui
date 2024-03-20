@@ -15,9 +15,7 @@ export function getApolloClient() {
     const token = await useJwt()
     operation.setContext({
       headers: {
-        referer: config.graphqlServerReferer,
-        authorization: token ? `Bearer ${token}` : '',
-        apikey: config.graphqlApikey
+        authorization: token ? `Bearer ${token}` : ''
       }
     })
     return forward(operation)

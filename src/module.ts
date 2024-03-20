@@ -47,16 +47,5 @@ export default defineNuxtModule<ModuleOptions>({
         prefix: 'tl'
       })
     })
-
-    // Setup auth
-    // if (options.auth0ClientId) {
-    //   initAuth0Client(
-    //     options.auth0ClientId,
-    //     options.auth0Domain,
-    //     options.auth0RedirectUri,
-    //     options.auth0Audience,
-    //     options.auth0Scope
-    //   )
-    // }
   }
 })

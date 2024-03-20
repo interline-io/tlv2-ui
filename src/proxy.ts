@@ -8,7 +8,7 @@ export function proxyHandler(
 ) {
   // Check user provided apikey
   const query = getQuery(event)
-  let apikey = (query.apikey ? query.apikey.toString() : '') || event.headers.get('apikey') || ''
+  const apikey = (query.apikey ? query.apikey.toString() : '') || event.headers.get('apikey') || ''
 
   // Check user provided bearer
   const bearer = event.headers.get('authorization') || ''
@@ -26,7 +26,6 @@ export function proxyHandler(
         allowed = true
       }
     }
-    apikey = graphqlApikey
   }
   if (!allowed) {
     return { error: `use ${proxyBase}` }
@@ -35,7 +34,7 @@ export function proxyHandler(
   // Auth headers
   const headers = {
     authorization: bearer,
-    apikey
+    apikey: apikey || graphqlApikey
   }
 
   // Proxy request
@@ -45,13 +44,13 @@ export function proxyHandler(
     newPath,
     proxyBase
   )
-  console.log(
-    'newPath:', newPath,
-    'proxyBase:', proxyBase,
-    'event.path:', event.path,
-    'proxyBase pathname:', proxyBaseUrl.pathname,
-    'target:', target.toString(),
-    'headers:', headers
-  )
+  //   console.log(
+  //     'newPath:', newPath,
+  //     'proxyBase:', proxyBase,
+  //     'event.path:', event.path,
+  //     'proxyBase pathname:', proxyBaseUrl.pathname,
+  //     'target:', target.toString(),
+  //     'headers:', headers
+  //   )
   return proxyRequest(event, target.toString(), { headers })
 }
