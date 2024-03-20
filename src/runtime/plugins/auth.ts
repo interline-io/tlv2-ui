@@ -83,7 +83,7 @@ export default defineNuxtPlugin(() => {
   addRouteMiddleware('global-auth', async (to, _) => {
     const query = to?.query
     const authClient = getAuth0Client()
-    if (query && query.code && query.state) {
+    if (authClient && query && query.code && query.state) {
       if (authClient) {
         console.log('auth mw: handle login')
         await authClient.handleRedirectCallback()
@@ -145,6 +145,9 @@ function getAuth0Client() {
     return auth
   }
   const config = useRuntimeConfig()
+  if (!config.public.auth0ClientId) {
+    return
+  }
   init = true
   auth = new Auth0Client({
     domain: config.public.auth0Domain,
