@@ -72,18 +72,29 @@
 </template>
 
 <script>
+import { navigateTo } from '#imports'
+
 export default {
+  props: {
+    searchCoords: {
+      type: Array,
+      default() {
+        return null
+      }
+    }
+  },
   data () {
+    const zoom = this.searchCoords ? 16 : 1.5
+    const activeTab = this.searchCoords ? 2 : 1
     return {
-      activeTab: 1,
-      initialZoom: 1.5,
-      currentZoom: 1.5,
-      center: [-119.49, 12.66],
+      activeTab,
+      initialZoom: zoom,
+      currentZoom: zoom,
+      center: this.searchCoords || [-119.49, 12.66],
       isComponentModalActive: false,
       agencyFeatures: {},
       showGeneratedGeometries: true,
       showProblematicGeometries: false,
-      searchCoords: null,
       currentBbox: null,
       routeTiles: {
         id: 'routes',
@@ -106,6 +117,11 @@ export default {
       this.setCoords(null)
     }
   },
+  mounted() {
+    if (this.searchCoords) {
+      this.setCoords(this.searchCoords)
+    }
+  },
   methods: {
     mapMove (e) {
       this.currentZoom = e.zoom
@@ -115,7 +131,19 @@ export default {
       this.agencyFeatures = e
     },
     setCoords (coords) {
-      this.searchCoords = coords
+      console.log('setCoords:', coords)
+      if (coords && coords.length === 2) {
+        navigateTo({
+          path: this.$route.path,
+          query: { lon: coords[0], lat: coords[1] },
+          hash: ''
+        })
+      } else {
+        navigateTo({
+          path: this.$route.path,
+          query: { }
+        })
+      }
     },
     setZoom (v) {
       this.currentZoom = v
@@ -123,7 +151,6 @@ export default {
     setGeolocation (coords) {
       this.setCoords(coords)
       this.center = coords
-      this.initialZoom = 16
     },
     mapClick (e) {
       if (this.activeTab === 2) {

@@ -8,6 +8,7 @@
         Click on the map to select a location
       </h6>
     </div>
+
     <div v-else>
       <div class="search-options mb-2">
         <o-field grouped>
@@ -59,16 +60,15 @@
           <h6 class="title is-6">
             {{ ss.agency.agency_name }}
           </h6>
-          <div v-for="(sr,srkey) of ss.routes.slice(0,routesPerAgencyShadow)" :key="srkey" class="is-clearfix">
+          <div v-for="(sr,srkey) of ss.routes.slice(0,routesPerAgencyShadow)" :key="srkey" class="tl-departure-container">
             <div
-              class="is-pulled-left tl-route-icon-fade-out"
+              class="tl-departure-route"
             >
               <nuxt-link
                 :to="{name:'routes-routeKey', params:{routeKey:sr.route.onestop_id}}"
               >
                 <tl-route-icon
                   :key="'icon'+sr.route.id"
-                  :name-icon="(sr.direction_id === 0 ? 'arrow-left' : 'arrow-right')"
                   :route-type="sr.route.route_type"
                   :route-short-name="sr.route.route_short_name"
                   :route-long-name="sr.trip_headsign || sr.route.route_long_name"
@@ -76,16 +76,14 @@
                 />
               </nuxt-link>
             </div>
-            <div class="tl-route-icon-departures">
-              <o-field grouped>
-                <tl-tag v-for="st of sr.departures.slice(0,3)" :key="st.trip.id">
-                  <template v-if="st.departure.estimated">
-                    {{ $filters.reformatHMS(st.departure.estimated) }} &nbsp;<o-icon variant="success" size="small" icon="wifi" />
-                  </template><template v-else>
-                    {{ $filters.reformatHMS(st.departure.scheduled) }} &nbsp;<o-icon variant="success" size="small" icon="blank" />
-                  </template>
-                </tl-tag>
-              </o-field>
+            <div class="tl-departure-times">
+              <span v-for="st of sr.departures.slice(0,3)" :key="st.trip.id" class="tl-departure-time tag">
+                <template v-if="st.departure.estimated">
+                  {{ $filters.reformatHMS(st.departure.estimated) }} &nbsp;<o-icon variant="success" size="small" icon="wifi" />
+                </template><template v-else>
+                  {{ $filters.reformatHMS(st.departure.scheduled) }} &nbsp;<o-icon variant="success" size="small" icon="blank" />
+                </template>
+              </span>
             </div>
           </div>
           <div v-if="ss.routes.length > routesPerAgencyShadow" class="is-clearfix">
@@ -163,6 +161,7 @@ export default {
   layout: 'map',
   props: {
     searchCoords: { type: Array, default () { return null } },
+    searchRadius: { type: Number, default () { return 100 } },
     nextSeconds: { type: Number, default () { return 7200 } },
     routesPerAgency: { type: Number, default () { return 10 } },
     showDateSelector: { type: Boolean, default () { return false } },
@@ -184,8 +183,18 @@ export default {
             next: this.nextSeconds
           }
         }
-        if (this.stopIds.length > 0) { q.stopIds = this.stopIds }
-        if (this.searchCoords) { q.where = { near: { lon: this.searchCoords[0], lat: this.searchCoords[1], radius: this.radius } } }
+        if (this.stopIds.length > 0) {
+          q.stopIds = this.stopIds
+        } else if (this.searchCoords && this.radius > 0) {
+          q.where = {
+            near: {
+              lon: this.searchCoords[0],
+              lat: this.searchCoords[1],
+              radius: this.radius
+            }
+          }
+        }
+        console.log(q)
         return q
       },
       update (data) {
@@ -211,7 +220,7 @@ export default {
       routesPerAgencyShadow: this.routesPerAgency,
       stops: [],
       debug: false,
-      radius: 100
+      radius: this.searchRadius
     }
   },
   computed: {
@@ -376,7 +385,7 @@ export default {
       this.startTimer()
     },
     refetch () {
-      this.$apollo.queries.departureQuery.refetch()
+      this.$apollo?.queries?.departureQuery.refetch()
     },
     expandRoutesPerAgency () {
       this.routesPerAgencyShadow = 1000
@@ -396,6 +405,29 @@ export default {
 </script>
 
 <style scoped>
+.tl-departure-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.tl-departure-route {
+  flex-grow:1;
+  white-space: nowrap;
+  min-width:240px;
+  -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1) 90%, rgba(0,0,0,0));
+
+}
+.tl-departure-times {
+  display: flex;
+  flex-direction: row;
+}
+.tl-departure-time {
+  display: flex;
+  padding:6px;
+  width:80px;
+  margin-right:5px;
+}
+
 .search-options {
   padding-top:10px
 }
@@ -420,9 +452,6 @@ export default {
 }
 
 .tl-route-icon-fade-out {
-  display:inline-block;
-  width:250px;
-  -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1) 90%, rgba(0,0,0,0));
 }
 
 .button-like {

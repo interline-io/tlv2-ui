@@ -430,7 +430,7 @@ export default {
       for (const ent of this.roots) {
         ret[ent.id] = ent
         if (ent.parent) {
-          ret[ent.parent.id] = parent
+          ret[ent.parent.id] = ent.parent
         }
         for (const child of ent.children || []) {
           ret[child.id] = child
