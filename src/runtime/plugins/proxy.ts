@@ -1,4 +1,4 @@
-import { proxyRequest, getQuery, H3Event } from 'h3'
+import { proxyRequest, getQuery, H3Event, defineEventHandler } from 'h3'
 
 export function proxyHandler(
   event: H3Event,
