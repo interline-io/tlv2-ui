@@ -17,7 +17,6 @@ export function initApolloClient(
   apiBase: string,
   allowedReferer: string
 ) {
-  console.log('initApolloClient apiBase:', apiBase, 'allowedReferer:', allowedReferer)
   const httpLink = new HttpLink({
     uri: apiBase + '/query'
   })
