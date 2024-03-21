@@ -1,15 +1,15 @@
-import { defineNuxtModule, addPlugin, addImportsDir, createResolver } from '@nuxt/kit'
+import { defineNuxtModule, addPlugin, addImportsDir, createResolver, addServerHandler } from '@nuxt/kit'
 
-export { proxyHandler } from './proxy'
-
+// Config handler
 export interface ModuleOptions{
   bulma: string,
+  useProxy: boolean,
 }
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
     name: 'tlv2-ui',
-    configKey: 'tlv2-ui',
+    configKey: 'tlv2',
     compatibility: {
       nuxt: '^3.4.0'
     }
@@ -19,17 +19,28 @@ export default defineNuxtModule<ModuleOptions>({
     const { resolve } = createResolver(import.meta.url)
     const resolveRuntimeModule = (path: string) => resolve('./runtime', path)
 
+    // Setup CSS
     if (options.bulma) {
       nuxt.options.css.push(options.bulma)
     } else {
       nuxt.options.css.push(resolveRuntimeModule('assets/bulma.scss'))
     }
+    nuxt.options.css.push(resolveRuntimeModule('assets/main.css'))
+
+    // Setup plugins
     addPlugin(resolveRuntimeModule('plugins/auth'))
     addPlugin(resolveRuntimeModule('plugins/apollo'))
     addPlugin(resolveRuntimeModule('plugins/oruga'))
     addPlugin(resolveRuntimeModule('plugins/filters'))
-    nuxt.options.css.push(resolveRuntimeModule('assets/main.css'))
     addImportsDir(resolveRuntimeModule('composables'))
+
+    // Proxy
+    if (options.useProxy) {
+      addServerHandler({
+        route: '/api/v2/**',
+        handler: resolveRuntimeModule('plugins/proxy')
+      })
+    }
 
     // Add assets
     nuxt.hook('nitro:config', (nitroConfig) => {

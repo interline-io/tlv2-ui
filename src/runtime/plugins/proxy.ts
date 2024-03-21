@@ -54,3 +54,13 @@ export function proxyHandler(
   //   )
   return proxyRequest(event, target.toString(), { headers })
 }
+
+export default defineEventHandler((event) => {
+  const config = useRuntimeConfig()
+  return proxyHandler(
+    event,
+    config.proxyBase,
+    config.allowedReferer,
+    config.graphqlApikey
+  )
+})

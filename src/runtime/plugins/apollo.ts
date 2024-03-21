@@ -3,12 +3,23 @@ import { ApolloClients, provideApolloClients } from '@vue/apollo-composable'
 import { createApolloProvider } from '@vue/apollo-option'
 import { ApolloClient, ApolloLink, concat, HttpLink, InMemoryCache } from '@apollo/client/core/index.js'
 import { useJwt } from './auth'
-import { defineNuxtPlugin, useRuntimeConfig } from '#imports'
+import { defineNuxtPlugin } from '#imports'
 
 export function getApolloClient() {
   const config = useRuntimeConfig()
+  return initApolloClient(
+    String(config.public.apiBase || ''),
+    String(config.allowedReferer || '')
+  )
+}
+
+export function initApolloClient(
+  apiBase: string,
+  allowedReferer: string
+) {
+  console.log('initApolloClient apiBase:', apiBase, 'allowedReferer:', allowedReferer)
   const httpLink = new HttpLink({
-    uri: config.public.apiBase + '/query'
+    uri: apiBase + '/query'
   })
   const authMiddleware = new ApolloLink(async(operation, forward) => {
     // add the authorization to the headers
@@ -18,7 +29,7 @@ export function getApolloClient() {
         // Set Authoriation header
         authorization: token ? `Bearer ${token}` : '',
         // Needed for SSR
-        referer: config.allowedReferer
+        referer: allowedReferer
       }
     })
     return forward(operation)
@@ -33,7 +44,6 @@ export function getApolloClient() {
 
 export default defineNuxtPlugin((nuxtApp) => {
   const apolloClient = getApolloClient()
-
   // options api
   const apolloProvider = createApolloProvider({
     defaultClient: apolloClient,
