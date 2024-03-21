@@ -1,4 +1,5 @@
-import { proxyRequest, getQuery, H3Event } from 'h3'
+import { proxyRequest, getQuery, H3Event, defineEventHandler } from 'h3'
+import { useRuntimeConfig } from '#imports'
 
 export function proxyHandler(
   event: H3Event,
@@ -54,3 +55,13 @@ export function proxyHandler(
   //   )
   return proxyRequest(event, target.toString(), { headers })
 }
+
+export default defineEventHandler((event) => {
+  const config = useRuntimeConfig()
+  return proxyHandler(
+    event,
+    config.proxyBase,
+    config.allowedReferer,
+    config.graphqlApikey
+  )
+})
