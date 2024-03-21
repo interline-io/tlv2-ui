@@ -1,4 +1,5 @@
 import { proxyRequest, getQuery, H3Event, defineEventHandler } from 'h3'
+import { useRuntimeConfig } from '#imports'
 
 export function proxyHandler(
   event: H3Event,
