@@ -1,7 +1,6 @@
-
 const headways = {
-  high: 300,
-  medium: 900,
+  high: 600,
+  medium: 1200,
   low: 1800
 }
 
@@ -10,8 +9,8 @@ const colors = {
   busoutline: '#ffffff',
   buslow: '#8acaeb',
   busmedium: '#1c96d6',
-  bushigh: '#ff0000',
-  rail: '#aaaaaa',
+  bushigh: '#0f6896',
+  rail: '#999999',
   railoutline: '#ffffff',
   tram: '#ff9966',
   tramoutline: '#ffffff',
@@ -34,6 +33,27 @@ const stopLayers = [
   }
 ]
 
+const railRamp = ['interpolate', ['exponential', 0.5], ['zoom'],
+  10, 4,
+  12, 2.5
+]
+
+const headwayColorRamp = ['step', ['get', 'headway_secs'],
+  '#000000', 1,
+  '#b0004c', 600,
+  '#1c96d6', 1200,
+  '#8acaeb', 1800,
+  '#8acaeb'
+]
+
+const headwayWidthRamp = ['step', ['get', 'headway_secs'],
+  1.5, 1,
+  2.5, 600,
+  2, 1200,
+  1.5, 1800,
+  1
+]
+
 const routeLayers = [
   // hitbox / active
   {
@@ -50,81 +70,135 @@ const routeLayers = [
       ]
     }
   },
-  // RAIL
+  // RAIL: ROUTE_TYPE 2
   {
     name: 'route-rail-outline',
     minzoom: 8,
     filter: ['all', ['==', 'route_type', 2]],
-    paint: { 'line-width': 3.0, 'line-gap-width': 1.0, 'line-color': colors.railoutline }
+    paint: {
+      'line-color': colors.railoutline,
+      'line-width': railRamp,
+      'line-gap-width': 1.0
+    }
   },
   {
     name: 'route-rail',
     filter: ['all', ['<=', 'route_type', 2]],
-    paint: { 'line-width': 3.0, 'line-color': '#666' }
+    paint: {
+      'line-color': colors.rail,
+      'line-width': railRamp
+    }
   },
-  // BUS LOW AND UNKNOWN
+  // BUS LOW AND UNKNOWN: ROUTE_TYPE 3
   {
     name: 'route-bus-unknown',
     // minzoom: 8,
     filter: ['all', ['==', 'route_type', 3], ['<=', 'headway_secs', 0]],
-    paint: { 'line-width': 1.5, 'line-color': colors.buslow }
+    paint: {
+      'line-color': colors.buslow,
+      'line-width': 1.5
+    }
   },
   {
     name: 'route-bus-low',
     filter: ['all', ['==', 'route_type', 3], ['>', 'headway_secs', headways.medium]],
-    paint: { 'line-width': 1.5, 'line-color': colors.buslow }
+    paint: {
+      'line-color': colors.buslow,
+      'line-width': 1.5
+      // 'line-color': ['coalesce', ['get', 'route_color'], colors.buslow]
+    }
   },
-  // BUS MEDIUM/HIGH
+  // BUS MEDIUM: ROUTE_TYPE 3
   {
     name: 'route-bus-medium-outline',
     minzoom: 8,
-    filter: ['all', ['==', 'route_type', 3], ['<=', 'headway_secs', headways.medium], ['>', 'headway_secs', 0]],
-    paint: { 'line-width': 2.0, 'line-gap-width': 1.0, 'line-color': colors.busoutline }
+    filter: ['all', ['==', 'route_type', 3], ['<=', 'headway_secs', headways.medium], ['>', 'headway_secs', headways.high]],
+    paint: {
+      'line-color': colors.busoutline,
+      'line-width': headwayWidthRamp,
+      'line-gap-width': 1.0
+    }
   },
   {
     name: 'route-bus-medium',
-    filter: ['all', ['==', 'route_type', 3], ['<=', 'headway_secs', headways.medium], ['>', 'headway_secs', 0]],
-    paint: { 'line-width': 2.0, 'line-color': colors.busmedium }
+    filter: ['all', ['==', 'route_type', 3], ['<=', 'headway_secs', headways.medium], ['>', 'headway_secs', headways.high]],
+    paint: {
+      'line-color': colors.busmedium,
+      // 'line-color': ['coalesce', ['get', 'route_color'], colors.high],
+      'line-width': headwayWidthRamp
+
+    }
   },
-  // TRAM
+  // BUS HIGH: ROUTE_TYPE 3
+  {
+    name: 'route-bus-high-outline',
+    minzoom: 8,
+    filter: ['all', ['==', 'route_type', 3], ['<=', 'headway_secs', headways.high], ['>', 'headway_secs', 0]],
+    paint: {
+      'line-color': colors.busoutline,
+      'line-width': headwayWidthRamp,
+      'line-gap-width': 1.0,
+      'line-opacity': 1.0
+    }
+  },
+  {
+    name: 'route-bus-high',
+    filter: ['all', ['==', 'route_type', 3], ['<=', 'headway_secs', headways.high], ['>', 'headway_secs', 0]],
+    paint: {
+      'line-color': colors.bushigh,
+      // 'line-color': ['coalesce', ['get', 'route_color'], colors.high],
+      'line-width': headwayWidthRamp,
+      // 'line-width': 1.0,
+      'line-opacity': 1.0
+
+    }
+  },
+  // TRAM: ROUTE_TYPE 0
   {
     name: 'route-tram-outline',
     minzoom: 8,
     filter: ['all', ['==', 'route_type', 0]],
-    paint: { 'line-width': 3.0, 'line-gap-width': 1.0, 'line-color': colors.tramoutline }
+    paint: {
+      'line-color': colors.tramoutline,
+      'line-width': railRamp,
+      'line-gap-width': 1.0
+    }
   },
   {
     name: 'route-tram',
     filter: ['all', ['==', 'route_type', 0]],
-    paint: { 'line-width': 3.0, 'line-color': ['coalesce', ['get', 'route_color'], colors.tram] }
+    paint: {
+      'line-color': ['coalesce', ['get', 'route_color'], colors.tram],
+      'line-width': railRamp
+    }
   },
-  // METRO
+  // METRO: ROUTE_TYPE 1
   {
     name: 'route-metro-outline',
     minzoom: 8,
     filter: ['all', ['==', 'route_type', 1]],
-    paint: { 'line-width': 3.0, 'line-gap-width': 1.0, 'line-color': colors.metrooutline }
+    paint: {
+      'line-color': colors.metrooutline,
+      'line-width': railRamp,
+      'line-gap-width': 1.0
+    }
   },
   {
     name: 'route-metro',
     filter: ['all', ['==', 'route_type', 1]],
-    paint: { 'line-width': 3.0, 'line-color': ['coalesce', ['get', 'route_color'], colors.metro] }
+    paint: {
+      'line-color': ['coalesce', ['get', 'route_color'], colors.metro],
+      'line-width': railRamp
+    }
   },
-  // OTHER
+  // OTHER: ROUTE_TYPE > 3
   {
     name: 'route-other',
     filter: ['all', ['>', 'route_type', 3]],
     paint: {
-      'line-opacity': 1.0,
-      'line-width': [
-        'step',
-        ['get', 'headway_secs'],
-        1, 1,
-        2, 600,
-        1, 1200,
-        1
-      ],
-      'line-color': colors.other
+      'line-color': colors.other,
+      'line-width': headwayWidthRamp,
+      'line-opacity': 1.0
     }
   }
 ]
