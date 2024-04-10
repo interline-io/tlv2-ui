@@ -84,6 +84,9 @@ function decodeHtmlCharacters(str: string) {
 
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.config.globalProperties.$filters = {
+    nameSort(v: Array<any>) {
+      return (v || []).slice(0).sort((a, b) => { return (a.name || '').localeCompare(b.name || '') })
+    },
     sanitizeUrl(url) {
       // https://github.com/braintree/sanitize-url/blob/main/src/index.ts
       if (!url) {

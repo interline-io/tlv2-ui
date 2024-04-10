@@ -65,6 +65,7 @@
 
 <script>
 import { gql } from 'graphql-tag'
+import Loadable from '../loadable'
 import AuthzMixin from './authz-mixin'
 
 const feedVersionQuery = gql`
@@ -89,7 +90,7 @@ mutation($id:Int!, $set:FeedVersionSetInput!) {
 `
 
 export default {
-  mixins: [AuthzMixin],
+  mixins: [AuthzMixin, Loadable],
   props: {
     id: { type: [String, Number], required: true }
   },
@@ -117,8 +118,8 @@ export default {
       showTenant: false,
       fv: null,
       perms: null,
-      error: null,
-      pending: false
+      pending: false,
+      user: useUser()
     }
   },
   mounted () { this.getData() },
@@ -132,8 +133,8 @@ export default {
     },
     async getData () {
       this.loading = true
-      await fetch(`${this.apiBase()}/admin/feed_versions/${this.id}`, {
-        headers: { authorization: await this.getAuthToken() }
+      await fetch(`${this.apiBase}/admin/feed_versions/${this.id}`, {
+        headers: { authorization: await this.authBearer() }
       })
         .then(this.handleError)
         .then((data) => {
@@ -162,9 +163,9 @@ export default {
     async addPermissions (relation, value) {
       console.log('addPermissions:', relation, value)
       await fetch(
-        `${this.apiBase()}/admin/feed_versions/${this.id}/permissions`, {
+        `${this.apiBase}/admin/feed_versions/${this.id}/permissions`, {
           method: 'POST',
-          headers: { authorization: await this.getAuthToken() },
+          headers: { authorization: await this.authBearer() },
           body: JSON.stringify({
             id: String(value.id),
             type: this.ObjectTypes(value.type),
@@ -178,9 +179,9 @@ export default {
     async removePermissions (relation, value) {
       console.log('removePermissions:', relation, value)
       await fetch(
-        `${this.apiBase()}/admin/feed_versions/${this.id}/permissions`, {
+        `${this.apiBase}/admin/feed_versions/${this.id}/permissions`, {
           method: 'DELETE',
-          headers: { authorization: await this.getAuthToken() },
+          headers: { authorization: await this.authBearer() },
           body: JSON.stringify({
             id: String(value.id),
             type: this.ObjectTypes(value.type),

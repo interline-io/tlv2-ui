@@ -18,7 +18,7 @@
         tags
       >
         <tl-admin-tenant-item
-          v-for="v of nameSorted(tenants || [])"
+          v-for="v of $filters.nameSort(tenants || [])"
           :key="v.id"
           :value="v"
           :action="canRemove ? 'remove' : null"
@@ -26,7 +26,7 @@
         />
 
         <tl-admin-group-item
-          v-for="v of nameSorted(groups || [])"
+          v-for="v of $filters.nameSort(groups || [])"
           :key="v.id"
           :value="v"
           :action="canRemove ? 'remove' : null"
@@ -34,7 +34,7 @@
         />
 
         <tl-admin-user-item
-          v-for="v of nameSorted(users || [])"
+          v-for="v of $filters.nameSort(users || [])"
           :key="v.id"
           :user="v"
           :action="canRemove ? 'remove' : null"
@@ -60,9 +60,7 @@
 </template>
 
 <script>
-import AuthzMixin from './authz-mixin'
 export default {
-  mixins: [AuthzMixin],
   props: {
     text: { type: String, default: '' },
     actionText: { type: String, default: '' },
@@ -78,7 +76,6 @@ export default {
   emits: ['addPermissions', 'removePermissions'],
   data () {
     return {
-      error: null,
       showUserPicker: false
     }
   },

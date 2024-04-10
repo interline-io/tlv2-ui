@@ -35,7 +35,7 @@
         <div class="field">
           <div class="field is-grouped is-grouped-multiline">
             <tl-admin-group-item
-              v-for="group of nameSorted(tenant.groups || [])"
+              v-for="group of $filters.nameSort(tenant.groups || [])"
               :key="group.id"
               :value="group"
             />
@@ -76,10 +76,12 @@
 </template>
 
 <script>
+import { useUser } from '../../plugins/auth'
+import Loadable from '../loadable'
 import AuthzMixin from './authz-mixin'
 
 export default {
-  mixins: [AuthzMixin],
+  mixins: [AuthzMixin, Loadable],
   props: {
     id: { type: [String, Number], required: true },
     filterAction: { type: String, default: null }
@@ -88,7 +90,7 @@ export default {
   data () {
     return {
       tenant: null,
-      error: null
+      user: useUser()
     }
   },
   mounted () { this.getData() },
@@ -103,11 +105,11 @@ export default {
       }
     },
     async getData () {
-      const token = await this.getAuthToken()
+      const token = await this.authBearer()
       console.log('TOKEN:', token)
       this.loading = true
-      await fetch(`${this.apiBase()}/admin/tenants/${this.id}`, {
-        headers: { authorization: await this.getAuthToken() }
+      await fetch(`${this.apiBase}/admin/tenants/${this.id}`, {
+        headers: { authorization: await this.authBearer() }
       })
         .then(this.handleError)
         .then((data) => {
@@ -120,9 +122,9 @@ export default {
       console.log('saveName', value)
       this.loading = true
       await fetch(
-        `${this.apiBase()}/admin/tenants/${this.id}`, {
+        `${this.apiBase}/admin/tenants/${this.id}`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', authorization: await this.getAuthToken() },
+          headers: { 'Content-Type': 'application/json', authorization: await this.authBearer() },
           body: JSON.stringify({ name: value })
         }
       )
@@ -132,9 +134,9 @@ export default {
       console.log('addPermissions:', relation, value)
       this.loading = true
       await fetch(
-        `${this.apiBase()}/admin/tenants/${this.id}/permissions`, {
+        `${this.apiBase}/admin/tenants/${this.id}/permissions`, {
           method: 'POST',
-          headers: { authorization: await this.getAuthToken() },
+          headers: { authorization: await this.authBearer() },
           body: JSON.stringify({
             id: value.id,
             type: this.ObjectTypes(value.type),
@@ -149,9 +151,9 @@ export default {
       console.log('removePermissions:', relation, value)
       this.loading = true
       await fetch(
-        `${this.apiBase()}/admin/tenants/${this.id}/permissions`, {
+        `${this.apiBase}/admin/tenants/${this.id}/permissions`, {
           method: 'DELETE',
-          headers: { authorization: await this.getAuthToken() },
+          headers: { authorization: await this.authBearer() },
           body: JSON.stringify({
             id: value.id,
             type: this.ObjectTypes(value.type),
@@ -167,9 +169,9 @@ export default {
       console.log('createGroup')
       this.loading = true
       await fetch(
-        `${this.apiBase()}/admin/tenants/${this.id}/groups`, {
+        `${this.apiBase}/admin/tenants/${this.id}/groups`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', authorization: await this.getAuthToken() },
+          headers: { 'Content-Type': 'application/json', authorization: await this.authBearer() },
           body: JSON.stringify({ group: { name: 'New Group' } })
         }
       )

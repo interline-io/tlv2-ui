@@ -43,22 +43,21 @@
 </template>
 
 <script>
-import AuthzMixin from '../authz-mixin'
+import Loadable from '../../loadable'
 
 export default {
-  mixins: [AuthzMixin],
+  mixins: [Loadable],
   data () {
     return {
-      groups: [],
-      error: null
+      groups: []
     }
   },
   mounted () { this.getData() },
   methods: {
     async getData () {
       this.loading = true
-      await fetch(`${this.apiBase()}/admin/groups`, {
-        headers: { authorization: await this.getAuthToken() }
+      await fetch(`${this.apiBase}/admin/groups`, {
+        headers: { authorization: await this.authBearer() }
       })
         .then(this.handleError)
         .then((data) => {

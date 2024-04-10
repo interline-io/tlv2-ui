@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="showUser" class="pb-2">
-      You are logged in as {{ user.nickname }} ({{ user.email }})
+      You are logged in as {{ user.name }} ({{ user.email }})
     </div>
 
     <div v-if="actionText" class="pb-2">
@@ -37,14 +37,20 @@
 </template>
 
 <script>
-import AuthzMixin from './authz-mixin'
+import { useUser } from '../../plugins/auth'
+import Loadable from '../loadable'
 
 export default {
-  mixins: [AuthzMixin],
+  mixins: [Loadable],
   props: {
     showUser: { type: Boolean, default: false },
     actions: { type: Object, default () { return { can_view: false } } },
     actionText: { type: String, default: null }
+  },
+  data () {
+    return {
+      user: useUser()
+    }
   }
 }
 </script>
