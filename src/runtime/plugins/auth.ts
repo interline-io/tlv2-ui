@@ -170,9 +170,8 @@ export default defineNuxtPlugin(() => {
     // Recheck user every 10 minutes
     const user = useUser()
     const lastChecked = Date.now() - (user?.checked || 0)
-    console.log('lastChecked:', lastChecked, 'RECHECK_INTERVAL:', RECHECK_INTERVAL)
     if (authClient && user?.loggedIn && lastChecked > RECHECK_INTERVAL) {
-      console.log('auth mw: recheck user')
+      console.log('auth mw: recheck user', 'lastChecked:', lastChecked, 'recheck interval:', RECHECK_INTERVAL)
       buildUser() // don't await
     }
   }, { global: true })
