@@ -1,5 +1,5 @@
 <script>
-export { useJwt } from '../plugins/auth'
+import { useJwt } from '../plugins/auth'
 
 export default {
   data () {
