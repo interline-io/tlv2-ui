@@ -24,12 +24,8 @@ export default {
   data () {
     return {
       error: null,
-      loading: false
-    }
-  },
-  computed: {
-    user () {
-      return useUser()
+      loading: false,
+      user: useUser()
     }
   },
   methods: {
