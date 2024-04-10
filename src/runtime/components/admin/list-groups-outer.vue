@@ -12,15 +12,14 @@
 </template>
 
 <script>
-import AuthzMixin from './authz-mixin'
+import Loadable from '../loadable'
 
 export default {
-  mixins: [AuthzMixin],
+  mixins: [Loadable],
   props: { id: { type: Number, default: null } },
   data () {
     return {
-      group: [],
-      error: null
+      group: []
     }
   },
   computed: {
@@ -32,8 +31,8 @@ export default {
   methods: {
     async getData () {
       this.loading = true
-      await fetch(`${this.apiBase()}/admin/groups/${this.id}`, {
-        headers: { authorization: await this.getAuthToken() }
+      await fetch(`${this.apiBase}/admin/groups/${this.id}`, {
+        headers: { authorization: await this.authBearer() }
       })
         .then(this.handleError)
         .then((data) => {

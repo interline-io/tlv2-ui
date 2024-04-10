@@ -82,10 +82,11 @@
 </template>
 
 <script>
-import AuthzMixin from './authz-mixin'
+import { useUser } from '../../plugins/auth'
+import Loadable from '../loadable'
 
 export default {
-  mixins: [AuthzMixin],
+  mixins: [Loadable],
   props: {
     id: { type: [String, Number], required: true }
   },
@@ -93,8 +94,8 @@ export default {
   data () {
     return {
       feed: null,
-      error: null,
-      showAssignGroup: false
+      showAssignGroup: false,
+      user: useUser()
     }
   },
   mounted () { this.getData() },
@@ -102,8 +103,8 @@ export default {
     async getData () {
       this.loading = true
       await fetch(
-        `${this.apiBase()}/admin/feeds/${this.id}`, {
-          headers: { authorization: await this.getAuthToken() }
+        `${this.apiBase}/admin/feeds/${this.id}`, {
+          headers: { authorization: await this.authBearer() }
         })
         .then(this.handleError)
         .then((data) => {
@@ -115,9 +116,9 @@ export default {
     async setGroup (value) {
       this.loading = true
       await fetch(
-        `${this.apiBase()}/admin/feeds/${this.id}/group`, {
+        `${this.apiBase}/admin/feeds/${this.id}/group`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', authorization: await this.getAuthToken() },
+          headers: { 'Content-Type': 'application/json', authorization: await this.authBearer() },
           body: JSON.stringify({ group_id: value.id })
         }
       )

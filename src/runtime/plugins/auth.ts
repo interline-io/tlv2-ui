@@ -1,5 +1,5 @@
 import { Auth0Client } from '@auth0/auth0-spa-js'
-import { useLocalStorage } from '@vueuse/core'
+import { useStorage } from '@vueuse/core'
 import { gql } from 'graphql-tag'
 import { getApolloClient } from './apollo'
 import { defineNuxtPlugin, addRouteMiddleware, navigateTo, useRuntimeConfig } from '#imports'
@@ -50,9 +50,8 @@ export function initAuth0Client(
 
 // JWT
 export const useJwt = async() => {
-  let token = ''
-
   // Client side only
+  let token = ''
   const authClient = getAuth0Client()
   if (authClient && await authClient.isAuthenticated()) {
     try {
@@ -77,8 +76,8 @@ export async function login() {
 
 export async function logout() {
   console.log('auth: logout')
-  const checkUser = useLocalStorage('user', defaultUser())
-  checkUser.value = defaultUser()
+  const checkUser = useStorage('user', {})
+  checkUser.value = {}
   const authClient = getAuth0Client()
   if (authClient) {
     await authClient.logout()
@@ -108,18 +107,18 @@ export class User {
   }
 }
 
-function defaultUser() {
-  return new User({})
-}
-
 export const useUser = () => {
-  const user = useLocalStorage('user', defaultUser())
+  const user = useStorage('user', {})
   return new User(user?.value || {})
 }
 
+export const useLogout = () => {
+  return logout()
+}
+
 async function setUser (data: User) {
-  const checkUser = useLocalStorage('user', defaultUser())
   console.log('buildUser: set user state')
+  const checkUser = useStorage('user', {})
   const auth0user = await authClient.getUser()
   checkUser.value = new User({
     loggedIn: true,
@@ -172,7 +171,7 @@ export default defineNuxtPlugin(() => {
     const user = useUser()
     const lastChecked = Date.now() - (user?.checked || 0)
     if (authClient && user?.loggedIn && lastChecked > RECHECK_INTERVAL) {
-      console.log('auth mw: recheck user')
+      console.log('auth mw: recheck user', 'lastChecked:', lastChecked, 'recheck interval:', RECHECK_INTERVAL)
       buildUser() // don't await
     }
   }, { global: true })

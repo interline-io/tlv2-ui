@@ -38,7 +38,7 @@
 
     <ul>
       <li
-        v-for="tenant of nameSorted(tenants)"
+        v-for="tenant of $filters.nameSort(tenants)"
         :key="tenant.id"
       >
         <nuxt-link :to="{ name: 'admin-tenants-tenantKey', params: { tenantKey: tenant.id } }">
@@ -50,22 +50,21 @@
 </template>
 
 <script>
-import AuthzMixin from '../authz-mixin'
+import Loadable from '../../loadable'
 
 export default {
-  mixins: [AuthzMixin],
+  mixins: [Loadable],
   data () {
     return {
-      tenants: [],
-      error: null
+      tenants: []
     }
   },
   mounted () { this.getData() },
   methods: {
     async getData () {
       this.loading = true
-      await fetch(`${this.apiBase()}/admin/tenants`, {
-        headers: { authorization: await this.getAuthToken() }
+      await fetch(`${this.apiBase}/admin/tenants`, {
+        headers: { authorization: await this.authBearer() }
       })
         .then(this.handleError)
         .then((data) => {

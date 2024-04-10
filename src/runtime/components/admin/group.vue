@@ -125,10 +125,12 @@
 </template>
 
 <script>
+import { useUser } from '../../plugins/auth'
+import Loadable from '../loadable'
 import AuthzMixin from './authz-mixin'
 
 export default {
-  mixins: [AuthzMixin],
+  mixins: [AuthzMixin, Loadable],
   props: {
     id: { type: [String, Number], required: true },
     showFeeds: { type: Boolean, default: true },
@@ -142,7 +144,8 @@ export default {
     return {
       showAssignTenant: false,
       group: null,
-      pending: false
+      pending: false,
+      user: useUser()
     }
   },
   mounted () { this.getData() },
@@ -159,8 +162,8 @@ export default {
     },
     async getData () {
       this.loading = true
-      await fetch(`${this.apiBase()}/admin/groups/${this.id}`, {
-        headers: { authorization: await this.getAuthToken() }
+      await fetch(`${this.apiBase}/admin/groups/${this.id}`, {
+        headers: { authorization: await this.authBearer() }
       })
         .then(this.handleError)
         .then((data) => {
@@ -173,11 +176,11 @@ export default {
       console.log('saveName', value)
       this.loading = true
       await fetch(
-        `${this.apiBase()}/admin/groups/${this.id}`, {
+        `${this.apiBase}/admin/groups/${this.id}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            authorization: await this.getAuthToken()
+            authorization: await this.authBearer()
           },
           body: JSON.stringify({ name: value })
         }
@@ -188,9 +191,9 @@ export default {
       console.log('addPermissions:', relation, value)
       this.loading = true
       await fetch(
-        `${this.apiBase()}/admin/groups/${this.id}/permissions`, {
+        `${this.apiBase}/admin/groups/${this.id}/permissions`, {
           method: 'POST',
-          headers: { authorization: await this.getAuthToken() },
+          headers: { authorization: await this.authBearer() },
           body: JSON.stringify({
             id: String(value.id),
             type: this.ObjectTypes(value.type),
@@ -207,9 +210,9 @@ export default {
       console.log('removePermissions:', relation, value)
       this.loading = true
       await fetch(
-        `${this.apiBase()}/admin/groups/${this.id}/permissions`, {
+        `${this.apiBase}/admin/groups/${this.id}/permissions`, {
           method: 'DELETE',
-          headers: { authorization: await this.getAuthToken() },
+          headers: { authorization: await this.authBearer() },
           body: JSON.stringify({
             id: String(value.id),
             type: this.ObjectTypes(value.type),
@@ -226,9 +229,9 @@ export default {
       console.log('setTenant', value)
       this.loading = true
       await fetch(
-        `${this.apiBase()}/admin/groups/${this.id}/tenant`, {
+        `${this.apiBase}/admin/groups/${this.id}/tenant`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', authorization: await this.getAuthToken() },
+          headers: { 'Content-Type': 'application/json', authorization: await this.authBearer() },
           body: JSON.stringify({ tenant_id: value.id })
         }
       )

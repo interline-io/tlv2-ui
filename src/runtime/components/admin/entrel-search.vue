@@ -31,7 +31,7 @@
       </div>
       <div class="field is-grouped is-grouped-multiline">
         <tl-admin-user-item
-          v-for="v of nameSorted(users || [])"
+          v-for="v of $filters.nameSort(users || [])"
           :key="v.id"
           :user="v"
           action="add"
@@ -68,14 +68,14 @@
       <div v-else>
         <div class="field is-grouped is-grouped-multiline">
           <tl-admin-tenant-item
-            v-for="v of nameSorted(tenants || [])"
+            v-for="v of $filters.nameSort(tenants || [])"
             :key="v.id"
             :value="v"
             action="add"
             @select="$emit('select', { type: 'tenant', id: $event, refrel: 'member' })"
           />
           <tl-admin-group-item
-            v-for="v of nameSorted(groups || [])"
+            v-for="v of $filters.nameSort(groups || [])"
             :key="v.id"
             :value="v"
             action="add"
@@ -88,10 +88,10 @@
 </template>
 
 <script>
-import AuthzMixin from './authz-mixin'
+import Loadable from '../loadable'
 
 export default {
-  mixins: [AuthzMixin],
+  mixins: [Loadable],
   props: {
     title: { type: String, default: '' },
     showUsers: { type: Boolean, default: true },
@@ -110,8 +110,7 @@ export default {
       },
       users: [],
       tenants: [],
-      groups: [],
-      error: null
+      groups: []
     }
   },
   computed: {
@@ -128,8 +127,8 @@ export default {
       this.loading = true
       // users
       if (search && search.length > 1) {
-        await fetch(`${this.apiBase()}/admin/users?q=` + search, {
-          headers: { authorization: await this.getAuthToken() }
+        await fetch(`${this.apiBase}/admin/users?q=` + search, {
+          headers: { authorization: await this.authBearer() }
         })
           .then(this.handleError)
           .then((data) => {
@@ -141,8 +140,8 @@ export default {
       }
 
       // groups
-      await fetch(`${this.apiBase()}/admin/groups`, {
-        headers: { authorization: await this.getAuthToken() }
+      await fetch(`${this.apiBase}/admin/groups`, {
+        headers: { authorization: await this.authBearer() }
       })
         .then(this.handleError)
         .then((data) => {
@@ -151,8 +150,8 @@ export default {
         .catch(this.setError)
 
       // tenants
-      await fetch(`${this.apiBase()}/admin/tenants`, {
-        headers: { authorization: await this.getAuthToken() }
+      await fetch(`${this.apiBase}/admin/tenants`, {
+        headers: { authorization: await this.authBearer() }
       })
         .then(this.handleError)
         .then((data) => {
