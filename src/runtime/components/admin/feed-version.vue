@@ -66,6 +66,7 @@
 <script>
 import { gql } from 'graphql-tag'
 import Loadable from '../loadable'
+import { useUser } from '../../plugins/auth'
 import AuthzMixin from './authz-mixin'
 
 const feedVersionQuery = gql`

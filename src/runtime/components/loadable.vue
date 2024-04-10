@@ -1,4 +1,6 @@
 <script>
+export { useJwt } from '../plugins/auth'
+
 export default {
   data () {
     return {
