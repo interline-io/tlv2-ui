@@ -108,9 +108,8 @@ export class User {
 }
 
 export const useUser = () => {
-  console.log('useUser')
   const user = useStorage('user', {})
-  return new User(user?.value)
+  return new User(user?.value || {})
 }
 
 export const useLogout = () => {
