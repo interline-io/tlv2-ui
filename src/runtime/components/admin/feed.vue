@@ -66,7 +66,7 @@
         <tl-admin-perm-list :actions="feed?.actions" />
       </o-field>
 
-      <tl-admin-modal
+      <tl-modal
         v-model="showAssignGroup"
         text="Show group"
         :title="`Set group`"
@@ -76,7 +76,7 @@
           :show-groups="true"
           @select="showAssignGroup = false; setGroup($event)"
         />
-      </tl-admin-modal>
+      </tl-modal>
     </div>
   </div>
 </template>

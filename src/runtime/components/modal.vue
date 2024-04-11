@@ -46,6 +46,5 @@ export default {
       this.$emit('update:modelValue', false)
     }
   }
-
 }
 </script>
