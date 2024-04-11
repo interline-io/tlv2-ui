@@ -9,6 +9,7 @@ const RECHECK_INTERVAL = 600_000
 // Auth0 client init
 let authInit = false
 let authClient: Auth0Client
+let requireLogin = false
 
 export function getAuth0Client() {
   if (authInit) {
@@ -19,6 +20,7 @@ export function getAuth0Client() {
   }
   const config = useRuntimeConfig()
   return initAuth0Client(
+    config.public.requireLogin === 'true',
     config.public.auth0ClientId,
     config.public.auth0Domain,
     config.public.auth0RedirectUri,
@@ -28,6 +30,7 @@ export function getAuth0Client() {
 }
 
 export function initAuth0Client(
+  requireLoginA: boolean,
   auth0ClientId: string,
   auth0Domain: string,
   auth0RedirectUri: string,
@@ -35,6 +38,7 @@ export function initAuth0Client(
   auth0Scope: string
 ) {
   authInit = true
+  requireLogin = requireLoginA
   authClient = new Auth0Client({
     domain: auth0Domain,
     clientId: auth0ClientId,
@@ -116,6 +120,10 @@ export const useLogout = () => {
   return logout()
 }
 
+export const useLogin = () => {
+  return login()
+}
+
 async function setUser (data: User) {
   console.log('buildUser: set user state')
   const checkUser = useStorage('user', {})
@@ -167,12 +175,22 @@ export default defineNuxtPlugin(() => {
       }
     }
 
-    // Recheck user every 10 minutes
+    // Check user
     const user = useUser()
     const lastChecked = Date.now() - (user?.checked || 0)
+
+    // Force login
+    if (authClient && requireLogin && user && !user.loggedIn) {
+      console.log('auth mw: force login')
+      await login()
+    }
+
+    // Recheck user every 10 minutes
     if (authClient && user?.loggedIn && lastChecked > RECHECK_INTERVAL) {
       console.log('auth mw: recheck user', 'lastChecked:', lastChecked, 'recheck interval:', RECHECK_INTERVAL)
       buildUser() // don't await
     }
-  }, { global: true })
+  }, {
+    global: true
+  })
 })
