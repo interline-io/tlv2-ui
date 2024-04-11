@@ -47,12 +47,6 @@ export default {
         allow_previous_onestop_ids: (!!osid && !this.feedOnestopId && !this.feedVersionSha1)
       }
     },
-    advancedMode() {
-      if (this.$route.query && this.$route.query.advanced === 'true') {
-        return true
-      }
-      return false
-    },
     linkVersion() {
       if (this.searchKey.feedVersionSha1) {
         return true

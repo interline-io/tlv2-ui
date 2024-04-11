@@ -210,15 +210,6 @@
           <o-tab-item id="stops" label="Stops">
             <tl-stop-table v-if="activeTab === 3" :agency-ids="agencyIds" />
           </o-tab-item>
-
-          <o-tab-item v-if="advancedMode" id="export" label="Export">
-            <template v-if="activeTab === 4 && agencyIds.length === 1">
-              <tl-agency-export :agency-ids="agencyIds" />
-            </template>
-            <template v-else>
-              Currently this feature is only available when a single agency is returned for this query.
-            </template>
-          </o-tab-item>
         </o-tabs>
       </div>
     </div>
