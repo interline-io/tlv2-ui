@@ -197,6 +197,17 @@
               {{ staticDescription }}
             </div>
           </slot>
+
+          <slot v-if="showAdmin" name="admin-details" :entity="entity">
+            <o-button class="is-pulled-right is-primary" @click="showAdminModal=true">
+              Show Feed Permissions
+            </o-button>
+            <tl-modal v-model="showAdminModal" title="Feed Permissions">
+              <tl-admin-feed
+                :id="entity.id"
+              />
+            </tl-modal>
+          </slot>
         </div>
 
         <slot name="edit-feed" :entity="entity" />
@@ -219,7 +230,13 @@
           Archived Feed Versions
         </h4>
 
-        <tl-feed-version-table :feed="entity" :show-download-column="showDownloadColumn" :issue-download-request="issueDownloadRequest" @download-triggered="(sha1, isLatest) => $emit('downloadTriggered', sha1, isLatest)" />
+        <tl-feed-version-table
+          :feed="entity"
+          :show-download-column="showDownloadColumn"
+          :show-description-column="showDescriptionColumn"
+          :issue-download-request="issueDownloadRequest"
+          @download-triggered="(sha1, isLatest) => $emit('downloadTriggered', sha1, isLatest)"
+        />
         <slot name="add-feed-version" :entity="entity" />
       </div>
     </div>
@@ -339,7 +356,9 @@ export default {
     }
   },
   props: {
+    showAdmin: { type: Boolean, default: true },
     showDownloadColumn: { type: Boolean, default: true },
+    showDescriptionColumn: { type: Boolean, default: true },
     issueDownloadRequest: { type: Boolean, default: true },
     showOperators: { type: Boolean, default: true }
   },
@@ -347,6 +366,7 @@ export default {
   data () {
     return {
       page: 1,
+      showAdminModal: false,
       tabIndex: {
         1: 'versions',
         2: 'service'

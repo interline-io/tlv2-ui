@@ -4,6 +4,12 @@
       <table class="table is-striped is-fullwidth">
         <thead>
           <tr>
+            <th v-if="showDescriptionColumn">
+              Name
+            </th>
+            <th v-if="showDescriptionColumn">
+              Description
+            </th>
             <th>Fetched</th>
             <th>SHA1</th>
             <th>Earliest date</th>
@@ -17,6 +23,12 @@
         </thead>
         <tbody>
           <tr v-for="fv of entities" :key="fv.id">
+            <td v-if="showDescriptionColumn">
+              {{ fv.name }}
+            </td>
+            <td v-if="showDescriptionColumn">
+              {{ fv.description }}
+            </td>
             <td>{{ $filters.formatDate(fv.fetched_at) }} ({{ $filters.fromNow(fv.fetched_at) }})</td>
             <td>
               <nuxt-link
@@ -88,6 +100,8 @@ query ($limit:Int=100, $onestop_id: String, $after:Int) {
   entities: feed_versions(limit:$limit, after:$after, where: {feed_onestop_id: $onestop_id}) {
     id
     sha1
+    name
+    description
     earliest_calendar_date
     latest_calendar_date
     fetched_at
@@ -118,6 +132,7 @@ export default {
   props: {
     feed: { type: Object, default () { return {} } },
     showDownloadColumn: { type: Boolean, default: true },
+    showDescriptionColumn: { type: Boolean, default: true },
     issueDownloadRequest: { type: Boolean, default: true }
   },
   emits: ['downloadTriggered'],
