@@ -194,8 +194,8 @@
               Success! The contents of your feed have been imported. The final step is to give this feed a name and description for future reference. Press the <em>Save</em> button to finish the upload process.
             </o-notification>
             <p>
-              <analyst-edit-fv
-                :entity="fetchResult.feed_version"
+              <tl-feed-version-edit
+                :id="fetchResult.feed_version.id"
                 @update="finished"
               />
             </p>
@@ -208,6 +208,7 @@
 
 <script>
 import { gql } from 'graphql-tag'
+import { useMixpanel } from '../../composables/useMixpanel'
 import EntityPageMixin from './entity-page-mixin'
 
 const q = gql`
@@ -467,7 +468,7 @@ export default {
     finished () {
       useMixpanel().track('Upload feed version: Finished')
       navigateTo({
-        name: 'feeds-feed',
+        name: 'feeds-feedKey',
         params: { feedKey: this.pathKey }
       })
     }
