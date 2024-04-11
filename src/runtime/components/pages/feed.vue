@@ -28,7 +28,7 @@
         </nav>
       </slot>
 
-      <slot name="title">
+      <slot name="title" :entity="entity">
         <tl-title :title="staticTitle">
           {{ feedSpec }} feed: {{ operatorNames }}
         </tl-title>
@@ -192,7 +192,7 @@
             </tbody>
           </table>
 
-          <slot name="description">
+          <slot name="description" :entity="entity">
             <div class="content">
               {{ staticDescription }}
             </div>
@@ -208,7 +208,7 @@
         <h4 class="title is-4">
           Operator(s) Associated with this Feed
         </h4>
-        <slot name="associatedOperatorsContent" />
+        <slot name="associatedOperatorsContent" :entity="entity" />
         <tl-associated-operators :associated-operators="entity.associated_operators" />
       </div>
 
