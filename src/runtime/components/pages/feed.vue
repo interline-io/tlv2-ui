@@ -20,8 +20,8 @@
               </nuxt-link>
             </li>
             <li>
-              <nuxt-link :to="{ name: 'feeds-feedKey', params: { feedKey: $route.params.feedKey } }">
-                {{ $route.params.feedKey }}
+              <nuxt-link :to="{ name: 'feeds-feedKey', params: { feedKey: pathKey } }">
+                {{ pathKey }}
               </nuxt-link>
             </li>
           </ul>
@@ -191,26 +191,32 @@
               </tr>
             </tbody>
           </table>
-
-          <slot name="description" :entity="entity">
-            <div class="content">
-              {{ staticDescription }}
-            </div>
-          </slot>
-
-          <slot v-if="showAdmin" name="admin-details" :entity="entity">
-            <o-button class="is-pulled-right is-primary" @click="showAdminModal=true">
-              Show Feed Permissions
-            </o-button>
-            <tl-modal v-model="showAdminModal" title="Feed Permissions">
-              <tl-admin-feed
-                :id="entity.id"
-              />
-            </tl-modal>
-          </slot>
         </div>
 
         <slot name="edit-feed" :entity="entity" />
+      </div>
+
+      <slot name="description" :entity="entity">
+        <div class="content">
+          {{ staticDescription }}
+        </div>
+      </slot>
+
+      <div class="is-clearfix mb-4">
+        <slot v-if="showUpload" name="upload" :entity="entity">
+          <nuxt-link :to="{name:'feeds-feedKey-upload', params:{feedKey:pathKey}}" class="button is-primary is-pulled-right">
+            Upload
+          </nuxt-link>
+        </slot>
+
+        <slot v-if="showPermissions" name="permissions" :entity="entity">
+          <o-button class="is-pulled-right is-primary" icon-left="pencil" @click="showPermissionsModal=true">
+            Permissions
+          </o-button>
+          <tl-modal v-model="showPermissionsModal" title="Feed Permissions">
+            <tl-admin-feed :id="entity.id" />
+          </tl-modal>
+        </slot>
       </div>
 
       <!-- TODO: Operators component -->
@@ -227,13 +233,14 @@
 
       <div v-if="entity.spec == 'GTFS'">
         <h4 class="title is-4">
-          Archived Feed Versions
+          Feed versions
         </h4>
 
         <tl-feed-version-table
           :feed="entity"
           :show-download-column="showDownloadColumn"
           :show-description-column="showDescriptionColumn"
+          :show-date-columns="showDateColumns"
           :issue-download-request="issueDownloadRequest"
           @download-triggered="(sha1, isLatest) => $emit('downloadTriggered', sha1, isLatest)"
         />
@@ -244,7 +251,7 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
 
 const q = gql`
@@ -356,9 +363,11 @@ export default {
     }
   },
   props: {
-    showAdmin: { type: Boolean, default: true },
+    showPermissions: { type: Boolean, default: false },
+    showUpload: { type: Boolean, default: false },
     showDownloadColumn: { type: Boolean, default: true },
     showDescriptionColumn: { type: Boolean, default: true },
+    showDateColumns: { type: Boolean, default: true },
     issueDownloadRequest: { type: Boolean, default: true },
     showOperators: { type: Boolean, default: true }
   },
@@ -366,7 +375,7 @@ export default {
   data () {
     return {
       page: 1,
-      showAdminModal: false,
+      showPermissionsModal: false,
       tabIndex: {
         1: 'versions',
         2: 'service'
@@ -400,7 +409,7 @@ export default {
       } else if (names.length > 0 && names.length <= 3) {
         operatorNames = names.slice(0, 3).join(', ')
       }
-      return operatorNames
+      return operatorNames || this.entity.onestop_id
     },
     displayLicense () {
       if (this.entity) {

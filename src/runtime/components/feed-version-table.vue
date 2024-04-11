@@ -10,10 +10,14 @@
             <th v-if="showDescriptionColumn">
               Description
             </th>
-            <th>Fetched</th>
+            <th>Added</th>
             <th>SHA1</th>
-            <th>Earliest date</th>
-            <th>Latest date</th>
+            <th v-if="showDateColumns">
+              Earliest date show: {{ showDateColumns }}
+            </th>
+            <th v-if="showDateColumns">
+              Latest date
+            </th>
             <th>Imported</th>
             <th>Active</th>
             <th v-if="showDownloadColumn">
@@ -37,8 +41,12 @@
                 {{ fv.sha1.substr(0, 6) }}…
               </nuxt-link>
             </td>
-            <td> {{ fv.earliest_calendar_date.substr(0, 10) }}</td>
-            <td> {{ fv.latest_calendar_date.substr(0, 10) }}</td>
+            <td v-if="showDateColumns">
+              {{ fv.earliest_calendar_date.substr(0, 10) }}
+            </td>
+            <td v-if="showDateColumns">
+              {{ fv.latest_calendar_date.substr(0, 10) }}
+            </td>
             <td>
               <template v-if="fv.feed_version_gtfs_import">
                 <o-tooltip
@@ -133,6 +141,7 @@ export default {
     feed: { type: Object, default () { return {} } },
     showDownloadColumn: { type: Boolean, default: true },
     showDescriptionColumn: { type: Boolean, default: true },
+    showDateColumns: { type: Boolean, default: true },
     issueDownloadRequest: { type: Boolean, default: true }
   },
   emits: ['downloadTriggered'],

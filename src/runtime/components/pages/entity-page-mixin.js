@@ -81,6 +81,9 @@ export default {
     }
   },
   methods: {
+    refetchEntities() {
+      this.$apollo.queries.entities.refetch()
+    },
     checkSearchSkip() {
       const fosid = this.$route.query.feed_onestop_id || ''
       const eid = this.$route.query.entity_id || ''

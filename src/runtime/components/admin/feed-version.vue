@@ -8,22 +8,6 @@
       Error: {{ error }}
     </o-notification>
     <div v-else-if="fv && perms">
-      <o-field label="Name" horizontal>
-        <tl-admin-input
-          :value="fv.name || 'Unnamed feed_version'"
-          :can-edit="perms.actions.can_edit"
-          @save="update({ name: $event })"
-        />
-      </o-field>
-
-      <o-field label="Description" horizontal>
-        <tl-admin-input
-          :value="fv.description || ''"
-          :can-edit="perms.actions.can_edit"
-          @save="update({ description: $event })"
-        />
-      </o-field>
-
       <o-field label="Your permissions" horizontal :title="`You are logged in as ${user.name} (${user.email})`">
         <tl-admin-perm-list :actions="perms.actions" />
       </o-field>
@@ -75,16 +59,6 @@ query($ids:[Int!]!) {
     id
     name
     sha1
-    description
-  }
-}
-`
-
-const saveFeedVersionMutation = gql`
-mutation($id:Int!, $set:FeedVersionSetInput!) {
-  feed_version_update(id:$id, set:$set) {
-    id
-    name
     description
   }
 }
@@ -143,23 +117,6 @@ export default {
         })
         .catch(this.setError)
       this.loading = false
-    },
-    update (update) {
-      this.loading = true
-      this.$apollo
-        .mutate({
-          client: 'transitland',
-          mutation: saveFeedVersionMutation,
-          variables: {
-            id: this.id,
-            set: update
-          },
-          update: () => {
-            this.loading = false
-            this.$apollo.queries.fvs.refetch()
-            this.$emit('changed')
-          }
-        }).catch(this.setError)
     },
     async addPermissions (relation, value) {
       console.log('addPermissions:', relation, value)
