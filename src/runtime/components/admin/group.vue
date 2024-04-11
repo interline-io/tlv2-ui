@@ -109,7 +109,7 @@
           </o-field>
         </div>
 
-        <tl-admin-modal
+        <tl-modal
           v-model="showAssignTenant"
           title="Set tenant"
         >
@@ -118,7 +118,7 @@
             :show-tenants="true"
             @select="showAssignTenant = false; setTenant($event)"
           />
-        </tl-admin-modal>
+        </tl-modal>
       </div>
     </div>
   </div>

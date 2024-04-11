@@ -42,7 +42,7 @@
         />
       </o-field>
     </o-field>
-    <tl-admin-modal
+    <tl-modal
       v-slot="scope"
       v-model="showUserPicker"
       :title="actionText"
@@ -55,7 +55,7 @@
         :show-user-star="showUserStar"
         @select="$emit('addPermissions', $event); scope.close();"
       />
-    </tl-admin-modal>
+    </tl-modal>
   </div>
 </template>
 
