@@ -429,13 +429,11 @@ export default {
     staticDescription () {
       const operatorDescription = (this.entity && this.entity.associated_operators) ? ` with data for ${this.entity.name || this.operatorNames}` : ''
       const fvCount = this.entity.feed_versions.length
-      let description = `This is a ${this.feedSpec} feed ${operatorDescription} with the Onestop ID of ${this.entity.onestop_id}.`
+      let description = `This is a ${this.feedSpec} feed ${operatorDescription} with the Onestop ID of "${this.entity.onestop_id}".`
       if (fvCount >= 100) {
-        description += ` Transitland has archived over 100 versions of this feed,
-        which are available to query by API and to download.`
+        description += ' There are over 100 versions of this feed.'
       } else if (fvCount > 1) {
-        description += ` Transitland has archived ${fvCount} versions of this feed,
-        which are available to query by API and to download.`
+        description += ` There are ${fvCount} versions of this feed.`
       }
       return description
     }

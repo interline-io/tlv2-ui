@@ -98,7 +98,7 @@
             </tr>
             <tr v-if="entity && entity.tags && Object.keys(entity.tags).length > 0">
               <td>
-                <o-tooltip dashed multiline label="Links between Transitland and other catalogs and data sources on the Internet">
+                <o-tooltip dashed multiline label="Links between this data and other catalogs and data sources on the Internet">
                   ID Crosswalk
                 </o-tooltip>
               </td>
@@ -382,7 +382,7 @@ export default {
       const locations = this.locations
         .map(l => [l.adm0_name, l.adm1_name, l.city_name].filter(Boolean).join(', '))
         .join('; ')
-      return `${this.operatorName} is an operator listed on the Transitland open data platform. Transitland sources data for this operator from ${feedCounts}. ${this.operatorName} provides transit services in the following locations: ${locations}.`
+      return `${this.operatorName} sources data for from ${feedCounts}. ${this.operatorName} provides transit services in the following locations: ${locations}.`
     }
   },
   methods: {

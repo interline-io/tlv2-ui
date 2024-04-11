@@ -37,7 +37,7 @@ export default {
       return 'Feeds index'
     },
     staticDescription() {
-      return 'An index of data sources indexed in Transitland'
+      return 'An index of data souurces'
     },
     search: {
       get() { return this.$route.query.search },

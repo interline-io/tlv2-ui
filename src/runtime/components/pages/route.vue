@@ -461,7 +461,7 @@ export default {
       return `${this.routeName} • ${this.routeType} route`
     },
     staticDescription () {
-      return `${this.routeName} is a ${this.routeType} route available for browsing and analyzing on the Transitland platform.`
+      return `${this.routeName} is a ${this.routeType} route available for browsing and analysis.`
     }
   },
   methods: {
