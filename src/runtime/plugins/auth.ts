@@ -19,11 +19,12 @@ export function getAuth0Client() {
     return
   }
   const config = useRuntimeConfig()
+  const redirectUri = config.public.auth0RedirectUri || window?.location?.origin || '/'
   return initAuth0Client(
     config.public.requireLogin,
     config.public.auth0ClientId,
     config.public.auth0Domain,
-    config.public.auth0RedirectUri,
+    redirectUri,
     config.public.auth0Audience,
     config.public.auth0Scope
   )
