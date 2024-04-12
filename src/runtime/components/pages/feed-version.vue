@@ -11,31 +11,9 @@
       <Meta name="og:title" :content="staticTitle" />
       <Meta name="og:description" :content="staticDescription" />
 
-      <slot name="nav" :entity="entity">
-        <nav class="breadcrumb">
-          <ul>
-            <li>
-              <nuxt-link :to="{name:'feeds'}">
-                Source Feeds
-              </nuxt-link>
-            </li>
-            <li>
-              <nuxt-link :to="{name: 'feeds-feedKey', params:{feedKey:$route.params.feedKey}}">
-                {{ $route.params.feedKey }}
-              </nuxt-link>
-            </li>
-            <li>
-              <nuxt-link :to="{name: 'feeds-feedKey-versions-feedVersionKey', params:{feedKey:$route.params.feedKey, feedVersionKey:$route.params.feedVersionKey}}">
-                {{ $filters.shortenName($route.params.feedVersionKey,8) }}
-              </nuxt-link>
-            </li>
-          </ul>
-        </nav>
-      </slot>
-
       <slot name="title">
         <tl-title :title="staticTitle">
-          GTFS feed: {{ operatorOrAgencyNames }} version fetched {{ $filters.formatDate(entity.fetched_at) }} ({{ $filters.fromNow(entity.fetched_at) }})
+          GTFS feed: {{ operatorOrAgencyNames }} version added {{ $filters.formatDate(entity.fetched_at) }} ({{ $filters.fromNow(entity.fetched_at) }})
         </tl-title>
       </slot>
 
@@ -100,13 +78,10 @@
               <tl-safelink :text="entity.feed.onestop_id" />
             </td>
           </tr>
-          <tr v-if="entity.name || canEdit">
+          <tr v-if="entity.name">
             <td>Name</td>
             <td>
-              <template v-if="showEdit">
-                <o-input v-model="entity.name" size="small" />
-              </template>
-              <template v-else-if="entity.name">
+              <template v-if="entity.name">
                 {{ entity.name }}
               </template>
               <template v-else>
@@ -117,10 +92,7 @@
           <tr v-if="entity.description">
             <td>Description</td>
             <td>
-              <template v-if="showEdit">
-                <o-input v-model="entity.description" size="small" />
-              </template>
-              <template v-else-if="entity.description">
+              <template v-if="entity.description">
                 {{ entity.description }}
               </template>
               <template v-else>
@@ -164,49 +136,41 @@
         </tbody>
       </table>
 
-      <slot name="edit" :entity="entity">
-        <div v-if="canEdit" class="=clearfix block pb-4">
-          &nbsp;
+      <div class="is-clearfix mb-4">
+        <slot v-if="showEdit" name="edit" :entity="entity">
+          <o-button class="is-pulled-right is-primary" icon-left="pencil" @click="showEditModal=true">
+            Edit
+          </o-button>
+          <tl-modal v-model="showEditModal" title="Feed Version">
+            <tl-feed-version-edit
+              :id="entity.id"
+              @update="showEditModal = false; refetchEntities()"
+            />
+          </tl-modal>
+        </slot>
+
+        <slot v-if="showPermissions" name="permissions" :entity="entity">
+          <o-button class="is-pulled-right is-primary" icon-left="pencil" @click="showPermissionsModal=true">
+            Permissions
+          </o-button>
+          <tl-modal v-model="showPermissionsModal" title="Feed Version Permissions">
+            <tl-admin-feed-version
+              :id="entity.id"
+              @update="showPermissionsModal = false; refetchEntities()"
+            />
+          </tl-modal>
+        </slot>
+
+        <slot v-if="showDownload" name="download" :entity="entity">
           <div class="is-pulled-right">
-            <o-button v-if="showEdit" variant="primary" @click="saveEntity">
-              Save
-            </o-button>
-            <o-button v-else variant="primary" icon-left="pencil" @click="showEdit = true">
-              Edit
-            </o-button>
+            <tl-feed-version-download :feed-onestop-id="feedKey" :feed-version-sha1="feedVersionKey" />
           </div>
-        </div>
-      </slot>
+        </slot>
+      </div>
 
       <slot name="import" :entity="entity">
-        <tl-msg-info v-if="!fvi">
-          This feed version is not currently imported into the database.
-          <template v-if="importLoading">
-            <span class="button is-primary is-pulled-right" :disabled="true">
-              Importing...
-            </span>
-          </template>
-          <template v-else>
-            <span class="button is-primary is-pulled-right" @click="importFeedVersion">
-              Import feed version
-            </span>
-          </template>
-        </tl-msg-info>
-        <tl-msg-success v-else-if="fvi.schedule_removed">
-          Agencies, stops, and routes are available for this feed version. Schedule data is not available.
-        </tl-msg-success>
-        <tl-msg-success v-else-if="fvi.success" icon="check-all">
-          This feed version was successfully imported into the database.
-        </tl-msg-success>
-        <tl-msg-success v-else-if="fvi.in_progress" icon="clock">
-          Import in progress! Please be patient.
-        </tl-msg-success>
-        <tl-msg-warning v-else-if="!fvi.success">
-          Import Error: {{ fvi.exception_log }}
-        </tl-msg-warning>
+        <tl-feed-version-import :entity="entity" @update="refetchEntities" />
       </slot>
-
-      <slot name="download" :entity="entity" />
 
       <o-tabs v-model="activeTab" class="tl-tabs" type="boxed" :animated="false" @update:model-value="setTab">
         <o-tab-item id="files" label="Files">
@@ -281,26 +245,8 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
-
-const importQuery = gql`
-mutation ($sha1: String!) {
-  import_feed_version(sha1: $sha1) {
-    success
-  }
-}
-`
-
-const saveFeedVersionMutation = gql`
-mutation($id:Int!, $set:FeedVersionSetInput!) {
-  feed_version_update(id:$id, set:$set) {
-    id
-    name
-    description
-  }
-}
-`
 
 const q = gql`
 query ($feed_version_sha1: String!) {
@@ -380,14 +326,17 @@ export default {
     }
   },
   props: {
-    canEdit: { type: Boolean, default: false },
-    feedVersionKey: { type: String, default: null },
-    showUserInformation: { type: Boolean, default: false }
+    showEdit: { type: Boolean, default: false },
+    showPermissions: { type: Boolean, default: false },
+    showUserInformation: { type: Boolean, default: false },
+    showDownload: { type: Boolean, default: true },
+    feedKey: { type: String, default: '', required: true },
+    feedVersionKey: { type: String, default: '', required: true }
   },
   data () {
     return {
-      showEdit: false,
-      importLoading: false,
+      showEditModal: false,
+      showPermissionsModal: false,
       features: [],
       tabIndex: {
         1: 'files',
@@ -431,47 +380,10 @@ export default {
       return `${this.entity.feed.onestop_id} • ${this.entity.sha1} • Feed version`
     },
     staticDescription () {
-      return `An archived GTFS feed version for ${this.operatorOrAgencyNames} from the feed with a Onestop ID of ${this.$route.params.feedKey} first fetched at ${this.entity.fetched_at}. This feed version contains ${this.rowCount['agency.txt'] ? this.rowCount['agency.txt'].toLocaleString() : '-'} agencies, ${this.rowCount['routes.txt'] ? this.rowCount['routes.txt'].toLocaleString() : '-'} routes, and ${this.rowCount['stops.txt'] ? this.rowCount['stops.txt'].toLocaleString() : '-'} stops.`
+      return `An archived GTFS feed version for ${this.operatorOrAgencyNames} from the feed with a Onestop ID of ${this.feedKey} first fetched at ${this.entity.fetched_at}. This feed version contains ${this.rowCount['agency.txt'] ? this.rowCount['agency.txt'].toLocaleString() : '-'} agencies, ${this.rowCount['routes.txt'] ? this.rowCount['routes.txt'].toLocaleString() : '-'} routes, and ${this.rowCount['stops.txt'] ? this.rowCount['stops.txt'].toLocaleString() : '-'} stops.`
     }
   },
   methods: {
-    saveEntity () {
-      this.$apollo
-        .mutate({
-          client: 'transitland',
-          mutation: saveFeedVersionMutation,
-          variables: {
-            id: this.entity.id,
-            set: {
-              name: this.entity.name,
-              description: this.entity.description
-            }
-          },
-          update: (store, { data }) => {
-            this.showEdit = false
-            this.$apollo.queries.entities.refetch()
-          }
-        }).catch((error) => {
-          this.setError(500, error)
-        })
-    },
-    importFeedVersion () {
-      this.importLoading = true
-      this.$apollo
-        .mutate({
-          client: 'transitland',
-          mutation: importQuery,
-          variables: {
-            sha1: this.entity.sha1
-          },
-          update: (store, { data }) => {
-            this.importLoading = false
-            this.$apollo.queries.entities.refetch()
-          }
-        }).catch((error) => {
-          this.setError(500, error)
-        })
-    },
     mergedCount (fvi) {
       const m = {}
       if (!fvi) { return m }

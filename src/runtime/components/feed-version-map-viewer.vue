@@ -32,7 +32,7 @@
 
 <script>
 import { nextTick } from 'vue'
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 
 const q = gql`
 query ($limit: Int=100, $agency_ids: [Int!], $after:Int!=0, $route_ids: [Int!], $feed_version_sha1: String, $include_stops: Boolean! = false) {

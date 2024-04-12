@@ -8,22 +8,6 @@
       Error: {{ error }}
     </o-notification>
     <div v-else-if="fv && perms">
-      <o-field label="Name" horizontal>
-        <tl-admin-input
-          :value="fv.name || 'Unnamed feed_version'"
-          :can-edit="perms.actions.can_edit"
-          @save="update({ name: $event })"
-        />
-      </o-field>
-
-      <o-field label="Description" horizontal>
-        <tl-admin-input
-          :value="fv.description || ''"
-          :can-edit="perms.actions.can_edit"
-          @save="update({ description: $event })"
-        />
-      </o-field>
-
       <o-field label="Your permissions" horizontal :title="`You are logged in as ${user.name} (${user.email})`">
         <tl-admin-perm-list :actions="perms.actions" />
       </o-field>
@@ -80,16 +64,6 @@ query($ids:[Int!]!) {
 }
 `
 
-const saveFeedVersionMutation = gql`
-mutation($id:Int!, $set:FeedVersionSetInput!) {
-  feed_version_update(id:$id, set:$set) {
-    id
-    name
-    description
-  }
-}
-`
-
 export default {
   mixins: [AuthzMixin, Loadable],
   props: {
@@ -133,65 +107,30 @@ export default {
       }
     },
     async getData () {
-      this.loading = true
-      await fetch(`${this.apiBase}/admin/feed_versions/${this.id}`, {
-        headers: { authorization: await this.authBearer() }
+      return await this.fetchAdmin(`/feed_versions/${this.id}`).then((data) => {
+        this.perms = data
       })
-        .then(this.handleError)
-        .then((data) => {
-          this.perms = data
-        })
-        .catch(this.setError)
-      this.loading = false
-    },
-    update (update) {
-      this.loading = true
-      this.$apollo
-        .mutate({
-          client: 'transitland',
-          mutation: saveFeedVersionMutation,
-          variables: {
-            id: this.id,
-            set: update
-          },
-          update: () => {
-            this.loading = false
-            this.$apollo.queries.fvs.refetch()
-            this.$emit('changed')
-          }
-        }).catch(this.setError)
     },
     async addPermissions (relation, value) {
       console.log('addPermissions:', relation, value)
-      await fetch(
-        `${this.apiBase}/admin/feed_versions/${this.id}/permissions`, {
-          method: 'POST',
-          headers: { authorization: await this.authBearer() },
-          body: JSON.stringify({
-            id: String(value.id),
-            type: this.ObjectTypes(value.type),
-            ref_relation: this.Relations(value.refrel),
-            relation: this.Relations(relation)
-          })
-        }
-      )
+      const data = {
+        id: String(value.id),
+        type: this.ObjectTypes(value.type),
+        ref_relation: this.Relations(value.refrel),
+        relation: this.Relations(relation)
+      }
+      await this.fetchAdmin(`/feed_versions/${this.id}/permissions`, data, 'POST')
       this.getData()
     },
     async removePermissions (relation, value) {
       console.log('removePermissions:', relation, value)
-      await fetch(
-        `${this.apiBase}/admin/feed_versions/${this.id}/permissions`, {
-          method: 'DELETE',
-          headers: { authorization: await this.authBearer() },
-          body: JSON.stringify({
-            id: String(value.id),
-            type: this.ObjectTypes(value.type),
-            ref_relation: this.Relations(value.refrel),
-            relation: this.Relations(relation)
-          })
-
-        }
-      )
+      const data = {
+        id: String(value.id),
+        type: this.ObjectTypes(value.type),
+        ref_relation: this.Relations(value.refrel),
+        relation: this.Relations(relation)
+      }
+      await this.fetchAdmin(`/feed_versions/${this.id}/permissions`, data, 'DELETE')
       this.getData()
     },
     changed () {

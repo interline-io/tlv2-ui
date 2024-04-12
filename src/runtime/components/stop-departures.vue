@@ -194,7 +194,6 @@ export default {
             }
           }
         }
-        console.log(q)
         return q
       },
       update (data) {

@@ -47,12 +47,6 @@ export default {
         allow_previous_onestop_ids: (!!osid && !this.feedOnestopId && !this.feedVersionSha1)
       }
     },
-    advancedMode() {
-      if (this.$route.query && this.$route.query.advanced === 'true') {
-        return true
-      }
-      return false
-    },
     linkVersion() {
       if (this.searchKey.feedVersionSha1) {
         return true
@@ -87,6 +81,9 @@ export default {
     }
   },
   methods: {
+    refetchEntities() {
+      this.$apollo.queries.entities.refetch()
+    },
     checkSearchSkip() {
       const fosid = this.$route.query.feed_onestop_id || ''
       const eid = this.$route.query.entity_id || ''

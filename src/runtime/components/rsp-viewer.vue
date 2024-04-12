@@ -86,7 +86,7 @@
 
 <script>
 import haversine from 'haversine'
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 
 const q = gql`
 query ($route_ids: [Int!]!, $radius:Float!, $include_nearby_stops:Boolean!) {

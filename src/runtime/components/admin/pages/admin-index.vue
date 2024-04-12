@@ -1,17 +1,5 @@
 <template>
   <div>
-    <slot name="nav">
-      <nav class="breadcrumb box" aria-label="breadcrumbs">
-        <ul>
-          <li class="is-active">
-            <nuxt-link :to="{name:'admin'}">
-              Admin
-            </nuxt-link>
-          </li>
-        </ul>
-      </nav>
-    </slot>
-
     <slot name="title">
       <tl-title title="Admin" />
     </slot>

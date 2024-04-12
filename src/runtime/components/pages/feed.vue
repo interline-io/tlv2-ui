@@ -11,24 +11,7 @@
       <Meta name="og:title" :content="staticTitle" />
       <Meta name="og:description" :content="staticDescription" />
 
-      <slot name="nav" :entity="entity">
-        <nav class="breadcrumb">
-          <ul>
-            <li>
-              <nuxt-link :to="{ name: 'feeds' }">
-                Source Feeds
-              </nuxt-link>
-            </li>
-            <li>
-              <nuxt-link :to="{ name: 'feeds-feedKey', params: { feedKey: $route.params.feedKey } }">
-                {{ $route.params.feedKey }}
-              </nuxt-link>
-            </li>
-          </ul>
-        </nav>
-      </slot>
-
-      <slot name="title">
+      <slot name="title" :entity="entity">
         <tl-title :title="staticTitle">
           {{ feedSpec }} feed: {{ operatorNames }}
         </tl-title>
@@ -191,15 +174,32 @@
               </tr>
             </tbody>
           </table>
-
-          <slot name="description">
-            <div class="content">
-              {{ staticDescription }}
-            </div>
-          </slot>
         </div>
 
         <slot name="edit-feed" :entity="entity" />
+      </div>
+
+      <slot name="description" :entity="entity">
+        <div class="content">
+          {{ staticDescription }}
+        </div>
+      </slot>
+
+      <div class="is-clearfix mb-4">
+        <slot v-if="showUpload" name="upload" :entity="entity">
+          <nuxt-link :to="{name:'feeds-feedKey-upload', params:{feedKey:pathKey}}" class="button is-primary is-pulled-right">
+            Upload
+          </nuxt-link>
+        </slot>
+
+        <slot v-if="showPermissions" name="permissions" :entity="entity">
+          <o-button class="is-pulled-right is-primary" icon-left="pencil" @click="showPermissionsModal=true">
+            Permissions
+          </o-button>
+          <tl-modal v-model="showPermissionsModal" title="Feed Permissions">
+            <tl-admin-feed :id="entity.id" />
+          </tl-modal>
+        </slot>
       </div>
 
       <!-- TODO: Operators component -->
@@ -208,7 +208,7 @@
         <h4 class="title is-4">
           Operator(s) Associated with this Feed
         </h4>
-        <slot name="associatedOperatorsContent" />
+        <slot name="associatedOperatorsContent" :entity="entity" />
         <tl-associated-operators :associated-operators="entity.associated_operators" />
       </div>
 
@@ -216,10 +216,18 @@
 
       <div v-if="entity.spec == 'GTFS'">
         <h4 class="title is-4">
-          Archived Feed Versions
+          Feed versions
         </h4>
 
-        <tl-feed-version-table :feed="entity" :show-download-column="showDownloadColumn" :issue-download-request="issueDownloadRequest" @download-triggered="(sha1, isLatest) => $emit('downloadTriggered', sha1, isLatest)" />
+        <tl-feed-version-table
+          :feed="entity"
+          :show-download-column="showDownloadColumn"
+          :show-description-column="showDescriptionColumn"
+          :show-date-columns="showDateColumns"
+          :show-active-column="showActiveColumn"
+          :issue-download-request="issueDownloadRequest"
+          @download-triggered="(sha1, isLatest) => $emit('downloadTriggered', sha1, isLatest)"
+        />
         <slot name="add-feed-version" :entity="entity" />
       </div>
     </div>
@@ -227,7 +235,7 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
 
 const q = gql`
@@ -339,7 +347,12 @@ export default {
     }
   },
   props: {
+    showPermissions: { type: Boolean, default: false },
+    showUpload: { type: Boolean, default: false },
     showDownloadColumn: { type: Boolean, default: true },
+    showDescriptionColumn: { type: Boolean, default: true },
+    showActiveColumn: { type: Boolean, default: true },
+    showDateColumns: { type: Boolean, default: true },
     issueDownloadRequest: { type: Boolean, default: true },
     showOperators: { type: Boolean, default: true }
   },
@@ -347,6 +360,7 @@ export default {
   data () {
     return {
       page: 1,
+      showPermissionsModal: false,
       tabIndex: {
         1: 'versions',
         2: 'service'
@@ -380,7 +394,7 @@ export default {
       } else if (names.length > 0 && names.length <= 3) {
         operatorNames = names.slice(0, 3).join(', ')
       }
-      return operatorNames
+      return operatorNames || this.entity.onestop_id
     },
     displayLicense () {
       if (this.entity) {
@@ -409,13 +423,11 @@ export default {
     staticDescription () {
       const operatorDescription = (this.entity && this.entity.associated_operators) ? ` with data for ${this.entity.name || this.operatorNames}` : ''
       const fvCount = this.entity.feed_versions.length
-      let description = `This is a ${this.feedSpec} feed ${operatorDescription} with the Onestop ID of ${this.entity.onestop_id}.`
+      let description = `This is a ${this.feedSpec} feed ${operatorDescription} with the Onestop ID of "${this.entity.onestop_id}".`
       if (fvCount >= 100) {
-        description += ` Transitland has archived over 100 versions of this feed,
-        which are available to query by API and to download.`
+        description += ' There are over 100 versions of this feed.'
       } else if (fvCount > 1) {
-        description += ` Transitland has archived ${fvCount} versions of this feed,
-        which are available to query by API and to download.`
+        description += ` There are ${fvCount} versions of this feed.`
       }
       return description
     }

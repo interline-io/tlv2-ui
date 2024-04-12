@@ -1,29 +1,5 @@
 <template>
   <div>
-    <slot name="nav">
-      <nav class="breadcrumb box" aria-label="breadcrumbs">
-        <ul>
-          <li>
-            <nuxt-link :to="{name:'editor'}">
-              Editor
-            </nuxt-link>
-          </li>
-          <li>
-            <span class="tag">Feed</span>
-            <a href="#">{{ feedName }}</a>
-          </li>
-          <li class="is-active">
-            <span class="tag">Version</span>
-            <nuxt-link
-              :to="{name:'editor-feedKey-feedVersionKey-stations',params:{feedKey,feedVersionKey}}"
-            >
-              {{ feedVersionName }}
-            </nuxt-link>
-          </li>
-        </ul>
-      </nav>
-    </slot>
-
     <slot name="title">
       <tl-title title="Stations" />
     </slot>
@@ -42,7 +18,7 @@
         Review stop ID associations
       </nuxt-link>
     </div>
-    <p class="content is-medium">
+    <p class="content">
       Or select an existing station in this feed version:
     </p>
     <div v-for="station in stations" :key="station.id" class="box is-clearfix">

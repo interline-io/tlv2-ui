@@ -1,28 +1,11 @@
 <template>
   <div>
-    <slot name="nav">
-      <nav class="breadcrumb box" aria-label="breadcrumbs">
-        <ul>
-          <li>
-            <nuxt-link :to="{ name: 'admin'}">
-              Admin
-            </nuxt-link>
-          </li>
-          <li class="is-active">
-            <nuxt-link :to="{ name: 'admin-tenants'}">
-              Tenants
-            </nuxt-link>
-          </li>
-        </ul>
-      </nav>
-    </slot>
-
     <slot name="title">
       <tl-title title="Tenants" />
     </slot>
 
     <slot name="description">
-      <p class="content is-medium">
+      <p class="content">
         Tenants are used by system administrators to organize groups and additional authorization information.
       </p>
     </slot>
@@ -62,16 +45,9 @@ export default {
   mounted () { this.getData() },
   methods: {
     async getData () {
-      this.loading = true
-      await fetch(`${this.apiBase}/admin/tenants`, {
-        headers: { authorization: await this.authBearer() }
+      return await this.fetchAdmin('/tenants').then((data) => {
+        this.tenants = data.tenants
       })
-        .then(this.handleError)
-        .then((data) => {
-          this.tenants = data.tenants
-        })
-        .catch(this.setError)
-      this.loading = false
     }
   }
 }

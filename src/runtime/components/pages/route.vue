@@ -18,45 +18,6 @@
       <Meta name="og:image" :content="staticImage" />
       <Meta name="og:image:alt" :content="staticDescription" />
 
-      <slot name="nav">
-        <nav class="breadcrumb">
-          <ul>
-            <li>
-              <nuxt-link :to="{ name: 'operators' }">
-                Operators
-              </nuxt-link>
-            </li>
-            <li>
-              <nuxt-link
-                v-if="entity.agency.onestop_id"
-                :to="{
-                  name: 'operators-operatorKey',
-                  params: { operatorKey: entity.agency.onestop_id },
-                }"
-              >
-                {{ entity.agency.agency_name }}
-              </nuxt-link>
-              <a v-else href="#">{{ entity.agency.agency_name }}</a>
-            </li>
-            <li>
-              <nuxt-link
-                :to="{
-                  name: 'routes-routeKey',
-                  params: { routeKey: pathKey },
-                }"
-              >
-                {{ entity.route_short_name }}
-                <template
-                  v-if="entity.route_short_name != entity.route_long_name"
-                >
-                  {{ entity.route_long_name }}
-                </template>
-              </nuxt-link>
-            </li>
-          </ul>
-        </nav>
-      </slot>
-
       <slot name="title">
         <tl-title :title="staticTitle">
           <div v-for="ent of routeNames" :key="ent.id" class="title">
@@ -285,7 +246,7 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
 
 const q = gql`
@@ -461,7 +422,7 @@ export default {
       return `${this.routeName} • ${this.routeType} route`
     },
     staticDescription () {
-      return `${this.routeName} is a ${this.routeType} route available for browsing and analyzing on the Transitland platform.`
+      return `${this.routeName} is a ${this.routeType} route available for browsing and analysis.`
     }
   },
   methods: {

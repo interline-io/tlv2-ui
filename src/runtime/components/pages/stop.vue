@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div>
     <tl-loading v-if="$apollo.loading" />
     <tl-msg-error v-else-if="error">
       {{ error }}
@@ -10,19 +10,6 @@
       <Meta name="twitter:description" :content="staticDescription" />
       <Meta name="og:title" :content="staticTitle" />
       <Meta name="og:description" :content="staticDescription" />
-
-      <nav class="breadcrumb">
-        <ul>
-          <li>
-            <a href="#">Stops</a>
-          </li>
-          <li>
-            <nuxt-link :to="{name: 'stops-stopKey', params:{stopKey:$route.params.stopKey}}">
-              {{ entity.stop_name }}
-            </nuxt-link>
-          </li>
-        </ul>
-      </nav>
 
       <slot name="title">
         <tl-title :title="entity.stop_name">
@@ -254,7 +241,7 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
 
 const q = gql`

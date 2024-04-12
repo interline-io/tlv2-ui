@@ -1,5 +1,5 @@
 <template>
-  <div class="tabs is-centered is-boxed is-medium">
+  <div class="tabs is-centered is-boxed">
     <ul>
       <li :class="(activeTab === 'levels') ? 'is-active' : ''">
         <nuxt-link

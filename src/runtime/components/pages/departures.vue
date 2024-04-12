@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 
 const q = gql`
   fragment rs on RouteStop {

@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 import TableViewerMixin from './table-viewer-mixin'
 
 const q = gql`

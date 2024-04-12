@@ -6,8 +6,6 @@
     <Meta name="og:title" :content="staticTitle" />
     <Meta name="og:description" :content="staticDescription" />
 
-    <slot name="nav" />
-
     <slot name="title">
       <tl-title :title="staticTitle" />
     </slot>
@@ -43,7 +41,7 @@ export default {
       return 'Browse all operators'
     },
     staticDescription() {
-      return 'Transitland uses operators to group together source feeds and other relevant data'
+      return 'Operators group together source feeds and other relevant data'
     },
     search: {
       get() { return this.$route.query.search },

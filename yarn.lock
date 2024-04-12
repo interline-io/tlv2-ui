@@ -2139,6 +2139,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/mixpanel-browser@npm:^2.49.0":
+  version: 2.49.0
+  resolution: "@types/mixpanel-browser@npm:2.49.0"
+  checksum: 8aa9f114098cd9e2b06314586d73934aa83a8116b7de61bd41208728aebd47daa30134a98c4af3d65c4e755fbbdb6c450058a34ad2204305587fbe8e27f844b3
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:*, @types/node@npm:^20.11.3":
   version: 20.11.3
   resolution: "@types/node@npm:20.11.3"
@@ -2945,6 +2952,18 @@ __metadata:
     normalize-path: "npm:^3.0.0"
     picomatch: "npm:^2.0.4"
   checksum: 3e044fd6d1d26545f235a9fe4d7a534e2029d8e59fa7fd9f2a6eb21230f6b5380ea1eaf55136e60cbf8e613544b3b766e7a6fa2102e2a3a117505466e3025dc2
+  languageName: node
+  linkType: hard
+
+"apollo-upload-client@npm:^18.0.1":
+  version: 18.0.1
+  resolution: "apollo-upload-client@npm:18.0.1"
+  dependencies:
+    extract-files: "npm:^13.0.0"
+  peerDependencies:
+    "@apollo/client": ^3.8.0
+    graphql: 14 - 16
+  checksum: 9c777f4fe4631a0983c39271b857358e3ecc49c6a8c979e9f71fd84beed12a42243482bf26333e94648e0c9d7d7c5678e434c2c605a24ebb927f0bc660f39d27
   languageName: node
   linkType: hard
 
@@ -4894,6 +4913,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"extract-files@npm:^13.0.0":
+  version: 13.0.0
+  resolution: "extract-files@npm:13.0.0"
+  dependencies:
+    is-plain-obj: "npm:^4.1.0"
+  checksum: b6fa0eb69115416808b4e92bfdaf69895a50daf3b28320a1dd99bc8a3c9163ac0fa1c1f5494bff00c16bdc029f2b8a89b1b0b879e9a06d6148f6f6ec50305b7a
+  languageName: node
+  linkType: hard
+
 "fast-deep-equal@npm:^3.1.1, fast-deep-equal@npm:^3.1.3":
   version: 3.1.3
   resolution: "fast-deep-equal@npm:3.1.3"
@@ -6065,6 +6093,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"is-plain-obj@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "is-plain-obj@npm:4.1.0"
+  checksum: 6dc45da70d04a81f35c9310971e78a6a3c7a63547ef782e3a07ee3674695081b6ca4e977fbb8efc48dae3375e0b34558d2bcd722aec9bddfa2d7db5b041be8ce
+  languageName: node
+  linkType: hard
+
 "is-primitive@npm:^3.0.1":
   version: 3.0.1
   resolution: "is-primitive@npm:3.0.1"
@@ -6913,6 +6948,13 @@ __metadata:
     minipass: "npm:^3.0.0"
     yallist: "npm:^4.0.0"
   checksum: ae0f45436fb51344dcb87938446a32fbebb540d0e191d63b35e1c773d47512e17307bf54aa88326cc6d176594d00e4423563a091f7266c2f9a6872cdc1e234d1
+  languageName: node
+  linkType: hard
+
+"mixpanel-browser@npm:^2.47.0":
+  version: 2.49.0
+  resolution: "mixpanel-browser@npm:2.49.0"
+  checksum: 46b738792153caa35c083f3e23b208d48fac0f040074d2f36dc95bac49e86729676ffb599b4b50d814231c4ae8170110419e748a1cbe0d5432ea415f0fe8adc4
   languageName: node
   linkType: hard
 
@@ -9573,10 +9615,12 @@ __metadata:
     "@types/cytoscape-fcose": "npm:^2"
     "@types/d3-scale-chromatic": "npm:^3"
     "@types/mapbox__mapbox-gl-draw": "npm:^1"
+    "@types/mixpanel-browser": "npm:^2.49.0"
     "@types/node": "npm:^20.11.3"
     "@vue/apollo-composable": "npm:^4.0.0"
     "@vue/apollo-option": "npm:^4.0.0"
     "@vueuse/core": "npm:^10.7.2"
+    apollo-upload-client: "npm:^18.0.1"
     bulma: "npm:^0.9.4"
     cytoscape: "npm:^3.28.1"
     cytoscape-fcose: "npm:^2.2.0"
@@ -9589,6 +9633,7 @@ __metadata:
     h3: "npm:^1.11.1"
     haversine: "npm:^1.1.1"
     maplibre-gl: "npm:^2.4.0"
+    mixpanel-browser: "npm:^2.47.0"
     nuxt: "npm:3.9.1"
     protomaps-themes-base: "npm:^1.3.1"
     sass: "npm:^1.69.7"

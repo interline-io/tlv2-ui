@@ -91,7 +91,7 @@
 </template>
 
 <script setup>
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
 import { ref, watch, computed } from 'vue'
 

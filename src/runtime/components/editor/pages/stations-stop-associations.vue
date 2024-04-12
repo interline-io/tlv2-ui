@@ -1,32 +1,5 @@
 <template>
   <div>
-    <slot name="nav">
-      <nav class="breadcrumb box" aria-label="breadcrumbs">
-        <ul>
-          <li>
-            <nuxt-link :to="{name:'editor'}">
-              Editor
-            </nuxt-link>
-          </li>
-          <li>
-            <span class="tag">Feed</span>
-            <a href="#">{{ feedName }}</a>
-          </li>
-          <li>
-            <span class="tag">Version</span>
-            <nuxt-link
-              :to="{name:'editor-feedKey-feedVersionKey-stations',params:{feedKey,feedVersionKey}}"
-            >
-              {{ feedVersionName }}
-            </nuxt-link>
-          </li>
-          <li class="is-active">
-            <a href="#">Stop ID Associations</a>
-          </li>
-        </ul>
-      </nav>
-    </slot>
-
     <slot name="title">
       <tl-title title="Stop ID Associations" />
     </slot>

@@ -4,12 +4,24 @@
       <table class="table is-striped is-fullwidth">
         <thead>
           <tr>
-            <th>Fetched</th>
+            <th v-if="showDescriptionColumn">
+              Name
+            </th>
+            <th v-if="showDescriptionColumn">
+              Description
+            </th>
+            <th>Added</th>
             <th>SHA1</th>
-            <th>Earliest date</th>
-            <th>Latest date</th>
+            <th v-if="showDateColumns">
+              Earliest date show: {{ showDateColumns }}
+            </th>
+            <th v-if="showDateColumns">
+              Latest date
+            </th>
             <th>Imported</th>
-            <th>Active</th>
+            <th v-if="showActiveColumn">
+              Active
+            </th>
             <th v-if="showDownloadColumn">
               Download
             </th>
@@ -17,6 +29,12 @@
         </thead>
         <tbody>
           <tr v-for="fv of entities" :key="fv.id">
+            <td v-if="showDescriptionColumn">
+              {{ fv.name }}
+            </td>
+            <td v-if="showDescriptionColumn">
+              {{ fv.description }}
+            </td>
             <td>{{ $filters.formatDate(fv.fetched_at) }} ({{ $filters.fromNow(fv.fetched_at) }})</td>
             <td>
               <nuxt-link
@@ -25,8 +43,12 @@
                 {{ fv.sha1.substr(0, 6) }}…
               </nuxt-link>
             </td>
-            <td> {{ fv.earliest_calendar_date.substr(0, 10) }}</td>
-            <td> {{ fv.latest_calendar_date.substr(0, 10) }}</td>
+            <td v-if="showDateColumns">
+              {{ fv.earliest_calendar_date.substr(0, 10) }}
+            </td>
+            <td v-if="showDateColumns">
+              {{ fv.latest_calendar_date.substr(0, 10) }}
+            </td>
             <td>
               <template v-if="fv.feed_version_gtfs_import">
                 <o-tooltip
@@ -50,7 +72,7 @@
                 </o-tooltip>
               </template>
             </td>
-            <td>
+            <td v-if="showActiveColumn">
               <o-icon
                 v-if="feed.feed_state && feed.feed_state.feed_version && feed.feed_state.feed_version.id === fv.id"
                 icon="check"
@@ -81,13 +103,15 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 
 const fvQuery = gql`
 query ($limit:Int=100, $onestop_id: String, $after:Int) {
   entities: feed_versions(limit:$limit, after:$after, where: {feed_onestop_id: $onestop_id}) {
     id
     sha1
+    name
+    description
     earliest_calendar_date
     latest_calendar_date
     fetched_at
@@ -118,6 +142,9 @@ export default {
   props: {
     feed: { type: Object, default () { return {} } },
     showDownloadColumn: { type: Boolean, default: true },
+    showDescriptionColumn: { type: Boolean, default: true },
+    showDateColumns: { type: Boolean, default: true },
+    showActiveColumn: { type: Boolean, default: true },
     issueDownloadRequest: { type: Boolean, default: true }
   },
   emits: ['downloadTriggered'],

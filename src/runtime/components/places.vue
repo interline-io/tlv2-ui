@@ -1,5 +1,5 @@
 <template>
-  <div class="content">
+  <div>
     <slot name="title">
       <tl-title title="Browse places" />
     </slot>
@@ -15,10 +15,13 @@
         Count
       </o-radio>
     </div>
+
     <o-loading v-model:active="$apollo.loading" :full-page="false" />
+
     <p
       v-for="place of sortedPlaces"
       :key="place.adm0_name"
+      class="content"
     >
       <template v-if="(placeLevelInt > 1) ? (place.adm0_name && place.adm1_name && place.city_name) : true">
         <nuxt-link to="/places">
@@ -59,25 +62,27 @@
     <h3 v-if="placeLevelInt > 1" class="is-3 title">
       Operators
     </h3>
-    <ul v-if="placeLevelInt > 1">
-      <li
-        v-for="operator of allOperators"
-        :key="operator.onestop_id"
-        class="pl-4"
-      >
-        <nuxt-link :to="{ name: 'operators-operatorKey', params: { operatorKey: operator.onestop_id } }">
-          {{ operator.name }}
-          <template v-if="operator.short_name">
-            ({{ operator.short_name }})
-          </template>
-        </nuxt-link>
-      </li>
-    </ul>
+    <p class="content">
+      <ul v-if="placeLevelInt > 1">
+        <li
+          v-for="operator of allOperators"
+          :key="operator.onestop_id"
+          class="pl-4"
+        >
+          <nuxt-link :to="{ name: 'operators-operatorKey', params: { operatorKey: operator.onestop_id } }">
+            {{ operator.name }}
+            <template v-if="operator.short_name">
+              ({{ operator.short_name }})
+            </template>
+          </nuxt-link>
+        </li>
+      </ul>
+    </p>
   </div>
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 
 const q = gql`
 query($level: PlaceAggregationLevel, $where: PlaceFilter, $include_operators: Boolean!) {
@@ -91,7 +96,7 @@ query($level: PlaceAggregationLevel, $where: PlaceFilter, $include_operators: Bo
             name
             short_name
         }
-	}
+  }
 }
 `
 
@@ -157,11 +162,12 @@ export default {
     },
     sortedPlaces() {
       return this.places.slice(0).sort((a, b) => {
-        if (this.sortBy == 'count') {
+        if (this.sortBy === 'count') {
           return b.count - a.count
-        } else if (this.sortBy == 'alphabetical') {
+        } else if (this.sortBy === 'alphabetical') {
           return a.name > b.name
         }
+        return false
       })
     },
     staticTitle() {

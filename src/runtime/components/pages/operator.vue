@@ -8,20 +8,6 @@
       <Meta name="og:title" :content="staticTitle" />
       <Meta name="og:description" :content="staticDescription" />
 
-      <nav class="breadcrumb">
-        <ul>
-          <li>
-            <nuxt-link :to="{name:'operators'}">
-              Operators
-            </nuxt-link>
-          </li><li>
-            <nuxt-link :to="{name:'operators-operatorKey', params:{operatorKey:$route.params.operatorKey}}">
-              {{ operatorName }}
-            </nuxt-link>
-          </li>
-        </ul>
-      </nav>
-
       <tl-title :title="staticTitle">
         {{ operatorName }}
       </tl-title>
@@ -98,7 +84,7 @@
             </tr>
             <tr v-if="entity && entity.tags && Object.keys(entity.tags).length > 0">
               <td>
-                <o-tooltip dashed multiline label="Links between Transitland and other catalogs and data sources on the Internet">
+                <o-tooltip dashed multiline label="Links between this data and other catalogs and data sources on the Internet">
                   ID Crosswalk
                 </o-tooltip>
               </td>
@@ -210,15 +196,6 @@
           <o-tab-item id="stops" label="Stops">
             <tl-stop-table v-if="activeTab === 3" :agency-ids="agencyIds" />
           </o-tab-item>
-
-          <o-tab-item v-if="advancedMode" id="export" label="Export">
-            <template v-if="activeTab === 4 && agencyIds.length === 1">
-              <tl-agency-export :agency-ids="agencyIds" />
-            </template>
-            <template v-else>
-              Currently this feature is only available when a single agency is returned for this query.
-            </template>
-          </o-tab-item>
         </o-tabs>
       </div>
     </div>
@@ -226,7 +203,7 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
 
 const q = gql`
@@ -391,7 +368,7 @@ export default {
       const locations = this.locations
         .map(l => [l.adm0_name, l.adm1_name, l.city_name].filter(Boolean).join(', '))
         .join('; ')
-      return `${this.operatorName} is an operator listed on the Transitland open data platform. Transitland sources data for this operator from ${feedCounts}. ${this.operatorName} provides transit services in the following locations: ${locations}.`
+      return `${this.operatorName} sources data for from ${feedCounts}. ${this.operatorName} provides transit services in the following locations: ${locations}.`
     }
   },
   methods: {
