@@ -1,6 +1,6 @@
 import { mixpanel } from 'mixpanel-browser'
-
 import { useUser } from './auth'
+import { useRuntimeConfig } from '#imports'
 
 // Mixpanel init
 let init = false
