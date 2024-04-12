@@ -157,7 +157,9 @@
             has-icon
             variant="danger"
           >
-            This feed version already exists in the database, with SHA1 checksum value {{ fetchResult.feed_version.sha1 }}, uploaded on {{ $filters.formatDate(fetchResult.feed_version.fetched_at) }}. Existing feeds cannot be uploaded again, even to a different folder. If you are uploading an existing agency-published feed, it is highly likely this schedule data is already available in the "RG" feed, which can be used for most analysis projects. If your needs are more specialized, please email <a href="mailto:transitdata@511.org">transitdata@511.org</a> for assistance.
+            <slot name="existing-feed-version">
+              This feed version already exists in the database, with SHA1 checksum value {{ fetchResult.feed_version.sha1 }}, uploaded on {{ $filters.formatDate(fetchResult.feed_version.fetched_at) }}. Existing feeds cannot be uploaded again.
+            </slot>
           </o-notification>
 
           <template v-else>
