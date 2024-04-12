@@ -5,7 +5,7 @@
     </slot>
 
     <slot name="description">
-      <p class="content is-medium">
+      <p class="content">
         Your user belongs to the following groups. Each group grants access to one or more associated feeds and their feed versions.
       </p>
     </slot>

@@ -5,7 +5,7 @@
     </slot>
 
     <slot name="description">
-      <p class="content is-medium">
+      <p class="content">
         Tenants are used by system administrators to organize groups and additional authorization information.
       </p>
     </slot>

@@ -18,7 +18,7 @@
         Review stop ID associations
       </nuxt-link>
     </div>
-    <p class="content is-medium">
+    <p class="content">
       Or select an existing station in this feed version:
     </p>
     <div v-for="station in stations" :key="station.id" class="box is-clearfix">

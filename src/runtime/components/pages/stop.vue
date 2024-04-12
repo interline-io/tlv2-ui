@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div>
     <tl-loading v-if="$apollo.loading" />
     <tl-msg-error v-else-if="error">
       {{ error }}

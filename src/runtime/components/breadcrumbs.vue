@@ -21,6 +21,8 @@ const capitalize = str => str.length
   : ''
 
 const routeNames = {
+  routes: 'Routes',
+  stops: 'Stops'
 }
 
 const shorteners = {
@@ -30,7 +32,11 @@ const shorteners = {
 const routeTags = {
   'editor-feedKey-feedVersionKey-stations-stationKey': 'Station',
   'editor-feedKey': 'Feed',
-  'editor-feedKey-feedVersionKey': 'Version'
+  'editor-feedKey-feedVersionKey': 'Version',
+  'feeds-feedKey': 'Feed',
+  'feeds-feedKey-versions-feedVersionKey': 'Version',
+  'routes-routeKey': 'Route',
+  'stops-stopKey': 'Stop'
 }
 
 export default {
