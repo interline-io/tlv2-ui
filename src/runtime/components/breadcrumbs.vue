@@ -1,5 +1,5 @@
 <template>
-  <nav class="breadcrumb box" aria-label="breadcrumbs">
+  <nav :key="$route.name" class="breadcrumb box" aria-label="breadcrumbs">
     <ul>
       <li v-for="p of parents" :key="p.id" :class="p.class">
         <span v-if="p.tag" class="tag is-small">{{ p.tag }}</span>
@@ -19,9 +19,6 @@ const capitalize = str => str.length
   : ''
 
 const routeNames = {
-  feeds: 'Source Feeds',
-  routes: 'Routes',
-  stops: 'Stops'
 }
 
 const shorteners = {
@@ -42,9 +39,9 @@ export default {
   computed: {
     parents() {
       const router = useRouter()
-      const params = useRoute().params
-      const routeFragments = useRoute().name.split('-')
-      console.log('routeFragments:', routeFragments)
+      const route = this.$route
+      const params = route.params
+      const routeFragments = route.name.split('-')
       const ret = []
       ret.push({
         class: '',
