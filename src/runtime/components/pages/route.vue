@@ -18,10 +18,6 @@
       <Meta name="og:image" :content="staticImage" />
       <Meta name="og:image:alt" :content="staticDescription" />
 
-      <slot name="nav">
-        <tl-breadcrumbs />
-      </slot>
-
       <slot name="title">
         <tl-title :title="staticTitle">
           <div v-for="ent of routeNames" :key="ent.id" class="title">
@@ -250,7 +246,7 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
 
 const q = gql`

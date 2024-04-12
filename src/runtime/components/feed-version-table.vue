@@ -103,7 +103,7 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 
 const fvQuery = gql`
 query ($limit:Int=100, $onestop_id: String, $after:Int) {

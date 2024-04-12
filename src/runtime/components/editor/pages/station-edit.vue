@@ -1,9 +1,5 @@
 <template>
   <div v-if="station">
-    <slot name="nav">
-      <tl-breadcrumbs />
-    </slot>
-
     <slot name="title">
       <tl-title title="Edit Station">
         Edit Station: {{ stationName }}

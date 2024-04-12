@@ -6,8 +6,6 @@
     <Meta name="og:title" :content="staticTitle" />
     <Meta name="og:description" :content="staticDescription" />
 
-    <slot name="nav" />
-
     <slot name="title">
       <tl-title :title="staticTitle" />
     </slot>

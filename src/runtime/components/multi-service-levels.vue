@@ -98,7 +98,7 @@
 
 <script>
 import { parseISO, format, add, isBefore } from 'date-fns'
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 
 const q = gql`
 query ($feed_version_ids: [Int!], $start_date: Date, $end_date: Date) {

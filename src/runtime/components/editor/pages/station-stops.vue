@@ -1,9 +1,5 @@
 <template>
   <div v-if="station">
-    <slot name="nav">
-      <tl-breadcrumbs />
-    </slot>
-
     <tl-editor-station-mode-tabs
       :station="station"
       :feed-key="feedKey"

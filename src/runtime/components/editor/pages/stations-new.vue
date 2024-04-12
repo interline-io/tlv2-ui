@@ -1,9 +1,5 @@
 <template>
   <div v-if="feedVersion && feedVersion.id">
-    <slot name="nav">
-      <tl-breadcrumbs />
-    </slot>
-
     <slot name="title">
       <tl-title title="New Station" />
     </slot>

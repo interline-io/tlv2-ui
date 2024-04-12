@@ -11,10 +11,6 @@
       <Meta name="og:title" :content="staticTitle" />
       <Meta name="og:description" :content="staticDescription" />
 
-      <slot name="nav" :entity="entity">
-        <tl-breadcrumbs />
-      </slot>
-
       <slot name="title">
         <tl-title :title="staticTitle">
           GTFS feed: {{ operatorOrAgencyNames }} version added {{ $filters.formatDate(entity.fetched_at) }} ({{ $filters.fromNow(entity.fetched_at) }})

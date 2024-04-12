@@ -1,7 +1,5 @@
 <template>
   <div>
-    <tl-breadcrumbs />
-
     <slot name="title">
       <tl-title title="Browse places" />
     </slot>
@@ -84,7 +82,7 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 
 const q = gql`
 query($level: PlaceAggregationLevel, $where: PlaceFilter, $include_operators: Boolean!) {
@@ -98,7 +96,7 @@ query($level: PlaceAggregationLevel, $where: PlaceFilter, $include_operators: Bo
             name
             short_name
         }
-	}
+  }
 }
 `
 
@@ -164,11 +162,12 @@ export default {
     },
     sortedPlaces() {
       return this.places.slice(0).sort((a, b) => {
-        if (this.sortBy == 'count') {
+        if (this.sortBy === 'count') {
           return b.count - a.count
-        } else if (this.sortBy == 'alphabetical') {
+        } else if (this.sortBy === 'alphabetical') {
           return a.name > b.name
         }
+        return false
       })
     },
     staticTitle() {

@@ -11,10 +11,6 @@
       <Meta name="og:title" :content="staticTitle" />
       <Meta name="og:description" :content="staticDescription" />
 
-      <slot name="nav" :entity="entity">
-        <tl-breadcrumbs />
-      </slot>
-
       <slot name="title" :entity="entity">
         <tl-title :title="staticTitle">
           {{ feedSpec }} feed: {{ operatorNames }}

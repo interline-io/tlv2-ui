@@ -1,9 +1,5 @@
 <template>
   <div>
-    <slot name="nav">
-      <tl-breadcrumbs />
-    </slot>
-
     <slot name="title">
       <tl-title title="Stations" />
     </slot>

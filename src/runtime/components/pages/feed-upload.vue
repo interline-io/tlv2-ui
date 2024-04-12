@@ -1,16 +1,6 @@
 <template>
   <div>
-    <Head>
-      <Title>Upload feed version</Title>
-    </Head>
-
-    <slot name="nav" :entity="entity">
-      <tl-breadcrumbs />
-    </slot>
-
-    <h1 class="title">
-      Upload feed version
-    </h1>
+    <tl-title title="Upload feed version" />
 
     <o-notification
       v-if="networkError"

@@ -11,8 +11,6 @@
       <Meta name="og:title" :content="staticTitle" />
       <Meta name="og:description" :content="staticDescription" />
 
-      <tl-breadcrumbs />
-
       <slot name="title">
         <tl-title :title="entity.stop_name">
           {{ entity.stop_name }}
@@ -243,7 +241,7 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
 
 const q = gql`

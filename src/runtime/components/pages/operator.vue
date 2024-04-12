@@ -8,8 +8,6 @@
       <Meta name="og:title" :content="staticTitle" />
       <Meta name="og:description" :content="staticDescription" />
 
-      <tl-breadcrumbs />
-
       <tl-title :title="staticTitle">
         {{ operatorName }}
       </tl-title>
@@ -205,7 +203,7 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
 
 const q = gql`
