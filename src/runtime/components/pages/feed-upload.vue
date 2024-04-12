@@ -186,6 +186,7 @@
 import { gql } from 'graphql-tag'
 import { useMixpanel } from '../../composables/useMixpanel'
 import EntityPageMixin from './entity-page-mixin'
+import { navigateTo } from '#imports'
 
 const q = gql`
   mutation ($file: Upload, $url: String, $realtime_urls: [String!]) {
