@@ -19,7 +19,6 @@ export function getAuth0Client() {
     return
   }
   const config = useRuntimeConfig()
-  console.log('config:', config.public)
   return initAuth0Client(
     config.public.requireLogin,
     config.public.auth0ClientId,

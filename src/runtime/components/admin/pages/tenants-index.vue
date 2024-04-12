@@ -45,16 +45,9 @@ export default {
   mounted () { this.getData() },
   methods: {
     async getData () {
-      this.loading = true
-      await fetch(`${this.apiBase}/admin/tenants`, {
-        headers: { authorization: await this.authBearer() }
+      return await this.fetchAdmin('/tenants').then((data) => {
+        this.tenants = data.tenants
       })
-        .then(this.handleError)
-        .then((data) => {
-          this.tenants = data.tenants
-        })
-        .catch(this.setError)
-      this.loading = false
     }
   }
 }

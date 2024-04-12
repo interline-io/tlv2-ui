@@ -5,7 +5,7 @@
       v-if="error"
       variant="danger"
     >
-      Error: {{ error }}
+      {{ error }}
     </o-notification>
     <div v-else-if="tenant && filterAction && !tenant.actions[filterAction]" />
     <div v-else-if="tenant">
@@ -105,76 +105,41 @@ export default {
       }
     },
     async getData () {
-      const token = await this.authBearer()
-      console.log('TOKEN:', token)
-      this.loading = true
-      await fetch(`${this.apiBase}/admin/tenants/${this.id}`, {
-        headers: { authorization: await this.authBearer() }
+      return await this.fetchAdmin(`/tenants/${this.id}`).then((data) => {
+        this.tenant = data
       })
-        .then(this.handleError)
-        .then((data) => {
-          this.tenant = data
-        })
-        .catch(this.setError)
-      this.loading = false
     },
     async saveName (value) {
       console.log('saveName', value)
-      this.loading = true
-      await fetch(
-        `${this.apiBase}/admin/tenants/${this.id}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', authorization: await this.authBearer() },
-          body: JSON.stringify({ name: value })
-        }
-      )
+      await this.fetchAdmin(`/tenants/${this.id}`, { name: value }, 'POST')
       this.changed()
     },
     async addPermissions (relation, value) {
       console.log('addPermissions:', relation, value)
-      this.loading = true
-      await fetch(
-        `${this.apiBase}/admin/tenants/${this.id}/permissions`, {
-          method: 'POST',
-          headers: { authorization: await this.authBearer() },
-          body: JSON.stringify({
-            id: value.id,
-            type: this.ObjectTypes(value.type),
-            ref_relation: this.Relations(value.refrel),
-            relation: this.Relations(relation)
-          })
-        }
-      )
+      const data = {
+        id: value.id,
+        type: this.ObjectTypes(value.type),
+        ref_relation: this.Relations(value.refrel),
+        relation: this.Relations(relation)
+      }
+      await this.fetchAdmin(`/tenants/${this.id}/permissions`, data, 'POST')
       this.getData()
     },
     async removePermissions (relation, value) {
       console.log('removePermissions:', relation, value)
-      this.loading = true
-      await fetch(
-        `${this.apiBase}/admin/tenants/${this.id}/permissions`, {
-          method: 'DELETE',
-          headers: { authorization: await this.authBearer() },
-          body: JSON.stringify({
-            id: value.id,
-            type: this.ObjectTypes(value.type),
-            ref_relation: this.Relations(value.refrel),
-            relation: this.Relations(relation)
-          })
-
-        }
-      )
+      const data = {
+        id: value.id,
+        type: this.ObjectTypes(value.type),
+        ref_relation: this.Relations(value.refrel),
+        relation: this.Relations(relation)
+      }
+      await this.fetchAdmin(`/tenants/${this.id}/permissions`, data, 'DELETE')
       this.getData()
     },
     async createGroup () {
       console.log('createGroup')
-      this.loading = true
-      await fetch(
-        `${this.apiBase}/admin/tenants/${this.id}/groups`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', authorization: await this.authBearer() },
-          body: JSON.stringify({ group: { name: 'New Group' } })
-        }
-      )
+      const data = { group: { name: 'New Group' } }
+      await this.fetchAdmin(`/tenants/${this.id}/groups`, data, 'POST')
       this.changed()
     },
     changed () {

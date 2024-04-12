@@ -101,27 +101,13 @@ export default {
   mounted () { this.getData() },
   methods: {
     async getData () {
-      this.loading = true
-      await fetch(
-        `${this.apiBase}/admin/feeds/${this.id}`, {
-          headers: { authorization: await this.authBearer() }
-        })
-        .then(this.handleError)
-        .then((data) => {
-          this.feed = data
-        })
-        .catch(this.setError)
-      this.loading = false
+      return await this.fetchAdmin(`/feeds/${this.id}`).then((data) => {
+        this.feed = data
+      })
     },
     async setGroup (value) {
-      this.loading = true
-      await fetch(
-        `${this.apiBase}/admin/feeds/${this.id}/group`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', authorization: await this.authBearer() },
-          body: JSON.stringify({ group_id: value.id })
-        }
-      )
+      const data = { group_id: value.id }
+      await this.fetchAdmin(`/feeds/${this.id}/group`, data, 'POST')
       this.getData()
     },
     changed () {

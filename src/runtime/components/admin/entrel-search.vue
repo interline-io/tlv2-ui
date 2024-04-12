@@ -1,6 +1,6 @@
 <template>
   <div>
-    <o-loading v-model:active="loading" :full-page="false" />
+    <o-loading v-model:active="loadingAll" :full-page="false" />
     <o-notification
       v-if="error"
       variant="danger"
@@ -103,6 +103,7 @@ export default {
   emits: ['select'],
   data () {
     return {
+      loadingAll: false,
       search: '',
       userStar: {
         id: '*',
@@ -124,42 +125,28 @@ export default {
   mounted () { this.getData('') },
   methods: {
     async getData (search) {
-      this.loading = true
+      this.loadingAll = true
       // users
       if (search && search.length > 1) {
-        await fetch(`${this.apiBase}/admin/users?q=` + search, {
-          headers: { authorization: await this.authBearer() }
+        await this.fetchAdmin('/users', { q: search }).then((data) => {
+          this.users = (data?.users || []).slice(0, 10)
         })
-          .then(this.handleError)
-          .then((data) => {
-            this.users = (data?.users || []).slice(0, 10)
-          })
-          .catch(this.setError)
       } else {
         this.users = []
       }
 
       // groups
-      await fetch(`${this.apiBase}/admin/groups`, {
-        headers: { authorization: await this.authBearer() }
+      await this.fetchAdmin('/groups').then((data) => {
+        this.groups = (data?.groups || []).slice(0, 100)
       })
-        .then(this.handleError)
-        .then((data) => {
-          this.groups = (data?.groups || []).slice(0, 100)
-        })
-        .catch(this.setError)
 
       // tenants
-      await fetch(`${this.apiBase}/admin/tenants`, {
-        headers: { authorization: await this.authBearer() }
+      await this.fetchAdmin('/tenants').then((data) => {
+        this.tenants = (data?.tenants || []).slice(0, 100)
       })
-        .then(this.handleError)
-        .then((data) => {
-          this.tenants = (data?.tenants || []).slice(0, 100)
-        })
-        .catch(this.setError)
 
-      this.loading = false
+      // Done
+      this.loadingAll = false
     }
   }
 }

@@ -161,82 +161,41 @@ export default {
       }
     },
     async getData () {
-      this.loading = true
-      await fetch(`${this.apiBase}/admin/groups/${this.id}`, {
-        headers: { authorization: await this.authBearer() }
+      return await this.fetchAdmin(`/groups/${this.id}`).then((data) => {
+        this.group = data
       })
-        .then(this.handleError)
-        .then((data) => {
-          this.group = data
-        })
-        .catch(this.setError)
-      this.loading = false
     },
     async saveName (value) {
       console.log('saveName', value)
-      this.loading = true
-      await fetch(
-        `${this.apiBase}/admin/groups/${this.id}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            authorization: await this.authBearer()
-          },
-          body: JSON.stringify({ name: value })
-        }
-      )
+      await this.fetchAdmin(`/groups/${this.id}`, { name: value }, 'POST')
       this.changed()
     },
     async addPermissions (relation, value) {
       console.log('addPermissions:', relation, value)
-      this.loading = true
-      await fetch(
-        `${this.apiBase}/admin/groups/${this.id}/permissions`, {
-          method: 'POST',
-          headers: { authorization: await this.authBearer() },
-          body: JSON.stringify({
-            id: String(value.id),
-            type: this.ObjectTypes(value.type),
-            ref_relation: this.Relations(value.refrel),
-            relation: this.Relations(relation)
-          })
-        }
-      )
-        .then(this.handleError)
-        .catch(this.setError)
+      const data = {
+        id: String(value.id),
+        type: this.ObjectTypes(value.type),
+        ref_relation: this.Relations(value.refrel),
+        relation: this.Relations(relation)
+      }
+      await this.fetchAdmin(`/groups/${this.id}/permissions`, data, 'POST')
       this.getData()
     },
     async removePermissions (relation, value) {
       console.log('removePermissions:', relation, value)
-      this.loading = true
-      await fetch(
-        `${this.apiBase}/admin/groups/${this.id}/permissions`, {
-          method: 'DELETE',
-          headers: { authorization: await this.authBearer() },
-          body: JSON.stringify({
-            id: String(value.id),
-            type: this.ObjectTypes(value.type),
-            ref_relation: this.Relations(value.refrel),
-            relation: this.Relations(relation)
-          })
-        }
-      )
-        .then(this.handleError)
-        .catch(this.setError)
+      const data = {
+        id: String(value.id),
+        type: this.ObjectTypes(value.type),
+        ref_relation: this.Relations(value.refrel),
+        relation: this.Relations(relation)
+      }
+      await this.fetchAdmin(`/groups/${this.id}/permissions`, data, 'DELETE')
       this.getData()
     },
     async setTenant (value) {
       console.log('setTenant', value)
-      this.loading = true
-      await fetch(
-        `${this.apiBase}/admin/groups/${this.id}/tenant`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', authorization: await this.authBearer() },
-          body: JSON.stringify({ tenant_id: value.id })
-        }
-      )
-        .then(this.handleError)
-        .catch(this.setError)
+      const data = { tenant_id: value.id }
+      await this.fetchAdmin(`/groups/${this.id}/tenant`, data, 'POST')
       this.getData()
     },
     changed () {

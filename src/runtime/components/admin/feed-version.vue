@@ -107,48 +107,30 @@ export default {
       }
     },
     async getData () {
-      this.loading = true
-      await fetch(`${this.apiBase}/admin/feed_versions/${this.id}`, {
-        headers: { authorization: await this.authBearer() }
+      return await this.fetchAdmin(`/feed_versions/${this.id}`).then((data) => {
+        this.perms = data
       })
-        .then(this.handleError)
-        .then((data) => {
-          this.perms = data
-        })
-        .catch(this.setError)
-      this.loading = false
     },
     async addPermissions (relation, value) {
       console.log('addPermissions:', relation, value)
-      await fetch(
-        `${this.apiBase}/admin/feed_versions/${this.id}/permissions`, {
-          method: 'POST',
-          headers: { authorization: await this.authBearer() },
-          body: JSON.stringify({
-            id: String(value.id),
-            type: this.ObjectTypes(value.type),
-            ref_relation: this.Relations(value.refrel),
-            relation: this.Relations(relation)
-          })
-        }
-      )
+      const data = {
+        id: String(value.id),
+        type: this.ObjectTypes(value.type),
+        ref_relation: this.Relations(value.refrel),
+        relation: this.Relations(relation)
+      }
+      await this.fetchAdmin(`/feed_versions/${this.id}/permissions`, data, 'POST')
       this.getData()
     },
     async removePermissions (relation, value) {
       console.log('removePermissions:', relation, value)
-      await fetch(
-        `${this.apiBase}/admin/feed_versions/${this.id}/permissions`, {
-          method: 'DELETE',
-          headers: { authorization: await this.authBearer() },
-          body: JSON.stringify({
-            id: String(value.id),
-            type: this.ObjectTypes(value.type),
-            ref_relation: this.Relations(value.refrel),
-            relation: this.Relations(relation)
-          })
-
-        }
-      )
+      const data = {
+        id: String(value.id),
+        type: this.ObjectTypes(value.type),
+        ref_relation: this.Relations(value.refrel),
+        relation: this.Relations(relation)
+      }
+      await this.fetchAdmin(`/feed_versions/${this.id}/permissions`, data, 'DELETE')
       this.getData()
     },
     changed () {

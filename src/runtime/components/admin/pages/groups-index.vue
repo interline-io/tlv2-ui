@@ -38,16 +38,9 @@ export default {
   mounted () { this.getData() },
   methods: {
     async getData () {
-      this.loading = true
-      await fetch(`${this.apiBase}/admin/groups`, {
-        headers: { authorization: await this.authBearer() }
+      return await this.fetchAdmin('/groups').then((data) => {
+        this.groups = data.groups
       })
-        .then(this.handleError)
-        .then((data) => {
-          this.groups = data.groups
-        })
-        .catch(this.setError)
-      this.loading = false
     }
   }
 }
