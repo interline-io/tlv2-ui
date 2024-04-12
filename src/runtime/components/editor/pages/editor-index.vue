@@ -1,13 +1,7 @@
 <template>
   <div>
     <slot name="nav">
-      <nav class="breadcrumb box" aria-label="breadcrumbs">
-        <ul>
-          <li class="is-active">
-            <a href="#">Editor</a>
-          </li>
-        </ul>
-      </nav>
+      <tl-breadcrumbs />
     </slot>
 
     <slot name="title">

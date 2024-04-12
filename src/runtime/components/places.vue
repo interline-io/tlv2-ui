@@ -1,5 +1,7 @@
 <template>
-  <div class="content">
+  <div>
+    <tl-breadcrumbs />
+
     <slot name="title">
       <tl-title title="Browse places" />
     </slot>
@@ -15,10 +17,13 @@
         Count
       </o-radio>
     </div>
+
     <o-loading v-model:active="$apollo.loading" :full-page="false" />
+
     <p
       v-for="place of sortedPlaces"
       :key="place.adm0_name"
+      class="content"
     >
       <template v-if="(placeLevelInt > 1) ? (place.adm0_name && place.adm1_name && place.city_name) : true">
         <nuxt-link to="/places">
@@ -59,20 +64,22 @@
     <h3 v-if="placeLevelInt > 1" class="is-3 title">
       Operators
     </h3>
-    <ul v-if="placeLevelInt > 1">
-      <li
-        v-for="operator of allOperators"
-        :key="operator.onestop_id"
-        class="pl-4"
-      >
-        <nuxt-link :to="{ name: 'operators-operatorKey', params: { operatorKey: operator.onestop_id } }">
-          {{ operator.name }}
-          <template v-if="operator.short_name">
-            ({{ operator.short_name }})
-          </template>
-        </nuxt-link>
-      </li>
-    </ul>
+    <p class="content">
+      <ul v-if="placeLevelInt > 1">
+        <li
+          v-for="operator of allOperators"
+          :key="operator.onestop_id"
+          class="pl-4"
+        >
+          <nuxt-link :to="{ name: 'operators-operatorKey', params: { operatorKey: operator.onestop_id } }">
+            {{ operator.name }}
+            <template v-if="operator.short_name">
+              ({{ operator.short_name }})
+            </template>
+          </nuxt-link>
+        </li>
+      </ul>
+    </p>
   </div>
 </template>
 

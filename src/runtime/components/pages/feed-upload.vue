@@ -5,23 +5,7 @@
     </Head>
 
     <slot name="nav" :entity="entity">
-      <nav class="breadcrumb">
-        <ul>
-          <li>
-            <nuxt-link :to="{ name: 'feeds' }">
-              Source Feeds
-            </nuxt-link>
-          </li>
-          <li>
-            <nuxt-link :to="{ name: 'feeds-feedKey', params: { feedKey: pathKey } }">
-              {{ pathKey }}
-            </nuxt-link>
-          </li>
-          <li>
-            <a href="#">Upload</a>
-          </li>
-        </ul>
-      </nav>
+      <tl-breadcrumbs />
     </slot>
 
     <h1 class="title">

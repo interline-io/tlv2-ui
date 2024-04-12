@@ -12,20 +12,7 @@
       <Meta name="og:description" :content="staticDescription" />
 
       <slot name="nav" :entity="entity">
-        <nav class="breadcrumb">
-          <ul>
-            <li>
-              <nuxt-link :to="{ name: 'feeds' }">
-                Source Feeds
-              </nuxt-link>
-            </li>
-            <li>
-              <nuxt-link :to="{ name: 'feeds-feedKey', params: { feedKey: pathKey } }">
-                {{ pathKey }}
-              </nuxt-link>
-            </li>
-          </ul>
-        </nav>
+        <tl-breadcrumbs />
       </slot>
 
       <slot name="title" :entity="entity">
@@ -241,6 +228,7 @@
           :show-download-column="showDownloadColumn"
           :show-description-column="showDescriptionColumn"
           :show-date-columns="showDateColumns"
+          :show-active-column="showActiveColumn"
           :issue-download-request="issueDownloadRequest"
           @download-triggered="(sha1, isLatest) => $emit('downloadTriggered', sha1, isLatest)"
         />
@@ -367,6 +355,7 @@ export default {
     showUpload: { type: Boolean, default: false },
     showDownloadColumn: { type: Boolean, default: true },
     showDescriptionColumn: { type: Boolean, default: true },
+    showActiveColumn: { type: Boolean, default: true },
     showDateColumns: { type: Boolean, default: true },
     issueDownloadRequest: { type: Boolean, default: true },
     showOperators: { type: Boolean, default: true }

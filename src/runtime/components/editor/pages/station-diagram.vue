@@ -1,38 +1,7 @@
 <template>
   <div v-if="station">
     <slot name="nav">
-      <nav class="breadcrumb box" aria-label="breadcrumbs">
-        <ul>
-          <li>
-            <nuxt-link :to="{name:'editor'}">
-              Editor
-            </nuxt-link>
-          </li>
-          <li>
-            <span class="tag">Feed</span>
-            <a href="#">{{ feedName }}</a>
-          </li>
-          <li>
-            <span class="tag">Version</span>
-            <nuxt-link
-              :to="{name:'editor-feedKey-feedVersionKey-stations',params:{feedKey,feedVersionKey}}"
-            >
-              {{ feedVersionName }}
-            </nuxt-link>
-          </li>
-          <li>
-            <span class="tag">Station</span>
-            <nuxt-link
-              :to="{name:'editor-feedKey-feedVersionKey-stations-stationKey',params:{feedKey,feedVersionKey,stationKey}}"
-            >
-              {{ stationName }}
-            </nuxt-link>
-          </li>
-          <li class="is-active">
-            <a href="#">Station Diagram</a>
-          </li>
-        </ul>
-      </nav>
+      <tl-breadcrumbs />
     </slot>
 
     <slot name="title">

@@ -11,18 +11,7 @@
       <Meta name="og:title" :content="staticTitle" />
       <Meta name="og:description" :content="staticDescription" />
 
-      <nav class="breadcrumb">
-        <ul>
-          <li>
-            <a href="#">Stops</a>
-          </li>
-          <li>
-            <nuxt-link :to="{name: 'stops-stopKey', params:{stopKey:$route.params.stopKey}}">
-              {{ entity.stop_name }}
-            </nuxt-link>
-          </li>
-        </ul>
-      </nav>
+      <tl-breadcrumbs />
 
       <slot name="title">
         <tl-title :title="entity.stop_name">

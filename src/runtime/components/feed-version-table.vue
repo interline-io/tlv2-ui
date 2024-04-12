@@ -19,7 +19,9 @@
               Latest date
             </th>
             <th>Imported</th>
-            <th>Active</th>
+            <th v-if="showActiveColumn">
+              Active
+            </th>
             <th v-if="showDownloadColumn">
               Download
             </th>
@@ -70,7 +72,7 @@
                 </o-tooltip>
               </template>
             </td>
-            <td>
+            <td v-if="showActiveColumn">
               <o-icon
                 v-if="feed.feed_state && feed.feed_state.feed_version && feed.feed_state.feed_version.id === fv.id"
                 icon="check"
@@ -142,6 +144,7 @@ export default {
     showDownloadColumn: { type: Boolean, default: true },
     showDescriptionColumn: { type: Boolean, default: true },
     showDateColumns: { type: Boolean, default: true },
+    showActiveColumn: { type: Boolean, default: true },
     issueDownloadRequest: { type: Boolean, default: true }
   },
   emits: ['downloadTriggered'],

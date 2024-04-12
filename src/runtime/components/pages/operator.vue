@@ -8,19 +8,7 @@
       <Meta name="og:title" :content="staticTitle" />
       <Meta name="og:description" :content="staticDescription" />
 
-      <nav class="breadcrumb">
-        <ul>
-          <li>
-            <nuxt-link :to="{name:'operators'}">
-              Operators
-            </nuxt-link>
-          </li><li>
-            <nuxt-link :to="{name:'operators-operatorKey', params:{operatorKey:$route.params.operatorKey}}">
-              {{ operatorName }}
-            </nuxt-link>
-          </li>
-        </ul>
-      </nav>
+      <tl-breadcrumbs />
 
       <tl-title :title="staticTitle">
         {{ operatorName }}

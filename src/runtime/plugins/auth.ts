@@ -19,8 +19,9 @@ export function getAuth0Client() {
     return
   }
   const config = useRuntimeConfig()
+  console.log('config:', config.public)
   return initAuth0Client(
-    config.public.requireLogin === 'true',
+    config.public.requireLogin,
     config.public.auth0ClientId,
     config.public.auth0Domain,
     config.public.auth0RedirectUri,
@@ -180,6 +181,7 @@ export default defineNuxtPlugin(() => {
     const lastChecked = Date.now() - (user?.checked || 0)
 
     // Force login
+    console.log('requireLogin', requireLogin)
     if (authClient && requireLogin && user && !user.loggedIn) {
       console.log('auth mw: force login')
       await login()

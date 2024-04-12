@@ -50,6 +50,14 @@ nav .tag {
   margin-left:10px;
 }
 
+.is-pulled-right.button {
+  margin-right:4px;
+}
+.is-pulled-right .button {
+  margin-right:4px;
+}
+
+
 @media only screen and (max-width: 600px) {
   .tab-item {
     overflow-x:auto;
@@ -61,3 +69,4 @@ nav .tag {
     white-space: inherit;
   }
 }
+

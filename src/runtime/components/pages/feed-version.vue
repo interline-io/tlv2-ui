@@ -12,25 +12,7 @@
       <Meta name="og:description" :content="staticDescription" />
 
       <slot name="nav" :entity="entity">
-        <nav class="breadcrumb">
-          <ul>
-            <li>
-              <nuxt-link :to="{name:'feeds'}">
-                Source Feeds
-              </nuxt-link>
-            </li>
-            <li>
-              <nuxt-link :to="{name: 'feeds-feedKey', params:{feedKey:feedKey}}">
-                {{ feedKey }}
-              </nuxt-link>
-            </li>
-            <li>
-              <nuxt-link :to="{name: 'feeds-feedKey-versions-feedVersionKey', params:{feedKey:feedKey, feedVersionKey:feedVersionKey}}">
-                {{ $filters.shortenName(feedVersionKey,8) }}
-              </nuxt-link>
-            </li>
-          </ul>
-        </nav>
+        <tl-breadcrumbs />
       </slot>
 
       <slot name="title">

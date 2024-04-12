@@ -19,42 +19,7 @@
       <Meta name="og:image:alt" :content="staticDescription" />
 
       <slot name="nav">
-        <nav class="breadcrumb">
-          <ul>
-            <li>
-              <nuxt-link :to="{ name: 'operators' }">
-                Operators
-              </nuxt-link>
-            </li>
-            <li>
-              <nuxt-link
-                v-if="entity.agency.onestop_id"
-                :to="{
-                  name: 'operators-operatorKey',
-                  params: { operatorKey: entity.agency.onestop_id },
-                }"
-              >
-                {{ entity.agency.agency_name }}
-              </nuxt-link>
-              <a v-else href="#">{{ entity.agency.agency_name }}</a>
-            </li>
-            <li>
-              <nuxt-link
-                :to="{
-                  name: 'routes-routeKey',
-                  params: { routeKey: pathKey },
-                }"
-              >
-                {{ entity.route_short_name }}
-                <template
-                  v-if="entity.route_short_name != entity.route_long_name"
-                >
-                  {{ entity.route_long_name }}
-                </template>
-              </nuxt-link>
-            </li>
-          </ul>
-        </nav>
+        <tl-breadcrumbs />
       </slot>
 
       <slot name="title">
