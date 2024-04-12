@@ -157,7 +157,7 @@
             has-icon
             variant="danger"
           >
-            <slot name="existing-feed-version">
+            <slot name="existing-feed-version" :fetch-result="fetchResult">
               This feed version already exists in the database, with SHA1 checksum value {{ fetchResult.feed_version.sha1 }}, uploaded on {{ $filters.formatDate(fetchResult.feed_version.fetched_at) }}. Existing feeds cannot be uploaded again.
             </slot>
           </o-notification>
