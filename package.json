@@ -57,14 +57,13 @@
     "typescript-eslint": "^0.0.1-alpha.0",
     "unstorage": "^1.10.1",
     "@types/node": "^20.11.3",
-    "vue": "^3.4.14"
-  },
-  "packageManager": "yarn@4.0.2",
-  "devDependencies": {
+    "vue": "^3.4.14",
     "@types/cytoscape-fcose": "^2",
     "@types/d3-scale-chromatic": "^3",
     "@types/mapbox__mapbox-gl-draw": "^1",
-    "@types/mixpanel-browser": "^2.49.0",
     "@types/cytoscape": "^3"
+  },
+  "packageManager": "yarn@4.0.2",
+  "devDependencies": {
   }
 }
