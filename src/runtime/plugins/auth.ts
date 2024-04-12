@@ -181,7 +181,6 @@ export default defineNuxtPlugin(() => {
     const lastChecked = Date.now() - (user?.checked || 0)
 
     // Force login
-    console.log('requireLogin', requireLogin)
     if (authClient && requireLogin && user && !user.loggedIn) {
       console.log('auth mw: force login')
       await login()
