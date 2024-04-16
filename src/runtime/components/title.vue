@@ -1,8 +1,8 @@
 <template>
   <div>
-    <h2 class="title is-2">
+    <h1 class="title is-1">
       <slot>{{ title }}</slot>
-    </h2>
+    </h1>
     <Head>
       <Title>{{ title }} </Title>
       <Meta name="description" :content="description || title" />
@@ -24,7 +24,7 @@ export default {
 </script>
 
 <style scoped>
-  h2 {
+  h1 {
     margin-top:1em;
     margin-bottom:1em;
     }
