@@ -2,15 +2,11 @@
   <div>
     <div v-if="$apollo.loading" class="is-loading" />
     <div v-else-if="entity">
-      <Meta name="description" :content="staticDescription" />
-      <Meta name="twitter:title" :content="staticTitle" />
-      <Meta name="twitter:description" :content="staticDescription" />
-      <Meta name="og:title" :content="staticTitle" />
-      <Meta name="og:description" :content="staticDescription" />
-
-      <tl-title :title="staticTitle">
-        {{ operatorName }}
-      </tl-title>
+      <slot name="title">
+        <tl-title :title="staticTitle" :description="staticDescription">
+          {{ operatorName }}
+        </tl-title>
+      </slot>
 
       <!-- Warnings for freshness and viewing a specific version -->
       <tl-check-fresh :fetched="dataFreshness" />
@@ -248,16 +244,6 @@ query ($onestop_id: String, $feed_onestop_id: String, $limit: Int=10) {
 `
 export default {
   mixins: [EntityPageMixin],
-  apollo: {
-    entities: {
-      client: 'transitland',
-      query: q,
-      // skip () { return this.checkSearchSkip(this.$route.query.agency_id) }, // skip if search and no agency_id
-      variables () {
-        return this.searchKey
-      }
-    }
-  },
   data () {
     return {
       features: [],
@@ -368,7 +354,22 @@ export default {
       const locations = this.locations
         .map(l => [l.adm0_name, l.adm1_name, l.city_name].filter(Boolean).join(', '))
         .join('; ')
-      return `${this.operatorName} sources data for from ${feedCounts}. ${this.operatorName} provides transit services in the following locations: ${locations}.`
+      return `Data for ${this.operatorName} is sourced from ${feedCounts}. ${this.operatorName} provides transit services in the following locations: ${locations}.`
+    }
+  },
+  watch: {
+    'entity.name'(v) {
+      useEventBus().$emit('setParamKey', 'operatorKey', v)
+    }
+  },
+  apollo: {
+    entities: {
+      client: 'transitland',
+      query: q,
+      // skip () { return this.checkSearchSkip(this.$route.query.agency_id) }, // skip if search and no agency_id
+      variables () {
+        return this.searchKey
+      }
     }
   },
   methods: {

@@ -1,13 +1,7 @@
 <template>
   <div>
-    <Meta name="description" :content="staticDescription" />
-    <Meta name="twitter:title" :content="staticTitle" />
-    <Meta name="twitter:description" :content="staticDescription" />
-    <Meta name="og:title" :content="staticTitle" />
-    <Meta name="og:description" :content="staticDescription" />
-
     <slot name="title">
-      <tl-title :title="staticTitle" />
+      <tl-title :title="staticTitle" :description="staticDescription" />
     </slot>
 
     <slot name="description" />

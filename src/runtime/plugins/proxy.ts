@@ -40,19 +40,20 @@ export function proxyHandler(
 
   // Proxy request
   const proxyBaseUrl = new URL(proxyBase)
-  const newPath = proxyBaseUrl.pathname + event.path.replace('/api/v2', '')
+  const proxyBasePathname = proxyBaseUrl.pathname === '/' ? '' : proxyBaseUrl.pathname
+  const newPath = proxyBasePathname + event.path.replace('/api/v2', '')
   const target = new URL(
     newPath,
-    proxyBase
+    proxyBaseUrl.toString()
   )
-  //   console.log(
-  //     'newPath:', newPath,
-  //     'proxyBase:', proxyBase,
-  //     'event.path:', event.path,
-  //     'proxyBase pathname:', proxyBaseUrl.pathname,
-  //     'target:', target.toString(),
-  //     'headers:', headers
-  //   )
+  // console.log(
+  //   'newPath:', newPath,
+  //   'proxyBase:', proxyBase,
+  //   'event.path:', event.path,
+  //   'proxyBase pathname:', proxyBaseUrl.pathname,
+  //   'target:', target.toString(),
+  //   'headers:', headers
+  // )
   return proxyRequest(event, target.toString(), { headers })
 }
 

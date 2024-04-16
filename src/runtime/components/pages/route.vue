@@ -5,21 +5,8 @@
       {{ error }}
     </tl-msg-error>
     <div v-else-if="entity">
-      <Meta name="description" :content="staticDescription" />
-      <Meta name="twitter:title" :content="staticTitle" />
-      <Meta name="twitter:description" :content="staticDescription" />
-      <Meta name="twitter:image" :content="staticImage" />
-      <Meta name="twitter:image:alt" :content="staticDescription" />
-      <Meta name="og:title" :content="staticTitle" />
-      <Meta name="og:description" :content="staticDescription" />
-      <Meta name="og:image:type" content="image/png" />
-      <Meta name="og:image:width" content="800" />
-      <Meta name="og:image:height" content="600" />
-      <Meta name="og:image" :content="staticImage" />
-      <Meta name="og:image:alt" :content="staticDescription" />
-
       <slot name="title">
-        <tl-title :title="staticTitle">
+        <tl-title :title="staticTitle" :description="staticDescription">
           <div v-for="ent of routeNames" :key="ent.id" class="title">
             {{ ent.agency.agency_name }} <br>
             <tl-route-icon
@@ -30,6 +17,11 @@
             />
           </div>
         </tl-title>
+        <Meta name="og:image:type" content="image/png" />
+        <Meta name="og:image:width" content="800" />
+        <Meta name="og:image:height" content="600" />
+        <Meta name="og:image" :content="staticImage" />
+        <Meta name="og:image:alt" :content="staticDescription" />
       </slot>
 
       <!-- Warnings for freshness and viewing a specific version -->
@@ -423,6 +415,11 @@ export default {
     },
     staticDescription () {
       return `${this.routeName} is a ${this.routeType} route available for browsing and analysis.`
+    }
+  },
+  watch: {
+    routeName(v) {
+      useEventBus().$emit('setParamKey', 'routeKey', v)
     }
   },
   methods: {

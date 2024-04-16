@@ -5,14 +5,8 @@
       {{ error }}
     </tl-msg-error>
     <div v-else-if="entity">
-      <Meta name="description" :content="staticDescription" />
-      <Meta name="twitter:title" :content="staticTitle" />
-      <Meta name="twitter:description" :content="staticDescription" />
-      <Meta name="og:title" :content="staticTitle" />
-      <Meta name="og:description" :content="staticDescription" />
-
       <slot name="title">
-        <tl-title :title="entity.stop_name">
+        <tl-title :title="staticTitle" :description="staticDescription">
           {{ entity.stop_name }}
         </tl-title>
       </slot>
@@ -357,6 +351,7 @@ export default {
       }
     }
   },
+
   computed: {
     allAlerts  () {
       const ret = []
@@ -538,6 +533,11 @@ export default {
     },
     staticDescription () {
       return `${this.entity.stop_name} stop available for browsing and analyzing on the Transitland platform`
+    }
+  },
+  watch: {
+    'entity.stop_name'(v) {
+      useEventBus().$emit('setParamKey', 'stopKey', v)
     }
   },
   methods: {

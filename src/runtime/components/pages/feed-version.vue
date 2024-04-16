@@ -5,14 +5,8 @@
       {{ error }}
     </tl-msg-error>
     <div v-else-if="entity">
-      <Meta name="description" :content="staticDescription" />
-      <Meta name="twitter:title" :content="staticTitle" />
-      <Meta name="twitter:description" :content="staticDescription" />
-      <Meta name="og:title" :content="staticTitle" />
-      <Meta name="og:description" :content="staticDescription" />
-
       <slot name="title">
-        <tl-title :title="staticTitle">
+        <tl-title :title="staticTitle" :description="staticDescription">
           GTFS feed: {{ operatorOrAgencyNames }} version added {{ $filters.formatDate(entity.fetched_at) }} ({{ $filters.fromNow(entity.fetched_at) }})
         </tl-title>
       </slot>
@@ -168,7 +162,7 @@
         </slot>
       </div>
 
-      <slot name="import" :entity="entity">
+      <slot v-if="showImportStatus" name="import" :entity="entity">
         <tl-feed-version-import :entity="entity" @update="refetchEntities" />
       </slot>
 
@@ -331,7 +325,8 @@ export default {
     showUserInformation: { type: Boolean, default: false },
     showDownload: { type: Boolean, default: true },
     feedKey: { type: String, default: '', required: true },
-    feedVersionKey: { type: String, default: '', required: true }
+    feedVersionKey: { type: String, default: '', required: true },
+    showImportStatus: { type: Boolean, default: true }
   },
   data () {
     return {
