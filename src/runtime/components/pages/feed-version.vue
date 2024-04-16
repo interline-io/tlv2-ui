@@ -168,7 +168,7 @@
         </slot>
       </div>
 
-      <slot name="import" :entity="entity">
+      <slot v-if="showImportStatus" name="import" :entity="entity">
         <tl-feed-version-import :entity="entity" @update="refetchEntities" />
       </slot>
 
@@ -331,7 +331,8 @@ export default {
     showUserInformation: { type: Boolean, default: false },
     showDownload: { type: Boolean, default: true },
     feedKey: { type: String, default: '', required: true },
-    feedVersionKey: { type: String, default: '', required: true }
+    feedVersionKey: { type: String, default: '', required: true },
+    showImportStatus: { type: Boolean, default: true }
   },
   data () {
     return {

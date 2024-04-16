@@ -145,7 +145,8 @@ export default {
     showDescriptionColumn: { type: Boolean, default: true },
     showDateColumns: { type: Boolean, default: true },
     showActiveColumn: { type: Boolean, default: true },
-    issueDownloadRequest: { type: Boolean, default: true }
+    issueDownloadRequest: { type: Boolean, default: true },
+    limit: { type: Number, default: 20 }
   },
   emits: ['downloadTriggered'],
   apollo: {
@@ -164,7 +165,6 @@ export default {
   data() {
     return {
       entities: [],
-      limit: 100,
       maxLimit: 10000
     }
   },

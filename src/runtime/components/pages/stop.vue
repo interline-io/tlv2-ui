@@ -357,6 +357,7 @@ export default {
       }
     }
   },
+
   computed: {
     allAlerts  () {
       const ret = []
@@ -538,6 +539,11 @@ export default {
     },
     staticDescription () {
       return `${this.entity.stop_name} stop available for browsing and analyzing on the Transitland platform`
+    }
+  },
+  watch: {
+    'entity.stop_name'(v) {
+      useEventBus().$emit('setParamKey', 'stopKey', v)
     }
   },
   methods: {

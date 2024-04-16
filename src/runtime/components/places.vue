@@ -1,7 +1,7 @@
 <template>
   <div>
     <slot name="title">
-      <tl-title title="Browse places" />
+      <tl-title :title="placeTitle" />
     </slot>
 
     <slot name="description" />
@@ -138,6 +138,16 @@ export default {
     }
   },
   computed: {
+    placeTitle() {
+      if (this.city && this.adm1 && this.adm0) {
+        return `Browse places: ${this.city}, ${this.adm1}, ${this.adm0}`
+      } else if (this.adm1 && this.adm0) {
+        return `Browse places: ${this.adm1}, ${this.adm0}`
+      } else if (this.adm0) {
+        return `Browse places: ${this.adm0}`
+      }
+      return 'Browse places'
+    },
     placeLevelInt() {
       if (this.placeLevel === 'ADM0_ADM1') {
         return 1

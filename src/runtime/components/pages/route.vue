@@ -425,6 +425,11 @@ export default {
       return `${this.routeName} is a ${this.routeType} route available for browsing and analysis.`
     }
   },
+  watch: {
+    routeName(v) {
+      useEventBus().$emit('setParamKey', 'routeKey', v)
+    }
+  },
   methods: {
     filterRTTranslations (v) {
       return v.filter((s) => { return !s.language.includes('html') })
