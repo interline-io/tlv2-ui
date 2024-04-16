@@ -5,7 +5,9 @@
       {{ error }}
     </tl-msg-error>
     <div v-else-if="entities">
-      <tl-title title="Upcoming Departures" />
+      <slot name="title">
+        <tl-title title="Upcoming Departures" />
+      </slot>
 
       <tl-map-viewer
         :stop-features="stopFeatures"

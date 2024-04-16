@@ -5,14 +5,8 @@
       {{ error }}
     </tl-msg-error>
     <div v-else-if="entity">
-      <Meta name="description" :content="staticDescription" />
-      <Meta name="twitter:title" :content="staticTitle" />
-      <Meta name="twitter:description" :content="staticDescription" />
-      <Meta name="og:title" :content="staticTitle" />
-      <Meta name="og:description" :content="staticDescription" />
-
       <slot name="title">
-        <tl-title :title="entity.stop_name">
+        <tl-title :title="staticTitle" :description="staticDescription">
           {{ entity.stop_name }}
         </tl-title>
       </slot>

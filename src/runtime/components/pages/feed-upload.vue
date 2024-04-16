@@ -1,6 +1,8 @@
 <template>
   <div>
-    <tl-title title="Upload feed version" />
+    <slot name="title">
+      <tl-title title="Upload feed version" />
+    </slot>
 
     <o-notification
       v-if="networkError"

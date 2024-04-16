@@ -1,7 +1,7 @@
 <template>
   <div>
     <slot name="title">
-      <tl-title :title="placeTitle" />
+      <tl-title :title="staticTitle" :description="staticDescription" />
     </slot>
 
     <slot name="description" />
@@ -138,13 +138,25 @@ export default {
     }
   },
   computed: {
-    placeTitle() {
+    staticDescription() {
+      if (this.placeTitleName?.length > 0) {
+        return `Find transit operators and source data feeds in ${this.placeTitleName}`
+      }
+      return 'Find transit operators and source data feeds'
+    },
+    placeTitleName() {
       if (this.city && this.adm1 && this.adm0) {
-        return `Browse places: ${this.city}, ${this.adm1}, ${this.adm0}`
+        return `${this.city}, ${this.adm1}, ${this.adm0}`
       } else if (this.adm1 && this.adm0) {
-        return `Browse places: ${this.adm1}, ${this.adm0}`
+        return `${this.adm1}, ${this.adm0}`
       } else if (this.adm0) {
-        return `Browse places: ${this.adm0}`
+        return `${this.adm0}`
+      }
+      return ''
+    },
+    staticTitle() {
+      if (this.placeTitleName) {
+        return `Browse places: ${this.placeTitleName}`
       }
       return 'Browse places'
     },
@@ -179,12 +191,6 @@ export default {
         }
         return false
       })
-    },
-    staticTitle() {
-      return ''
-    },
-    staticDescription() {
-      return ''
     }
   }
 }

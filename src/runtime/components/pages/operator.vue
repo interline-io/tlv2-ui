@@ -2,15 +2,11 @@
   <div>
     <div v-if="$apollo.loading" class="is-loading" />
     <div v-else-if="entity">
-      <Meta name="description" :content="staticDescription" />
-      <Meta name="twitter:title" :content="staticTitle" />
-      <Meta name="twitter:description" :content="staticDescription" />
-      <Meta name="og:title" :content="staticTitle" />
-      <Meta name="og:description" :content="staticDescription" />
-
-      <tl-title :title="staticTitle">
-        {{ operatorName }}
-      </tl-title>
+      <slot name="title">
+        <tl-title :title="staticTitle" :description="staticDescription">
+          {{ operatorName }}
+        </tl-title>
+      </slot>
 
       <!-- Warnings for freshness and viewing a specific version -->
       <tl-check-fresh :fetched="dataFreshness" />
