@@ -1,6 +1,5 @@
 <template>
   <div>
-    desc: {{ description }}
     <h2 class="title is-2">
       <slot>{{ title }}</slot>
     </h2>
