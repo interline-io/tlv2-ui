@@ -209,27 +209,51 @@
 
             <o-tab-item id="export" label="Export">
               <client-only placeholder="Export">
-                <tl-data-export
-                  v-if="activeTab === 4"
-                  :route-name="routeName"
-                  :route-features="routeFeatures"
-                  :stop-features="stopFeatures"
-                  :route-ids="[entity.id]"
-                  @set-features="features = $event"
-                />
+                <tl-login-gate role="tl_user">
+                  <tl-data-export
+                    v-if="activeTab === 4"
+                    :route-name="routeName"
+                    :route-features="routeFeatures"
+                    :stop-features="stopFeatures"
+                    :route-ids="[entity.id]"
+                    @set-features="features = $event"
+                  />
+                  <template #loginText>
+                    <o-notification icon="lock">
+                      To export this route geometry and stop locations as GeoJSON, sign into a Transitland account.
+                    </o-notification>
+                  </template>
+                  <template #roleText>
+                    <o-notification icon="lock">
+                      Your account does not have permission to export route geometries.
+                    </o-notification>
+                  </template>
+                </tl-login-gate>
               </client-only>
             </o-tab-item>
           </o-tabs>
         </div>
         <div class="column is-one-third">
           <client-only placeholder="Map">
-            <tl-feed-version-map-viewer
-              :route-ids="entityIds"
-              :overlay="false"
-              :include-stops="true"
-              :link-version="linkVersion"
-              :features="activeTab === 4 ? features : []"
-            />
+            <tl-login-gate role="tl_user">
+              <tl-feed-version-map-viewer
+                :route-ids="entityIds"
+                :overlay="false"
+                :include-stops="true"
+                :link-version="linkVersion"
+                :features="activeTab === 4 ? features : []"
+              />
+              <template #loginText>
+                <o-notification icon="lock">
+                  To view an interactive map of this route and its stop locations, sign into a Transitland account.
+                </o-notification>
+              </template>
+              <template #roleText>
+                <o-notification icon="lock">
+                  Your account does not have permission to view route map.
+                </o-notification>
+              </template>
+            </tl-login-gate>
           </client-only>
         </div>
       </div>
