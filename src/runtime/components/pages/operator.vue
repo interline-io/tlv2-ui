@@ -257,7 +257,9 @@ export default {
   },
   computed: {
     dataFreshness () {
-      if (this.agencies.length > 0) { return this.agencies[0].feed_version.fetched_at }
+      if (this.agencies.length > 0) {
+        return this.agencies.map(a => a.feed_version.fetched_at).sort((a, b) => new Date(a) < new Date(b))[0]
+      }
       return null
     },
     locations () {
