@@ -143,20 +143,6 @@
               </div>
             </o-tab-item>
 
-            <o-tab-item id="departures" label="Departures">
-              <client-only placeholder="Departures">
-                <tl-stop-departures
-                  v-if="entity.id && activeTab == 2"
-                  :show-fallback-selector="true"
-                  :stop-ids="entityIds"
-                  :search-coords="entity.geometry.coordinates"
-                />
-              </client-only>
-              <tl-msg-info>
-                <p><a href="https://www.transit.land/documentation/rest-api/departures" target="_blank">Learn more about Transitland v2 REST API stop departures endpoint</a></p>
-              </tl-msg-info>
-            </o-tab-item>
-
             <!-- Data sources -->
             <o-tab-item id="sources" label="Sources">
               <div class="table-container">
@@ -213,20 +199,58 @@
                 </table>
               </div>
             </o-tab-item>
+
+            <o-tab-item id="departures" label="Departures">
+              <client-only placeholder="Departures">
+                <tl-login-gate role="tl_user">
+                  <tl-stop-departures
+                    v-if="entity.id && activeTab == 3"
+                    :show-fallback-selector="true"
+                    :stop-ids="entityIds"
+                    :search-coords="entity.geometry.coordinates"
+                  />
+                  <template #loginText>
+                    <o-notification icon="lock">
+                      To view upcoming departure times, sign into a Transitland account.
+                    </o-notification>
+                  </template>
+                  <template #roleText>
+                    <o-notification icon="lock">
+                      Your account does not have permission to view upcoming departures.
+                    </o-notification>
+                  </template>
+                </tl-login-gate>
+              </client-only>
+              <tl-msg-info>
+                <p><a href="https://www.transit.land/documentation/rest-api/departures" target="_blank">Learn more about Transitland v2 REST API stop departures endpoint</a></p>
+              </tl-msg-info>
+            </o-tab-item>
           </o-tabs>
         </div>
         <div class="column is-one-third">
           <client-only placeholder="Map">
-            <tl-map-viewer
-              :stop-features="stopFeatures"
-              :route-features="routeFeatures"
-              :features="features"
-              :auto-fit="false"
-              :center="entity.geometry.coordinates"
-              :circle-radius="20"
-              :zoom="15"
-              :overlay="true"
-            />
+            <tl-login-gate role="tl_user">
+              <tl-map-viewer
+                :stop-features="stopFeatures"
+                :route-features="routeFeatures"
+                :features="features"
+                :auto-fit="false"
+                :center="entity.geometry.coordinates"
+                :circle-radius="20"
+                :zoom="15"
+                :overlay="true"
+              />
+              <template #loginText>
+                <o-notification icon="lock">
+                  To view an interactive map of this stop location and incoming/outgoing routes, sign into a Transitland account.
+                </o-notification>
+              </template>
+              <template #roleText>
+                <o-notification icon="lock">
+                  Your account does not have permission to view stop map.
+                </o-notification>
+              </template>
+            </tl-login-gate>
           </client-only>
         </div>
       </div>
@@ -346,8 +370,8 @@ export default {
       radius: 1000,
       tabIndex: {
         1: 'summary',
-        2: 'departures',
-        3: 'sources'
+        2: 'sources',
+        3: 'departures'
       }
     }
   },
