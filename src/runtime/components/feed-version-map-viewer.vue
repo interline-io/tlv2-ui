@@ -11,8 +11,10 @@
         :route-features="routeFeatures"
         :stop-features="stopFeatures"
         :center="center"
-        :auto-fit="true"
+        :auto-fit="autoFit"
         :zoom="zoom ? zoom : null"
+        :circle-radius="circleRadius"
+        :circle-color="circleColor"
         @set-agency-features="agencyFeatures = $event"
         @map-click="mapClick"
         @set-zoom="currentZoom = $event"
@@ -49,7 +51,6 @@ query ($limit: Int=100, $agency_ids: [Int!], $after:Int!=0, $route_ids: [Int!], 
     route_type
     route_url
     geometries {
-      geometry
       combined_geometry
       generated
       length
@@ -102,6 +103,7 @@ export default {
     }
   },
   props: {
+    autoFit: { type: Boolean, default: true },
     limit: { type: Number, default: 1000 },
     maxLimit: { type: Number, default: 10000 },
     feedVersionSha1: { type: String, default: null },
@@ -114,7 +116,9 @@ export default {
     features: { type: Array, default () { return [] } },
     center: { type: Array, default () { return [] } },
     zoom: { type: Number, default: null },
-    enableScrollZoom: { type: Boolean, default: false }
+    enableScrollZoom: { type: Boolean, default: false },
+    circleRadius: { type: Number, default: 1 },
+    circleColor: { type: String, default: '#f03b20' }
   },
   data () {
     return {
