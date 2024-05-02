@@ -201,6 +201,7 @@
 <script>
 import { gql } from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
+import { useEventBus } from '#imports'
 
 const q = gql`
 query ($onestop_id: String, $feed_onestop_id: String, $limit: Int=10) {
