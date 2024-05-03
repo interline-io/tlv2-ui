@@ -57,8 +57,9 @@ export const useJwt = async() => {
 
 export const useUser = () => {
   const user = useStorage('user', {})
-  console.log('useUser user:', user)
-  return new User(user?.value || {})
+  const ret = new User(user?.value || {})
+  console.log('useUser user:', ret)
+  return ret
 }
 
 // Login
