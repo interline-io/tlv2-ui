@@ -10,83 +10,66 @@ const RECHECK_INTERVAL = 600_000
 let authInit = false
 let authClient: Auth0Client
 let requireLogin = false
+let logoutUri = '/'
 
 export function getAuth0Client() {
-  if (authInit) {
-    return authClient
-  }
   if (process.server) {
     return
   }
-  const config = useRuntimeConfig()
-  const redirectUri = config.public.auth0RedirectUri || window?.location?.origin || '/'
-  return initAuth0Client(
-    config.public.requireLogin,
-    config.public.auth0ClientId,
-    config.public.auth0Domain,
-    redirectUri,
-    config.public.auth0Audience,
-    config.public.auth0Scope
-  )
-}
+  if (authInit) {
+    return authClient
+  }
 
-export function initAuth0Client(
-  requireLoginA: boolean,
-  auth0ClientId: string,
-  auth0Domain: string,
-  auth0RedirectUri: string,
-  auth0Audience: string,
-  auth0Scope: string
-) {
+  // Check if we are configured correctly
+  const config = useRuntimeConfig()
+  if (config.public.auth0ClientId) {
+    // Update global config
+    requireLogin = !!config.public.requireLogin
+    logoutUri = String(config.public.auth0LogoutUri || window?.location?.origin || '/')
+
+    // Create and return global auth0 client
+    authClient = new Auth0Client({
+      domain: String(config.public.auth0Domain),
+      clientId: String(config.public.auth0ClientId),
+      cacheLocation: 'localstorage',
+      authorizationParams: {
+        redirect_uri: String(config.public.auth0RedirectUri || window?.location?.origin || '/'),
+        audience: String(config.public.auth0Audience),
+        scope: String(config.public.auth0Scope)
+      }
+    })
+  }
+
+  // Set as initialized
+  // (even if not available, to avoid future runtime config check)
   authInit = true
-  requireLogin = requireLoginA
-  authClient = new Auth0Client({
-    domain: auth0Domain,
-    clientId: auth0ClientId,
-    cacheLocation: 'localstorage',
-    authorizationParams: {
-      redirect_uri: auth0RedirectUri,
-      audience: auth0Audience,
-      scope: auth0Scope
-    }
-  })
   return authClient
 }
 
 // JWT
 export const useJwt = async() => {
-  // Client side only
-  let token = ''
-  const authClient = getAuth0Client()
-  if (authClient && await authClient.isAuthenticated()) {
-    try {
-      token = await authClient.getTokenSilently()
-    } catch (error) {
-      console.log('useJwt: error in getTokenSilently; log in again')
-      login()
-    }
+  const { token, mustReauthorize } = await checkToken()
+  if (mustReauthorize) {
+    await useLogin(window?.location?.toString() || '/')
   }
-  // console.log('useJwt: return', token)
   return token
 }
 
-// Login, logout
-export async function login() {
-  console.log('auth: login')
-  const authClient = getAuth0Client()
-  if (authClient) {
-    await authClient.loginWithRedirect()
-  }
+export const useUser = () => {
+  const user = useStorage('user', {})
+  return new User(user?.value || {})
 }
 
-export async function logout() {
+// Login
+export const useLogin = async(targetUrl: null | string) => {
+  console.log('auth: login')
+  return navigateTo(await getAuthorizeUrl(targetUrl), { external: true })
+}
+
+// Logout
+export const useLogout = async() => {
   console.log('auth: logout')
-  const checkUser = useStorage('user', {})
-  checkUser.value = {}
-  const authClient = getAuth0Client()
-  if (authClient) {
-    await authClient.logout()
-  }
+  return navigateTo(await getLogoutUrl(logoutUri), { external: true })
 }
 
 // User
@@ -112,35 +95,8 @@ export class User {
   }
 }
 
-export const useUser = () => {
-  const user = useStorage('user', {})
-  return new User(user?.value || {})
-}
-
-export const useLogout = () => {
-  return logout()
-}
-
-export const useLogin = () => {
-  return login()
-}
-
-async function setUser (data: User) {
-  console.log('buildUser: set user state')
-  const checkUser = useStorage('user', {})
-  const auth0user = await authClient.getUser()
-  checkUser.value = new User({
-    loggedIn: true,
-    id: data?.id,
-    name: auth0user?.name || '',
-    email: auth0user?.email || '',
-    externalData: data?.externalData || {},
-    roles: data?.roles || [],
-    checked: Date.now()
-  })
-}
-
-export async function buildUser() {
+// Build the user from auth0 data and GraphQL me response
+async function buildUser() {
   // Build user object
   // Get additional user metadata from GraphQL
   console.log('buildUser: await me response')
@@ -152,42 +108,113 @@ export async function buildUser() {
     return data.data.me
   })
 
-  // // Save checkUser
-  await setUser(new User({
+  // Set user state
+  console.log('buildUser: set user state')
+  const client = getAuth0Client()
+  if (!client) {
+    return
+  }
+  const auth0user = await client.getUser()
+  const checkUser = useStorage('user', {})
+  const builtUser = new User({
+    loggedIn: true,
     id: meData?.id || '',
+    name: auth0user?.name || '',
+    email: auth0user?.email || '',
     externalData: meData?.external_data || {},
-    roles: meData?.roles || []
-  }))
+    roles: meData?.roles || [],
+    checked: Date.now()
+  })
+  checkUser.value = builtUser
+  console.log('buildUser: result:', builtUser)
+}
+
+// Check the client token, return { token, loggedIn, mustReauthorize }
+// mustReauthorize will be set to true if a user is logged in but token fails
+async function checkToken() {
+  let token = ''
+  let loggedIn = false
+  let mustReauthorize = false
+  const client = getAuth0Client()
+  if (!client) {
+    return { token, loggedIn, mustReauthorize }
+  }
+  if (await client.isAuthenticated()) {
+    loggedIn = true
+    try {
+      // Everything is OK
+      token = await client.getTokenSilently()
+    } catch (error) {
+      // Invalid token
+      console.log('useJwt: error in getTokenSilently; must authorize again')
+      mustReauthorize = true
+    }
+  }
+  return { token, loggedIn, mustReauthorize }
+}
+
+// Get an auth0 /authorize url that also includes targetUrl in app state
+async function getAuthorizeUrl(targetUrl: null | string): Promise<string> {
+  targetUrl = targetUrl || '/'
+  const client = getAuth0Client()
+  if (!client) {
+    return targetUrl
+  }
+  let authorizationUrl = ''
+  await client.loginWithRedirect({
+    appState: { targetUrl },
+    openUrl(url) { authorizationUrl = url }
+  })
+  return authorizationUrl
+}
+
+// Get an auth0 logout url
+async function getLogoutUrl(targetUrl: null | string): Promise<string> {
+  targetUrl = targetUrl || '/'
+  const client = getAuth0Client()
+  if (!client) {
+    return targetUrl
+  }
+  let authorizationUrl = ''
+  await client.logout({
+    logoutParams: {
+      returnTo: targetUrl
+    },
+    openUrl(url) { authorizationUrl = url }
+  })
+  return authorizationUrl
 }
 
 export default defineNuxtPlugin(() => {
   addRouteMiddleware('global-auth', async (to, _) => {
-    const query = to?.query
-    const authClient = getAuth0Client()
-    if (authClient && query && query.code && query.state) {
-      if (authClient) {
-        console.log('auth mw: handle login')
-        await authClient.handleRedirectCallback()
-        await buildUser()
-        return navigateTo({
-          name: 'index',
-          query: {}
-        })
-      }
+    const client = getAuth0Client()
+    if (!client) {
+      return
     }
 
-    // Check user
+    // Check if we have state/code returned from successful auth0 login
+    const query = to?.query
+    if (query && query.code && query.state) {
+      // OK login, set client auth details and get targetUrl from appState
+      console.log('auth mw: handle login')
+      const { appState } = await client.handleRedirectCallback()
+      await buildUser()
+      return navigateTo(appState.targetUrl)
+    }
+
+    // Force login
+    const { loggedIn, mustReauthorize } = await checkToken()
+    if (requireLogin && (!loggedIn || mustReauthorize)) {
+      console.log('auth mw: force login')
+      return navigateTo(await getAuthorizeUrl(to.fullPath), { external: true })
+    }
+
+    // Check user and the last time the user was checked
     const user = useUser()
     const lastChecked = Date.now() - (user?.checked || 0)
 
-    // Force login
-    if (authClient && requireLogin && user && !user.loggedIn) {
-      console.log('auth mw: force login')
-      await login()
-    }
-
     // Recheck user every 10 minutes
-    if (authClient && user?.loggedIn && lastChecked > RECHECK_INTERVAL) {
+    if (user?.loggedIn && lastChecked > RECHECK_INTERVAL) {
       console.log('auth mw: recheck user', 'lastChecked:', lastChecked, 'recheck interval:', RECHECK_INTERVAL)
       buildUser() // don't await
     }
