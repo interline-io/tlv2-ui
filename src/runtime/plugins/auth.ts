@@ -57,6 +57,7 @@ export const useJwt = async() => {
 
 export const useUser = () => {
   const user = useStorage('user', {})
+  console.log('useUser user:', user)
   return new User(user?.value || {})
 }
 
@@ -212,6 +213,7 @@ export default defineNuxtPlugin(() => {
     // Check user and the last time the user was checked
     const user = useUser()
     const lastChecked = Date.now() - (user?.checked || 0)
+    console.log('user:', user, 'lastChecked:', lastChecked)
 
     // Recheck user every 10 minutes
     if (user?.loggedIn && lastChecked > RECHECK_INTERVAL) {
