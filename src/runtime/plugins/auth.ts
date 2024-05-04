@@ -50,7 +50,7 @@ export function getAuth0Client() {
 export const useJwt = async() => {
   const { token, mustReauthorize } = await checkToken()
   if (mustReauthorize) {
-    await useLogin(window?.location?.toString() || '/')
+    await useLogin('')
   }
   return token
 }
@@ -64,7 +64,8 @@ export const useUser = () => {
 
 // Login
 export const useLogin = async(targetUrl: null | string) => {
-  console.log('auth: login')
+  targetUrl = targetUrl || window?.location?.toString() || '/'
+  console.log('auth: login, targetUrl:', targetUrl)
   return navigateTo(await getAuthorizeUrl(targetUrl), { external: true })
 }
 
@@ -201,6 +202,7 @@ export default defineNuxtPlugin(() => {
       console.log('auth mw: handle login')
       const { appState } = await client.handleRedirectCallback()
       await buildUser()
+      console.log('auth mw: redirecting to', appState.targetUrl)
       return navigateTo(appState.targetUrl)
     }
 
