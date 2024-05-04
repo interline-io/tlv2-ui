@@ -4,6 +4,10 @@ import { gql } from 'graphql-tag'
 import { getApolloClient } from './apollo'
 import { defineNuxtPlugin, addRouteMiddleware, navigateTo, useRuntimeConfig } from '#imports'
 
+/// ////////////////////
+// Auth0 client initialization
+/// ////////////////////
+
 const RECHECK_INTERVAL = 600_000
 
 // Auth0 client init
@@ -46,36 +50,43 @@ export function getAuth0Client() {
   return authClient
 }
 
+/// ////////////////////
+// Composables
+/// ////////////////////
+
 // JWT
 export const useJwt = async() => {
   const { token, mustReauthorize } = await checkToken()
   if (mustReauthorize) {
-    await useLogin('')
+    debugLog('useJwt: mustReauthorize')
+    await useLogin(null)
+    return ''
   }
   return token
 }
 
 export const useUser = () => {
   const user = useStorage('user', {})
-  const ret = new User(user?.value || {})
-  console.log('useUser user:', ret)
-  return ret
+  return new User(user?.value || {})
 }
 
 // Login
 export const useLogin = async(targetUrl: null | string) => {
-  targetUrl = targetUrl || window?.location?.toString() || '/'
-  console.log('auth: login, targetUrl:', targetUrl)
+  targetUrl = targetUrl || `${window?.location?.pathname}${window?.location?.search}`
+  debugLog('auth: login, targetUrl:', targetUrl)
   return navigateTo(await getAuthorizeUrl(targetUrl), { external: true })
 }
 
 // Logout
 export const useLogout = async() => {
-  console.log('auth: logout')
+  debugLog('auth: logout')
   return navigateTo(await getLogoutUrl(logoutUri), { external: true })
 }
 
+/// ////////////////////
 // User
+/// ////////////////////
+
 export class User {
   loggedIn = false
   id = ''
@@ -98,26 +109,43 @@ export class User {
   }
 }
 
+function clearUser() {
+  const checkUser = useStorage('user', {})
+  checkUser.value = new User({ loggedIn: false })
+  debugLog('clearUser: done')
+}
+
 // Build the user from auth0 data and GraphQL me response
 async function buildUser() {
   // Build user object
-  // Get additional user metadata from GraphQL
-  console.log('buildUser: await me response')
-  const apolloClient = getApolloClient()
-  const meData = await apolloClient.query({
-    query: gql`query{me{id name email external_data roles}}`
-  }).then((data) => {
-    console.log('buildUser: me graphql response:', data.data.me)
-    return data.data.me
-  })
-
-  // Set user state
-  console.log('buildUser: set user state')
   const client = getAuth0Client()
   if (!client) {
     return
   }
+
+  // Get auth0 user data
   const auth0user = await client.getUser()
+  debugLog('buildUser: auth0 user:', auth0user)
+
+  // Get additional user metadata from GraphQL
+  const apolloClient = getApolloClient()
+  const meData = await apolloClient.query({
+    query: gql`query{me{id name email external_data roles}}`
+  }).then((data) => {
+    debugLog('buildUser: me graphql response:', data.data.me)
+    return data.data.me
+  }).catch((e) => {
+    debugLog('buildUser: graphql failed:', e)
+  })
+
+  if (!auth0user || !meData) {
+    debugLog('buildUser: missing auth0 or graphql data, clearing user')
+    clearUser()
+    return
+  }
+
+  // Set user state
+  debugLog('buildUser: set user state')
   const checkUser = useStorage('user', {})
   const builtUser = new User({
     loggedIn: true,
@@ -129,8 +157,12 @@ async function buildUser() {
     checked: Date.now()
   })
   checkUser.value = builtUser
-  console.log('buildUser: result:', builtUser)
+  debugLog('buildUser: result:', builtUser)
 }
+
+/// ////////////////////
+// Helpers
+/// ////////////////////
 
 // Check the client token, return { token, loggedIn, mustReauthorize }
 // mustReauthorize will be set to true if a user is logged in but token fails
@@ -140,18 +172,23 @@ async function checkToken() {
   let mustReauthorize = false
   const client = getAuth0Client()
   if (!client) {
+    // debugLog('checkToken: no client')
     return { token, loggedIn, mustReauthorize }
   }
   if (await client.isAuthenticated()) {
+    // debugLog('checkToken: loggedIn')
     loggedIn = true
     try {
       // Everything is OK
       token = await client.getTokenSilently()
+      // debugLog('checkToken: got token:', token)
     } catch (error) {
       // Invalid token
-      console.log('useJwt: error in getTokenSilently; must authorize again')
+      debugLog('checkToken: error in getTokenSilently; must authorize again')
       mustReauthorize = true
     }
+  } else {
+    // debugLog('checkToken: not logged in')
   }
   return { token, loggedIn, mustReauthorize }
 }
@@ -166,7 +203,9 @@ async function getAuthorizeUrl(targetUrl: null | string): Promise<string> {
   let authorizationUrl = ''
   await client.loginWithRedirect({
     appState: { targetUrl },
-    openUrl(url) { authorizationUrl = url }
+    openUrl(url) {
+      authorizationUrl = url
+    }
   })
   return authorizationUrl
 }
@@ -183,13 +222,24 @@ async function getLogoutUrl(targetUrl: null | string): Promise<string> {
     logoutParams: {
       returnTo: targetUrl
     },
-    openUrl(url) { authorizationUrl = url }
+    openUrl(url) {
+      authorizationUrl = url
+    }
   })
   return authorizationUrl
 }
 
+function debugLog(msg: string, ...args: any) {
+  console.log(msg, ...args)
+}
+
+/// ////////////////////
+// Middleware
+/// ////////////////////
+
 export default defineNuxtPlugin(() => {
   addRouteMiddleware('global-auth', async (to, _) => {
+    // Check if client is configured
     const client = getAuth0Client()
     if (!client) {
       return
@@ -203,25 +253,32 @@ export default defineNuxtPlugin(() => {
       const { appState } = await client.handleRedirectCallback()
       await buildUser()
       console.log('auth mw: redirecting to', appState.targetUrl)
-      return navigateTo(appState.targetUrl)
+      return navigateTo(appState.targetUrl || '/')
     }
 
     // Force login
     const { loggedIn, mustReauthorize } = await checkToken()
-    if (requireLogin && (!loggedIn || mustReauthorize)) {
+    if (mustReauthorize) {
+      console.log('auth mw: mustReauthorize')
+      return navigateTo(await getAuthorizeUrl(to.fullPath), { external: true })
+    }
+    if (requireLogin && !loggedIn) {
       console.log('auth mw: force login')
       return navigateTo(await getAuthorizeUrl(to.fullPath), { external: true })
     }
 
-    // Check user and the last time the user was checked
+    // Check user and data freshness
     const user = useUser()
-    const lastChecked = Date.now() - (user?.checked || 0)
-    console.log('user:', user, 'lastChecked:', lastChecked)
-
-    // Recheck user every 10 minutes
-    if (user?.loggedIn && lastChecked > RECHECK_INTERVAL) {
-      console.log('auth mw: recheck user', 'lastChecked:', lastChecked, 'recheck interval:', RECHECK_INTERVAL)
-      buildUser() // don't await
+    if (loggedIn) {
+      // Recheck user every 10 minutes
+      const lastChecked = Date.now() - (user?.checked || 0)
+      if (lastChecked > RECHECK_INTERVAL) {
+        console.log('auth mw: recheck user', 'lastChecked:', lastChecked, 'recheck interval:', RECHECK_INTERVAL)
+        buildUser() // don't await
+      }
+    } else {
+      // Clear any stale user state
+      clearUser()
     }
   }, {
     global: true
