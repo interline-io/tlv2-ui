@@ -110,7 +110,7 @@ export default {
               type: 'Route',
               name: `${i.agency.agency_name}: ${i.route_short_name} ${i.route_long_name}`,
               rank: (1 + i.search_rank) * 10,
-              link: { name: 'routes-routeKey', params: { routeKey: i.onestop_id } }
+              link: this.$filters.makeRouteLink(i.onestop_id, i.feed_onestop_id, i.feed_version_sha1, i.route_id, i.id, false)
             })
           }
           for (const i of data.stops || []) {
@@ -126,7 +126,7 @@ export default {
               type: 'Stop',
               name,
               rank: (1 + i.search_rank),
-              link: { name: 'stops-stopKey', params: { stopKey: i.onestop_id } }
+              link: this.$filters.makeStopLink(i.onestop_id, i.feed_onestop_id, i.feed_version_sha1, i.route_id, i.id, false)
             })
           }
           this.data = ret.sort(function (a, b) { return b.rank - a.rank })

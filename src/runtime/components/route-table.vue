@@ -49,7 +49,7 @@
               <td class="has-text-right">
                 <nuxt-link
                   class="button is-small is-primary"
-                  :to="{ name: 'routes-routeKey', params: { routeKey: route.onestop_id || 'search' }, query: (linkVersion ? { feed_onestop_id: route.feed_onestop_id, feed_version_sha1: route.feed_version_sha1, entity_id: route.route_id } : {}) }"
+                  :to="$filters.makeRouteLink(route.onestop_id, route.feed_onestop_id, route.feed_version_sha1, route.route_id, route.id, linkVersion)"
                 >
                   Route
                 </nuxt-link>

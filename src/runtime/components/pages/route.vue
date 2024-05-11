@@ -26,7 +26,7 @@
 
       <!-- Warnings for freshness and viewing a specific version -->
       <tl-check-fresh :fetched="entity.feed_version.fetched_at" />
-      <tl-check-single :feed-onestop-id="feedOnestopId" :feed-version-sha1="feedVersionSha1" />
+      <tl-check-single :feed-onestop-id="searchKey.feedOnestopId" :feed-version-sha1="searchKey.feedVersionSha1" />
 
       <slot name="contentBeforeTable" :entity="entity" />
 
@@ -135,7 +135,7 @@
           >
             <o-tab-item id="summary" label="Connections">
               <client-only placeholder="Service patterns">
-                <tl-rsp-viewer v-if="activeTab === 1" :route-ids="entityIds" />
+                <tl-rsp-viewer v-if="activeTab === 1" :route-ids="entityIds" :link-version="linkVersion" />
               </client-only>
             </o-tab-item>
 
@@ -187,15 +187,7 @@
                         >
                           Feed version
                         </nuxt-link> <nuxt-link
-                          :to="{
-                            name: 'routes-routeKey',
-                            params: { routeKey: row.onestop_id },
-                            query: {
-                              feed_onestop_id: row.feed_onestop_id,
-                              feed_version_sha1: row.feed_version_sha1,
-                              route_id: row.route_id,
-                            },
-                          }"
+                          :to="$filters.makeRouteLink(row.onestop_id,row.feed_onestop_id,row.feed_version_sha1,row.route_id,row.id,true)"
                           class="button is-primary is-small"
                         >
                           Route
@@ -267,8 +259,8 @@ import EntityPageMixin from './entity-page-mixin'
 import { useEventBus } from '#imports'
 
 const q = gql`
-query ($onestop_id: String, $ids: [Int!], $entity_id: String, $feed_onestop_id: String, $feed_version_sha1: String, $include_stops: Boolean! = true, $limit: Int=10, $allow_previous_onestop_ids: Boolean = false) {
-  entities: routes(limit:$limit, ids: $ids, where: {onestop_id: $onestop_id, feed_onestop_id: $feed_onestop_id, feed_version_sha1: $feed_version_sha1, route_id: $entity_id, allow_previous_onestop_ids: $allow_previous_onestop_ids}) {
+query ($onestopId: String, $ids: [Int!], $entityId: String, $feedOnestopId: String, $feedVersionSha1: String, $include_stops: Boolean! = true, $limit: Int=10, $allowPreviousOnestopIds: Boolean = false) {
+  entities: routes(limit:$limit, ids: $ids, where: {onestop_id: $onestopId, feed_onestop_id: $feedOnestopId, feed_version_sha1: $feedVersionSha1, route_id: $entityId, allow_previous_onestop_ids: $allowPreviousOnestopIds}) {
     id
     onestop_id
     feed_onestop_id

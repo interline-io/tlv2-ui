@@ -13,7 +13,7 @@
 
       <!-- Warnings for freshness and viewing a specific version -->
       <tl-check-fresh :fetched="entity.feed_version.fetched_at" />
-      <tl-check-single :feed-onestop-id="feedOnestopId" :feed-version-sha1="feedVersionSha1" />
+      <tl-check-single :feed-onestop-id="searchKey.feedOnestopId" :feed-version-sha1="searchKey.feedVersionSha1" />
 
       <slot name="contentBeforeTable" :entity="entity" />
 
@@ -116,7 +116,7 @@
                   </div>
                   <div v-for="rs of rss" :key="rs.route.id">
                     <nuxt-link
-                      :to="{name:'routes-routeKey', params:{routeKey:rs.route.onestop_id}}"
+                      :to="$filters.makeRouteLink(rs.route.onestop_id,rs.route.feed_onestop_id,rs.route.feed_version_sha1,rs.route.route_id,rs.route.id,linkVersion)"
                     >
                       <tl-route-icon :route-type="rs.route.route_type" :route-short-name="rs.route.route_short_name" :route-long-name="rs.route.route_long_name" :route-link="rs.route.route_url" />
                     </nuxt-link>
@@ -134,7 +134,7 @@
                   </div>
                   <div v-for="rs of rss" :key="rs.route.id">
                     <nuxt-link
-                      :to="{name:'routes-routeKey', params:{routeKey:rs.route.onestop_id}}"
+                      :to="$filters.makeRouteLink(rs.route.onestop_id,rs.route.feed_onestop_id,rs.route.feed_version_sha1,rs.route.route_id,rs.route.id,linkVersion)"
                     >
                       <tl-route-icon :route-type="rs.route.route_type" :route-short-name="rs.route.route_short_name" :route-long-name="rs.route.route_long_name" :route-link="rs.route.route_url" />
                     </nuxt-link>
@@ -181,15 +181,7 @@
                       </td>
                       <td>
                         <nuxt-link
-                          :to="{
-                            name: 'stops-stopKey',
-                            params: { stopKey: row.onestop_id },
-                            query: {
-                              feed_onestop_id: row.feed_onestop_id,
-                              feed_version_sha1: row.feed_version_sha1,
-                              route_id: row.stop_id,
-                            },
-                          }"
+                          :to="$filters.makeStopLink(row.onestop_id, row.feed_onestop_id, row.feed_version_sha1, row.stop_id, row.id, true)"
                         >
                           {{ $filters.shortenName(row.stop_id) }}
                         </nuxt-link>
@@ -275,6 +267,8 @@ fragment rs on RouteStop {
     route_id
     route_color
     geometry
+    feed_onestop_id
+    feed_version_sha1
     agency {
       agency_name
       id
@@ -324,8 +318,8 @@ fragment ss on Stop {
   }
 }
 
-query ($onestop_id: String, $ids: [Int!], $entity_id: String, $feed_onestop_id: String, $feed_version_sha1: String, $limit: Int=10, $allow_previous_onestop_ids: Boolean = false) {
-  entities: stops(limit: $limit, ids: $ids, where: {onestop_id: $onestop_id, feed_onestop_id:$feed_onestop_id, feed_version_sha1:$feed_version_sha1, stop_id:$entity_id, allow_previous_onestop_ids: $allow_previous_onestop_ids}) {
+query ($onestopId: String, $ids: [Int!], $entityId: String, $feedOnestopId: String, $feedVersionSha1: String, $limit: Int=10, $allowPreviousOnestopIds: Boolean = false) {
+  entities: stops(limit: $limit, ids: $ids, where: {onestop_id: $onestopId, feed_onestop_id:$feedOnestopId, feed_version_sha1:$feedVersionSha1, stop_id:$entityId, allow_previous_onestop_ids: $allowPreviousOnestopIds}) {
     ...ss
     parent {
       ...ss
