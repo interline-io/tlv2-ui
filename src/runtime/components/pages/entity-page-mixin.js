@@ -68,29 +68,6 @@ export default {
         entityId: match.eid,
         allowPreviousOnestopIds: !!fv
       }
-
-      // Check if pathKey is <feed>:<entity_id> or <feed>@<sha1>:<entity_id> or @<sha1>:<entity_id>
-      // Anything with ':' will be interpreted like this
-      // const kFeedEntity = pk.split(':')
-      // if (kFeedEntity.length > 1) {
-      //   const kFeedVersion = kFeedEntity[0].split('@')
-      //   return {
-      //     feed_onestop_id: kFeedVersion[0],
-      //     feed_version_sha1: kFeedVersion.length > 1 ? kFeedVersion[1] : this.feedVersionSha1,
-      //     entity_id: kFeedEntity.slice(1).join(':')
-      //   }
-      // }
-
-      // // Check if <onestop_id> or <onestop_id>@<sha1>
-      // // Must not contain ':'
-      // const kOsid = pk.split('@')
-      // const fv = kOsid.length > 1 ? kOsid[1] : this.feedVersionSha1
-      // return {
-      //   feed_onestop_id: this.feedOnestopId,
-      //   feed_version_sha1: fv,
-      //   onestop_id: kOsid[0],
-      //   allow_previous_onestop_ids: (!!fv) // allowed if no version is specified
-      // }
     },
     linkVersion() {
       if (this.searchKey.feedVersionSha1) {
