@@ -1,3 +1,15 @@
+const pathRegex = /(?<osid>[ors]-[a-z0-9~-]*)?:?(?<feed>[a-z0-9~-]*)?@?((?<sha>[a-z0-9]{40})?)?:?(?<eid>.*)*$/
+// console.log(pathRegex.exec('r-osid').groups)
+// console.log(pathRegex.exec('r-osid:feed').groups)
+// console.log(pathRegex.exec('s-osid').groups)
+// console.log(pathRegex.exec('s-osid:feed').groups)
+// console.log(pathRegex.exec('r-osid@76de8e75c70e1c0fc1c8c8d6cf6ae7dcb77bde90').groups)
+// console.log(pathRegex.exec('r-osid:feed@76de8e75c70e1c0fc1c8c8d6cf6ae7dcb77bde90').groups)
+// console.log(pathRegex.exec('feed:eid').groups)
+// console.log(pathRegex.exec('feed@76de8e75c70e1c0fc1c8c8d6cf6ae7dcb77bde90:eid').groups)
+// console.log(pathRegex.exec('@76de8e75c70e1c0fc1c8c8d6cf6ae7dcb77bde90:eid').groups)
+// console.log(pathRegex.exec('r-osid:feed@76de8e75c70e1c0fc1c8c8d6cf6ae7dcb77bde90:eid').groups)
+
 export default {
   apollo: {
     $query: {
@@ -29,22 +41,32 @@ export default {
   },
   computed: {
     searchKey() {
-      const pk = String(this.pathKey || '')
-      const k = pk.split(':')
-      if (k.length > 1) {
-        return { feed_onestop_id: k[0], entity_id: k.slice(1).join(':'), feed_version_sha1: this.feedVersionSha1 }
+      let pk = String(this.pathKey || '')
+      if (this.feedOnestopId && this.feedVersionSha1 && this.entityId) {
+        pk = `${this.feedOnestopId}@${this.feedVersionSha1}:${this.entityId}`
+      } else if (this.feedOnestopId && this.entityId) {
+        pk = `${this.feedOnestopId}:${this.entityId}`
       }
+
+      // Note: OnestopIDs cannot normally contain ':' or '@' or ',' or be completely numeric
+
+      // Check if the pathKey is comma joined integers
       const kInts = pk.split(',').map((s) => { return parseInt(s) }).filter((s) => { return !isNaN(s) })
       if (kInts.length > 0) {
         return { ids: kInts }
       }
-      const osid = (this.feedOnestopId && this.feedVersionSha1 && this.entityId) ? null : this.pathKey
+
+      const match = pathRegex.exec(pk)?.groups
+      if (!match) {
+        return {} // not found
+      }
+      const fv = match.sha || this.feedVersionSha1
       return {
-        onestop_id: osid,
-        entity_id: this.entityId,
-        feed_onestop_id: this.feedOnestopId,
-        feed_version_sha1: this.feedVersionSha1,
-        allow_previous_onestop_ids: (!!osid && !this.feedOnestopId && !this.feedVersionSha1)
+        onestopId: match.osid,
+        feedOnestopId: match.feed || this.feedOnestopId,
+        feedVersionSha1: fv,
+        entityId: match.eid,
+        allowPreviousOnestopIds: !!fv
       }
     },
     linkVersion() {

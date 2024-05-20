@@ -204,8 +204,8 @@ import EntityPageMixin from './entity-page-mixin'
 import { useEventBus } from '#imports'
 
 const q = gql`
-query ($onestop_id: String, $feed_onestop_id: String, $limit: Int=10) {
-  entities: operators(limit: $limit, where: {feed_onestop_id: $feed_onestop_id, onestop_id: $onestop_id, merged: true}) {
+query ($onestopId: String, $feedOnestopId: String, $limit: Int=10) {
+  entities: operators(limit: $limit, where: {feed_onestop_id: $feedOnestopId, onestop_id: $onestopId, merged: true}) {
     id
     onestop_id
     generated

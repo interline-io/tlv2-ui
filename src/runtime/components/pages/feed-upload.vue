@@ -304,8 +304,8 @@ const q = gql`
   
   `
 const fetchQuery = gql`
-  mutation ($file: Upload, $url: String, $feed_onestop_id: String!) {
-      feed_version_fetch(file: $file, url: $url, feed_onestop_id: $feed_onestop_id) {
+  mutation ($file: Upload, $url: String, $feedOnestopId: String!) {
+      feed_version_fetch(file: $file, url: $url, feed_onestop_id: $feedOnestopId) {
         feed_version {
           id
           sha1

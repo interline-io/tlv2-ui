@@ -65,7 +65,7 @@
               class="tl-departure-route"
             >
               <nuxt-link
-                :to="{name:'routes-routeKey', params:{routeKey:sr.route.onestop_id}}"
+                :to="$filters.makeRouteLink(sr.route.onestop_id, sr.route.feed_onestop_id, sr.route.feed_version_sha1, sr.route.route_id, sr.route.id, false)"
               >
                 <tl-route-icon
                   :key="'icon'+sr.route.id"
@@ -118,6 +118,7 @@ query( $stopIds: [Int!], $where: StopFilter, $stwhere: StopTimeFilter, $includeG
         route_type
         route_color
         route_text_color
+        feed_onestop_id
         geometry @include(if:$includeGeometry)
       }
     }
@@ -138,6 +139,7 @@ query( $stopIds: [Int!], $where: StopFilter, $stwhere: StopTimeFilter, $includeG
         direction_id
         route {
             id
+            route_id
             onestop_id
             route_short_name
             route_long_name
@@ -145,6 +147,7 @@ query( $stopIds: [Int!], $where: StopFilter, $stwhere: StopTimeFilter, $includeG
             route_text_color
             route_type
             route_url
+            feed_onestop_id
             agency {
               id
               agency_id

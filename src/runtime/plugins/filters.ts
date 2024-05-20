@@ -82,10 +82,61 @@ function decodeHtmlCharacters(str: string) {
   })
 }
 
+function makePathKey(onestopId:string, feedId:string, sha1:string, entityId:string, id:number, linkVer:boolean) {
+  // todo: omit feedId if possible
+  if (linkVer && onestopId) {
+    return `${onestopId}:${feedId}@${sha1}`
+  }
+  if (linkVer) {
+    return `${feedId}@${sha1}:${entityId}`
+  }
+  if (onestopId) {
+    return onestopId
+  }
+  if (feedId && entityId) {
+    return `${feedId}:${entityId}`
+  }
+  // Return id as last resort
+  return `${id}`
+}
+
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.config.globalProperties.$filters = {
     nameSort(v: Array<any>) {
       return (v || []).slice(0).sort((a, b) => { return (a.name || '').localeCompare(b.name || '') })
+    },
+    makeRouteLink(onestopId:string, feedId:string, sha1:string, entityId:string, id:number, linkVer: boolean) {
+      if (linkVer && onestopId) {
+        return {
+          name: 'routes-routeKey',
+          params: { routeKey: onestopId },
+          query: {
+            feedOnestopId: feedId,
+            feedVersionSha1: sha1,
+            entityId
+          }
+        }
+      }
+      return {
+        name: 'routes-routeKey',
+        params: { routeKey: makePathKey(onestopId, feedId, sha1, entityId, id, linkVer) }
+      }
+    },
+    makeStopLink(onestopId:string, feedId:string, sha1:string, entityId:string, id:number, linkVer: boolean) {
+      if (linkVer && onestopId) {
+        return {
+          name: 'stops-stopKey',
+          params: { stopKey: onestopId },
+          query: {
+            feedOnestopId: feedId,
+            feedVersionSha1: sha1
+          }
+        }
+      }
+      return {
+        name: 'stops-stopKey',
+        params: { stopKey: makePathKey(onestopId, feedId, sha1, entityId, id, linkVer) }
+      }
     },
     sanitizeUrl(url) {
       // https://github.com/braintree/sanitize-url/blob/main/src/index.ts
