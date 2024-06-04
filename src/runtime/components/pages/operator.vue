@@ -22,7 +22,7 @@
                   Onestop ID
                 </o-tooltip>
               </td>
-              <td><tl-safelink :text="searchKey.onestop_id" /></td>
+              <td><tl-safelink :text="searchKey.onestopId" /></td>
             </tr>
             <tr>
               <td>

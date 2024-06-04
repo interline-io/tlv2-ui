@@ -75,7 +75,7 @@ export default {
       }
     },
     search() {
-      return this.searchKey.onestop_id === 'search'
+      return this.searchKey.onestopId === 'search'
     },
     entity() {
       return (this.entities && this.entities.length > 0) ? this.entities[0] : null
