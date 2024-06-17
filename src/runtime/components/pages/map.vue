@@ -27,7 +27,17 @@
               :agency-features="agencyFeatures"
               :is-component-modal-active="isComponentModalActive"
               @close="isComponentModalActive = false"
-            />
+            >
+              <h6 class="title is-6">
+                Select routes
+              </h6>
+              <div v-if="currentZoom < 8">
+                Zoom in to select routes and to see stop points.
+              </div>
+              <div v-else>
+                Use your cursor to highlight routes and see their names here. <br>Click for more details.
+              </div>
+            </tl-map-route-list>
             <p v-if="Object.keys(agencyFeatures).length == 0" class="content block is-small pt-2">
               <a href="https://www.transit.land/documentation/vector-tiles" target="_blank">Learn more about Transitland v2 Vector Tiles</a>
             </p>

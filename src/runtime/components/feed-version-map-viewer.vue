@@ -26,7 +26,11 @@
           :agency-features="agencyFeatures"
           :is-component-modal-active="isComponentModalActive"
           @close="isComponentModalActive = false"
-        />
+        >
+          <strong>Select routes</strong>
+          <br>
+          Use your cursor to highlight routes
+        </tl-map-route-list>
       </div>
     </div>
   </div>
