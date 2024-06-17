@@ -50,7 +50,7 @@
       <li v-for="(st) of activePattern.stop_times" :key="st.stop_sequence">
         <p class="route-stop-name">
           <nuxt-link
-            :to="{name:'stops-stopKey', params:{stopKey:st.stop.onestop_id}}"
+            :to="$filters.makeStopLink(st.stop.onestop_id, st.stop.feed_onestop_id, st.stop.feed_version_sha1, st.stop.stop_id, st.stop.id, linkVersion)"
           >
             {{ st.stop.stop_name }}
           </nuxt-link>
@@ -66,10 +66,9 @@
             </div>
             <div v-for="rs of rss" :key="rs.id">
               <nuxt-link
-                :to="{name:'routes-routeKey', params:{routeKey:rs.onestop_id}}"
+                :to="$filters.makeRouteLink(rs.onestop_id, rs.feed_onestop_id, rs.feed_version_sha1, rs.route_id, rs.id, linkVersion)"
               >
                 <tl-route-icon
-
                   :agency-name="rs.agency_name"
                   :route-short-name="rs.route_short_name"
                   :route-type="rs.route_type"
@@ -96,6 +95,8 @@ query ($route_ids: [Int!]!, $radius:Float!, $include_nearby_stops:Boolean!) {
     route_short_name
     route_long_name
     onestop_id
+    feed_onestop_id
+    feed_version_sha1
     patterns {
       direction_id
       stop_pattern_id
@@ -114,6 +115,8 @@ query ($route_ids: [Int!]!, $radius:Float!, $include_nearby_stops:Boolean!) {
             stop_name
             location_type
             geometry
+            feed_onestop_id
+            feed_version_sha1
             nearby_stops(radius: $radius, limit: 1000) @include(if: $include_nearby_stops) {
               id
               onestop_id
@@ -121,6 +124,8 @@ query ($route_ids: [Int!]!, $radius:Float!, $include_nearby_stops:Boolean!) {
               stop_name
               location_type
               geometry              
+              feed_onestop_id
+              feed_version_sha1
               route_stops {
                 route {
                   id
@@ -129,6 +134,8 @@ query ($route_ids: [Int!]!, $radius:Float!, $include_nearby_stops:Boolean!) {
                   route_long_name
                   route_type
                   onestop_id
+                  feed_onestop_id
+                  feed_version_sha1
                   agency {
                     id
                     agency_id
@@ -154,7 +161,8 @@ export default {
     transferRadius: {
       type: Number,
       default: 0
-    }
+    },
+    linkVersion: { type: Boolean, default: false }
   },
   data () {
     return {
@@ -270,6 +278,8 @@ export default {
               stop_id: st.stop.stop_id,
               stop_name: st.stop.stop_name,
               onestop_id: st.stop.onestop_id,
+              feed_version_sha1: st.stop.feed_version_sha1,
+              feed_onestop_id: st.stop.feed_onestop_id,
               routes: routesByAgency
             }
           })
@@ -314,6 +324,8 @@ export default {
             distance: stopDist,
             id: rs.route.id,
             onestop_id: rs.route.onestop_id,
+            feed_onestop_id: rs.route.feed_onestop_id,
+            feed_version_sha1: rs.route.feed_version_sha1,
             route_short_name: rs.route.route_short_name,
             route_long_name: rs.route.route_long_name,
             route_type: rs.route.route_type,

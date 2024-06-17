@@ -13,7 +13,7 @@
 
       <!-- Warnings for freshness and viewing a specific version -->
       <tl-check-fresh :fetched="entity.feed_version.fetched_at" />
-      <tl-check-single :feed-onestop-id="feedOnestopId" :feed-version-sha1="feedVersionSha1" />
+      <tl-check-single :feed-onestop-id="searchKey.feedOnestopId" :feed-version-sha1="searchKey.feedVersionSha1" />
 
       <slot name="contentBeforeTable" :entity="entity" />
 
@@ -116,7 +116,7 @@
                   </div>
                   <div v-for="rs of rss" :key="rs.route.id">
                     <nuxt-link
-                      :to="{name:'routes-routeKey', params:{routeKey:rs.route.onestop_id}}"
+                      :to="$filters.makeRouteLink(rs.route.onestop_id,rs.route.feed_onestop_id,rs.route.feed_version_sha1,rs.route.route_id,rs.route.id,linkVersion)"
                     >
                       <tl-route-icon :route-type="rs.route.route_type" :route-short-name="rs.route.route_short_name" :route-long-name="rs.route.route_long_name" :route-link="rs.route.route_url" />
                     </nuxt-link>
@@ -134,27 +134,13 @@
                   </div>
                   <div v-for="rs of rss" :key="rs.route.id">
                     <nuxt-link
-                      :to="{name:'routes-routeKey', params:{routeKey:rs.route.onestop_id}}"
+                      :to="$filters.makeRouteLink(rs.route.onestop_id,rs.route.feed_onestop_id,rs.route.feed_version_sha1,rs.route.route_id,rs.route.id,linkVersion)"
                     >
                       <tl-route-icon :route-type="rs.route.route_type" :route-short-name="rs.route.route_short_name" :route-long-name="rs.route.route_long_name" :route-link="rs.route.route_url" />
                     </nuxt-link>
                   </div>
                 </div>
               </div>
-            </o-tab-item>
-
-            <o-tab-item id="departures" label="Departures">
-              <client-only placeholder="Departures">
-                <tl-stop-departures
-                  v-if="entity.id && activeTab == 2"
-                  :show-fallback-selector="true"
-                  :stop-ids="entityIds"
-                  :search-coords="entity.geometry.coordinates"
-                />
-              </client-only>
-              <tl-msg-info>
-                <p><a href="https://www.transit.land/documentation/rest-api/departures" target="_blank">Learn more about Transitland v2 REST API stop departures endpoint</a></p>
-              </tl-msg-info>
             </o-tab-item>
 
             <!-- Data sources -->
@@ -195,15 +181,7 @@
                       </td>
                       <td>
                         <nuxt-link
-                          :to="{
-                            name: 'stops-stopKey',
-                            params: { stopKey: row.onestop_id },
-                            query: {
-                              feed_onestop_id: row.feed_onestop_id,
-                              feed_version_sha1: row.feed_version_sha1,
-                              route_id: row.stop_id,
-                            },
-                          }"
+                          :to="$filters.makeStopLink(row.onestop_id, row.feed_onestop_id, row.feed_version_sha1, row.stop_id, row.id, true)"
                         >
                           {{ $filters.shortenName(row.stop_id) }}
                         </nuxt-link>
@@ -213,20 +191,58 @@
                 </table>
               </div>
             </o-tab-item>
+
+            <o-tab-item id="departures" label="Departures">
+              <client-only placeholder="Departures">
+                <tl-login-gate role="tl_user">
+                  <tl-stop-departures
+                    v-if="entity.id && activeTab == 3"
+                    :show-fallback-selector="true"
+                    :stop-ids="entityIds"
+                    :search-coords="entity.geometry.coordinates"
+                  />
+                  <template #loginText>
+                    <o-notification icon="lock">
+                      To view upcoming departure times, sign into a Transitland account.
+                    </o-notification>
+                  </template>
+                  <template #roleText>
+                    <o-notification icon="lock">
+                      Your account does not have permission to view upcoming departures.
+                    </o-notification>
+                  </template>
+                </tl-login-gate>
+              </client-only>
+              <tl-msg-info>
+                <p><a href="https://www.transit.land/documentation/rest-api/departures" target="_blank">Learn more about Transitland v2 REST API stop departures endpoint</a></p>
+              </tl-msg-info>
+            </o-tab-item>
           </o-tabs>
         </div>
         <div class="column is-one-third">
           <client-only placeholder="Map">
-            <tl-feed-version-map-viewer
-              :features="stopFeatures"
-              :route-ids="routeIds"
-              :overlay="false"
-              :include-stops="true"
-              :center="entity.geometry.coordinates"
-              :circle-radius="20"
-              :zoom="15"
-              :auto-fit="false"
-            />
+            <tl-login-gate role="tl_user">
+              <tl-map-viewer
+                :stop-features="stopFeatures"
+                :route-features="routeFeatures"
+                :features="features"
+                :auto-fit="false"
+                :center="entity.geometry.coordinates"
+                :circle-radius="20"
+                :zoom="15"
+                :overlay="true"
+              />
+              <template #loginText>
+                <o-notification icon="lock">
+                  To view an interactive map of this stop location and incoming/outgoing routes, sign into a Transitland account.
+                </o-notification>
+              </template>
+              <template #roleText>
+                <o-notification icon="lock">
+                  Your account does not have permission to view stop map.
+                </o-notification>
+              </template>
+            </tl-login-gate>
           </client-only>
         </div>
       </div>
@@ -237,6 +253,7 @@
 <script>
 import { gql } from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
+import { useEventBus } from '#imports'
 
 const q = gql`
 fragment rs on RouteStop {
@@ -248,6 +265,9 @@ fragment rs on RouteStop {
     route_type
     route_id
     route_color
+    geometry
+    feed_onestop_id
+    feed_version_sha1
     agency {
       id
       agency_name
@@ -297,8 +317,8 @@ fragment ss on Stop {
   }
 }
 
-query ($onestop_id: String, $ids: [Int!], $entity_id: String, $feed_onestop_id: String, $feed_version_sha1: String, $limit: Int=10, $allow_previous_onestop_ids: Boolean = false) {
-  entities: stops(limit: $limit, ids: $ids, where: {onestop_id: $onestop_id, feed_onestop_id:$feed_onestop_id, feed_version_sha1:$feed_version_sha1, stop_id:$entity_id, allow_previous_onestop_ids: $allow_previous_onestop_ids}) {
+query ($onestopId: String, $ids: [Int!], $entityId: String, $feedOnestopId: String, $feedVersionSha1: String, $limit: Int=10, $allowPreviousOnestopIds: Boolean = false) {
+  entities: stops(limit: $limit, ids: $ids, where: {onestop_id: $onestopId, feed_onestop_id:$feedOnestopId, feed_version_sha1:$feedVersionSha1, stop_id:$entityId, allow_previous_onestop_ids: $allowPreviousOnestopIds}) {
     ...ss
     parent {
       ...ss
@@ -347,8 +367,8 @@ export default {
       radius: 1000,
       tabIndex: {
         1: 'summary',
-        2: 'departures',
-        3: 'sources'
+        2: 'sources',
+        3: 'departures'
       }
     }
   },

@@ -22,7 +22,7 @@
                   Onestop ID
                 </o-tooltip>
               </td>
-              <td><tl-safelink :text="searchKey.onestop_id" /></td>
+              <td><tl-safelink :text="searchKey.onestopId" /></td>
             </tr>
             <tr>
               <td>
@@ -201,10 +201,11 @@
 <script>
 import { gql } from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
+import { useEventBus } from '#imports'
 
 const q = gql`
-query ($onestop_id: String, $feed_onestop_id: String, $limit: Int=10) {
-  entities: operators(limit: $limit, where: {feed_onestop_id: $feed_onestop_id, onestop_id: $onestop_id, merged: true}) {
+query ($onestopId: String, $feedOnestopId: String, $limit: Int=10) {
+  entities: operators(limit: $limit, where: {feed_onestop_id: $feedOnestopId, onestop_id: $onestopId, merged: true}) {
     id
     onestop_id
     generated
@@ -257,7 +258,9 @@ export default {
   },
   computed: {
     dataFreshness () {
-      if (this.agencies.length > 0) { return this.agencies[0].feed_version.fetched_at }
+      if (this.agencies.length > 0) {
+        return this.agencies.map(a => a.feed_version.fetched_at).sort((a, b) => new Date(a) < new Date(b))[0]
+      }
       return null
     },
     locations () {

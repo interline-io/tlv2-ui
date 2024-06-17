@@ -22,16 +22,6 @@
       >
         {{ $filters.shortenName(feedVersionSha1, 8) }}
       </nuxt-link>.<br>
-      <!-- <template v-if="!search">
-            Click
-            <nuxt-link :to="{
-                name: 'stops-stopKey',
-                params: { stopKey: searchKey.onestop_id },
-            }">
-                here
-            </nuxt-link>
-            to return to the main view.
-        </template> -->
     </tl-msg-info>
   </div>
 </template>

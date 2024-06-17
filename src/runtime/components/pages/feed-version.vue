@@ -243,8 +243,8 @@ import { gql } from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
 
 const q = gql`
-query ($feed_version_sha1: String!) {
-  entities: feed_versions(limit: 1, where: {sha1: $feed_version_sha1}) {
+query ($feedVersionSha1: String!) {
+  entities: feed_versions(limit: 1, where: {sha1: $feedVersionSha1}) {
     id
     sha1
     earliest_calendar_date
@@ -314,7 +314,7 @@ export default {
       query: q,
       variables () {
         return {
-          feed_version_sha1: this.feedVersionKey
+          feedVersionSha1: this.feedVersionKey
         }
       }
     }

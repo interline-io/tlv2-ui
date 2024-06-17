@@ -26,7 +26,7 @@
 
       <!-- Warnings for freshness and viewing a specific version -->
       <tl-check-fresh :fetched="entity.feed_version.fetched_at" />
-      <tl-check-single :feed-onestop-id="feedOnestopId" :feed-version-sha1="feedVersionSha1" />
+      <tl-check-single :feed-onestop-id="searchKey.feedOnestopId" :feed-version-sha1="searchKey.feedVersionSha1" />
 
       <slot name="contentBeforeTable" :entity="entity" />
 
@@ -135,7 +135,7 @@
           >
             <o-tab-item id="summary" label="Connections">
               <client-only placeholder="Service patterns">
-                <tl-rsp-viewer v-if="activeTab === 1" :route-ids="entityIds" />
+                <tl-rsp-viewer v-if="activeTab === 1" :route-ids="entityIds" :link-version="linkVersion" />
               </client-only>
             </o-tab-item>
 
@@ -187,15 +187,7 @@
                         >
                           Feed version
                         </nuxt-link> <nuxt-link
-                          :to="{
-                            name: 'routes-routeKey',
-                            params: { routeKey: row.onestop_id },
-                            query: {
-                              feed_onestop_id: row.feed_onestop_id,
-                              feed_version_sha1: row.feed_version_sha1,
-                              route_id: row.route_id,
-                            },
-                          }"
+                          :to="$filters.makeRouteLink(row.onestop_id,row.feed_onestop_id,row.feed_version_sha1,row.route_id,row.id,true)"
                           class="button is-primary is-small"
                         >
                           Route
@@ -209,27 +201,51 @@
 
             <o-tab-item id="export" label="Export">
               <client-only placeholder="Export">
-                <tl-data-export
-                  v-if="activeTab === 4"
-                  :route-name="routeName"
-                  :route-features="routeFeatures"
-                  :stop-features="stopFeatures"
-                  :route-ids="[entity.id]"
-                  @set-features="features = $event"
-                />
+                <tl-login-gate role="tl_user">
+                  <tl-data-export
+                    v-if="activeTab === 4"
+                    :route-name="routeName"
+                    :route-features="routeFeatures"
+                    :stop-features="stopFeatures"
+                    :route-ids="[entity.id]"
+                    @set-features="features = $event"
+                  />
+                  <template #loginText>
+                    <o-notification icon="lock">
+                      To export this route geometry and stop locations as GeoJSON, sign into a Transitland account.
+                    </o-notification>
+                  </template>
+                  <template #roleText>
+                    <o-notification icon="lock">
+                      Your account does not have permission to export route geometries.
+                    </o-notification>
+                  </template>
+                </tl-login-gate>
               </client-only>
             </o-tab-item>
           </o-tabs>
         </div>
         <div class="column is-one-third">
           <client-only placeholder="Map">
-            <tl-feed-version-map-viewer
-              :route-ids="entityIds"
-              :overlay="false"
-              :include-stops="true"
-              :link-version="linkVersion"
-              :features="activeTab === 4 ? features : []"
-            />
+            <tl-login-gate role="tl_user">
+              <tl-feed-version-map-viewer
+                :route-ids="entityIds"
+                :overlay="false"
+                :include-stops="true"
+                :link-version="linkVersion"
+                :features="activeTab === 4 ? features : []"
+              />
+              <template #loginText>
+                <o-notification icon="lock">
+                  To view an interactive map of this route and its stop locations, sign into a Transitland account.
+                </o-notification>
+              </template>
+              <template #roleText>
+                <o-notification icon="lock">
+                  Your account does not have permission to view route map.
+                </o-notification>
+              </template>
+            </tl-login-gate>
           </client-only>
         </div>
       </div>
@@ -240,10 +256,11 @@
 <script>
 import { gql } from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
+import { useEventBus } from '#imports'
 
 const q = gql`
-query ($onestop_id: String, $ids: [Int!], $entity_id: String, $feed_onestop_id: String, $feed_version_sha1: String, $include_stops: Boolean! = true, $limit: Int=10, $allow_previous_onestop_ids: Boolean = false) {
-  entities: routes(limit:$limit, ids: $ids, where: {onestop_id: $onestop_id, feed_onestop_id: $feed_onestop_id, feed_version_sha1: $feed_version_sha1, route_id: $entity_id, allow_previous_onestop_ids: $allow_previous_onestop_ids}) {
+query ($onestopId: String, $ids: [Int!], $entityId: String, $feedOnestopId: String, $feedVersionSha1: String, $include_stops: Boolean! = true, $limit: Int=10, $allowPreviousOnestopIds: Boolean = false) {
+  entities: routes(limit:$limit, ids: $ids, where: {onestop_id: $onestopId, feed_onestop_id: $feedOnestopId, feed_version_sha1: $feedVersionSha1, route_id: $entityId, allow_previous_onestop_ids: $allowPreviousOnestopIds}) {
     id
     onestop_id
     feed_onestop_id
@@ -273,7 +290,7 @@ query ($onestop_id: String, $ids: [Int!], $entity_id: String, $feed_onestop_id: 
         text
       }
     }
-    route_stops @include(if: $include_stops) {
+    route_stops(limit: 1000) @include(if: $include_stops) {
       stop {
         id
         stop_id
