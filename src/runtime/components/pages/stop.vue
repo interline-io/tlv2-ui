@@ -222,12 +222,12 @@
         <div class="column is-one-third">
           <client-only placeholder="Map">
             <tl-login-gate role="tl_user">
-              <tl-map-viewer
-                :stop-features="stopFeatures"
-                :route-features="routeFeatures"
+              <tl-feed-version-map-viewer
+                :route-ids="routeIds"
                 :features="features"
                 :auto-fit="false"
                 :center="entity.geometry.coordinates"
+                :include-stops="true"
                 :circle-radius="20"
                 :zoom="15"
                 :overlay="true"
@@ -265,7 +265,6 @@ fragment rs on RouteStop {
     route_type
     route_id
     route_color
-    geometry
     feed_onestop_id
     feed_version_sha1
     agency {
@@ -383,25 +382,6 @@ export default {
       }
       return ret
     },
-    stopFeatures () {
-      const ret = []
-      for (const i of this.allStops) {
-        if (!i.geometry) {
-          continue
-        }
-        ret.push({
-          type: 'Feature',
-          id: i.id,
-          geometry: i.geometry,
-          properties: {
-            class: 'stop',
-            id: i.id
-
-          }
-        })
-      }
-      return ret
-    },
     routeIds () {
       const ret = new Map()
       for (const rss of Object.values(this.servedRoutes || {})) {
@@ -409,6 +389,7 @@ export default {
           ret.set(rs.route.id, true)
         }
       }
+      console.log('routeIds:', Array.from(ret.keys()))
       return Array.from(ret.keys())
     },
     allStops () {
@@ -498,6 +479,26 @@ export default {
       const ret = []
       const sg = this.entity.geometry
       let featid = 1
+
+      for (const i of this.allStops) {
+        if (!i.geometry) {
+          continue
+        }
+        if (!(i.location_type !== 0 || i.location_type !== 2)) {
+          continue
+        }
+        ret.push({
+          type: 'Feature',
+          id: i.id,
+          geometry: i.geometry,
+          properties: {
+            class: 'stop',
+            id: i.id
+
+          }
+        })
+      }
+
       for (const i of this.entity.children || []) {
         ret.push({
           type: 'Feature',

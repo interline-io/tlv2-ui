@@ -179,7 +179,7 @@ export default {
     top: 10px;
     left: 10px;
     max-width:90vw;
-    /* width: 565px; */
+    min-width: 565px;
 }
 
 .tl-map-panel-tabs {

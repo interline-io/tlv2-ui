@@ -5,15 +5,17 @@
         <tl-route-select :agency-features="agencyFeatures" :collapse="true" :link="true" />
       </div>
       <div v-else>
-        <h6 class="title is-6">
-          Select routes
-        </h6>
-        <div v-if="currentZoom < 8">
-          Zoom in to select routes and to see stop points.
-        </div>
-        <div v-else>
-          Use your cursor to highlight routes and see their names here. Click for more details.
-        </div>
+        <slot name="default">
+          <h6 class="title is-6">
+            Select routes
+          </h6>
+          <div v-if="currentZoom < 8">
+            Zoom in to select routes and to see stop points.
+          </div>
+          <div v-else>
+            Use your cursor to highlight routes and see their names here. <br>Click for more details.
+          </div>
+        </slot>
       </div>
     </div>
     <div v-if="isComponentModalActive">
