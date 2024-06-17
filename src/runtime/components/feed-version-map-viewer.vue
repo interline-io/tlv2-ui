@@ -1,5 +1,5 @@
 <template>
-  <div class="tl-map">
+  <div class="tl-fv-map">
     <tl-loading v-if="loading" />
     <tl-msg-error v-else-if="error">
       {{ error }}
@@ -11,20 +11,26 @@
         :route-features="routeFeatures"
         :stop-features="stopFeatures"
         :center="center"
-        :auto-fit="true"
+        :auto-fit="autoFit"
         :zoom="zoom ? zoom : null"
+        :circle-radius="circleRadius"
+        :circle-color="circleColor"
         @set-agency-features="agencyFeatures = $event"
         @map-click="mapClick"
         @set-zoom="currentZoom = $event"
       />
-      <div v-if="overlay" class="tl-map-panel">
+      <div v-if="overlay" class="tl-fv-map-panel">
         <tl-map-route-list
           :current-zoom="currentZoom"
           :link-version="linkVersion"
           :agency-features="agencyFeatures"
           :is-component-modal-active="isComponentModalActive"
           @close="isComponentModalActive = false"
-        />
+        >
+          <strong>Select routes</strong>
+          <br>
+          Use your cursor to highlight routes
+        </tl-map-route-list>
       </div>
     </div>
   </div>
@@ -102,6 +108,7 @@ export default {
     }
   },
   props: {
+    autoFit: { type: Boolean, default: true },
     limit: { type: Number, default: 1000 },
     maxLimit: { type: Number, default: 10000 },
     feedVersionSha1: { type: String, default: null },
@@ -114,7 +121,9 @@ export default {
     features: { type: Array, default () { return [] } },
     center: { type: Array, default () { return [] } },
     zoom: { type: Number, default: null },
-    enableScrollZoom: { type: Boolean, default: false }
+    enableScrollZoom: { type: Boolean, default: false },
+    circleRadius: { type: Number, default: 1 },
+    circleColor: { type: String, default: '#f03b20' }
   },
   data () {
     return {
@@ -123,7 +132,7 @@ export default {
       error: null,
       isComponentModalActive: false,
       agencyFeatures: {},
-      currentZoom: 0
+      currentZoom: this.zoom
     }
   },
   computed: {
@@ -164,6 +173,9 @@ export default {
       const features = []
       for (const feature of this.routes) {
         for (const g of feature.route_stops || []) {
+          if (!(g.stop.location_type !== 0 || g.stop.location_type !== 2)) {
+            continue
+          }
           const fcopy = Object.assign({}, g.stop)
           delete fcopy.geometry
           delete fcopy.__typename
@@ -221,11 +233,11 @@ export default {
 }
 </script>
 
-<style>
-.tl-map {
+<style scoped>
+.tl-fv-map {
   position:relative
 }
-.tl-map-panel {
+.tl-fv-map-panel {
     background-color: white;
     user-select: none;
     position: absolute !important;
@@ -233,14 +245,7 @@ export default {
     padding: 10px;
     top: 10px;
     left: 10px;
-    width: 565px;
-}
-.tl-map-panel-tabs .tab-content {
-    background-color: rgba(255, 255, 255, 0.9);
-    margin: 0px;
-    padding-left: 10px;
-    padding-right: 10px;
-    max-height:80vh;
-    overflow-y:auto;
+    width: 350px;
+    max-width: 565px;
 }
 </style>

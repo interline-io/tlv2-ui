@@ -222,12 +222,12 @@
         <div class="column is-one-third">
           <client-only placeholder="Map">
             <tl-login-gate role="tl_user">
-              <tl-map-viewer
-                :stop-features="stopFeatures"
-                :route-features="routeFeatures"
+              <tl-feed-version-map-viewer
+                :route-ids="routeIds"
                 :features="features"
                 :auto-fit="false"
                 :center="entity.geometry.coordinates"
+                :include-stops="true"
                 :circle-radius="20"
                 :zoom="15"
                 :overlay="true"
@@ -263,15 +263,13 @@ fragment rs on RouteStop {
     route_long_name
     route_short_name
     route_type
-    route_url
     route_id
     route_color
-    geometry
     feed_onestop_id
     feed_version_sha1
     agency {
-      agency_name
       id
+      agency_name
       operator {
         onestop_id
       }
@@ -339,8 +337,11 @@ query ($onestopId: String, $ids: [Int!], $entityId: String, $feedOnestopId: Stri
     route_stops {
       ...rs
     }
-    nearby_stops(radius:100) {
-      ...ss
+    nearby_stops(radius:50)  {
+      id
+      onestop_id
+      stop_id
+      stop_name
       route_stops {
         ...rs
       }
@@ -381,50 +382,15 @@ export default {
       }
       return ret
     },
-    stopFeatures () {
-      const ret = []
-      for (const i of this.allStops) {
-        if (!i.geometry) {
-          continue
-        }
-        ret.push({ type: 'Feature', id: i.id, geometry: i.geometry, properties: { class: 'stop', id: i.id } })
-      }
-      return ret
-    },
-    routeFeatures () {
-      const ret = []
-      let featid = 1
+    routeIds () {
+      const ret = new Map()
       for (const rss of Object.values(this.servedRoutes || {})) {
         for (const rs of rss) {
-          let routeColor = rs.route.route_color
-          if (routeColor && routeColor.substr(0, 1) !== '#') {
-            routeColor = '#' + routeColor
-          }
-          featid++
-          ret.push(
-            {
-              type: 'Feature',
-              id: featid,
-              geometry: rs.route.geometry,
-              properties: {
-                class: 'route',
-                id: featid,
-                generated: false,
-                geometry_length: -1,
-                headway_secs: 60,
-                route_color: routeColor,
-                route_long_name: rs.route.route_long_name,
-                route_short_name: rs.route.route_short_name,
-                route_type: rs.route.route_type,
-                route_url: rs.route.route_url,
-                route_id: rs.route.route_id,
-                agency_name: rs.route.agency.agency_name
-              }
-            }
-          )
+          ret.set(rs.route.id, true)
         }
       }
-      return ret
+      console.log('routeIds:', Array.from(ret.keys()))
+      return Array.from(ret.keys())
     },
     allStops () {
       const ret = {}
@@ -484,7 +450,7 @@ export default {
         }
       }
       for (const ent of this.nearbyStops) {
-        for (const rs of ent.route_stops) {
+        for (const rs of ent.route_stops || []) {
           if (excl[rs.route.id]) {
             continue
           }
@@ -513,6 +479,26 @@ export default {
       const ret = []
       const sg = this.entity.geometry
       let featid = 1
+
+      for (const i of this.allStops) {
+        if (!i.geometry) {
+          continue
+        }
+        if (!(i.location_type !== 0 || i.location_type !== 2)) {
+          continue
+        }
+        ret.push({
+          type: 'Feature',
+          id: i.id,
+          geometry: i.geometry,
+          properties: {
+            class: 'stop',
+            id: i.id
+
+          }
+        })
+      }
+
       for (const i of this.entity.children || []) {
         ret.push({
           type: 'Feature',

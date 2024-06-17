@@ -441,7 +441,7 @@ export default {
   },
   methods: {
     filterRTTranslations (v) {
-      return v.filter((s) => { return !s.language.includes('html') })
+      return v.filter((s) => { return !(s?.language || '').includes('html') })
     }
   }
 }
