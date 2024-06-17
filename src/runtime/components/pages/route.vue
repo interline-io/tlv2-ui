@@ -290,7 +290,7 @@ query ($onestopId: String, $ids: [Int!], $entityId: String, $feedOnestopId: Stri
         text
       }
     }
-    route_stops @include(if: $include_stops) {
+    route_stops(limit: 1000) @include(if: $include_stops) {
       stop {
         id
         stop_id

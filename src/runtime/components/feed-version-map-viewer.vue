@@ -60,7 +60,7 @@ query ($limit: Int=100, $agency_ids: [Int!], $after:Int!=0, $route_ids: [Int!], 
       direction_id
       headway_secs
     }
-    route_stops @include(if: $include_stops) {
+    route_stops(limit: 1000) @include(if: $include_stops) {
       stop {
         id
         stop_id
