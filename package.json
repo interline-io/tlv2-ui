@@ -27,9 +27,9 @@
     "@auth0/auth0-spa-js": "^2.1.3",
     "@mapbox/mapbox-gl-draw": "^1.4.3",
     "@mdi/font": "^7.4.47",
-    "@nuxt/kit": "^3.11.2",
-    "@nuxt/module-builder": "^0.6.0",
-    "@nuxt/types": "^2.17.3",
+    "@nuxt/kit": "^3.12.2",
+    "@nuxt/module-builder": "^0.7.1",
+    "@nuxt/types": "^2.17.4",
     "@nuxtjs/eslint-config-typescript": "^12.1.0",
     "@oruga-ui/oruga-next": "^0.7.0",
     "@oruga-ui/theme-bulma": "^0.2.11",
@@ -40,7 +40,7 @@
     "@types/node": "^20.11.3",
     "@vue/apollo-composable": "^4.0.0",
     "@vue/apollo-option": "^4.0.0",
-    "@vueuse/core": "^10.7.2",
+    "@vueuse/core": "^10.11.0",
     "apollo-upload-client": "^18.0.1",
     "bulma": "^0.9.4",
     "cytoscape": "^3.28.1",
@@ -55,14 +55,14 @@
     "haversine": "^1.1.1",
     "maplibre-gl": "^2.4.0",
     "mixpanel-browser": "^2.47.0",
-    "nuxt": "3.11.2",
+    "nuxt": "3.12.2",
     "protomaps-themes-base": "^1.3.1",
     "sass": "^1.69.7",
     "tiny-emitter": "^2.1.0",
     "typescript": "^5.3.3",
     "typescript-eslint": "^0.0.1-alpha.0",
     "unstorage": "^1.10.1",
-    "vue": "^3.4.14"
+    "vue": "^3.4.29"
   },
   "packageManager": "yarn@4.3.0"
 }
