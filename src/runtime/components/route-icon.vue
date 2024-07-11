@@ -14,6 +14,8 @@
 </template>
 
 <script>
+import { getBasicRouteType } from '../plugins/routetypes'
+
 export default {
   props: {
     nameIcon: {
@@ -39,7 +41,9 @@ export default {
   },
   computed: {
     routeTypeIcon () {
-      switch (this.routeType) {
+      const rt = getBasicRouteType(this.routeType)
+      const code = rt.parentType ? rt.parentType.code : rt.routeType.code
+      switch (code) {
         case 0:
           return 'tram'
         case 1:
