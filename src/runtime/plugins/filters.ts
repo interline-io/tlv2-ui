@@ -1,4 +1,5 @@
 import { formatDistanceToNow, parseISO, format } from 'date-fns'
+import { getRouteType, getBasicRouteType } from './routetypes'
 import { defineNuxtPlugin } from '#imports'
 
 function parseHMS(value) {
@@ -294,23 +295,12 @@ export default defineNuxtPlugin((nuxtApp) => {
       const unit = units[exponent]
       return (neg ? '-' : '') + num + ' ' + unit
     },
-    routeTypeToWords(num) {
-      if (num >= 0 <= 12) {
-        return {
-          0: 'Tram, Streetcar, Light rail',
-          1: 'Subway, Metro',
-          2: 'Rail',
-          3: 'Bus',
-          4: 'Ferry',
-          5: 'Cable tram',
-          6: 'Aerial lift',
-          7: 'Funicular',
-          11: 'Trolleybus',
-          12: 'Monorail'
-        }[num]
-      } else {
-        return num
+    routeTypeToWords(code: number) {
+      const rt = getBasicRouteType(code)
+      if (rt.parentType) {
+        return `${rt.routeType.name} (${rt.parentType.name})`
       }
+      return rt.routeType.name
     }
   }
 })
