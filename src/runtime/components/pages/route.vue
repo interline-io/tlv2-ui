@@ -30,6 +30,8 @@
 
       <slot name="contentBeforeTable" :entity="entity" />
 
+      <tl-route-departures :route-id="entity.id" />
+
       <!-- Main content -->
       <div class="columns">
         <div class="column is-two-thirds">
