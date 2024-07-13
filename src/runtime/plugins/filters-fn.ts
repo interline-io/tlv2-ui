@@ -158,6 +158,10 @@ export function reformatHMS(value: string): string {
   return formatHMS(parseHMS(value))
 }
 
+export function reformatHM(value: string): string {
+  return formatHM(parseHMS(value))
+}
+
 export function round(value: number): string {
   return value.toFixed(2)
 }

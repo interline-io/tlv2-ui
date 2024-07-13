@@ -133,6 +133,9 @@
             :animated="false"
             @update:model-value="setTab"
           >
+            <o-tab-item id="schedule" label="Schedule">
+              <tl-route-departures-outer :route-id="entity.id" />
+            </o-tab-item>
             <o-tab-item id="summary" label="Connections">
               <client-only placeholder="Service patterns">
                 <tl-rsp-viewer v-if="activeTab === 1" :route-ids="entityIds" :link-version="linkVersion" />
