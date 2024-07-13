@@ -8,6 +8,7 @@
     "build": "nuxt build",
     "dev": "nuxi dev playground",
     "dev:build": "nuxi build playground",
+    "test": "vitest",
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
     "lint": "eslint --ext .js,.ts,.vue --ignore-path .eslintignore ."
   },
@@ -29,7 +30,7 @@
     "@mdi/font": "^7.4.47",
     "@nuxt/kit": "^3.12.2",
     "@nuxt/module-builder": "^0.7.1",
-    "@nuxt/types": "^2.17.4",
+    "@nuxt/types": "^2.18.1",
     "@nuxtjs/eslint-config-typescript": "^12.1.0",
     "@oruga-ui/oruga-next": "^0.7.0",
     "@oruga-ui/theme-bulma": "^0.2.11",
@@ -37,9 +38,11 @@
     "@types/cytoscape-fcose": "^2",
     "@types/d3-scale-chromatic": "^3",
     "@types/mapbox__mapbox-gl-draw": "^1",
-    "@types/node": "^20.11.3",
+    "@types/node": "^20.14.10",
+    "@vitejs/plugin-vue": "^5.0.5",
     "@vue/apollo-composable": "^4.0.0",
     "@vue/apollo-option": "^4.0.0",
+    "@vue/test-utils": "^2.4.6",
     "@vueuse/core": "^10.11.0",
     "apollo-upload-client": "^18.0.1",
     "bulma": "^0.9.4",
@@ -62,6 +65,7 @@
     "typescript": "^5.3.3",
     "typescript-eslint": "^0.0.1-alpha.0",
     "unstorage": "^1.10.1",
+    "vitest": "^2.0.2",
     "vue": "^3.4.29"
   },
   "packageManager": "yarn@4.3.0"
