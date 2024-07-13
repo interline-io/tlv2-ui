@@ -1,139 +1,82 @@
-<template>
-  <div>
-    <div v-for="route of routes" :key="route.id">
-      <div v-for="[k,mergedPattern] of Object.entries(directionTables(route.trips))" :key="k">
-        <div class="title is-3">
-          {{ $filters.capitalize(k) }}
-        </div>
-        <table class="table is-striped">
-          <thead>
-            <th v-for="sp of mergedPattern.timepointStops" :key="sp.id+sp.visit">
-              <nuxt-link :to="{name:'stops-stopKey', params: {stopKey: sp.stop?.onestop_id}}">
-                {{ sp.stop?.stop_name }}
-              </nuxt-link>
-            </th>
-          </thead>
-          <tbody>
-            <tr v-for="trip of mergedPattern.trips" :key="trip.id">
-              <td v-for="pst of pluckStopTimes(mergedPattern.timepointStops, trip.stop_times)" :key="pst.sequence">
-                <span v-if="pst.st">
-                  <template v-if="pst.st.departure.estimated">
-                    {{ $filters.reformatHMS(pst.st.departure.estimated) }} &nbsp;<o-icon variant="success" size="small" icon="wifi" />
-                  </template><template v-else>
-                    {{ $filters.reformatHMS(pst.st.departure.scheduled) }} &nbsp;<o-icon variant="success" size="small" icon="blank" />
-                  </template>
-                </span>
-                <span v-else>-</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</template>
-
-<script lang="ts">
-import { gql } from 'graphql-tag'
 import { NeedlemanWunsch } from './nw'
 
-const q = gql`
-query($ids: [Int!], $service_date: Date!) {
-    routes(ids: $ids) {
-        id
-        onestop_id
-        trips(limit: 1000, where: { service_date: $service_date}) {
-            id
-            trip_id
-            trip_headsign
-            direction_id
-            stop_pattern_id
-            stop_times(limit: 1000) {
-                stop_sequence
-                stop_headsign
-                timepoint
-                departure {
-                  scheduled
-                  estimated
-                }
-                stop {
-                    id
-                    stop_name
-                    onestop_id
-                }
-            }
-        }
-    }
-}
-`
-
-interface Stop {
+export interface Stop {
   id: number;
   stop_name: string;
   onestop_id: string;
 }
 
-interface StopTimeEvent {
+export interface StopTimeEvent {
   scheduled: string;
   estimated: string;
 }
 
-interface StopTime {
+export interface StopTime {
   departure: StopTimeEvent;
   timepoint: number;
   stop_sequence: number;
   stop: Stop;
 }
 
-interface PluckedStopTime {
-  sequence: number;
-  st?: StopTime;
-}
-
-interface Trip {
+export interface Trip {
   id: number;
+  trip_headsign: string;
   stop_pattern_id: number;
   direction_id: number;
   stop_times: Array<StopTime>;
   timepoints: Array<StopTime>;
 }
 
-interface StopPosition {
+export interface StopPosition {
   id: number;
   visit: number;
   stop?: Stop;
+  skipStops?: Array<string>;
 }
 
-interface Route {
+export interface Route {
   id: number;
   trips: Array<Trip>;
 }
 
-interface MergedPattern {
+export interface MergedPattern {
+  title: string;
   timepointStops: Array<StopPosition>;
   trips: Array<Trip>;
 }
 
-function pluckStopTimes(stopPositionPattern: Array<StopPosition>, sts: Array<StopTime>): Array<PluckedStopTime> {
+export interface PluckedStopTime {
+  sequence: number;
+  st?: StopTime;
+  sp: StopPosition;
+}
+
+export function pluckStopTimes(stopPositionPattern: Array<StopPosition>, sts: Array<StopTime>): Array<PluckedStopTime> {
   const ret = new Array<PluckedStopTime>()
   let j = 0
   for (let i = 0; i < stopPositionPattern.length; i++) {
     const sp = stopPositionPattern[i]
     let found = false
-    for (let jj = j; jj < sts.length; jj++) {
-      const st = sts[jj]
-      if (st.stop.id === sp.id) {
-        ret.push({
-          sequence: i,
-          st
-        })
-        j = j + 1
-        found = true
-        break
+    if (sp.id > 0) {
+      for (let jj = j; jj < sts.length; jj++) {
+        const st = sts[jj]
+        if (st.stop.id === sp.id) {
+          ret.push({
+            sequence: i,
+            st,
+            sp
+          })
+          j = j + 1
+          found = true
+          break
+        }
       }
     }
     if (!found) {
-      ret.push({ sequence: i })
+      ret.push({
+        sequence: i,
+        sp
+      })
     }
   }
   return ret
@@ -156,13 +99,26 @@ function firstStopDeparture(sts: Array<StopTime>): number {
   return parseHMS(sts[0].departure.scheduled)
 }
 
-function timepointTables(trips: Array<Trip>): MergedPattern {
+function hasTimepoints(sts: Array<StopTime>): boolean {
+  for (const st of sts) {
+    if (st.timepoint > 0) {
+      return true
+    }
+  }
+  return false
+}
+
+export function timepointTables(trips: Array<Trip>): MergedPattern {
+  // Filter out trips with no stop times
+  const filteredTrips = trips.filter((t) => { return t.stop_times.length > 0 })
+
   // Check visits to all timepoints across all trips
   const seenAllPatterns = new Map<number, number>()
   for (const t of trips) {
     const seen = new Map<number, number>()
+    const hastp = hasTimepoints(t.stop_times)
     for (const st of t.stop_times) {
-      if (!st.timepoint) {
+      if (!st.timepoint && hastp) {
         continue
       }
       // Only count first visit to this stop as a hit
@@ -180,7 +136,7 @@ function timepointTables(trips: Array<Trip>): MergedPattern {
   const seenAllPatternsKeys = [...seenAllPatterns.entries()].sort((a, b) => b[1] - a[1])
   if (seenAllPatternsKeys.length > 0) {
     const sortStop = seenAllPatternsKeys[0][0]
-    for (const t of trips) {
+    for (const t of filteredTrips) {
       for (const st of t.stop_times) {
         // Only consider first visit to common stop
         if (st.stop.id === sortStop) {
@@ -190,7 +146,7 @@ function timepointTables(trips: Array<Trip>): MergedPattern {
       }
     }
   }
-  const tripDir = trips.sort((a, b) => {
+  const sortedTrips = filteredTrips.sort((a, b) => {
     const at = tripSortStop.get(a.id) || firstStopDeparture(a.stop_times)
     const bt = tripSortStop.get(b.id) || firstStopDeparture(b.stop_times)
     return at - bt
@@ -200,7 +156,7 @@ function timepointTables(trips: Array<Trip>): MergedPattern {
   // This is so the alignment is not confused by multiple visits to the same stop
   const stopPositionPatterns = new Map<number, Array<StopPosition>>()
   const stopLookup = new Map<number, Stop>()
-  for (const t of tripDir) {
+  for (const t of sortedTrips) {
     if (stopPositionPatterns.has(t.stop_pattern_id)) {
       continue
     }
@@ -209,8 +165,9 @@ function timepointTables(trips: Array<Trip>): MergedPattern {
     }
     const stopPositionPattern = new Array<StopPosition>()
     const seen = new Map<number, number>()
+    const hastp = hasTimepoints(t.stop_times)
     for (const st of t.stop_times) {
-      if (!st.timepoint) {
+      if (!st.timepoint && hastp) {
         continue
       }
       const visit = seen.get(st.stop.id) ?? 0
@@ -225,45 +182,42 @@ function timepointTables(trips: Array<Trip>): MergedPattern {
   sortedPatterns.sort((a, b) => { return b.length - a.length })
 
   // Merge stop patterns using Needleman-Wunsch algorithm
-  let commonCount = 0
   let mergedStops = new Array<string>()
   for (const stopPositionPattern of sortedPatterns) {
     // convert to `<id>:<visit>`
     const spString = stopPositionPattern.map((s) => { return s.id + ':' + s.visit })
-    console.log('pattern:', stopPositionPattern)
-    console.log('  spString:', spString)
-    const alignment = NeedlemanWunsch(mergedStops, spString)
+    // console.log('pattern:', stopPositionPattern)
+    // console.log('  spString:', spString)
+    const alignment = NeedlemanWunsch(mergedStops, spString, { G: 2, P: 1, M: -100 })
     const alignA = alignment.a
     const alignB = alignment.b
-    console.log('  alignA:', alignA)
-    console.log('  alignB:', alignB)
+    // console.log('  alignA:', alignA)
+    // console.log('  alignB:', alignB)
 
     // TODO: Exclude stop pattern if there are no common stops??
-    for (let i = 0; i < alignA.length; i++) {
-      if (alignA[i] === alignB[i]) {
-        commonCount += 1
-      }
-    }
-    console.log('  common count:', commonCount)
+    // const commonCount = 0
+    // for (let i = 0; i < alignA.length; i++) {
+    //   if (alignA[i] === alignB[i]) {
+    //     commonCount += 1
+    //   }
+    // }
+    // console.log('  common count:', commonCount)
 
     // Merge alignA and alignB together
     const mergedAlignment = Array<string>()
     for (let i = 0; i < alignA.length; i++) {
       const a = alignA[i]
       const b = alignB[i]
-      if (a === b) {
-        commonCount += 1
-      }
       if (a !== '-') {
         mergedAlignment.push(a)
       } else if (b !== '-') {
         mergedAlignment.push(b)
       }
     }
-    console.log('  mergedAlignment: ', mergedAlignment)
+    // console.log('  mergedAlignment: ', mergedAlignment)
     mergedStops = mergedAlignment
   }
-  console.log('mergedStops:', mergedStops)
+  // console.log('mergedStops:', mergedStops)
 
   // Convert `<id>:<visit>` back to StopPositions
   const mergedStopPositions = new Array<StopPosition>()
@@ -271,48 +225,31 @@ function timepointTables(trips: Array<Trip>): MergedPattern {
     const ss = s.split(':')
     const sid = Number(ss[0])
     const svisit = Number(ss[1])
-    console.log(ss, sid, svisit)
+    // console.log(ss, sid, svisit)
     mergedStopPositions.push({
       id: sid,
       visit: svisit,
       stop: stopLookup.get(sid)!
     })
   }
+
+  // Sort headsigns by frequency
+  const headsignCount = new Map<string, number>()
+  for (const trip of sortedTrips) {
+    const a = headsignCount.get(trip.trip_headsign) ?? 0
+    headsignCount.set(trip.trip_headsign, a + 1)
+  }
+  const headsignUniqueKeys = [...headsignCount.keys()].sort((a, b) => {
+    const at = headsignCount.get(a) ?? 0
+    const bt = headsignCount.get(b) ?? 0
+    return at - bt
+  })
+  const title = headsignUniqueKeys.join(', ')
+
+  // OK
   return {
+    title,
     timepointStops: mergedStopPositions,
-    trips: tripDir
+    trips: sortedTrips
   }
 }
-
-export default {
-  props: {
-    routeId: { type: Number, default: 0 }
-  },
-  data () {
-    return { routes: new Array<Route>() }
-  },
-  apollo: {
-    routes: {
-      query: q,
-      variables () {
-        return {
-          ids: [this.routeId],
-          service_date: '2024-07-11'
-        }
-      }
-    }
-  },
-  methods: {
-    pluckStopTimes,
-    directionTables(trips: Array<Trip>): {inbound: MergedPattern, outbound: MergedPattern} {
-      const inbound = timepointTables(trips.filter((t) => { return t.direction_id === 0 }))
-      const outbound = timepointTables(trips.filter((t) => { return t.direction_id === 1 }))
-      return {
-        inbound,
-        outbound
-      }
-    }
-  }
-
-}
-</script>

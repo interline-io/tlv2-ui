@@ -21,7 +21,7 @@ export function NeedlemanWunsch(s1: Array<string>, s2: Array<string>, op: Option
   op = op || {}
   const G = op.G || 2
   const P = op.P || 1
-  const M = op.M || -100
+  const M = op.M || 0.5
   const mat: Matrix = {}
   const direc: Direc = {}
 
