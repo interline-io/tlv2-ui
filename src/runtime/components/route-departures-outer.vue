@@ -62,6 +62,7 @@
         <tl-route-departures-table
           :merged-pattern="activeTable"
           :timepoint-limit="6"
+          :show-rt="showRt"
         />
       </div>
 
@@ -69,7 +70,11 @@
         v-model="showModal"
         title="Route Schedule"
       >
-        <tl-route-departures-table :merged-pattern="activeTable" :timepoint-limit="100" />
+        <tl-route-departures-table
+          :merged-pattern="activeTable"
+          :timepoint-limit="100"
+          :show-rt="showRt"
+        />
       </tl-modal>
     </div>
   </div>
@@ -77,7 +82,7 @@
 
 <script lang="ts">
 import { gql } from 'graphql-tag'
-import { parseISO, format, add, isBefore } from 'date-fns'
+import { parseISO, format } from 'date-fns'
 import { MergedPattern, Route, Trip, timepointTables } from './route-departures'
 
 const q = gql`
@@ -127,7 +132,7 @@ export default {
       groupByDirection: true,
       groupByHeadsign: false,
       groupByStopPattern: false,
-      showRt: true,
+      showRt: false,
       error: '',
       serviceDate
     }
@@ -150,13 +155,8 @@ export default {
         if (this.serviceDate) {
           return this.serviceDate
         }
-        // Get default date
-        // const days = this.fvsls.map((s) => { return s.start_date }).sort()
-        // if (days.length > 0) {
-        //   return serviceDate(days[0].substr(0, 10))
-        // }
-        // return serviceDate('2020-01-01')
-        return parseISO('2020-01-01')
+        // TODO: GET DATE
+        return parseISO('2024-07-11')
       },
       set (v: Date) {
         this.serviceDate = v

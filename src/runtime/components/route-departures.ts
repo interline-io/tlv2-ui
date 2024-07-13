@@ -20,6 +20,7 @@ export interface StopTime {
 
 export interface Trip {
   id: number;
+  trip_id: string;
   trip_headsign: string;
   stop_pattern_id: number;
   direction_id: number;

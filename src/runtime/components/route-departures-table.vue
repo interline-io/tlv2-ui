@@ -28,16 +28,15 @@
             <div v-if="pst.sp?.skipStops?.length ?? 0 > 0" class="skipstop-row">
               …
             </div>
-            <div v-else-if="pst.st">
-              <template v-if="pst.st.departure.estimated && showRt">
-                {{ $filters.reformatHM(pst.st.departure.estimated) }} &nbsp;<o-icon
-                  variant="success"
-                  size="small"
-                  icon="wifi"
-                />
-              </template><template v-else>
-                {{ $filters.reformatHM(pst.st.departure.scheduled) }}
-              </template>
+            <div v-else-if="pst.st && pst.st.departure.estimated && showRt" :title="'trip: '+row.trip.trip_id">
+              {{ $filters.reformatHM(pst.st.departure.estimated) }} &nbsp;<o-icon
+                variant="success"
+                size="small"
+                icon="wifi"
+                :title="'scheduled: '+pst.st.departure.scheduled"
+              />
+            </div><div v-else-if="pst.st" :title="row.trip.trip_id">
+              {{ $filters.reformatHM(pst.st.departure.scheduled) }}
             </div>
             <div v-else>
               -
