@@ -29,18 +29,14 @@
               …
             </div>
             <div v-else-if="pst.st">
-              <template v-if="pst.st.departure.estimated">
+              <template v-if="pst.st.departure.estimated && showRt">
                 {{ $filters.reformatHM(pst.st.departure.estimated) }} &nbsp;<o-icon
                   variant="success"
                   size="small"
                   icon="wifi"
                 />
               </template><template v-else>
-                {{ $filters.reformatHM(pst.st.departure.scheduled) }} &nbsp;<o-icon
-                  variant="success"
-                  size="small"
-                  icon="blank"
-                />
+                {{ $filters.reformatHM(pst.st.departure.scheduled) }}
               </template>
             </div>
             <div v-else>
@@ -65,6 +61,7 @@ export default {
       type: Number,
       default: 100
     },
+    showRt: { type: Boolean, default: false },
     mergedPattern: {
       type:
         Object as PropType<MergedPattern>,

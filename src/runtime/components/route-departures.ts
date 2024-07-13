@@ -242,7 +242,7 @@ export function timepointTables(trips: Array<Trip>): MergedPattern {
   const headsignUniqueKeys = [...headsignCount.keys()].sort((a, b) => {
     const at = headsignCount.get(a) ?? 0
     const bt = headsignCount.get(b) ?? 0
-    return at - bt
+    return bt - at
   })
   const title = headsignUniqueKeys.join(', ')
 

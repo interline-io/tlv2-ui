@@ -39,6 +39,12 @@
                 Stop Pattern
               </o-checkbox>
             </o-field>
+
+            <o-field label="Debug">
+              <o-checkbox v-model="showRt">
+                Show GTFS-RT
+              </o-checkbox>
+            </o-field>
           </div>
         </o-dropdown>
       </o-field>
@@ -121,6 +127,7 @@ export default {
       groupByDirection: true,
       groupByHeadsign: false,
       groupByStopPattern: false,
+      showRt: true,
       error: '',
       serviceDate
     }
