@@ -195,7 +195,7 @@ async function checkToken() {
       debugLog('checkToken: got token:', token)
     } catch (error) {
       // Invalid token
-      debugLog('checkToken: error in getTokenSilently; must authorize again')
+      debugLog('checkToken: error in getTokenSilently; must authorize again:', error)
       mustReauthorize = true
     }
   } else {
