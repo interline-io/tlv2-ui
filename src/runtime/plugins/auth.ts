@@ -167,7 +167,7 @@ async function buildUser() {
 // Check the client token, return { token, loggedIn, mustReauthorize }
 // mustReauthorize will be set to true if a user is logged in but token fails
 async function checkToken() {
-  const token = ''
+  let token = ''
   let loggedIn = false
   let mustReauthorize = false
   const client = getAuth0Client()
@@ -179,7 +179,8 @@ async function checkToken() {
     loggedIn = true
     try {
       // Everything is OK
-      await client.getTokenSilently({ timeoutInSeconds: 1, detailedResponse: true })
+      const tokenResponse = await client.getTokenSilently({ timeoutInSeconds: 1, detailedResponse: true })
+      token = tokenResponse.access_token
     } catch (error) {
       // Invalid token
       debugLog('checkToken: error in getTokenSilently; must authorize again:', error)
