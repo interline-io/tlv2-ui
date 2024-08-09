@@ -178,7 +178,7 @@ async function buildUser() {
 // mustReauthorize will be set to true if a user is logged in but token fails
 async function checkToken() {
   debugLog('checkToken: start')
-  let token = ''
+  const token = ''
   let loggedIn = false
   let mustReauthorize = false
   const client = getAuth0Client()
@@ -191,7 +191,9 @@ async function checkToken() {
     loggedIn = true
     try {
       // Everything is OK
-      token = await client.getTokenSilently()
+      const tokenResponse = await client.getTokenSilently({ timeoutInSeconds: 1, detailedResponse: true })
+      console.log('checkToken: tokenResponse:', tokenResponse)
+      const token = tokenResponse.access_token
       debugLog('checkToken: got token:', token)
     } catch (error) {
       // Invalid token
