@@ -24,7 +24,6 @@ export function getAuth0Client() {
     return authClient
   }
 
-  debugLog('getAuth0Client: start')
   // Check if we are configured correctly
   const config = useRuntimeConfig()
   if (config.public.auth0ClientId) {
@@ -48,7 +47,6 @@ export function getAuth0Client() {
   // Set as initialized
   // (even if not available, to avoid future runtime config check)
   authInit = true
-  debugLog('getAuth0Client: done')
   return authClient
 }
 
@@ -58,35 +56,30 @@ export function getAuth0Client() {
 
 // JWT
 export const useJwt = async() => {
-  debugLog('useJwt: start')
   const { token, mustReauthorize } = await checkToken()
   if (mustReauthorize) {
     debugLog('useJwt: mustReauthorize')
     await useLogin(null)
     return ''
   }
-  debugLog('useJwt: done')
   return token
 }
 
 export const useUser = () => {
-  debugLog('useUser: start')
   const user = useStorage('user', {})
-  debugLog('useUser: done')
   return new User(user?.value || {})
 }
 
 // Login
 export const useLogin = async(targetUrl: null | string) => {
-  debugLog('useLogin: start')
+  debugLog('useLogin')
   targetUrl = targetUrl || `${window?.location?.pathname}${window?.location?.search}`
-  debugLog('useLogin: login, targetUrl:', targetUrl)
   return navigateTo(await getAuthorizeUrl(targetUrl), { external: true })
 }
 
 // Logout
 export const useLogout = async() => {
-  debugLog('auth: logout')
+  debugLog('useLogout')
   return navigateTo(await getLogoutUrl(logoutUri), { external: true })
 }
 
@@ -117,16 +110,13 @@ export class User {
 }
 
 function clearUser() {
-  debugLog('clearUser: start')
+  debugLog('clearUser')
   const checkUser = useStorage('user', {})
   checkUser.value = new User({ loggedIn: false })
-  debugLog('clearUser: done')
 }
 
 // Build the user from auth0 data and GraphQL me response
 async function buildUser() {
-  debugLog('buildUser: start')
-
   // Build user object
   const client = getAuth0Client()
   if (!client) {
@@ -134,6 +124,7 @@ async function buildUser() {
   }
 
   // Get auth0 user data
+  debugLog('buildUser')
   const auth0user = await client.getUser()
   debugLog('buildUser: auth0 user:', auth0user)
 
@@ -167,7 +158,6 @@ async function buildUser() {
     checked: Date.now()
   })
   checkUser.value = builtUser
-  debugLog('buildUser: done:', builtUser)
 }
 
 /// ////////////////////
@@ -177,7 +167,6 @@ async function buildUser() {
 // Check the client token, return { token, loggedIn, mustReauthorize }
 // mustReauthorize will be set to true if a user is logged in but token fails
 async function checkToken() {
-  debugLog('checkToken: start')
   let token = ''
   let loggedIn = false
   let mustReauthorize = false
@@ -187,12 +176,11 @@ async function checkToken() {
     return { token, loggedIn, mustReauthorize }
   }
   if (await client.isAuthenticated()) {
-    debugLog('checkToken: loggedIn')
     loggedIn = true
     try {
       // Everything is OK
-      token = await client.getTokenSilently()
-      debugLog('checkToken: got token:', token)
+      const tokenResponse = await client.getTokenSilently({ timeoutInSeconds: 1, detailedResponse: true })
+      token = tokenResponse.access_token
     } catch (error) {
       // Invalid token
       debugLog('checkToken: error in getTokenSilently; must authorize again:', error)
@@ -201,13 +189,11 @@ async function checkToken() {
   } else {
     debugLog('checkToken: not logged in')
   }
-  debugLog('checkToken: done')
   return { token, loggedIn, mustReauthorize }
 }
 
 // Get an auth0 /authorize url that also includes targetUrl in app state
 async function getAuthorizeUrl(targetUrl: null | string): Promise<string> {
-  debugLog('getAuthorizeUrl: start')
   targetUrl = targetUrl || '/'
   const client = getAuth0Client()
   if (!client) {
@@ -220,13 +206,11 @@ async function getAuthorizeUrl(targetUrl: null | string): Promise<string> {
       authorizationUrl = url
     }
   })
-  debugLog('getAuthorizeUrl: done')
   return authorizationUrl
 }
 
 // Get an auth0 logout url
 async function getLogoutUrl(targetUrl: null | string): Promise<string> {
-  debugLog('getLogoutUrl: start')
   targetUrl = targetUrl || '/'
   const client = getAuth0Client()
   if (!client) {
@@ -241,7 +225,6 @@ async function getLogoutUrl(targetUrl: null | string): Promise<string> {
       authorizationUrl = url
     }
   })
-  debugLog('getLogoutUrl: done')
   return authorizationUrl
 }
 
@@ -255,8 +238,6 @@ function debugLog(msg: string, ...args: any) {
 
 export default defineNuxtPlugin(() => {
   addRouteMiddleware('global-auth', async (to, _) => {
-    debugLog('auth mw: start')
-
     // Check if client is configured
     const client = getAuth0Client()
     if (!client) {
@@ -267,21 +248,21 @@ export default defineNuxtPlugin(() => {
     const query = to?.query
     if (query && query.code && query.state) {
       // OK login, set client auth details and get targetUrl from appState
-      console.log('auth mw: handle login')
+      debugLog('auth mw: handle login')
       const { appState } = await client.handleRedirectCallback()
       await buildUser()
-      console.log('auth mw: redirecting to', appState.targetUrl)
+      debugLog('auth mw: redirecting to', appState.targetUrl)
       return navigateTo(appState.targetUrl || '/')
     }
 
     // Force login
     const { loggedIn, mustReauthorize } = await checkToken()
     if (mustReauthorize) {
-      console.log('auth mw: mustReauthorize')
+      debugLog('auth mw: mustReauthorize')
       return navigateTo(await getAuthorizeUrl(to.fullPath), { external: true })
     }
     if (requireLogin && !loggedIn) {
-      console.log('auth mw: force login')
+      debugLog('auth mw: force login')
       return navigateTo(await getAuthorizeUrl(to.fullPath), { external: true })
     }
 
@@ -291,14 +272,13 @@ export default defineNuxtPlugin(() => {
       // Recheck user every 10 minutes
       const lastChecked = Date.now() - (user?.checked || 0)
       if (lastChecked > RECHECK_INTERVAL) {
-        console.log('auth mw: recheck user', 'lastChecked:', lastChecked, 'recheck interval:', RECHECK_INTERVAL)
+        debugLog('auth mw: recheck user', 'lastChecked:', lastChecked, 'recheck interval:', RECHECK_INTERVAL)
         buildUser() // don't await
       }
     } else {
       // Clear any stale user state
       clearUser()
     }
-    debugLog('auth mw: done')
   }, {
     global: true
   })
