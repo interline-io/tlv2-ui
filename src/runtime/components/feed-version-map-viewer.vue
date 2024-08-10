@@ -144,7 +144,7 @@ export default {
         }
         const geom = feature.geometries[0]
         let routeColor = feature.route_color
-        if (routeColor && routeColor.substr(0, 1) !== '#') {
+        if (routeColor && routeColor.length > 2 && routeColor.substr(0, 1) !== '#') {
           routeColor = '#' + routeColor
         }
         const headwaySorted = (feature.headways || [])

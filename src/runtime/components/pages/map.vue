@@ -9,9 +9,9 @@
         :route-tiles="routeTiles"
         :stop-tiles="stopTiles"
         :zoom="initialZoom"
-        :center="center"
-        :hash="true"
-        :marker-coords="searchCoords"
+        :center="initialCenter"
+        :hash="useHash"
+        :marker-coords="markerCoords"
         map-class="tall"
         @set-zoom="setZoom"
         @set-agency-features="setAgencyFeatures"
@@ -21,39 +21,39 @@
       <div class="tl-map-panel tl-map-panel-tabs">
         <o-tabs v-model="activeTab" class="tl-tabs block" position="centered" type="boxed">
           <o-tab-item id="routes" label="Routes">
-            <tl-map-route-list
-              v-if="activeTab === 1"
-              :current-zoom="currentZoom"
-              :agency-features="agencyFeatures"
-              :is-component-modal-active="isComponentModalActive"
-              @close="isComponentModalActive = false"
-            >
-              <h6 class="title is-6">
-                Select routes
-              </h6>
-              <div v-if="currentZoom < 8">
-                Zoom in to select routes and to see stop points.
-              </div>
-              <div v-else>
-                Use your cursor to highlight routes and see their names here. <br>Click for more details.
-              </div>
-            </tl-map-route-list>
+            <div v-if="currentZoom < 8">
+              Zoom in to select routes and to see stop points.
+            </div>
+            <div v-else>
+              <tl-map-route-list
+                v-if="activeTab === 1"
+                :agency-features="agencyFeatures"
+                :is-component-modal-active="isComponentModalActive"
+                @close="isComponentModalActive = false"
+              >
+                <h6 class="title is-6">
+                  Select routes
+                </h6>
+                <div>
+                  Use your cursor to highlight routes and see their names here. <br>Click for more details.
+                </div>
+              </tl-map-route-list>
+            </div>
             <p v-if="Object.keys(agencyFeatures).length == 0" class="content block is-small pt-2">
               <a href="https://www.transit.land/documentation/vector-tiles" target="_blank">Learn more about Transitland v2 Vector Tiles</a>
             </p>
           </o-tab-item>
           <o-tab-item id="departures" label="Departures">
             <tl-map-search
-              :zoom="currentZoom"
               :bbox="currentBbox"
-              @set-geolocation="setGeolocation"
+              @set-location="setLocation"
             />
             <tl-stop-departures
               v-if="activeTab === 2"
               :show-auto-refresh="true"
               :show-fallback-selector="true"
               :show-radius-selector="true"
-              :search-coords="searchCoords"
+              :search-coords="markerCoords"
             />
             <p class="content block is-small pt-2">
               <a href="https://www.transit.land/documentation/rest-api/departures" target="_blank">Learn more about Transitland v2 REST API stop departures endpoint</a>
@@ -86,21 +86,36 @@ import { navigateTo } from '#imports'
 
 export default {
   props: {
-    searchCoords: {
-      type: Array,
-      default() {
-        return null
-      }
+    lon: {
+      type: [String, Number], default () { return null }
+    },
+    lat: {
+      type: [String, Number], default () { return null }
     }
   },
   data () {
-    const zoom = this.searchCoords ? 16 : 1.5
-    const activeTab = this.searchCoords ? 2 : 1
+    let center = [-119.49, 12.66]
+    let zoom = 1.5
+    let activeTab = 1
+    const useHash = true
+    let searchCoords = null
+    let markerCoords = null
+    if (this.lon && this.lat) {
+      center = [parseFloat(this.lon), parseFloat(this.lat)]
+      searchCoords = center
+      markerCoords = center
+      zoom = 16
+      activeTab = 2
+    }
     return {
       activeTab,
+      useHash,
+      searchCoords,
+      markerCoords,
       initialZoom: zoom,
+      initialCenter: center,
       currentZoom: zoom,
-      center: this.searchCoords || [-119.49, 12.66],
+      centerCenter: center,
       isComponentModalActive: false,
       agencyFeatures: {},
       showGeneratedGeometries: true,
@@ -124,12 +139,6 @@ export default {
     activeTab () {
       // Hacky; always set modal back to empty when switching tabs
       this.isComponentModalActive = false
-      this.setCoords(null)
-    }
-  },
-  mounted() {
-    if (this.searchCoords) {
-      this.setCoords(this.searchCoords)
     }
   },
   methods: {
@@ -140,27 +149,39 @@ export default {
     setAgencyFeatures (e) {
       this.agencyFeatures = e
     },
-    setCoords (coords) {
-      console.log('setCoords:', coords)
-      if (coords && coords.length === 2) {
-        navigateTo({
-          path: this.$route.path,
-          query: { lon: coords[0], lat: coords[1] },
-          hash: ''
-        })
-      } else {
-        navigateTo({
-          path: this.$route.path,
+    async setCoords (coords) {
+      const pathNoHash = this.$route.path.split('#')[0]
+      if (!coords || coords.length !== 2) {
+        this.markerCoords = null
+        this.searchCoords = null
+        await navigateTo({
+          path: pathNoHash,
           query: { }
+        })
+        return
+      }
+      // Re-initialize map
+      if (!this.searchCoords) {
+        this.initialZoom = 16
+        this.initialCenter = coords
+      }
+      this.searchCoords = coords
+      this.markerCoords = coords
+      // Update query parameters, split off any hash
+      if (coords && coords.length === 2) {
+        await navigateTo({
+          path: pathNoHash,
+          query: { lon: coords[0].toFixed(5), lat: coords[1].toFixed(5) }
         })
       }
     },
     setZoom (v) {
       this.currentZoom = v
     },
-    setGeolocation (coords) {
+    setLocation (coords) {
+      this.markerCoords = null
+      this.searchCoords = null
       this.setCoords(coords)
-      this.center = coords
     },
     mapClick (e) {
       if (this.activeTab === 2) {
@@ -218,9 +239,8 @@ export default {
     max-width:80vw;
     overflow-y:auto;
 }
-
-.tl-map-panel .dropdown-content{
-    position: fixed;
-    max-width:80%;
+.tl-map-search-autocomplete{
+  width:450px;
 }
+
 </style>
