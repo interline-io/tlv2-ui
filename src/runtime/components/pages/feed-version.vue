@@ -157,7 +157,7 @@
 
         <slot v-if="showDownload" name="download" :entity="entity">
           <div class="is-pulled-right">
-            <tl-feed-version-download :feed-onestop-id="feedKey" :feed-version-sha1="feedVersionKey" />
+            <tl-feed-version-download :feed-onestop-id="pathKey" :feed-version-sha1="feedVersionKey" />
           </div>
         </slot>
       </div>
@@ -324,7 +324,6 @@ export default {
     showPermissions: { type: Boolean, default: false },
     showUserInformation: { type: Boolean, default: false },
     showDownload: { type: Boolean, default: true },
-    feedKey: { type: String, default: '', required: true },
     feedVersionKey: { type: String, default: '', required: true },
     showImportStatus: { type: Boolean, default: true }
   },
@@ -375,7 +374,7 @@ export default {
       return `${this.entity.feed.onestop_id} • ${this.entity.sha1} • Feed version`
     },
     staticDescription () {
-      return `An archived GTFS feed version for ${this.operatorOrAgencyNames} from the feed with a Onestop ID of ${this.feedKey} first fetched at ${this.entity.fetched_at}. This feed version contains ${this.rowCount['agency.txt'] ? this.rowCount['agency.txt'].toLocaleString() : '-'} agencies, ${this.rowCount['routes.txt'] ? this.rowCount['routes.txt'].toLocaleString() : '-'} routes, and ${this.rowCount['stops.txt'] ? this.rowCount['stops.txt'].toLocaleString() : '-'} stops.`
+      return `An archived GTFS feed version for ${this.operatorOrAgencyNames} from the feed with a Onestop ID of ${this.pathKey} first fetched at ${this.entity.fetched_at}. This feed version contains ${this.rowCount['agency.txt'] ? this.rowCount['agency.txt'].toLocaleString() : '-'} agencies, ${this.rowCount['routes.txt'] ? this.rowCount['routes.txt'].toLocaleString() : '-'} routes, and ${this.rowCount['stops.txt'] ? this.rowCount['stops.txt'].toLocaleString() : '-'} stops.`
     }
   },
   methods: {
