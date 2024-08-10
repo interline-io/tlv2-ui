@@ -336,14 +336,11 @@ export default {
       client: 'transitland',
       query: q,
       variables () {
-        return {
-          onestopId: this.feedKey
-        }
+        return this.searchKey
       }
     }
   },
   props: {
-    feedKey: { type: String, default: '', required: true },
     showPermissions: { type: Boolean, default: false },
     showUpload: { type: Boolean, default: false },
     showDownloadColumn: { type: Boolean, default: true },
