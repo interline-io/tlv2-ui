@@ -61,8 +61,8 @@ export default defineEventHandler((event) => {
   const config = useRuntimeConfig()
   return proxyHandler(
     event,
-    config.proxyBase,
-    config.allowedReferer,
-    config.graphqlApikey
+    String(config.proxyBase),
+    String(config.allowedReferer),
+    String(config.graphqlApikey)
   )
 })
