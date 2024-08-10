@@ -53,7 +53,8 @@
         <h6 class="title is-6">
           No results
         </h6>
-        <div>Unfortunately, no departures were found at this location for the selected location and time. Try increasing the search radius or selecting the "fallback service day" option.</div>
+        <p>Unfortunately, no departures were found at this location for the selected location and time.</p>
+        <p>Try increasing the search radius or selecting the "fallback service day" option.</p>
       </div>
       <div v-else>
         <div v-for="(ss, sskey) of filteredStopsGroupRoutes" :key="sskey">
@@ -164,7 +165,7 @@ export default {
   layout: 'map',
   props: {
     searchCoords: { type: Array, default () { return null } },
-    searchRadius: { type: Number, default () { return 100 } },
+    searchRadius: { type: Number, default () { return 200 } },
     nextSeconds: { type: Number, default () { return 7200 } },
     routesPerAgency: { type: Number, default () { return 10 } },
     showDateSelector: { type: Boolean, default () { return false } },

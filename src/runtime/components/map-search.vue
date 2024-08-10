@@ -1,25 +1,25 @@
 <template>
   <div>
-    <o-field grouped>
-      <o-autocomplete
-        expanded
-        placeholder="Search stops. Example: Penn Station"
-        root-class="is-expanded m-0 mr-2"
-        max-height="800px"
-        max-width="600px"
-        :data="stopSearch"
-        :clearable="true"
-        icon="magnify"
-        @typing="typing"
-        @select="option => setLocation(option.geometry.coordinates)"
-      >
-        <template #default="props">
-          {{ props.option.stop_name }}
-          <div v-for="rs of props.option.route_stops" :key="rs.route.id" class="clearfix tag">
-            {{ rs.route.agency.agency_name }} :{{ rs.route.route_short_name }}
-          </div>
-        </template>
-      </o-autocomplete>
+    <o-field grouped expanded>
+      <o-field expanded>
+        <o-autocomplete
+          class="tl-map-search-autocomplete"
+          expanded
+          placeholder="Search stops. Example: Penn Station"
+          :data="stopSearchFiltered"
+          :clearable="true"
+          icon="magnify"
+          @typing="typing"
+          @select="option => setLocation(option.geometry.coordinates)"
+        >
+          <template #default="props">
+            {{ props.option.stop_name }}
+            <div v-for="rs of props.option.route_stops" :key="rs.route.id" class="clearfix tag">
+              {{ rs.route.agency.agency_name }} :{{ rs.route.route_short_name }}
+            </div>
+          </template>
+        </o-autocomplete>
+      </o-field>
       <o-field>
         <span v-if="!locationUse" class="button" @click="watchLocation"><o-icon icon="crosshairs" /></span>
         <span v-if="locationError" class="button"><o-icon icon="crosshairs" /></span>
@@ -28,7 +28,7 @@
       </o-field>
     </o-field>
     <tl-msg-warning v-if="locationError">
-      There was an error trying to obtain your location. {{ locationError }}
+      There was an error trying to obtain your location.
     </tl-msg-warning>
   </div>
 </template>
@@ -64,7 +64,7 @@ export default {
     boundedStopsQuery: {
       query: stopSearchQuery,
       skip () {
-        return this.search.length < this.minSearchLength || !this.bboxPolygon || this.zoom < 8
+        return this.search.length < this.minSearchLength || !this.bboxPolygon
       },
       variables () {
         return {
@@ -96,11 +96,12 @@ export default {
     }
   },
   props: {
-    bbox: { type: Array, default () { return null } },
-    zoom: { type: Number, default () { return 0 } }
+    bbox: { type: Array, default () { return null } }
   },
+  emits: ['setLocation'],
   data () {
     return {
+      geo: null,
       search: '',
       error: null,
       locationError: null,
@@ -127,6 +128,9 @@ export default {
       }
       return ret
     },
+    stopSearchFiltered () {
+      return this.stopSearch
+    },
     bboxPolygon () {
       if (!this.bbox) { return null }
       const sw = this.bbox[0]
@@ -142,27 +146,33 @@ export default {
     }
   },
   watch: {
-    coords () {
-      const { error } = useGeolocation()
-      this.locationError = error
-      if (this.coords.accuracy === 0) {
+    'geo.coords' () {
+      const geo = this.geo
+      if (!geo || !geo.coords) {
         return
       }
-      this.setLocation([this.coords.longitude, this.coords.latitude])
+      if (geo.coords.longitude < -180 || geo.coords.longitude > 180 || geo.coords.latitude < -90 || geo.coords.latitude > 90) {
+        console.log('geo: bad coords:', geo.coords)
+        return
+      }
+      this.locationUse = false
+      this.locationLoading = false
+      this.setLocation([geo.coords.longitude, geo.coords.latitude])
+      if (geo.pause) {
+        console.log('geo: pause')
+        geo.pause()
+      }
     }
   },
   methods: {
     setLocation (coords) {
-      this.$emit('setGeolocation', coords)
-      const { pause } = useGeolocation()
-      pause()
-      this.locationLoading = false
+      this.$emit('setLocation', coords)
     },
     watchLocation () {
+      console.log('watchLocation: start')
       this.locationUse = true
       this.locationLoading = true
-      const { coords } = useGeolocation()
-      this.coords = coords
+      this.geo = useGeolocation()
     },
     typing (val) {
       if (val.length >= this.minSearchLength) {
