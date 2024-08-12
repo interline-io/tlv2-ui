@@ -21,8 +21,15 @@
       <div class="tl-map-panel tl-map-panel-tabs">
         <o-tabs v-model="activeTab" class="tl-tabs block" position="centered" type="boxed">
           <o-tab-item id="routes" label="Routes">
+            <!-- <tl-map-search
+              :bbox="currentBbox"
+              :include-routes="true"
+              @set-location="setLocation"
+            /> -->
             <div v-if="currentZoom < 8">
-              Zoom in to select routes and to see stop points.
+              <h6 class="title is-6">
+                Zoom in to select routes and to see stop points.
+              </h6>
             </div>
             <div v-else>
               <tl-map-route-list
@@ -46,6 +53,7 @@
           <o-tab-item id="departures" label="Departures">
             <tl-map-search
               :bbox="currentBbox"
+              :include-stops="true"
               @set-location="setLocation"
             />
             <tl-stop-departures
