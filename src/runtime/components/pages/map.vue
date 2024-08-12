@@ -20,7 +20,7 @@
       />
       <div class="tl-map-panel tl-map-panel-tabs">
         <o-tabs v-model="activeTab" class="tl-tabs block" position="centered" type="boxed">
-          <o-tab-item id="routes" label="Routes">
+          <o-tab-item id="routes" label="Routes & Stops">
             <tl-map-route-list
               v-if="activeTab === 1"
               :current-zoom="currentZoom"
@@ -42,7 +42,7 @@
               <a href="https://www.transit.land/documentation/vector-tiles" target="_blank">Learn more about Transitland v2 Vector Tiles</a>
             </p>
           </o-tab-item>
-          <o-tab-item id="departures" label="Departures">
+          <o-tab-item id="departures" label="Real-time Departures">
             <tl-map-search
               :zoom="currentZoom"
               :bbox="currentBbox"
@@ -59,7 +59,36 @@
               <a href="https://www.transit.land/documentation/rest-api/departures" target="_blank">Learn more about Transitland v2 REST API stop departures endpoint</a>
             </p>
           </o-tab-item>
-          <o-tab-item id="options" label="Options">
+          <o-tab-item id="routes" label="Plan a Journey">
+            <o-field label="Start (Origin)">
+              <o-input v-model="routingFromPlace" placeholder="Click map to select an origin point..." />
+              <o-button v-if="routingFromPlace" variant="danger" @click="routingFromPlace = null">
+                <o-icon icon="trash-can" />
+              </o-button>
+            </o-field>
+            <o-field label="End (Destination)">
+              <o-input v-model="routingToPlace" placeholder="Click map to select a destination point" />
+              <o-button v-if="routingToPlace" variant="danger" @click="routingToPlace = null">
+                <o-icon icon="trash-can" />
+              </o-button>
+            </o-field>
+            <o-field label="Date">
+              <o-input v-model="routingDate" />
+            </o-field>
+            <o-field label="Time (Departure)">
+              <o-input v-model="routingTime" />
+            </o-field>
+            <template
+              v-if
+              v-model="routingUrl"
+              <o-input
+              type="textarea"
+            />
+            <o-button type="is-primary" @click="routingPlan">
+              Plan
+            </o-button>
+          </o-tab-item>
+          <o-tab-item id="options" label="Map Options">
             <div class="field">
               <o-checkbox
                 v-model="showGeneratedGeometries"
@@ -96,6 +125,9 @@ export default {
   data () {
     const zoom = this.searchCoords ? 16 : 1.5
     const activeTab = this.searchCoords ? 2 : 1
+    const now = new Date()
+    const routingDate = now.toISOString().split('T')[0]
+    const routingTime = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`
     return {
       activeTab,
       initialZoom: zoom,
@@ -117,7 +149,22 @@ export default {
         url: `${this.$config.public.apiBase}/tiles/stops/tiles/{z}/{x}/{y}.pbf`,
         minzoom: 14,
         maxzoom: 14
-      }
+      },
+      routingFromPlace: null,
+      routingToPlace: null,
+      routingDate,
+      routingTime
+    }
+  },
+  computed: {
+    routingUrl() {
+      return 'https://transit.land/api/v2/routing/otp/plan?' + new URLSearchParams({
+        fromPlace: this.routingFromPlace,
+        toPlace: this.routingToPlace,
+        date: this.routingDate,
+        time: this.routingTime,
+        apikey: 'NbzGUC8g8VFcT8tnUiOSk0xaxkY5bg7k' // TODO: remove; this is Drew's
+      }).toString()
     }
   },
   watch: {
@@ -163,14 +210,26 @@ export default {
       this.center = coords
     },
     mapClick (e) {
+      // departures tab
       if (this.activeTab === 2) {
         this.setCoords([e.lngLat.lng, e.lngLat.lat])
+      // routing tab
+      } else if (this.activeTab === 3) {
+        if (this.routingFromPlace == null) {
+          this.routingFromPlace = [e.lngLat.lng, e.lngLat.lat].join(',')
+        } else if (this.routingToPlace == null) {
+          this.routingToPlace = [e.lngLat.lng, e.lngLat.lat].join(',')
+        }
+      // routes & stops or map options
       } else {
         this.setCoords(null)
       }
       if (Object.keys(this.agencyFeatures).length > 0) {
         this.isComponentModalActive = true
       }
+    },
+    routingPlan () {
+      // HERE
     }
   }
 }
