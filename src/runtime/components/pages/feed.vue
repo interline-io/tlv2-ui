@@ -233,8 +233,8 @@ import { gql } from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
 
 const q = gql`
-query($onestopId: String) {
-  entities: feeds(where: {onestop_id: $onestopId}, limit: 1) {
+query($pathKey: String) {
+  entities: feeds(where: {onestop_id: $pathKey}, limit: 1) {
     id
     onestop_id
     name
@@ -336,7 +336,7 @@ export default {
       client: 'transitland',
       query: q,
       variables () {
-        return this.searchKey
+        return { pathKey: this.pathKey }
       }
     }
   },
