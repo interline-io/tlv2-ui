@@ -1,4 +1,4 @@
-import { proxyRequest, getQuery, H3Event, defineEventHandler } from 'h3'
+import { proxyRequest, getQuery, setResponseStatus, H3Event, defineEventHandler } from 'h3'
 import { useRuntimeConfig } from '#imports'
 
 export function proxyHandler(
@@ -24,6 +24,7 @@ export function proxyHandler(
     }
   }
   if (!allowed) {
+    setResponseStatus(event, 404, 'Not Found')
     return { error: `use ${proxyBase}` }
   }
 
