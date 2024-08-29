@@ -4,6 +4,7 @@
       :active="modelValue"
       has-modal-card
       can-cancel
+      :fullscreen="fullscreen"
       @update:model-value="$emit('update:modelValue', $event)"
       @close="close"
     >
@@ -34,7 +35,8 @@ export default {
   props: {
     text: { type: String, default: '+' },
     title: { type: String, default: '' },
-    modelValue: { type: Boolean }
+    modelValue: { type: Boolean },
+    fullscreen: { type: Boolean }
   },
   emits: ['input', 'update:modelValue'],
   data () {
