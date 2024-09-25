@@ -54,7 +54,7 @@
                 <abbr title="General Transit Feed Specification">GTFS</abbr>
               </o-checkbox>
               <o-checkbox v-model="feedSpecs" native-value="GTFS_RT" size="medium">
-                <abbr title="GTFS Realtime">RT</abbr>
+                <abbr title="GTFS Realtime">GTFS RT</abbr>
               </o-checkbox>
               <o-checkbox v-model="feedSpecs" native-value="GBFS" size="medium">
                 <abbr title="General Bikeshare Feed Specification">GBFS</abbr>
