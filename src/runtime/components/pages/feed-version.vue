@@ -7,7 +7,7 @@
     <div v-else-if="entity">
       <slot name="title">
         <tl-title :title="staticTitle" :description="staticDescription">
-          GTFS feed: {{ operatorOrAgencyNames }} version added {{ $filters.formatDate(entity.fetched_at) }} ({{ $filters.fromNow(entity.fetched_at) }})
+          GTFS feed: {{ operatorOrAgencyNames }}
         </tl-title>
       </slot>
 
@@ -111,7 +111,7 @@
             </tr>
           </template>
           <tr>
-            <td>Fetched</td>
+            <td>Added</td>
             <td>{{ $filters.formatDate(entity.fetched_at) }} ({{ $filters.fromNow(entity.fetched_at) }})</td>
           </tr>
           <tr>
