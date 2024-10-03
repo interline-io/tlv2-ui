@@ -51,7 +51,7 @@
               {{ $filters.formatDate(entity.service_window?.feed_start_date) }}
             </p>
             <p v-else class="title">
-              {{ $filters.formatDate(entity.earliest_calendar_date) }} *
+              {{ $filters.formatDate(entity.earliest_calendar_date) }}
             </p>
           </div>
         </div>
@@ -64,7 +64,7 @@
               {{ $filters.formatDate(entity.service_window?.feed_end_date) }}
             </p>
             <p v-else class="title">
-              {{ $filters.formatDate(entity.latest_calendar_date) }} *
+              {{ $filters.formatDate(entity.latest_calendar_date) }}
             </p>
           </div>
         </div>
