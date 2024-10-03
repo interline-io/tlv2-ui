@@ -6,7 +6,7 @@
     <o-button v-else-if="loading" disabled>
       Downloading... please wait.
     </o-button>
-    <o-button v-else variant="success" icon-left="download" @click="download">
+    <o-button v-else variant="primary" icon-left="download" @click="download">
       {{ text }}
     </o-button>
   </div>
