@@ -53,3 +53,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+dd {
+  margin-left:20px;
+}
+</style>

@@ -282,7 +282,7 @@ query($pathKey: String) {
       fetch_error
       fetched_at
     }
-    feed_versions(limit:100) {
+    most_recent_feed_version: feed_versions(limit:1) {
       id
       sha1
       earliest_calendar_date
@@ -300,6 +300,9 @@ query($pathKey: String) {
         feed_contact_email
         feed_contact_url
       }      
+    }
+    feed_versions(limit:100) {
+      id
     }
     feed_state {
       id
@@ -366,7 +369,7 @@ export default {
       return this.entity?.spec?.toUpperCase()?.replace('_', '-')
     },
     mostRecentFeedInfo () {
-      return this.entity?.feed_versions?.length > 0 ? this.entity.feed_versions[0]?.feed_infos[0] : null
+      return this.entity?.most_recent_feed_version?.length > 0 ? this.entity.most_recent_feed_version[0]?.feed_infos[0] : null
     },
     lastFetch () {
       return first(this.entity.last_fetch)
