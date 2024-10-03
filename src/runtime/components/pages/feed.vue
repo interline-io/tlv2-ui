@@ -17,7 +17,7 @@
             <tbody>
               <tr>
                 <td>
-                  <o-tooltip dashed label="A globally unique identifier for this feed">
+                  <o-tooltip trigger-class="dashed" label="A globally unique identifier for this feed">
                     Onestop ID
                   </o-tooltip>
                 </td>
@@ -27,7 +27,7 @@
               </tr>
               <tr>
                 <td>
-                  <o-tooltip dashed label="Data specification or format for this feed">
+                  <o-tooltip trigger-class="dashed" label="Data specification or format for this feed">
                     Format
                   </o-tooltip>
                 </td>
@@ -64,7 +64,7 @@
 
               <tr>
                 <td>
-                  <o-tooltip dashed label="Last time a fetch successfully returned valid GTFS data">
+                  <o-tooltip trigger-class="dashed" label="Last time a fetch successfully returned valid GTFS data">
                     Last Fetch
                   </o-tooltip>
                 </td>
@@ -81,7 +81,7 @@
 
               <tr v-if="lastFetch && lastFetch.fetch_error">
                 <td>
-                  <o-tooltip dashed label="Error message from last fetch attempt">
+                  <o-tooltip trigger-class="dashed" label="Error message from last fetch attempt">
                     Fetch Error
                   </o-tooltip>
                 </td>

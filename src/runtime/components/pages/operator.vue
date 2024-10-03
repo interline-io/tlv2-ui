@@ -18,7 +18,7 @@
           <table class="table is-borderless property-list tl-props">
             <tr>
               <td>
-                <o-tooltip dashed label="A globally unique identifier for this operator">
+                <o-tooltip trigger-class="dashed" label="A globally unique identifier for this operator">
                   Onestop ID
                 </o-tooltip>
               </td>
@@ -26,7 +26,7 @@
             </tr>
             <tr>
               <td>
-                <o-tooltip dashed multiline label="Matched agencies; see 'Sources Feed(s)' below for full details">
+                <o-tooltip trigger-class="dashed" multiline label="Matched agencies; see 'Sources Feed(s)' below for full details">
                   Agencies
                 </o-tooltip>
               </td>
@@ -40,7 +40,7 @@
             </tr>
             <tr>
               <td>
-                <o-tooltip dashed multiline label="Operators and their service areas are matched against place names from the Natural Earth project">
+                <o-tooltip trigger-class="dashed" multiline label="Operators and their service areas are matched against place names from the Natural Earth project">
                   Locations
                 </o-tooltip>
               </td>
@@ -80,7 +80,7 @@
             </tr>
             <tr v-if="entity && entity.tags && Object.keys(entity.tags).length > 0">
               <td>
-                <o-tooltip dashed multiline label="Links between this data and other catalogs and data sources on the Internet">
+                <o-tooltip trigger-class="dashed" multiline label="Links between this data and other catalogs and data sources on the Internet">
                   ID Crosswalk
                 </o-tooltip>
               </td>
@@ -148,7 +148,7 @@
                   {{ row.target_match.agency_name }}
                 </template>
                 <template v-else-if="row.feed_spec == 'GTFS'">
-                  <o-tooltip dashed label="The active version of this source feed does not contain a matching agency">
+                  <o-tooltip trigger-class="dashed" label="The active version of this source feed does not contain a matching agency">
                     <o-icon icon="alert" />
                   </o-tooltip>
                 </template>

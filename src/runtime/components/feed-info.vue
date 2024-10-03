@@ -1,5 +1,5 @@
 <template>
-  <dl class="content">
+  <dl>
     <template v-if="feedPublisherName">
       <dt>Publisher</dt>
       <dd>
@@ -28,14 +28,6 @@
       <template v-if="feedVersion">
         <dt>Version name</dt>
         <dd>{{ feedVersion }}</dd>
-      </template>
-      <template v-if="feedStartDate">
-        <dt>Start date</dt>
-        <dd>{{ $filters.formatDate(feedStartDate) }}</dd>
-      </template>
-      <template v-if="feedEndDate">
-        <dt>End date</dt>
-        <dd>{{ $filters.formatDate(feedEndDate) }}</dd>
       </template>
     </template>
   </dl>

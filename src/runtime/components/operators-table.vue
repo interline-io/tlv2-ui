@@ -76,7 +76,7 @@
             <td>
               <o-tooltip
                 :label="row.other_places.filter((s) => { return s.city_name }).map((s) => { return s.city_name }).join(', ')"
-                dashed
+                trigger-class="dashed"
               >
                 {{ row.adm0_name }}
               </o-tooltip>

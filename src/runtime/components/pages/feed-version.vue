@@ -47,8 +47,11 @@
             <p class="heading">
               Earliest Date
             </p>
-            <p class="title">
-              {{ entity.earliest_calendar_date.substr(0,10) }}
+            <p v-if="entity.service_window?.feed_start_date && entity.service_window?.feed_end_date" class="title">
+              {{ $filters.formatDate(entity.service_window?.feed_start_date) }}
+            </p>
+            <p v-else class="title">
+              {{ $filters.formatDate(entity.earliest_calendar_date) }} *
             </p>
           </div>
         </div>
@@ -57,8 +60,11 @@
             <p class="heading">
               Latest Date
             </p>
-            <p class="title">
-              {{ entity.latest_calendar_date.substr(0,10) }}
+            <p v-if="entity.service_window?.feed_start_date && entity.service_window?.feed_end_date" class="title">
+              {{ $filters.formatDate(entity.service_window?.feed_end_date) }}
+            </p>
+            <p v-else class="title">
+              {{ $filters.formatDate(entity.latest_calendar_date) }} *
             </p>
           </div>
         </div>
@@ -118,6 +124,25 @@
             <td>SHA1</td>
             <td>
               <tl-safelink :text="entity.sha1" />
+            </td>
+          </tr>
+
+          <tr>
+            <td>Service</td>
+            <td>
+              <o-tooltip v-if="entity.service_window?.feed_start_date && entity.service_window?.feed_end_date" trigger-class="dashed">
+                {{ $filters.formatDate(entity.service_window?.feed_start_date) }} to {{ $filters.formatDate(entity.service_window?.feed_end_date) }}
+                <template #content>
+                  <p>These service dates are sourced from the information in <code>feed_info.txt</code>.</p>
+                  <p>The full span of service contained in <code>calendar.txt</code> is {{ $filters.formatDate(entity.earliest_calendar_date) }} to {{ $filters.formatDate(entity.latest_calendar_date) }}</p>
+                </template>
+              </o-tooltip>
+              <o-tooltip v-else trigger-class="dashed">
+                {{ $filters.formatDate(entity.earliest_calendar_date) }} to {{ $filters.formatDate(entity.latest_calendar_date) }}
+                <template #content>
+                  <p>The full span of service contained in <code>calendar.txt</code>.</p>
+                </template>
+              </o-tooltip>
             </td>
           </tr>
 
@@ -290,6 +315,12 @@ query ($feedVersionSha1: String!) {
       warning_count
       entity_count
     }
+    service_window {
+      feed_start_date
+      feed_end_date
+      earliest_calendar_date
+      latest_calendar_date
+    }
     agencies {
       id
       agency_name
@@ -406,3 +437,6 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+</style>

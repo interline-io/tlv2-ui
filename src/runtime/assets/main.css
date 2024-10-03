@@ -1,3 +1,7 @@
+.dashed {
+  border-bottom: dashed 1px #ccc;
+}
+
 code {
     word-wrap: none;
     white-space: nowrap;
