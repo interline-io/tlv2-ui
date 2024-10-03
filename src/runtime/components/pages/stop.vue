@@ -25,7 +25,7 @@
               <tr>
                 <td>
                   <o-tooltip
-                    dashed
+                    trigger-class="dashed"
                     label="A globally unique identifier for this route"
                   >
                     Onestop ID

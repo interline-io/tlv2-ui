@@ -24,7 +24,7 @@
         <tbody>
           <tr>
             <td>
-              <o-tooltip dashed :label="`Population (B01001) of ${layerInfo[layer].plural.toLowerCase()} within ${radius}m of stops`">
+              <o-tooltip trigger-class="dashed" :label="`Population (B01001) of ${layerInfo[layer].plural.toLowerCase()} within ${radius}m of stops`">
                 Population
               </o-tooltip>
             </td>
@@ -34,7 +34,7 @@
 
           <tr>
             <td>
-              <o-tooltip dashed :label="`Median household income (B19013) in the past 12 months of ${layerInfo[layer].plural.toLowerCase()} within ${radius}m of stops, weighted by population`">
+              <o-tooltip trigger-class="dashed" :label="`Median household income (B19013) in the past 12 months of ${layerInfo[layer].plural.toLowerCase()} within ${radius}m of stops, weighted by population`">
                 Median Income
               </o-tooltip>
             </td>
@@ -48,7 +48,7 @@
         <thead>
           <tr>
             <th>
-              <o-tooltip dashed label="Means of transportation to work by vehicles available (B08141)">
+              <o-tooltip trigger-class="dashed" label="Means of transportation to work by vehicles available (B08141)">
                 Means of transport to work
               </o-tooltip>
             </th>
