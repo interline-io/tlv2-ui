@@ -1899,12 +1899,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oruga-ui/theme-bulma@npm:^0.4.0":
-  version: 0.4.0
-  resolution: "@oruga-ui/theme-bulma@npm:0.4.0"
+"@oruga-ui/theme-bulma@npm:^0.4.3":
+  version: 0.4.3
+  resolution: "@oruga-ui/theme-bulma@npm:0.4.3"
   dependencies:
     bulma: "npm:1.0.2"
-  checksum: 10/f4f501c5e16eac1d3ecbb3dfd135daa84217aa7b8386a7037c14938dae31798ea594b887750bd22e7cfb2a8f8243a9b7d8ac6e6eee9d0257685fdef45b79ec7f
+  peerDependencies:
+    "@oruga-ui/oruga-next": 0.9.0-pre.2
+  checksum: 10/54d47b25de79e6735aeb3939c1c78d91b666ae1f3d05be49e5b8e17ace256d8c7559721450da6bface8986bbe2398bbf9f6b1110dee410dbe2aac15223687b15
   languageName: node
   linkType: hard
 
@@ -11055,7 +11057,7 @@ __metadata:
     "@nuxt/types": "npm:^2.18.1"
     "@nuxtjs/eslint-config-typescript": "npm:^12.1.0"
     "@oruga-ui/oruga-next": "npm:0.9.0-pre.2"
-    "@oruga-ui/theme-bulma": "npm:^0.4.0"
+    "@oruga-ui/theme-bulma": "npm:^0.4.3"
     "@types/cytoscape": "npm:^3"
     "@types/cytoscape-fcose": "npm:^2"
     "@types/d3-scale-chromatic": "npm:^3"
