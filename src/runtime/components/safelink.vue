@@ -15,8 +15,8 @@
 </template>
 
 <script>
-import { useProgrammatic } from '@oruga-ui/oruga-next/dist/oruga.mjs'
-const { oruga } = useProgrammatic()
+import { useOruga } from '@oruga-ui/oruga-next'
+const oruga = useOruga()
 
 export default {
   props: {
