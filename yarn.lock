@@ -1890,23 +1890,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oruga-ui/oruga-next@npm:0.9.0-pre.2":
-  version: 0.9.0-pre.2
-  resolution: "@oruga-ui/oruga-next@npm:0.9.0-pre.2"
+"@oruga-ui/oruga-next@npm:^0.7.0":
+  version: 0.7.0
+  resolution: "@oruga-ui/oruga-next@npm:0.7.0"
   peerDependencies:
     vue: ^3.0.0
-  checksum: 10/707b3a03a9f1b8d6429c70b791335bb5acbe75a7292416c1b8a029858f133e807b5f00cdddfff408a14f753fd064ce4c0e97c9ccf6e656cfdc5b07f87664d27e
+  checksum: 10/f09789e63df09e45aa09d1d6607bb3cea469fa380ff8b74d8e8e4c962e30e5a8f224345571bdf847fdb6f70e65c8ea3aa2038fc8cba5ebf8f28de97f38213b32
   languageName: node
   linkType: hard
 
-"@oruga-ui/theme-bulma@npm:^0.4.3":
-  version: 0.4.3
-  resolution: "@oruga-ui/theme-bulma@npm:0.4.3"
+"@oruga-ui/theme-bulma@npm:^0.2.11":
+  version: 0.2.11
+  resolution: "@oruga-ui/theme-bulma@npm:0.2.11"
   dependencies:
-    bulma: "npm:1.0.2"
-  peerDependencies:
-    "@oruga-ui/oruga-next": 0.9.0-pre.2
-  checksum: 10/54d47b25de79e6735aeb3939c1c78d91b666ae1f3d05be49e5b8e17ace256d8c7559721450da6bface8986bbe2398bbf9f6b1110dee410dbe2aac15223687b15
+    bulma: "npm:0.9.4"
+  checksum: 10/29c1ab4de733b9435f9bc736467218c71f2a44de9b6518cc7c30128a367471e96d0b04ec16baa667577f08bc9a70920add65e29bf7883580bced5b87f60854d6
   languageName: node
   linkType: hard
 
@@ -4140,10 +4138,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bulma@npm:1.0.2, bulma@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "bulma@npm:1.0.2"
-  checksum: 10/af40425c61fedb88f34801a5a4d7e559bbf0c88ab437caa76a5d685419ce203ddbcaefa4a427ddfc3b4d493a1bbbca68ee549be1ad7684f4ee9ef52fbaece78a
+"bulma@npm:0.9.4, bulma@npm:^0.9.4":
+  version: 0.9.4
+  resolution: "bulma@npm:0.9.4"
+  checksum: 10/d2696c3685d5f2389891c7b6d41be82c8de6deb5ed4ccbc9905383828089caf5d8c08ea7c4d09f4dec2df9358563440fd6c5e10492d1adf9e857e0d3d7b80c50
   languageName: node
   linkType: hard
 
@@ -11056,8 +11054,8 @@ __metadata:
     "@nuxt/module-builder": "npm:^0.7.1"
     "@nuxt/types": "npm:^2.18.1"
     "@nuxtjs/eslint-config-typescript": "npm:^12.1.0"
-    "@oruga-ui/oruga-next": "npm:0.9.0-pre.2"
-    "@oruga-ui/theme-bulma": "npm:^0.4.3"
+    "@oruga-ui/oruga-next": "npm:^0.7.0"
+    "@oruga-ui/theme-bulma": "npm:^0.2.11"
     "@types/cytoscape": "npm:^3"
     "@types/cytoscape-fcose": "npm:^2"
     "@types/d3-scale-chromatic": "npm:^3"
@@ -11069,7 +11067,7 @@ __metadata:
     "@vue/test-utils": "npm:^2.4.6"
     "@vueuse/core": "npm:^10.11.0"
     apollo-upload-client: "npm:^18.0.1"
-    bulma: "npm:^1.0.2"
+    bulma: "npm:^0.9.4"
     cytoscape: "npm:^3.28.1"
     cytoscape-fcose: "npm:^2.2.0"
     d3-scale-chromatic: "npm:^3.0.0"
