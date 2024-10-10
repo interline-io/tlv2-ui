@@ -25,7 +25,7 @@ export default {
 
 <style scoped>
   h1 {
-    margin-top:1em;
-    margin-bottom:1em;
+    margin-top:0.5em;
+    margin-bottom:0.5em;
     }
 </style>
