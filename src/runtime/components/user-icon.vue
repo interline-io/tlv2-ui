@@ -1,50 +1,31 @@
 <template>
-  <client-only placeholder="">
-    <div v-if="user && user.id" class="tl-navbar-user navbar-item has-dropdown is-hoverable">
-      <div class="navbar-item" style="margin:0px;padding:0px">
-        <o-icon icon="account" />
-      </div>
-      <div class="navbar-dropdown is-right">
-        <div class="navbar-item">
-          You are signed in as<br>
-          {{ user.email }}
+  <div>
+    <client-only>
+      <template v-if="user && user.id">
+        <span class="name">{{ user.name }}</span>
+        <span class="button is-primary" @click="useLogout">Sign out</span>
+      </template>
+      <template v-else>
+        <div class="field has-addons">
+          <span class="button is-primary" @click="useLogin">Sign in</span>
+          <a href="https://app.interline.io/products/tlv2_api/orders/new" class="button is-secondary">Sign up</a>
         </div>
-        <div class="navbar-item">
-          <span class="button is-primary " @click="logout">Sign out</span>
-        </div>
-      </div>
-    </div>
-    <div v-else class="tl-navbar-user navbar-item">
-      <div class="field has-addons">
-        <span class="button is-primary" @click="login">Sign in</span>
-        <!-- NOTE: "sign up" button can go here if it's relevant to a given deployment -->
-      </div>
-    </div>
-  </client-only>
+      </template>
+    </client-only>
+  </div>
 </template>
 
-<script>
-import { login, logout, useUser } from '../plugins/auth'
-export default {
-  data() {
-    return {
-      user: useUser()
-    }
-  },
-  methods: {
-    async login() {
-      await login()
-    },
-    async logout() {
-      await logout()
-    }
-  }
-}
+<script lang="ts" setup>
+import { useLogin, useLogout, useUser } from '../plugins/auth'
+const user = useUser()
 </script>
 
 <style scoped>
-.tl-navbar-user {
-  padding-left:0px;
-  padding-right:10px;
+.name {
+  display:inline-block;
+  margin: 0px;
+  margin-right:8px;
+  padding: 8px;
+  font-weight: bold;
 }
 </style>
