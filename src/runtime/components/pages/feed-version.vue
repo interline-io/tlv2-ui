@@ -7,7 +7,7 @@
     <div v-else-if="entity">
       <slot name="title">
         <tl-title :title="staticTitle" :description="staticDescription">
-          GTFS feed: {{ operatorOrAgencyNames }} version added {{ $filters.formatDate(entity.fetched_at) }} ({{ $filters.fromNow(entity.fetched_at) }})
+          GTFS feed: {{ operatorOrAgencyNames }}
         </tl-title>
       </slot>
 
@@ -47,8 +47,11 @@
             <p class="heading">
               Earliest Date
             </p>
-            <p class="title">
-              {{ entity.earliest_calendar_date.substr(0,10) }}
+            <p v-if="entity.service_window?.feed_start_date && entity.service_window?.feed_end_date" class="title">
+              {{ $filters.formatDate(entity.service_window?.feed_start_date) }}
+            </p>
+            <p v-else class="title">
+              {{ $filters.formatDate(entity.earliest_calendar_date) }}
             </p>
           </div>
         </div>
@@ -57,8 +60,11 @@
             <p class="heading">
               Latest Date
             </p>
-            <p class="title">
-              {{ entity.latest_calendar_date.substr(0,10) }}
+            <p v-if="entity.service_window?.feed_start_date && entity.service_window?.feed_end_date" class="title">
+              {{ $filters.formatDate(entity.service_window?.feed_end_date) }}
+            </p>
+            <p v-else class="title">
+              {{ $filters.formatDate(entity.latest_calendar_date) }}
             </p>
           </div>
         </div>
@@ -105,7 +111,7 @@
             </tr>
           </template>
           <tr>
-            <td>Fetched</td>
+            <td>Added</td>
             <td>{{ $filters.formatDate(entity.fetched_at) }} ({{ $filters.fromNow(entity.fetched_at) }})</td>
           </tr>
           <tr>
@@ -118,6 +124,25 @@
             <td>SHA1</td>
             <td>
               <tl-safelink :text="entity.sha1" />
+            </td>
+          </tr>
+
+          <tr>
+            <td>Service</td>
+            <td>
+              <o-tooltip v-if="entity.service_window?.feed_start_date && entity.service_window?.feed_end_date" trigger-class="dashed">
+                {{ $filters.formatDate(entity.service_window?.feed_start_date) }} to {{ $filters.formatDate(entity.service_window?.feed_end_date) }}
+                <template #content>
+                  <p>These service dates are sourced from the information in <code>feed_info.txt</code>.</p>
+                  <p>The full span of service contained in <code>calendar.txt</code> is {{ $filters.formatDate(entity.earliest_calendar_date) }} to {{ $filters.formatDate(entity.latest_calendar_date) }}</p>
+                </template>
+              </o-tooltip>
+              <o-tooltip v-else trigger-class="dashed">
+                {{ $filters.formatDate(entity.earliest_calendar_date) }} to {{ $filters.formatDate(entity.latest_calendar_date) }}
+                <template #content>
+                  <p>The full span of service contained in <code>calendar.txt</code>.</p>
+                </template>
+              </o-tooltip>
             </td>
           </tr>
 
@@ -157,7 +182,7 @@
 
         <slot v-if="showDownload" name="download" :entity="entity">
           <div class="is-pulled-right">
-            <tl-feed-version-download :feed-onestop-id="feedKey" :feed-version-sha1="feedVersionKey" />
+            <tl-feed-version-download :feed-onestop-id="pathKey" :feed-version-sha1="feedVersionKey" />
           </div>
         </slot>
       </div>
@@ -290,6 +315,12 @@ query ($feedVersionSha1: String!) {
       warning_count
       entity_count
     }
+    service_window {
+      feed_start_date
+      feed_end_date
+      earliest_calendar_date
+      latest_calendar_date
+    }
     agencies {
       id
       agency_name
@@ -324,7 +355,6 @@ export default {
     showPermissions: { type: Boolean, default: false },
     showUserInformation: { type: Boolean, default: false },
     showDownload: { type: Boolean, default: true },
-    feedKey: { type: String, default: '', required: true },
     feedVersionKey: { type: String, default: '', required: true },
     showImportStatus: { type: Boolean, default: true }
   },
@@ -375,7 +405,7 @@ export default {
       return `${this.entity.feed.onestop_id} • ${this.entity.sha1} • Feed version`
     },
     staticDescription () {
-      return `An archived GTFS feed version for ${this.operatorOrAgencyNames} from the feed with a Onestop ID of ${this.feedKey} first fetched at ${this.entity.fetched_at}. This feed version contains ${this.rowCount['agency.txt'] ? this.rowCount['agency.txt'].toLocaleString() : '-'} agencies, ${this.rowCount['routes.txt'] ? this.rowCount['routes.txt'].toLocaleString() : '-'} routes, and ${this.rowCount['stops.txt'] ? this.rowCount['stops.txt'].toLocaleString() : '-'} stops.`
+      return `An archived GTFS feed version for ${this.operatorOrAgencyNames} from the feed with a Onestop ID of ${this.pathKey} first fetched at ${this.entity.fetched_at}. This feed version contains ${this.rowCount['agency.txt'] ? this.rowCount['agency.txt'].toLocaleString() : '-'} agencies, ${this.rowCount['routes.txt'] ? this.rowCount['routes.txt'].toLocaleString() : '-'} routes, and ${this.rowCount['stops.txt'] ? this.rowCount['stops.txt'].toLocaleString() : '-'} stops.`
     }
   },
   methods: {
@@ -407,3 +437,6 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+</style>

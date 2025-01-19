@@ -44,10 +44,20 @@
               </nuxt-link>
             </td>
             <td v-if="showDateColumns">
-              {{ fv.earliest_calendar_date.substr(0, 10) }}
+              <template v-if="fv.service_window?.feed_start_date && fv.service_window?.feed_end_date">
+                {{ $filters.formatDate(fv.service_window?.feed_start_date) }}
+              </template>
+              <template v-else>
+                {{ $filters.formatDate(fv.earliest_calendar_date) }}
+              </template>
             </td>
             <td v-if="showDateColumns">
-              {{ fv.latest_calendar_date.substr(0, 10) }}
+              <template v-if="fv.service_window?.feed_start_date && fv.service_window?.feed_end_date">
+                {{ $filters.formatDate(fv.service_window?.feed_end_date) }}
+              </template>
+              <template v-else>
+                {{ $filters.formatDate(fv.latest_calendar_date) }}
+              </template>
             </td>
             <td>
               <template v-if="fv.feed_version_gtfs_import">
@@ -122,6 +132,12 @@ query ($limit:Int=100, $onestop_id: String, $after:Int) {
       in_progress
       exception_log
       schedule_removed
+    }
+    service_window {
+      feed_start_date
+      feed_end_date
+      earliest_calendar_date
+      latest_calendar_date
     }
     feed_infos {
       feed_publisher_name

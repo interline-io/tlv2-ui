@@ -35,7 +35,6 @@
 <script>
 export default {
   props: {
-    currentZoom: { type: Number, default () { return 0 } },
     linkVersion: { type: Boolean, default: false },
     isComponentModalActive: { type: Boolean, default: false },
     agencyFeatures: { type: Object, default () { return {} } }

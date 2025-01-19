@@ -1,16 +1,18 @@
-import destr from 'destr'
+import { destr } from 'destr'
 import { ApolloClients, provideApolloClients } from '@vue/apollo-composable'
 import { createApolloProvider } from '@vue/apollo-option'
-import { ApolloClient, ApolloLink, concat, HttpLink, InMemoryCache } from '@apollo/client/core/index.js'
+import { ApolloClient, ApolloLink, concat, InMemoryCache } from '@apollo/client/core/index.js'
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
 import { useJwt } from './auth'
 import { defineNuxtPlugin, useRuntimeConfig } from '#imports'
 
 export function getApolloClient() {
   const config = useRuntimeConfig()
+  const apiBase = config.public.apiBase || ''
+  const allowedReferer = process.server ? (config.allowedReferer || '') : ''
   return initApolloClient(
-    String(config.public.apiBase || ''),
-    String(config.allowedReferer || '')
+    String(apiBase),
+    String(allowedReferer)
   )
 }
 
@@ -18,9 +20,6 @@ export function initApolloClient(
   apiBase: string,
   allowedReferer: string
 ) {
-  // const httpLink = new HttpLink({
-  //   uri: apiBase + '/query'
-  // })
   const httpLink = createUploadLink({
     uri: apiBase + '/query'
   })

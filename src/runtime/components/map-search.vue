@@ -1,45 +1,56 @@
 <template>
   <div>
-    <o-field grouped>
-      <o-autocomplete
-        expanded
-        placeholder="Search stops. Example: Penn Station"
-        root-class="is-expanded m-0 mr-2"
-        max-height="800px"
-        max-width="600px"
-        :data="stopSearch"
-        :clearable="true"
-        icon="magnify"
-        @typing="typing"
-        @select="option => setLocation(option.geometry.coordinates)"
-      >
-        <template #default="props">
-          {{ props.option.stop_name }}
-          <div v-for="rs of props.option.route_stops" :key="rs.route.id" class="clearfix tag">
-            {{ rs.route.agency.agency_name }} :{{ rs.route.route_short_name }}
-          </div>
-        </template>
-      </o-autocomplete>
+    <o-field grouped expanded>
+      <o-field expanded>
+        <o-autocomplete
+          class="tl-map-search-autocomplete"
+          expanded
+          placeholder="Search stops. Example: Penn Station"
+          group-field="type"
+          group-options="items"
+          :data="searchFiltered"
+          :clearable="true"
+          icon="magnify"
+          @typing="typing"
+          @select="option => setLocation(option.geometry.coordinates)"
+        >
+          <template #default="props">
+            {{ props.option.name }}
+            <span v-if="props.option.agencyName" class="tag">{{ props.option.agencyName }}</span>
+            <div v-for="rs of props.option.routeStops || []" :key="rs.route.id" class="clearfix tag">
+              {{ rs.route.agency.agency_name }} :{{ rs.route.route_short_name }}
+            </div>
+          </template>
+        </o-autocomplete>
+      </o-field>
       <o-field>
-        <span v-if="!locationUse" class="button" @click="watchLocation"><o-icon icon="crosshairs" /></span>
-        <span v-if="locationError" class="button"><o-icon icon="crosshairs" /></span>
-        <span v-else-if="locationUse && locationLoading" class="button"><o-icon icon="loading" /></span>
-        <span v-else-if="locationUse && !locationLoading" class="button"><o-icon icon="crosshairs-gps" /></span>
+        <tl-geolocation @set-location="setLocation" />
       </o-field>
     </o-field>
-    <tl-msg-warning v-if="locationError">
-      There was an error trying to obtain your location. {{ locationError }}
-    </tl-msg-warning>
   </div>
 </template>
 
 <script>
-import { useGeolocation } from '@vueuse/core'
 import { gql } from 'graphql-tag'
 
-const stopSearchQuery = gql`
-query($where: StopFilter!) {
-  stops(limit: 10, where:$where) {
+const searchQuery = gql`
+query($stopFilter: StopFilter, $routeFilter: RouteFilter, $includeStops: Boolean=false, $includeRoutes: Boolean=false) {
+  routes(limit: 10, where:$routeFilter) @include(if: $includeRoutes) {
+    id
+    route_short_name
+    route_long_name
+    route_stops(limit:1) {
+      stop {
+        id
+        geometry
+      }
+    }
+    agency {
+      id
+      agency_name
+    }
+  }
+  stops(limit: 10, where:$stopFilter) @include(if: $includeStops) {
     id
     geometry
     onestop_id
@@ -61,69 +72,108 @@ query($where: StopFilter!) {
 
 export default {
   apollo: {
-    boundedStopsQuery: {
-      query: stopSearchQuery,
+    boundedQuery: {
+      query: searchQuery,
       skip () {
-        return this.search.length < this.minSearchLength || !this.bboxPolygon || this.zoom < 8
+        return this.search.length < this.minSearchLength || !this.bboxPolygon
       },
       variables () {
         return {
-          where: {
+          includeStops: this.includeStops,
+          includeRoutes: this.includeRoutes,
+          routeFilter: {
+            search: this.search,
+            within: this.bboxPolygon
+          },
+          stopFilter: {
             search: this.search,
             within: this.bboxPolygon
           }
         }
       },
       update (data) {
-        this.boundedStops = data.stops
+        this.boundedStops = data.stops || []
+        this.boundedRoutes = data.routes || []
       }
     },
-    unboundedStopsQuery: {
-      query: stopSearchQuery,
+    unboundedQuery: {
+      query: searchQuery,
       skip () {
         return this.search.length < this.minSearchLength
       },
       variables () {
         return {
-          where: {
+          includeStops: this.includeStops,
+          includeRoutes: this.includeRoutes,
+          routeFilter: {
+            search: this.search
+          },
+          stopFilter: {
             search: this.search
           }
         }
       },
       update (data) {
-        this.unboundedStops = data.stops
+        this.unboundedStops = data.stops || []
+        this.unboundedRoutes = data.routes || []
       }
     }
   },
   props: {
     bbox: { type: Array, default () { return null } },
-    zoom: { type: Number, default () { return 0 } }
+    includeStops: { type: Boolean, default () { return false } },
+    includeRoutes: { type: Boolean, default () { return false } }
   },
+  emits: ['setLocation'],
   data () {
     return {
       search: '',
       error: null,
-      locationError: null,
       minSearchLength: 4,
-      locationUse: false,
-      locationLoading: false,
       coords: null,
+      boundedStops: [],
       unboundedStops: [],
-      boundedStops: []
+      boundedRoutes: [],
+      unboundedRoutes: []
     }
   },
   computed: {
-    stopSearch () {
-      const boundedIds = {}
-      const ret = []
+    searchFiltered () {
+      const stops = []
+      const boundedStops = {}
       for (const stop of this.boundedStops) {
-        boundedIds[stop.id] = true
-        ret.push(stop)
+        boundedStops[stop.id] = true
+        const agencyName = (stop.route_stops.length > 0) ? stop.route_stops[0].route.agency.agency_name : ''
+        stops.push({ name: stop.stop_name, routeStops: stop.route_stops, agencyName, geometry: stop.geometry })
       }
       for (const stop of this.unboundedStops) {
-        if (!boundedIds[stop.id]) {
-          ret.push(stop)
+        if (!boundedStops[stop.id]) {
+          const agencyName = (stop.route_stops.length > 0) ? stop.route_stops[0].route.agency.agency_name : ''
+          stops.push({ name: stop.stop_name, routeStops: stop.route_stops, agencyName, geometry: stop.geometry })
         }
+      }
+
+      const routes = []
+      const boundedRoutes = {}
+      for (const route of this.boundedRoutes) {
+        boundedRoutes[route.id] = true
+        const geometry = (route.route_stops.length > 0) ? route.route_stops[0].stop.geometry : null
+        routes.push({ name: route.route_short_name, agencyName: route.agency.agency_name, geometry })
+      }
+      for (const route of this.unboundedRoutes) {
+        if (!boundedRoutes[route.id]) {
+          const geometry = (route.route_stops.length > 0) ? route.route_stops[0].stop.geometry : null
+          routes.push({ name: route.route_short_name, agencyName: route.agency.agency_name, geometry })
+        }
+      }
+      console.log('routes:', routes)
+
+      const ret = []
+      if (this.includeRoutes > 0) {
+        ret.push({ type: 'Routes', items: routes })
+      }
+      if (this.includeStops > 0) {
+        ret.push({ type: 'Stops', items: stops })
       }
       return ret
     },
@@ -141,28 +191,9 @@ export default {
       return { type: 'Polygon', coordinates: coords }
     }
   },
-  watch: {
-    coords () {
-      const { error } = useGeolocation()
-      this.locationError = error
-      if (this.coords.accuracy === 0) {
-        return
-      }
-      this.setLocation([this.coords.longitude, this.coords.latitude])
-    }
-  },
   methods: {
     setLocation (coords) {
-      this.$emit('setGeolocation', coords)
-      const { pause } = useGeolocation()
-      pause()
-      this.locationLoading = false
-    },
-    watchLocation () {
-      this.locationUse = true
-      this.locationLoading = true
-      const { coords } = useGeolocation()
-      this.coords = coords
+      this.$emit('setLocation', coords)
     },
     typing (val) {
       if (val.length >= this.minSearchLength) {

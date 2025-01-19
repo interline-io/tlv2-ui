@@ -16,14 +16,14 @@
 
 <script setup lang="ts">
 import { useRoute, useRouter, useEventBus, ref, computed } from '#imports'
-
+import { type RouteParams } from '#vue-router'
 interface nameOpts { [index: string]: string}
 
 interface nameVal { [index: string]: number}
 
 interface linkElem {
   routeName: string,
-  routeParams: Object,
+  routeParams: RouteParams,
   tag: string,
   text: string,
   id: string,
@@ -71,14 +71,34 @@ useEventBus().$on('setParamKey', (k: string, v: string) => {
 // Watch on changes to route and forceUpdate
 const curRoute = useRoute()
 const updateKey = computed(() => {
-  return `${curRoute.name}:${forceUpdate.value}`
+  return `${String(curRoute.name)}:${forceUpdate.value}`
 })
 
-function capitalize (str:String) {
+const abbrs: Record<string, string> = {
+  id: 'ID',
+  api: 'API',
+  graphql: 'GraphQL',
+  gtfs: 'GTFS',
+  gbfs: 'GBFS',
+  rest: 'REST'
+}
+
+function capitalize (str:string) {
+  if (abbrs[str]) {
+    return abbrs[str]
+  }
   return str.length
     ? str[0].toUpperCase() +
       str.slice(1).toLowerCase()
     : ''
+}
+
+function titleize(str:string) {
+  const ret = []
+  for (const s of str.split(/[\s-_]/)) {
+    ret.push(capitalize(s))
+  }
+  return ret.join(' ')
 }
 
 function makeNav() {
@@ -87,7 +107,7 @@ function makeNav() {
   const routeParams = useRoute().params
   const routeFragments = String(routePath || '').split('-')
   const ret: linkElem[] = []
-  const foundParams = {}
+  const foundParams: Record<string, any> = {}
   ret.push({
     class: '',
     id: 'index',
@@ -102,8 +122,24 @@ function makeNav() {
   for (let i = 0; i < routeFragments.length; i++) {
     const element = routeFragments[i]
     const routeId = String(routeFragments.slice(0, i + 1).join('-'))
+    const slug = routeParams.slug
+    let routeName = routeId
+
+    // Check if route exists
+    if (slug?.length > 0 && router.hasRoute(routeId + '-slug')) {
+      routeName = routeId + '-slug'
+    }
+    if (!router.hasRoute(routeName)) {
+      continue
+    }
+
+    // Get matching parameters
+    if (routeParams[element]) {
+      foundParams[element] = routeParams[element]
+    }
+
+    // Get display text
     let text = ''
-    let routeName = ''
     let tag = ''
     if (routeNames[routeId]) {
       text = routeNames[routeId]
@@ -115,29 +151,21 @@ function makeNav() {
       text = String(routeParams[element])
     } else if (router.hasRoute(routeId)) {
       text = capitalize(element)
-    } else {
-      continue
+    }
+    // Check text length
+    const shortenLength = shorteners[element] || 128
+    if (shortenLength && text.length > shortenLength) {
+      text = text.substr(0, shortenLength) + '…'
     }
 
-    if (routeParams[element]) {
-      foundParams[element] = routeParams[element]
-    }
-
+    // Get tag
     if (routeTags[routeId]) {
       tag = routeTags[routeId]
     } else if (props.extraRouteTags[routeId]) {
       tag = props.extraRouteTags[routeId]
     }
 
-    if (router.hasRoute(routeId)) {
-      routeName = routeId
-    }
-    const shortenLength = shorteners[element] || 128
-    if (shortenLength && text.length > shortenLength) {
-      text = text.substr(0, shortenLength) + '…'
-    }
-
-    // Prepare for rendering
+    // Add to crumbs
     ret.push({
       class: routeName ? '' : 'is-active',
       id: routeId,
@@ -146,6 +174,23 @@ function makeNav() {
       routeName,
       text
     })
+    if (slug?.length > 0) {
+      for (const [sli, sl] of Array.from(slug).entries()) {
+        if (!sl) {
+          continue
+        }
+        ret.push({
+          class: routeName ? '' : 'is-active',
+          id: routeId,
+          routeParams: Object.assign({}, foundParams, { slug: slug.slice(0, sli + 1) }),
+          tag,
+          routeName,
+          text: titleize(sl)
+        })
+      }
+      // Skip processing of split path elements
+      break
+    }
   }
   return ret
 }

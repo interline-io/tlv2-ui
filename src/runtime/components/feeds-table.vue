@@ -54,13 +54,10 @@
                 <abbr title="General Transit Feed Specification">GTFS</abbr>
               </o-checkbox>
               <o-checkbox v-model="feedSpecs" native-value="GTFS_RT" size="medium">
-                <abbr title="GTFS Realtime">RT</abbr>
+                <abbr title="GTFS Realtime">GTFS RT</abbr>
               </o-checkbox>
               <o-checkbox v-model="feedSpecs" native-value="GBFS" size="medium">
                 <abbr title="General Bikeshare Feed Specification">GBFS</abbr>
-              </o-checkbox>
-              <o-checkbox v-model="feedSpecs" native-value="MDS" size="medium">
-                <abbr title="Mobility Data Specification">MDS</abbr>
               </o-checkbox>
             </div>
           </o-field>
@@ -204,7 +201,7 @@ const props = defineProps({
   fetchError: String,
   importStatus: String,
   tagUnstableUrl: String,
-  feedSpecs: { type: Array, default() { return ['GTFS', 'GTFS_RT', 'GBFS', 'MDS'] } }
+  feedSpecs: { type: Array, default() { return ['GTFS', 'GTFS_RT', 'GBFS'] } }
 })
 
 // shadow props

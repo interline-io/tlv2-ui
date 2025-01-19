@@ -72,14 +72,14 @@ export const useUser = () => {
 
 // Login
 export const useLogin = async(targetUrl: null | string) => {
+  debugLog('useLogin')
   targetUrl = targetUrl || `${window?.location?.pathname}${window?.location?.search}`
-  debugLog('auth: login, targetUrl:', targetUrl)
   return navigateTo(await getAuthorizeUrl(targetUrl), { external: true })
 }
 
 // Logout
 export const useLogout = async() => {
-  debugLog('auth: logout')
+  debugLog('useLogout')
   return navigateTo(await getLogoutUrl(logoutUri), { external: true })
 }
 
@@ -110,9 +110,9 @@ export class User {
 }
 
 function clearUser() {
+  debugLog('clearUser')
   const checkUser = useStorage('user', {})
   checkUser.value = new User({ loggedIn: false })
-  debugLog('clearUser: done')
 }
 
 // Build the user from auth0 data and GraphQL me response
@@ -124,6 +124,7 @@ async function buildUser() {
   }
 
   // Get auth0 user data
+  debugLog('buildUser')
   const auth0user = await client.getUser()
   debugLog('buildUser: auth0 user:', auth0user)
 
@@ -157,7 +158,6 @@ async function buildUser() {
     checked: Date.now()
   })
   checkUser.value = builtUser
-  debugLog('buildUser: result:', builtUser)
 }
 
 /// ////////////////////
@@ -172,23 +172,22 @@ async function checkToken() {
   let mustReauthorize = false
   const client = getAuth0Client()
   if (!client) {
-    // debugLog('checkToken: no client')
+    debugLog('checkToken: no client')
     return { token, loggedIn, mustReauthorize }
   }
   if (await client.isAuthenticated()) {
-    // debugLog('checkToken: loggedIn')
     loggedIn = true
     try {
       // Everything is OK
-      token = await client.getTokenSilently()
-      // debugLog('checkToken: got token:', token)
+      const tokenResponse = await client.getTokenSilently({ timeoutInSeconds: 1, detailedResponse: true })
+      token = tokenResponse.access_token
     } catch (error) {
       // Invalid token
-      debugLog('checkToken: error in getTokenSilently; must authorize again')
+      debugLog('checkToken: error in getTokenSilently; must authorize again:', error)
       mustReauthorize = true
     }
   } else {
-    // debugLog('checkToken: not logged in')
+    debugLog('checkToken: not logged in')
   }
   return { token, loggedIn, mustReauthorize }
 }
@@ -249,21 +248,21 @@ export default defineNuxtPlugin(() => {
     const query = to?.query
     if (query && query.code && query.state) {
       // OK login, set client auth details and get targetUrl from appState
-      console.log('auth mw: handle login')
+      debugLog('auth mw: handle login')
       const { appState } = await client.handleRedirectCallback()
       await buildUser()
-      console.log('auth mw: redirecting to', appState.targetUrl)
+      debugLog('auth mw: redirecting to', appState.targetUrl)
       return navigateTo(appState.targetUrl || '/')
     }
 
     // Force login
     const { loggedIn, mustReauthorize } = await checkToken()
     if (mustReauthorize) {
-      console.log('auth mw: mustReauthorize')
+      debugLog('auth mw: mustReauthorize')
       return navigateTo(await getAuthorizeUrl(to.fullPath), { external: true })
     }
     if (requireLogin && !loggedIn) {
-      console.log('auth mw: force login')
+      debugLog('auth mw: force login')
       return navigateTo(await getAuthorizeUrl(to.fullPath), { external: true })
     }
 
@@ -273,7 +272,7 @@ export default defineNuxtPlugin(() => {
       // Recheck user every 10 minutes
       const lastChecked = Date.now() - (user?.checked || 0)
       if (lastChecked > RECHECK_INTERVAL) {
-        console.log('auth mw: recheck user', 'lastChecked:', lastChecked, 'recheck interval:', RECHECK_INTERVAL)
+        debugLog('auth mw: recheck user', 'lastChecked:', lastChecked, 'recheck interval:', RECHECK_INTERVAL)
         buildUser() // don't await
       }
     } else {

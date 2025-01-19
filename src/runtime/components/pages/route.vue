@@ -38,7 +38,7 @@
               <tr v-if="entity.onestop_id">
                 <td>
                   <o-tooltip
-                    dashed
+                    trigger-class="dashed"
                     label="A globally unique identifier for this route"
                   >
                     Onestop ID
@@ -77,7 +77,7 @@
                 <td>Vehicle Type</td>
                 <td>
                   <o-tooltip
-                    dashed
+                    trigger-class="dashed"
                     :label="`Route with route_type = ${entity.route_type}`"
                   >
                     {{ $filters.routeTypeToWords(entity.route_type) }}
@@ -212,12 +212,12 @@
                   />
                   <template #loginText>
                     <o-notification icon="lock">
-                      To export this route geometry and stop locations as GeoJSON, sign into a Transitland account.
+                      To export this route geometry and stop locations as GeoJSON, please sign into an Interline account with a Transitland subscription.
                     </o-notification>
                   </template>
                   <template #roleText>
                     <o-notification icon="lock">
-                      Your account does not have permission to export route geometries.
+                      Your account does not have permission to export route geometries. Please <a href="https://app.interline.io/products/tlv2_api/orders/new">sign up for a Transitland subscription</a>.
                     </o-notification>
                   </template>
                 </tl-login-gate>

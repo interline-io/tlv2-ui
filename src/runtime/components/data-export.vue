@@ -33,11 +33,13 @@
           multiple
           aria-role="list"
         >
-          <button slot="trigger" class="button" type="button" icon="menu-down">
-            <span>
-              {{ showOnMap.map((s)=>{return titleize(s)}).join(", ") }}
-            </span>
-          </button>
+          <template #trigger>
+            <button class="button" type="button" icon="menu-down">
+              <span>
+                {{ showOnMap.map((s)=>{return titleize(s)}).join(", ") }}
+              </span>
+            </button>
+          </template>
 
           <o-dropdown-item value="buffer" aria-role="listitem">
             <span>Stop Buffer</span>
@@ -93,8 +95,8 @@ export default {
       layer: 'tract',
       layerInfo: {
         tract: { name: 'Tract', plural: 'Tracts' },
-        county: { name: 'County', plural: 'Counties' },
-        bg: { name: 'Block Group', plural: 'Block Groups' }
+        county: { name: 'County', plural: 'Counties' }
+        // bg: { name: 'Block Group', plural: 'Block Groups' }
         // state: { name: 'State', plural: 'States' },
         // city: { name: 'City (Census Designated Place)', plural: 'Cities' },
         // cd: { name: 'Congressional District', plural: 'Congressional Districts' }

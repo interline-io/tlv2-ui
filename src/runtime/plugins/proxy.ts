@@ -1,4 +1,4 @@
-import { proxyRequest, getQuery, H3Event, defineEventHandler } from 'h3'
+import { proxyRequest, getQuery, setResponseStatus, H3Event, defineEventHandler } from 'h3'
 import { useRuntimeConfig } from '#imports'
 
 export function proxyHandler(
@@ -9,33 +9,29 @@ export function proxyHandler(
 ) {
   // Check user provided apikey
   const query = getQuery(event)
-  const apikey = (query.apikey ? query.apikey.toString() : '') || event.headers.get('apikey') || ''
+  const requestApikey = (query.apikey ? query.apikey.toString() : '') || event.headers.get('apikey') || ''
 
   // Check user provided bearer
-  const bearer = event.headers.get('authorization') || ''
+  const requestBearer = event.headers.get('authorization') || ''
 
-  // Check if allowed
+  // Check referer
   let allowed = false
-  if (apikey || bearer) {
-    allowed = true
-  } else {
-    // Check referer
-    const referer = event.headers.get('referer')
-    const allowedReferers = [allowedReferer, 'http://localhost:3000']
-    for (const ref of allowedReferers) {
-      if (referer?.startsWith(ref)) {
-        allowed = true
-      }
+  const referer = event.headers.get('referer')
+  const allowedReferers = [allowedReferer, 'http://localhost:3000']
+  for (const ref of allowedReferers) {
+    if (referer?.startsWith(ref)) {
+      allowed = true
     }
   }
   if (!allowed) {
+    setResponseStatus(event, 404, 'Not Found')
     return { error: `use ${proxyBase}` }
   }
 
   // Auth headers
   const headers = {
-    authorization: bearer,
-    apikey: apikey || graphqlApikey
+    authorization: requestBearer,
+    apikey: requestApikey || graphqlApikey
   }
 
   // Proxy request
@@ -61,8 +57,8 @@ export default defineEventHandler((event) => {
   const config = useRuntimeConfig()
   return proxyHandler(
     event,
-    config.proxyBase,
-    config.allowedReferer,
-    config.graphqlApikey
+    String(config.proxyBase),
+    String(config.allowedReferer),
+    String(config.graphqlApikey)
   )
 })

@@ -25,7 +25,7 @@
               <tr>
                 <td>
                   <o-tooltip
-                    dashed
+                    trigger-class="dashed"
                     label="A globally unique identifier for this route"
                   >
                     Onestop ID
@@ -203,12 +203,12 @@
                   />
                   <template #loginText>
                     <o-notification icon="lock">
-                      To view upcoming departure times, sign into a Transitland account.
+                      To view upcoming departure times, please sign into an Interline account with a Transitland subscription.
                     </o-notification>
                   </template>
                   <template #roleText>
                     <o-notification icon="lock">
-                      Your account does not have permission to view upcoming departures.
+                      Your account does not have permission to view upcoming departures. Please <a href="https://app.interline.io/products/tlv2_api/orders/new">sign up for a Transitland subscription</a>.
                     </o-notification>
                   </template>
                 </tl-login-gate>

@@ -17,7 +17,7 @@
             <tbody>
               <tr>
                 <td>
-                  <o-tooltip dashed label="A globally unique identifier for this feed">
+                  <o-tooltip trigger-class="dashed" label="A globally unique identifier for this feed">
                     Onestop ID
                   </o-tooltip>
                 </td>
@@ -27,7 +27,7 @@
               </tr>
               <tr>
                 <td>
-                  <o-tooltip dashed label="Data specification or format for this feed">
+                  <o-tooltip trigger-class="dashed" label="Data specification or format for this feed">
                     Format
                   </o-tooltip>
                 </td>
@@ -64,7 +64,7 @@
 
               <tr>
                 <td>
-                  <o-tooltip dashed label="Last time a fetch successfully returned valid GTFS data">
+                  <o-tooltip trigger-class="dashed" label="Last time a fetch successfully returned valid GTFS data">
                     Last Fetch
                   </o-tooltip>
                 </td>
@@ -81,7 +81,7 @@
 
               <tr v-if="lastFetch && lastFetch.fetch_error">
                 <td>
-                  <o-tooltip dashed label="Error message from last fetch attempt">
+                  <o-tooltip trigger-class="dashed" label="Error message from last fetch attempt">
                     Fetch Error
                   </o-tooltip>
                 </td>
@@ -233,8 +233,8 @@ import { gql } from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
 
 const q = gql`
-query($onestopId: String) {
-  entities: feeds(where: {onestop_id: $onestopId}, limit: 1) {
+query($pathKey: String) {
+  entities: feeds(where: {onestop_id: $pathKey}, limit: 1) {
     id
     onestop_id
     name
@@ -282,7 +282,7 @@ query($onestopId: String) {
       fetch_error
       fetched_at
     }
-    feed_versions(limit:100) {
+    most_recent_feed_version: feed_versions(limit:1) {
       id
       sha1
       earliest_calendar_date
@@ -300,6 +300,9 @@ query($onestopId: String) {
         feed_contact_email
         feed_contact_url
       }      
+    }
+    feed_versions(limit:100) {
+      id
     }
     feed_state {
       id
@@ -336,14 +339,11 @@ export default {
       client: 'transitland',
       query: q,
       variables () {
-        return {
-          onestopId: this.feedKey
-        }
+        return { pathKey: this.pathKey }
       }
     }
   },
   props: {
-    feedKey: { type: String, default: '', required: true },
     showPermissions: { type: Boolean, default: false },
     showUpload: { type: Boolean, default: false },
     showDownloadColumn: { type: Boolean, default: true },
@@ -369,7 +369,7 @@ export default {
       return this.entity?.spec?.toUpperCase()?.replace('_', '-')
     },
     mostRecentFeedInfo () {
-      return this.entity?.feed_versions?.length > 0 ? this.entity.feed_versions[0]?.feed_infos[0] : null
+      return this.entity?.most_recent_feed_version?.length > 0 ? this.entity.most_recent_feed_version[0]?.feed_infos[0] : null
     },
     lastFetch () {
       return first(this.entity.last_fetch)
