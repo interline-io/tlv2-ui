@@ -21,12 +21,43 @@ const colors = {
 }
 
 const stopLayers = [
+  // Add hover/active layer first
+  {
+    name: 'stop-active',
+    type: 'circle',
+    source: 'stops',
+    minzoom: 14, // Match the stopTiles minzoom
+    paint: {
+      'circle-radius': [
+        'case',
+        ['boolean', ['feature-state', 'hover'], false],
+        8,  // hovered size
+        6   // normal size
+      ],
+      'circle-color': colors.stop,
+      'circle-opacity': [
+        'case',
+        ['boolean', ['feature-state', 'hover'], false],
+        0.8,  // hovered opacity
+        0.0   // normal opacity (invisible when not hovered)
+      ],
+      'circle-stroke-width': [
+        'case',
+        ['boolean', ['feature-state', 'hover'], false],
+        2,    // hovered stroke width
+        0     // normal stroke width
+      ],
+      'circle-stroke-color': '#ffffff'
+    }
+  },
+  // Regular stops layer
   {
     name: 'stops',
     type: 'circle',
     source: 'stops',
+    minzoom: 14,
     paint: {
-      'circle-color': '#000',
+      'circle-color': colors.stop,
       'circle-radius': 4,
       'circle-opacity': 0.75
     }

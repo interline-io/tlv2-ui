@@ -29,7 +29,7 @@
         >
           <strong>Select routes</strong>
           <br>
-          Use your cursor to highlight routes
+          Use your cursor to highlight route lines or stop points. Click for details.
         </tl-map-route-list>
       </div>
     </div>

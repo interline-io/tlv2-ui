@@ -1,33 +1,60 @@
 <template>
   <div>
-    <div v-for="(routes,agency) in agencyFeatures" :key="agency">
+    <div v-for="(features, agency) in agencyFeatures" :key="agency">
       <h6 class="title is-6">
         {{ agency }}
       </h6>
       <template v-if="isCollapsed">
-        <div>{{ Object.keys(routes).length }} routes</div>
+        <div>
+          {{ Object.keys(features.routes || {}).length }} routes, 
+          {{ Object.keys(features.stops || {}).length }} stops
+        </div>
       </template>
       <template v-else>
-        <div v-for="route in routes" :key="route.id">
-          <nuxt-link
-            v-if="link"
-            :to="$filters.makeRouteLink(route.onestop_id, route.feed_onestop_id, route.feed_version_sha1, route.route_id, route.id, linkVersion)"
-          >
-            <tl-route-icon
-              :key="route.id"
-              :route-type="route.route_type"
-              :route-short-name="route.route_short_name"
-              :route-long-name="route.route_long_name"
-            />
-          </nuxt-link>
-          <template v-else>
-            <tl-route-icon
-              :key="route.id"
-              :route-type="route.route_type"
-              :route-short-name="route.route_short_name"
-              :route-long-name="route.route_long_name"
-            />
-          </template>
+        <!-- Routes -->
+        <div v-if="Object.keys(features.routes || {}).length > 0">
+          <h6 class="subtitle is-6">Routes:</h6>
+          <div v-for="route in features.routes" :key="route.id">
+            <nuxt-link
+              v-if="link"
+              :to="$filters.makeRouteLink(route.onestop_id, route.feed_onestop_id, route.feed_version_sha1, route.route_id, route.id, linkVersion)"
+            >
+              <tl-route-icon
+                :key="route.id"
+                :route-type="route.route_type"
+                :route-short-name="route.route_short_name"
+                :route-long-name="route.route_long_name"
+              />
+            </nuxt-link>
+            <template v-else>
+              <tl-route-icon
+                :key="route.id"
+                :route-type="route.route_type"
+                :route-short-name="route.route_short_name"
+                :route-long-name="route.route_long_name"
+              />
+            </template>
+          </div>
+        </div>
+
+        <!-- Stops -->
+        <div v-if="Object.keys(features.stops || {}).length > 0">
+          <h6 class="subtitle is-6">Stops:</h6>
+          <div v-for="stop in features.stops" :key="stop.id">
+            <nuxt-link
+              v-if="link"
+              :to="$filters.makeStopLink(stop.onestop_id, stop.feed_onestop_id, stop.feed_version_sha1, stop.stop_id, stop.id, linkVersion)"
+            >
+              <div class="stop-item">
+                <i class="fas fa-bus-alt" /> {{ stop.stop_name }}
+              </div>
+            </nuxt-link>
+            <template v-else>
+              <div class="stop-item">
+                <i class="fas fa-bus-alt" /> {{ stop.stop_name }}
+              </div>
+            </template>
+          </div>
         </div>
       </template>
     </div>
@@ -41,19 +68,32 @@ export default {
     maxAgencyRows: { type: Number, default () { return 5 } },
     collapse: { type: Boolean },
     linkVersion: { type: Boolean, default: false },
+    showStops: { type: Boolean, default: true },
     agencyFeatures: { type: Object, default () { return {} } }
   },
   computed: {
     isCollapsed () {
-      return this.routeCount > this.maxAgencyRows && this.collapse
+      return this.totalFeatureCount > this.maxAgencyRows && this.collapse
     },
-    routeCount () {
+    totalFeatureCount () {
       let count = 0
-      for (const v of Object.values(this.agencyFeatures)) {
-        count = count + Object.keys(v).length
+      for (const agency of Object.values(this.agencyFeatures)) {
+        count += Object.keys(agency.routes || {}).length
+        count += Object.keys(agency.stops || {}).length
       }
       return count
     }
   }
 }
 </script>
+
+<style scoped>
+.stop-item {
+  padding: 4px 0;
+  color: #363636;
+}
+.subtitle {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+</style>

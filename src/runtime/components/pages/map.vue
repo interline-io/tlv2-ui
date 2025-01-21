@@ -28,7 +28,7 @@
             /> -->
             <div v-if="currentZoom < 8">
               <h6 class="title is-6">
-                Zoom in to select routes and to see stop points.
+                Zoom in to select route lines and to see stop points.
               </h6>
             </div>
             <div v-else>
@@ -39,10 +39,10 @@
                 @close="isComponentModalActive = false"
               >
                 <h6 class="title is-6">
-                  Select routes
+                  Select routes and stops
                 </h6>
                 <div>
-                  Use your cursor to highlight routes and see their names here. <br>Click for more details.
+                  Use your cursor to highlight routes lines or stop points. Click for details.
                 </div>
               </tl-map-route-list>
             </div>
@@ -197,7 +197,12 @@ export default {
       } else {
         this.setCoords(null)
       }
-      if (Object.keys(this.agencyFeatures).length > 0) {
+      // Check if we have any routes or stops to show in the modal
+      const hasFeatures = Object.keys(this.agencyFeatures).some(agency => {
+        return Object.keys(this.agencyFeatures[agency].routes || {}).length > 0 ||
+               Object.keys(this.agencyFeatures[agency].stops || {}).length > 0
+      })
+      if (hasFeatures) {
         this.isComponentModalActive = true
       }
     }
