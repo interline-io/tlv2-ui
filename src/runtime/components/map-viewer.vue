@@ -34,7 +34,8 @@ export default {
     return {
       map: null,
       marker: null,
-      hovering: []
+      hoveringRoutes: [],
+      hoveringStops: []
     }
   },
   watch: {
@@ -363,28 +364,57 @@ export default {
     },
     mapMouseMove (e) {
       const map = this.map
-      const features = map.queryRenderedFeatures(e.point, { layers: ['route-active'] })
+      // Query both routes and stops
+      const routeFeatures = map.queryRenderedFeatures(e.point, { layers: ['route-active'] })
+      const stopFeatures = map.queryRenderedFeatures(e.point, { layers: ['stop-active'] })
+      
       map.getCanvas().style.cursor = 'pointer'
-      for (const k of this.hovering) {
+
+      // Handle route hover states
+      for (const k of this.hoveringRoutes) {
         map.setFeatureState(
           { source: 'routes', id: k, sourceLayer: this.routeTiles ? this.routeTiles.id : null },
           { hover: false }
         )
       }
-      this.hovering = []
-      for (const v of features) {
-        this.hovering.push(v.id)
+      this.hoveringRoutes = []
+      for (const v of routeFeatures) {
+        this.hoveringRoutes.push(v.id)
         map.setFeatureState({ source: 'routes', id: v.id, sourceLayer: this.routeTiles ? this.routeTiles.id : null }, { hover: true })
       }
-      const agencyFeatures = {}
-      for (const v of features) {
-        const agencyId = v.properties.agency_name
-        const routeId = v.properties.route_id
-        if (agencyFeatures[agencyId] == null) {
-          agencyFeatures[agencyId] = {}
-        }
-        agencyFeatures[agencyId][routeId] = v.properties
+
+      // Handle stop hover states
+      for (const k of this.hoveringStops) {
+        map.setFeatureState(
+          { source: 'stops', id: k, sourceLayer: this.stopTiles ? this.stopTiles.id : null },
+          { hover: false }
+        )
       }
+      this.hoveringStops = []
+      for (const v of stopFeatures) {
+        this.hoveringStops.push(v.id)
+        map.setFeatureState({ source: 'stops', id: v.id, sourceLayer: this.stopTiles ? this.stopTiles.id : null }, { hover: true })
+      }
+
+      // Combine features for emission
+      const agencyFeatures = {}
+      const processFeature = (v) => {
+        const agencyId = v.properties.agency_name
+        const featureId = v.properties.route_id || v.properties.stop_id
+        const featureType = v.properties.route_id ? 'route' : 'stop'
+        if (agencyFeatures[agencyId] == null) {
+          agencyFeatures[agencyId] = { routes: {}, stops: {} }
+        }
+        if (featureType === 'route') {
+          agencyFeatures[agencyId].routes[featureId] = v.properties
+        } else {
+          agencyFeatures[agencyId].stops[featureId] = v.properties
+        }
+      }
+      
+      routeFeatures.forEach(processFeature)
+      stopFeatures.forEach(processFeature)
+      console.log(agencyFeatures)
       this.$emit('setAgencyFeatures', agencyFeatures)
     }
   }
