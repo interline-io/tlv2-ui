@@ -95,6 +95,10 @@ export function formatDate(value: string): string {
   return format(parseISO(value), 'yyyy-MM-dd')
 }
 
+export function formatDateTime(value: string): string {
+  return format(parseISO(value), 'hh:mm:ss bbb')
+}
+
 export function joinUnique(values: Array<string>): string {
   return Array.from(new Set(values)).sort().join(', ')
 }
