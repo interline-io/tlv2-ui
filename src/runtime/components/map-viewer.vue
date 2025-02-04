@@ -11,6 +11,7 @@ import mapLayers from './map-layers'
 export default {
   props: {
     markerCoords: { type: Array, default () { return [] } },
+    markers: { type: Array, default () { return [] } },
     enableScrollZoom: { type: Boolean, default: false },
     showProblematicGeometries: { type: Boolean, default: true },
     showGeneratedGeometries: { type: Boolean, default: true },
@@ -34,7 +35,8 @@ export default {
     return {
       map: null,
       marker: null,
-      hovering: []
+      hovering: [],
+      markerLayer: null
     }
   },
   watch: {
@@ -61,6 +63,9 @@ export default {
     },
     markerCoords (v) {
       this.drawMarker(v)
+    },
+    markers(v) {
+      this.drawMarkers(v)
     }
   },
   mounted () {
@@ -120,10 +125,12 @@ export default {
       this.map = new maplibre.Map(opts)
       this.map.addControl(new maplibre.FullscreenControl())
       this.map.addControl(new maplibre.NavigationControl())
+      this.markerLayer = []
       if (!this.enableScrollZoom) {
         this.map.scrollZoom.disable()
       }
       this.drawMarker(this.markerCoords)
+      this.drawMarkers(this.markers)
       this.map.on('load', () => {
         this.createSources()
         this.createLayers()
@@ -299,7 +306,6 @@ export default {
       for (const labelLayer of labels('protomaps-base', 'grayscale')) {
         this.map.addLayer(labelLayer)
       }
-
       // Set initial show generated geometry
       this.updateFilters()
     },
@@ -315,6 +321,18 @@ export default {
         this.marker = new maplibre.Marker().setLngLat(coords).addTo(this.map)
       } else {
         this.marker.setLngLat(coords)
+      }
+    },
+    drawMarkers(markers) {
+      if (!markers || markers.length === 0) {
+        return
+      }
+      for (const m of this.markerLayer) {
+        m.remove()
+      }
+      for (const m of markers) {
+        const newMarker = new maplibre.Marker(m).setLngLat(m).addTo(this.map)
+        this.markerLayer.push(newMarker)
       }
     },
     fitFeatures () {
