@@ -332,6 +332,9 @@ export default {
       }
       for (const m of markers) {
         const newMarker = new maplibre.Marker(m).setLngLat(m).addTo(this.map)
+        if (m.onDragEnd) {
+          newMarker.on('dragend', m.onDragEnd)
+        }
         this.markerLayer.push(newMarker)
       }
     },
