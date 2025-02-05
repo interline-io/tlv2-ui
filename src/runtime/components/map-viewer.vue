@@ -309,6 +309,7 @@ export default {
       // Set initial show generated geometry
       this.updateFilters()
     },
+
     drawMarker (coords) {
       if (!coords || coords.length === 0 || coords[0] === 0) {
         if (this.marker) {
