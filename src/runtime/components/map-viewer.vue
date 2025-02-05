@@ -250,8 +250,8 @@ export default {
         type: 'circle',
         source: 'points',
         paint: {
-          'circle-color': this.circleColor,
-          'circle-radius': this.circleRadius,
+          'circle-color': ['coalesce', ['get', 'marker-color'], this.circleColor],
+          'circle-radius': ['coalesce', ['get', 'marker-radius'], this.circleRadius],
           'circle-opacity': 0.4
         }
       })
@@ -261,8 +261,8 @@ export default {
         source: 'lines',
         layout: {},
         paint: {
-          'line-width': 2,
-          'line-color': '#000',
+          'line-color': ['coalesce', ['get', 'stroke'], '#000'],
+          'line-width': ['coalesce', ['get', 'stroke-width'], 2],
           'line-opacity': 1.0
         }
       })
@@ -309,6 +309,7 @@ export default {
       // Set initial show generated geometry
       this.updateFilters()
     },
+
     drawMarker (coords) {
       if (!coords || coords.length === 0 || coords[0] === 0) {
         if (this.marker) {
@@ -332,6 +333,9 @@ export default {
       }
       for (const m of markers) {
         const newMarker = new maplibre.Marker(m).setLngLat(m).addTo(this.map)
+        if (m.onDragEnd) {
+          newMarker.on('dragend', m.onDragEnd)
+        }
         this.markerLayer.push(newMarker)
       }
     },
