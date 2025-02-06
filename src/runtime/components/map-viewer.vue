@@ -40,10 +40,10 @@ export default {
     }
   },
   watch: {
-    showProblematicGeometries (v) {
+    showProblematicGeometries () {
       this.updateFilters()
     },
-    showGeneratedGeometries (v) {
+    showGeneratedGeometries () {
       this.updateFilters()
     },
     features (v) {
@@ -55,7 +55,10 @@ export default {
     routeFeatures (v) {
       this.nextTickUpdateFeatures(v)
     },
-    center () {
+    center (oldVal, newVal) {
+      if (oldVal.toString() === newVal.toString()) {
+        return
+      }
       this.map.jumpTo({ center: this.center, zoom: this.zoom })
     },
     zoom () {
@@ -377,10 +380,10 @@ export default {
     mapClick (e) {
       this.$emit('mapClick', e)
     },
-    mapZoom (e) {
+    mapZoom () {
       this.$emit('setZoom', this.map.getZoom())
     },
-    mapMove (e) {
+    mapMove () {
       this.$emit('mapMove', { zoom: this.map.getZoom(), bbox: this.map.getBounds().toArray() })
     },
     mapMouseMove (e) {
