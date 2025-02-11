@@ -48,7 +48,14 @@
         </div>
       </div>
 
-      <tl-loading v-if="$apollo.loading && stops.length === 0" />
+      <tl-loading v-if="$apollo.loading" />
+
+      <div v-else-if="!coordsOrStops">
+        <h6 class="title is-6">
+          Click the map to set a departure location
+        </h6>
+      </div>
+
       <div v-else-if="filteredStopsGroupRoutes.length === 0">
         <h6 class="title is-6">
           No results
@@ -56,40 +63,39 @@
         <p>Unfortunately, no departures were found at this location for the selected location and time.</p>
         <p>Try increasing the search radius or selecting the "fallback service day" option.</p>
       </div>
-      <div v-else>
-        <div v-for="(ss, sskey) of filteredStopsGroupRoutes" :key="sskey">
-          <h6 class="title is-6">
-            {{ ss.agency.agency_name }}
-          </h6>
-          <div v-for="(sr,srkey) of ss.routes.slice(0,routesPerAgencyShadow)" :key="srkey" class="tl-departure-container">
-            <div
-              class="tl-departure-route"
+
+      <div v-for="(ss, sskey) of filteredStopsGroupRoutes" :key="sskey">
+        <h6 class="title is-6">
+          {{ ss.agency.agency_name }}
+        </h6>
+        <div v-for="(sr,srkey) of ss.routes.slice(0,routesPerAgencyShadow)" :key="srkey" class="tl-departure-container">
+          <div
+            class="tl-departure-route"
+          >
+            <nuxt-link
+              :to="$filters.makeRouteLink(sr.route.onestop_id, sr.route.feed_onestop_id, sr.route.feed_version_sha1, sr.route.route_id, sr.route.id, false)"
             >
-              <nuxt-link
-                :to="$filters.makeRouteLink(sr.route.onestop_id, sr.route.feed_onestop_id, sr.route.feed_version_sha1, sr.route.route_id, sr.route.id, false)"
-              >
-                <tl-route-icon
-                  :key="'icon'+sr.route.id"
-                  :route-type="sr.route.route_type"
-                  :route-short-name="sr.route.route_short_name"
-                  :route-long-name="sr.trip_headsign || sr.route.route_long_name"
-                  :route-link="sr.route.route_url"
-                />
-              </nuxt-link>
-            </div>
-            <div class="tl-departure-times">
-              <span v-for="st of sr.departures.slice(0,3)" :key="st.trip.id" class="tl-departure-time tag">
-                <template v-if="st.departure.estimated">
-                  {{ $filters.reformatHMS(st.departure.estimated) }} &nbsp;<o-icon variant="success" size="small" icon="wifi" />
-                </template><template v-else>
-                  {{ $filters.reformatHMS(st.departure.scheduled) }} &nbsp;<o-icon variant="success" size="small" icon="blank" />
-                </template>
-              </span>
-            </div>
+              <tl-route-icon
+                :key="'icon'+sr.route.id"
+                :route-type="sr.route.route_type"
+                :route-short-name="sr.route.route_short_name"
+                :route-long-name="sr.trip_headsign || sr.route.route_long_name"
+                :route-link="sr.route.route_url"
+              />
+            </nuxt-link>
           </div>
-          <div v-if="ss.routes.length > routesPerAgencyShadow" class="is-clearfix">
-            <span class="button small ml-5" @click="expandRoutesPerAgency">Click to show {{ ss.routes.length - routesPerAgencyShadow }} additional rows</span>
+          <div class="tl-departure-times">
+            <span v-for="st of sr.departures.slice(0,3)" :key="st.trip.id" class="tl-departure-time tag">
+              <template v-if="st.departure.estimated">
+                {{ $filters.reformatHMS(st.departure.estimated) }} &nbsp;<o-icon variant="success" size="small" icon="wifi" />
+              </template><template v-else>
+                {{ $filters.reformatHMS(st.departure.scheduled) }} &nbsp;<o-icon variant="success" size="small" icon="blank" />
+              </template>
+            </span>
           </div>
+        </div>
+        <div v-if="ss.routes.length > routesPerAgencyShadow" class="is-clearfix">
+          <span class="button small ml-5" @click="expandRoutesPerAgency">Click to show {{ ss.routes.length - routesPerAgencyShadow }} additional rows</span>
         </div>
       </div>
     </div>
@@ -179,7 +185,7 @@ export default {
   apollo: {
     departureQuery: {
       query,
-      skip () { return !this.searchCoords && this.stopIds.length === 0 },
+      skip () { return !this.coordsOrStops },
       variables () {
         const q = {
           stwhere: {
@@ -227,6 +233,9 @@ export default {
     }
   },
   computed: {
+    coordsOrStops() {
+      return (this.searchCoords?.length === 2 || this.stopIds.length > 0)
+    },
     routeFeatures () {
       const features = new Map()
       for (const stop of this.stops || []) {

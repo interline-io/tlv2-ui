@@ -10,6 +10,7 @@ import mapLayers from './map-layers'
 
 export default {
   props: {
+    hideTiles: { type: Boolean, default: false },
     markerCoords: { type: Array, default () { return [] } },
     markers: { type: Array, default () { return [] } },
     enableScrollZoom: { type: Boolean, default: false },
@@ -40,6 +41,9 @@ export default {
     }
   },
   watch: {
+    hideTiles () {
+      this.updateFilters()
+    },
     showProblematicGeometries () {
       this.updateFilters()
     },
@@ -63,9 +67,6 @@ export default {
     },
     zoom () {
       this.map.jumpTo({ center: this.center, zoom: this.zoom })
-    },
-    markerCoords (v) {
-      this.drawMarker(v)
     },
     markers(v) {
       this.drawMarkers(v)
@@ -132,7 +133,6 @@ export default {
       if (!this.enableScrollZoom) {
         this.map.scrollZoom.disable()
       }
-      this.drawMarker(this.markerCoords)
       this.drawMarkers(this.markers)
       this.map.on('load', () => {
         this.createSources()
@@ -163,11 +163,32 @@ export default {
       this.fitFeatures()
     },
     updateFilters () {
+      for (const v of mapLayers.stopLayers) {
+        const f = (v.filter || []).slice()
+        if (f.length === 0) {
+          f.push('all')
+        }
+        // Hide all routes?
+        if (this.hideTiles) {
+          f.push(['==', 'route_id', ''])
+        }
+        if (f.length > 1) {
+          this.map.setFilter(v.name, f)
+        } else {
+          this.map.setFilter(v.name, null)
+        }
+      }
+
       for (const v of mapLayers.routeLayers) {
         const f = (v.filter || []).slice()
         if (f.length === 0) {
           f.push('all')
         }
+        // Hide all routes?
+        if (this.hideTiles) {
+          f.push(['==', 'route_id', ''])
+        }
+
         // Hide geometries with long max segment lengths
         if (!this.showProblematicGeometries) {
           f.push(['any', ['==', 'generated', true], ['<', 'geometry_max_segment_length', 50 * 1000]])
@@ -313,24 +334,7 @@ export default {
       this.updateFilters()
     },
 
-    drawMarker (coords) {
-      if (!coords || coords.length === 0 || coords[0] === 0) {
-        if (this.marker) {
-          this.marker.remove()
-          this.marker = null
-        }
-        return
-      }
-      if (!this.marker) {
-        this.marker = new maplibre.Marker().setLngLat(coords).addTo(this.map)
-      } else {
-        this.marker.setLngLat(coords)
-      }
-    },
     drawMarkers(markers) {
-      if (!markers || markers.length === 0) {
-        return
-      }
       for (const m of this.markerLayer) {
         m.remove()
       }
