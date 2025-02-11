@@ -5643,7 +5643,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^7.32.0 || ^8.2.0":
+"eslint@npm:^8.57.1":
   version: 8.57.1
   resolution: "eslint@npm:8.57.1"
   dependencies:
@@ -6430,7 +6430,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:^16.8.1":
+"graphql@npm:^16.10.0":
   version: 16.10.0
   resolution: "graphql@npm:16.10.0"
   checksum: 10/d42cf81ddcf3a61dfb213217576bf33c326f15b02c4cee369b373dc74100cbdcdc4479b3b797e79b654dabd8fddf50ef65ff75420e9ce5596c02e21f24c9126a
@@ -6453,7 +6453,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"h3@npm:^1.11.1, h3@npm:^1.12.0, h3@npm:^1.13.0, h3@npm:^1.14.0":
+"h3@npm:^1.12.0, h3@npm:^1.13.0, h3@npm:^1.14.0, h3@npm:^1.15.0":
   version: 1.15.0
   resolution: "h3@npm:1.15.0"
   dependencies:
@@ -10951,10 +10951,10 @@ __metadata:
     d3-scale-chromatic: "npm:^3.1.0"
     date-fns: "npm:^3.6.0"
     destr: "npm:^2.0.3"
-    eslint: "npm:^7.32.0 || ^8.2.0"
-    graphql: "npm:^16.8.1"
+    eslint: "npm:^8.57.1"
+    graphql: "npm:^16.10.0"
     graphql-tag: "npm:^2.12.6"
-    h3: "npm:^1.11.1"
+    h3: "npm:^1.15.0"
     haversine: "npm:^1.1.1"
     maplibre-gl: "npm:^2.4.0"
     mixpanel-browser: "npm:^2.60.0"
