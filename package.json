@@ -68,5 +68,8 @@
     "vitest": "^2.0.2",
     "vue": "^3.4.29"
   },
-  "packageManager": "yarn@4.3.0"
+  "packageManager": "yarn@4.3.0",
+  "devDependencies": {
+    "nuxi": "^3.21.1"
+  }
 }
