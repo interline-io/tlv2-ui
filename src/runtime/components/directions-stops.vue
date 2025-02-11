@@ -1,11 +1,14 @@
 <template>
   <div>
     <table v-if="stops.length > 0" class="itin-departure-table">
+      <thead>
       <tr>
         <th>Time</th>
         <th>Stop</th>
         <th>Stop ID</th>
       </tr>
+    </thead>
+    <tbody>
       <tr v-for="(stop,stopIdx) of stops.slice(0,1)" :key="stopIdx">
         <td>{{ formatDateTime(stop.departure) }}</td>
         <td>{{ stop.stop_name }}</td>
@@ -34,6 +37,7 @@
         <td>{{ stop.stop_name }}</td>
         <td>{{ stop.stop_id }}</td>
       </tr>
+    </tbody>
     </table>
   </div>
 </template>
