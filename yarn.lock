@@ -2932,7 +2932,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitejs/plugin-vue@npm:^5.0.5, @vitejs/plugin-vue@npm:^5.2.1":
+"@vitejs/plugin-vue@npm:^5.2.1":
   version: 5.2.1
   resolution: "@vitejs/plugin-vue@npm:5.2.1"
   peerDependencies:
@@ -3290,7 +3290,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vueuse/core@npm:^10.11.0":
+"@vueuse/core@npm:^10.11.1":
   version: 10.11.1
   resolution: "@vueuse/core@npm:10.11.1"
   dependencies:
@@ -10944,11 +10944,11 @@ __metadata:
     "@types/d3-scale-chromatic": "npm:^3.1.0"
     "@types/mapbox__mapbox-gl-draw": "npm:^1.4.8"
     "@types/node": "npm:^22.13.1"
-    "@vitejs/plugin-vue": "npm:^5.0.5"
+    "@vitejs/plugin-vue": "npm:^5.2.1"
     "@vue/apollo-composable": "npm:^4.0.0"
     "@vue/apollo-option": "npm:^4.0.0"
     "@vue/test-utils": "npm:^2.4.6"
-    "@vueuse/core": "npm:^10.11.0"
+    "@vueuse/core": "npm:^10.11.1"
     apollo-upload-client: "npm:^18.0.1"
     bulma: "npm:^0.9.4"
     cytoscape: "npm:^3.28.1"
@@ -10972,7 +10972,7 @@ __metadata:
     typescript-eslint: "npm:^8.24.0"
     unstorage: "npm:^1.10.1"
     vitest: "npm:^2.0.2"
-    vue: "npm:^3.4.29"
+    vue: "npm:^3.5.13"
   languageName: unknown
   linkType: soft
 
@@ -12058,7 +12058,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vue@npm:^3.4.29, vue@npm:^3.5.13":
+"vue@npm:^3.5.13":
   version: 3.5.13
   resolution: "vue@npm:3.5.13"
   dependencies:
