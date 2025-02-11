@@ -1536,21 +1536,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oruga-ui/oruga-next@npm:^0.7.0":
-  version: 0.7.0
-  resolution: "@oruga-ui/oruga-next@npm:0.7.0"
+"@oruga-ui/oruga-next@npm:^0.9.3":
+  version: 0.9.3
+  resolution: "@oruga-ui/oruga-next@npm:0.9.3"
+  dependencies:
+    vue-component-type-helpers: "npm:^2.1.10"
   peerDependencies:
     vue: ^3.0.0
-  checksum: 10/f09789e63df09e45aa09d1d6607bb3cea469fa380ff8b74d8e8e4c962e30e5a8f224345571bdf847fdb6f70e65c8ea3aa2038fc8cba5ebf8f28de97f38213b32
+  checksum: 10/f53f12e281e12d2366d2d813c5c80e04c506069c08dd6191aa6d56a485a1b4ae9c1aa47668d3da0e8aa862fed53ac2e89da3cb697e28dd8292608d8422537b8d
   languageName: node
   linkType: hard
 
-"@oruga-ui/theme-bulma@npm:^0.2.11":
-  version: 0.2.11
-  resolution: "@oruga-ui/theme-bulma@npm:0.2.11"
+"@oruga-ui/theme-bulma@npm:^0.5.3":
+  version: 0.5.3
+  resolution: "@oruga-ui/theme-bulma@npm:0.5.3"
   dependencies:
-    bulma: "npm:0.9.4"
-  checksum: 10/29c1ab4de733b9435f9bc736467218c71f2a44de9b6518cc7c30128a367471e96d0b04ec16baa667577f08bc9a70920add65e29bf7883580bced5b87f60854d6
+    bulma: "npm:1.0.3"
+  peerDependencies:
+    "@oruga-ui/oruga-next": ^0.9.0
+  checksum: 10/40b0fb46802fcecd6098434c39a28c048c1adffcbf128c6b04907417ee9e8acf721f6c0f0cd8b48172eb650bae5067547516fd513a6715d97d8a94320ffbddab
   languageName: node
   linkType: hard
 
@@ -3753,10 +3757,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bulma@npm:0.9.4, bulma@npm:^0.9.4":
-  version: 0.9.4
-  resolution: "bulma@npm:0.9.4"
-  checksum: 10/d2696c3685d5f2389891c7b6d41be82c8de6deb5ed4ccbc9905383828089caf5d8c08ea7c4d09f4dec2df9358563440fd6c5e10492d1adf9e857e0d3d7b80c50
+"bulma@npm:1.0.3, bulma@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "bulma@npm:1.0.3"
+  checksum: 10/099ea71a1718a614b3d33eb8b25953c815183a523d91453831c2b254870a5889a0549db981c95c0198106fd6d21eefb817c63a775116e99470aa28826ce2351b
   languageName: node
   linkType: hard
 
@@ -10738,8 +10742,8 @@ __metadata:
     "@nuxt/module-builder": "npm:^0.8.4"
     "@nuxt/types": "npm:^2.18.1"
     "@nuxtjs/eslint-config-typescript": "npm:^12.1.0"
-    "@oruga-ui/oruga-next": "npm:^0.7.0"
-    "@oruga-ui/theme-bulma": "npm:^0.2.11"
+    "@oruga-ui/oruga-next": "npm:^0.9.3"
+    "@oruga-ui/theme-bulma": "npm:^0.5.3"
     "@types/cytoscape": "npm:^3.21.9"
     "@types/cytoscape-fcose": "npm:^2.2.4"
     "@types/d3-scale-chromatic": "npm:^3.1.0"
@@ -10751,7 +10755,7 @@ __metadata:
     "@vue/test-utils": "npm:^2.4.6"
     "@vueuse/core": "npm:^10.11.1"
     apollo-upload-client: "npm:^18.0.1"
-    bulma: "npm:^0.9.4"
+    bulma: "npm:^1.0.3"
     cytoscape: "npm:^3.31.0"
     cytoscape-fcose: "npm:^2.2.0"
     d3-scale-chromatic: "npm:^3.1.0"
@@ -11746,7 +11750,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vue-component-type-helpers@npm:^2.0.0":
+"vue-component-type-helpers@npm:^2.0.0, vue-component-type-helpers@npm:^2.1.10":
   version: 2.2.0
   resolution: "vue-component-type-helpers@npm:2.2.0"
   checksum: 10/91ec570dcd01f2f4192118d0562faa28f7d06867e548bee265b7ca7a7dc5fd112b1251b5bca74f3b21558a4336b87466f6423b83bf42e41e068c1c7e122904f4
