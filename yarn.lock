@@ -4478,7 +4478,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cytoscape@npm:^3.28.1":
+"cytoscape@npm:^3.31.0":
   version: 3.31.0
   resolution: "cytoscape@npm:3.31.0"
   checksum: 10/b3b7ff848ca42e5209bef8340b6a23be0ac798e5943aafa11def90d13d3030e912412f061505b170376d4fe6d5767b127d9a76a8975224d104d84047e62a9528
@@ -4501,7 +4501,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"d3-scale-chromatic@npm:^3.0.0":
+"d3-scale-chromatic@npm:^3.1.0":
   version: 3.1.0
   resolution: "d3-scale-chromatic@npm:3.1.0"
   dependencies:
@@ -10946,9 +10946,9 @@ __metadata:
     "@vueuse/core": "npm:^10.11.1"
     apollo-upload-client: "npm:^18.0.1"
     bulma: "npm:^0.9.4"
-    cytoscape: "npm:^3.28.1"
+    cytoscape: "npm:^3.31.0"
     cytoscape-fcose: "npm:^2.2.0"
-    d3-scale-chromatic: "npm:^3.0.0"
+    d3-scale-chromatic: "npm:^3.1.0"
     date-fns: "npm:^3.2.0"
     destr: "npm:^2.0.2"
     eslint: "npm:^7.32.0 || ^8.2.0"
