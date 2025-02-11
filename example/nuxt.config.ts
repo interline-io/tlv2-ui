@@ -2,16 +2,20 @@ const isDev = process.env.NODE_ENV === 'development'
 
 export default defineNuxtConfig({
   ssr: false,
+
   modules: [
     '../src/module',
     '@nuxt/devtools'
   ],
+
   devtools: {
     enabled: isDev
   },
+
   tlv2: {
     useProxy: true
   },
+
   runtimeConfig: {
     proxyBase: '',
     allowedReferer: '',
@@ -28,6 +32,7 @@ export default defineNuxtConfig({
       loginGate: ''
     }
   },
+
   // bugs
   build: {
     transpile: [
@@ -37,6 +42,7 @@ export default defineNuxtConfig({
       'protomaps-themes-base'
     ]
   },
+
   vite: {
     // https://github.com/nuxt/nuxt/issues/20001
     resolve: {
@@ -58,5 +64,7 @@ export default defineNuxtConfig({
         'mixpanel-browser'
       ]
     }
-  }
+  },
+
+  compatibilityDate: '2025-02-11'
 })
