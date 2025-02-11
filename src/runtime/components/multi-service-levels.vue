@@ -411,8 +411,8 @@ const months = {
 .tt {
   visibility: hidden;
   width: 360px;
-  background-color: black;
-  color: #fff;
+  /* background-color: black; */
+  /* color: #fff; */
   text-align: center;
   border-radius: 6px;
   padding: 5px;

@@ -238,7 +238,7 @@ export default {
   position:relative
 }
 .tl-fv-map-panel {
-    background-color: white;
+    /* background-color: white; */
     user-select: none;
     position: absolute !important;
     margin: 0px;

@@ -18,7 +18,7 @@
         >
           <template #default="props">
             {{ props.option.name }}
-            <span class="is-pulled-right" style="color:#ccc">{{ props.option.type }}</span>
+            <span class="is-pulled-right">{{ props.option.type }}</span>
           </template>
         </o-autocomplete>
       </div>

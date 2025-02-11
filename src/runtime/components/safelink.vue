@@ -53,8 +53,8 @@ export default {
 }
 
 .safelink .desc {
-    color: #da1039;
-    background:hsl(0, 0%, 96%);
+    color: var(--bulma-info-on-scheme);
+    background:var(--bulma-background);
     font-family: monospace;
     font-weight: normal;
     font-size: 0.875em;
@@ -75,7 +75,7 @@ export default {
     text-align:center;
     margin:0px;
     padding:3px;
-    background:hsl(0, 0%, 94%);
+    background:var(--bulma-background);
 
 }
 

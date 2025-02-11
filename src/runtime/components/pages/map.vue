@@ -415,24 +415,19 @@ const markers = computed(() => {
     min-width: 565px;
 }
 
-.tl-map-panel-tabs {
-    background: rgba(255, 255, 255, 0.0) !important;
-}
-
-.tl-map-panel-tabs div[role=tab] a {
+.tl-map-panel-tabs div[role=tab] button {
     margin-right: 5px;
 }
 
-.tl-map-panel-tabs div[role=tab] a {
-    background-color: rgba(235, 235, 235, 0.9) !important;
+.tl-map-panel-tabs div[role=tab][aria-selected=false] button {
+    background-color: var(--bulma-background);
+}
+.tl-map-panel-tabs div[role=tab][aria-selected=true] button {
+    background-color: var(--bulma-scheme-main)
 }
 
-.tl-map-panel-tabs div[role=tab][aria-selected=true] a {
-    background-color: rgba(255, 255, 255, 0.9) !important;
-}
-
-.tl-map-panel-tabs .tab-content {
-    background-color: rgba(255, 255, 255, 0.9);
+.tl-map-panel-tabs .tabs-content {
+    background-color: var(--bulma-scheme-main) !important;
     margin: 0px;
     padding-left: 10px;
     padding-right: 10px;
