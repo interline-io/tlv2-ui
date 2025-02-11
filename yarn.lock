@@ -4544,7 +4544,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:^3.2.0":
+"date-fns@npm:^3.6.0":
   version: 3.6.0
   resolution: "date-fns@npm:3.6.0"
   checksum: 10/cac35c58926a3b5d577082ff2b253612ec1c79eb6754fddef46b6a8e826501ea2cb346ecbd211205f1ba382ddd1f9d8c3f00bf433ad63cc3063454d294e3a6b8
@@ -4703,7 +4703,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"destr@npm:^2.0.2, destr@npm:^2.0.3":
+"destr@npm:^2.0.3":
   version: 2.0.3
   resolution: "destr@npm:2.0.3"
   checksum: 10/dbb756baa876810ec0ca4bcb702d86cc3b480ed14f36bf5747718ed211f96bca5520b63a4109eb181ad940ee2a645677d9a63d4a0ed11a7510619dae97317201
@@ -10949,8 +10949,8 @@ __metadata:
     cytoscape: "npm:^3.31.0"
     cytoscape-fcose: "npm:^2.2.0"
     d3-scale-chromatic: "npm:^3.1.0"
-    date-fns: "npm:^3.2.0"
-    destr: "npm:^2.0.2"
+    date-fns: "npm:^3.6.0"
+    destr: "npm:^2.0.3"
     eslint: "npm:^7.32.0 || ^8.2.0"
     graphql: "npm:^16.8.1"
     graphql-tag: "npm:^2.12.6"
