@@ -57,7 +57,7 @@
             </template>
           </table>
 
-          <directions-stops v-if="leg.stops" :stops="leg.stops" />
+          <tl-directions-stops v-if="leg.stops" :stops="leg.stops" />
 
           <div class="itin-duration">
             {{ $filters.formatDuration(leg.duration.duration) }} /
