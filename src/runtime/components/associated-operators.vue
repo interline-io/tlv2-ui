@@ -3,11 +3,13 @@
     <div v-if="associatedOperators?.length > 0" class="table-container">
       <table class="table is-fullwidth is-striped">
         <thead>
-          <th>Operator name</th>
-          <th>Operator Onestop ID</th>
-          <th class="has-text-right">
-            Links to view
-          </th>
+          <tr>
+            <th>Operator name</th>
+            <th>Operator Onestop ID</th>
+            <th class="has-text-right">
+              Links to view
+            </th>
+          </tr>
         </thead>
         <tbody>
           <tr v-for="(operator, i) of associatedOperatorsToDisplay" :key="i">
