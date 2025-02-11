@@ -15,8 +15,8 @@
 </template>
 
 <script>
-import { useProgrammatic } from '@oruga-ui/oruga-next/dist/oruga.mjs'
-const { oruga } = useProgrammatic()
+// import { useProgrammatic } from '@oruga-ui/oruga-next/dist/oruga.mjs'
+// const { oruga } = useProgrammatic()
 
 export default {
   props: {
@@ -32,12 +32,12 @@ export default {
   methods: {
     clipboard() {
       navigator.clipboard.writeText(this.text || this.sanitizedUrl)
-      oruga.notification.open({
-        message: 'Copied to clipboard',
-        rootClass: 'toast toast-notification',
-        position: 'bottom',
-        variant: 'primary'
-      })
+      // oruga.notification.open({
+      //   message: 'Copied to clipboard',
+      //   rootClass: 'toast toast-notification',
+      //   position: 'bottom',
+      //   variant: 'primary'
+      // })
     }
   }
 }
