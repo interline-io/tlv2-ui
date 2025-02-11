@@ -172,7 +172,7 @@ const ROUTES_TAB = 1
 const DEPARTURE_TAB = 2
 const DIRECTIONS_TAB = 3
 
-const activeTab = ref(DEPARTURE_TAB)
+const activeTab = ref(ROUTES_TAB)
 const useHash = true
 const initialZoom = ref(1.5)
 const initialCenter = ref([-119.49, 12.66])
