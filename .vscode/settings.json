@@ -1,7 +1,4 @@
 {
-  "search.exclude": {
-    ".yarn": true,
-  },
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
