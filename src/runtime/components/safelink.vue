@@ -25,12 +25,12 @@ export default {
     maxWidth: { type: String, default: '400px' }
   },
   computed: {
-    sanitizedUrl() {
+    sanitizedUrl () {
       return this.$filters.sanitizeUrl(this.url)
     }
   },
   methods: {
-    clipboard() {
+    clipboard () {
       navigator.clipboard.writeText(this.text || this.sanitizedUrl)
       // oruga.notification.open({
       //   message: 'Copied to clipboard',

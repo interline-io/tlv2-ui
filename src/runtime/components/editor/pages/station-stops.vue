@@ -73,8 +73,6 @@
             </template>
             <div class="card-content">
               <ul class="help">
-                <!-- <li><span style="color:#e69320">Stops in station</span></li> -->
-                <!-- <li><span style="color:#87a9ff">Stops not in station</span></li> -->
                 <li>Select a node to import into station</li>
                 <li>You must select a level before importing</li>
                 <li>Click the selected item again to unselect</li>

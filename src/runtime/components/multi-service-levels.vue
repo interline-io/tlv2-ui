@@ -411,8 +411,7 @@ const months = {
 .tt {
   visibility: hidden;
   width: 360px;
-  /* background-color: black; */
-  /* color: #fff; */
+  background-color: var(--bulma-schema-main);
   text-align: center;
   border-radius: 6px;
   padding: 5px;
@@ -432,5 +431,10 @@ const months = {
     z-index:100;
     box-shadow: none !important;
 }
+</style>
 
+<style lang="scss">
+.tt {
+  background-color: var(--bulma-background) !important;
+}
 </style>
