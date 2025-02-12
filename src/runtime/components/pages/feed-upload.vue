@@ -456,7 +456,6 @@ export default {
 </script>
 
   <style scoped>
-
   .error-group td {
     border-bottom:solid 1px #000;
     font-weight: bold;

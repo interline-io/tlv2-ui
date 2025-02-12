@@ -40,7 +40,7 @@
         <tl-editor-basemap-control v-model="basemap" />
       </o-field>
 
-      <div class="control">
+      <div class="control" style="width:100%">
         <tl-editor-level-map
           :basemap="basemap"
           :zoom="18"
@@ -134,11 +134,11 @@ export default {
       ]
     },
     valid () {
-      return this.level.level_name &&
-      this.level.level_name.length > 0 &&
-      this.level.level_index !== null &&
-      this.level.level_id &&
-      this.level.level_id.length > 0
+      return this.level.level_name
+        && this.level.level_name.length > 0
+        && this.level.level_index !== null
+        && this.level.level_id
+        && this.level.level_id.length > 0
     }
   },
   watch: {

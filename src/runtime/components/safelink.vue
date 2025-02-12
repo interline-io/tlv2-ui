@@ -15,8 +15,8 @@
 </template>
 
 <script>
-import { useProgrammatic } from '@oruga-ui/oruga-next/dist/oruga.mjs'
-const { oruga } = useProgrammatic()
+// import { useProgrammatic } from '@oruga-ui/oruga-next/dist/oruga.mjs'
+// const { oruga } = useProgrammatic()
 
 export default {
   props: {
@@ -25,19 +25,19 @@ export default {
     maxWidth: { type: String, default: '400px' }
   },
   computed: {
-    sanitizedUrl() {
+    sanitizedUrl () {
       return this.$filters.sanitizeUrl(this.url)
     }
   },
   methods: {
-    clipboard() {
+    clipboard () {
       navigator.clipboard.writeText(this.text || this.sanitizedUrl)
-      oruga.notification.open({
-        message: 'Copied to clipboard',
-        rootClass: 'toast toast-notification',
-        position: 'bottom',
-        variant: 'primary'
-      })
+      // oruga.notification.open({
+      //   message: 'Copied to clipboard',
+      //   rootClass: 'toast toast-notification',
+      //   position: 'bottom',
+      //   variant: 'primary'
+      // })
     }
   }
 }
@@ -53,8 +53,8 @@ export default {
 }
 
 .safelink .desc {
-    color: #da1039;
-    background:hsl(0, 0%, 96%);
+    color: var(--bulma-info-on-scheme);
+    background:var(--bulma-background);
     font-family: monospace;
     font-weight: normal;
     font-size: 0.875em;
@@ -75,7 +75,7 @@ export default {
     text-align:center;
     margin:0px;
     padding:3px;
-    background:hsl(0, 0%, 94%);
+    background:var(--bulma-background);
 
 }
 

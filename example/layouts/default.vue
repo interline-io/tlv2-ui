@@ -61,11 +61,6 @@ const items = [
 
 
 <style scoped>
-.footer,
-.navbar {
-    background-color: hsl(0, 0%, 96%);
-}
-
 .footer {
     padding: 20px;
 }

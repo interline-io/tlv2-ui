@@ -182,7 +182,7 @@
 
         <slot v-if="showDownload" name="download" :entity="entity">
           <div class="is-pulled-right">
-            <tl-feed-version-download :feed-onestop-id="pathKey" :feed-version-sha1="feedVersionKey" />
+            <tl-feed-version-download :feed-onestop-id="entity.feed.onestop_id" :feed-version-sha1="feedVersionKey" />
           </div>
         </slot>
       </div>
@@ -192,20 +192,18 @@
       </slot>
 
       <o-tabs v-model="activeTab" class="tl-tabs" type="boxed" :animated="false" @update:model-value="setTab">
-        <o-tab-item id="files" label="Files">
+        <o-tab-item :value="tabNames.files" label="Files">
           <tl-file-info-table :files="entity.files" />
         </o-tab-item>
 
-        <o-tab-item id="service" label="Service levels">
-          <client-only placeholder="Service levels">
-            <template v-if="activeTab === 2">
-              <tl-multi-service-levels :show-group-info="false" :show-service-relative="false" :fvids="[entity.id]" :week-agg="false" />
-            </template>
-          </client-only>
+        <o-tab-item :value="tabNames.service" label="Service levels">
+          <template v-if="activeTab === tabNames.service">
+            <tl-multi-service-levels :show-group-info="false" :show-service-relative="false" :fvids="[entity.id]" :week-agg="false" />
+          </template>
         </o-tab-item>
 
-        <o-tab-item id="map" label="Map">
-          <template v-if="activeTab === 3">
+        <o-tab-item :value="tabNames.map" label="Map">
+          <template v-if="activeTab === 'map'">
             <div v-if="imported">
               <client-only placeholder="Map">
                 <tl-feed-version-map-viewer :feed-version-sha1="entity.sha1" :overlay="true" :link-version="true" />
@@ -217,19 +215,19 @@
           </template>
         </o-tab-item>
 
-        <o-tab-item v-if="imported" id="agencies" label="Agencies">
-          <tl-agency-table v-if="activeTab === 4" :fvid="entity.sha1" />
+        <o-tab-item v-if="imported" :value="tabNames.agencies" label="Agencies">
+          <tl-agency-table v-if="activeTab === tabNames.agencies" :fvid="entity.sha1" />
         </o-tab-item>
 
-        <o-tab-item v-if="imported" id="routes" label="Routes">
-          <tl-route-table v-if="activeTab === 5" :link-version="true" :feed-version-sha1="entity.sha1" />
+        <o-tab-item v-if="imported" :value="tabNames.routes" label="Routes">
+          <tl-route-table v-if="activeTab === tabNames.routes" :link-version="true" :feed-version-sha1="entity.sha1" />
         </o-tab-item>
 
-        <o-tab-item v-if="imported" id="stops" label="Stops">
-          <tl-stop-table v-if="activeTab === 6" :link-version="true" :feed-version-sha1="entity.sha1" />
+        <o-tab-item v-if="imported" :value="tabNames.stops" label="Stops">
+          <tl-stop-table v-if="activeTab === tabNames.stops" :link-version="true" :feed-version-sha1="entity.sha1" />
         </o-tab-item>
 
-        <o-tab-item v-if="imported" id="import" label="Import log">
+        <o-tab-item v-if="imported" :value="tabNames.imports" label="Import log">
           <table class="table is-striped is-fullwidth">
             <thead>
               <tr>
@@ -358,20 +356,14 @@ export default {
     feedVersionKey: { type: String, default: '', required: true },
     showImportStatus: { type: Boolean, default: true }
   },
+
   data () {
     return {
       showEditModal: false,
       showPermissionsModal: false,
       features: [],
-      tabIndex: {
-        1: 'files',
-        2: 'service',
-        3: 'map',
-        4: 'agencies',
-        5: 'routes',
-        6: 'stops',
-        7: 'import'
-      }
+      tabNames: this.makeTabNames(['files', 'service', 'map', 'agencies', 'routes', 'stops', 'imports']),
+      activeTab: 'files'
     }
   },
   computed: {

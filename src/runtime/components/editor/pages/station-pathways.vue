@@ -37,7 +37,7 @@
                 </p>
                 <o-field v-else label="Select Pathways">
                   <div class="buttons has-addons">
-                    <a v-for="pwm of PathwayModes" :key="pwm[0]" class="button is-secondary is-small" @click="selectPathwayModes(pwm[0])">{{ pwm[1] }}</a>
+                    <a v-for="pwm of PathwayModes" :key="pwm[0]" class="button is-small" @click="selectPathwayModes(pwm[0])">{{ pwm[1] }}</a>
                   </div>
                 </o-field>
                 <ul>
@@ -55,7 +55,7 @@
                 </p>
                 <o-field v-else label="Select Stops">
                   <div class="buttons has-addons">
-                    <a v-for="pwm of LocationTypes" :key="pwm[0]" class="button is-secondary is-small" @click="selectLocationTypes(pwm[0])">{{ pwm[1] }}</a>
+                    <a v-for="pwm of LocationTypes" :key="pwm[0]" class="button is-small" @click="selectLocationTypes(pwm[0])">{{ pwm[1] }}</a>
                   </div>
                 </o-field>
               </div>

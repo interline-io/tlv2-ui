@@ -24,7 +24,7 @@
 
       <div class="tl-map-panel tl-map-panel-tabs">
         <o-tabs v-model="activeTab" class="tl-tabs block" position="centered" type="boxed">
-          <o-tab-item id="routes" label="Routes">
+          <o-tab-item :value="ROUTES_TAB" label="Routes">
             <o-field addons>
               <o-field expanded style="width:100%">
                 <h6 class="title is-6 short-margin">
@@ -60,7 +60,7 @@
               </p>
             </div>
           </o-tab-item>
-          <o-tab-item id="departures" label="Departures">
+          <o-tab-item :value="DEPARTURE_TAB" label="Departures">
             <tl-login-gate>
               <tl-map-search
                 :bbox="currentBbox"
@@ -85,7 +85,7 @@
             </tl-login-gate>
           </o-tab-item>
           <tl-login-gate role="tl_user_enterprise">
-            <o-tab-item label="Directions">
+            <o-tab-item :value="DIRECTIONS_TAB" label="Directions">
               <tl-msg-info>
                 This feature is in a limited beta. <br>
                 Please see the <a href="https://www.transit.land/documentation/routing-api/" target="_blank">Routing API docs</a><br>
@@ -168,9 +168,9 @@ const props = defineProps({
 
 const rerenderKey = ref(0)
 
-const ROUTES_TAB = 1
-const DEPARTURE_TAB = 2
-const DIRECTIONS_TAB = 3
+const ROUTES_TAB = 'routes'
+const DEPARTURE_TAB = 'departures'
+const DIRECTIONS_TAB = 'directions'
 
 const activeTab = ref(ROUTES_TAB)
 const useHash = true
@@ -271,21 +271,21 @@ const toPlaceCoords = computed((): number[] => {
   return coords.length === 2 ? coords : []
 })
 
-async function directionsSetDepartAt(v: string) {
+async function directionsSetDepartAt (v: string) {
   await navigateTo({
     query: { ...route.query, departAt: v },
     hash: window.location.hash
   })
 }
 
-async function directionsSetMode(v: string) {
+async function directionsSetMode (v: string) {
   await navigateTo({
     query: { ...route.query, mode: v },
     hash: window.location.hash
   })
 }
 
-async function directionsReset() {
+async function directionsReset () {
   directionsFeatures.value = []
   await navigateTo({
     query: { },
@@ -293,7 +293,7 @@ async function directionsReset() {
   })
 }
 
-async function directionsSetPlaces(fromPlace: number[] | null, toPlace: number[] | null) {
+async function directionsSetPlaces (fromPlace: number[] | null, toPlace: number[] | null) {
   const pathNoHash = route.path.split('#')[0]
   const fromPlaceStr = (fromPlace || []).map(v => v.toFixed(6)).join(',')
   const toPlaceStr = (toPlace || []).map(v => v.toFixed(6)).join(',')
@@ -304,7 +304,7 @@ async function directionsSetPlaces(fromPlace: number[] | null, toPlace: number[]
   })
 }
 
-function splitCoords(v: any): number[] {
+function splitCoords (v: any): number[] {
   const vs = (v || '').split(',').map(parseFloat).filter((v: number) => !isNaN(v))
   if (vs.length === 2) {
     return vs
@@ -415,24 +415,19 @@ const markers = computed(() => {
     min-width: 565px;
 }
 
-.tl-map-panel-tabs {
-    background: rgba(255, 255, 255, 0.0) !important;
-}
-
-.tl-map-panel-tabs div[role=tab] a {
+.tl-map-panel-tabs div[role=tab] button {
     margin-right: 5px;
 }
 
-.tl-map-panel-tabs div[role=tab] a {
-    background-color: rgba(235, 235, 235, 0.9) !important;
+.tl-map-panel-tabs div[role=tab][aria-selected=false] button {
+    background-color: var(--bulma-background);
+}
+.tl-map-panel-tabs div[role=tab][aria-selected=true] button {
+    background-color: var(--bulma-scheme-main)
 }
 
-.tl-map-panel-tabs div[role=tab][aria-selected=true] a {
-    background-color: rgba(255, 255, 255, 0.9) !important;
-}
-
-.tl-map-panel-tabs .tab-content {
-    background-color: rgba(255, 255, 255, 0.9);
+.tl-map-panel-tabs .tabs-content {
+    background-color: var(--bulma-scheme-main) !important;
     margin: 0px;
     padding-left: 10px;
     padding-right: 10px;

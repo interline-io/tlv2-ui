@@ -4,6 +4,7 @@ export default defineNuxtConfig({
   ssr: false,
 
   modules: [
+    '@nuxt/eslint',
     '../src/module',
     '@nuxt/devtools'
   ],
