@@ -132,7 +132,6 @@
 
           <tl-editor-basemap-control v-model="basemap" />
         </o-field>
-
         <tl-editor-pathway-map
           :center="station.geometry.coordinates"
           :other-stops="filteredNearbyStops"

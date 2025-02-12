@@ -25,22 +25,6 @@ const LEVEL_COLORS = [
   '#3288bd'
 ]
 
-function loadImages (map, icons, callback) {
-  const results = {}
-  for (const icon of Object.values(icons)) {
-    map.loadImage(`/icons/${icon.icon}.png`, makeCallback(icon.icon))
-  }
-  function makeCallback (name) {
-    return function (err, image) {
-      results[name] = err ? null : image
-      // if all images are loaded, call the callback
-      if (Object.keys(results).length === Object.keys(icons).length) {
-        callback(results)
-      }
-    }
-  }
-}
-
 export default {
   props: {
     station: {
@@ -254,6 +238,7 @@ export default {
       if (!this.ready || !this.station) {
         return
       }
+
       // filter stops based on agency
       const allStops = [...this.station.stops, ...this.otherStops]
 
@@ -587,13 +572,13 @@ export default {
         //   'top-right'
         // )
       }
-
       // Load images, defer drawing map until loaded
-      loadImages(this.map, PathwayModeIcons, (icons) => {
-        for (const [icon, image] of Object.entries(icons)) {
-          this.map.addImage(icon, image)
+      this.map.on('load', async () => {
+        for (const icon of Object.values(PathwayModeIcons)) {
+          const image2 = await this.map.loadImage(`/icons/${icon.icon}.png`)
+          this.map.addImage(icon.icon, image2.data)
         }
-        this.map.on('load', this.drawMap)
+        this.drawMap()
       })
     },
     drawMap () {
