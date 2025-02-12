@@ -7,29 +7,13 @@
 <script>
 import { nextTick } from 'vue'
 import { Map, AttributionControl } from 'maplibre-gl'
-import MapboxDraw from '@mapbox/mapbox-gl-draw'
 import { getBasemapLayers, PeliasIcons } from './basemaps'
+import MapboxDraw from '@mapbox/mapbox-gl-draw'
 
 // https:// github.com/maplibre/maplibre-gl-js/issues/2601
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl'
 MapboxDraw.constants.classes.CONTROL_PREFIX = 'maplibregl-ctrl-'
 MapboxDraw.constants.classes.CONTROL_GROUP = 'maplibregl-ctrl-group'
-
-function loadImages (map, icons, callback) {
-  const results = {}
-  for (const icon of Object.values(icons)) {
-    map.loadImage(`/icons/${icon.icon}.png`, makeCallback(icon.icon))
-  }
-  function makeCallback (name) {
-    return function (err, image) {
-      results[name] = err ? null : image
-      // if all images are loaded, call the callback
-      if (Object.keys(results).length === Object.keys(icons).length) {
-        callback(results)
-      }
-    }
-  }
-}
 
 export default {
   props: {
@@ -184,15 +168,24 @@ export default {
       this.map.on('draw.create', this.changed)
       this.map.on('draw.delete', this.changed)
       this.map.on('draw.update', this.changed)
-      loadImages(this.map, PeliasIcons, (icons) => {
-        for (const [icon, image] of Object.entries(icons)) {
-          this.map.addImage(icon, image)
+
+      this.map.on('load', async () => {
+        for (const icon of Object.values(PeliasIcons)) {
+          const image2 = await this.map.loadImage(`/icons/${icon.icon}.png`)
+          this.map.addImage(icon.icon, image2.data)
         }
-        this.map.on('load', () => {
-          this.drawMap()
-          this.map.resize()
-        })
+        this.drawMap()
       })
+
+      // loadImages(this.map, PeliasIcons, (icons) => {
+      //   for (const [icon, image] of Object.entries(icons)) {
+      //     this.map.addImage(icon, image)
+      //   }
+      //   this.map.on('load', () => {
+      //     this.drawMap()
+      //     this.map.resize()
+      //   })
+      // })
     },
     redraw () {
       const l = this.map.getSource('lines')
