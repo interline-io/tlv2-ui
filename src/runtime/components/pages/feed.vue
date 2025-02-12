@@ -358,10 +358,7 @@ export default {
     return {
       page: 1,
       showPermissionsModal: false,
-      tabIndex: {
-        1: 'versions',
-        2: 'service'
-      }
+      tabNames: this.makeTabNames(['versions', 'service'])
     }
   },
   computed: {

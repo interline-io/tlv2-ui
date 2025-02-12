@@ -169,17 +169,15 @@
 
       <hr>
 
-      <!-- anchors for when users click between tabs -->
       <div v-if="agencyIds.length > 0">
-        <a v-for="[, value] of Object.entries(tabIndex)" :key="value" :name="value" />
         <h4 class="title is-4">
           Operator Service
         </h4>
         <o-tabs v-model="activeTab" class="tl-tabs" type="boxed" :animated="false" @update:model-value="setTab">
-          <o-tab-item id="map" label="Map">
+          <o-tab-item :value="tabNames.map" label="Map">
             <client-only placeholder="Map">
               <tl-feed-version-map-viewer
-                v-if="activeTab === 1"
+                v-if="activeTab === tabNames.map"
                 :agency-ids="agencyIds"
                 :overlay="true"
                 :link-version="linkVersion"
@@ -187,12 +185,12 @@
             </client-only>
           </o-tab-item>
 
-          <o-tab-item id="routes" label="Routes">
-            <tl-route-table v-if="activeTab === 2" :agency-ids="agencyIds" :show-agency="true" />
+          <o-tab-item :value="tabNames.routes" label="Routes">
+            <tl-route-table v-if="activeTab === tabNames.routes" :agency-ids="agencyIds" :show-agency="true" />
           </o-tab-item>
 
-          <o-tab-item id="stops" label="Stops">
-            <tl-stop-table v-if="activeTab === 3" :agency-ids="agencyIds" />
+          <o-tab-item :value="tabNames.stops" label="Stops">
+            <tl-stop-table v-if="activeTab === tabNames.stops" :agency-ids="agencyIds" />
           </o-tab-item>
         </o-tabs>
       </div>
@@ -250,12 +248,8 @@ export default {
   data () {
     return {
       features: [],
-      tabIndex: {
-        1: 'map',
-        2: 'routes',
-        3: 'stops',
-        4: 'export'
-      }
+      tabNames: this.makeTabNames(['map', 'routes', 'stops', 'export']),
+      activeTab: 'map'
     }
   },
   computed: {
@@ -363,7 +357,7 @@ export default {
     }
   },
   watch: {
-    'entity.name'(v) {
+    'entity.name' (v) {
       useEventBus().$emit('setParamKey', 'operatorKey', v)
     }
   },

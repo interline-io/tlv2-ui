@@ -99,7 +99,7 @@ export default {
           after: 0
         }
       },
-      update(data) {
+      update (data) {
         nextTick(() => {
           this.fetchMore()
         })
@@ -199,7 +199,7 @@ export default {
     }
   },
   methods: {
-    fetchMore() {
+    fetchMore () {
       if (this.routes.length > this.maxLimit) {
         this.loading = false
         return
@@ -238,7 +238,7 @@ export default {
   position:relative
 }
 .tl-fv-map-panel {
-    /* background-color: white; */
+    background-color: var(--bulma-scheme-main);
     user-select: none;
     position: absolute !important;
     margin: 0px;
