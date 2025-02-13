@@ -199,3 +199,9 @@ function makeNav () {
 }
 
 </script>
+
+<style scoped>
+nav .tag {
+  margin-left:10px;
+}
+</style>

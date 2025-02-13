@@ -15,7 +15,7 @@
       <!-- Main content -->
       <div class="columns">
         <div class="column is-three-quarters">
-          <table class="table is-borderless property-list tl-props">
+          <table class="tl-props">
             <tbody>
               <tr>
                 <td>

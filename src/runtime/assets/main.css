@@ -1,57 +1,23 @@
+.main .message {
+    margin-top:20px;
+    margin-bottom:20px;
+}
+
+.subtitle {
+    font-size:20px;
+    clear:both;
+}
+
 .dashed {
   border-bottom: dashed 1px #ccc;
 }
 
-code {
-    word-wrap: none;
-    white-space: nowrap;
-}
-
-.tl-props td,
-.tl-props th {
-    padding: 5px;
-    border: 0px;
-}
-
-
-.tl-props td:first-child {
-    padding-right: 20px;
-    font-weight: bold;
-    text-align: right;
-    width: 160px;
-    white-space: nowrap;
-    word-wrap: nowrap;
-}
-
-.tl-tabs .tabs-content {
-    margin: 0px;
-    padding: 0px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-}
-
-.tl-tabs nav.tabs {
-    margin-bottom:0px !important;
-}
-
-.is-6 {
-    margin: 0px !important;
-    padding: 0px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-}
-
-.tab-item {
-    width:100%;
+table {
+  width:100%;
 }
 
 .table-container {
-    width:100%;
     overflow-x:auto;
-}
-
-nav .tag {
-  margin-left:10px;
 }
 
 .is-pulled-right.button {
@@ -60,7 +26,6 @@ nav .tag {
 .is-pulled-right .button {
   margin-right:4px;
 }
-
 
 @media only screen and (max-width: 600px) {
   .tab-item {
