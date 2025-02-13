@@ -33,10 +33,13 @@
         label="Group"
         horizontal
       >
-        <template v-if="feed?.group">
-          <tl-admin-ghost-button :text="feed?.group?.name || 'Unnamed Group'" />
-          <o-field>
+        <tl-admin-input
+          :value="feed?.group?.name || 'Unnamed Group'"
+          :link="true"
+        >
+          <template #link>
             <nuxt-link
+              v-if="feed?.group"
               class="button is-small mr-2"
               :to="{ name: 'admin-groups-groupKey', params: { groupKey: feed.group.id }}"
             >
@@ -49,17 +52,8 @@
             >
               Set group
             </o-button>
-          </o-field>
-        </template>
-        <template v-else>
-          <o-button
-            v-if="feed.actions.can_set_group"
-            size="small"
-            @click="showAssignGroup = true"
-          >
-            Set group
-          </o-button>
-        </template>
+          </template>
+        </tl-admin-input>
       </o-field>
 
       <o-field label="Your permissions" horizontal :title="`You are logged in as ${user.name} (${user.email})`">

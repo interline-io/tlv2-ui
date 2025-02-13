@@ -19,7 +19,7 @@ export default {
         if (data && data.entities && data.entities.length === 0) {
           return this.setError(404, 'Not found')
         }
-        return data.entities
+        return data.entities || []
       }
     }
   },

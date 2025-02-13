@@ -25,12 +25,14 @@
           label="Parent"
           horizontal
         >
-          <o-field>
-            <tl-admin-ghost-button :text="group.tenant?.name" />
-            <o-field>
+          <tl-admin-input
+            :value="group.tenant?.name"
+            :link="true"
+          >
+            <template #link>
               <nuxt-link
                 v-if="group.tenant"
-                class="button mr-2 is-small"
+                class="button is-small"
                 :to="{ name: 'admin-tenants-tenantKey', params: { tenantKey: group.tenant.id }}"
               >
                 View tenant
@@ -42,8 +44,8 @@
               >
                 Set tenant
               </o-button>
-            </o-field>
-          </o-field>
+            </template>
+          </tl-admin-input>
         </o-field>
 
         <o-field
