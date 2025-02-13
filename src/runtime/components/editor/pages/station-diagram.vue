@@ -1,7 +1,7 @@
 <template>
   <div v-if="station">
     <slot name="title">
-      <tl-title title="Edit Station">
+      <tl-title title="Station Diagram">
         Station Diagram: {{ stationName }}
       </tl-title>
     </slot>
