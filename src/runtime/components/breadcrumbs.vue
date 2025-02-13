@@ -102,7 +102,6 @@ function titleize (str: string) {
 }
 
 function makeNav () {
-  console.log('makeNav')
   const router = useRouter()
   const routePath = useRoute().name
   const routeParams = useRoute().params
@@ -125,14 +124,12 @@ function makeNav () {
     const routeId = String(routeFragments.slice(0, i + 1).join('-'))
     const slug = routeParams.slug
     let routeName = routeId
-    console.log('makeNav element:', element, 'routeName:', routeName, 'slug:', slug)
 
     // Check if route exists
     if (slug?.length > 0 && router.hasRoute(routeId + '-slug')) {
       routeName = routeId + '-slug'
     }
     if (!router.hasRoute(routeName)) {
-      console.log('\tno routeName:', routeName)
       continue
     }
 
