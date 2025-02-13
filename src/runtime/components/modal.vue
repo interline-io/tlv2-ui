@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="tl-modal">
     <o-modal
       :active="modelValue"
       has-modal-card
@@ -48,3 +48,9 @@ export default {
   }
 }
 </script>
+
+<style>
+.tl-modal .modal-card {
+  min-width: 800px;
+}
+</style>
