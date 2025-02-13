@@ -40,9 +40,9 @@ const shorteners: nameVal = {
 }
 
 const routeTags: nameOpts = {
-  'editor-feedKey-feedVersionKey-stations-stationKey': 'Station',
   'editor-feedKey': 'Feed',
   'editor-feedKey-feedVersionKey': 'Version',
+  'editor-feedKey-feedVersionKey-stations-stationKey': 'Station',
   'feeds-feedKey': 'Feed',
   'feeds-feedKey-versions-feedVersionKey': 'Version',
   'routes-routeKey': 'Route',
@@ -125,13 +125,6 @@ function makeNav () {
     const slug = routeParams.slug
     let routeName = routeId
 
-    // Check if route exists
-    if (slug?.length > 0 && router.hasRoute(routeId + '-slug')) {
-      routeName = routeId + '-slug'
-    }
-    if (!router.hasRoute(routeName)) {
-      continue
-    }
 
     // Get matching parameters
     if (routeParams[element]) {
@@ -165,6 +158,23 @@ function makeNav () {
       tag = props.extraRouteTags[routeId]
     }
 
+    
+    // Check if route exists
+    if (slug?.length > 0 && router.hasRoute(routeId + '-slug')) {
+      routeName = routeId + '-slug'
+    }
+    
+    // Do not try to create a link if route name does not exist
+    if (!router.hasRoute(routeName)) {
+      routeName = ''
+    }
+
+    // Nothing to display
+    if (!routeName && !text) {
+      continue
+    }
+
+
     // Add to crumbs
     ret.push({
       class: routeName ? '' : 'is-active',
@@ -174,6 +184,7 @@ function makeNav () {
       routeName,
       text
     })
+
     if (slug?.length > 0) {
       for (const [sli, sl] of Array.from(slug).entries()) {
         if (!sl) {
