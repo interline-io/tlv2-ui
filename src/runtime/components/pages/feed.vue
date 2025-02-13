@@ -13,161 +13,159 @@
 
       <div class="columns">
         <div class="column">
-          <table class="table is-borderless property-list tl-props">
-            <tbody>
-              <tr>
-                <td>
-                  <o-tooltip trigger-class="dashed" label="A globally unique identifier for this feed">
-                    Onestop ID
-                  </o-tooltip>
-                </td>
-                <td>
-                  <tl-safelink :text="entity.onestop_id" />
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <o-tooltip trigger-class="dashed" label="Data specification or format for this feed">
-                    Format
-                  </o-tooltip>
-                </td>
-                <td>{{ feedSpec }}</td>
-              </tr>
+          <tl-props>
+            <tr>
+              <td>
+                <o-tooltip trigger-class="dashed" label="A globally unique identifier for this feed">
+                  Onestop ID
+                </o-tooltip>
+              </td>
+              <td>
+                <tl-safelink :text="entity.onestop_id" />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <o-tooltip trigger-class="dashed" label="Data specification or format for this feed">
+                  Format
+                </o-tooltip>
+              </td>
+              <td>{{ feedSpec }}</td>
+            </tr>
 
-              <tr v-if="displayUrls">
-                <td>URLs</td>
-                <td>
-                  <ul>
-                    <li v-if="entity.urls.static_current">
-                      Current Static GTFS: <tl-safelink :url="entity.urls.static_current" />
-                    </li>
-                    <li v-if="entity.urls.static_planned && entity.urls.static_planned.length > 0">
-                      Future Static GTFS: <tl-safelink :url="entity.urls.static_planned" />
-                    </li>
-                    <li v-if="entity.urls.static_historic">
-                      <div v-for="(k, i) of entity.urls.static_historic" :key="i">
-                        Historic GTFS: <tl-safelink :url="k" />
-                      </div>
-                    </li>
-                    <li v-if="entity.urls.realtime_vehicle_positions">
-                      GTFS Realtime Vehicle Positions: <tl-safelink :url="entity.urls.realtime_vehicle_positions" />
-                    </li>
-                    <li v-if="entity.urls.realtime_trip_updates">
-                      GTFS Realtime Trip Updates: <tl-safelink :url="entity.urls.realtime_trip_updates" />
-                    </li>
-                    <li v-if="entity.urls.realtime_alerts">
-                      GTFS Realtime Alerts: <tl-safelink :url="entity.urls.realtime_alerts" />
-                    </li>
-                  </ul>
-                </td>
-              </tr>
+            <tr v-if="displayUrls">
+              <td>URLs</td>
+              <td>
+                <ul>
+                  <li v-if="entity.urls.static_current">
+                    Current Static GTFS: <tl-safelink :url="entity.urls.static_current" />
+                  </li>
+                  <li v-if="entity.urls.static_planned && entity.urls.static_planned.length > 0">
+                    Future Static GTFS: <tl-safelink :url="entity.urls.static_planned" />
+                  </li>
+                  <li v-if="entity.urls.static_historic">
+                    <div v-for="(k, i) of entity.urls.static_historic" :key="i">
+                      Historic GTFS: <tl-safelink :url="k" />
+                    </div>
+                  </li>
+                  <li v-if="entity.urls.realtime_vehicle_positions">
+                    GTFS Realtime Vehicle Positions: <tl-safelink :url="entity.urls.realtime_vehicle_positions" />
+                  </li>
+                  <li v-if="entity.urls.realtime_trip_updates">
+                    GTFS Realtime Trip Updates: <tl-safelink :url="entity.urls.realtime_trip_updates" />
+                  </li>
+                  <li v-if="entity.urls.realtime_alerts">
+                    GTFS Realtime Alerts: <tl-safelink :url="entity.urls.realtime_alerts" />
+                  </li>
+                </ul>
+              </td>
+            </tr>
 
-              <tr>
-                <td>
-                  <o-tooltip trigger-class="dashed" label="Last time a fetch successfully returned valid GTFS data">
-                    Last Fetch
-                  </o-tooltip>
-                </td>
-                <td>
-                  <template v-if="lastSuccessfulFetch && lastSuccessfulFetch.fetched_at">
-                    {{ $filters.formatDate(lastSuccessfulFetch.fetched_at) }} ({{
-                      $filters.fromNow(lastSuccessfulFetch.fetched_at) }})
-                  </template>
-                  <template v-else>
-                    Unknown
-                  </template>
-                </td>
-              </tr>
+            <tr>
+              <td>
+                <o-tooltip trigger-class="dashed" label="Last time a fetch successfully returned valid GTFS data">
+                  Last Fetch
+                </o-tooltip>
+              </td>
+              <td>
+                <template v-if="lastSuccessfulFetch && lastSuccessfulFetch.fetched_at">
+                  {{ $filters.formatDate(lastSuccessfulFetch.fetched_at) }} ({{
+                    $filters.fromNow(lastSuccessfulFetch.fetched_at) }})
+                </template>
+                <template v-else>
+                  Unknown
+                </template>
+              </td>
+            </tr>
 
-              <tr v-if="lastFetch && lastFetch.fetch_error">
-                <td>
-                  <o-tooltip trigger-class="dashed" label="Error message from last fetch attempt">
-                    Fetch Error
-                  </o-tooltip>
-                </td>
-                <td>
-                  <tl-msg-error>
-                    {{ lastFetch.fetch_error }}
-                  </tl-msg-error>
-                </td>
-              </tr>
+            <tr v-if="lastFetch && lastFetch.fetch_error">
+              <td>
+                <o-tooltip trigger-class="dashed" label="Error message from last fetch attempt">
+                  Fetch Error
+                </o-tooltip>
+              </td>
+              <td>
+                <tl-msg-error>
+                  {{ lastFetch.fetch_error }}
+                </tl-msg-error>
+              </td>
+            </tr>
 
-              <tr v-if="entity.authorization && entity.authorization.type">
-                <td>Authorization</td>
-                <td>
-                  <ul>
-                    <li v-if="entity.authorization.type">
-                      Type: {{ entity.authorization.type }}
-                    </li>
-                    <li v-if="entity.authorization.param_name">
-                      Parameter Name: {{ entity.authorization.param_name }}
-                    </li>
-                    <li v-if="entity.authorization.info_url">
-                      Info URL: <tl-safelink :url="entity.authorization.info_url" />
-                    </li>
-                  </ul>
-                </td>
-              </tr>
+            <tr v-if="entity.authorization && entity.authorization.type">
+              <td>Authorization</td>
+              <td>
+                <ul>
+                  <li v-if="entity.authorization.type">
+                    Type: {{ entity.authorization.type }}
+                  </li>
+                  <li v-if="entity.authorization.param_name">
+                    Parameter Name: {{ entity.authorization.param_name }}
+                  </li>
+                  <li v-if="entity.authorization.info_url">
+                    Info URL: <tl-safelink :url="entity.authorization.info_url" />
+                  </li>
+                </ul>
+              </td>
+            </tr>
 
-              <tr v-if="displayLicense">
-                <td>License</td>
-                <td>
-                  <ul>
-                    <li v-if="entity.license.url">
-                      License URL: <tl-safelink :url="entity.license.url" />
-                    </li>
-                    <li v-if="entity.license.spdx_identifier">
-                      License Identifier: {{ entity.license.spdx_identifier }}
-                    </li>
-                    <li v-if="entity.license.use_without_attribution">
-                      Use allowed without attribution: {{ $filters.capitalize(entity.license.use_without_attribution) }}
-                    </li>
-                    <li v-if="entity.license.share_alike_optional">
-                      Share-alike optional: {{ $filters.capitalize(entity.license.share_alike_optional) }}
-                    </li>
-                    <li v-if="entity.license.commercial_use_allowed">
-                      Commercial use allowed: {{ $filters.capitalize(entity.license.commercial_use_allowed) }}
-                    </li>
-                    <li v-if="entity.license.create_derived_product">
-                      Creating derived products allowed: {{ $filters.capitalize(entity.license.create_derived_product) }}
-                    </li>
-                    <li v-if="entity.license.redistribution_allowed">
-                      Redistribution allowed: {{ $filters.capitalize(entity.license.redistribution_allowed) }}
-                    </li>
-                    <li v-if="entity.license.attribution_text">
-                      Required attribution text: {{ entity.license.attribution_text }}
-                    </li>
-                    <li v-if="entity.license.attribution_instructions" class="content">
-                      Attribution instructions:
-                      <blockquote>{{ $filters.capitalize(entity.license.attribution_instructions) }}</blockquote>
-                    </li>
-                  </ul>
-                </td>
-              </tr>
-              <tr v-if="entity.languages">
-                <td>Languages</td>
-                <td>{{ entity.languages }}</td>
-              </tr>
+            <tr v-if="displayLicense">
+              <td>License</td>
+              <td>
+                <ul>
+                  <li v-if="entity.license.url">
+                    License URL: <tl-safelink :url="entity.license.url" />
+                  </li>
+                  <li v-if="entity.license.spdx_identifier">
+                    License Identifier: {{ entity.license.spdx_identifier }}
+                  </li>
+                  <li v-if="entity.license.use_without_attribution">
+                    Use allowed without attribution: {{ $filters.capitalize(entity.license.use_without_attribution) }}
+                  </li>
+                  <li v-if="entity.license.share_alike_optional">
+                    Share-alike optional: {{ $filters.capitalize(entity.license.share_alike_optional) }}
+                  </li>
+                  <li v-if="entity.license.commercial_use_allowed">
+                    Commercial use allowed: {{ $filters.capitalize(entity.license.commercial_use_allowed) }}
+                  </li>
+                  <li v-if="entity.license.create_derived_product">
+                    Creating derived products allowed: {{ $filters.capitalize(entity.license.create_derived_product) }}
+                  </li>
+                  <li v-if="entity.license.redistribution_allowed">
+                    Redistribution allowed: {{ $filters.capitalize(entity.license.redistribution_allowed) }}
+                  </li>
+                  <li v-if="entity.license.attribution_text">
+                    Required attribution text: {{ entity.license.attribution_text }}
+                  </li>
+                  <li v-if="entity.license.attribution_instructions" class="content">
+                    Attribution instructions:
+                    <blockquote>{{ $filters.capitalize(entity.license.attribution_instructions) }}</blockquote>
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            <tr v-if="entity.languages">
+              <td>Languages</td>
+              <td>{{ entity.languages }}</td>
+            </tr>
 
-              <tr v-if="entity.spec == 'GTFS'">
-                <td>
-                  <o-tooltip
-                    dashed
-                    multilined
-                    label="Information provided by the feed producer inside a feed_info.txt file"
-                  >
-                    Feed Info
-                  </o-tooltip>
-                </td>
-                <td v-if="mostRecentFeedInfo">
-                  <tl-feed-info :feed-info="mostRecentFeedInfo" />
-                </td>
-                <td v-else>
-                  <em>No <code>feed_info.txt</code> file included in the most recent feed version.</em>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+            <tr v-if="entity.spec == 'GTFS'">
+              <td>
+                <o-tooltip
+                  dashed
+                  multilined
+                  label="Information provided by the feed producer inside a feed_info.txt file"
+                >
+                  Feed Info
+                </o-tooltip>
+              </td>
+              <td v-if="mostRecentFeedInfo">
+                <tl-feed-info :feed-info="mostRecentFeedInfo" />
+              </td>
+              <td v-else>
+                <em>No <code>feed_info.txt</code> file included in the most recent feed version.</em>
+              </td>
+            </tr>
+          </tl-props>
         </div>
 
         <slot name="edit-feed" :entity="entity" />

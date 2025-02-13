@@ -18,7 +18,7 @@
     </o-notification>
 
     <div v-for="v of groups" :key="v.id">
-      <tl-msg-info no-icon :title="v.name" variant="light">
+      <tl-msg-info no-icon :title="v.name" variant="dark">
         <tl-admin-group :id="v.id" />
       </tl-msg-info>
     </div>

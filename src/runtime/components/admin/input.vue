@@ -1,45 +1,67 @@
 <template>
-  <div>
-    <o-field v-if="canEdit && currentlyEditing">
-      <o-input
-        v-model="valueShadow"
-        expanded
-      />
-      <o-button
-        variant="danger"
-        @click="cancel"
-      >
-        Cancel
-      </o-button>
-      <o-button
-        variant="primary"
-        icon-left="pencil"
-        @click="save"
-      >
-        Save
-      </o-button>
+  <o-field grouped>
+    <!-- These are arranged in this specific way to get correct widths and 'addon' rounding -->
+
+    <!-- Text or edit -->
+    <o-field addons style="width:100%">
+      <!-- Editable field -->
+      <template v-if="currentlyEditing">
+        <o-input
+          v-model="valueShadow"
+          size="small"
+          expanded
+        />
+        <!-- Editing buttons -->
+        <o-button
+          variant="danger"
+          size="small"
+          @click="cancel"
+        >
+          Cancel
+        </o-button>
+        <o-button
+          variant="primary"
+          icon-left="pencil"
+          size="small"
+          @click="save"
+        >
+          Save
+        </o-button>
+      </template>
+
+      <div v-else style="width:100%">
+        {{ value }}
+      </div>
+
+      <!-- Show edit button? -->
+      <o-field v-if="canEdit && !currentlyEditing">
+        <o-button
+          size="small"
+          variant="primary"
+          icon-left="pencil"
+          @click="currentlyEditing = true"
+        >
+          Edit
+        </o-button>
+      </o-field>
     </o-field>
-    <div v-else>
-      <span class="p-3">{{ value }}</span>
-      <o-button
-        v-if="canEdit"
-        variant="primary"
-        size="small"
-        class="is-pulled-right"
-        icon-left="pencil"
-        @click="currentlyEditing = true"
-      >
-        Edit
-      </o-button>
-    </div>
-  </div>
+
+    <!-- Show links -->
+    <o-field
+      v-if="link"
+      grouped
+    >
+      <slot name="link" />
+    </o-field>
+  </o-field>
 </template>
 
 <script>
 export default {
   props: {
     value: { type: String, default: '' },
-    canEdit: { type: Boolean, default: false }
+    canEdit: { type: Boolean, default: false },
+    link: { type: Boolean, default: false },
   },
   emits: ['save'],
   data () {

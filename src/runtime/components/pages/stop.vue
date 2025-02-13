@@ -20,7 +20,7 @@
       <!-- Main content -->
       <div class="columns">
         <div class="column is-two-thirds">
-          <table class="table is-borderless property-list tl-props">
+          <table class="tl-props">
             <tbody>
               <tr>
                 <td>

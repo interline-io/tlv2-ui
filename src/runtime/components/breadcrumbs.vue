@@ -17,16 +17,16 @@
 <script setup lang="ts">
 import { useRoute, useRouter, useEventBus, ref, computed } from '#imports'
 import { type RouteParams } from '#vue-router'
-interface nameOpts { [index: string]: string}
+interface nameOpts { [index: string]: string }
 
-interface nameVal { [index: string]: number}
+interface nameVal { [index: string]: number }
 
 interface linkElem {
-  routeName: string,
-  routeParams: RouteParams,
-  tag: string,
-  text: string,
-  id: string,
+  routeName: string
+  routeParams: RouteParams
+  tag: string
+  text: string
+  id: string
   class: string
 }
 
@@ -35,11 +35,11 @@ const routeNames: nameOpts = {
   stops: 'Stops'
 }
 
-const shorteners:nameVal = {
+const shorteners: nameVal = {
   feedVersionKey: 8
 }
 
-const routeTags:nameOpts = {
+const routeTags: nameOpts = {
   'editor-feedKey-feedVersionKey-stations-stationKey': 'Station',
   'editor-feedKey': 'Feed',
   'editor-feedKey-feedVersionKey': 'Version',
@@ -51,8 +51,8 @@ const routeTags:nameOpts = {
 
 const props = defineProps({
   boxed: { type: Boolean, default: false },
-  extraRouteNames: { type: Object as ()=>nameOpts, default() { return {} } },
-  extraRouteTags: { type: Object as ()=>nameOpts, default() { return {} } }
+  extraRouteNames: { type: Object as () => nameOpts, default () { return {} } },
+  extraRouteTags: { type: Object as () => nameOpts, default () { return {} } }
 })
 
 const classes = computed(() => {
@@ -83,17 +83,17 @@ const abbrs: Record<string, string> = {
   rest: 'REST'
 }
 
-function capitalize (str:string) {
+function capitalize (str: string) {
   if (abbrs[str]) {
     return abbrs[str]
   }
   return str.length
-    ? str[0].toUpperCase() +
-      str.slice(1).toLowerCase()
+    ? str[0].toUpperCase()
+    + str.slice(1).toLowerCase()
     : ''
 }
 
-function titleize(str:string) {
+function titleize (str: string) {
   const ret = []
   for (const s of str.split(/[\s-_]/)) {
     ret.push(capitalize(s))
@@ -101,7 +101,7 @@ function titleize(str:string) {
   return ret.join(' ')
 }
 
-function makeNav() {
+function makeNav () {
   const router = useRouter()
   const routePath = useRoute().name
   const routeParams = useRoute().params
@@ -196,3 +196,9 @@ function makeNav() {
 }
 
 </script>
+
+<style scoped>
+nav .tag {
+  margin-left:10px;
+}
+</style>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="tl-feed-upload">
     <slot name="title">
       <tl-title title="Upload feed version" />
     </slot>
@@ -485,3 +485,9 @@ export default {
     padding: 50px 0;
   }
   </style>
+
+<style>
+.tl-feed-upload .step-content {
+  margin-top:20px;
+}
+</style>
