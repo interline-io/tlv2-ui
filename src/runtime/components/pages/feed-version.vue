@@ -70,7 +70,7 @@
         </div>
       </nav>
 
-      <table class="tl-props">
+      <tl-props>
         <tbody>
           <tr>
             <td>Feed Onestop ID</td>
@@ -153,7 +153,7 @@
             </td>
           </tr>
         </tbody>
-      </table>
+      </tl-props>
 
       <div class="is-clearfix mb-4">
         <slot v-if="showEdit" name="edit" :entity="entity">

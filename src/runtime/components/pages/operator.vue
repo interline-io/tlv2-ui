@@ -15,7 +15,7 @@
       <!-- Main content -->
       <div class="columns">
         <div class="column is-three-quarters">
-          <table class="tl-props">
+          <tl-props>
             <tbody>
               <tr>
                 <td>
@@ -101,7 +101,7 @@
                 </td>
               </tr>
             </tbody>
-          </table>
+          </tl-props>
 
           <slot name="description">
             <div class="content">
