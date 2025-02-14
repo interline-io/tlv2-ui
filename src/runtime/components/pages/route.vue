@@ -33,7 +33,7 @@
       <!-- Main content -->
       <div class="columns">
         <div class="column is-two-thirds">
-          <table class="tl-props">
+          <tl-props>
             <tbody>
               <tr v-if="entity.onestop_id">
                 <td>
@@ -101,10 +101,10 @@
                 </td>
               </tr>
             </tbody>
-          </table>
+          </tl-props>
 
           <slot name="contentAfterTable" :entity="entity">
-            <tl-msg-info>
+            <tl-msg-info class="mx-4">
               <p>Learn more about <a href="https://www.transit.land/documentation/concepts/routes">routes in the Transitland documentation</a>.</p>
             </tl-msg-info>
           </slot>

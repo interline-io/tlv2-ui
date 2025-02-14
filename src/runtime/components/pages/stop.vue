@@ -20,14 +20,15 @@
       <!-- Main content -->
       <div class="columns">
         <div class="column is-two-thirds">
-          <table class="tl-props">
+          <tl-props>
             <tbody>
               <tr>
                 <td>
-                  <o-tooltip  
-                                    label="A globally unique identifier for this route"                  >
+                  <o-tooltip
+                    label="A globally unique identifier for this route"
+                  >
                     Onestop ID
-              </o-tooltip>
+                  </o-tooltip>
                 </td>
                 <td>
                   <div v-for="root of roots" :key="root.id">
@@ -79,7 +80,7 @@
                 </td>
               </tr>
             </tbody>
-          </table>
+          </tl-props>
 
           <slot name="contentAfterTable" :entity="entity">
             <tl-msg-info>
