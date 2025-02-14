@@ -1,5 +1,4 @@
-import { defineNuxtModule, addPlugin, addImportsDir, createResolver, addServerHandler, resolvePath } from '@nuxt/kit'
-import { join } from 'pathe'
+import { defineNuxtModule, addPlugin, addImportsDir, createResolver, addServerHandler } from '@nuxt/kit'
 
 // Config handler
 export interface ModuleOptions{
@@ -15,16 +14,10 @@ export default defineNuxtModule<ModuleOptions>({
       nuxt: '^3.4.0'
     }
   },
-  async setup (options, nuxt) {
-    // const { resolve } = createResolver(import.meta.url)
-    // const resolveRuntimeModule = (path: string) => resolve('./runtime', path)
-
+  setup (options, nuxt) {
     // Create resolver to resolve relative paths
-    const entrypoint = await resolvePath('@tlv2-ui')
-    const resolveRuntimeModule = (path: string) => {
-      return join(entrypoint, 'runtime', path)
-    }
-
+    const { resolve } = createResolver(import.meta.url)
+    const resolveRuntimeModule = (path: string) => resolve('./runtime', path)
 
     // Setup CSS
     if (options.bulma) {
