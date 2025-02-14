@@ -1,4 +1,5 @@
-import { defineNuxtModule, addPlugin, addImportsDir, createResolver, addServerHandler } from '@nuxt/kit'
+import { defineNuxtModule, addPlugin, addImportsDir, createResolver, addServerHandler, resolvePath } from '@nuxt/kit'
+import { join } from 'pathe'
 
 // Config handler
 export interface ModuleOptions{
@@ -14,10 +15,13 @@ export default defineNuxtModule<ModuleOptions>({
       nuxt: '^3.4.0'
     }
   },
-  setup (options, nuxt) {
+  async setup (options, nuxt) {
     // Create resolver to resolve relative paths
-    const { resolve } = createResolver(import.meta.url)
-    const resolveRuntimeModule = (path: string) => resolve('./runtime', path)
+    const entrypoint = await resolvePath('@headlessui/vue')
+    const resolveRuntimeModule = (path: string) => {
+      return join(entrypoint, 'runtime', path)
+    }
+
 
     // Setup CSS
     if (options.bulma) {
