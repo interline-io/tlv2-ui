@@ -19,7 +19,7 @@
             <tbody>
               <tr>
                 <td>
-                  <o-tooltip trigger-class="dashed" label="A globally unique identifier for this operator">
+                  <o-tooltip label="A globally unique identifier for this operator">
                     Onestop ID
                   </o-tooltip>
                 </td>
@@ -27,7 +27,7 @@
               </tr>
               <tr>
                 <td>
-                  <o-tooltip trigger-class="dashed" multiline label="Matched agencies; see 'Sources Feed(s)' below for full details">
+                  <o-tooltip multiline label="Matched agencies; see 'Sources Feed(s)' below for full details">
                     Agencies
                   </o-tooltip>
                 </td>
@@ -41,7 +41,7 @@
               </tr>
               <tr>
                 <td>
-                  <o-tooltip trigger-class="dashed" multiline label="Operators and their service areas are matched against place names from the Natural Earth project">
+                  <o-tooltip multiline label="Operators and their service areas are matched against place names from the Natural Earth project">
                     Locations
                   </o-tooltip>
                 </td>
@@ -81,7 +81,7 @@
               </tr>
               <tr v-if="entity && entity.tags && Object.keys(entity.tags).length > 0">
                 <td>
-                  <o-tooltip trigger-class="dashed" multiline label="Links between this data and other catalogs and data sources on the Internet">
+                  <o-tooltip multiline label="Links between this data and other catalogs and data sources on the Internet">
                     ID Crosswalk
                   </o-tooltip>
                 </td>
@@ -150,12 +150,12 @@
                   {{ row.target_match.agency_name }}
                 </template>
                 <template v-else-if="row.feed_spec == 'GTFS'">
-                  <o-tooltip trigger-class="dashed" label="The active version of this source feed does not contain a matching agency">
+                  <o-tooltip label="The active version of this source feed does not contain a matching agency">
                     <o-icon icon="alert" />
                   </o-tooltip>
                 </template>
               </td>
-              <td class="has-text-right" style="min-width: 250px;">
+              <td class="has-text-right">
                 <nuxt-link class="button is-small is-primary" :to="{name:'feeds-feedKey', params:{feedKey:row.target_feed}}">
                   Feed
                 </nuxt-link> <nuxt-link v-if="row.target_feed_spec == 'GTFS'" class="button is-small is-primary" :to="{name:'feeds-feedKey', params:{feedKey: row.target_feed}, hash: '#versions'}">

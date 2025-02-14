@@ -14,7 +14,7 @@
 
     <div class="columns">
       <div class="column is-narrow">
-        <div style="width:460px">
+        <div class="editor-info">
           <o-collapse class="card">
             <template #trigger>
               <div
@@ -109,7 +109,7 @@
           </o-dropdown>
           <o-dropdown
             v-model="selectedLevels"
-            style="margin-left:30px"
+            class="ml-4"
             :width="300"
             aria-role="list"
             multiple
@@ -394,4 +394,7 @@ export default {
   .help li {
     margin-bottom:10px;
   }
-  </style>
+.editor-info {
+  width:460px
+}
+</style>

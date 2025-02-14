@@ -130,14 +130,14 @@
           <tr>
             <td>Service</td>
             <td>
-              <o-tooltip v-if="entity.service_window?.feed_start_date && entity.service_window?.feed_end_date" trigger-class="dashed">
+              <o-tooltip v-if="entity.service_window?.feed_start_date && entity.service_window?.feed_end_date">
                 {{ $filters.formatDate(entity.service_window?.feed_start_date) }} to {{ $filters.formatDate(entity.service_window?.feed_end_date) }}
                 <template #content>
                   <p>These service dates are sourced from the information in <code>feed_info.txt</code>.</p>
                   <p>The full span of service contained in <code>calendar.txt</code> is {{ $filters.formatDate(entity.earliest_calendar_date) }} to {{ $filters.formatDate(entity.latest_calendar_date) }}</p>
                 </template>
               </o-tooltip>
-              <o-tooltip v-else trigger-class="dashed">
+              <o-tooltip v-else>
                 {{ $filters.formatDate(entity.earliest_calendar_date) }} to {{ $filters.formatDate(entity.latest_calendar_date) }}
                 <template #content>
                   <p>The full span of service contained in <code>calendar.txt</code>.</p>

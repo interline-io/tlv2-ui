@@ -1,7 +1,7 @@
 <template>
-  <form style="flex: 1 0 auto;" @submit.prevent>
-    <div class="field has-addons" style="flex: 1 0 auto;">
-      <div class="control" style="flex: 1 0 auto;">
+  <form @submit.prevent>
+    <div class="field has-addons expandy-form">
+      <div class="control">
         <o-autocomplete
           :expanded="focused"
           :data="data"
@@ -216,3 +216,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.expandy-form {
+  flex: 1 0 auto;
+}
+</style>

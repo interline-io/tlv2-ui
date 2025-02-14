@@ -82,7 +82,7 @@
     <!-- ITIN CHOOSER -->
     <div v-else>
       <!-- INPUTS -->
-      <div class="is-clearfix" style="margin-bottom:10px;">
+      <div class="is-clearfix">
         <o-field addons expanded>
           <o-button
             v-for="(v,k) of modeIcons"
@@ -113,7 +113,7 @@
           />
         </o-field>
 
-        <div style="font-size:8pt;text-align:right;margin:8px;">
+        <div class="utc-note">
           * currently must be in UTC
         </div>
 
@@ -157,7 +157,7 @@
               <div class="itin-summary-text-time">
                 <strong>
                   {{ formatDateTime(itin.start_time ) }}
-                  <o-icon icon="chevron-right" size="small" style="margin-left:6px;margin-right:6px;" />
+                  <o-icon icon="chevron-right" size="small" class="itin-chevron" />
                   {{ formatDateTime(itin.end_time ) }}
                 </strong>
               </div>
@@ -324,7 +324,7 @@ const loadReady = computed(() => {
   return (props.fromPlace || []).length && (props.toPlace || []).length && props.mode
 })
 
-function loadReload() {
+function loadReload () {
   selectedItinIdx.value = null
   activeItinIdx.value = null
   if (loadReady.value) {
@@ -381,8 +381,8 @@ const activeFeatures = computed(() => {
       if (!leg.geometry) { continue }
       const props = {
         'stroke-width': 6,
-        id: featId++,
-        stroke: '#666'
+        'id': featId++,
+        'stroke': '#666'
       }
       if (leg.trip) {
         let routeColor = leg.trip.route.route_color || '#ff0000'
@@ -523,5 +523,15 @@ watch(departAtOut, (newValue) => {
 .itin-prop {
   width:90px;
   text-align:left;
+}
+
+.utc-note {
+  font-size:8pt;
+  text-align:right;
+  margin:8px;
+}
+.itin-chevron {
+  margin-left:6px;
+  margin-right:6px;
 }
 </style>

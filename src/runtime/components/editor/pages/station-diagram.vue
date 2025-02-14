@@ -15,7 +15,7 @@
 
     <div v-if="ready" class="columns">
       <div class="column is-narrow">
-        <div class="block" style="width: 540px;">
+        <div class="block tl-editor-info">
           <o-collapse class="card">
             <template #trigger>
               <div class="card-header">
@@ -93,7 +93,7 @@ const cytoscapeConfig = {
       selector: 'node',
       style: {
         'background-color': 'data(bgcolor)',
-        label: 'data(name)'
+        'label': 'data(name)'
       }
     }, {
       selector: 'edge',
@@ -101,7 +101,7 @@ const cytoscapeConfig = {
         'curve-style': 'bezier',
         'target-arrow-shape': 'triangle',
         'source-arrow-shape': edge => edge.data.bidirectional ? 'triangle' : null,
-        width: 3,
+        'width': 3,
         'line-color': 'data(lineColor)',
         'target-arrow-color': '#ccc'
       }
@@ -194,14 +194,14 @@ export default {
     }
   },
   watch: {
-    ready() {
+    ready () {
       if (this.ready) {
         nextTick(() => { this.cytoscapeInit() })
       }
     }
   },
   methods: {
-    cytoscapeInit() {
+    cytoscapeInit () {
       if (this.cytoscapeElements.length === 0) {
         console.log('cytoscape not ready')
         return
@@ -270,6 +270,12 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.tl-editor-info {
+  width: 540px;
+}
+</style>
 
   <style scss>
 #cy {

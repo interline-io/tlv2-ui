@@ -24,12 +24,10 @@
             <tbody>
               <tr>
                 <td>
-                  <o-tooltip
-                    trigger-class="dashed"
-                    label="A globally unique identifier for this route"
-                  >
+                  <o-tooltip  
+                                    label="A globally unique identifier for this route"                  >
                     Onestop ID
-                  </o-tooltip>
+              </o-tooltip>
                 </td>
                 <td>
                   <div v-for="root of roots" :key="root.id">

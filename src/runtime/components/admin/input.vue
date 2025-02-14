@@ -3,7 +3,7 @@
     <!-- These are arranged in this specific way to get correct widths and 'addon' rounding -->
 
     <!-- Text or edit -->
-    <o-field addons style="width:100%">
+    <o-field addons class="is-fullwidth">
       <!-- Editable field -->
       <template v-if="currentlyEditing">
         <o-input
@@ -29,7 +29,7 @@
         </o-button>
       </template>
 
-      <div v-else style="width:100%">
+      <div v-else class="is-fullwidth">
         {{ value }}
       </div>
 
@@ -82,3 +82,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.is-fullwidth {
+  width:100%;
+}
+</style>

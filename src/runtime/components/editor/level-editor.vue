@@ -40,7 +40,7 @@
         <tl-editor-basemap-control v-model="basemap" />
       </o-field>
 
-      <div class="control" style="width:100%">
+      <div class="control">
         <tl-editor-level-map
           :basemap="basemap"
           :zoom="18"

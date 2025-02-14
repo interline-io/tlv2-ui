@@ -1,0 +1,10 @@
+{
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "eslint.format.enable": true,
+  "eslint.run": "onSave",
+  "html.format.wrapAttributes": "force-expand-multiline",
+  "workbench.editor.splitInGroupLayout": "vertical",
+  "typescript.tsdk": "node_modules/typescript/lib"
+}
