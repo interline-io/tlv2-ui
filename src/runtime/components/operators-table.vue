@@ -11,7 +11,7 @@
           <o-button label="Options" variant="primary" :icon-left="active ? 'menu-up' : 'menu-down'" />
         </template>
 
-        <div aria-role="menu-item" style="padding:20px">
+        <div aria-role="menu-item" class="p-4">
           <div class="field">
             <o-checkbox v-model="merged">
               Group agencies by operator
@@ -76,7 +76,6 @@
             <td>
               <o-tooltip
                 :label="row.other_places.filter((s) => { return s.city_name }).map((s) => { return s.city_name }).join(', ')"
-                trigger-class="dashed"
               >
                 {{ row.adm0_name }}
               </o-tooltip>
@@ -208,7 +207,7 @@ const operatorEntities = computed(() => {
   })
 })
 
-function fetchMoreFn() {
+function fetchMoreFn () {
   const lastId = entities.value.length > 0 ? entities.value[entities.value.length - 1].id : 0
   fetchMore({
     variables: {

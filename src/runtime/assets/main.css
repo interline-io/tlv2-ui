@@ -1,14 +1,29 @@
-.main .message {
-    margin-top:20px;
-    margin-bottom:20px;
+@media only screen and (max-width: 600px) {
+  .tab-item {
+    overflow-x:auto;
+  }
+  .breadcrumb ul {
+    display:block;
+  }
+  .breadcrumb {
+    white-space: inherit;
+  }
 }
 
-.subtitle {
-    font-size:20px;
-    clear:both;
+/* Bulma fixes */
+
+.collapse-trigger {
+  width:100%;
 }
 
-.dashed {
+/* Global styles */
+.tabs-content {
+  padding-left:0px !important;
+  padding-right:0px !important;
+  margin:0px;
+}
+
+.tooltip-trigger {
   border-bottom: dashed 1px #ccc;
 }
 
@@ -23,19 +38,8 @@ table {
 .is-pulled-right.button {
   margin-right:4px;
 }
+
 .is-pulled-right .button {
   margin-right:4px;
-}
-
-@media only screen and (max-width: 600px) {
-  .tab-item {
-    overflow-x:auto;
-  }
-  .breadcrumb ul {
-    display:block;
-  }
-  .breadcrumb {
-    white-space: inherit;
-  }
 }
 

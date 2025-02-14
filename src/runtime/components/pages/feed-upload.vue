@@ -39,7 +39,7 @@
           <p>Drag a GTFS archive to this box, or click to browse your computer's file system.</p>
         </div>
 
-        <p style="text-align:center;margin:20px;">
+        <p class="action-or">
           or
         </p>
 
@@ -483,6 +483,10 @@ export default {
     font-size: 1.2em;
     text-align: center;
     padding: 50px 0;
+  }
+  .action-or {
+    text-align:center;
+    margin:20px;
   }
   </style>
 

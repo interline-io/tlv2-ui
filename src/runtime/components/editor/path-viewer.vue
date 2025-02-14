@@ -5,7 +5,7 @@
                   <strong>To Route:</strong> {{ trip.agency_name }}: {{ trip.route_name }} <strong>Node:</strong> {{ toStop.stop_name }}
                 </o-notification> -->
 
-    <table class="table shaded is-narrow" style="width:100%;margin:0px;padding:0px;" cellpadding="0" cellspacing="0">
+    <table class="table shaded is-narrow tl-path-table" cellpadding="0" cellspacing="0">
       <thead>
         <tr>
           <th>Type</th>
@@ -16,7 +16,7 @@
       <tbody>
         <tr v-for="edge of path" :key="edge.pathway.id">
           <td>
-            <span style="width:24px"><img style="height:16px" :src="pathwayIcon(edge.pathway.pathway_mode).url" :title="pathwayIcon(edge.pathway.pathway_mode).label"></span>
+            <span class="tl-path-icon"><img :src="pathwayIcon(edge.pathway.pathway_mode).url" :title="pathwayIcon(edge.pathway.pathway_mode).label"></span>
           </td>
           <td>
             {{ stopName(edge.pathway.from_stop) }}
@@ -69,3 +69,15 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.tl-path-table {
+  width:100%;margin:0px;padding:0px;
+}
+.tl-path-icon {
+  width:24px
+}
+.tl-path-icon img {
+  height:20px;
+}
+</style>

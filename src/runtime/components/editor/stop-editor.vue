@@ -75,8 +75,8 @@
           <ul>
             <li v-for="pw of pathways_from_stop" :key="pw.id">
               <span class="button" :title="pw.pathway_id" @click="$emit('select-pathway', pw.id)">
-                <span style="width:24px"><img style="height:16px" :src="pathwayIcon(pw.pathway_mode).url" :title="pathwayIcon(pw.pathway_mode).label"></span>
-                <span v-if="pw.is_bidirectional === 1" style="width:24px">
+                <span class="tl-path-icon"><img :src="pathwayIcon(pw.pathway_mode).url" :title="pathwayIcon(pw.pathway_mode).label"></span>
+                <span v-if="pw.is_bidirectional === 1">
                   ↔
                 </span>
                 <span v-else>
@@ -91,8 +91,8 @@
           <ul>
             <li v-for="pw of pathways_to_stop" :key="pw.id">
               <span class="button" :title="pw.pathway_id" @click="$emit('select-pathway', pw.id)">
-                <span style="width:24px"><img style="height:16px" :src="pathwayIcon(pw.pathway_mode).url" :title="pathwayIcon(pw.pathway_mode).label"></span>
-                <span v-if="pw.is_bidirectional === 1" style="width:24px">
+                <span class="tl-path-icon"><img :src="pathwayIcon(pw.pathway_mode).url" :title="pathwayIcon(pw.pathway_mode).label"></span>
+                <span v-if="pw.is_bidirectional === 1">
                   ↔
                 </span>
                 <span v-else>
@@ -226,3 +226,12 @@ export default {
   }
 }
 </script>
+
+<style>
+.tl-path-icon {
+  width:24px;
+}
+.tl-path-icon img {
+  height: 20px;
+}
+</style>

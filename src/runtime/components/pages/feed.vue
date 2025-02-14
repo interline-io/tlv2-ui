@@ -16,7 +16,7 @@
           <tl-props>
             <tr>
               <td>
-                <o-tooltip trigger-class="dashed" label="A globally unique identifier for this feed">
+                <o-tooltip label="A globally unique identifier for this feed">
                   Onestop ID
                 </o-tooltip>
               </td>
@@ -26,7 +26,7 @@
             </tr>
             <tr>
               <td>
-                <o-tooltip trigger-class="dashed" label="Data specification or format for this feed">
+                <o-tooltip label="Data specification or format for this feed">
                   Format
                 </o-tooltip>
               </td>
@@ -63,7 +63,7 @@
 
             <tr>
               <td>
-                <o-tooltip trigger-class="dashed" label="Last time a fetch successfully returned valid GTFS data">
+                <o-tooltip label="Last time a fetch successfully returned valid GTFS data">
                   Last Fetch
                 </o-tooltip>
               </td>
@@ -80,7 +80,7 @@
 
             <tr v-if="lastFetch && lastFetch.fetch_error">
               <td>
-                <o-tooltip trigger-class="dashed" label="Error message from last fetch attempt">
+                <o-tooltip label="Error message from last fetch attempt">
                   Fetch Error
                 </o-tooltip>
               </td>
@@ -151,7 +151,6 @@
             <tr v-if="entity.spec == 'GTFS'">
               <td>
                 <o-tooltip
-                  dashed
                   multilined
                   label="Information provided by the feed producer inside a feed_info.txt file"
                 >
@@ -179,7 +178,7 @@
 
       <div class="is-clearfix mb-4">
         <slot v-if="showUpload" name="upload" :entity="entity">
-          <nuxt-link :to="{name:'feeds-feedKey-upload', params:{feedKey:pathKey}}" class="button is-primary is-pulled-right">
+          <nuxt-link :to="{name:'feeds-feedKey-upload', params:{feedKey:feedKey}}" class="button is-primary is-pulled-right">
             Upload
           </nuxt-link>
         </slot>

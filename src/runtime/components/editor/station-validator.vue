@@ -75,7 +75,7 @@
       aria-role="dialog"
       aria-modal
     >
-      <div class="modal-card" style="width: auto">
+      <div class="modal-card tl-editor-report">
         <header class="modal-card-head">
           <p class="modal-card-title">
             Station Validation: Pathways Report
@@ -120,7 +120,7 @@
       aria-role="dialog"
       aria-modal
     >
-      <div class="modal-card" style="width: auto">
+      <div class="modal-card tl-editor-report">
         <header class="modal-card-head">
           <p class="modal-card-title">
             Station Validation: Connectivity Report
@@ -321,3 +321,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.tl-editor-report {
+  width:100%;
+}
+</style>

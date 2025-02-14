@@ -38,7 +38,6 @@
               <tr v-if="entity.onestop_id">
                 <td>
                   <o-tooltip
-                    trigger-class="dashed"
                     label="A globally unique identifier for this route"
                   >
                     Onestop ID
@@ -77,7 +76,6 @@
                 <td>Vehicle Type</td>
                 <td>
                   <o-tooltip
-                    trigger-class="dashed"
                     :label="`Route with route_type = ${entity.route_type}`"
                   >
                     {{ $filters.routeTypeToWords(entity.route_type) }}

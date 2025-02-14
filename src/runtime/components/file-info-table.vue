@@ -17,7 +17,7 @@
           <td>{{ $filters.prettyBytes(f.size) }}</td>
           <td><tl-safelink :text="f.sha1" max-width="100px" /></td>
           <td>
-            <o-tooltip v-if="f.csv_like" trigger-class="dashed">
+            <o-tooltip v-if="f.csv_like">
               <template #content>
                 <div>Columns</div>
                 <ul>

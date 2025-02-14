@@ -1,64 +1,65 @@
 <template>
-    <div class="outer">
-        <nav class="navbar" role="navigation" aria-label="main navigation">
-            <div class="navbar-brand" style="margin-right: 30px">
-                <nuxt-link class="navbar-item" :to="{ name: 'index' }">
-                    Test App
-                </nuxt-link>
-            </div>
+  <div class="outer">
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
+        <nuxt-link class="navbar-item" :to="{ name: 'index' }">
+          Test App
+        </nuxt-link>
+      </div>
 
-            <div class="navbar-menu">
-                <div class="navbar-start">
-                    <nuxt-link
-                        v-for="item in items"
-                        :key="item.title"
-                        :to="item.to"
-                        class="navbar-item is-hoverable"
-                        :class="
-                            $route &&
-                            $route.name &&
-                            $route.name.startsWith(item.to.name)
-                                ? 'is-active is-tab'
-                                : ''
-                        ">
-                        {{ item.title }}
-                    </nuxt-link>
-                </div>
-
-                <div class="navbar-end">
-                    <div class="navbar-item">Search</div>
-                </div>
-            </div>
-        </nav>
-
-        <div class="main" style="flex: 1">
-            <div class="container">
-                <slot />
-            </div>
+      <div class="navbar-menu">
+        <div class="navbar-start">
+          <nuxt-link
+            v-for="item in items"
+            :key="item.title"
+            :to="item.to"
+            class="navbar-item is-hoverable"
+            :class="
+              $route &&
+                $route.name &&
+                $route.name.startsWith(item.to.name)
+                ? 'is-active is-tab'
+                : ''
+            "
+          >
+            {{ item.title }}
+          </nuxt-link>
         </div>
 
-        <footer class="footer content is-small">
-            <p>
-                <a href="/">Footer</a>
-            </p>
-        </footer>
-    </div>
-</template>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            Search
+          </div>
+        </div>
+      </div>
+    </nav>
 
+    <div class="main">
+      <div class="container">
+        <slot />
+      </div>
+    </div>
+
+    <footer class="footer content is-small">
+      <p>
+        <a href="/">Footer</a>
+      </p>
+    </footer>
+  </div>
+</template>
 
 <script setup>
 const items = [
-    {
-        title: "Home",
-        to: { name: "index" },
-    },
-    {
-        title: "About",
-        to: { name: "about" },
-    },
-];
+  {
+    title: 'Home',
+    to: { name: 'index' },
+  },
+  {
+    title: 'About',
+    to: { name: 'about' },
+  },
+]
 </script>
-
 
 <style scoped>
 .footer {

@@ -106,7 +106,7 @@
       </table>
     </div>
 
-    <div v-if="hasMore" style="text-align:center" @click="fetchMore">
+    <div v-if="hasMore" @click="fetchMore">
       <a class="button is-primary is-small is-fullwidth">Show more feed versions</a>
     </div>
   </div>
@@ -178,14 +178,14 @@ export default {
       }
     }
   },
-  data() {
+  data () {
     return {
       entities: [],
       maxLimit: 10000
     }
   },
   computed: {
-    hasMore() {
+    hasMore () {
       return (this.entities.length % this.limit) === 0
     },
     latestFeedVersionSha1 () {
@@ -197,7 +197,7 @@ export default {
     }
   },
   methods: {
-    fetchMore() {
+    fetchMore () {
       if (this.entities.length > this.maxLimit) {
         return
       }

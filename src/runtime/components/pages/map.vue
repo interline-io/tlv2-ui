@@ -26,7 +26,7 @@
         <o-tabs v-model="activeTab" class="tl-tabs block" position="centered" type="boxed">
           <o-tab-item :value="ROUTES_TAB" label="Routes">
             <o-field addons>
-              <o-field expanded style="width:100%">
+              <o-field expanded class="is-fullwidth">
                 <h6 class="title is-6 short-margin">
                   <template v-if="currentZoom < 8">
                     Zoom in to select routes and to see stop points.
@@ -428,9 +428,7 @@ const markers = computed(() => {
 
 .tl-map-panel-tabs .tabs-content {
     background-color: var(--bulma-scheme-main) !important;
-    margin: 0px;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding:10px !important;
     max-height:80vh;
     min-width:330px;
     max-width:80vw;
@@ -445,5 +443,8 @@ const markers = computed(() => {
 .short-bottom {
   margin-bottom:0px;
   padding-bottom:0px;
+}
+.is-fullwidth {
+  width:100%
 }
 </style>

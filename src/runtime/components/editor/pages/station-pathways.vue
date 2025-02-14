@@ -14,7 +14,7 @@
 
     <div v-if="ready" class="columns">
       <div class="column is-narrow">
-        <div class="block" style="width: 540px;">
+        <div class="block tl-editor-info">
           <o-field label="Station Validation Reports">
             <tl-editor-station-validator
               :station="station"
@@ -623,5 +623,8 @@ export default {
   }
   .red-rectangle::before {
     content: "🟥 "
+  }
+  .tl-editor-info {
+    width: 540px;
   }
   </style>

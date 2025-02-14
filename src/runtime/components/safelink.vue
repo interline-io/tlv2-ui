@@ -1,5 +1,5 @@
 <template>
-  <div style="display:inline-block">
+  <div class="safelink-outer">
     <div class="safelink">
       <div class="desc">
         {{ text || sanitizedUrl }}
@@ -44,6 +44,10 @@ export default {
 </script>
 
 <style scoped>
+
+.safelink-outer {
+  display:inline-block
+}
 
 .safelink {
     display:flex;

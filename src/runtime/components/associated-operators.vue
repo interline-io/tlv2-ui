@@ -19,7 +19,7 @@
             <td>
               <tl-safelink :text="operator.onestop_id" />
             </td>
-            <td class="has-text-right" style="min-width: 300px;">
+            <td class="has-text-right">
               <nuxt-link class="button is-primary is-small" :to="{ name: 'operators-operatorKey', params: { operatorKey: operator.onestop_id } }">
                 Operator
               </nuxt-link> <nuxt-link class="button is-primary is-small" :to="{ name: 'operators-operatorKey', hash: '#map', params: { operatorKey: operator.onestop_id } }">
@@ -35,7 +35,7 @@
         <tfoot v-if="associatedOperators.length > associatedOperatorsToDisplay.length">
           <tr>
             <td colspan="3">
-              <div style="text-align:center">
+              <div>
                 <a class="button is-primary is-small is-fullwidth" @click="showAllRows = true">Show all operators</a>
               </div>
             </td>
@@ -52,7 +52,7 @@
 <script>
 export default {
   props: {
-    associatedOperators: { type: Array, default() { return [] } }
+    associatedOperators: { type: Array, default () { return [] } }
   },
   data () {
     return {
