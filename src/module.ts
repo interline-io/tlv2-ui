@@ -16,10 +16,13 @@ export default defineNuxtModule<ModuleOptions>({
     }
   },
   async setup (options, nuxt) {
+    // const { resolve } = createResolver(import.meta.url)
+    // const resolveRuntimeModule = (path: string) => resolve('./runtime', path)
+
     // Create resolver to resolve relative paths
-    const entrypoint = await resolvePath('@headlessui/vue')
+    const entrypoint = await resolvePath('@tlv2-ui')
     const resolveRuntimeModule = (path: string) => {
-      return join(entrypoint, 'runtime', path)
+      return join(entrypoint, 'src/runtime', path)
     }
 
 
