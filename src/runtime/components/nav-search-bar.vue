@@ -14,7 +14,7 @@
           @blur="blur"
           @typing="typing"
           @select="option => selected = option"
-          @keydown.esc.native="clearSearch"
+          @keydown.esc="clearSearch"
         >
           <template #default="props">
             {{ props.option.name }}
