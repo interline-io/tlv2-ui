@@ -178,7 +178,7 @@
 
       <div class="is-clearfix mb-4">
         <slot v-if="showUpload" name="upload" :entity="entity">
-          <nuxt-link :to="{name:'feeds-feedKey-upload', params:{feedKey:feedKey}}" class="button is-primary is-pulled-right">
+          <nuxt-link :to="{name:'feeds-feedKey-upload', params:{feedKey:pathKey}}" class="button is-primary is-pulled-right">
             Upload
           </nuxt-link>
         </slot>
