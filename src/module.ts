@@ -20,9 +20,9 @@ export default defineNuxtModule<ModuleOptions>({
     // const resolveRuntimeModule = (path: string) => resolve('./runtime', path)
 
     // Create resolver to resolve relative paths
-    const entrypoint = await resolvePath('tlv2-ui')
+    const entrypoint = await resolvePath('@tlv2-ui')
     const resolveRuntimeModule = (path: string) => {
-      return join(entrypoint, 'src/runtime', path)
+      return join(entrypoint, 'runtime', path)
     }
 
 
