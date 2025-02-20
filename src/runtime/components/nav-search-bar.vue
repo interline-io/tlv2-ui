@@ -84,20 +84,20 @@ function close () {
 // Setup graphql
 
 const query = gql`
-query ($search: String!) {
-    feeds(limit: 5, where:{search:$search}) {
+query ($search: String!, $limit: Int=10) {
+    feeds(limit: $limit, where:{search:$search}) {
         id
         name
         onestop_id
         search_rank
     }
-    operators(limit: 5, where:{search:$search, merged: true}) {
+    operators(limit: $limit, where:{search:$search, merged: true}) {
         onestop_id
         name
         short_name
         search_rank
     }
-    routes(limit: 5, where:{search:$search}) {
+    routes(limit: $limit, where:{search:$search}) {
         id
         route_id
         route_short_name
