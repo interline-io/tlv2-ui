@@ -4,11 +4,11 @@
       {{ error }}
     </tl-msg-error>
     <div v-else>
-      <o-field label="Name">
-        <o-input v-model="entity.name" type="text" required placeholder="A short name for this feed version..." />
+      <o-field label="Name" horizontal>
+        <o-input v-model="entity.name" expanded type="text" required placeholder="A short name for this feed version..." />
       </o-field>
-      <o-field label="Description">
-        <o-input v-model="entity.description" type="text" required placeholder="A longer description of this feed version..." />
+      <o-field label="Description" horizontal>
+        <o-input v-model="entity.description" expanded type="text" required placeholder="A longer description of this feed version..." />
       </o-field>
       <div class="block is-clearfix">
         <o-field label="" :message="validationMessage" variant="danger" class="is-pulled-right">

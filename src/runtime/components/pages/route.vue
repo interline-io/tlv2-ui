@@ -33,12 +33,11 @@
       <!-- Main content -->
       <div class="columns">
         <div class="column is-two-thirds">
-          <table class="table is-borderless property-list tl-props">
+          <tl-props>
             <tbody>
               <tr v-if="entity.onestop_id">
                 <td>
                   <o-tooltip
-                    trigger-class="dashed"
                     label="A globally unique identifier for this route"
                   >
                     Onestop ID
@@ -77,7 +76,6 @@
                 <td>Vehicle Type</td>
                 <td>
                   <o-tooltip
-                    trigger-class="dashed"
                     :label="`Route with route_type = ${entity.route_type}`"
                   >
                     {{ $filters.routeTypeToWords(entity.route_type) }}
@@ -103,7 +101,7 @@
                 </td>
               </tr>
             </tbody>
-          </table>
+          </tl-props>
 
           <slot name="contentAfterTable" :entity="entity">
             <tl-msg-info>
@@ -133,18 +131,18 @@
             :animated="false"
             @update:model-value="setTab"
           >
-            <o-tab-item id="summary" label="Connections">
+            <o-tab-item :value="tabNames.summary" label="Connections">
               <client-only placeholder="Service patterns">
-                <tl-rsp-viewer v-if="activeTab === 1" :route-ids="entityIds" :link-version="linkVersion" />
+                <tl-rsp-viewer :route-ids="entityIds" :link-version="linkVersion" />
               </client-only>
             </o-tab-item>
 
-            <o-tab-item id="headways" label="Headways">
+            <o-tab-item :value="tabNames.headways" label="Headways">
               <tl-headway-viewer :headways="entity.headways" />
             </o-tab-item>
 
             <!-- Data sources -->
-            <o-tab-item id="sources" label="Source feed(s)">
+            <o-tab-item :value="tabNames.sources" label="Source feed(s)">
               <div class="table-container">
                 <table class="table is-striped is-fullwidth">
                   <thead>
@@ -199,11 +197,11 @@
               </div>
             </o-tab-item>
 
-            <o-tab-item id="export" label="Export">
+            <o-tab-item :value="tabNames.export" label="Export">
               <client-only placeholder="Export">
                 <tl-login-gate role="tl_user">
                   <tl-data-export
-                    v-if="activeTab === 4"
+                    v-if="activeTab === tabNames.export"
                     :route-name="routeName"
                     :route-features="routeFeatures"
                     :stop-features="stopFeatures"
@@ -233,7 +231,7 @@
                 :overlay="false"
                 :include-stops="true"
                 :link-version="linkVersion"
-                :features="activeTab === 4 ? features : []"
+                :features="activeTab === tabNames.export ? features : []"
               />
               <template #loginText>
                 <o-notification icon="lock">
@@ -340,12 +338,13 @@ export default {
       routeGeom: null,
       censusGeoms: null,
       selectDate: null,
-      tabIndex: {
-        1: 'summary',
-        2: 'headways',
-        3: 'sources',
-        4: 'export'
-      }
+      tabNames: this.makeTabNames([
+        'summary',
+        'headways',
+        'sources',
+        'export'
+      ]),
+      activeTab: 'summary',
     }
   },
   computed: {
@@ -435,7 +434,7 @@ export default {
     }
   },
   watch: {
-    routeName(v) {
+    routeName (v) {
       useEventBus().$emit('setParamKey', 'routeKey', v)
     }
   },

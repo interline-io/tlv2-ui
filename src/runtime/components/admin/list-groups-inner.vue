@@ -1,6 +1,6 @@
 <template>
   <div>
-    <table class="table is-fullwidth is-shaded" style="background:none">
+    <table class="table is-fullwidth is-shaded">
       <thead>
         <th>Feed</th>
         <th>Versions</th>

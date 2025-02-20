@@ -10,7 +10,9 @@ import mapLayers from './map-layers'
 
 export default {
   props: {
+    hideTiles: { type: Boolean, default: false },
     markerCoords: { type: Array, default () { return [] } },
+    markers: { type: Array, default () { return [] } },
     enableScrollZoom: { type: Boolean, default: false },
     showProblematicGeometries: { type: Boolean, default: true },
     showGeneratedGeometries: { type: Boolean, default: true },
@@ -35,14 +37,18 @@ export default {
       map: null,
       marker: null,
       hoveringRoutes: [],
-      hoveringStops: []
+      hoveringStops: [],
+      markerLayer: null
     }
   },
   watch: {
-    showProblematicGeometries (v) {
+    hideTiles () {
       this.updateFilters()
     },
-    showGeneratedGeometries (v) {
+    showProblematicGeometries () {
+      this.updateFilters()
+    },
+    showGeneratedGeometries () {
       this.updateFilters()
     },
     features (v) {
@@ -54,14 +60,17 @@ export default {
     routeFeatures (v) {
       this.nextTickUpdateFeatures(v)
     },
-    center () {
+    center (oldVal, newVal) {
+      if (oldVal.toString() === newVal.toString()) {
+        return
+      }
       this.map.jumpTo({ center: this.center, zoom: this.zoom })
     },
     zoom () {
       this.map.jumpTo({ center: this.center, zoom: this.zoom })
     },
-    markerCoords (v) {
-      this.drawMarker(v)
+    markers (v) {
+      this.drawMarkers(v)
     }
   },
   mounted () {
@@ -121,10 +130,11 @@ export default {
       this.map = new maplibre.Map(opts)
       this.map.addControl(new maplibre.FullscreenControl())
       this.map.addControl(new maplibre.NavigationControl())
+      this.markerLayer = []
       if (!this.enableScrollZoom) {
         this.map.scrollZoom.disable()
       }
-      this.drawMarker(this.markerCoords)
+      this.drawMarkers(this.markers)
       this.map.on('load', () => {
         this.createSources()
         this.createLayers()
@@ -154,11 +164,32 @@ export default {
       this.fitFeatures()
     },
     updateFilters () {
+      for (const v of mapLayers.stopLayers) {
+        const f = (v.filter || []).slice()
+        if (f.length === 0) {
+          f.push('all')
+        }
+        // Hide all routes?
+        if (this.hideTiles) {
+          f.push(['==', 'route_id', ''])
+        }
+        if (f.length > 1) {
+          this.map.setFilter(v.name, f)
+        } else {
+          this.map.setFilter(v.name, null)
+        }
+      }
+
       for (const v of mapLayers.routeLayers) {
         const f = (v.filter || []).slice()
         if (f.length === 0) {
           f.push('all')
         }
+        // Hide all routes?
+        if (this.hideTiles) {
+          f.push(['==', 'route_id', ''])
+        }
+
         // Hide geometries with long max segment lengths
         if (!this.showProblematicGeometries) {
           f.push(['any', ['==', 'generated', true], ['<', 'geometry_max_segment_length', 50 * 1000]])
@@ -244,8 +275,8 @@ export default {
         type: 'circle',
         source: 'points',
         paint: {
-          'circle-color': this.circleColor,
-          'circle-radius': this.circleRadius,
+          'circle-color': ['coalesce', ['get', 'marker-color'], this.circleColor],
+          'circle-radius': ['coalesce', ['get', 'marker-radius'], this.circleRadius],
           'circle-opacity': 0.4
         }
       })
@@ -255,8 +286,8 @@ export default {
         source: 'lines',
         layout: {},
         paint: {
-          'line-width': 2,
-          'line-color': '#000',
+          'line-color': ['coalesce', ['get', 'stroke'], '#000'],
+          'line-width': ['coalesce', ['get', 'stroke-width'], 2],
           'line-opacity': 1.0
         }
       })
@@ -300,22 +331,20 @@ export default {
       for (const labelLayer of labels('protomaps-base', 'grayscale')) {
         this.map.addLayer(labelLayer)
       }
-
       // Set initial show generated geometry
       this.updateFilters()
     },
-    drawMarker (coords) {
-      if (!coords || coords.length === 0 || coords[0] === 0) {
-        if (this.marker) {
-          this.marker.remove()
-          this.marker = null
-        }
-        return
+
+    drawMarkers (markers) {
+      for (const m of this.markerLayer) {
+        m.remove()
       }
-      if (!this.marker) {
-        this.marker = new maplibre.Marker().setLngLat(coords).addTo(this.map)
-      } else {
-        this.marker.setLngLat(coords)
+      for (const m of markers) {
+        const newMarker = new maplibre.Marker(m).setLngLat(m).addTo(this.map)
+        if (m.onDragEnd) {
+          newMarker.on('dragend', m.onDragEnd)
+        }
+        this.markerLayer.push(newMarker)
       }
     },
     fitFeatures () {
@@ -356,10 +385,10 @@ export default {
     mapClick (e) {
       this.$emit('mapClick', e)
     },
-    mapZoom (e) {
+    mapZoom () {
       this.$emit('setZoom', this.map.getZoom())
     },
-    mapMove (e) {
+    mapMove () {
       this.$emit('mapMove', { zoom: this.map.getZoom(), bbox: this.map.getBounds().toArray() })
     },
     mapMouseMove (e) {
@@ -367,7 +396,7 @@ export default {
       // Query both routes and stops
       const routeFeatures = map.queryRenderedFeatures(e.point, { layers: ['route-active'] })
       const stopFeatures = map.queryRenderedFeatures(e.point, { layers: ['stop-active'] })
-      
+
       map.getCanvas().style.cursor = 'pointer'
 
       // Handle route hover states
@@ -411,7 +440,7 @@ export default {
           agencyFeatures[agencyId].stops[featureId] = v.properties
         }
       }
-      
+
       routeFeatures.forEach(processFeature)
       stopFeatures.forEach(processFeature)
       console.log(agencyFeatures)

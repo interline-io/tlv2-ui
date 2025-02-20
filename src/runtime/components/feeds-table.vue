@@ -8,7 +8,7 @@
           <o-button label="Options" variant="primary" :icon-left="active ? 'menu-up' : 'menu-down'" />
         </template>
 
-        <div aria-role="menu-item" style="padding:20px">
+        <div aria-role="menu-item" class="p-4">
           <o-field label="Fetch status">
             <o-select v-model="fetchError">
               <option value="">
@@ -126,7 +126,7 @@
         </tbody>
       </table>
     </div>
-    <div style="text-align:center">
+    <div>
       <a class="button is-primary is-small is-fullwidth" @click="fetchMoreFn">
         Show more feeds
       </a>
@@ -201,7 +201,7 @@ const props = defineProps({
   fetchError: String,
   importStatus: String,
   tagUnstableUrl: String,
-  feedSpecs: { type: Array, default() { return ['GTFS', 'GTFS_RT', 'GBFS'] } }
+  feedSpecs: { type: Array, default () { return ['GTFS', 'GTFS_RT', 'GBFS'] } }
 })
 
 // shadow props
@@ -239,7 +239,7 @@ const { result, loading, error, fetchMore } = useQuery(
 
 const entities = computed(() => result.value?.entities ?? [])
 
-function fetchMoreFn() {
+function fetchMoreFn () {
   const lastId = entities.value.length > 0 ? entities.value[entities.value.length - 1].id : 0
   fetchMore({
     variables: {

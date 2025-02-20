@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="tl-feed-upload">
     <slot name="title">
       <tl-title title="Upload feed version" />
     </slot>
@@ -39,7 +39,7 @@
           <p>Drag a GTFS archive to this box, or click to browse your computer's file system.</p>
         </div>
 
-        <p style="text-align:center;margin:20px;">
+        <p class="action-or">
           or
         </p>
 
@@ -456,7 +456,6 @@ export default {
 </script>
 
   <style scoped>
-
   .error-group td {
     border-bottom:solid 1px #000;
     font-weight: bold;
@@ -485,4 +484,14 @@ export default {
     text-align: center;
     padding: 50px 0;
   }
+  .action-or {
+    text-align:center;
+    margin:20px;
+  }
   </style>
+
+<style>
+.tl-feed-upload .step-content {
+  margin-top:20px;
+}
+</style>

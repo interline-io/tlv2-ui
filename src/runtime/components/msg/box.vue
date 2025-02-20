@@ -1,24 +1,22 @@
 <template>
-  <div class="mb-4">
-    <article :class="msgClass">
-      <div v-if="title" class="message-header">
-        {{ title }}
-      </div>
-      <template v-if="hasIcon">
-        <div class="media message-body">
-          <o-icon :icon="getIcon" size="medium" class="media-left" />
-          <div class="media-content">
-            <slot />
-          </div>
-        </div>
-      </template>
-      <template v-else>
-        <div class="message-body">
+  <article :class="msgClass">
+    <div v-if="title" class="message-header">
+      {{ title }}
+    </div>
+    <template v-if="hasIcon">
+      <div class="media message-body">
+        <o-icon :icon="getIcon" size="medium" class="media-left" />
+        <div class="media-content">
           <slot />
         </div>
-      </template>
-    </article>
-  </div>
+      </div>
+    </template>
+    <template v-else>
+      <div class="message-body">
+        <slot />
+      </div>
+    </template>
+  </article>
 </template>
 
 <script>
@@ -30,14 +28,17 @@ export default {
     noIcon: { type: Boolean, default: false }
   },
   computed: {
-    getIcon() {
+    getIcon () {
       if (this.variant === 'info') { return 'information' }
       if (this.variant === 'danger' || this.variant === 'warning') { return 'alert' }
       return this.icon || this.variant
     },
-    hasIcon() { return !this.noIcon },
-    msgClass() {
-      return `message block is-${this.variant}`
+    hasIcon () { return !this.noIcon },
+    msgClass () {
+      if (this.variant) {
+        return `message mb-4 is-${this.variant}`
+      }
+      return `message mb-4`
     }
   }
 }

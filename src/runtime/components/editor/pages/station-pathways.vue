@@ -1,5 +1,10 @@
 <template>
   <div v-if="station">
+    <slot name="title">
+      <tl-title title="Station Pathways">
+        Station Pathways: {{ stationName }}
+      </tl-title>
+    </slot>
     <tl-editor-station-mode-tabs
       :station="station"
       :feed-key="feedKey"
@@ -9,7 +14,7 @@
 
     <div v-if="ready" class="columns">
       <div class="column is-narrow">
-        <div class="block" style="width: 540px;">
+        <div class="block tl-editor-info">
           <o-field label="Station Validation Reports">
             <tl-editor-station-validator
               :station="station"
@@ -37,7 +42,7 @@
                 </p>
                 <o-field v-else label="Select Pathways">
                   <div class="buttons has-addons">
-                    <a v-for="pwm of PathwayModes" :key="pwm[0]" class="button is-secondary is-small" @click="selectPathwayModes(pwm[0])">{{ pwm[1] }}</a>
+                    <a v-for="pwm of PathwayModes" :key="pwm[0]" class="button is-small" @click="selectPathwayModes(pwm[0])">{{ pwm[1] }}</a>
                   </div>
                 </o-field>
                 <ul>
@@ -55,7 +60,7 @@
                 </p>
                 <o-field v-else label="Select Stops">
                   <div class="buttons has-addons">
-                    <a v-for="pwm of LocationTypes" :key="pwm[0]" class="button is-secondary is-small" @click="selectLocationTypes(pwm[0])">{{ pwm[1] }}</a>
+                    <a v-for="pwm of LocationTypes" :key="pwm[0]" class="button is-small" @click="selectLocationTypes(pwm[0])">{{ pwm[1] }}</a>
                   </div>
                 </o-field>
               </div>
@@ -618,5 +623,8 @@ export default {
   }
   .red-rectangle::before {
     content: "🟥 "
+  }
+  .tl-editor-info {
+    width: 540px;
   }
   </style>

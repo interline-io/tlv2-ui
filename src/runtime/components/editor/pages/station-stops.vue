@@ -1,5 +1,10 @@
 <template>
   <div v-if="station">
+    <slot name="title">
+      <tl-title title="Station Stops">
+        Station Stops: {{ stationName }}
+      </tl-title>
+    </slot>
     <tl-editor-station-mode-tabs
       :station="station"
       :feed-key="feedKey"
@@ -9,7 +14,7 @@
 
     <div class="columns">
       <div class="column is-narrow">
-        <div style="width:460px">
+        <div class="editor-info">
           <o-collapse class="card">
             <template #trigger>
               <div
@@ -73,8 +78,6 @@
             </template>
             <div class="card-content">
               <ul class="help">
-                <!-- <li><span style="color:#e69320">Stops in station</span></li> -->
-                <!-- <li><span style="color:#87a9ff">Stops not in station</span></li> -->
                 <li>Select a node to import into station</li>
                 <li>You must select a level before importing</li>
                 <li>Click the selected item again to unselect</li>
@@ -106,7 +109,7 @@
           </o-dropdown>
           <o-dropdown
             v-model="selectedLevels"
-            style="margin-left:30px"
+            class="ml-4"
             :width="300"
             aria-role="list"
             multiple
@@ -134,7 +137,6 @@
 
           <tl-editor-basemap-control v-model="basemap" />
         </o-field>
-
         <tl-editor-pathway-map
           :center="station.geometry.coordinates"
           :other-stops="filteredNearbyStops"
@@ -392,4 +394,7 @@ export default {
   .help li {
     margin-bottom:10px;
   }
-  </style>
+.editor-info {
+  width:460px
+}
+</style>

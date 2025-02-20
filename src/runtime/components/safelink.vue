@@ -1,22 +1,21 @@
 <template>
-  <div style="display:inline-block">
+  <div class="safelink-outer">
     <div class="safelink">
       <div class="desc">
         {{ text || sanitizedUrl }}
       </div>
       <a v-if="text || sanitizedUrl" class="linker" @click="clipboard">
-        <o-tooltip label="Copy to clipboard"><i class="mdi mdi-content-paste" /></o-tooltip>
+        <i class="mdi mdi-content-paste" title="Copy to clipboard" role="button" />
       </a>
       <a v-if="url && sanitizedUrl" target="_blank" :href="sanitizedUrl" class="linker">
-        <o-tooltip label="Open URL"><i class="mdi mdi-link" /></o-tooltip>
+        <i class="mdi mdi-link" title="Open URL" role="button" />
       </a>
     </div>
   </div>
 </template>
 
 <script>
-import { useProgrammatic } from '@oruga-ui/oruga-next/dist/oruga.mjs'
-const { oruga } = useProgrammatic()
+import { useToastNotification } from '../composables/useToastNotification'
 
 export default {
   props: {
@@ -25,19 +24,14 @@ export default {
     maxWidth: { type: String, default: '400px' }
   },
   computed: {
-    sanitizedUrl() {
+    sanitizedUrl () {
       return this.$filters.sanitizeUrl(this.url)
     }
   },
   methods: {
-    clipboard() {
+    clipboard () {
       navigator.clipboard.writeText(this.text || this.sanitizedUrl)
-      oruga.notification.open({
-        message: 'Copied to clipboard',
-        rootClass: 'toast toast-notification',
-        position: 'bottom',
-        variant: 'primary'
-      })
+      useToastNotification().showToast('Copied to clipboard')
     }
   }
 }
@@ -45,38 +39,40 @@ export default {
 
 <style scoped>
 
+.safelink-outer {
+  display:inline-block
+}
+
 .safelink {
+    margin: 2px 0;
     display:flex;
     flex-direction: row;
     flex-wrap: nowrap;
-
 }
 
 .safelink .desc {
-    color: #da1039;
-    background:hsl(0, 0%, 96%);
+    color: var(--bulma-link-text);
+    background:var(--bulma-background);
     font-family: monospace;
-    font-weight: normal;
-    font-size: 0.875em;
-    margin:0px;
+    font-size: 1.2em;
     padding-left:10px;
-    padding-right:10px;
-    padding-top:3px;
-    padding-bottom:3px;
+    padding-top:2px;
+    padding-bottom:2px;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: v-bind(maxWidth);
     white-space: nowrap;
     word-wrap: nowrap;
+    line-height: var(--bulma-line-height);
 }
 
 .safelink .linker {
     width:30px;
     text-align:center;
-    margin:0px;
-    padding:3px;
-    background:hsl(0, 0%, 94%);
-
+    background:var(--bulma-background);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 @media only screen and (max-width: 600px) {

@@ -20,12 +20,11 @@
       <!-- Main content -->
       <div class="columns">
         <div class="column is-two-thirds">
-          <table class="table is-borderless property-list tl-props">
+          <tl-props>
             <tbody>
               <tr>
                 <td>
                   <o-tooltip
-                    trigger-class="dashed"
                     label="A globally unique identifier for this route"
                   >
                     Onestop ID
@@ -81,7 +80,7 @@
                 </td>
               </tr>
             </tbody>
-          </table>
+          </tl-props>
 
           <slot name="contentAfterTable" :entity="entity">
             <tl-msg-info>
@@ -105,7 +104,7 @@
           </div>
 
           <o-tabs v-model="activeTab" class="tl-tabs" type="boxed" :animated="false" @update:model-value="setTab">
-            <o-tab-item id="summary" label="Summary">
+            <o-tab-item :value="tabNames.summary" label="Summary">
               <div v-if="servedRoutes">
                 <h6 class="title is-6">
                   Routes at this stop
@@ -144,7 +143,7 @@
             </o-tab-item>
 
             <!-- Data sources -->
-            <o-tab-item id="sources" label="Sources">
+            <o-tab-item :value="tabNames.sources" label="Sources">
               <div class="table-container">
                 <table class="table is-striped is-fullwidth">
                   <thead>
@@ -192,11 +191,11 @@
               </div>
             </o-tab-item>
 
-            <o-tab-item id="departures" label="Departures">
+            <o-tab-item :value="tabNames.departures" label="Departures">
               <client-only placeholder="Departures">
                 <tl-login-gate role="tl_user">
                   <tl-stop-departures
-                    v-if="entity.id && activeTab == 3"
+                    v-if="entity.id && activeTab === tabNames.departures"
                     :show-fallback-selector="true"
                     :stop-ids="entityIds"
                     :search-coords="entity.geometry.coordinates"
@@ -364,11 +363,8 @@ export default {
   data () {
     return {
       radius: 1000,
-      tabIndex: {
-        1: 'summary',
-        2: 'sources',
-        3: 'departures'
-      }
+      tabNames: this.makeTabNames(['summary', 'sources', 'departures']),
+      activeTab: 'summary'
     }
   },
 
@@ -541,7 +537,7 @@ export default {
     }
   },
   watch: {
-    'entity.stop_name'(v) {
+    'entity.stop_name' (v) {
       useEventBus().$emit('setParamKey', 'stopKey', v)
     }
   },

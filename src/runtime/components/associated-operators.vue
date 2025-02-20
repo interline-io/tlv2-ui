@@ -3,11 +3,13 @@
     <div v-if="associatedOperators?.length > 0" class="table-container">
       <table class="table is-fullwidth is-striped">
         <thead>
-          <th>Operator name</th>
-          <th>Operator Onestop ID</th>
-          <th class="has-text-right">
-            Links to view
-          </th>
+          <tr>
+            <th>Operator name</th>
+            <th>Operator Onestop ID</th>
+            <th class="has-text-right">
+              Links to view
+            </th>
+          </tr>
         </thead>
         <tbody>
           <tr v-for="(operator, i) of associatedOperatorsToDisplay" :key="i">
@@ -17,7 +19,7 @@
             <td>
               <tl-safelink :text="operator.onestop_id" />
             </td>
-            <td class="has-text-right" style="min-width: 300px;">
+            <td class="has-text-right">
               <nuxt-link class="button is-primary is-small" :to="{ name: 'operators-operatorKey', params: { operatorKey: operator.onestop_id } }">
                 Operator
               </nuxt-link> <nuxt-link class="button is-primary is-small" :to="{ name: 'operators-operatorKey', hash: '#map', params: { operatorKey: operator.onestop_id } }">
@@ -33,7 +35,7 @@
         <tfoot v-if="associatedOperators.length > associatedOperatorsToDisplay.length">
           <tr>
             <td colspan="3">
-              <div style="text-align:center">
+              <div>
                 <a class="button is-primary is-small is-fullwidth" @click="showAllRows = true">Show all operators</a>
               </div>
             </td>
@@ -50,7 +52,7 @@
 <script>
 export default {
   props: {
-    associatedOperators: { type: Array, default() { return [] } }
+    associatedOperators: { type: Array, default () { return [] } }
   },
   data () {
     return {

@@ -1,3 +1,9 @@
-@import "bulma/sass/utilities/_all";
-@import "bulma/bulma";
-@import '@oruga-ui/theme-bulma/dist/scss/bulma';
+$primary: #8c67ef;
+$link: $primary;
+
+@use '@oruga-ui/theme-bulma/dist/scss/bulma-build' with (
+    $family-primary: '"Nunito", sans-serif',
+    $primary: $primary,
+    $link: $link,
+);
+

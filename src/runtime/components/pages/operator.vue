@@ -15,91 +15,93 @@
       <!-- Main content -->
       <div class="columns">
         <div class="column is-three-quarters">
-          <table class="table is-borderless property-list tl-props">
-            <tr>
-              <td>
-                <o-tooltip trigger-class="dashed" label="A globally unique identifier for this operator">
-                  Onestop ID
-                </o-tooltip>
-              </td>
-              <td><tl-safelink :text="searchKey.onestopId" /></td>
-            </tr>
-            <tr>
-              <td>
-                <o-tooltip trigger-class="dashed" multiline label="Matched agencies; see 'Sources Feed(s)' below for full details">
-                  Agencies
-                </o-tooltip>
-              </td>
-              <td>
-                <ul>
-                  <li v-for="k of agencyNames" :key="k">
-                    {{ k }}
-                  </li>
-                </ul>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <o-tooltip trigger-class="dashed" multiline label="Operators and their service areas are matched against place names from the Natural Earth project">
-                  Locations
-                </o-tooltip>
-              </td>
-              <td>
-                <ul>
-                  <li v-for="location of locations" :key="location.name">
-                    <nuxt-link :to="{name:'places-adm0', params:{adm0: location.adm0_name}}">
-                      {{ location.adm0_name }}
-                    </nuxt-link>
-                    <template v-if="location.adm1_name">
-                      /
-                      <nuxt-link :to="{name:'places-adm0-adm1', params:{adm1: location.adm1_name, adm0: location.adm0_name}}">
-                        {{ location.adm1_name }}
+          <tl-props>
+            <tbody>
+              <tr>
+                <td>
+                  <o-tooltip label="A globally unique identifier for this operator">
+                    Onestop ID
+                  </o-tooltip>
+                </td>
+                <td><tl-safelink :text="searchKey.onestopId" /></td>
+              </tr>
+              <tr>
+                <td>
+                  <o-tooltip multiline label="Matched agencies; see 'Sources Feed(s)' below for full details">
+                    Agencies
+                  </o-tooltip>
+                </td>
+                <td>
+                  <ul>
+                    <li v-for="k of agencyNames" :key="k">
+                      {{ k }}
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <o-tooltip multiline label="Operators and their service areas are matched against place names from the Natural Earth project">
+                    Locations
+                  </o-tooltip>
+                </td>
+                <td>
+                  <ul>
+                    <li v-for="location of locations" :key="location.name">
+                      <nuxt-link :to="{name:'places-adm0', params:{adm0: location.adm0_name}}">
+                        {{ location.adm0_name }}
                       </nuxt-link>
-                    </template>
-                    <template v-if="location.city_name">
-                      /
-                      <nuxt-link :to="{name:'places-adm0-adm1-city', params:{city: location.city_name, adm1: location.adm1_name, adm0: location.adm0_name}}">
-                        {{ location.city_name }}
-                      </nuxt-link>
-                    </template>
-                  </li>
-                </ul>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                Contact
-              </td>
-              <td>
-                <ul>
-                  <li v-for="k of agencyURLs" :key="k">
-                    <tl-safelink :url="k" />
-                  </li>
-                </ul>
-              </td>
-            </tr>
-            <tr v-if="entity && entity.tags && Object.keys(entity.tags).length > 0">
-              <td>
-                <o-tooltip trigger-class="dashed" multiline label="Links between this data and other catalogs and data sources on the Internet">
-                  ID Crosswalk
-                </o-tooltip>
-              </td>
-              <td>
-                <ul>
-                  <li v-if="entity.tags.us_ntd_id">
-                    US National Transit Database (NTD) ID: <tl-safelink :text="entity.tags.us_ntd_id" url="https://www.transit.dot.gov/ntd/" />
-                  </li>
-                  <li v-if="entity.tags.omd_provider_id">
-                    OpenMobilityData Provider ID: <tl-safelink :text="entity.tags.omd_provider_id" :url="`https://openmobilitydata.org/p/${entity.tags.omd_provider_id}`" />
-                  </li>
-                  <li v-if="entity.tags.wikidata_id">
-                    Wikidata Entity ID:
-                    <tl-safelink :text="entity.tags.wikidata_id" :url="`https://www.wikidata.org/wiki/${entity.tags.wikidata_id}`" />
-                  </li>
-                </ul>
-              </td>
-            </tr>
-          </table>
+                      <template v-if="location.adm1_name">
+                        /
+                        <nuxt-link :to="{name:'places-adm0-adm1', params:{adm1: location.adm1_name, adm0: location.adm0_name}}">
+                          {{ location.adm1_name }}
+                        </nuxt-link>
+                      </template>
+                      <template v-if="location.city_name">
+                        /
+                        <nuxt-link :to="{name:'places-adm0-adm1-city', params:{city: location.city_name, adm1: location.adm1_name, adm0: location.adm0_name}}">
+                          {{ location.city_name }}
+                        </nuxt-link>
+                      </template>
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Contact
+                </td>
+                <td>
+                  <ul>
+                    <li v-for="k of agencyURLs" :key="k">
+                      <tl-safelink :url="k" />
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+              <tr v-if="entity && entity.tags && Object.keys(entity.tags).length > 0">
+                <td>
+                  <o-tooltip multiline label="Links between this data and other catalogs and data sources on the Internet">
+                    ID Crosswalk
+                  </o-tooltip>
+                </td>
+                <td>
+                  <ul>
+                    <li v-if="entity.tags.us_ntd_id">
+                      US National Transit Database (NTD) ID: <tl-safelink :text="entity.tags.us_ntd_id" url="https://www.transit.dot.gov/ntd/" />
+                    </li>
+                    <li v-if="entity.tags.omd_provider_id">
+                      OpenMobilityData Provider ID: <tl-safelink :text="entity.tags.omd_provider_id" :url="`https://openmobilitydata.org/p/${entity.tags.omd_provider_id}`" />
+                    </li>
+                    <li v-if="entity.tags.wikidata_id">
+                      Wikidata Entity ID:
+                      <tl-safelink :text="entity.tags.wikidata_id" :url="`https://www.wikidata.org/wiki/${entity.tags.wikidata_id}`" />
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </tl-props>
 
           <slot name="description">
             <div class="content">
@@ -148,12 +150,12 @@
                   {{ row.target_match.agency_name }}
                 </template>
                 <template v-else-if="row.feed_spec == 'GTFS'">
-                  <o-tooltip trigger-class="dashed" label="The active version of this source feed does not contain a matching agency">
+                  <o-tooltip label="The active version of this source feed does not contain a matching agency">
                     <o-icon icon="alert" />
                   </o-tooltip>
                 </template>
               </td>
-              <td class="has-text-right" style="min-width: 250px;">
+              <td class="has-text-right">
                 <nuxt-link class="button is-small is-primary" :to="{name:'feeds-feedKey', params:{feedKey:row.target_feed}}">
                   Feed
                 </nuxt-link> <nuxt-link v-if="row.target_feed_spec == 'GTFS'" class="button is-small is-primary" :to="{name:'feeds-feedKey', params:{feedKey: row.target_feed}, hash: '#versions'}">
@@ -167,17 +169,15 @@
 
       <hr>
 
-      <!-- anchors for when users click between tabs -->
       <div v-if="agencyIds.length > 0">
-        <a v-for="[, value] of Object.entries(tabIndex)" :key="value" :name="value" />
         <h4 class="title is-4">
           Operator Service
         </h4>
         <o-tabs v-model="activeTab" class="tl-tabs" type="boxed" :animated="false" @update:model-value="setTab">
-          <o-tab-item id="map" label="Map">
+          <o-tab-item :value="tabNames.map" label="Map">
             <client-only placeholder="Map">
               <tl-feed-version-map-viewer
-                v-if="activeTab === 1"
+                v-if="activeTab === tabNames.map"
                 :agency-ids="agencyIds"
                 :overlay="true"
                 :link-version="linkVersion"
@@ -185,12 +185,12 @@
             </client-only>
           </o-tab-item>
 
-          <o-tab-item id="routes" label="Routes">
-            <tl-route-table v-if="activeTab === 2" :agency-ids="agencyIds" :show-agency="true" />
+          <o-tab-item :value="tabNames.routes" label="Routes">
+            <tl-route-table v-if="activeTab === tabNames.routes" :agency-ids="agencyIds" :show-agency="true" />
           </o-tab-item>
 
-          <o-tab-item id="stops" label="Stops">
-            <tl-stop-table v-if="activeTab === 3" :agency-ids="agencyIds" />
+          <o-tab-item :value="tabNames.stops" label="Stops">
+            <tl-stop-table v-if="activeTab === tabNames.stops" :agency-ids="agencyIds" />
           </o-tab-item>
         </o-tabs>
       </div>
@@ -248,12 +248,8 @@ export default {
   data () {
     return {
       features: [],
-      tabIndex: {
-        1: 'map',
-        2: 'routes',
-        3: 'stops',
-        4: 'export'
-      }
+      tabNames: this.makeTabNames(['map', 'routes', 'stops', 'export']),
+      activeTab: 'map'
     }
   },
   computed: {
@@ -361,7 +357,7 @@ export default {
     }
   },
   watch: {
-    'entity.name'(v) {
+    'entity.name' (v) {
       useEventBus().$emit('setParamKey', 'operatorKey', v)
     }
   },

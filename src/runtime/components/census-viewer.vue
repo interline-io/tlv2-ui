@@ -13,11 +13,11 @@
         Census results for {{ layerInfo[layer].plural.toLowerCase() }} within {{ radius }}m of a stop.
       </h5>
 
-      <table class="table" style="width:100%">
+      <table class="table">
         <thead>
           <tr>
             <th>
-              <o-tooltip trigger-class="dashed" :label="`Population (B01001) of ${layerInfo[layer].plural.toLowerCase()} within ${radius}m of stops`">
+              <o-tooltip :label="`Population (B01001) of ${layerInfo[layer].plural.toLowerCase()} within ${radius}m of stops`">
                 Population
               </o-tooltip>
             </th>
