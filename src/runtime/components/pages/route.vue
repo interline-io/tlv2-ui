@@ -104,7 +104,7 @@
           </tl-props>
 
           <slot name="contentAfterTable" :entity="entity">
-            <tl-msg-info class="mx-4">
+            <tl-msg-info>
               <p>Learn more about <a href="https://www.transit.land/documentation/concepts/routes">routes in the Transitland documentation</a>.</p>
             </tl-msg-info>
           </slot>
