@@ -24,15 +24,19 @@ export default {
     latest: { type: Boolean, default: false }
   },
   methods: {
-    async download() {
+    async download () {
       this.loading = true
       console.log('download')
       const url = this.latest
         ? `${this.apiBase}/rest/feeds/${this.feedOnestopId}/download_latest_feed_version`
         : `${this.apiBase}/rest/feed_versions/${this.feedVersionSha1}/download`
       let filename = ''
+      const { headerName: csrfHeader, csrf: csrfToken } = useCsrf()
       await fetch(url, {
-        headers: { authorization: await this.authBearer() }
+        headers: {
+          authorization: await this.authBearer(),
+          [csrfHeader]: csrfToken,
+        }
       })
         .then((result) => {
           if (!result.ok) {
