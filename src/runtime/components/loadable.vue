@@ -1,6 +1,6 @@
 <script lang="ts">
 import { useJwt } from '../plugins/auth'
-
+import { useCsrf } from '#imports'
 export default {
   data () {
     return {
@@ -9,7 +9,7 @@ export default {
     }
   },
   computed: {
-    apiBase() {
+    apiBase () {
       return this.$config.public.apiBase
     }
   },
@@ -17,11 +17,15 @@ export default {
     async authBearer () {
       return 'Bearer ' + await useJwt()
     },
-    async fetchRest(path: String, data: Object, method: String) {
+    async fetchRest (path: String, data: Object, method: String) {
+      const { headerName: csrfHeader, csrf: csrfToken } = useCsrf()
       method = method || 'GET'
       const body = {
         'Content-Type': 'application/json',
-        headers: { authorization: await this.authBearer() },
+        'headers': {
+          authorization: await this.authBearer(),
+          [csrfHeader]: csrfToken,
+        },
         method
       }
       const target = new URL(`${this.apiBase}${path}`)
@@ -43,7 +47,7 @@ export default {
           return data
         })
     },
-    fetchAdmin(path: String, params: Object, method: String) {
+    fetchAdmin (path: String, params: Object, method: String) {
       return this.fetchRest('/admin' + path, params, method)
     },
     handleError (response) {
