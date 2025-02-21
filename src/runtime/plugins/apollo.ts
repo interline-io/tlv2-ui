@@ -4,36 +4,38 @@ import { createApolloProvider } from '@vue/apollo-option'
 import { ApolloClient, ApolloLink, concat, InMemoryCache } from '@apollo/client/core/index.js'
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
 import { useJwt } from './auth'
-import { defineNuxtPlugin, useRuntimeConfig } from '#imports'
+import { defineNuxtPlugin, useRuntimeConfig, useCsrf, useNuxtApp } from '#imports'
 
 export function getApolloClient() {
   const config = useRuntimeConfig()
-  const apiBase = config.public.apiBase || ''
-  const allowedReferer = process.server ? (config.allowedReferer || '') : ''
+  const apiBase = import.meta.server ? (config.proxyBase) : (config.public.apiBase || '')
+  const apiKey = import.meta.server ? config.graphqlApikey : ''
   return initApolloClient(
     String(apiBase),
-    String(allowedReferer)
+    String(apiKey)
   )
 }
 
 export function initApolloClient(
   apiBase: string,
-  allowedReferer: string
+  graphqlApikey: string
 ) {
   const httpLink = createUploadLink({
-    uri: apiBase + '/query'
+    uri: apiBase + '/query',
   })
-  const authMiddleware = new ApolloLink(async(operation, forward) => {
+  const authMiddleware = new ApolloLink(async (operation, forward) => {
     // add the authorization to the headers
+    const { csrf } = useCsrf()
     const token = await useJwt()
-    operation.setContext({
-      headers: {
-        // Set Authoriation header
-        authorization: token ? `Bearer ${token}` : '',
-        // Needed for SSR
-        referer: allowedReferer
-      }
+    const headers = removeEmpty({
+      // Set Authoriation header
+      authorization: token ? `Bearer ${token}` : null,
+      // Set graphql api key if not going through proxy
+      apikey: graphqlApikey || null,
+      // Set the csurf token, if available
+      'csrf-token': csrf || null,
     })
+    operation.setContext({ headers })
     return forward(operation)
   })
   const cache = new InMemoryCache()
@@ -69,3 +71,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     apolloClient.cache.restore(destr(JSON.stringify(nuxtApp.payload.data[cacheKey])))
   }
 })
+
+function removeEmpty(obj) {
+  return Object.fromEntries(Object.entries(obj).filter(([_, v]) => v != null));
+}

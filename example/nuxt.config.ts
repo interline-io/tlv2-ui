@@ -19,7 +19,6 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     proxyBase: '',
-    allowedReferer: '',
     graphqlApikey: '',
     public: {
       apiBase: '',
