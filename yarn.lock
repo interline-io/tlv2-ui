@@ -1574,7 +1574,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nuxt/kit@npm:3.15.4, @nuxt/kit@npm:^3.15.0, @nuxt/kit@npm:^3.15.4":
+"@nuxt/kit@npm:3.15.4, @nuxt/kit@npm:^3.13.2, @nuxt/kit@npm:^3.15.0, @nuxt/kit@npm:^3.15.4":
   version: 3.15.4
   resolution: "@nuxt/kit@npm:3.15.4"
   dependencies:
@@ -8811,6 +8811,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nuxt-csurf@npm:1.6.5":
+  version: 1.6.5
+  resolution: "nuxt-csurf@npm:1.6.5"
+  dependencies:
+    "@nuxt/kit": "npm:^3.13.2"
+    defu: "npm:^6.1.4"
+    uncsrf: "npm:^1.2.0"
+  checksum: 10/1f7dba0d793b42656568c688d5aa615cf73bc043b80e34df50a18610824734636a144af96be126f984d3293944ef310c59cf5b4550b182bf3e7ea703067724c3
+  languageName: node
+  linkType: hard
+
 "nuxt@npm:^3.15.4":
   version: 3.15.4
   resolution: "nuxt@npm:3.15.4"
@@ -11423,6 +11434,7 @@ __metadata:
     mixpanel-browser: "npm:^2.60.0"
     nuxi: "npm:^3.21.1"
     nuxt: "npm:^3.15.4"
+    nuxt-csurf: "npm:1.6.5"
     protomaps-themes-base: "npm:1.3.1"
     sass: "npm:1.84.0"
     tiny-emitter: "npm:^2.1.0"
@@ -11770,6 +11782,13 @@ __metadata:
   version: 0.1.3
   resolution: "uncrypto@npm:0.1.3"
   checksum: 10/0020f74b0ce34723196d8982a73bb7f40cff455a41b8f88ae146b86885f4e66e41a1241fe80a887505c3bd2c7f07ed362b6ed041968370073c40a98496e6a737
+  languageName: node
+  linkType: hard
+
+"uncsrf@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "uncsrf@npm:1.2.0"
+  checksum: 10/825136679dbff7bc01656507abaa6f22ca810216ad8e27bcc45fe267f8ddaaf7d9c28b7100f6e179b9f20b089df4ad0e538112277ae8f22e57fcb31b19096b60
   languageName: node
   linkType: hard
 
