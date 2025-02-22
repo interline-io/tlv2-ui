@@ -1,6 +1,5 @@
 <script lang="ts">
-import { useJwt } from '../plugins/auth'
-import { useCsrf } from '#imports'
+import { useAuthHeaders } from '../plugins/auth'
 export default {
   data () {
     return {
@@ -14,18 +13,14 @@ export default {
     }
   },
   methods: {
-    async authBearer () {
-      return 'Bearer ' + await useJwt()
+    useAuthHeaders () {
+      return useAuthHeaders()
     },
     async fetchRest (path: String, data: Object, method: String) {
-      const { headerName: csrfHeader, csrf: csrfToken } = useCsrf()
       method = method || 'GET'
       const body = {
         'Content-Type': 'application/json',
-        'headers': {
-          authorization: await this.authBearer(),
-          [csrfHeader]: csrfToken,
-        },
+        'headers': this.useAuthHeaders(),
         method
       }
       const target = new URL(`${this.apiBase}${path}`)

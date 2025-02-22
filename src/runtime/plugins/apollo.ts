@@ -3,7 +3,7 @@ import { ApolloClients, provideApolloClients } from '@vue/apollo-composable'
 import { createApolloProvider } from '@vue/apollo-option'
 import { ApolloClient, ApolloLink, concat, InMemoryCache } from '@apollo/client/core/index.js'
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
-import { useJwt } from './auth'
+import { useAuthHeaders } from './auth'
 import { defineNuxtPlugin, useRuntimeConfig, useCsrf, useNuxtApp } from '#imports'
 
 export function getApolloClient() {
@@ -25,17 +25,9 @@ export function initApolloClient(
   })
   const authMiddleware = new ApolloLink(async (operation, forward) => {
     // add the authorization to the headers
-    const { csrf } = useCsrf()
-    const token = await useJwt()
-    const headers = removeEmpty({
-      // Set Authoriation header
-      authorization: token ? `Bearer ${token}` : null,
-      // Set graphql api key if not going through proxy
-      apikey: graphqlApikey || null,
-      // Set the csurf token, if available
-      'csrf-token': csrf || null,
+    operation.setContext({ 
+      headers: removeEmpty(Object.assign({}, useAuthHeaders(), {apikey: graphqlApikey})) 
     })
-    operation.setContext({ headers })
     return forward(operation)
   })
   const cache = new InMemoryCache()

@@ -2,7 +2,7 @@ import { Auth0Client } from '@auth0/auth0-spa-js'
 import { useStorage } from '@vueuse/core'
 import { gql } from 'graphql-tag'
 import { getApolloClient } from './apollo'
-import { defineNuxtPlugin, addRouteMiddleware, navigateTo, useRuntimeConfig } from '#imports'
+import { defineNuxtPlugin, addRouteMiddleware, navigateTo, useRuntimeConfig, useCsrf } from '#imports'
 
 /// ////////////////////
 // Auth0 client initialization
@@ -68,6 +68,16 @@ export const useJwt = async() => {
 export const useUser = () => {
   const user = useStorage('user', {})
   return new User(user?.value || {})
+}
+
+// Headers, including CSRF
+export const useAuthHeaders = async() => {
+  const token = await useJwt()
+  const { headerName: csrfHeader, csrf: csrfToken } = useCsrf()
+  return {
+    Authorization: `Bearer ${token}`,
+    [csrfHeader]: csrfToken,
+  }
 }
 
 // Login
