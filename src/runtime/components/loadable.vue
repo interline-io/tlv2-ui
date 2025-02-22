@@ -1,6 +1,5 @@
 <script lang="ts">
-import { useJwt } from '../plugins/auth'
-import { useCsrf } from '#imports'
+import { useAuthHeaders, useApiEndpoint } from '../plugins/auth'
 export default {
   data () {
     return {
@@ -8,27 +7,17 @@ export default {
       loading: false
     }
   },
-  computed: {
-    apiBase () {
-      return this.$config.public.apiBase
-    }
-  },
   methods: {
-    async authBearer () {
-      return 'Bearer ' + await useJwt()
-    },
+    apiEndpoint: () => (useApiEndpoint()),
+    authHeaders: () => (useAuthHeaders()),
     async fetchRest (path: String, data: Object, method: String) {
-      const { headerName: csrfHeader, csrf: csrfToken } = useCsrf()
       method = method || 'GET'
       const body = {
         'Content-Type': 'application/json',
-        'headers': {
-          authorization: await this.authBearer(),
-          [csrfHeader]: csrfToken,
-        },
+        'headers': await this.authHeaders(),
         method
       }
-      const target = new URL(`${this.apiBase}${path}`)
+      const target = new URL(`${this.apiEndpoint()}${path}`)
       if (data) {
         if (method === 'PUT' || method === 'POST' || method === 'DELETE') {
           body.body = JSON.stringify(data)

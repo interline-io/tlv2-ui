@@ -28,16 +28,10 @@ export default {
       this.loading = true
       console.log('download')
       const url = this.latest
-        ? `${this.apiBase}/rest/feeds/${this.feedOnestopId}/download_latest_feed_version`
-        : `${this.apiBase}/rest/feed_versions/${this.feedVersionSha1}/download`
+        ? `${this.apiEndpoint()}/rest/feeds/${this.feedOnestopId}/download_latest_feed_version`
+        : `${this.apiEndpoint()}/rest/feed_versions/${this.feedVersionSha1}/download`
       let filename = ''
-      const { headerName: csrfHeader, csrf: csrfToken } = useCsrf()
-      await fetch(url, {
-        headers: {
-          authorization: await this.authBearer(),
-          [csrfHeader]: csrfToken,
-        }
-      })
+      await fetch(url, { headers: await this.authHeaders() })
         .then((result) => {
           if (!result.ok) {
             throw new Error(result.status + ' ' + result.statusText)

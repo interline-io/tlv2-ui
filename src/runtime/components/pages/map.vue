@@ -317,7 +317,7 @@ function splitCoords (v: any): number[] {
 /// ////////////////////////
 
 // Only show base routes for route and departures tabs
-
+// NOTE: These always go through the proxy, for now
 const routeTiles = computed(() => {
   return {
     id: 'routes',

@@ -1,13 +1,12 @@
-import { proxyRequest, getQuery, setResponseStatus, H3Event, defineEventHandler } from 'h3'
+import { proxyRequest, getQuery, H3Event, defineEventHandler } from 'h3'
 import { useRuntimeConfig } from '#imports'
 
-// Use nuxt-csurf to protect this in nuxt.config.ts
+// Use sessions and/or nuxt-csurf to protect this in nuxt.config.ts
 export function proxyHandler(
   event: H3Event,
   proxyBase: string,
   graphqlApikey: string
 ) {
-  
   // Check user provided apikey
   const query = getQuery(event)
   const requestApikey = (query.apikey ? query.apikey.toString() : '') || event.headers.get('apikey') || ''
@@ -29,14 +28,6 @@ export function proxyHandler(
     newPath,
     proxyBaseUrl.toString()
   )
-  // console.log(
-  //   'newPath:', newPath,
-  //   'proxyBase:', proxyBase,
-  //   'event.path:', event.path,
-  //   'proxyBase pathname:', proxyBaseUrl.pathname,
-  //   'target:', target.toString(),
-  //   'headers:', headers
-  // )
   return proxyRequest(event, target.toString(), { headers })
 }
 
