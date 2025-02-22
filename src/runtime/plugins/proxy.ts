@@ -43,7 +43,8 @@ export function proxyHandler(
 }
 
 export default defineEventHandler((event) => {
-  const config = useRuntimeConfig()
+  // Pass event; see https://github.com/nuxt/nuxt/issues/25047
+  const config = useRuntimeConfig(event)
   console.log('proxy defineEventHandler:', event, 'config:', config)
   return proxyHandler(
     event,
