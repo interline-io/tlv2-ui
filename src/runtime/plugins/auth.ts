@@ -89,7 +89,9 @@ function removeEmpty(obj: Record<string, string|null>) {
 
 export const useApiEndpoint = () => {
   const config = useRuntimeConfig()
-  return import.meta.server ? (config.proxyBase) : (config.public.apiBase || '')
+  return import.meta.server ? 
+    (config.proxyBase || config.public.apiBase) :
+    (config.public.apiBase || window?.location?.origin + '/api/v2')
 }
 
 // Login
