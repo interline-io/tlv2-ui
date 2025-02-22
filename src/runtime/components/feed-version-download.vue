@@ -13,7 +13,6 @@
 </template>
 
 <script>
-import { useApiEndpoint, useAuthHeaders } from '../plugins/auth'
 import Loadable from './loadable'
 
 export default {
@@ -29,10 +28,10 @@ export default {
       this.loading = true
       console.log('download')
       const url = this.latest
-        ? `${useApiEndpoint()}/rest/feeds/${this.feedOnestopId}/download_latest_feed_version`
-        : `${useApiEndpoint()}/rest/feed_versions/${this.feedVersionSha1}/download`
+        ? `${this.apiEndpoint()}/rest/feeds/${this.feedOnestopId}/download_latest_feed_version`
+        : `${this.apiEndpoint()}/rest/feed_versions/${this.feedVersionSha1}/download`
       let filename = ''
-      await fetch(url, { headers: useAuthHeaders() })
+      await fetch(url, { headers: this.authHeaders() })
         .then((result) => {
           if (!result.ok) {
             throw new Error(result.status + ' ' + result.statusText)
