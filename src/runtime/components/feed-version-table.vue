@@ -114,6 +114,7 @@
 
 <script>
 import { gql } from 'graphql-tag'
+import { useApiEndpoint } from '../plugins/auth'
 
 const fvQuery = gql`
 query ($limit:Int=100, $onestop_id: String, $after:Int) {
@@ -219,7 +220,7 @@ export default {
       const isLatest = (sha1 === this.latestFeedVersionSha1)
       this.$emit('downloadTriggered', sha1, isLatest)
       if (this.issueDownloadRequest) {
-        window.open(`${this.$config.public.apiBase}/rest/feed_versions/${sha1}/download`, '_blank')
+        window.open(`${useApiEndpoint()}/rest/feed_versions/${sha1}/download`, '_blank')
       }
     }
   }

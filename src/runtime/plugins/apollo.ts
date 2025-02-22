@@ -3,31 +3,18 @@ import { ApolloClients, provideApolloClients } from '@vue/apollo-composable'
 import { createApolloProvider } from '@vue/apollo-option'
 import { ApolloClient, ApolloLink, concat, InMemoryCache } from '@apollo/client/core/index.js'
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
-import { useAuthHeaders } from './auth'
-import { defineNuxtPlugin, useRuntimeConfig, useCsrf, useNuxtApp } from '#imports'
+import { useApiEndpoint, useAuthHeaders } from './auth'
+import { defineNuxtPlugin } from '#imports'
 
 export function getApolloClient() {
-  const config = useRuntimeConfig()
-  const apiBase = import.meta.server ? (config.proxyBase) : (config.public.apiBase || '')
-  const apiKey = import.meta.server ? config.graphqlApikey : ''
-  return initApolloClient(
-    String(apiBase),
-    String(apiKey)
-  )
+  return initApolloClient(useApiEndpoint())
 }
 
-export function initApolloClient(
-  apiBase: string,
-  graphqlApikey: string
-) {
-  const httpLink = createUploadLink({
-    uri: apiBase + '/query',
-  })
+export function initApolloClient(apiBase: string) {
+  const httpLink = createUploadLink({uri: apiBase + '/query'})
   const authMiddleware = new ApolloLink(async (operation, forward) => {
     // add the authorization to the headers
-    operation.setContext({ 
-      headers: removeEmpty(Object.assign({}, useAuthHeaders(), {apikey: graphqlApikey})) 
-    })
+    operation.setContext({headers: await useAuthHeaders()})
     return forward(operation)
   })
   const cache = new InMemoryCache()
@@ -63,7 +50,3 @@ export default defineNuxtPlugin((nuxtApp) => {
     apolloClient.cache.restore(destr(JSON.stringify(nuxtApp.payload.data[cacheKey])))
   }
 })
-
-function removeEmpty(obj) {
-  return Object.fromEntries(Object.entries(obj).filter(([_, v]) => v != null));
-}

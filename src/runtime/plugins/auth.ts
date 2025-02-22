@@ -72,12 +72,25 @@ export const useUser = () => {
 
 // Headers, including CSRF
 export const useAuthHeaders = async() => {
-  const token = await useJwt()
+  const config = useRuntimeConfig()
   const { headerName: csrfHeader, csrf: csrfToken } = useCsrf()
-  return {
-    Authorization: `Bearer ${token}`,
+  const token = await useJwt()
+  const headers = removeEmpty({
+    authorization: token ? `Bearer ${token}` : '',
+    apikey: String(import.meta.server ? config.graphqlApikey : ''),
     [csrfHeader]: csrfToken,
-  }
+  })
+  console.log('useAuthHeaders:', headers)
+  return headers
+}
+
+function removeEmpty(obj: Record<string, string|null>) {
+  return Object.fromEntries(Object.entries(obj).filter(([_, v]) => v));
+}
+
+export const useApiEndpoint = () => {
+  const config = useRuntimeConfig()
+  return import.meta.server ? (config.proxyBase) : (config.public.apiBase || '')
 }
 
 // Login

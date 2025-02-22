@@ -1,5 +1,5 @@
 <script lang="ts">
-import { useAuthHeaders } from '../plugins/auth'
+import { useAuthHeaders, useApiEndpoint } from '../plugins/auth'
 export default {
   data () {
     return {
@@ -7,15 +7,9 @@ export default {
       loading: false
     }
   },
-  computed: {
-    apiBase () {
-      return this.$config.public.apiBase
-    }
-  },
   methods: {
-    useAuthHeaders () {
-      return useAuthHeaders()
-    },
+    apiEndpoint: () => (useApiEndpoint()),
+    authHeaders: () => { useAuthHeaders() },
     async fetchRest (path: String, data: Object, method: String) {
       method = method || 'GET'
       const body = {
@@ -23,7 +17,7 @@ export default {
         'headers': this.useAuthHeaders(),
         method
       }
-      const target = new URL(`${this.apiBase}${path}`)
+      const target = new URL(`${this.apiEndpoint()}${path}`)
       if (data) {
         if (method === 'PUT' || method === 'POST' || method === 'DELETE') {
           body.body = JSON.stringify(data)
