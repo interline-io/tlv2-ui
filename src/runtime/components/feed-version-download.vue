@@ -31,7 +31,7 @@ export default {
         ? `${this.apiEndpoint()}/rest/feeds/${this.feedOnestopId}/download_latest_feed_version`
         : `${this.apiEndpoint()}/rest/feed_versions/${this.feedVersionSha1}/download`
       let filename = ''
-      await fetch(url, { headers: this.authHeaders() })
+      await fetch(url, { headers: await this.authHeaders() })
         .then((result) => {
           if (!result.ok) {
             throw new Error(result.status + ' ' + result.statusText)

@@ -9,12 +9,12 @@ export default {
   },
   methods: {
     apiEndpoint: () => (useApiEndpoint()),
-    authHeaders: () => { useAuthHeaders() },
+    authHeaders: () => (useAuthHeaders()),
     async fetchRest (path: String, data: Object, method: String) {
       method = method || 'GET'
       const body = {
         'Content-Type': 'application/json',
-        'headers': this.useAuthHeaders(),
+        'headers': await this.authHeaders(),
         method
       }
       const target = new URL(`${this.apiEndpoint()}${path}`)
