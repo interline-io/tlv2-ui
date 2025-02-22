@@ -44,6 +44,7 @@ export function proxyHandler(
 
 export default defineEventHandler((event) => {
   const config = useRuntimeConfig()
+  console.log('proxy defineEventHandler:', event, 'config:', config)
   return proxyHandler(
     event,
     String(config.proxyBase),
