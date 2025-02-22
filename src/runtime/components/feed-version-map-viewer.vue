@@ -20,17 +20,17 @@
         @set-zoom="currentZoom = $event"
       />
       <div v-if="overlay" class="tl-fv-map-panel">
-        <tl-map-route-list
+        <tl-map-route-stop-list
           :current-zoom="currentZoom"
           :link-version="linkVersion"
           :agency-features="agencyFeatures"
           :is-component-modal-active="isComponentModalActive"
           @close="isComponentModalActive = false"
         >
-          <strong>Select routes</strong>
+          <strong>Select routes and stops</strong>
           <br>
           Use your cursor to highlight route lines or stop points. Click for details.
-        </tl-map-route-list>
+        </tl-map-route-stop-list>
       </div>
     </div>
   </div>
@@ -173,18 +173,17 @@ export default {
       const features = []
       for (const feature of this.routes) {
         for (const g of feature.route_stops || []) {
-          if (!(g.stop.location_type !== 0 || g.stop.location_type !== 2)) {
-            continue
+          if (g.stop.location_type === 0 || g.stop.location_type === 2) {
+            const fcopy = Object.assign({}, g.stop)
+            delete fcopy.geometry
+            delete fcopy.__typename
+            features.push({
+              type: 'Feature',
+              geometry: g.stop.geometry,
+              properties: fcopy,
+              id: g.stop.id
+            })
           }
-          const fcopy = Object.assign({}, g.stop)
-          delete fcopy.geometry
-          delete fcopy.__typename
-          features.push({
-            type: 'Feature',
-            geometry: g.stop.geometry,
-            properties: fcopy,
-            id: g.stop.id
-          })
         }
       }
       return features
@@ -195,7 +194,7 @@ export default {
       this.$emit('setRouteFeatures', v)
     },
     stopFeatures (v) {
-      this.$emit('setSopFeatures', v)
+      this.$emit('setStopFeatures', v)
     }
   },
   methods: {

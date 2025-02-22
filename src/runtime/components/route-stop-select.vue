@@ -14,7 +14,7 @@
         <!-- Routes -->
         <div v-if="Object.keys(features.routes || {}).length > 0">
           <h6 class="subtitle is-6">Routes:</h6>
-          <div v-for="route in features.routes" :key="route.id">
+          <div v-for="route in features.routes" :key="route.id" class="item-row">
             <nuxt-link
               v-if="link"
               :to="$filters.makeRouteLink(route.onestop_id, route.feed_onestop_id, route.feed_version_sha1, route.route_id, route.id, linkVersion)"
@@ -40,18 +40,20 @@
         <!-- Stops -->
         <div v-if="Object.keys(features.stops || {}).length > 0">
           <h6 class="subtitle is-6">Stops:</h6>
-          <div v-for="stop in features.stops" :key="stop.id">
+          <div v-for="stop in features.stops" :key="stop.id" class="item-row">
             <nuxt-link
               v-if="link"
               :to="$filters.makeStopLink(stop.onestop_id, stop.feed_onestop_id, stop.feed_version_sha1, stop.stop_id, stop.id, linkVersion)"
             >
               <div class="stop-item">
-                <i class="fas fa-bus-alt" /> {{ stop.stop_name }}
+                <tl-stop-icon :location_type="stop.location_type" />
+                {{ stop.stop_name || 'Unnamed Stop' }}
               </div>
             </nuxt-link>
             <template v-else>
               <div class="stop-item">
-                <i class="fas fa-bus-alt" /> {{ stop.stop_name }}
+                <tl-stop-icon :location_type="stop.location_type" />
+                {{ stop.stop_name || 'Unnamed Stop' }}
               </div>
             </template>
           </div>
@@ -88,10 +90,13 @@ export default {
 </script>
 
 <style scoped>
-.stop-item {
+.item-row {
   padding: 4px 0;
-  color: #363636;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
+
 .subtitle {
   margin-top: 1rem;
   margin-bottom: 0.5rem;

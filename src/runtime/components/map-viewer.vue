@@ -393,9 +393,10 @@ export default {
     },
     mapMouseMove (e) {
       const map = this.map
-      // Query both routes and stops
       const routeFeatures = map.queryRenderedFeatures(e.point, { layers: ['route-active'] })
       const stopFeatures = map.queryRenderedFeatures(e.point, { layers: ['stop-active'] })
+
+      console.log('Raw stop features:', JSON.stringify(stopFeatures, null, 2))
 
       map.getCanvas().style.cursor = 'pointer'
 
@@ -428,22 +429,48 @@ export default {
       // Combine features for emission
       const agencyFeatures = {}
       const processFeature = (v) => {
+        try {
+          if (v.properties.route_id) {
+            // Handle route
         const agencyId = v.properties.agency_name
-        const featureId = v.properties.route_id || v.properties.stop_id
-        const featureType = v.properties.route_id ? 'route' : 'stop'
         if (agencyFeatures[agencyId] == null) {
           agencyFeatures[agencyId] = { routes: {}, stops: {} }
         }
-        if (featureType === 'route') {
-          agencyFeatures[agencyId].routes[featureId] = v.properties
+            agencyFeatures[agencyId].routes[v.properties.route_id] = v.properties
         } else {
-          agencyFeatures[agencyId].stops[featureId] = v.properties
+            // Handle stop
+            console.log('Processing stop properties:', v.properties)
+            const agencies = JSON.parse(v.properties.agencies || '[]')
+            console.log('Parsed agencies:', agencies)
+            
+            const agencyId = agencies[0]?.agency_name || 'undefined'
+            if (agencyFeatures[agencyId] == null) {
+              agencyFeatures[agencyId] = { routes: {}, stops: {} }
+            }
+            
+            const stopData = {
+              id: v.properties.stop_id,
+              stop_id: v.properties.stop_id,
+              stop_name: v.properties.stop_name,
+              location_type: v.properties.location_type || 0,
+              onestop_id: v.properties.onestop_id,
+              feed_onestop_id: v.properties.feed_onestop_id,
+              feed_version_sha1: v.properties.feed_version_sha1,
+              agencies: v.properties.agencies
+            }
+            console.log('Created stop data:', stopData)
+            
+            agencyFeatures[agencyId].stops[v.properties.stop_id] = stopData
+          }
+        } catch (err) {
+          console.warn('Error processing feature:', err, v)
         }
       }
 
       routeFeatures.forEach(processFeature)
       stopFeatures.forEach(processFeature)
-      console.log(agencyFeatures)
+      
+      console.log('Final agency features:', JSON.stringify(agencyFeatures, null, 2))
       this.$emit('setAgencyFeatures', agencyFeatures)
     }
   }
