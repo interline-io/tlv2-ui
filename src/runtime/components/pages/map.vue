@@ -137,6 +137,71 @@
 import { useRoute, useRuntimeConfig, navigateTo } from 'nuxt/app'
 import { ref, computed, watch } from 'vue'
 
+// Interfaces
+interface MapMarker {
+  lng: number
+  lat: number
+  color: string
+  label: string
+  draggable: boolean
+  onDragEnd?: (event: any) => void
+}
+
+interface MapMoveEvent {
+  zoom: number
+  bbox: number[]
+}
+
+interface MapClickEvent {
+  lngLat: {
+    lng: number
+    lat: number
+  }
+}
+
+interface Agency {
+  agency_id: string
+  agency_name: string
+  operator: {
+    onestop_id: string
+    name: string
+  }
+}
+
+interface Stop {
+  stop_id: string
+  stop_name: string
+  location_type: number
+  onestop_id: string
+  feed_onestop_id: string
+  feed_version_sha1: string
+  agencies: string
+}
+
+interface Route {
+  route_id: string
+  route_short_name: string
+  route_long_name: string
+  route_color: string
+  route_type: number
+  agency_id: string
+  agency_name: string
+  onestop_id: string
+  generated: boolean
+  headway_secs: number
+  geometry_length: number
+  geometry_max_segment_length: number
+}
+
+interface AgencyFeatures {
+  routes?: Record<string, Route>
+  stops?: Record<string, Stop>
+}
+
+interface AgencyFeaturesMap {
+  [key: string]: AgencyFeatures
+}
+
 const config = useRuntimeConfig()
 
 const route = useRoute()
@@ -183,55 +248,7 @@ const currentBbox = ref<number[] | null>(null)
 const showGeneratedGeometries = ref(true)
 const showProblematicGeometries = ref(false)
 
-interface Agency {
-  agency_id: string
-  agency_name: string
-  operator: {
-    onestop_id: string
-    name: string
-  }
-}
-
-interface Stop {
-  stop_id: string
-  stop_name: string
-  location_type: number
-  onestop_id: string
-  feed_onestop_id: string
-  feed_version_sha1: string
-  agencies: string
-}
-
-interface Route {
-  route_id: string
-  route_short_name: string
-  route_long_name: string
-  route_color: string
-  route_type: number
-  agency_id: string
-  agency_name: string
-  onestop_id: string
-  generated: boolean
-  headway_secs: number
-  geometry_length: number
-  geometry_max_segment_length: number
-}
-
-interface AgencyFeatures {
-  routes?: Record<string, Route>
-  stops?: Record<string, Stop>
-}
-
-interface AgencyFeaturesMap {
-  [key: string]: AgencyFeatures
-}
-
 const agencyFeatures = ref<AgencyFeaturesMap>({})
-
-interface MapMoveEvent {
-  zoom: number
-  bbox: number[]
-}
 
 function mapMove (e: MapMoveEvent) {
   currentZoom.value = e.zoom
@@ -242,7 +259,7 @@ function mapSetZoom (v: number) {
   currentZoom.value = v
 }
 
-function mapClick (e: any) {
+function mapClick(e: MapClickEvent) {
   // Convert to coordinates
   const coords = [e.lngLat.lng, e.lngLat.lat]
 
@@ -485,10 +502,6 @@ const markers = computed((): MapMarker[] => {
   }
 
   return ret
-})
-
-const processedFeatures = computed(() => {
-  return agencyFeatures.value
 })
 
 </script>
