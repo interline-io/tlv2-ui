@@ -13,7 +13,7 @@ export function getApolloClient() {
 export function initApolloClient(apiBase: string) {
   const httpLink = createUploadLink({uri: apiBase + '/query'})
   const authMiddleware = new ApolloLink(async (operation, forward) => {
-    // add the authorization to the headers
+    // Add authorization headers
     operation.setContext({headers: await useAuthHeaders()})
     return forward(operation)
   })

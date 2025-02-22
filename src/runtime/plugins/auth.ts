@@ -80,7 +80,6 @@ export const useAuthHeaders = async() => {
     apikey: String(import.meta.server ? config.graphqlApikey : ''),
     [csrfHeader]: csrfToken,
   })
-  console.log('useAuthHeaders:', headers)
   return headers
 }
 

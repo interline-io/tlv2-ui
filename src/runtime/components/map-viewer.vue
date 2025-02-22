@@ -6,6 +6,7 @@
 import maplibre from 'maplibre-gl'
 import { noLabels, labels } from 'protomaps-themes-base'
 import { nextTick } from 'vue'
+import { useAuthHeaders, useApiEndpoint } from '../plugins/auth'
 import mapLayers from './map-layers'
 
 export default {
@@ -68,7 +69,7 @@ export default {
     zoom () {
       this.map.jumpTo({ center: this.center, zoom: this.zoom })
     },
-    markers(v) {
+    markers (v) {
       this.drawMarkers(v)
     }
   },
@@ -95,10 +96,12 @@ export default {
         link.click()
       })
     },
-    initMap () {
+    async initMap () {
       if (this.map) {
         return
       }
+      const apiBase = useApiEndpoint()
+      const authHeaders = await useAuthHeaders()
       const opts = {
         hash: this.hash,
         interactive: this.interactive,
@@ -116,6 +119,11 @@ export default {
             }
           },
           layers: noLabels('protomaps-base', 'grayscale')
+        },
+        transformRequest: (url, resourceType) => {
+          if (resourceType === 'Tile' && url.startsWith(apiBase)) {
+            return { url: url, headers: authHeaders, credentials: 'include' }
+          }
         }
       }
       if (this.center && this.center.length > 0) {
@@ -224,7 +232,7 @@ export default {
           type: 'vector',
           tiles: [this.routeTiles.url],
           minzoom: this.routeTiles.minzoom || 0,
-          maxzoom: this.routeTiles.maxzoom || 14
+          maxzoom: this.routeTiles.maxzoom || 14,
         })
       } else {
         this.map.addSource('routes', {
@@ -334,7 +342,7 @@ export default {
       this.updateFilters()
     },
 
-    drawMarkers(markers) {
+    drawMarkers (markers) {
       for (const m of this.markerLayer) {
         m.remove()
       }
