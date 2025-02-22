@@ -11,6 +11,7 @@ export function proxyHandler(
   const query = getQuery(event)
   const requestApikey = (query.apikey ? query.apikey.toString() : '') || event.headers.get('apikey') || ''
 
+
   // Check user provided bearer
   const requestBearer = event.headers.get('authorization') || ''
 
@@ -20,14 +21,24 @@ export function proxyHandler(
     apikey: requestApikey || graphqlApikey
   }
 
+  console.log('start proxy:', event.path)
+  console.log('requestApikey:', requestApikey)
+  console.log('graphqlApikey:', graphqlApikey)
+  console.log('requestBearer:', requestBearer)
+  console.log('headers:', headers)
+
   // Proxy request
   const proxyBaseUrl = new URL(proxyBase)
+  console.log('proxyBaseUrl:', proxyBaseUrl)
   const proxyBasePathname = proxyBaseUrl.pathname === '/' ? '' : proxyBaseUrl.pathname
+  console.log('proxyBasePathname:', proxyBasePathname)
   const newPath = proxyBasePathname + event.path.replace('/api/v2', '')
+  console.log('newPath:', newPath)
   const target = new URL(
     newPath,
     proxyBaseUrl.toString()
   )
+  console.log('target:', target.toString())
   return proxyRequest(event, target.toString(), { headers })
 }
 
