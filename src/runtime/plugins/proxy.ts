@@ -11,6 +11,7 @@ export function proxyHandler(
   const query = getQuery(event)
   const requestApikey = (query.apikey ? query.apikey.toString() : '') || event.headers.get('apikey') || ''
 
+
   // Check user provided bearer
   const requestBearer = event.headers.get('authorization') || ''
 
@@ -32,7 +33,8 @@ export function proxyHandler(
 }
 
 export default defineEventHandler((event) => {
-  const config = useRuntimeConfig()
+  // Pass event; see https://github.com/nuxt/nuxt/issues/25047
+  const config = useRuntimeConfig(event)
   return proxyHandler(
     event,
     String(config.proxyBase),
