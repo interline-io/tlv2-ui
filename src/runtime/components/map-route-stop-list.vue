@@ -9,9 +9,7 @@
       />
     </div>
     <div v-else>
-      <slot name="default">
-        
-      </slot>
+      <slot />
     </div>
 
     <o-modal
@@ -42,8 +40,25 @@ import { computed } from 'vue'
 interface Props {
   isComponentModalActive?: boolean
   agencyFeatures: Record<string, {
-    routes?: Record<string, any>
-    stops?: Record<string, any>
+    routes?: Record<string, {
+      id: string | number
+      route_type: number
+      route_short_name: string
+      route_long_name: string
+      onestop_id: string
+      feed_onestop_id: string
+      feed_version_sha1: string
+      route_id: string
+    }>
+    stops?: Record<string, {
+      id: string | number
+      location_type: number
+      stop_name: string
+      onestop_id: string
+      feed_onestop_id: string
+      feed_version_sha1: string
+      stop_id: string
+    }>
   }>
 }
 
@@ -61,13 +76,3 @@ const hasFeatures = computed(() => {
   })
 })
 </script>
-
-<style scoped>
-.route-item, .stop-item {
-  margin: 0.5rem 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-</style>

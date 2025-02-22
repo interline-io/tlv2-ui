@@ -63,30 +63,59 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    link: { type: Boolean, default: false },
-    maxAgencyRows: { type: Number, default () { return 5 } },
-    collapse: { type: Boolean },
-    linkVersion: { type: Boolean, default: false },
-    showStops: { type: Boolean, default: true },
-    agencyFeatures: { type: Object, default () { return {} } }
-  },
-  computed: {
-    isCollapsed () {
-      return this.totalFeatureCount > this.maxAgencyRows && this.collapse
-    },
-    totalFeatureCount () {
+<script setup lang="ts">
+import { computed } from 'vue'
+
+interface Props {
+  link?: boolean
+  maxAgencyRows?: number
+  collapse?: boolean
+  linkVersion?: boolean
+  showStops?: boolean
+  agencyFeatures: Record<string, {
+    routes?: Record<string, {
+      id: string | number
+      route_type: number
+      route_short_name: string
+      route_long_name: string
+      onestop_id: string
+      feed_onestop_id: string
+      feed_version_sha1: string
+      route_id: string
+    }>
+    stops?: Record<string, {
+      id: string | number
+      location_type: number
+      stop_name: string
+      onestop_id: string
+      feed_onestop_id: string
+      feed_version_sha1: string
+      stop_id: string
+    }>
+  }>
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  link: false,
+  maxAgencyRows: 5,
+  collapse: false,
+  linkVersion: false,
+  showStops: true,
+  agencyFeatures: () => ({})
+})
+
+const isCollapsed = computed(() => {
+  return totalFeatureCount.value > props.maxAgencyRows && props.collapse
+})
+
+const totalFeatureCount = computed(() => {
       let count = 0
-      for (const agency of Object.values(this.agencyFeatures)) {
+  for (const agency of Object.values(props.agencyFeatures)) {
         count += Object.keys(agency.routes || {}).length
         count += Object.keys(agency.stops || {}).length
       }
       return count
-    }
-  }
-}
+})
 </script>
 
 <style scoped>
