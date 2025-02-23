@@ -229,7 +229,7 @@
                 :include-stops="true"
                 :circle-radius="20"
                 :zoom="15"
-                :overlay="true"
+                :overlay="false"
               />
               <template #loginText>
                 <o-notification icon="lock">
