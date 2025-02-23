@@ -44,8 +44,8 @@
                   </p>
               </o-field>
               <o-field>
-                <o-button variant="primary" @click="showRouteOptionsModal = true">
-                  Options
+                <o-button variant="outlined" @click="showRouteOptionsModal = true">
+                  Map Options
                 </o-button>
               </o-field>
             </o-field>
@@ -113,19 +113,25 @@
       </div>
 
       <!-- Modal Options -->
-      <tl-modal v-model="showRouteOptionsModal" title="Route Options">
+      <tl-modal v-model="showRouteOptionsModal" title="Options for Routes & Stops Map">
         <div class="field">
           <o-checkbox
             v-model="showGeneratedGeometries"
           >
             Show stop-to-stop geometries
+            <o-tooltip label="For routes without agency-defined shapes, render straight lines between stops.">
+              <o-icon icon="information" />
+            </o-tooltip>
           </o-checkbox>
         </div>
         <div class="field">
           <o-checkbox
             v-model="showProblematicGeometries"
           >
-            Show problematic geometries
+            Show problematic geometries with long segment lengths
+            <o-tooltip label="Routes with extra long segment lengths may look messy and obscure other routes.">
+              <o-icon icon="information" />
+            </o-tooltip>
           </o-checkbox>
         </div>
       </tl-modal>
