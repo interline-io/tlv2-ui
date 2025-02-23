@@ -309,7 +309,7 @@ function routesSetAgencyFeatures (e: AgencyFeaturesMap) {
     if (!features.stops) return
 
     Object.entries(features.stops).forEach(([stopId, stop]) => {
-      let agencyName = 'Other'
+      let agencyName = 'Other (No Defined Agency)'
       
       try {
         const agencies = JSON.parse(stop.agencies || '[]')

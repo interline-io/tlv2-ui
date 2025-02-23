@@ -1,19 +1,21 @@
 <template>
   <div>
     <div v-for="(features, agency) in agencyFeatures" :key="agency">
-      <h6 class="title is-6">
+      <h6 class="title is-6 mt-2">
         {{ agency }}
       </h6>
       <template v-if="isCollapsed">
         <div>
-          {{ Object.keys(features.routes || {}).length }} routes, 
-          {{ Object.keys(features.stops || {}).length }} stops
+          <span v-if="Object.keys(features.routes || {}).length">{{ Object.keys(features.routes || {}).length }} routes</span>
+          <span v-if="Object.keys(features.stops || {}).length">
+            <template v-if="Object.keys(features.routes || {}).length">, </template>
+            {{ Object.keys(features.stops || {}).length }} stops
+          </span>
         </div>
       </template>
       <template v-else>
         <!-- Routes -->
         <div v-if="Object.keys(features.routes || {}).length > 0">
-          <h6 class="subtitle is-6">Routes:</h6>
           <div v-for="route in features.routes" :key="route.id" class="item-row">
             <nuxt-link
               v-if="link"
@@ -37,9 +39,9 @@
           </div>
         </div>
 
+        <hr v-if="Object.keys(features.routes || {}).length > 0 && Object.keys(features.stops || {}).length > 0" />
         <!-- Stops -->
         <div v-if="Object.keys(features.stops || {}).length > 0">
-          <h6 class="subtitle is-6">Stops:</h6>
           <div v-for="stop in features.stops" :key="stop.id" class="item-row">
             <nuxt-link
               v-if="link"
@@ -129,5 +131,8 @@ const totalFeatureCount = computed(() => {
 .subtitle {
   margin-top: 1rem;
   margin-bottom: 0.5rem;
+}
+hr {
+  margin: 0.5rem 0;
 }
 </style>
