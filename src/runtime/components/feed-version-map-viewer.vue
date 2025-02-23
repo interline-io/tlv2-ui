@@ -72,6 +72,7 @@ query ($limit: Int=100, $agency_ids: [Int!], $after:Int!=0, $route_ids: [Int!], 
         stop_id
         stop_name
         geometry
+        location_type
       }
     }
     agency {

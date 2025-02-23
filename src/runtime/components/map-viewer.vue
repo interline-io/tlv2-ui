@@ -151,16 +151,32 @@ export default {
       const polygons = this.features.filter((s) => { return s.geometry.type === 'MultiPolygon' || s.geometry.type === 'Polygon' })
       const points = this.features.filter((s) => { return s.geometry.type === 'Point' })
       const lines = this.features.filter((s) => { return s.geometry.type === 'LineString' })
-      // check if map is initialized... TODO: this could be improved to try again
+
+      // check if map is initialized...
       const p = this.map.getSource('polygons')
       if (!p) {
+        console.warn('Map not initialized yet')
         return
       }
+
       this.map.getSource('polygons').setData({ type: 'FeatureCollection', features: polygons })
       this.map.getSource('lines').setData({ type: 'FeatureCollection', features: lines })
       this.map.getSource('points').setData({ type: 'FeatureCollection', features: points })
-      // this.map.getSource('stops').setData({ type: 'FeatureCollection', features: this.stopFeatures })
-      // this.map.getSource('routes').setData({ type: 'FeatureCollection', features: this.routeFeatures })
+
+      // Only update if using GeoJSON sources
+      if (!this.stopTiles) {
+        this.map.getSource('stops').setData({ 
+          type: 'FeatureCollection', 
+          features: this.stopFeatures 
+        })
+      }
+      if (!this.routeTiles) {
+        this.map.getSource('routes').setData({ 
+          type: 'FeatureCollection', 
+          features: this.routeFeatures 
+        })
+      }
+
       this.fitFeatures()
     },
     updateFilters () {
@@ -219,7 +235,8 @@ export default {
         type: 'geojson',
         data: { type: 'FeatureCollection', features: [] }
       })
-      // Add route/stop sources, with geojson features as fallbacks
+      // Add route/stop sources
+
       if (this.routeTiles) {
         this.map.addSource('routes', {
           type: 'vector',
@@ -233,6 +250,7 @@ export default {
           data: { type: 'FeatureCollection', features: this.routeFeatures }
         })
       }
+
       if (this.stopTiles) {
         this.map.addSource('stops', {
           type: 'vector',
@@ -393,37 +411,90 @@ export default {
     },
     mapMouseMove (e) {
       const map = this.map
-      const routeFeatures = map.queryRenderedFeatures(e.point, { layers: ['route-active'] })
-      const stopFeatures = map.queryRenderedFeatures(e.point, { layers: ['stop-active'] })
+      let routeFeatures = []
+      let stopFeatures = []
 
-      console.log('Raw stop features:', JSON.stringify(stopFeatures, null, 2))
+      // Only query layers that exist
+      const routeLayer = this.routeTiles ? 'route-active' : 'routes'
+      const stopLayer = this.stopTiles ? 'stop-active' : 'stops'
 
-      map.getCanvas().style.cursor = 'pointer'
+      // Check if layers exist before querying
+      if (map.getLayer(routeLayer)) {
+        try {
+          routeFeatures = map.queryRenderedFeatures(e.point, { 
+            layers: [routeLayer]
+          })
+        } catch (err) {
+          console.warn('Error querying route features:', err)
+        }
+      }
+      
+      if (map.getLayer(stopLayer)) {
+        try {
+          stopFeatures = map.queryRenderedFeatures(e.point, { 
+            layers: [stopLayer]
+          })
+        } catch (err) {
+          console.warn('Error querying stop features:', err)
+        }
+      }
+      
+      map.getCanvas().style.cursor = stopFeatures.length || routeFeatures.length ? 'pointer' : ''
 
       // Handle route hover states
       for (const k of this.hoveringRoutes) {
-        map.setFeatureState(
-          { source: 'routes', id: k, sourceLayer: this.routeTiles ? this.routeTiles.id : null },
-          { hover: false }
-        )
+        if (map.getLayer(routeLayer)) {
+          try {
+            map.setFeatureState(
+              { source: 'routes', id: k, sourceLayer: this.routeTiles ? this.routeTiles.id : null },
+              { hover: false }
+            )
+          } catch (err) {
+            console.warn('Error setting route feature state:', err)
+          }
+        }
       }
       this.hoveringRoutes = []
       for (const v of routeFeatures) {
         this.hoveringRoutes.push(v.id)
-        map.setFeatureState({ source: 'routes', id: v.id, sourceLayer: this.routeTiles ? this.routeTiles.id : null }, { hover: true })
+        if (map.getLayer(routeLayer)) {
+          try {
+            map.setFeatureState(
+              { source: 'routes', id: v.id, sourceLayer: this.routeTiles ? this.routeTiles.id : null }, 
+              { hover: true }
+            )
+          } catch (err) {
+            console.warn('Error setting route feature state:', err)
+          }
+        }
       }
 
       // Handle stop hover states
       for (const k of this.hoveringStops) {
-        map.setFeatureState(
-          { source: 'stops', id: k, sourceLayer: this.stopTiles ? this.stopTiles.id : null },
-          { hover: false }
-        )
+        if (map.getLayer(stopLayer)) {
+          try {
+            map.setFeatureState(
+              { source: 'stops', id: k, sourceLayer: this.stopTiles ? this.stopTiles.id : null },
+              { hover: false }
+            )
+          } catch (err) {
+            console.warn('Error setting stop feature state:', err)
+          }
+        }
       }
       this.hoveringStops = []
       for (const v of stopFeatures) {
         this.hoveringStops.push(v.id)
-        map.setFeatureState({ source: 'stops', id: v.id, sourceLayer: this.stopTiles ? this.stopTiles.id : null }, { hover: true })
+        if (map.getLayer(stopLayer)) {
+          try {
+            map.setFeatureState(
+              { source: 'stops', id: v.id, sourceLayer: this.stopTiles ? this.stopTiles.id : null },
+              { hover: true }
+            )
+          } catch (err) {
+            console.warn('Error setting stop feature state:', err)
+          }
+        }
       }
 
       // Combine features for emission
@@ -439,9 +510,7 @@ export default {
             agencyFeatures[agencyId].routes[v.properties.route_id] = v.properties
         } else {
             // Handle stop
-            console.log('Processing stop properties:', v.properties)
             const agencies = JSON.parse(v.properties.agencies || '[]')
-            console.log('Parsed agencies:', agencies)
             
             const agencyId = agencies[0]?.agency_name || 'undefined'
             if (agencyFeatures[agencyId] == null) {
@@ -458,7 +527,6 @@ export default {
               feed_version_sha1: v.properties.feed_version_sha1,
               agencies: v.properties.agencies
             }
-            console.log('Created stop data:', stopData)
             
             agencyFeatures[agencyId].stops[v.properties.stop_id] = stopData
           }
@@ -470,7 +538,6 @@ export default {
       routeFeatures.forEach(processFeature)
       stopFeatures.forEach(processFeature)
       
-      console.log('Final agency features:', JSON.stringify(agencyFeatures, null, 2))
       this.$emit('setAgencyFeatures', agencyFeatures)
     }
   }
