@@ -140,8 +140,7 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute, useRuntimeConfig, navigateTo } from 'nuxt/app'
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, useRoute, useRuntimeConfig, navigateTo } from '#imports'
 
 // Interfaces
 interface MapMarker {
