@@ -29,6 +29,7 @@ export function proxyHandler(
     newPath,
     proxyBaseUrl.toString()
   )
+  console.log('proxyHandler', target.toString(), 'headers:', headers)
   return proxyRequest(event, target.toString(), { headers })
 }
 
