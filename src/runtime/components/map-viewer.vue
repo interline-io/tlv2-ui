@@ -466,18 +466,7 @@ export default {
       let stopFeatures = []
 
       // Query features
-      const routeLayers = this.routeTiles ? ['route-active'] : [
-        'route-active',
-        'route-rail',
-        'route-rail-outline',
-        'route-bus-unknown',
-        'route-bus-low',
-        'route-bus-medium',
-        'route-bus-high',
-        'route-tram',
-        'route-metro',
-        'route-other'
-      ]
+      const routeLayers = this.routeTiles ? ['route-active'] : mapLayers.routeLayers.map(layer => layer.name)
       const stopLayer = this.stopTiles ? 'stop-active' : 'stops'
 
       // Query all route layers
