@@ -24,42 +24,40 @@
 
       <div class="tl-map-panel tl-map-panel-tabs">
         <o-tabs v-model="activeTab" class="tl-tabs block" position="centered" type="boxed">
-          <o-tab-item :value="ROUTES_TAB" label="Routes">
-            <o-field addons>
+          <o-tab-item :value="ROUTES_TAB" label="Routes & Stops">
+            <o-field addons class="mt-2">
               <o-field expanded class="is-fullwidth">
-                <h6 class="title is-6 short-margin">
                   <template v-if="currentZoom < 8">
-                    Zoom in to select routes and to see stop points.
+                    <p class="content">Zoom in to select routes and to see stop points.</p>
                   </template>
-                  <template v-else>
-                    Select routes
+                  <template v-else-if="currentZoom >= 8 && currentZoom < 14 && Object.keys(agencyFeatures).length == 0">
+                    <p class="content">Use your cursor to highlight routes.</p>
+                    <p class="content">Click or tap for more information.</p>
+                    <p class="content">Zoom in to see stop points.</p>
                   </template>
-                </h6>
+                  <template v-else-if="currentZoom >= 14 && Object.keys(agencyFeatures).length == 0">
+                    <p class="content">Use your cursor to highlight routes and stops.</p>
+                    <p class="content">Click or tap for more information.</p>
+                  </template>
+                  <p class="content block is-small">
+                    <a href="https://www.transit.land/documentation/vector-tiles" target="_blank">Learn more about Transitland v2 Vector Tiles</a>
+                  </p>
               </o-field>
               <o-field>
-                <o-button variant="primary" @click="showRouteOptionsModal = true">
-                  Options
+                <o-button variant="outlined" @click="showRouteOptionsModal = true">
+                  Map Options
                 </o-button>
               </o-field>
             </o-field>
 
-            <tl-map-route-list
+            <tl-map-route-stop-list
               v-if="activeTab === ROUTES_TAB"
               :agency-features="agencyFeatures"
               :is-component-modal-active="showRouteModal"
               @close="showRouteModal = false"
             />
-
-            <div v-if="Object.keys(agencyFeatures).length == 0">
-              <p v-if="currentZoom >= 8">
-                Use your cursor to highlight routes and see their names here.<br>
-                Click on a route for more details.
-              </p>
-              <p class="content block is-small pt-2">
-                <a href="https://www.transit.land/documentation/vector-tiles" target="_blank">Learn more about Transitland v2 Vector Tiles</a>
-              </p>
-            </div>
           </o-tab-item>
+
           <o-tab-item :value="DEPARTURE_TAB" label="Departures">
             <tl-login-gate>
               <tl-map-search
@@ -84,8 +82,9 @@
               </template>
             </tl-login-gate>
           </o-tab-item>
-          <tl-login-gate role="tl_user_enterprise">
-            <o-tab-item :value="DIRECTIONS_TAB" label="Directions">
+
+          <o-tab-item :value="DIRECTIONS_TAB" label="Directions">
+            <tl-login-gate role="tl_user_enterprise">
               <tl-msg-info>
                 This feature is in a limited beta. <br>
                 Please see the <a href="https://www.transit.land/documentation/routing-api/" target="_blank">Routing API docs</a><br>
@@ -102,30 +101,37 @@
                 @reset="directionsReset"
                 @set-depart-at="directionsSetDepartAt"
               />
-            </o-tab-item>
-            <template #loginText>
-              <div />
-            </template>
-            <template #roleText>
-              <div />
-            </template>
-          </tl-login-gate>
+              <template #loginText>
+                <div />
+              </template>
+              <template #roleText>
+                <div />
+              </template>
+            </tl-login-gate>
+          </o-tab-item>
         </o-tabs>
       </div>
+
       <!-- Modal Options -->
-      <tl-modal v-model="showRouteOptionsModal" title="Route Options">
+      <tl-modal v-model="showRouteOptionsModal" title="Options for Routes & Stops Map">
         <div class="field">
           <o-checkbox
             v-model="showGeneratedGeometries"
           >
             Show stop-to-stop geometries
+            <o-tooltip label="For routes without agency-defined shapes, render straight lines between stops.">
+              <o-icon icon="information" />
+            </o-tooltip>
           </o-checkbox>
         </div>
         <div class="field">
           <o-checkbox
             v-model="showProblematicGeometries"
           >
-            Show problematic geometries
+            Show problematic geometries with long segment lengths
+            <o-tooltip label="Routes with extra long segment lengths may look messy and obscure other routes.">
+              <o-icon icon="information" />
+            </o-tooltip>
           </o-checkbox>
         </div>
       </tl-modal>
@@ -134,8 +140,73 @@
 </template>
 
 <script setup lang="ts">
+import { useRoute, useRuntimeConfig, navigateTo } from 'nuxt/app'
 import { ref, computed, watch } from 'vue'
-import { useRoute, useRuntimeConfig, navigateTo } from '#imports'
+
+// Interfaces
+interface MapMarker {
+  lng: number
+  lat: number
+  color: string
+  label: string
+  draggable: boolean
+  onDragEnd?: (event: any) => void
+}
+
+interface MapMoveEvent {
+  zoom: number
+  bbox: number[]
+}
+
+interface MapClickEvent {
+  lngLat: {
+    lng: number
+    lat: number
+  }
+}
+
+interface Agency {
+  agency_id: string
+  agency_name: string
+  operator: {
+    onestop_id: string
+    name: string
+  }
+}
+
+interface Stop {
+  stop_id: string
+  stop_name: string
+  location_type: number
+  onestop_id: string
+  feed_onestop_id: string
+  feed_version_sha1: string
+  agencies: string
+}
+
+interface Route {
+  route_id: string
+  route_short_name: string
+  route_long_name: string
+  route_color: string
+  route_type: number
+  agency_id: string
+  agency_name: string
+  onestop_id: string
+  generated: boolean
+  headway_secs: number
+  geometry_length: number
+  geometry_max_segment_length: number
+}
+
+interface AgencyFeatures {
+  routes?: Record<string, Route>
+  stops?: Record<string, Stop>
+}
+
+interface AgencyFeaturesMap {
+  [key: string]: AgencyFeatures
+}
 
 const config = useRuntimeConfig()
 
@@ -179,14 +250,13 @@ const initialCenter = ref([-119.49, 12.66])
 const currentZoom = ref(1.5)
 const showRouteModal = ref(false)
 const showRouteOptionsModal = ref(false)
-const agencyFeatures = ref({})
+const currentBbox = ref<number[] | null>(null)
 const showGeneratedGeometries = ref(true)
 const showProblematicGeometries = ref(false)
-const currentBbox = ref(null)
 
-// Generic map event handlers
+const agencyFeatures = ref<AgencyFeaturesMap>({})
 
-function mapMove (e: any) {
+function mapMove (e: MapMoveEvent) {
   currentZoom.value = e.zoom
   currentBbox.value = e.bbox
 }
@@ -195,7 +265,7 @@ function mapSetZoom (v: number) {
   currentZoom.value = v
 }
 
-function mapClick (e: any) {
+function mapClick(e: MapClickEvent) {
   // Convert to coordinates
   const coords = [e.lngLat.lng, e.lngLat.lat]
 
@@ -225,8 +295,50 @@ function mapClick (e: any) {
 // Routes
 /// ////////////////////
 
-function routesSetAgencyFeatures (e: any) {
-  agencyFeatures.value = e
+function routesSetAgencyFeatures (e: AgencyFeaturesMap) {
+  console.log('Input features:', JSON.stringify(e, null, 2))
+  const reorganizedFeatures: AgencyFeaturesMap = {}
+  
+  // First process routes
+  Object.entries(e).forEach(([agencyName, features]) => {
+    if (features.routes && Object.keys(features.routes).length > 0) {
+      // Initialize agency with empty routes and stops
+      reorganizedFeatures[agencyName] = { 
+        routes: features.routes,
+        stops: {}  // Initialize empty stops object
+      }
+    }
+  })
+
+  // Then process stops
+  Object.entries(e).forEach(([_, features]) => {
+    if (!features.stops) return
+
+    Object.entries(features.stops).forEach(([stopId, stop]) => {
+      let agencyName = 'Other (No Defined Agency)'
+      
+      try {
+        const agencies = JSON.parse(stop.agencies || '[]')
+        if (agencies && agencies.length > 0) {
+          agencyName = agencies[0].agency_name
+        }
+      } catch (err) {
+        console.warn('Failed to parse agencies for stop:', stopId, err)
+        return // Skip this stop if we can't determine the agency
+      }
+
+      // Initialize agency if it doesn't exist yet
+      if (!reorganizedFeatures[agencyName]) {
+        reorganizedFeatures[agencyName] = { routes: {}, stops: {} }
+      }
+
+      // Now TypeScript knows stops exists and is initialized
+      reorganizedFeatures[agencyName].stops[stopId] = stop
+    })
+  })
+
+  console.log('Reorganized features:', JSON.stringify(reorganizedFeatures, null, 2))
+  agencyFeatures.value = reorganizedFeatures
 }
 
 /// ////////////////////
@@ -353,8 +465,9 @@ watch(activeTab, () => {
 })
 
 // TODO: Does not reset map when goes empty
-const markers = computed(() => {
-  const ret = []
+const markers = computed((): MapMarker[] => {
+  const ret: MapMarker[] = []
+
   if (activeTab.value === DEPARTURE_TAB) {
     if (departureCoords.value.length === 2) {
       ret.push({

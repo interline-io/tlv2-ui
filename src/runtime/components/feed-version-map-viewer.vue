@@ -20,17 +20,17 @@
         @set-zoom="currentZoom = $event"
       />
       <div v-if="overlay" class="tl-fv-map-panel">
-        <tl-map-route-list
+        <tl-map-route-stop-list
           :current-zoom="currentZoom"
           :link-version="linkVersion"
           :agency-features="agencyFeatures"
           :is-component-modal-active="isComponentModalActive"
           @close="isComponentModalActive = false"
         >
-          <strong>Select routes</strong>
-          <br>
-          Use your cursor to highlight routes
-        </tl-map-route-list>
+          <p><strong>Select routes and stops</strong></p>
+          <p>Use your cursor to highlight route lines<template v-if="includeStops"> or stop points</template>.</p>
+          <p>Click for details.</p>
+        </tl-map-route-stop-list>
       </div>
     </div>
   </div>
@@ -72,6 +72,7 @@ query ($limit: Int=100, $agency_ids: [Int!], $after:Int!=0, $route_ids: [Int!], 
         stop_id
         stop_name
         geometry
+        location_type
       }
     }
     agency {
@@ -173,18 +174,17 @@ export default {
       const features = []
       for (const feature of this.routes) {
         for (const g of feature.route_stops || []) {
-          if (!(g.stop.location_type !== 0 || g.stop.location_type !== 2)) {
-            continue
+          if (g.stop.location_type === 0 || g.stop.location_type === 2) {
+            const fcopy = Object.assign({}, g.stop)
+            delete fcopy.geometry
+            delete fcopy.__typename
+            features.push({
+              type: 'Feature',
+              geometry: g.stop.geometry,
+              properties: fcopy,
+              id: g.stop.id
+            })
           }
-          const fcopy = Object.assign({}, g.stop)
-          delete fcopy.geometry
-          delete fcopy.__typename
-          features.push({
-            type: 'Feature',
-            geometry: g.stop.geometry,
-            properties: fcopy,
-            id: g.stop.id
-          })
         }
       }
       return features
@@ -195,7 +195,7 @@ export default {
       this.$emit('setRouteFeatures', v)
     },
     stopFeatures (v) {
-      this.$emit('setSopFeatures', v)
+      this.$emit('setStopFeatures', v)
     }
   },
   methods: {
