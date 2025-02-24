@@ -27,9 +27,9 @@
           :is-component-modal-active="isComponentModalActive"
           @close="isComponentModalActive = false"
         >
-          <strong>Select routes and stops</strong>
-          <br>
-          Use your cursor to highlight route lines or stop points. Click for details.
+          <p><strong>Select routes and stops</strong></p>
+          <p>Use your cursor to highlight route lines<template v-if="includeStops"> or stop points</template>.</p>
+          <p>Click for details.</p>
         </tl-map-route-stop-list>
       </div>
     </div>

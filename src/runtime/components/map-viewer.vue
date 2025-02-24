@@ -148,6 +148,14 @@ export default {
       })
     },
     updateFeatures () {
+      console.log('Updating features:', {
+        stopFeatures: this.stopFeatures.length,
+        routeFeatures: this.routeFeatures.length,
+        usingTiles: {
+          stops: !!this.stopTiles,
+          routes: !!this.routeTiles
+        }
+      })
       const polygons = this.features.filter((s) => { return s.geometry.type === 'MultiPolygon' || s.geometry.type === 'Polygon' })
       const points = this.features.filter((s) => { return s.geometry.type === 'Point' })
       const lines = this.features.filter((s) => { return s.geometry.type === 'LineString' })
@@ -165,12 +173,28 @@ export default {
 
       // Only update if using GeoJSON sources
       if (!this.stopTiles) {
+        console.log('Updating GeoJSON stops source:', {
+          featureCount: this.stopFeatures.length,
+          features: this.stopFeatures.map(f => ({
+            id: f.id,
+            type: f.type,
+            properties: f.properties
+          }))
+        })
         this.map.getSource('stops').setData({ 
           type: 'FeatureCollection', 
           features: this.stopFeatures 
         })
       }
       if (!this.routeTiles) {
+        console.log('Updating GeoJSON routes source:', {
+          featureCount: this.routeFeatures.length,
+          features: this.routeFeatures.map(f => ({
+            id: f.id,
+            type: f.type,
+            properties: f.properties
+          }))
+        })
         this.map.getSource('routes').setData({ 
           type: 'FeatureCollection', 
           features: this.routeFeatures 
@@ -223,6 +247,13 @@ export default {
       }
     },
     createSources () {
+      console.log('Creating sources:', {
+        routeTiles: this.routeTiles,
+        stopTiles: this.stopTiles,
+        routeFeatures: this.routeFeatures.length,
+        stopFeatures: this.stopFeatures.length
+      })
+
       this.map.addSource('polygons', {
         type: 'geojson',
         data: { type: 'FeatureCollection', features: [] }
@@ -238,6 +269,7 @@ export default {
       // Add route/stop sources
 
       if (this.routeTiles) {
+        console.log('Adding vector tile source for routes:', this.routeTiles)
         this.map.addSource('routes', {
           type: 'vector',
           tiles: [this.routeTiles.url],
@@ -245,6 +277,10 @@ export default {
           maxzoom: this.routeTiles.maxzoom || 14
         })
       } else {
+        console.log('Adding GeoJSON source for routes:', {
+          featureCount: this.routeFeatures.length,
+          firstFeature: this.routeFeatures[0]
+        })
         this.map.addSource('routes', {
           type: 'geojson',
           data: { type: 'FeatureCollection', features: this.routeFeatures }
@@ -266,6 +302,57 @@ export default {
       }
     },
     createLayers () {
+      console.log('Creating layers with paint properties:', mapLayers)
+
+      // Add route layers
+      for (const v of mapLayers.routeLayers) {
+        const layer = {
+          id: v.name,
+          type: 'line',
+          source: 'routes',
+          layout: {
+            'line-cap': 'round',
+            'line-join': 'round'
+          },
+          minzoom: v.minzoom || 0,
+          paint: v.paint
+        }
+        if (this.routeTiles) {
+          layer['source-layer'] = this.routeTiles.id
+        }
+        if (v.filter) {
+          layer.filter = v.filter.slice()
+        }
+        console.log('Adding route layer:', {
+          name: v.name,
+          paint: v.paint,
+          filter: v.filter
+        })
+        this.map.addLayer(layer)
+      }
+
+      // Add stop layers  
+      for (const v of mapLayers.stopLayers) {
+        const layer = {
+          id: v.name,
+          type: 'circle',
+          source: 'stops',
+          paint: v.paint
+        }
+        if (this.stopTiles) {
+          layer['source-layer'] = this.stopTiles.id
+        }
+        if (v.filter) {
+          layer.filter = v.filter.slice()
+        }
+        console.log('Adding stop layer:', {
+          name: v.name,
+          paint: v.paint,
+          filter: v.filter
+        })
+        this.map.addLayer(layer)
+      }
+
       // Other feature layers
       this.map.addLayer({
         id: 'polygons',
@@ -309,42 +396,6 @@ export default {
           'line-opacity': 1.0
         }
       })
-      // Route/Stop layers
-      for (const v of mapLayers.routeLayers) {
-        const layer = {
-          id: v.name,
-          type: 'line',
-          source: 'routes',
-          layout: {
-            'line-cap': 'round',
-            'line-join': 'round'
-          },
-          minzoom: v.minzoom || 0,
-          paint: v.paint
-        }
-        if (this.routeTiles) {
-          layer['source-layer'] = this.routeTiles.id
-        }
-        if (v.filter) {
-          layer.filter = v.filter.slice()
-        }
-        this.map.addLayer(layer)
-      }
-      for (const v of mapLayers.stopLayers) {
-        const layer = {
-          id: v.name,
-          type: 'circle',
-          source: 'stops',
-          paint: v.paint
-        }
-        if (this.stopTiles) {
-          layer['source-layer'] = this.stopTiles.id
-        }
-        if (v.filter) {
-          layer.filter = v.filter.slice()
-        }
-        this.map.addLayer(layer)
-      }
       // add labels last
       for (const labelLayer of labels('protomaps-base', 'grayscale')) {
         this.map.addLayer(labelLayer)
@@ -414,57 +465,75 @@ export default {
       let routeFeatures = []
       let stopFeatures = []
 
-      // Only query layers that exist
-      const routeLayer = this.routeTiles ? 'route-active' : 'routes'
+      // Query features
+      const routeLayers = this.routeTiles ? ['route-active'] : [
+        'route-active',
+        'route-rail',
+        'route-rail-outline',
+        'route-bus-unknown',
+        'route-bus-low',
+        'route-bus-medium',
+        'route-bus-high',
+        'route-tram',
+        'route-metro',
+        'route-other'
+      ]
       const stopLayer = this.stopTiles ? 'stop-active' : 'stops'
 
-      // Check if layers exist before querying
-      if (map.getLayer(routeLayer)) {
-        try {
-          routeFeatures = map.queryRenderedFeatures(e.point, { 
-            layers: [routeLayer]
-          })
-        } catch (err) {
-          console.warn('Error querying route features:', err)
+      // Query all route layers
+      for (const layer of routeLayers) {
+        if (map.getLayer(layer)) {
+          try {
+            const features = map.queryRenderedFeatures(e.point, { layers: [layer] })
+            routeFeatures = routeFeatures.concat(features)
+          } catch (err) {
+            console.warn(`Error querying route layer ${layer}:`, err)
+          }
         }
       }
-      
+
+      // Query stop layer
       if (map.getLayer(stopLayer)) {
         try {
-          stopFeatures = map.queryRenderedFeatures(e.point, { 
-            layers: [stopLayer]
-          })
+          stopFeatures = map.queryRenderedFeatures(e.point, { layers: [stopLayer] })
         } catch (err) {
           console.warn('Error querying stop features:', err)
         }
       }
-      
+
+      // Update cursor
       map.getCanvas().style.cursor = stopFeatures.length || routeFeatures.length ? 'pointer' : ''
 
       // Handle route hover states
       for (const k of this.hoveringRoutes) {
-        if (map.getLayer(routeLayer)) {
-          try {
-            map.setFeatureState(
-              { source: 'routes', id: k, sourceLayer: this.routeTiles ? this.routeTiles.id : null },
-              { hover: false }
-            )
-          } catch (err) {
-            console.warn('Error setting route feature state:', err)
+        for (const layer of routeLayers) {
+          if (map.getLayer(layer)) {
+            try {
+              map.setFeatureState(
+                { source: 'routes', sourceLayer: this.routeTiles ? 'routes' : undefined, id: k },
+                { hover: false }
+              )
+            } catch (err) {
+              console.warn(`Error removing hover state from route ${k} in layer ${layer}:`, err)
+            }
           }
         }
       }
       this.hoveringRoutes = []
+
+      // Set hover state for found routes
       for (const v of routeFeatures) {
         this.hoveringRoutes.push(v.id)
-        if (map.getLayer(routeLayer)) {
-          try {
-            map.setFeatureState(
-              { source: 'routes', id: v.id, sourceLayer: this.routeTiles ? this.routeTiles.id : null }, 
-              { hover: true }
-            )
-          } catch (err) {
-            console.warn('Error setting route feature state:', err)
+        for (const layer of routeLayers) {
+          if (map.getLayer(layer)) {
+            try {
+              map.setFeatureState(
+                { source: 'routes', sourceLayer: this.routeTiles ? 'routes' : undefined, id: v.id },
+                { hover: true }
+              )
+            } catch (err) {
+              console.warn(`Error setting hover state for route ${v.id} in layer ${layer}:`, err)
+            }
           }
         }
       }
@@ -478,11 +547,12 @@ export default {
               { hover: false }
             )
           } catch (err) {
-            console.warn('Error setting stop feature state:', err)
+            console.warn('Error removing stop hover state:', err)
           }
         }
       }
       this.hoveringStops = []
+
       for (const v of stopFeatures) {
         this.hoveringStops.push(v.id)
         if (map.getLayer(stopLayer)) {
@@ -492,12 +562,12 @@ export default {
               { hover: true }
             )
           } catch (err) {
-            console.warn('Error setting stop feature state:', err)
+            console.warn('Error setting stop hover state:', err)
           }
         }
       }
 
-      // Combine features for emission
+      // Always process and emit features
       const agencyFeatures = {}
       const processFeature = (v) => {
         try {
