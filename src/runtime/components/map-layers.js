@@ -1,3 +1,5 @@
+import { stopColors } from '../constants/stop-colors'
+
 const headways = {
   high: 600,
   medium: 1200,
@@ -17,11 +19,11 @@ const colors = {
   metro: '#ff0000',
   metrooutline: '#ffffff',
   other: '#E6A615',
-  stop: '#000000',
-  stopNode: '#808080',          // Gray for location_type > 1
-  stopEntrance: '#ffffff',      // White outline for entrances (type 2)
-  stopGeneric: '#ff0000',       // Red outline for generic nodes (type 3)
-  stopBoarding: '#00ff00'       // Green outline for boarding areas (type 4)
+  stop: stopColors.stop,
+  stopNode: stopColors.entrance,
+  stopEntrance: stopColors.entrance,
+  stopGeneric: stopColors.node,
+  stopBoarding: stopColors.boarding
 }
 
 const LocationTypes = {

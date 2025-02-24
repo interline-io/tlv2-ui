@@ -10,14 +10,21 @@
           <o-checkbox
             :model-value="showStopTypes[type]"
             @update:model-value="updateFilter(Number(type), $event)"
+            class="stop-type-checkbox"
           >
-            {{ label }} 
-            <o-tooltip>
-              <o-icon icon="information" />
-              <template #content>
-                <code>location_type = {{ type }}</code>
-              </template>
-            </o-tooltip>
+            <span class="stop-type-label">
+              <span 
+                class="color-dot" 
+                :style="{ backgroundColor: getStopTypeColor(type) }"
+              />
+              {{ label }} 
+              <o-tooltip>
+                <o-icon icon="information" />
+                <template #content>
+                  <code>location_type = {{ type }}</code>
+                </template>
+              </o-tooltip>
+            </span>
           </o-checkbox>
         </div>
       </div>
@@ -56,6 +63,9 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
+import { stopColors } from '../constants/stop-colors'
+
 // Define props
 const props = defineProps({
   title: {
@@ -109,10 +119,50 @@ function updateFilter(type, checked) {
     [type]: checked
   })
 }
+
+function getStopTypeColor(type) {
+  switch (Number(type)) {
+    case 0: return stopColors.stop
+    case 1: return stopColors.station
+    case 2: return stopColors.entrance
+    case 3: return stopColors.node
+    case 4: return stopColors.boarding
+    default: return '#000000'
+  }
+}
+
+function getStopTypeName(type) {
+  switch (Number(type)) {
+    case 0: return 'Stop/Platform'
+    case 1: return 'Station'
+    case 2: return 'Entrance/Exit'
+    case 3: return 'Generic Node'
+    case 4: return 'Boarding Area'
+    default: return 'Unknown'
+  }
+}
 </script>
 
 <style scoped>
 .control {
   margin-bottom: 0.5rem;
+}
+
+.stop-type-checkbox {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.stop-type-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.color-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
 }
 </style> 

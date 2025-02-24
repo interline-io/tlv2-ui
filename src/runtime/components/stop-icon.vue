@@ -6,6 +6,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { stopColors } from '../constants/stop-colors'
 
 interface Props {
   location_type: number
@@ -47,24 +48,24 @@ const iconClass = computed(() => {
 </script>
 
 <style scoped>
-/* if we want to customize colors in the future */
+/* Use shared stop type colors */
 .stop-icon-station {
-  color: var(--bulma-link);
+  color: v-bind('stopColors.station');
 }
 
 .stop-icon-entrance {
-  color: var(--bulma-link);
+  color: v-bind('stopColors.entrance');
 }
 
 .stop-icon-node {
-  color: var(--bulma-link);
+  color: v-bind('stopColors.node');
 }
 
 .stop-icon-boarding {
-  color: var(--bulma-link);
+  color: v-bind('stopColors.boarding');
 }
 
 .stop-icon-stop {
-  color: var(--bulma-link);
+  color: v-bind('stopColors.stop');
 }
 </style> 
