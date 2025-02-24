@@ -234,4 +234,59 @@ const routeLayers = [
   }
 ]
 
-export default { headways, colors, stopLayers, routeLayers }
+// Add these new layer definitions
+const otherLayers = {
+  polygons: {
+    id: 'polygons',
+    type: 'fill',
+    paint: {
+      'fill-color': '#ccc',
+      'fill-opacity': 0.2
+    }
+  },
+  polygonsOutline: {
+    id: 'polygons-outline',
+    type: 'line',
+    paint: {
+      'line-width': 2,
+      'line-color': '#000',
+      'line-opacity': 0.2
+    }
+  },
+  points: {
+    id: 'points',
+    type: 'circle',
+    paint: {
+      'circle-color': ['coalesce', ['get', 'marker-color'], '#f03b20'],
+      'circle-radius': ['coalesce', ['get', 'marker-radius'], 1],
+      'circle-opacity': 0.4
+    }
+  },
+  lines: {
+    id: 'lines',
+    type: 'line',
+    paint: {
+      'line-color': ['coalesce', ['get', 'stroke'], '#000'],
+      'line-width': ['coalesce', ['get', 'stroke-width'], 2],
+      'line-opacity': 1.0
+    }
+  }
+}
+
+// Add route layer defaults
+const routeLayerDefaults = {
+  type: 'line',
+  layout: {
+    'line-cap': 'round',
+    'line-join': 'round'
+  }
+}
+
+export default { 
+  headways, 
+  colors, 
+  stopLayers, 
+  routeLayers,
+  otherLayers,
+  routeLayerDefaults 
+}

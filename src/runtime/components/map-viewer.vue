@@ -307,13 +307,9 @@ export default {
       // Add route layers
       for (const v of mapLayers.routeLayers) {
         const layer = {
+          ...mapLayers.routeLayerDefaults,
           id: v.name,
-          type: 'line',
           source: 'routes',
-          layout: {
-            'line-cap': 'round',
-            'line-join': 'round'
-          },
           minzoom: v.minzoom || 0,
           paint: v.paint
         }
@@ -323,11 +319,6 @@ export default {
         if (v.filter) {
           layer.filter = v.filter.slice()
         }
-        console.log('Adding route layer:', {
-          name: v.name,
-          paint: v.paint,
-          filter: v.filter
-        })
         this.map.addLayer(layer)
       }
 
@@ -345,61 +336,22 @@ export default {
         if (v.filter) {
           layer.filter = v.filter.slice()
         }
-        console.log('Adding stop layer:', {
-          name: v.name,
-          paint: v.paint,
-          filter: v.filter
-        })
         this.map.addLayer(layer)
       }
 
-      // Other feature layers
-      this.map.addLayer({
-        id: 'polygons',
-        type: 'fill',
-        source: 'polygons',
-        layout: {},
-        paint: {
-          'fill-color': '#ccc',
-          'fill-opacity': 0.2
-        }
+      // Add other feature layers
+      Object.values(mapLayers.otherLayers).forEach(layer => {
+        this.map.addLayer({
+          ...layer,
+          source: layer.id
+        })
       })
-      this.map.addLayer({
-        id: 'polygons-outline',
-        type: 'line',
-        source: 'polygons',
-        layout: {},
-        paint: {
-          'line-width': 2,
-          'line-color': '#000',
-          'line-opacity': 0.2
-        }
-      })
-      this.map.addLayer({
-        id: 'points',
-        type: 'circle',
-        source: 'points',
-        paint: {
-          'circle-color': ['coalesce', ['get', 'marker-color'], this.circleColor],
-          'circle-radius': ['coalesce', ['get', 'marker-radius'], this.circleRadius],
-          'circle-opacity': 0.4
-        }
-      })
-      this.map.addLayer({
-        id: 'lines',
-        type: 'line',
-        source: 'lines',
-        layout: {},
-        paint: {
-          'line-color': ['coalesce', ['get', 'stroke'], '#000'],
-          'line-width': ['coalesce', ['get', 'stroke-width'], 2],
-          'line-opacity': 1.0
-        }
-      })
-      // add labels last
+
+      // Add labels last
       for (const labelLayer of labels('protomaps-base', 'grayscale')) {
         this.map.addLayer(labelLayer)
       }
+
       // Set initial show generated geometry
       this.updateFilters()
     },
