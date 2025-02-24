@@ -230,6 +230,15 @@
                 :circle-radius="20"
                 :zoom="15"
                 :overlay="false"
+                :highlighted-stop-feature-id="entity.id"
+                :enable-hover="false"
+                :show-stop-types="{
+                  0: true,  // Stop/Platform
+                  1: true,  // Station
+                  2: true,  // Entrance
+                  3: true,  // Node
+                  4: true   // Boarding Area
+                }"
               />
               <template #loginText>
                 <o-notification icon="lock">

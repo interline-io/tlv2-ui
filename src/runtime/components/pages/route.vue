@@ -231,6 +231,7 @@
                 :overlay="false"
                 :include-stops="true"
                 :link-version="linkVersion"
+                :enable-hover="false"
                 :features="activeTab === tabNames.export ? features : []"
               />
               <template #loginText>

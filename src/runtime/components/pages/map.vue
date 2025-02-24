@@ -16,6 +16,7 @@
         :auto-fit="false"
         :hide-tiles="activeTab === DIRECTIONS_TAB"
         map-class="tall"
+        :show-stop-types="showStopTypes"
         @set-zoom="mapSetZoom"
         @set-agency-features="routesSetAgencyFeatures"
         @map-click="mapClick"
@@ -44,7 +45,7 @@
                   </p>
               </o-field>
               <o-field>
-                <o-button variant="outlined" @click="showRouteOptionsModal = true">
+                <o-button variant="outlined" @click="showMapOptionsModal = true" role="button">
                   Map Options
                 </o-button>
               </o-field>
@@ -111,30 +112,13 @@
           </o-tab-item>
         </o-tabs>
       </div>
-
-      <!-- Modal Options -->
-      <tl-modal v-model="showRouteOptionsModal" title="Options for Routes & Stops Map">
-        <div class="field">
-          <o-checkbox
-            v-model="showGeneratedGeometries"
-          >
-            Show stop-to-stop geometries
-            <o-tooltip label="For routes without agency-defined shapes, render straight lines between stops.">
-              <o-icon icon="information" />
-            </o-tooltip>
-          </o-checkbox>
-        </div>
-        <div class="field">
-          <o-checkbox
-            v-model="showProblematicGeometries"
-          >
-            Show problematic geometries with long segment lengths
-            <o-tooltip label="Routes with extra long segment lengths may look messy and obscure other routes.">
-              <o-icon icon="information" />
-            </o-tooltip>
-          </o-checkbox>
-        </div>
-      </tl-modal>
+      <tl-map-options-modal
+        v-model="showMapOptionsModal"
+        v-model:show-stop-types="showStopTypes"
+        v-model:show-generated-geometries="showGeneratedGeometries"
+        v-model:show-problematic-geometries="showProblematicGeometries"
+        title="Map Options"
+      />
     </div>
   </client-only>
 </template>
@@ -248,12 +232,20 @@ const initialZoom = ref(1.5)
 const initialCenter = ref([-119.49, 12.66])
 const currentZoom = ref(1.5)
 const showRouteModal = ref(false)
-const showRouteOptionsModal = ref(false)
+const showMapOptionsModal = ref(false)
 const currentBbox = ref<number[] | null>(null)
 const showGeneratedGeometries = ref(true)
 const showProblematicGeometries = ref(false)
 
 const agencyFeatures = ref<AgencyFeaturesMap>({})
+
+const showStopTypes = ref({
+  0: true,  // Stop/Platform
+  1: true,  // Station
+  2: true,  // Entrance
+  3: false, // Node
+  4: false  // Boarding Area
+})
 
 function mapMove (e: MapMoveEvent) {
   currentZoom.value = e.zoom
@@ -459,7 +451,7 @@ const activeFeatures = computed(() => {
 watch(activeTab, () => {
   // Hacky; always set modal back to empty when switching tabs
   showRouteModal.value = false
-  showRouteOptionsModal.value = false
+  showMapOptionsModal.value = false
   // rerenderKey.value += 1
 })
 

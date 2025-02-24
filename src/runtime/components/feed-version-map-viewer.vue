@@ -15,6 +15,8 @@
         :zoom="zoom ? zoom : null"
         :circle-radius="circleRadius"
         :circle-color="circleColor"
+        :enable-hover="enableHover"
+        :highlighted-stop-feature-id="highlightedStopFeatureId"
         @set-agency-features="agencyFeatures = $event"
         @map-click="mapClick"
         @set-zoom="currentZoom = $event"
@@ -124,7 +126,15 @@ export default {
     zoom: { type: Number, default: null },
     enableScrollZoom: { type: Boolean, default: false },
     circleRadius: { type: Number, default: 1 },
-    circleColor: { type: String, default: '#f03b20' }
+    circleColor: { type: String, default: '#f03b20' },
+    enableHover: {
+      type: Boolean,
+      default: true
+    },
+    highlightedStopFeatureId: { 
+      type: [String, Number],
+      default: null 
+    }
   },
   data () {
     return {

@@ -30,6 +30,24 @@ export default {
     hash: { type: Boolean, default: false },
     features: {
       type: Array, default () { return [] }
+    },
+    showStopTypes: {
+      type: Object,
+      default: () => ({
+        0: true,  // Stop/Platform
+        1: true,  // Station  
+        2: true,  // Entrance
+        3: false, // Node
+        4: false  // Boarding Area
+      })
+    },
+    enableHover: {
+      type: Boolean,
+      default: true
+    },
+    highlightedStopFeatureId: {
+      type: [String, Number],
+      default: null
     }
   },
   data () {
@@ -71,8 +89,33 @@ export default {
     },
     markers (v) {
       this.drawMarkers(v)
+    },
+    showStopTypes: {
+      handler() {
+        this.updateFilters()
+      },
+      deep: true
+    },
+    highlightedStopFeatureId: {
+      handler(newId) {
+        if (!this.map) return
+        
+        // Wait for map and source to be ready
+        this.map.once('load', () => {
+          console.log('Setting highlight state for stop:', {
+            id: newId,
+            source: 'stops',
+            features: this.stopFeatures.map(f => f.id)
+          })
+          this.map.setFeatureState(
+            { source: 'stops', id: newId },
+            { hover: true }
+          )
+        })
+      }
     }
   },
+
   mounted () {
     if (this.features) {
       nextTick(() => { this.initMap() })
@@ -185,6 +228,14 @@ export default {
           type: 'FeatureCollection', 
           features: this.stopFeatures 
         })
+
+        // Set highlight state after updating source
+        if (this.highlightedStopFeatureId) {
+          this.map.setFeatureState(
+            { source: 'stops', id: this.highlightedStopFeatureId },
+            { hover: true }
+          )
+        }
       }
       if (!this.routeTiles) {
         console.log('Updating GeoJSON routes source:', {
@@ -204,22 +255,6 @@ export default {
       this.fitFeatures()
     },
     updateFilters () {
-      for (const v of mapLayers.stopLayers) {
-        const f = (v.filter || []).slice()
-        if (f.length === 0) {
-          f.push('all')
-        }
-        // Hide all routes?
-        if (this.hideTiles) {
-          f.push(['==', 'route_id', ''])
-        }
-        if (f.length > 1) {
-          this.map.setFilter(v.name, f)
-        } else {
-          this.map.setFilter(v.name, null)
-        }
-      }
-
       for (const v of mapLayers.routeLayers) {
         const f = (v.filter || []).slice()
         if (f.length === 0) {
@@ -244,6 +279,26 @@ export default {
         } else {
           this.map.setFilter(v.name, null)
         }
+      }
+
+      // Update stop layer filters
+      for (const layer of mapLayers.stopLayers) {
+        let filter = ['any']
+        
+        // Show stop types based on showStopTypes prop
+        const visibleTypes = Object.entries(this.showStopTypes)
+          .filter(([_, visible]) => visible)
+          .map(([type]) => Number(type))
+
+        for (const type of visibleTypes) {
+          filter.push(['==', ['get', 'location_type'], type])
+        }
+
+        if (this.hideTiles) {
+          filter.push(['==', 'stop_id', ''])
+        }
+
+        this.map.setFilter(layer.name, filter)
       }
     },
     createSources () {
@@ -343,7 +398,7 @@ export default {
       Object.values(mapLayers.otherLayers).forEach(layer => {
         this.map.addLayer({
           ...layer,
-          source: layer.id
+          source: layer.id === 'polygons-outline' ? 'polygons' : layer.id
         })
       })
 
@@ -413,6 +468,11 @@ export default {
       this.$emit('mapMove', { zoom: this.map.getZoom(), bbox: this.map.getBounds().toArray() })
     },
     mapMouseMove (e) {
+      // Skip hover effects if disabled
+      if (!this.enableHover) {
+        return
+      }
+      
       const map = this.map
       let routeFeatures = []
       let stopFeatures = []

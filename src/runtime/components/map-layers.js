@@ -17,7 +17,19 @@ const colors = {
   metro: '#ff0000',
   metrooutline: '#ffffff',
   other: '#E6A615',
-  stop: '#007cbf'
+  stop: '#000000',
+  stopNode: '#808080',          // Gray for location_type > 1
+  stopEntrance: '#ffffff',      // White outline for entrances (type 2)
+  stopGeneric: '#ff0000',       // Red outline for generic nodes (type 3)
+  stopBoarding: '#00ff00'       // Green outline for boarding areas (type 4)
+}
+
+const LocationTypes = {
+  STOP: 0,      // Stop/Platform
+  STATION: 1,   // Station
+  ENTRANCE: 2,  // Entrance/Exit
+  NODE: 3,      // Generic Node
+  BOARDING: 4   // Boarding Area
 }
 
 const stopLayers = [
@@ -26,29 +38,45 @@ const stopLayers = [
     name: 'stop-active',
     type: 'circle',
     source: 'stops',
-    minzoom: 14, // Match the stopTiles minzoom
+    minzoom: 14,
     paint: {
       'circle-radius': [
         'case',
         ['boolean', ['feature-state', 'hover'], false],
-        8,  // hovered size
-        6   // normal size
+        8,
+        6
       ],
-      'circle-color': colors.stop,
+      'circle-color': [
+        'case',
+        ['>', ['get', 'location_type'], 1],
+        colors.stopNode,
+        colors.stop
+      ],
       'circle-opacity': [
         'case',
         ['boolean', ['feature-state', 'hover'], false],
-        0.8,  // hovered opacity
-        0.0   // normal opacity (invisible when not hovered)
+        0.8,
+        0.0
       ],
       'circle-stroke-width': [
         'case',
         ['boolean', ['feature-state', 'hover'], false],
-        2,    // hovered stroke width
-        0     // normal stroke width
+        6,
+        0
       ],
-      'circle-stroke-color': '#ffffff'
-    }
+      'circle-stroke-color': [
+        'case',
+        ['boolean', ['feature-state', 'hover'], false],
+        colors.active,
+        '#ffffff'
+      ]
+    },
+    filter: [
+      'any',
+      ['==', ['get', 'location_type'], LocationTypes.STOP],
+      ['==', ['get', 'location_type'], LocationTypes.STATION],
+      ['==', ['get', 'location_type'], LocationTypes.ENTRANCE]
+    ]
   },
   // Regular stops layer
   {
@@ -57,10 +85,41 @@ const stopLayers = [
     source: 'stops',
     minzoom: 14,
     paint: {
-      'circle-color': colors.stop,
+      'circle-color': [
+        'case',
+        ['>', ['get', 'location_type'], 1],
+        colors.stopNode,
+        colors.stop
+      ],
       'circle-radius': 4,
-      'circle-opacity': 0.75
-    }
+      'circle-opacity': 0.75,
+      'circle-stroke-width': [
+        'case',
+        ['==', ['get', 'location_type'], 2],
+        2,
+        ['==', ['get', 'location_type'], 3],
+        2,
+        ['==', ['get', 'location_type'], 4],
+        2,
+        0
+      ],
+      'circle-stroke-color': [
+        'case',
+        ['==', ['get', 'location_type'], 2],
+        colors.stopEntrance,
+        ['==', ['get', 'location_type'], 3],
+        colors.stopGeneric,
+        ['==', ['get', 'location_type'], 4],
+        colors.stopBoarding,
+        '#ffffff'
+      ]
+    },
+    filter: [
+      'any',
+      ['==', ['get', 'location_type'], LocationTypes.STOP],
+      ['==', ['get', 'location_type'], LocationTypes.STATION], 
+      ['==', ['get', 'location_type'], LocationTypes.ENTRANCE]
+    ]
   }
 ]
 
@@ -239,6 +298,7 @@ const otherLayers = {
   polygons: {
     id: 'polygons',
     type: 'fill',
+    source: 'polygons',
     paint: {
       'fill-color': '#ccc',
       'fill-opacity': 0.2
@@ -247,6 +307,7 @@ const otherLayers = {
   polygonsOutline: {
     id: 'polygons-outline',
     type: 'line',
+    source: 'polygons',
     paint: {
       'line-width': 2,
       'line-color': '#000',
@@ -256,6 +317,7 @@ const otherLayers = {
   points: {
     id: 'points',
     type: 'circle',
+    source: 'points',
     paint: {
       'circle-color': ['coalesce', ['get', 'marker-color'], '#f03b20'],
       'circle-radius': ['coalesce', ['get', 'marker-radius'], 1],
@@ -265,6 +327,7 @@ const otherLayers = {
   lines: {
     id: 'lines',
     type: 'line',
+    source: 'lines',
     paint: {
       'line-color': ['coalesce', ['get', 'stroke'], '#000'],
       'line-width': ['coalesce', ['get', 'stroke-width'], 2],
@@ -288,5 +351,6 @@ export default {
   stopLayers, 
   routeLayers,
   otherLayers,
-  routeLayerDefaults 
+  routeLayerDefaults,
+  LocationTypes
 }
