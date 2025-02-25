@@ -89,8 +89,12 @@ function removeEmpty(obj: Record<string, string|null>) {
 
 export const useApiEndpoint = () => {
   const config = useRuntimeConfig()
+  const user = useUser()
+  if (user.loggedIn) {
+    return config.public.proxyBase
+  }
   return import.meta.server ? 
-    (config.proxyBase) :
+    (config.public.proxyBase) :
     (config.public.apiBase || window?.location?.origin + '/api/v2')
 }
 
@@ -103,7 +107,6 @@ export const useLogin = async(targetUrl: null | string) => {
 
 // Logout
 export const useLogout = async() => {
-  debugLog('useLogout')
   return navigateTo(await getLogoutUrl(logoutUri), { external: true })
 }
 
