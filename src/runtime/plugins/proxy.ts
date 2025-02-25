@@ -30,7 +30,12 @@ export function proxyHandler(
     proxyBaseUrl.toString()
   )
   console.log('proxyHandler', target.toString(), 'headers:', headers)
-  return proxyRequest(event, target.toString(), { headers })
+  return proxyRequest(event, target.toString(), { 
+    fetchOptions: {
+      redirect: 'manual'
+    },
+    headers
+   })
 }
 
 export default defineEventHandler((event) => {

@@ -36,9 +36,15 @@ export default {
           if (!result.ok) {
             throw new Error(result.status + ' ' + result.statusText)
           }
-          const header = result.headers.get('Content-Disposition')
-          const parts = header.split(';')
-          filename = parts[1].split('=')[1].replaceAll('"', '')
+          filename = `${this.feedOnestopId}-latest.zip`
+          if (this.feedVersionSha1) {
+            filename = `${this.feedOnestopId}-${this.feedVersionSha1}.zip`
+          }
+          // const header = result.headers.get('Content-Disposition')
+          // const parts = (header || '').split(';')
+          // if (parts.length > 1) {
+          //   filename = parts[1].split('=')[1].replaceAll('"', '')
+          // }
           return result.blob()
         })
         .then((blob) => {
