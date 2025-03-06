@@ -6,12 +6,11 @@ interface User {
   id: string
   email: string
   name: string
-  groups?: Array<{ name: string }>
 }
 
 interface MixpanelInstance {
   track: (msg: string, args: any) => void
-  identify: () => void
+  identify: (properties?: Record<string, any>) => void
   reset: () => void
 }
 
@@ -44,16 +43,14 @@ const createMixpanel = (): MixpanelInstance => {
       console.log('mixpanel track:', msg, args)
       mixpanel.track(msg, args)
     },
-    identify: () => {
+    identify: (properties?: Record<string, any>) => {
       if (hasUser) return
       const user = useUser() as User
       if (user && user.id) {
         const mpUser: any = {
           $email: user.email,
-          $name: user.name
-        }
-        if (user.groups?.length) {
-          mpUser.$groups = user.groups.map(s => s.name)
+          $name: user.name,
+          ...properties
         }
         console.log('mixpanel: identify', mpUser)
         mixpanel.identify(user.id)
