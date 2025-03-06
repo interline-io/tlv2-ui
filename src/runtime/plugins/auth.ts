@@ -3,6 +3,7 @@ import { useStorage } from '@vueuse/core'
 import { gql } from 'graphql-tag'
 import { getApolloClient } from './apollo'
 import { defineNuxtPlugin, addRouteMiddleware, navigateTo, useRuntimeConfig, useCsrf } from '#imports'
+import { useMixpanel } from './mixpanel'
 
 /// ////////////////////
 // Auth0 client initialization
@@ -104,6 +105,11 @@ export const useLogin = async(targetUrl: null | string) => {
 // Logout
 export const useLogout = async() => {
   debugLog('useLogout')
+  // Reset Mixpanel before redirecting
+  if (!process.server) {
+    const mixpanel = useMixpanel()
+    mixpanel.reset()
+  }
   return navigateTo(await getLogoutUrl(logoutUri), { external: true })
 }
 

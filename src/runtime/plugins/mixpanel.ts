@@ -9,21 +9,31 @@ interface User {
   groups?: Array<{ name: string }>
 }
 
+interface MixpanelInstance {
+  track: (msg: string, args: any) => void
+  identify: () => void
+  reset: () => void
+}
+
 // Mixpanel init
 let init = false
 let hasUser = false
 
-const createMixpanel = () => {
+const createMixpanel = (): MixpanelInstance => {
   if (process.server) {
     return {
-      track: (msg: string, args: any) => { console.log('mixpanel server-side dummy track:', msg, args) }
+      track: (msg: string, args: any) => { console.log('mixpanel server-side dummy track:', msg, args) },
+      identify: () => {},
+      reset: () => {}
     }
   }
 
   const config = useRuntimeConfig()
   if (!config.public.mixpanelApikey) {
     return { 
-      track: (msg: string, args: any) => { console.log('mixpanel dummy track (no API key):', msg, args) }
+      track: (msg: string, args: any) => { console.log('mixpanel dummy track (no API key):', msg, args) },
+      identify: () => {},
+      reset: () => {}
     }
   }
 
@@ -58,6 +68,11 @@ const createMixpanel = () => {
         mixpanel.people.set(mpUser)
         hasUser = true
       }
+    },
+    reset: () => {
+      console.log('mixpanel: reset')
+      hasUser = false
+      mixpanel.reset()
     }
   }
 }
@@ -72,10 +87,12 @@ export default defineNuxtPlugin(() => {
 })
 
 // Composable for use in components
-export const useMixpanel = () => {
+export const useMixpanel = (): MixpanelInstance => {
   if (process.server) {
     return {
-      track: (msg: string, args: any) => { console.log('mixpanel server-side dummy track:', msg, args) }
+      track: (msg: string, args: any) => { console.log('mixpanel server-side dummy track:', msg, args) },
+      identify: () => {},
+      reset: () => {}
     }
   }
   const mp = createMixpanel()
