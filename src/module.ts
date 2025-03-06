@@ -37,7 +37,7 @@ export default defineNuxtModule<ModuleOptions>({
     addImportsDir(resolveRuntimeModule('composables'))
 
     // Add Mixpanel config
-    nuxt.options.runtimeConfig.public.mixpanelApikey = options.mixpanelApikey || ''
+    nuxt.options.runtimeConfig.public.mixpanelApikey = options.mixpanelApikey || null
 
     // Proxy
     if (options.useProxy) {
