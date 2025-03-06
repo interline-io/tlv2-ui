@@ -2,8 +2,7 @@
   <div class="tl-modal">
     <o-modal
       :active="modelValue"
-      has-modal-card
-      can-cancel
+      :cancelable="['escape', 'x']"
       @update:model-value="$emit('update:modelValue', $event)"
       @close="close"
     >
