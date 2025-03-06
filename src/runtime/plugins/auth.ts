@@ -106,10 +106,8 @@ export const useLogin = async(targetUrl: null | string) => {
 export const useLogout = async() => {
   debugLog('useLogout')
   // Reset Mixpanel before redirecting
-  if (!process.server) {
-    const mixpanel = useMixpanel()
-    mixpanel.reset()
-  }
+  const mixpanel = useMixpanel()
+  mixpanel.reset()
   return navigateTo(await getLogoutUrl(logoutUri), { external: true })
 }
 

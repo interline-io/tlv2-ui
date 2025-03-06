@@ -33,7 +33,7 @@ export default defineNuxtModule<ModuleOptions>({
     addPlugin(resolveRuntimeModule('plugins/apollo'))
     addPlugin(resolveRuntimeModule('plugins/oruga'))
     addPlugin(resolveRuntimeModule('plugins/filters'))
-    addPlugin(resolveRuntimeModule('plugins/mixpanel'))
+    addPlugin(resolveRuntimeModule('plugins/mixpanel.client'))
     addImportsDir(resolveRuntimeModule('composables'))
 
     // Add Mixpanel config

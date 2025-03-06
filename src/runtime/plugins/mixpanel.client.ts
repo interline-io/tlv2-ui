@@ -20,14 +20,6 @@ let init = false
 let hasUser = false
 
 const createMixpanel = (): MixpanelInstance => {
-  if (process.server) {
-    return {
-      track: (msg: string, args: any) => { console.log('mixpanel server-side dummy track:', msg, args) },
-      identify: () => {},
-      reset: () => {}
-    }
-  }
-
   const config = useRuntimeConfig()
   if (!config.public.mixpanelApikey) {
     return { 
@@ -88,14 +80,7 @@ export default defineNuxtPlugin(() => {
 
 // Composable for use in components
 export const useMixpanel = (): MixpanelInstance => {
-  if (process.server) {
-    return {
-      track: (msg: string, args: any) => { console.log('mixpanel server-side dummy track:', msg, args) },
-      identify: () => {},
-      reset: () => {}
-    }
-  }
   const mp = createMixpanel()
   mp.identify()
   return mp
-}
+} 
