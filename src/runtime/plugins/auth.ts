@@ -3,7 +3,6 @@ import { useStorage } from '@vueuse/core'
 import { gql } from 'graphql-tag'
 import { getApolloClient } from './apollo'
 import { defineNuxtPlugin, addRouteMiddleware, navigateTo, useRuntimeConfig, useCsrf } from '#imports'
-import { useMixpanel } from './mixpanel'
 
 /// ////////////////////
 // Auth0 client initialization
