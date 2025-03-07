@@ -1,4 +1,4 @@
-import { mixpanel } from 'mixpanel-browser'
+import mixpanel from 'mixpanel-browser'
 import { defineNuxtPlugin, useRuntimeConfig } from '#imports'
 import { useUser } from './auth'
 
