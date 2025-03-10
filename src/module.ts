@@ -3,8 +3,7 @@ import { defineNuxtModule, addPlugin, addImportsDir, createResolver, addServerHa
 // Config handler
 export interface ModuleOptions{
   bulma: string,
-  useProxy: boolean,
-  mixpanelApikey?: string
+  useProxy: boolean
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -35,9 +34,6 @@ export default defineNuxtModule<ModuleOptions>({
     addPlugin(resolveRuntimeModule('plugins/filters'))
     addPlugin(resolveRuntimeModule('plugins/mixpanel.client'))
     addImportsDir(resolveRuntimeModule('composables'))
-
-    // Add Mixpanel config
-    nuxt.options.runtimeConfig.public.mixpanelApikey = options.mixpanelApikey || null
 
     // Proxy
     if (options.useProxy) {
