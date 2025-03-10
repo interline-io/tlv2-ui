@@ -80,7 +80,7 @@ export const useAuthHeaders = async() => {
   })
 
   // Only add CSRF headers if proxy is enabled
-  if (config.tlv2?.useProxy) {
+  if (config.public.useProxy) {
     const { headerName: csrfHeader, csrf: csrfToken } = useCsrf()
     headers[csrfHeader] = csrfToken
   }
