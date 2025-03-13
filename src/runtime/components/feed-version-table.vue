@@ -13,7 +13,7 @@
             <th>Added</th>
             <th>SHA1</th>
             <th v-if="showDateColumns">
-              Earliest date show: {{ showDateColumns }}
+              Earliest date
             </th>
             <th v-if="showDateColumns">
               Latest date
