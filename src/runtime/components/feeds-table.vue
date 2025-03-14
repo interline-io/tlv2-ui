@@ -54,7 +54,7 @@
                 <abbr title="General Transit Feed Specification">GTFS</abbr>
               </o-checkbox>
               <o-checkbox v-model="feedSpecs" native-value="GTFS_RT" size="medium">
-                <abbr title="GTFS Realtime">GTFS RT</abbr>
+                GTFS Realtime
               </o-checkbox>
               <o-checkbox v-model="feedSpecs" native-value="GBFS" size="medium">
                 <abbr title="General Bikeshare Feed Specification">GBFS</abbr>
@@ -87,7 +87,7 @@
             </nuxt-link>
           </td>
           <td>
-            {{ row.spec.toUpperCase() }}
+            {{ displaySpec(row.spec) }}
           </td>
           <td v-if="showColumns.includes('last_fetched')" class="has-text-right">
             <template v-if="row.last_successful_fetch && row.last_successful_fetch.length > 0">
@@ -262,6 +262,17 @@ function fetchMoreFn () {
       }
     }
   })
+}
+
+function displaySpec (spec) {
+  spec = spec.toUpperCase()
+  if (spec === 'GTFS') {
+    return 'GTFS'
+  } else if (spec === 'GTFS_RT') {
+    return 'GTFS Realtime'
+  } else if (spec === 'GBFS') {
+    return 'GBFS'
+  }
 }
 
 </script>
