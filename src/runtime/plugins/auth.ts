@@ -2,7 +2,7 @@ import { Auth0Client } from '@auth0/auth0-spa-js'
 import { useStorage } from '@vueuse/core'
 import { gql } from 'graphql-tag'
 import { getApolloClient } from './apollo'
-import { defineNuxtPlugin, addRouteMiddleware, navigateTo, useRuntimeConfig, useMixpanel } from '#imports'
+import { defineNuxtPlugin, addRouteMiddleware, navigateTo, useRuntimeConfig, useCsrf, useMixpanel } from '#imports'
 
 /// ////////////////////
 // Auth0 client initialization
@@ -73,18 +73,13 @@ export const useUser = () => {
 // Headers, including CSRF
 export const useAuthHeaders = async() => {
   const config = useRuntimeConfig()
+  const { headerName: csrfHeader, csrf: csrfToken } = useCsrf()
   const token = await useJwt()
   const headers = removeEmpty({
     authorization: token ? `Bearer ${token}` : '',
-    apikey: String(import.meta.server ? config.graphqlApikey : '')
+    apikey: String(import.meta.server ? config.graphqlApikey : ''),
+    [csrfHeader]: csrfToken,
   })
-
-  // Only add CSRF headers if proxy is enabled
-  if (config.public.useProxy) {
-    const { headerName: csrfHeader, csrf: csrfToken } = useCsrf()
-    headers[csrfHeader] = csrfToken
-  }
-
   return headers
 }
 
