@@ -1,11 +1,11 @@
 <template>
   <div>
-    <o-field grouped label="Search by feed name">
-      <tl-search-bar v-model="search" placeholder="Search" />
+    <o-field grouped label="Filter">
+      <tl-search-bar v-model="search" placeholder="Filter by feed Onestop ID or feed name..." />
 
       <o-dropdown position="bottom-left" append-to-body aria-role="menu" trap-focus menu-class="tl-feeds-table">
         <template #trigger="{ active }">
-          <o-button label="Options" variant="primary" :icon-left="active ? 'menu-up' : 'menu-down'" />
+          <o-button label="Filter options" variant="primary" :icon-left="active ? 'menu-up' : 'menu-down'" />
         </template>
 
         <div aria-role="menu-item" class="p-4">
@@ -54,7 +54,7 @@
                 <abbr title="General Transit Feed Specification">GTFS</abbr>
               </o-checkbox>
               <o-checkbox v-model="feedSpecs" native-value="GTFS_RT" size="medium">
-                <abbr title="GTFS Realtime">GTFS RT</abbr>
+                GTFS Realtime
               </o-checkbox>
               <o-checkbox v-model="feedSpecs" native-value="GBFS" size="medium">
                 <abbr title="General Bikeshare Feed Specification">GBFS</abbr>
@@ -68,64 +68,65 @@
     <tl-msg-error v-if="error">
       {{ error }}
     </tl-msg-error>
-    <div class="table-container">
-      <table class="table is-striped is-fullwidth">
-        <thead>
-          <tr>
-            <th>Onestop ID</th>
-            <th>Format</th>
-            <th>Last Fetched</th>
-            <th>Last Imported</th>
-            <th>Fetch Errors</th>
-            <th v-if="tagUnstableUrl">
-              Tags
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="row of entities" :key="row.id">
-            <td>
-              <nuxt-link :to="{ name: 'feeds-feedKey', params: { feedKey: row.onestop_id } }">
-                {{ row.onestop_id }}
-              </nuxt-link>
-            </td>
-            <td>
-              {{ row.spec.toUpperCase() }}
-            </td>
-            <td>
-              <template v-if="row.last_successful_fetch && row.last_successful_fetch.length > 0">
-                {{ $filters.fromNow(row.last_successful_fetch[0].fetched_at) }}
+    <table class="table is-striped is-fullwidth">
+      <thead>
+        <tr>
+          <th v-if="showColumns.includes('onestop_id')">Onestop ID</th>
+          <th v-if="showColumns.includes('spec')">Format</th>
+          <th v-if="showColumns.includes('last_fetched')" class="has-text-right">Last Fetched</th>
+          <th v-if="importStatus || showColumns.includes('last_imported')" class="has-text-right">Last Imported</th>
+          <th v-if="fetchError === 'true' || showColumns.includes('fetch_errors')" class="has-text-right">Fetch Errors</th>
+          <th v-if="tagUnstableUrl || showColumns.includes('tags')" class="has-text-right">Tags</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="row of entities" :key="row.id">
+          <td v-if="showColumns.includes('onestop_id')">
+            <nuxt-link :to="{ name: 'feeds-feedKey', params: { feedKey: row.onestop_id } }">
+              {{ row.onestop_id }}
+            </nuxt-link>
+          </td>
+          <td>
+            {{ displaySpec(row.spec) }}
+          </td>
+          <td v-if="showColumns.includes('last_fetched')" class="has-text-right">
+            <template v-if="row.last_successful_fetch && row.last_successful_fetch.length > 0">
+              {{ $filters.fromNow(row.last_successful_fetch[0].fetched_at) }}
+            </template>
+            <template v-else>
+              Unknown
+            </template>
+          </td>
+          <td v-if="importStatus || showColumns.includes('last_imported')" class="has-text-right">
+            <span v-if="row.spec === 'GTFS'">
+              <template v-if="row.last_successful_import && row.last_successful_import.length > 0">
+                {{ $filters.fromNow(row.last_successful_import[0].fetched_at) }}
               </template>
               <template v-else>
-                Unknown
+                -
               </template>
-            </td>
-            <td>
-              <span v-if="row.spec === 'GTFS'">
-                <template v-if="row.last_successful_import && row.last_successful_import.length > 0">
-                  {{ $filters.fromNow(row.last_successful_import[0].fetched_at) }}
-                </template>
-                <template v-else>
-                  Never
-                </template>
-              </span>
-            </td>
-            <td>
-              <o-tooltip
-                v-if="row.last_fetch && row.last_fetch.length > 0 && row.last_fetch[0].fetch_error"
-                :label="row.last_fetch[0].fetch_error"
-                multilined
-              >
-                <o-icon icon="alert" />
-              </o-tooltip>
-            </td>
-            <td v-if="tagUnstableUrl">
-              <pre class="tags">{{ row.tags }}</pre>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+            </span>
+          </td>
+          <td v-if="fetchError === 'true' || showColumns.includes('fetch_errors')" class="has-text-right">
+            <span
+              v-if="row.last_fetch && row.last_fetch.length > 0 && row.last_fetch[0].fetch_error"
+              class="tag is-danger is-light"
+              :title="row.last_fetch[0].fetch_error"
+            >
+              {{ row.last_fetch[0].fetch_error.split('\n')[0] }}
+            </span>
+          </td>
+          <td v-if="tagUnstableUrl || showColumns.includes('tags')" class="has-text-right">
+            <div class="tags is-right">
+                <span v-for="(value, key) in row.tags" :key="key" class="tag is-info is-light">
+                    <strong class="mr-1">{{ key.replace(/_/g, ' ') }}:</strong>
+                    {{ value }}
+                </span>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
     <div>
       <a class="button is-primary is-small is-fullwidth" @click="fetchMoreFn">
         Show more feeds
@@ -138,7 +139,7 @@
 <script setup>
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
-import { ref, watch, computed } from 'vue'
+import { computed } from 'vue'
 
 const query = gql`
 query($specs: [FeedSpecTypes!], $after: Int, $limit:Int=100, $search: String, $fetch_error: Boolean, $import_status: ImportStatus, $tags: Tags) {
@@ -195,42 +196,26 @@ const nullString = function (v) {
   return v
 }
 
+const search = defineModel('search')
+const fetchError = defineModel('fetchError')
+const importStatus = defineModel('importStatus')
+const tagUnstableUrl = defineModel('tagUnstableUrl')
+const feedSpecs = defineModel('feedSpecs')
+
 const props = defineProps({
-  search: String,
   limit: { type: Number, default: 100 },
-  fetchError: String,
-  importStatus: String,
-  tagUnstableUrl: String,
-  feedSpecs: { type: Array, default () { return ['GTFS', 'GTFS_RT', 'GBFS'] } }
+  showColumns: { 
+    type: Array, 
+    default: () => ['onestop_id', 'spec', 'last_fetched']
+    // by default excludes fetch_errors, last_imported and tags
+  }
 })
-
-// shadow props
-const search = ref(props.search)
-const limit = ref(props.limit)
-const fetchError = ref(props.fetchError)
-const feedSpecs = ref(props.feedSpecs)
-const importStatus = ref(props.importStatus)
-const tagUnstableUrl = ref(nullBool(props.tagUnstableUrl))
-
-const emit = defineEmits([
-  'update:search',
-  'update:fetchError',
-  'update:feedSpecs',
-  'update:importStatus',
-  'update:tagUnstableUrl'
-])
-
-watch(search, (v) => { emit('update:search', v) })
-watch(fetchError, (v) => { emit('update:fetchError', v) })
-watch(feedSpecs, (v) => { emit('update:feedSpecs', v) })
-watch(importStatus, (v) => { emit('update:importStatus', v) })
-watch(tagUnstableUrl, (v) => { emit('update:tagUnstableUrl', v) })
 
 const { result, loading, error, fetchMore } = useQuery(
   query,
   () => ({
     search: nullString(search.value),
-    limit: limit.value,
+    limit: props.limit,
     specs: feedSpecs.value.length === 4 ? null : feedSpecs.value,
     fetch_error: nullBool(fetchError.value),
     import_status: nullString(importStatus.value),
@@ -259,10 +244,23 @@ function fetchMoreFn () {
   })
 }
 
+function displaySpec (spec) {
+  spec = spec.toUpperCase()
+  if (spec === 'GTFS') {
+    return 'GTFS'
+  } else if (spec === 'GTFS_RT') {
+    return 'GTFS Realtime'
+  } else if (spec === 'GBFS') {
+    return 'GBFS'
+  }
+}
+
 </script>
 
-<style>
-.tl-feeds-table {
-  min-width:300px !important;
-}
+<style scoped>
+  /* fetch errors are multiline */
+  .tag {
+    white-space: break-spaces !important;
+    height: auto !important;
+  }
 </style>

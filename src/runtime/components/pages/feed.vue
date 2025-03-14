@@ -164,6 +164,22 @@
                 <em>No <code>feed_info.txt</code> file included in the most recent feed version.</em>
               </td>
             </tr>
+
+            <tr v-if="displayTags">
+              <td>
+                <o-tooltip label="Metadata about this feed set in the Transitland Atlas registry">
+                  Tags
+                </o-tooltip>
+              </td>
+              <td>
+                <ul v-if="entity.tags">
+                  <li v-for="(value, key) in entity.tags" :key="key">
+                    {{ key }}: {{ value }}
+                  </li>
+                </ul>
+                <em v-else>No tags</em>
+              </td>
+            </tr>
           </tl-props>
         </div>
 
@@ -235,6 +251,7 @@ query($pathKey: String) {
     id
     onestop_id
     name
+    tags
     languages
     spec
     file
@@ -401,6 +418,10 @@ export default {
     },
     displayUrls () {
       if (this.entity) { return isEmpty(this.entity.urls) }
+      return false
+    },
+    displayTags () {
+      if (this.entity) { return isEmpty(this.entity.tags) }
       return false
     },
     staticTitle () {
