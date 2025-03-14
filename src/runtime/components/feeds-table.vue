@@ -200,9 +200,7 @@ const search = defineModel('search')
 const fetchError = defineModel('fetchError')
 const importStatus = defineModel('importStatus')
 const tagUnstableUrl = defineModel('tagUnstableUrl')
-const feedSpecs = defineModel('feedSpecs', {
-  default: () => ['GTFS', 'GTFS_RT', 'GBFS']
-})
+const feedSpecs = defineModel('feedSpecs')
 
 const props = defineProps({
   limit: { type: Number, default: 100 },
