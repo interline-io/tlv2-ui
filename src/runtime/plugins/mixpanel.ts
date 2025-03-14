@@ -21,7 +21,7 @@ let hasUser = false
 const createMixpanel = (): MixpanelInstance => {
   if (process.server) {
     return { 
-      track: (msg: string, args: any) => { console.log('mixpanel dummy track (ssr):', msg, args) },
+      track: (msg: string, args: any) => { },
       identify: () => {},
       reset: () => {}
     }
