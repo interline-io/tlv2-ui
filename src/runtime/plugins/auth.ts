@@ -2,7 +2,7 @@ import { Auth0Client } from '@auth0/auth0-spa-js'
 import { useStorage } from '@vueuse/core'
 import { gql } from 'graphql-tag'
 import { getApolloClient } from './apollo'
-import { defineNuxtPlugin, addRouteMiddleware, navigateTo, useRuntimeConfig, useMixpanel } from '#imports'
+import { defineNuxtPlugin, addRouteMiddleware, navigateTo, useRuntimeConfig, useCsrf, useMixpanel } from '#imports'
 
 /// ////////////////////
 // Auth0 client initialization
@@ -73,23 +73,27 @@ export const useUser = () => {
 // Headers, including CSRF
 export const useAuthHeaders = async() => {
   const config = useRuntimeConfig()
-  const token = await useJwt()
-  const headers = removeEmpty({
-    authorization: token ? `Bearer ${token}` : '',
-    apikey: String(import.meta.server ? config.graphqlApikey : '')
-  })
+  const headers: Record<string, string> = {}
 
-  // Only add CSRF headers if proxy is enabled
+  // CSRF
+  // NOTE: For unknown reasons, useCsrf will panic if called after useJwt.
   if (config.public.useProxy) {
-    const { headerName: csrfHeader, csrf: csrfToken } = useCsrf()
+    const { headerName: csrfHeader, csrf: csrfToken } = useCsrf()  
     headers[csrfHeader] = csrfToken
   }
 
-  return headers
-}
+  // JWT
+  const token = await useJwt()
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`
+  }
 
-function removeEmpty(obj: Record<string, string|null>) {
-  return Object.fromEntries(Object.entries(obj).filter(([_, v]) => v));
+  // Api key
+  if (import.meta.server && config.graphqlApikey) {
+    headers['apikey'] = config.graphqlApikey
+  }
+
+  return headers
 }
 
 export const useApiEndpoint = () => {

@@ -19,6 +19,14 @@ let init = false
 let hasUser = false
 
 const createMixpanel = (): MixpanelInstance => {
+  if (process.server) {
+    return { 
+      track: (msg: string, args: any) => { },
+      identify: () => {},
+      reset: () => {}
+    }
+  }
+
   const config = useRuntimeConfig()
   if (!config.public.mixpanelApikey) {
     return { 
