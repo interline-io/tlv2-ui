@@ -50,9 +50,23 @@ export default {
       }
     },
     feedSpecs: {
-      get() { return this.$route.query.feedSpecs },
+      get() { 
+        const specs = this.$route.query.feedSpecs
+        // Handle both string and array values
+        return specs ? (Array.isArray(specs) ? specs : [specs]) : ['GTFS', 'GTFS_RT', 'GBFS']
+      },
       set(v) {
-        this.$router.replace({ query: { ...this.$route.query, feedSpecs: v } })
+        // If v is empty array or contains all default values, remove query param
+        const defaultSpecs = ['GTFS', 'GTFS_RT', 'GBFS']
+        const shouldRemoveParam = !v?.length || 
+          (v.length === defaultSpecs.length && v.every(spec => defaultSpecs.includes(spec)))
+        
+        this.$router.replace({ 
+          query: { 
+            ...this.$route.query, 
+            feedSpecs: shouldRemoveParam ? undefined : v 
+          } 
+        })
       }
     },
     tagUnstableUrl: {
@@ -64,10 +78,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-pre.tags {
-  padding: 1px;
-  font-size: 0.8em;
-}
-</style>

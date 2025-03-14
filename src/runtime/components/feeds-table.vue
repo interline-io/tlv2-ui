@@ -139,7 +139,7 @@
 <script setup>
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
-import { ref, watch, computed } from 'vue'
+import { computed } from 'vue'
 
 const query = gql`
 query($specs: [FeedSpecTypes!], $after: Int, $limit:Int=100, $search: String, $fetch_error: Boolean, $import_status: ImportStatus, $tags: Tags) {
@@ -196,46 +196,28 @@ const nullString = function (v) {
   return v
 }
 
-const props = defineProps({
-  search: String,
-  limit: { type: Number, default: 100 },
-  fetchError: String,
-  importStatus: String,
-  tagUnstableUrl: String,
-  feedSpecs: { type: Array, default () { return ['GTFS', 'GTFS_RT', 'GBFS'] } },
-  showColumns: { type: Array, default () {
-    return ['onestop_id', 'spec', 'last_fetched']
-    // by default excludes fetch_errors, last_imported and tags
-  } }
+const search = defineModel('search')
+const fetchError = defineModel('fetchError')
+const importStatus = defineModel('importStatus')
+const tagUnstableUrl = defineModel('tagUnstableUrl')
+const feedSpecs = defineModel('feedSpecs', {
+  default: () => ['GTFS', 'GTFS_RT', 'GBFS']
 })
 
-// shadow props
-const search = ref(props.search)
-const limit = ref(props.limit)
-const fetchError = ref(props.fetchError)
-const feedSpecs = ref(props.feedSpecs)
-const importStatus = ref(props.importStatus)
-const tagUnstableUrl = ref(nullBool(props.tagUnstableUrl))
-
-const emit = defineEmits([
-  'update:search',
-  'update:fetchError',
-  'update:feedSpecs',
-  'update:importStatus',
-  'update:tagUnstableUrl'
-])
-
-watch(search, (v) => { emit('update:search', v) })
-watch(fetchError, (v) => { emit('update:fetchError', v) })
-watch(feedSpecs, (v) => { emit('update:feedSpecs', v) })
-watch(importStatus, (v) => { emit('update:importStatus', v) })
-watch(tagUnstableUrl, (v) => { emit('update:tagUnstableUrl', v) })
+const props = defineProps({
+  limit: { type: Number, default: 100 },
+  showColumns: { 
+    type: Array, 
+    default: () => ['onestop_id', 'spec', 'last_fetched']
+    // by default excludes fetch_errors, last_imported and tags
+  }
+})
 
 const { result, loading, error, fetchMore } = useQuery(
   query,
   () => ({
     search: nullString(search.value),
-    limit: limit.value,
+    limit: props.limit,
     specs: feedSpecs.value.length === 4 ? null : feedSpecs.value,
     fetch_error: nullBool(fetchError.value),
     import_status: nullString(importStatus.value),
