@@ -92,7 +92,6 @@ export const useAuthHeaders = async() => {
     headers['apikey'] = config.graphqlApikey
   }
 
-  // Merge headers
   return headers
 }
 
