@@ -76,6 +76,7 @@ export const useAuthHeaders = async() => {
   const headers: Record<string, string> = {}
 
   // CSRF
+  // NOTE: For unknown reasons, useCsrf will panic if called after useJwt.
   if (config.public.useProxy) {
     const { headerName: csrfHeader, csrf: csrfToken } = useCsrf()  
     headers[csrfHeader] = csrfToken
