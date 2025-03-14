@@ -108,13 +108,13 @@
             </span>
           </td>
           <td v-if="fetchError === 'true' || showColumns.includes('fetch_errors')" class="has-text-right">
-            <o-tooltip
+            <span
               v-if="row.last_fetch && row.last_fetch.length > 0 && row.last_fetch[0].fetch_error"
-              :label="row.last_fetch[0].fetch_error"
-              multilined
+              class="tag is-danger is-light"
+              :title="row.last_fetch[0].fetch_error"
             >
-              <o-icon icon="alert" />
-            </o-tooltip>
+              {{ row.last_fetch[0].fetch_error.split('\n')[0] }}
+            </span>
           </td>
           <td v-if="tagUnstableUrl || showColumns.includes('tags')" class="has-text-right">
             <div class="tags is-right">
@@ -257,8 +257,10 @@ function displaySpec (spec) {
 
 </script>
 
-<style>
-.tl-feeds-table {
-  min-width:300px !important;
-}
+<style scoped>
+  /* fetch errors are multiline */
+  .tag {
+    white-space: break-spaces !important;
+    height: auto !important;
+  }
 </style>
