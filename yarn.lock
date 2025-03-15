@@ -11423,6 +11423,7 @@ __metadata:
     cytoscape-fcose: "npm:^2.2.0"
     d3-scale-chromatic: "npm:^3.1.0"
     date-fns: "npm:^4.1.0"
+    defu: "npm:^6.1.4"
     destr: "npm:^2.0.3"
     eslint: "npm:^9.20.1"
     eslint-plugin-vue: "npm:^9.32.0"
