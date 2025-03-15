@@ -1,4 +1,5 @@
 import { defineNuxtModule, addPlugin, addImportsDir, createResolver, addServerHandler, installModule } from '@nuxt/kit'
+import { defu } from 'defu'
 
 // Config handler
 export interface ModuleOptions{
@@ -33,8 +34,6 @@ export default defineNuxtModule<ModuleOptions>({
       nuxt.options.css.push(resolveRuntimeModule('assets/bulma.scss'))
     }
     nuxt.options.css.push(resolveRuntimeModule('assets/main.css'))
-
-
     
     // Setup plugins
     addPlugin(resolveRuntimeModule('plugins/auth'))
@@ -45,7 +44,11 @@ export default defineNuxtModule<ModuleOptions>({
     addImportsDir(resolveRuntimeModule('composables'))
 
     // Proxy
-    if (options.useProxy) {
+    const useProxy = options.useProxy ? true : false
+    nuxt.options.runtimeConfig.public.tlv2 = defu(nuxt.options.runtimeConfig.public.tlv2, {
+      useProxy: useProxy
+    })
+    if (useProxy) {
       addServerHandler({
         route: '/api/v2/**',
         handler: resolveRuntimeModule('plugins/proxy')
