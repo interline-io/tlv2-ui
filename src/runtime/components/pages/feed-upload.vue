@@ -4,12 +4,9 @@
       <tl-title title="Upload feed version" />
     </slot>
 
-    <o-notification
-      v-if="networkError"
-      variant="danger"
-    >
-      Error: {{ networkError }}
-    </o-notification>
+    <tl-msg-error v-if="validationError">
+      {{ validationError }}
+    </tl-msg-error>
 
     <o-steps
       v-model="activeStep"
@@ -188,7 +185,7 @@
 import { gql } from 'graphql-tag'
 import { useMixpanel } from '../../composables/useMixpanel'
 import EntityPageMixin from './entity-page-mixin'
-import { navigateTo } from '#imports'
+import { navigateTo, createError } from '#imports'
 
 const q = gql`
   mutation ($file: Upload, $url: String, $realtime_urls: [String!]) {
@@ -352,7 +349,7 @@ export default {
       mutationLoading: false,
       fetchLoading: false,
       importLoading: true,
-      networkError: false
+      validationError: null
     }
   },
   computed: {
@@ -367,6 +364,7 @@ export default {
     validateFeed (file) {
       this.entities = []
       this.mutationLoading = true
+      this.validationError = null
       this.$apollo
         .mutate({
           client: 'transitland',
@@ -377,19 +375,31 @@ export default {
             realtime_urls: this.realtimeUrl ? [this.realtimeUrl] : null
           },
           update: (_, { data }) => {
+            if (!data.validate_gtfs.success) {
+              this.validationError = data.validate_gtfs.failure_reason
+              return
+            }
             this.activeStep = 2
             this.entities = [data.validate_gtfs]
             this.mutationLoading = false
           }
         }).catch((error) => {
           this.mutationLoading = false
-          this.networkError = error
+          if (error.networkError) {
+            throw createError({
+              statusCode: 500,
+              statusMessage: 'Network Error',
+              message: 'Failed to connect to the API'
+            })
+          }
+          this.validationError = error.message
         })
     },
     fetchFeedVersion () {
       useMixpanel().track('Upload feed version: Fetch feed version')
       this.fetchResult = null
       this.fetchLoading = true
+      this.validationError = null
       this.$apollo
         .mutate({
           client: 'transitland',
@@ -400,6 +410,10 @@ export default {
             feed_onestop_id: this.pathKey
           },
           update: (_, { data }) => {
+            if (data.feed_version_fetch.fetch_error) {
+              this.validationError = data.feed_version_fetch.fetch_error
+              return
+            }
             this.activeStep = 3
             this.fetchResult = data.feed_version_fetch
             this.fetchLoading = false
@@ -407,7 +421,14 @@ export default {
           }
         }).catch((error) => {
           this.fetchLoading = false
-          this.networkError = error
+          if (error.networkError) {
+            throw createError({
+              statusCode: 500,
+              statusMessage: 'Network Error',
+              message: 'Failed to connect to the API'
+            })
+          }
+          this.validationError = error.message
         })
     },
     importFeedVersion (fvid) {
@@ -421,13 +442,24 @@ export default {
           variables: {
             id: fvid
           },
-          update: () => {
+          update: (_, { data }) => {
+            if (!data.feed_version_import.success) {
+              this.validationError = 'Failed to import feed version'
+              return
+            }
             this.importLoading = false
             this.activeStep = 4
           }
         }).catch((error) => {
-          console.log('import feed version error:', error)
-          this.networkError = error
+          this.importLoading = false
+          if (error.networkError) {
+            throw createError({
+              statusCode: 500,
+              statusMessage: 'Network Error',
+              message: 'Failed to connect to the API'
+            })
+          }
+          this.validationError = error.message
         })
     },
     submitUrl () {
