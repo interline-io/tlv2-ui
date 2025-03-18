@@ -1,9 +1,6 @@
 <template>
   <div>
     <tl-loading v-if="$apollo.loading" />
-    <tl-msg-error v-else-if="error">
-      {{ error }}
-    </tl-msg-error>
     <div v-else-if="entity">
       <slot name="title" :entity="entity">
         <tl-title :title="staticTitle" :description="staticDescription">

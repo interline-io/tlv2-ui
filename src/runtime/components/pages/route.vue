@@ -1,9 +1,6 @@
 <template>
   <div>
     <tl-loading v-if="$apollo.loading" />
-    <tl-msg-error v-else-if="error">
-      {{ error }}
-    </tl-msg-error>
     <div v-else-if="entity">
       <slot name="title">
         <tl-title :title="staticTitle" :description="staticDescription">
@@ -324,7 +321,7 @@ export default {
       client: 'transitland',
       query: q,
       skip () {
-        return this.checkSearchSkip(this.entityId)
+        return this.checkSearchSkip(this.$route.query.stop_id)
       },
       variables () {
         return this.searchKey

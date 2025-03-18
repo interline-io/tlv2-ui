@@ -10,15 +10,42 @@ const pathRegex = /(?<osid>[ors]-[a-z0-9~-]*)?:?(?<feed>[a-z0-9~-]*)?@?((?<sha>[
 // console.log(pathRegex.exec('@76de8e75c70e1c0fc1c8c8d6cf6ae7dcb77bde90:eid').groups)
 // console.log(pathRegex.exec('r-osid:feed@76de8e75c70e1c0fc1c8c8d6cf6ae7dcb77bde90:eid').groups)
 
+import { createError } from '#app'
+
 export default {
   apollo: {
     $query: {
       client: 'transitland',
-      error (e) { this.error = e },
-      update (data) {
-        if (data && data.entities && data.entities.length === 0) {
-          return this.setError(404, 'Not found')
+      errorPolicy: 'all',
+      error(error) {
+        // Network and GraphQL errors should be fatal
+        if (error.networkError || error.graphQLErrors?.length > 0) {
+          throw createError({
+            statusCode: 500,
+            statusMessage: 'API Error',
+            message: error.message
+          })
         }
+      },
+      update(data) {
+        // No data returned is a server error
+        if (!data) {
+          throw createError({
+            statusCode: 500,
+            statusMessage: 'Invalid Response',
+            message: 'API returned an invalid response'
+          })
+        }
+
+        // Empty entities array means 404
+        if (data.entities && data.entities.length === 0) {
+          throw createError({
+            statusCode: 404,
+            statusMessage: 'Not Found',
+            message: 'No transit entity could not be found with that Onestop ID or alternative identifier'
+          })
+        }
+
         return data.entities || []
       }
     }
@@ -35,8 +62,7 @@ export default {
       activeTab: 'default',
       tabNames: {},
       newLimit: null,
-      childLabel: null,
-      error: null,
+      childLabel: null
     }
   },
   computed: {
@@ -96,20 +122,33 @@ export default {
       return a
     },
     refetchEntities () {
-      this.$apollo.queries.entities.refetch()
+      return this.$apollo.queries.entities.refetch()
+        .catch(error => {
+          throw createError({
+            statusCode: 500,
+            statusMessage: 'Refetch Failed',
+            message: 'Failed to refresh the data',
+            data: { cause: error }
+          })
+        })
     },
     checkSearchSkip () {
       const fosid = this.$route.query.feed_onestop_id || ''
       const eid = this.$route.query.entity_id || ''
       if (this.$route.params.onestop_id === 'search' && (fosid.length === 0 || eid.length === 0)) {
-        this.setError(404, 'Not found')
+        this.error = {
+          statusCode: 404,
+          message: 'Missing required search parameters'
+        }
         return true
       }
       return false
     },
     setError (statusCode, message) {
-      // this.$nuxt.error({ statusCode, message })
-      this.error = message
+      this.error = { statusCode, message }
+    },
+    clearError() {
+      this.error = null
     },
     setTab (value) {
       // TODO
