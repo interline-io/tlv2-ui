@@ -4,7 +4,8 @@ import { defu } from 'defu'
 // Config handler
 export interface ModuleOptions{
   bulma: string,
-  useProxy: boolean
+  useProxy: boolean,
+  safelinkUtmSource?: string
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -43,10 +44,11 @@ export default defineNuxtModule<ModuleOptions>({
     addPlugin(resolveRuntimeModule('plugins/mixpanel.client'))
     addImportsDir(resolveRuntimeModule('composables'))
 
-    // Proxy
+    // Proxy and module options
     const useProxy = options.useProxy ? true : false
     nuxt.options.runtimeConfig.public.tlv2 = defu(nuxt.options.runtimeConfig.public.tlv2, {
-      useProxy: useProxy
+      useProxy: useProxy,
+      safelinkUtmSource: options.safelinkUtmSource
     })
     if (useProxy) {
       addServerHandler({
