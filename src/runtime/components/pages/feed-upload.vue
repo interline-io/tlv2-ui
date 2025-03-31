@@ -30,8 +30,9 @@
         >
           Upload a GTFS archive from your local computer or enter a URL to download a GTFS archive from another server. Provide a single ZIP archive that contains all relevant GTFS files without any subdirectories.
         </o-notification>
-        <div class="dropbox">
+        <div class="dropbox" @click="$refs.fileInput.click()">
           <input
+            ref="fileInput"
             type="file"
             class="input-file"
             accept=".zip"
