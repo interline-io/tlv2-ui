@@ -122,7 +122,7 @@
 
             <hr>
 
-            <analyst-validation-results :entity="entity" />
+            <rgrt-validation-results :entity="entity" />
           </div>
         </div>
       </o-step-item>
