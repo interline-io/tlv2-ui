@@ -20,8 +20,9 @@
         :is-full-page="false"
       />
       <o-step-item
-        label="Upload feed"
+        value="1"
         step="1"
+        label="Upload feed"
       >
         <o-notification
           variant="info"
@@ -76,8 +77,9 @@
       </o-step-item>
 
       <o-step-item
-        label="Validate feed"
+        value="2"
         step="2"
+        label="Validate feed"
       >
         <o-loading
           v-model="fetchLoading"
@@ -126,8 +128,9 @@
       </o-step-item>
 
       <o-step-item
-        label="Import feed"
+        value="3"
         step="3"
+        label="Import feed"
       >
         <o-notification
           variant="info"
@@ -142,8 +145,9 @@
       </o-step-item>
 
       <o-step-item
-        label="Name and finalize feed"
+        value="4"
         step="4"
+        label="Name and finalize feed"
       >
         <div v-if="fetchResult">
           <o-notification
@@ -343,7 +347,7 @@ export default {
   },
   data () {
     return {
-      activeStep: 1,
+      activeStep: '1',
       fetchResult: null,
       selectedFiles: [],
       entities: [],
@@ -377,7 +381,7 @@ export default {
             realtime_urls: this.realtimeUrl ? [this.realtimeUrl] : null
           },
           update: (_, { data }) => {
-            this.activeStep = 2
+            this.activeStep = '2'
             this.entities = [data.validate_gtfs]
             this.mutationLoading = false
           }
@@ -400,7 +404,7 @@ export default {
             feed_onestop_id: this.pathKey
           },
           update: (_, { data }) => {
-            this.activeStep = 3
+            this.activeStep = '3'
             this.fetchResult = data.feed_version_fetch
             this.fetchLoading = false
             this.importFeedVersion(this.fetchResult.feed_version.id)
@@ -423,7 +427,7 @@ export default {
           },
           update: () => {
             this.importLoading = false
-            this.activeStep = 4
+            this.activeStep = '4'
           }
         }).catch((error) => {
           console.log('import feed version error:', error)
