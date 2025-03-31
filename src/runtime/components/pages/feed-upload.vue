@@ -352,7 +352,7 @@ export default {
       fetchResult: null,
       selectedFiles: [],
       entities: [],
-      feedUrl: null,
+      feedUrl: '',
       realtimeUrl: '',
       mutationLoading: false,
       fetchLoading: false,
