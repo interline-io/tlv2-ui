@@ -402,7 +402,7 @@ export default {
           variables: {
             file: this.selectedFiles[0],
             url: this.feedUrl,
-            feed_onestop_id: this.pathKey
+            feedOnestopId: this.pathKey
           },
           update: (_, { data }) => {
             this.activeStep = '3'
