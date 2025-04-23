@@ -29,20 +29,18 @@
         <tl-editor-basemap-control v-model="basemap" />
       </o-field>
 
-      <div class="control">
-        <tl-editor-level-map
-          :basemap="basemap"
-          :center="center"
-          :search="true"
-          width="100%"
-          height="500px"
-          :zoom="18"
-          :draw-tools="true"
-          :editable-features="editFeatures"
-          :draw-default-mode="editFeatures.length > 0 ? 'simple_select' : 'draw_point'"
-          @changed="setGeometry"
-        />
-      </div>
+      <tl-editor-level-map
+        :basemap="basemap"
+        :center="center"
+        :search="true"
+        width="100%"
+        height="500px"
+        :zoom="18"
+        :draw-tools="true"
+        :editable-features="editFeatures"
+        :draw-default-mode="editFeatures.length > 0 ? 'simple_select' : 'draw_point'"
+        @changed="setGeometry"
+      />
     </div>
     <div class="buttons is-pulled-right">
       <template v-if="station.id">

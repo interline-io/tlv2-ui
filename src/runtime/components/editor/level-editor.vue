@@ -40,23 +40,21 @@
         <tl-editor-basemap-control v-model="basemap" />
       </o-field>
 
-      <div class="control">
-        <tl-editor-level-map
-          :basemap="basemap"
-          :zoom="18"
-          :center="center"
-          :draw-tools="true"
-          :draw-default-mode="editFeatures.length > 0 ? 'simple_select' : 'draw_polygon'"
-          width="100%"
-          height="500px"
-          :editable-features="editFeatures"
-          :polygons="station.levels.filter((s)=>{return s.geometry && s.level_id !== level.level_id}).map((s)=>{return s.geometry})"
-          :points="station.stops.map((s)=>{return s.geometry})"
-          :opacity="0.1"
-          :search="true"
-          @changed="setGeometry"
-        />
-      </div>
+      <tl-editor-level-map
+        :basemap="basemap"
+        :zoom="18"
+        :center="center"
+        :draw-tools="true"
+        :draw-default-mode="editFeatures.length > 0 ? 'simple_select' : 'draw_polygon'"
+        width="100%"
+        height="500px"
+        :editable-features="editFeatures"
+        :polygons="station.levels.filter((s)=>{return s.geometry && s.level_id !== level.level_id}).map((s)=>{return s.geometry})"
+        :points="station.stops.map((s)=>{return s.geometry})"
+        :opacity="0.1"
+        :search="true"
+        @changed="setGeometry"
+      />
     </div>
     <div class="buttons is-pulled-right">
       <template v-if="level.id">
