@@ -242,7 +242,7 @@ export class Stop {
       this.children.push(new Stop(c))
     }
     // levels
-    this.level = { id: null }
+    this.level = { id: null, level_name: 'Unassigned' }
     if (stop.level) {
       this.level = new Level(stop.level)
     }
