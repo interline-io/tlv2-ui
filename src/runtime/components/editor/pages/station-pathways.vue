@@ -139,6 +139,7 @@
                 <tl-editor-stop-editor
                   :station="station"
                   :value="ss"
+                  :stop-associations-enabled="stopAssociationsEnabled"
                   @delete="deleteStopHandler"
                   @update="updateStopHandler"
                   @create-association="createAssociationHandler"

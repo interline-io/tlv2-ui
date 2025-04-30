@@ -12,6 +12,11 @@ query currentFeeds ($feed_onestop_id: String, $feed_version_file: String) {
       file
       sha1
       id
+      agencies {
+        id
+        agency_id
+        agency_name
+      }
       stations: stops(limit:1000, where:{location_type:1}) {
         feed_version {
           id
@@ -131,8 +136,11 @@ export default {
     feedVersion () {
       return this.feed?.feed_versions?.length > 0 ? this.feed.feed_versions[0] : null
     },
-    feedVersionName() {
+    feedVersionName () {
       return (this.feedVersion?.file || this.feedVersionKey || '').substr(0, 8)
+    },
+    stopAssociationsEnabled () {
+      return this.feedVersion?.agencies?.length === 0
     },
     stopIndex () {
       const a = new Map()

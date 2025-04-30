@@ -8,7 +8,7 @@
           <i class="mdi mdi-layers mdi-16px" /> &nbsp; Draw Levels
         </nuxt-link>
       </li>
-      <li :class="(activeTab === 'stops') ? 'is-active' : ''">
+      <li v-if="stopAssociationsEnabled" :class="(activeTab === 'stops') ? 'is-active' : ''">
         <span>
           <nuxt-link
             :to="{name:routeKeys['stops'], params: {feedKey:feedKey,feedVersionKey:feedVersionKey,stationKey:stationKey}}"
@@ -48,6 +48,10 @@ export default {
     feedKey: {
       type: String,
       default: null
+    },
+    stopAssociationsEnabled: {
+      type: Boolean,
+      default: false
     },
     feedVersionKey: {
       type: String,
