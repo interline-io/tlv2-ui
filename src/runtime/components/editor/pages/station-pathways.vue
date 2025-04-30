@@ -24,16 +24,12 @@
             />
           </o-field>
           <!-- SELECT -->
-          <o-collapse v-if="selectMode === 'select'" class="card">
+          <tl-msg-card v-if="selectMode === 'select'">
             <template #trigger>
-              <div class="card-header">
-                <div class="card-header-title">
-                  Select
-                </div>
-                <o-button v-if="selectedStops.length > 0 || selectedPathways.length > 0" class="is-pulled-right m-2" variant="primary is-small" outlined @click="unselectAll">
-                  Unselect All
-                </o-button>
-              </div>
+              Select
+              <o-button v-if="selectedStops.length > 0 || selectedPathways.length > 0" class="is-pulled-right m-2" variant="primary is-small" outlined @click="unselectAll">
+                Unselect All
+              </o-button>
             </template>
             <div class="card-content">
               <div class="mb-2">
@@ -65,14 +61,10 @@
                 </o-field>
               </div>
             </div>
-          </o-collapse>
-          <o-collapse v-else-if="selectMode === 'add-pathway'" class="card">
+          </tl-msg-card>
+          <tl-msg-card v-else-if="selectMode === 'add-pathway'">
             <template #trigger>
-              <div class="card-header">
-                <p class="card-header-title">
-                  Add Pathway
-                </p>
-              </div>
+              Add Pathway
             </template>
             <div class="card-content">
               <tl-editor-pathway-editor
@@ -82,116 +74,92 @@
                 @create="createPathwayHandler"
               />
             </div>
-          </o-collapse>
+          </tl-msg-card>
           <template v-if="selectMode === 'edit-pathway'">
-            <o-collapse v-for="spw of selectedPathways" :key="spw.id" class="card">
+            <tl-msg-card v-for="spw of selectedPathways" :key="spw.id">
               <template #trigger>
-                <div class="card-header">
-                  <p class="card-header-title">
-                    Edit Pathway
-                  </p>
-                </div>
+                Edit Pathway
               </template>
-              <div class="card-content">
-                <tl-editor-mode-switch
-                  :params="{
-                    feedKey: feedKey,
-                    feedVersionKey: feedVersionKey,
-                    stationKey: stationKey
-                  }"
-                  :query="{
-                    selectedPathway: spw.id
-                  }"
-                />
-                <tl-editor-pathway-editor
-                  :station="station"
-                  :value="spw"
-                  @select-stop="selectStop"
-                  @delete="deletePathwayHandler"
-                  @update="updatePathwayHandler"
-                />
-              </div>
-            </o-collapse>
+              <tl-editor-mode-switch
+                :params="{
+                  feedKey: feedKey,
+                  feedVersionKey: feedVersionKey,
+                  stationKey: stationKey
+                }"
+                :query="{
+                  selectedPathway: spw.id
+                }"
+              />
+              <tl-editor-pathway-editor
+                :station="station"
+                :value="spw"
+                @select-stop="selectStop"
+                @delete="deletePathwayHandler"
+                @update="updatePathwayHandler"
+              />
+            </tl-msg-card>
           </template>
           <template v-else-if="selectMode === 'edit-node'">
-            <o-collapse v-for="ss of selectedStops" :key="ss.id" class="card">
+            <tl-msg-card v-for="ss of selectedStops" :key="ss.id" class="card">
               <template #trigger>
-                <div class="card-header">
-                  <p class="card-header-title">
-                    Edit Node
-                  </p>
-                  <o-button v-if="selectedStops.length > 0 || selectedPathways.length > 0" class="is-pulled-right m-2" variant="primary is-small" outlined @click="unselectAll">
-                    Unselect
-                  </o-button>
-                </div>
+                Edit Node
+                <o-button v-if="selectedStops.length > 0 || selectedPathways.length > 0" class="is-pulled-right m-2" variant="primary is-small" outlined @click="unselectAll">
+                  Unselect
+                </o-button>
               </template>
-              <div class="card-content">
-                <tl-editor-mode-switch
-                  :params="{
-                    feedKey: feedKey,
-                    feedVersionKey: feedVersionKey,
-                    stationKey: stationKey
-                  }"
-                  :query="{
-                    selectedStop: ss.id
-                  }"
-                />
-                <tl-editor-stop-editor
-                  :station="station"
-                  :value="ss"
-                  :stop-associations-enabled="stopAssociationsEnabled"
-                  @delete="deleteStopHandler"
-                  @update="updateStopHandler"
-                  @create-association="createAssociationHandler"
-                  @delete-association="deleteAssociationHandler"
-                  @select-pathway="selectPathway"
-                />
-              </div>
-            </o-collapse>
+              <tl-editor-mode-switch
+                :params="{
+                  feedKey: feedKey,
+                  feedVersionKey: feedVersionKey,
+                  stationKey: stationKey
+                }"
+                :query="{
+                  selectedStop: ss.id
+                }"
+              />
+              <tl-editor-stop-editor
+                :station="station"
+                :value="ss"
+                :stop-associations-enabled="stopAssociationsEnabled"
+                @delete="deleteStopHandler"
+                @update="updateStopHandler"
+                @create-association="createAssociationHandler"
+                @delete-association="deleteAssociationHandler"
+                @select-pathway="selectPathway"
+              />
+            </tl-msg-card>
           </template>
           <template v-else-if="selectMode === 'add-node'">
-            <o-collapse v-if="selectMode === 'add-node'" class="card">
+            <tl-msg-card v-if="selectMode === 'add-node'">
               <template #trigger>
-                <div class="card-header">
-                  <p class="card-header-title">
-                    Add Node
-                  </p>
-                </div>
+                Add Node
               </template>
-              <div class="card-content">
-                <o-field label="Level">
-                  <o-dropdown
-                    v-model="selectedLevel"
-                    aria-role="list"
-                  >
-                    <template #trigger>
-                      <button class="button" type="button">
-                        {{ levelIndex[selectedLevel] ? levelIndex[selectedLevel].level_name : 'None' }} &nbsp;
-                        <o-icon icon="menu-down" />
-                      </button>
-                    </template>
-                    <o-dropdown-item v-for="level of station.levels" :key="level.id" :value="level.id" aria-role="listitem">
-                      <h3>{{ level.level_name }}</h3>
-                      <small> {{ level.stops.length }} nodes</small>
-                    </o-dropdown-item>
-                  </o-dropdown>
-                </o-field>
-              </div>
-            </o-collapse>
+              <o-field label="Level">
+                <o-dropdown
+                  v-model="selectedLevel"
+                  aria-role="list"
+                >
+                  <template #trigger>
+                    <button class="button" type="button">
+                      {{ levelIndex[selectedLevel] ? levelIndex[selectedLevel].level_name : 'None' }} &nbsp;
+                      <o-icon icon="menu-down" />
+                    </button>
+                  </template>
+                  <o-dropdown-item v-for="level of station.levels" :key="level.id" :value="level.id" aria-role="listitem">
+                    <h3>{{ level.level_name }}</h3>
+                    <small> {{ level.stops.length }} nodes</small>
+                  </o-dropdown-item>
+                </o-dropdown>
+              </o-field>
+            </tl-msg-card>
           </template>
           <template v-else-if="selectMode === 'find-route'">
-            <o-collapse v-if="selectedStops.length > 1" class="card">
+            <tl-msg-card v-if="selectedStops.length > 1">
               <template #trigger>
-                <div class="card-header">
-                  <div class="card-header-title">
-                    Find Route
-                  </div>
-                </div>
+                Find Route
               </template>
-              <div class="card-content">
-                <tl-editor-path-viewer :path="selectedPath" />
-              </div>
-            </o-collapse>
+              <tl-editor-path-viewer :path="selectedPath" />
+            </tl-msg-card>
           </template>
 
           <br>
@@ -283,6 +251,7 @@ import StationMixin from './station-mixin'
 
 export default {
   mixins: [StationMixin],
+  layout: 'wide',
   query: ['selectedStop', 'selectedPathway'],
   data () {
     return {

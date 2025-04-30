@@ -15,18 +15,11 @@
     <div class="columns">
       <div class="column is-narrow">
         <div class="editor-info">
-          <o-collapse class="card">
+          <tl-msg-card class="card">
             <template #trigger>
-              <div
-                class="card-header"
-                role="button"
-              >
-                <p class="card-header-title">
-                  Node
-                </p>
-              </div>
+              Node
             </template>
-            <div v-if="selectedStop" :key="selectedStop" class="card-content">
+            <div v-if="selectedStop" :key="selectedStop">
               <template v-if="selectedStop.id === station.id">
                 This is the station.
               </template>
@@ -59,31 +52,22 @@
                 </span>
               </div>
             </div>
-            <div v-else class="card-content">
+            <div v-else>
               Click to select a stop
             </div>
-          </o-collapse>
+          </tl-msg-card>
 
           <br>
-          <o-collapse class="card">
+          <tl-msg-card>
             <template #trigger>
-              <div
-                class="card-header"
-                role="button"
-              >
-                <p class="card-header-title">
-                  Help
-                </p>
-              </div>
+              Help
             </template>
-            <div class="card-content">
-              <ul class="help">
-                <li>Select a node to import into station</li>
-                <li>You must select a level before importing</li>
-                <li>Click the selected item again to unselect</li>
-              </ul>
-            </div>
-          </o-collapse>
+            <ul class="help">
+              <li>Select a node to import into station</li>
+              <li>You must select a level before importing</li>
+              <li>Click the selected item again to unselect</li>
+            </ul>
+          </tl-msg-card>
         </div>
       </div>
 

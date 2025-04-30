@@ -16,60 +16,54 @@
     <div v-if="ready" class="columns">
       <div class="column is-narrow">
         <div class="block tl-editor-info">
-          <o-collapse class="card">
+          <tl-msg-card>
             <template #trigger>
-              <div class="card-header">
-                <div class="card-header-title">
-                  Select
-                </div>
-                <o-button v-if="selectedElements.length > 0" class="is-pulled-right m-2" variant="primary is-small" outlined @click="clearSelectedElements">
-                  Unselect All
-                </o-button>
-              </div>
+              Select
+              <o-button v-if="selectedElements.length > 0" class="is-pulled-right m-2" variant="primary is-small" outlined @click="clearSelectedElements">
+                Unselect All
+              </o-button>
             </template>
-            <div class="card-content">
-              <p v-if="selectedElements.length === 0" class="notification">
-                Click to select a stop node or a pathway edge. Hold down the Ctrl or Shift keys to select multiple.
-              </p>
-              <div v-for="p in selectedPathways" :key="p" class="block">
-                <tl-editor-mode-switch
-                  :params="{
-                    feedKey: feedKey,
-                    feedVersionKey: feedVersionKey,
-                    stationKey: stationKey
-                  }"
-                  :query="{
-                    selectedPathway: p.match('[0-9]+')[0]
-                  }"
-                />
-                <tl-editor-pathway-editor
-                  :station="station"
-                  :value="getElementById(p)"
-                  read-only
-                  @select-stop="selectStop"
-                />
-              </div>
-              <div v-for="s in selectedStops" :key="s" class="block">
-                <tl-editor-mode-switch
-                  :params="{
-                    feedKey: feedKey,
-                    feedVersionKey: feedVersionKey,
-                    stationKey: stationKey
-                  }"
-                  :query="{
-                    selectedStop: s.match('[0-9]+')[0]
-                  }"
-                />
-                <tl-editor-stop-editor
-                  :station="station"
-                  :value="getElementById(s)"
-                  read-only
-                  current-mode="diagram"
-                  @select-pathway="selectPathway"
-                />
-              </div>
+            <p v-if="selectedElements.length === 0" class="notification">
+              Click to select a stop node or a pathway edge. Hold down the Ctrl or Shift keys to select multiple.
+            </p>
+            <div v-for="p in selectedPathways" :key="p" class="block">
+              <tl-editor-mode-switch
+                :params="{
+                  feedKey: feedKey,
+                  feedVersionKey: feedVersionKey,
+                  stationKey: stationKey
+                }"
+                :query="{
+                  selectedPathway: p.match('[0-9]+')[0]
+                }"
+              />
+              <tl-editor-pathway-editor
+                :station="station"
+                :value="getElementById(p)"
+                read-only
+                @select-stop="selectStop"
+              />
             </div>
-          </o-collapse>
+            <div v-for="s in selectedStops" :key="s" class="block">
+              <tl-editor-mode-switch
+                :params="{
+                  feedKey: feedKey,
+                  feedVersionKey: feedVersionKey,
+                  stationKey: stationKey
+                }"
+                :query="{
+                  selectedStop: s.match('[0-9]+')[0]
+                }"
+              />
+              <tl-editor-stop-editor
+                :station="station"
+                :value="getElementById(s)"
+                read-only
+                current-mode="diagram"
+                @select-pathway="selectPathway"
+              />
+            </div>
+          </tl-msg-card>
         </div>
       </div>
       <div class="column">
