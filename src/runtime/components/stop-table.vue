@@ -30,7 +30,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="stop of entities" :key="stop.id">
+            <tr v-for="stop of stops" :key="stop.id">
               <td>
                 <slot name="stopName" :stop="stop">
                   {{ stop.stop_name }}
@@ -44,7 +44,7 @@
                 {{ $filters.joinUnique(props.row.route_stops.map((s) => { return s.agency.agency_name })) }}
               </td>
               <td v-if="showRoutes">
-                {{ $filters.joinUnique(stop.route_stops.map((s) => { return s.route.route_short_name })) }}
+                {{ servedByRoutes(stop) }}
               </td>
               <td v-if="showLinks" class="has-text-right">
                 <nuxt-link
@@ -58,7 +58,7 @@
           </tbody>
         </table>
       </div>
-      <tl-show-more v-if="entities.length === limit || hasMore" :limit="entities.length" @click="showAll" />
+      <tl-show-more v-if="stops.length === limit || hasMore" :limit="stops.length" @click="showAll" />
     </div>
   </div>
 </template>
@@ -82,6 +82,18 @@ query ($feed_version_sha1: String, $feed_version_ids: [Int!], $agency_ids: [Int!
       stop_url
       location_type
       wheelchair_boarding
+      children {
+        id
+        stop_id
+        route_stops {
+        route {
+          id
+          route_id
+          route_short_name
+          route_long_name
+        }
+      }
+      }
       route_stops {
         route {
           id
@@ -94,6 +106,16 @@ query ($feed_version_sha1: String, $feed_version_ids: [Int!], $agency_ids: [Int!
   }
 }
 `
+
+function routeName (route) {
+  if (route.route_short_name && route.route_long_name) {
+    return `${route.route_short_name} (${route.route_long_name})`
+  } else if (route.route_short_name) {
+    return route.route_short_name
+  } else if (route.route_long_name) {
+    return route.route_long_name
+  }
+}
 
 export default {
   mixins: [TableViewerMixin],
@@ -116,7 +138,7 @@ export default {
     }
   },
   computed: {
-    entities () {
+    stops () {
       const ret = []
       for (const feedVersion of this.feed_versions) {
         for (const stop of feedVersion.stops) {
@@ -124,6 +146,21 @@ export default {
         }
       }
       return ret
+    }
+  },
+  methods: {
+    servedByRoutes (stop) {
+      const routeNames = new Set()
+      console.log('stop:', stop)
+      for (const routeStop of stop.route_stops) {
+        routeNames.add(routeName(routeStop.route))
+      }
+      for (const childStop of stop.children || []) {
+        for (const routeStop of childStop.route_stops) {
+          routeNames.add(routeName(routeStop.route))
+        }
+      }
+      return Array.from(routeNames).join(', ')
     }
   },
   apollo: {
