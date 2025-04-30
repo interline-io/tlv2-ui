@@ -30,7 +30,7 @@ export default [
           max: 1
         }
       }],
-      'brace-style': ['error', '1tbs', { allowSingleLine: true }],
+      '@stylistic/brace-style': ['error', '1tbs', { allowSingleLine: true }],
       '@stylistic/space-before-function-paren': ['error', {
         anonymous: 'always',
         named: 'always',
