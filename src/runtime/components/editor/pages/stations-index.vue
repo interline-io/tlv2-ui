@@ -24,6 +24,7 @@
     <tl-stop-table
       v-if="feedVersion?.id"
       :feed-version-ids="[feedVersion.id]"
+      :location-type="1"
       :show-links="false"
     >
       <template #stopName="slotProps">

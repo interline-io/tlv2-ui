@@ -68,9 +68,9 @@ import { gql } from 'graphql-tag'
 import TableViewerMixin from './table-viewer-mixin'
 
 const q = gql`
-query ($feed_version_sha1: String, $feed_version_ids: [Int!], $agency_ids: [Int!], $limit: Int=100, $search: String, $route_type:Int) {
+query ($feed_version_sha1: String, $feed_version_ids: [Int!], $agency_ids: [Int!], $limit: Int=100, $search: String, $location_type:Int, $route_type:Int) {
   feed_versions(ids: $feed_version_ids, where: { sha1: $feed_version_sha1 }) {
-      stops(limit: $limit, where: {serviced: true, agency_ids: $agency_ids, feed_version_sha1: $feed_version_sha1, search: $search, served_by_route_type:$route_type}) {
+      stops(limit: $limit, where: {serviced: true, agency_ids: $agency_ids, feed_version_sha1: $feed_version_sha1, search: $search, location_type:$location_type, served_by_route_type:$route_type}) {
       id
       feed_onestop_id
       feed_version_sha1
@@ -125,6 +125,7 @@ export default {
     feedVersionSha1: { type: String, default: null },
     feedVersionIds: { type: Array, default () { return [] } },
     agencyIds: { type: Array, default () { return [] } },
+    locationType: { type: Number, default: null },
     linkVersion: { type: Boolean, default: false },
     showOnestopId: { type: Boolean, default: false },
     showLinks: { type: Boolean, default: true },
@@ -171,6 +172,7 @@ export default {
         return {
           search: this.search,
           limit: this.limit,
+          location_type: this.locationType,
           feed_version_sha1: this.feedVersionSha1,
           feed_version_ids: this.feedVersionIds ? this.feedVersionIds : [],
           agency_ids: this.agencyIds,
