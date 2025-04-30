@@ -270,7 +270,8 @@ export default {
           message: 'Cannot have self as parent_station'
         })
       }
-      if (stop.location_type !== 4 && stop.parent && stop.parent.location_type !== 1) {
+      if (stop.location_type !== 4 && stop.parent?.id && stop.parent.location_type !== 1) {
+        console.log('stop.parent?', stop.parent)
         errs.push({
           message: 'The parent_station must be a Station (location_type = 1)'
         })
@@ -311,10 +312,14 @@ export default {
       //     message: 'Fare-gate and exit-gate pathways must be one-way'
       //   })
       // }
-      if (pathway.pathway_mode === 2 && (pathway.stair_count < 0 || pathway.from_stop.level?.id === pathway.to_stop.level?.id)) {
-        errs.push({
-          message: 'Stairs pathways must have a stair_count or connect stops with different levels'
-        })
+      if (pathway.pathway_mode === 2 && pathway.stair_count == null) {
+        if ((pathway.from_stop.level?.id || pathway.to_stop.level?.id) && (pathway.from_stop.level?.id === pathway.to_stop.level?.id)) {
+          // ok
+        } else {
+          errs.push({
+            message: 'Stairs pathways must have a stair_count or connect stops with different levels'
+          })
+        }
       }
       return errs
     }

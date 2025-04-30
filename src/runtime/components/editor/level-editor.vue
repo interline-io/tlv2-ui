@@ -23,7 +23,12 @@
     <div class="field">
       <label class="label">Level Index</label>
       <div class="control">
-        <o-input v-model="level.level_index" controls-position="compact" />
+        <o-input
+          v-model="level.level_index"
+          type="number"
+          number
+          controls-position="compact"
+        />
       </div>
       <p class="help">
         A number representing the relative vertical order of the level.

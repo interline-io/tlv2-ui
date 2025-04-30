@@ -111,7 +111,7 @@
                 </div>
                 <div class="media-content">
                   <h3>
-                    {{ level.level_name !== undefined ? level.level_name : 'Unassigned' }}
+                    {{ level.id == null ? 'Unassigned' : level.level_name }}
                   </h3>
                   <small>{{ level.stops.length }} nodes </small>
                 </div>

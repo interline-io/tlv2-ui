@@ -53,39 +53,67 @@
       <div class="column is-one-half">
         <o-field label="Length">
           <o-field>
-            <o-checkbox v-model="autoLength" class="button" :disabled="readOnly">
-              Auto
-            </o-checkbox>
-            <o-input v-if="autoLength" v-model="stopLength" disabled controls-position="compact" />
-            <o-input v-else v-model="pathway.length" :disabled="readOnly" controls-position="compact" />
+            <o-input
+              v-model="pathway.length"
+              number
+              type="number"
+              min="0"
+              step="0.01"
+              :disabled="readOnly"
+              controls-position="compact"
+            />
           </o-field>
         </o-field>
 
         <o-field label="Traversal time">
           <o-field>
-            <o-checkbox v-model="autoTraversalTime" class="button" :disabled="readOnly">
-              Auto
-            </o-checkbox>
-            <o-input v-if="autoTraversalTime" v-model="stopTraversalTime" disabled controls-position="compact" />
-            <o-input v-else v-model="pathway.traversal_time" :disabled="readOnly" controls-position="compact" />
+            <o-input
+              v-model="pathway.traversal_time"
+              number
+              type="number"
+              min="0"
+              :disabled="readOnly"
+              controls-position="compact"
+            />
           </o-field>
         </o-field>
 
         <o-field label="Stair count">
           <o-field>
-            <o-input v-model="pathway.stair_count" controls-position="compact" :disabled="readOnly" />
+            <o-input
+              v-model="pathway.stair_count"
+              number
+              type="number"
+              controls-position="compact"
+              :disabled="readOnly"
+            />
           </o-field>
         </o-field>
 
         <o-field label="Max slope">
           <o-field>
-            <o-input v-model="pathway.max_slope" controls-position="compact" :disabled="readOnly" />
+            <o-input
+              v-model="pathway.max_slope"
+              number
+              type="number"
+              step="0.01"
+              controls-position="compact"
+              :disabled="readOnly"
+            />
           </o-field>
         </o-field>
 
         <o-field label="Minimum width">
           <o-field>
-            <o-input v-model="pathway.min_width" controls-position="compact" :disabled="readOnly" />
+            <o-input
+              v-model="pathway.min_width"
+              number
+              min="0"
+              step="0.01"
+              type="number"
+              controls-position="compact"
+              :disabled="readOnly"
+            />
           </o-field>
         </o-field>
       </div>
@@ -132,8 +160,6 @@ export default {
   data () {
     return {
       pathway: new Pathway(this.value).setDefaults(),
-      autoLength: (this.value === null || this.value.length === undefined || this.value.length < 0),
-      autoTraversalTime: (this.value.traversal_time === null || this.value.traversal_time === undefined || this.value.traversal_time < 0),
       PathwayModes
     }
   },
