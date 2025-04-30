@@ -7,7 +7,7 @@
           <o-input v-else v-model="pathway.pathway_id" />
         </o-field>
         <o-field label="From">
-          <span class="button" @click="$emit('select-stop', pathway.from_stop.id)">
+          <span class="button stop-label" @click="$emit('select-stop', pathway.from_stop.id)">
             <template v-if="pathway.from_stop.stop_name">
               {{ pathway.from_stop.stop_name }}</template>
             <template v-else>
@@ -17,7 +17,7 @@
           </span>
         </o-field>
         <o-field label="To">
-          <span class="button" @click="$emit('select-stop', pathway.to_stop.id)">
+          <span class="button stop-label" @click="$emit('select-stop', pathway.to_stop.id)">
             <template v-if="pathway.to_stop.stop_name">
               {{ pathway.to_stop.stop_name }}</template>
             <template v-else>
@@ -162,3 +162,13 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.stop-label {
+  max-width:200px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  justify-content: left;
+}
+</style>
