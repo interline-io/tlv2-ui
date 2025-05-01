@@ -11,6 +11,10 @@ import { Map as MaplibreMap } from 'maplibre-gl'
 import { nextTick } from 'vue'
 import { PathwayModeIcons, getBasemapLayers } from './basemaps'
 
+function mapLevelKeyFn (level) {
+  return `mapLevelKey-${level.id || 'unassigned'}`
+}
+
 function distance (p1, p2) {
   return ((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2) ** 0.5
 }
@@ -120,16 +124,15 @@ export default {
     selectedLevels () {
       const strids = this.selectedLevels.map((s) => { return String(s) })
       for (const [levelId, layerIds] of Object.entries(this.levelLayers)) {
-        const pfx = `level-${levelId}`
         const vis = strids.includes(levelId) ? 'visible' : 'none'
         const spt = this.selectedPathwayTransitionTypes
         for (const k of layerIds) {
           this.map.setLayoutProperty(k, 'visibility', vis)
-          if (k.startsWith(pfx + '-pathway-type')) {
-            if (spt === 'same' && !k.startsWith(pfx + '-pathway-type-' + spt)) {
+          if (k.startsWith(levelId + '-pathway-type')) {
+            if (spt === 'same' && !k.startsWith(levelId + '-pathway-type-' + spt)) {
               this.map.setLayoutProperty(k, 'visibility', 'none')
             }
-            if (spt === 'transition' && !k.startsWith(pfx + '-pathway-type-' + spt)) {
+            if (spt === 'transition' && !k.startsWith(levelId + '-pathway-type-' + spt)) {
               this.map.setLayoutProperty(k, 'visibility', 'none')
             }
           }
@@ -201,10 +204,11 @@ export default {
         if (!level.geometry) {
           continue
         }
-        features.push({ type: 'Feature', id: level.id, properties: { id: level.id }, geometry: level.geometry })
-        this.addLevelLayer(level.id,
+        const mapLevelKey = mapLevelKeyFn(level)
+        features.push({ type: 'Feature', id: level.id, properties: { id: level.id, mapLevelKey: mapLevelKey }, geometry: level.geometry })
+        this.addLevelLayer(mapLevelKey,
           {
-            id: `level-${level.id}-level`,
+            id: `${mapLevelKey}-level`,
             type: 'fill',
             source: 'levels',
             layout: {},
@@ -213,19 +217,19 @@ export default {
               'fill-outline-color': '#3bb2d0',
               'fill-opacity': 0.1
             },
-            filter: ['==', level.id, ['get', 'id']]
+            filter: ['==', mapLevelKey, ['get', 'mapLevelKey']]
           }
         )
-        this.addLevelLayer(level.id,
+        this.addLevelLayer(mapLevelKey,
           {
-            id: `level-${level.id}-level-outline`,
+            id: `${mapLevelKey}-outline`,
             type: 'line',
             source: 'levels',
             paint: {
               'line-color': '#3bb2d0',
               'line-width': 2
             },
-            filter: ['==', level.id, ['get', 'id']]
+            filter: ['==', mapLevelKey, ['get', 'mapLevelKey']]
           }
         )
       }
@@ -253,16 +257,16 @@ export default {
       levelColors.set(0, '#87a9ff')
       for (const [i, level] of this.station.levels.entries()) {
         levelColors.set(
-          level.id,
+          mapLevelKeyFn(level),
           LEVEL_COLORS[i % LEVEL_COLORS.length]
         )
       }
 
-      for (const [levelId, color] of levelColors) {
+      for (const [mapLevelKey, color] of levelColors) {
         this.addLevelLayer(
-          levelId,
+          mapLevelKey,
           {
-            id: `level-${levelId}-stops-selected`,
+            id: `${mapLevelKey}-stops-selected`,
             type: 'circle',
             source: 'stops',
             paint: {
@@ -275,26 +279,26 @@ export default {
                 0.0
               ]
             },
-            filter: ['==', levelId, ['get', 'level_id']]
+            filter: ['==', mapLevelKey, ['get', 'mapLevelKey']]
           }
         )
         this.addLevelLayer(
-          levelId,
+          mapLevelKey,
           {
-            id: `level-${levelId}-stops`,
+            id: `${mapLevelKey}-stops`,
             type: 'circle',
             source: 'stops',
             paint: {
               'circle-radius': 8,
               'circle-color': color
             },
-            filter: ['==', levelId, ['get', 'level_id']]
+            filter: ['==', mapLevelKey, ['get', 'mapLevelKey']]
           }
         )
         this.addLevelLayer(
-          levelId,
+          mapLevelKey,
           {
-            id: `level-${levelId}-stops-text`,
+            id: `${mapLevelKey}-stops-text`,
             type: 'symbol',
             source: 'stops',
             layout: {
@@ -303,13 +307,13 @@ export default {
               'text-font': ['DIN Offc Pro Regular Sans Regular', 'Arial Unicode MS Regular'],
               'text-size': 10
             },
-            filter: ['==', levelId, ['get', 'level_id']]
+            filter: ['==', mapLevelKey, ['get', 'mapLevelKey']]
           }
         )
         this.addLevelLayer(
-          levelId,
+          mapLevelKey,
           {
-            id: `level-${levelId}-stops-stop-name`,
+            id: `${mapLevelKey}-stops-stop-name`,
             type: 'symbol',
             source: 'stops',
             layout: {
@@ -320,13 +324,13 @@ export default {
               'text-size': 12,
               'text-offset': [1.0, 0]
             },
-            filter: ['==', levelId, ['get', 'level_id']]
+            filter: ['==', mapLevelKey, ['get', 'mapLevelKey']]
           }
         )
         this.addLevelLayer(
-          levelId,
+          mapLevelKey,
           {
-            id: `level-${levelId}-stops-parent-stations`,
+            id: `${mapLevelKey}-stops-parent-stations`,
             type: 'line',
             source: 'stops-parent-stations',
             paint: {
@@ -334,7 +338,7 @@ export default {
               'line-opacity': 0.5,
               'line-width': 2
             },
-            filter: ['==', levelId, ['get', 'level_id']]
+            filter: ['==', mapLevelKey, ['get', 'mapLevelKey']]
           }
         )
       }
@@ -346,6 +350,7 @@ export default {
             type: 'Feature',
             id: s.id,
             properties: {
+              mapLevelKey: mapLevelKeyFn(s.level),
               level_id: s.level?.id || 0,
               level_index: s.level?.level_index,
               stop_name: s.stop_name
@@ -364,6 +369,7 @@ export default {
           type: 'Feature',
           id: s.id,
           properties: {
+            mapLevelKey: mapLevelKeyFn(s.level),
             level_id: s.level?.id || 0,
             level_index: s.level?.level_index,
             stop_name: s.stop_name
@@ -388,14 +394,13 @@ export default {
       }
       const pwLevels = new Map()
       for (const pw of this.station.pathways || []) {
-        const levelId1 = pw.from_stop.level ? pw.from_stop.level.id : null
-        pwLevels.set(levelId1, true)
+        pwLevels.set(mapLevelKeyFn(pw.from_stop.level), true)
       }
-      for (const levelId1 of pwLevels.keys()) {
+      for (const mapLevelKey1 of pwLevels.keys()) {
         this.addLevelLayer(
-          levelId1,
+          mapLevelKey1,
           {
-            id: `level-${levelId1}-pathway-selected`,
+            id: `${mapLevelKey1}-pathway-selected`,
             type: 'line',
             source: 'pathways',
             paint: {
@@ -408,13 +413,13 @@ export default {
                 0.0
               ]
             },
-            filter: ['any', ['==', levelId1, ['get', 'from_level_id']], ['==', levelId1, ['get', 'to_level_id']]]
+            filter: ['any', ['==', mapLevelKey1, ['get', 'fromMapLevelKey']], ['==', mapLevelKey1, ['get', 'toMapLevelKey']]]
           }
         )
         this.addLevelLayer(
-          levelId1,
+          mapLevelKey1,
           {
-            id: `level-${levelId1}-pathway-type-same`,
+            id: `${mapLevelKey1}-pathway-type-same`,
             type: 'line',
             source: 'pathways',
             paint: {
@@ -428,17 +433,17 @@ export default {
             },
             filter: [
               'all',
-              ['any', ['==', levelId1, ['get', 'from_level_id']], ['==', levelId1, ['get', 'to_level_id']]],
+              ['any', ['==', mapLevelKey1, ['get', 'fromMapLevelKey']], ['==', mapLevelKey1, ['get', 'toMapLevelKey']]],
               [
-                '==', ['get', 'from_level_id'], ['get', 'to_level_id']
+                '==', ['get', 'fromMapLevelKey'], ['get', 'toMapLevelKey']
               ]
             ]
           }
         )
         this.addLevelLayer(
-          levelId1,
+          mapLevelKey1,
           {
-            id: `level-${levelId1}-pathway-type-transition`,
+            id: `${mapLevelKey1}-pathway-type-transition`,
             type: 'line',
             source: 'pathways',
             paint: {
@@ -452,24 +457,24 @@ export default {
             },
             filter: [
               'all',
-              ['any', ['==', levelId1, ['get', 'from_level_id']], ['==', levelId1, ['get', 'to_level_id']]],
+              ['any', ['==', mapLevelKey1, ['get', 'fromMapLevelKey']], ['==', mapLevelKey1, ['get', 'toMapLevelKey']]],
               [
-                '!=', ['get', 'from_level_id'], ['get', 'to_level_id']
+                '!=', ['get', 'fromMapLevelKey'], ['get', 'toMapLevelKey']
               ]
             ]
           }
         )
         this.addLevelLayer(
-          levelId1,
+          mapLevelKey1,
           {
-            id: `level-${levelId1}-pathway-icon`,
+            id: `${mapLevelKey1}-pathway-icon`,
             type: 'symbol',
             source: 'pathways-midpoints',
             layout: {
               'icon-image': ['get', 'icon'],
               'icon-size': 0.25
             },
-            filter: ['any', ['==', levelId1, ['get', 'from_level_id']], ['==', levelId1, ['get', 'to_level_id']]]
+            filter: ['any', ['==', mapLevelKey1, ['get', 'fromMapLevelKey']], ['==', mapLevelKey1, ['get', 'toMapLevelKey']]]
           }
         )
       }
@@ -481,8 +486,8 @@ export default {
           id: s.id,
           properties: {
             description: 'ok',
-            from_level_id: s.from_stop.level?.id,
-            to_level_id: s.to_stop.level?.id,
+            fromMapLevelKey: mapLevelKeyFn(s.from_stop.level),
+            toMapLevelKey: mapLevelKeyFn(s.to_stop.level),
             icon: PathwayModeIcons[s.pathway_mode].icon
           },
           geometry: {
@@ -507,9 +512,9 @@ export default {
           properties: {
             from_stop_id: s.from_stop.id,
             to_stop_id: s.to_stop.id,
-            level_id: s.from_stop.level?.id,
-            from_level_id: s.from_stop.level?.id,
-            to_level_id: s.to_stop.level?.id,
+            mapLevelKey: mapLevelKeyFn(s.from_stop.level),
+            fromMapLevelKey: mapLevelKeyFn(s.from_stop.level),
+            toMapLevelKey: mapLevelKeyFn(s.to_stop.level),
             generated: s.generated || false
           },
           geometry: {

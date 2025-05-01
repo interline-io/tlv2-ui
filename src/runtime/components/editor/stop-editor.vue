@@ -39,7 +39,7 @@
           </o-select>
         </o-field>
 
-        <o-field v-if="(stop.location_type === 4 || stop.location_type === 0 || (stop.parent && stop.parent.id !== station.id))" label="Parent">
+        <o-field v-if="(stop.location_type === 4 || (stop.parent && stop.parent?.id !== station.id))" label="Parent">
           <o-dropdown
             v-model="stop.parent.id"
             aria-role="list"
@@ -61,10 +61,11 @@
               <h3>{{ station.stop.stop_name }}</h3>
               <small> Station </small>
             </o-dropdown-item>
-            <o-dropdown-item :value="null" aria-role="listitem">
+            <!-- Stops can be "lost" if parent is unset completely. Don't allow this in UI -->
+            <!-- <o-dropdown-item :value="-1" aria-role="listitem">
               <h3>No parent</h3>
-            </o-dropdown-item>
-            <o-dropdown-item v-for="ss of platformStops" :key="ss.id" :value="ss.id" aria-role="listitem">
+            </o-dropdown-item> -->
+            <o-dropdown-item v-for="ss of platformStops" :key="ss.id" :value="ss.id" aria-role="listitem" :disabled="ss.id === stop.id">
               <h3>{{ ss.stop_name }}</h3>
               <small> Platform: {{ routeSummary(ss) }}</small>
             </o-dropdown-item>

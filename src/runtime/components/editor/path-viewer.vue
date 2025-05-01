@@ -1,11 +1,10 @@
 <template>
   <div>
-    <!-- <o-notification type="info">
-                  <strong>From Route:</strong> {{ trip.from_agency_name }}: {{ trip.from_route_name }} <strong>Node:</strong> {{ fromStop.stop_name }} <br>
-                  <strong>To Route:</strong> {{ trip.agency_name }}: {{ trip.route_name }} <strong>Node:</strong> {{ toStop.stop_name }}
-                </o-notification> -->
+    <tl-msg-warning v-if="!path.length">
+      No pathways found for this path.
+    </tl-msg-warning>
 
-    <table class="table shaded is-narrow tl-path-table" cellpadding="0" cellspacing="0">
+    <table v-else class="table shaded is-narrow tl-path-table" cellpadding="0" cellspacing="0">
       <thead>
         <tr>
           <th>Type</th>
