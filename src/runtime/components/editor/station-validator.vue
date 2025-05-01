@@ -273,7 +273,6 @@ export default {
         })
       }
       if (stop.location_type !== 4 && stop.parent?.id && stop.parent.location_type !== 1) {
-        console.log('stop.parent?', stop.parent)
         errs.push({
           message: 'The parent_station must be a Station (location_type = 1)'
         })

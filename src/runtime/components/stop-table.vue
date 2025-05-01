@@ -153,7 +153,6 @@ export default {
   methods: {
     servedByRoutes (stop) {
       const routeNames = new Set()
-      console.log('stop:', stop)
       for (const routeStop of stop.route_stops) {
         routeNames.add(routeName(routeStop.route))
       }

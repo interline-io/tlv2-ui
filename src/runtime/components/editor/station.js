@@ -450,7 +450,6 @@ export class Station {
 
   addStops (stops) {
     // Add these stops/levels to the station and return a list of new stops to fetch.
-    // console.log('addStops:', stops)
     const currentStops = new Map()
     currentStops.set(this.stop.id, this.stop)
     for (const i of this.stops) {
