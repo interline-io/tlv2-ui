@@ -172,7 +172,7 @@ export default {
       variables () {
         return {
           search: this.search,
-          limit: this.limit,
+          limit: 1000,
           location_type: this.locationType,
           feed_version_sha1: this.feedVersionSha1,
           feed_version_ids: this.feedVersionIds ? this.feedVersionIds : [],

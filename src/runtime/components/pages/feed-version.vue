@@ -224,7 +224,12 @@
         </o-tab-item>
 
         <o-tab-item v-if="imported" :value="tabNames.stops" label="Stops">
-          <tl-stop-table v-if="activeTab === tabNames.stops" :link-version="true" :feed-version-sha1="entity.sha1" />
+          <tl-stop-table
+            v-if="activeTab === tabNames.stops"
+            :show-onestop-id="true"
+            :link-version="true"
+            :feed-version-sha1="entity.sha1"
+          />
         </o-tab-item>
 
         <o-tab-item v-if="imported" :value="tabNames.imports" label="Import log">

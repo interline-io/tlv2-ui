@@ -99,7 +99,7 @@ export default {
     showGeometry: { type: Boolean, default: true },
     linkVersion: { type: Boolean, default: false }
   },
-  data() {
+  data () {
     return {
       selectedRouteType: null
     }
