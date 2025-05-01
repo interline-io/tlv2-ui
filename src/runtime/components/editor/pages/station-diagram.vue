@@ -74,12 +74,13 @@
 </template>
 
 <script>
-import fcose from 'cytoscape-fcose'
 import { schemeRdGy, schemeDark2 } from 'd3-scale-chromatic'
 import { nextTick } from 'vue'
-import cytoscape from 'cytoscape'
 import StationMixin from './station-mixin'
 import { navigateTo } from '#imports'
+
+import cytoscape from 'cytoscape'
+import fcose from 'cytoscape-fcose'
 
 const cytoscapeConfig = {
   style: [
