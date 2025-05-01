@@ -248,6 +248,7 @@
 import { PathwayModes, LocationTypes } from '../basemaps'
 import { Stop, Pathway } from '../station'
 import StationMixin from './station-mixin'
+import { nextTick } from 'vue'
 
 export default {
   mixins: [StationMixin],
@@ -350,9 +351,16 @@ export default {
   methods: {
     // stops
     createStopHandler (node) {
+      let newStopId = 0
       this.station.createStop(this.$apollo, node)
-        .then(() => { return this.refetch() })
-        .then(() => { this.selectStop(null) })
+        .then((d) => {
+          newStopId = d?.data?.stop_create?.id
+          return this.refetch()
+        })
+        .then(() => {
+          // NextTick does not seem to be sufficient here, so we use setTimeout
+          setTimeout(() => { this.selectStop(newStopId) }, 100)
+        })
         .catch(this.setError)
     },
     updateStopHandler (node) {
@@ -371,7 +379,7 @@ export default {
       if (stopid === null) {
         return
       }
-      const stop = this.stopIndex.get(stopid) // copy
+      const stop = this.station.getStop(stopid) // copy
       if (!stop) {
         return
       }
@@ -422,27 +430,30 @@ export default {
         .catch(this.setError)
     },
     // select tools
-    selectStop (stopid) {
-      console.log('selectStop:', stopid)
-      if (stopid === null) {
+    selectStop (stopId) {
+      console.log('selectStop: start', stopId)
+      if (stopId === null) {
         this.selectedStops = []
         this.selectMode = 'select'
-        console.log('no stopid')
+        console.log('selectStop: no stopid')
         return
       }
-      const cur = this.stopIndex.get(stopid)
+      const cur = this.station.getStop(stopId)
+      console.log('selectStop: cur stop', cur)
       const prev = this.selectedStops.length > 0 ? this.selectedStops[this.selectedStops.length - 1] : null
       if (!cur) {
-        console.warn('selectStop: stop not found', stopid)
+        console.warn('selectStop: stop not found', stopId)
         return
       }
       // find-route is sticky on first selected stop
       if (prev && this.selectMode === 'find-route') {
         if (prev === cur) {
+          console.log('selectStop: same stop, unselecting')
           this.selectedStops = []
           return
         }
         this.selectedStops = [this.selectedStops[0], cur]
+        console.log('selectStop: find-route set selectedStops to', this.selectedStops)
         return
       }
       //
@@ -459,10 +470,11 @@ export default {
         this.selectedStops = [cur]
         this.selectMode = 'edit-node'
       }
+      console.log('selectStop: set selectedStops to', this.selectedStops, 'and selectMode to', this.selectMode)
     },
     selectPath (fromId, toId) {
       this.selectMode = 'find-route'
-      this.selectedStops = [this.stopIndex.get(fromId), this.stopIndex.get(toId)]
+      this.selectedStops = [this.station.getStop(fromId), this.station.getStop(toId)]
     },
     selectPathway (pwid) {
       if (pwid === null) {

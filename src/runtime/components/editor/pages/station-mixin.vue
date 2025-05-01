@@ -142,16 +142,6 @@ export default {
     stopAssociationsEnabled () {
       return this.feedVersion?.agencies?.length === 0
     },
-    stopIndex () {
-      const a = new Map()
-      if (!this.station) {
-        return a
-      }
-      for (const stop of this.station.stops) {
-        a.set(stop.id, stop)
-      }
-      return a
-    }
   },
   methods: {
     handleError (response) {

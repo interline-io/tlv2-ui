@@ -390,7 +390,6 @@ export class Level {
 
 export class Station {
   constructor (stop) {
-    this.stopIndex = new Map()
     this.graph = null
     this.stop = new Stop(stop)
     this.pathways = []
@@ -418,7 +417,12 @@ export class Station {
   }
 
   getStop (stopId) {
-    return this.stopIndex.get(stopId)
+    for (const stop of this.stops) {
+      if (stop.id === stopId) {
+        return stop
+      }
+    }
+    return null
   }
 
   findRoute (start, goal) {
@@ -504,7 +508,6 @@ export class Station {
     }
     // Update
     this.stops = newStops
-    this.stopIndex = currentStops
     this.pathways = Array.from(pwIndex.values())
     this.levels = Array.from(lvls.values())
     // Update stoplist
