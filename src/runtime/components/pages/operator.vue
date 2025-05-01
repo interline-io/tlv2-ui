@@ -190,7 +190,12 @@
           </o-tab-item>
 
           <o-tab-item :value="tabNames.stops" label="Stops">
-            <tl-stop-table v-if="activeTab === tabNames.stops" :agency-ids="agencyIds" />
+            <tl-stop-table
+              v-if="activeTab === tabNames.stops"
+              :show-onestop-id="true"
+              :feed-version-ids="agencies.map(a => a.feed_version.id)"
+              :agency-ids="agencyIds"
+            />
           </o-tab-item>
         </o-tabs>
       </div>

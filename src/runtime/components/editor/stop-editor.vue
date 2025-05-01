@@ -136,7 +136,7 @@
           </o-field>
           <span v-if="!readOnly" class="button is-danger" @click="$emit('delete-association', stop)">Remove association</span>
         </template>
-        <template v-else-if="!readOnly">
+        <template v-else-if="!readOnly && stopAssociationsEnabled">
           <span class="button is-primary" @click="$emit('create-association', stop)">Add association</span>
         </template>
       </div>
@@ -171,6 +171,11 @@ export default {
       default () { return null }
     },
     readOnly: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    stopAssociationsEnabled: {
       type: Boolean,
       required: false,
       default: false

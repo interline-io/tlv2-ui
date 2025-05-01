@@ -60,7 +60,7 @@ export default {
     feedName () {
       return this.feed ? (this.feed.name || this.feed.onestop_id) : this.feedKey
     },
-    feedVersionName() {
+    feedVersionName () {
       return (this.feedVersion?.file || this.feedVersionKey || '').substr(0, 8)
     },
     stations () {

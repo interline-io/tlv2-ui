@@ -1,16 +1,18 @@
 <template>
   <div>
-    <a class="button is-outlined" :class="errorCount.stops > 0 ? 'is-danger' : ''" @click="openStops = true">
-      <i v-if="errorCount.stops > 0" class="mdi mdi-alert has-text-danger" /> Stops
-    </a>
+    <div class="buttons">
+      <a class="button is-outlined" :class="errorCount.stops > 0 ? 'is-danger' : ''" @click="openStops = true">
+        <i v-if="errorCount.stops > 0" class="mdi mdi-alert has-text-danger" /> Stops
+      </a>
 
-    <a class="button is-outlined" :class="errorCount.pathways > 0 ? 'is-danger' : ''" @click="openPathways = true">
-      <i v-if="errorCount.pathways > 0" class="mdi mdi-alert has-text-danger" /> Pathways
-    </a>
+      <a class="button is-outlined" :class="errorCount.pathways > 0 ? 'is-danger' : ''" @click="openPathways = true">
+        <i v-if="errorCount.pathways > 0" class="mdi mdi-alert has-text-danger" /> Pathways
+      </a>
 
-    <a class="button is-outlined" :class="stopPathErrorCount > 0 ? 'is-danger' : ''" @click="openPaths = true">
-      <i v-if="stopPathErrorCount > 0" class="mdi mdi-alert has-text-danger" /> Connectivity
-    </a>
+      <a class="button is-outlined" :class="stopPathErrorCount > 0 ? 'is-danger' : ''" @click="openPaths = true">
+        <i v-if="stopPathErrorCount > 0" class="mdi mdi-alert has-text-danger" /> Connectivity
+      </a>
+    </div>
 
     <o-modal
       v-model:active="openStops"
@@ -270,7 +272,7 @@ export default {
           message: 'Cannot have self as parent_station'
         })
       }
-      if (stop.location_type !== 4 && stop.parent && stop.parent.location_type !== 1) {
+      if (stop.location_type !== 4 && stop.parent?.id && stop.parent.location_type !== 1) {
         errs.push({
           message: 'The parent_station must be a Station (location_type = 1)'
         })
@@ -311,10 +313,14 @@ export default {
       //     message: 'Fare-gate and exit-gate pathways must be one-way'
       //   })
       // }
-      if (pathway.pathway_mode === 2 && (pathway.stair_count < 0 || pathway.from_stop.level?.id === pathway.to_stop.level?.id)) {
-        errs.push({
-          message: 'Stairs pathways must have a stair_count or connect stops with different levels'
-        })
+      if (pathway.pathway_mode === 2 && pathway.stair_count == null) {
+        if (pathway.from_stop.level?.id !== pathway.to_stop.level?.id) {
+          // ok
+        } else {
+          errs.push({
+            message: 'Stairs pathways must have a stair_count or connect stops with different levels'
+          })
+        }
       }
       return errs
     }

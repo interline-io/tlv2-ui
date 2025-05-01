@@ -240,7 +240,7 @@ export default {
       }
 
       // filter stops based on agency
-      const allStops = [...this.station.stops, ...this.otherStops]
+      const allStops = [...this.station.stops, ...this.otherStops].filter(s => (s.location_type !== 1))
 
       // get geoms
       const geoms = {}
@@ -357,7 +357,9 @@ export default {
 
       this.map.getSource('stops').setData(newStops)
 
-      const stopParentStationGeoms = allStops.filter((s) => { return s.parent && s.parent.id && s.parent.id !== this.station.id }).map((s) => {
+      const stopParentStationGeoms = allStops.filter((s) => {
+        return s.parent?.id && s.parent?.id !== this.station.id
+      }).map((s) => {
         return {
           type: 'Feature',
           id: s.id,

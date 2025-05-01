@@ -385,7 +385,6 @@ export default {
           ret.set(rs.route.id, true)
         }
       }
-      console.log('routeIds:', Array.from(ret.keys()))
       return Array.from(ret.keys())
     },
     allStops () {

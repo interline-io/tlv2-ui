@@ -242,7 +242,7 @@ export class Stop {
       this.children.push(new Stop(c))
     }
     // levels
-    this.level = { id: null }
+    this.level = { id: null, level_name: 'Unassigned' }
     if (stop.level) {
       this.level = new Level(stop.level)
     }
@@ -320,15 +320,15 @@ export class Pathway {
 
   setDefaults () {
     this.feed_version = { id: def(this.feed_version.id, this.from_stop.feed_version.id) } // fix
-    this.length = def(this.length, -1)
+    this.length = this.length
     this.pathway_id = def(this.pathway_id, String(Date.now()))
     this.pathway_mode = def(this.pathway_mode, 1)
-    this.max_slope = def(this.max_slope, 0)
-    this.min_width = def(this.min_width, 0)
+    this.max_slope = this.max_slope
+    this.min_width = this.min_width
     this.signposted_as = def(this.signposted_as, '')
     this.reverse_signposted_as = def(this.reverse_signposted_as, '')
-    this.stair_count = def(this.stair_count, -1)
-    this.traversal_time = def(this.traversal_time, -1)
+    this.stair_count = this.stair_count
+    this.traversal_time = this.traversal_time
     this.is_bidirectional = def(this.is_bidirectional, 1)
     return this
   }
@@ -390,7 +390,6 @@ export class Level {
 
 export class Station {
   constructor (stop) {
-    this.stopIndex = new Map()
     this.graph = null
     this.stop = new Stop(stop)
     this.pathways = []
@@ -418,7 +417,12 @@ export class Station {
   }
 
   getStop (stopId) {
-    return this.stopIndex.get(stopId)
+    for (const stop of this.stops) {
+      if (stop.id === stopId) {
+        return stop
+      }
+    }
+    return null
   }
 
   findRoute (start, goal) {
@@ -446,7 +450,6 @@ export class Station {
 
   addStops (stops) {
     // Add these stops/levels to the station and return a list of new stops to fetch.
-    // console.log('addStops:', stops)
     const currentStops = new Map()
     currentStops.set(this.stop.id, this.stop)
     for (const i of this.stops) {
@@ -504,7 +507,6 @@ export class Station {
     }
     // Update
     this.stops = newStops
-    this.stopIndex = currentStops
     this.pathways = Array.from(pwIndex.values())
     this.levels = Array.from(lvls.values())
     // Update stoplist

@@ -10,7 +10,7 @@
             <h5 class="title is-5">
               {{ level.level_name }}
             </h5>
-            <div class="content">
+            <div class="content" v-if="level.id">
               <strong>ID:</strong> {{ level.level_id }}
             </div>
             <div class="field is-grouped is-grouped-multiline">
@@ -60,22 +60,27 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   props: {
     station: { type: Object, default () { return {} } }
   },
   computed: {
     groupedSortedStationLevels () {
-      const levelsObjByIndex = {}
+      const m: Map<number, any[]> = new Map()
       for (const lvl of this.station.levels) {
-        const a = levelsObjByIndex[lvl.level_index] || []
+        const idx = lvl.level_index
+        if (idx == null) {
+          continue
+        }
+        const a = m.get(idx) || []
         a.push(lvl)
-        levelsObjByIndex[lvl.level_index] = a
+        m.set(idx, a)
       }
-      const levelIndexes = Object.keys(levelsObjByIndex).map(i => parseInt(i)).sort((a, b) => b - a)
-      const levelsArrByIndex = levelIndexes.map(i => levelsObjByIndex[i])
-      return levelsArrByIndex
+      const keys = [...m.keys()].sort((a, b) => b - a)
+      const ret = keys.map(s =>(m.get(s) || []))
+      ret.push(this.station.levels.filter( s =>( s.level_index == null)))
+      return ret
     }
   }
 }

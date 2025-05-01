@@ -21,14 +21,23 @@
     <p class="content">
       Or select an existing station in this feed version:
     </p>
-    <div v-for="station in stations" :key="station.id" class="box is-clearfix">
-      <nuxt-link
-        :to="{name:'editor-feedKey-feedVersionKey-stations-stationKey', params: {feedKey,feedVersionKey,stationKey:station.station_id}}"
-      >
-        {{ station.stationName }}
-      </nuxt-link>
+    <tl-stop-table
+      v-if="feedVersion?.id"
+      :feed-version-ids="[feedVersion.id]"
+      :location-type="1"
+      :show-links="false"
+    >
+      <template #stopName="slotProps">
+        <nuxt-link
+          :to="{name:'editor-feedKey-feedVersionKey-stations-stationKey', params: {feedKey,feedVersionKey,stationKey:slotProps.stop.stop_id}}"
+        >
+          {{ slotProps.stop.stop_name }}
+        </nuxt-link>
+      </template>
+    </tl-stop-table>
+    <!-- <div v-for="station in stations" :key="station.id" class="box is-clearfix">
       <div class="is-pulled-right" />
-    </div>
+    </div> -->
   </div>
 </template>
 
