@@ -1,16 +1,18 @@
 <template>
   <div>
-    <a class="button is-outlined" :class="errorCount.stops > 0 ? 'is-danger' : ''" @click="openStops = true">
-      <i v-if="errorCount.stops > 0" class="mdi mdi-alert has-text-danger" /> Stops
-    </a>
+    <div class="buttons">
+      <a class="button is-outlined" :class="errorCount.stops > 0 ? 'is-danger' : ''" @click="openStops = true">
+        <i v-if="errorCount.stops > 0" class="mdi mdi-alert has-text-danger" /> Stops
+      </a>
 
-    <a class="button is-outlined" :class="errorCount.pathways > 0 ? 'is-danger' : ''" @click="openPathways = true">
-      <i v-if="errorCount.pathways > 0" class="mdi mdi-alert has-text-danger" /> Pathways
-    </a>
+      <a class="button is-outlined" :class="errorCount.pathways > 0 ? 'is-danger' : ''" @click="openPathways = true">
+        <i v-if="errorCount.pathways > 0" class="mdi mdi-alert has-text-danger" /> Pathways
+      </a>
 
-    <a class="button is-outlined" :class="stopPathErrorCount > 0 ? 'is-danger' : ''" @click="openPaths = true">
-      <i v-if="stopPathErrorCount > 0" class="mdi mdi-alert has-text-danger" /> Connectivity
-    </a>
+      <a class="button is-outlined" :class="stopPathErrorCount > 0 ? 'is-danger' : ''" @click="openPaths = true">
+        <i v-if="stopPathErrorCount > 0" class="mdi mdi-alert has-text-danger" /> Connectivity
+      </a>
+    </div>
 
     <o-modal
       v-model:active="openStops"
@@ -313,7 +315,7 @@ export default {
       //   })
       // }
       if (pathway.pathway_mode === 2 && pathway.stair_count == null) {
-        if ((pathway.from_stop.level?.id || pathway.to_stop.level?.id) && (pathway.from_stop.level?.id === pathway.to_stop.level?.id)) {
+        if (pathway.from_stop.level?.id !== pathway.to_stop.level?.id) {
           // ok
         } else {
           errs.push({

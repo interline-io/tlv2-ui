@@ -436,7 +436,6 @@ export default {
         console.warn('selectStop: stop not found', stopid)
         return
       }
-      console.log('selectStop: cur', cur, 'prev:', prev, 'mode:', this.selectMode)
       // find-route is sticky on first selected stop
       if (prev && this.selectMode === 'find-route') {
         if (prev === cur) {
@@ -452,18 +451,14 @@ export default {
         if (prev === cur) {
           this.selectedStops = []
           this.selectMode = 'select'
-          console.log('1')
         } else {
           this.selectedStops = [prev, cur]
           this.selectMode = 'add-pathway'
-          console.log('2')
         }
       } else {
         this.selectedStops = [cur]
         this.selectMode = 'edit-node'
-        console.log('3')
       }
-      console.log('4')
     },
     selectPath (fromId, toId) {
       this.selectMode = 'find-route'
