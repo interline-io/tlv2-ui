@@ -3,12 +3,12 @@ import { gql } from 'graphql-tag'
 import { Stop, Station, stationQuery, stationStopQuery } from '../station'
 
 const currentFeeds = gql`
-query currentFeeds ($feed_onestop_id: String, $feed_version_file: String) {
+query currentFeeds ($feed_onestop_id: String, $feed_version_ids: [Int!]) {
   feeds(limit:1000, where: {onestop_id: $feed_onestop_id, spec: GTFS}) {
     id
     name
     onestop_id
-    feed_versions(limit: 10, where: {file: $feed_version_file}) {
+    feed_versions(limit: 10, where: {ids: $feed_version_ids}) {
       file
       sha1
       id
@@ -53,7 +53,7 @@ export default {
       variables () {
         return {
           feed_onestop_id: this.feedKey,
-          feed_version_file: this.feedVersionKey
+          feed_version_ids: this.feedVersionKey ? [this.feedVersionKey] : null
         }
       }
     },
@@ -63,7 +63,7 @@ export default {
       fetchPolicy: 'network-only',
       variables () {
         return {
-          feed_version_file: this.feedVersionKey,
+          feed_version_ids: this.feedVersionKey ? [this.feedVersionKey] : null,
           feed_onestop_id: this.feedKey,
           stop_id: this.stationKey
         }
@@ -137,7 +137,7 @@ export default {
       return this.feed?.feed_versions?.length > 0 ? this.feed.feed_versions[0] : null
     },
     feedVersionName () {
-      return (this.feedVersion?.file || this.feedVersionKey || '').substr(0, 8)
+      return String(this.feedVersion?.id || this.feedVersionKey || '').substr(0, 8)
     },
     stopAssociationsEnabled () {
       return this.feedVersion?.agencies?.length === 0

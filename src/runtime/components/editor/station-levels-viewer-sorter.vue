@@ -10,7 +10,7 @@
             <h5 class="title is-5">
               {{ level.level_name }}
             </h5>
-            <div class="content" v-if="level.id">
+            <div v-if="level.id" class="content">
               <strong>ID:</strong> {{ level.level_id }}
             </div>
             <div class="field is-grouped is-grouped-multiline">
@@ -43,7 +43,7 @@
           <div class="column is-3 has-text-right">
             <nuxt-link
               v-if="level.id"
-              :to="{name:'editor-feedKey-feedVersionKey-stations-stationKey-levels-levelKey-edit', params: {feedKey:station.stop.feed_version.feed.onestop_id,feedVersionKey:station.stop.feed_version.file,stationKey:station.stop.stop_id,levelKey:level.level_id}}"
+              :to="{name:'editor-feedKey-feedVersionKey-stations-stationKey-levels-levelKey-edit', params: {feedKey:station.stop.feed_version.feed.onestop_id,feedVersionKey:station.stop.feed_version.id,stationKey:station.stop.stop_id,levelKey:level.level_id}}"
               class="button is-primary is-outlined"
             >
               Edit Level
@@ -78,8 +78,8 @@ export default {
         m.set(idx, a)
       }
       const keys = [...m.keys()].sort((a, b) => b - a)
-      const ret = keys.map(s =>(m.get(s) || []))
-      ret.push(this.station.levels.filter( s =>( s.level_index == null)))
+      const ret = keys.map(s => (m.get(s) || []))
+      ret.push(this.station.levels.filter(s => (s.level_index == null)))
       return ret
     }
   }
