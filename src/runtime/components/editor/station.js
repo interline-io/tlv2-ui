@@ -291,8 +291,8 @@ export class Stop {
       stop_desc: this.stop_desc,
       geometry: this.geometry,
       location_type: this.location_type,
-      parent: { id: this.parent.id },
-      level: { id: this.level.id },
+      parent: this.parent?.id > 0 ? { id: this.parent.id } : { id: null },
+      level: this.level?.id > 0 ? { id: this.level.id } : { id: null },
       feed_version: { id: this.feed_version.id }
     }
   }

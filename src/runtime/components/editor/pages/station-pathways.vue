@@ -208,7 +208,7 @@
                   <o-icon icon="menu-down" />
                 </button>
               </template>
-              <o-dropdown-item v-for="level of sortedStationLevels" :key="level.id" :value="level.id" aria-role="listitem">
+              <o-dropdown-item v-for="level of sortedStationLevels" :key="level.id" :value="mapLevelKeyFn(level)" aria-role="listitem">
                 <div class="media">
                   <div class="media-left">
                     {{ level.level_index }}
@@ -249,6 +249,10 @@ import { PathwayModes, LocationTypes } from '../basemaps'
 import { Stop, Pathway } from '../station'
 import StationMixin from './station-mixin'
 import { nextTick } from 'vue'
+
+function mapLevelKeyFn (level) {
+  return `mapLevelKey-${level.id || 'unassigned'}`
+}
 
 export default {
   mixins: [StationMixin],
@@ -317,10 +321,11 @@ export default {
   watch: {
     'station.levels' () {
       // only call once
-      if (this.selectedLevels.length === 0) {
-        this.selectedLevels = this.station.levels.map((s) => { return s.id })
-        this.selectedLevel = this.selectedLevels.length > 0 ? this.selectedLevels[0] : null
-      }
+      // if (this.selectedLevels.length === 0) {
+      console.log('this.staiton.levels', this.station.levels)
+      this.selectedLevels = this.station.levels.map(mapLevelKeyFn)
+      this.selectedLevel = this.station.levels.length > 0 ? this.station.levels[0].id : null
+      // }
     },
     'station.stops' () {
       if (this.station.stops.length > 0 && this.$route.query.selectedStop) {
@@ -349,6 +354,7 @@ export default {
     }
   },
   methods: {
+    mapLevelKeyFn,
     // stops
     createStopHandler (node) {
       let newStopId = 0
