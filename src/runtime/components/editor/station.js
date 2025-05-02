@@ -10,8 +10,8 @@ fragment level on Level {
   geometry
 }
 
-query stationQuery ($stop_id: String, $feed_onestop_id: String!, $feed_version_file: String!) {
-  feed_versions(where: {file: $feed_version_file, feed_onestop_id: $feed_onestop_id}) {
+query stationQuery ($stop_id: String, $feed_onestop_id: String!, $feed_version_ids: [Int!]) {
+  feed_versions(ids: $feed_version_ids, where: {feed_onestop_id: $feed_onestop_id}) {
     stops(limit: 1, where: {stop_id: $stop_id}) {
       id
       stop_id

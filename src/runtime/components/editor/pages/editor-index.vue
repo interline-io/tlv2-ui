@@ -19,14 +19,14 @@
               {{ feed.name || feed.onestop_id }}
             </td>
             <td>
-              {{ feed_version.file }}
+              {{ feed_version.sha1 }}
             </td>
             <td>
               <nuxt-link
-                v-if="feed_version.file"
+                v-if="feed_version.id"
                 :to="{name:'editor-feedKey-feedVersionKey-stations', params: {
                   feedKey:feed.onestop_id || 'unknown',
-                  feedVersionKey:feed_version.file || 'unknown'
+                  feedVersionKey:feed_version.id || 'unknown'
                 }}"
               >
                 Edit {{ feed_version.stations ? feed_version.stations.length : '' }} Stations

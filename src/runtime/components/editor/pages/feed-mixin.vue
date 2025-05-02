@@ -2,12 +2,12 @@
 import { gql } from 'graphql-tag'
 
 const currentFeeds = gql`
-query currentFeeds ($feed_onestop_id: String, $feed_version_file: String) {
+query currentFeeds ($feed_onestop_id: String, $feed_version_ids: [Int!]) {
   feeds(limit:1000, where: {onestop_id: $feed_onestop_id, spec: GTFS}) {
     id
     name
     onestop_id
-    feed_versions(limit: 2, where: {file: $feed_version_file}) {
+    feed_versions(limit: 2, where: {ids: $feed_version_ids}) {
       file
       sha1
       id
@@ -36,7 +36,7 @@ export default {
       variables () {
         return {
           feed_onestop_id: this.feedKey,
-          feed_version_file: this.feedVersionKey
+          feed_version_ids: this.feedVersionKey ? [this.feedVersionKey] : null
         }
       }
     }
@@ -61,7 +61,7 @@ export default {
       return this.feed ? (this.feed.name || this.feed.onestop_id) : this.feedKey
     },
     feedVersionName () {
-      return (this.feedVersion?.file || this.feedVersionKey || '').substr(0, 8)
+      return String(this.feedVersion?.id || this.feedVersionKey || '').substr(0, 8)
     },
     stations () {
       return this.feedVersion ? this.feedVersion.stations : null
