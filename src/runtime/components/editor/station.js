@@ -293,7 +293,8 @@ export class Stop {
       location_type: this.location_type,
       parent: this.parent?.id > 0 ? { id: this.parent.id } : { id: null },
       level: this.level?.id > 0 ? { id: this.level.id } : { id: null },
-      feed_version: { id: this.feed_version.id }
+      feed_version: { id: this.feed_version.id },
+      external_reference: this.stop_ext
     }
   }
 }
@@ -646,11 +647,6 @@ export class Station {
       return this.updateStop($apollo, ent)
     }
     throw new Error('temporarily unsupported')
-  }
-
-  createAssociation ($apollo, ent) {
-    _ = $apollo
-    _ = ent
   }
 
   deleteAssociation ($apollo, ent) {
