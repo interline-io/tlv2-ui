@@ -123,7 +123,6 @@
                 :stop-associations-enabled="stopAssociationsEnabled"
                 @delete="deleteStopHandler"
                 @update="updateStopHandler"
-                @create-association="createAssociationHandler"
                 @delete-association="deleteAssociationHandler"
                 @select-pathway="selectPathway"
               />
@@ -393,12 +392,6 @@ export default {
       this.updateStopHandler(stop)
     },
     // node associations
-    createAssociationHandler (node) {
-      this.station.createAssociation(this.$apollo, node)
-        .then(() => { return this.refetch() })
-        .then(() => { this.selectStop(null) })
-        .catch(this.setError)
-    },
     deleteAssociationHandler (node) {
       this.station.deleteAssociation(this.$apollo, node)
         .then(() => { return this.refetch() })
