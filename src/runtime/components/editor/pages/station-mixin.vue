@@ -140,7 +140,7 @@ export default {
       return String(this.feedVersion?.id || this.feedVersionKey || '').substr(0, 8)
     },
     stopAssociationsEnabled () {
-      return this.feedVersion?.agencies?.length === 0
+      return (this.feedVersion?.agencies || []).length === 0
     },
   },
   methods: {

@@ -11,6 +11,7 @@
       :feed-key="feedKey"
       :feed-version-key="feedVersionKey"
       :station-key="stationKey"
+      :stop-associations-enabled="stopAssociationsEnabled"
     />
 
     <div v-if="ready" class="columns">
