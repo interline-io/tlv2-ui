@@ -31,7 +31,13 @@
       </div>
     </div>
 
-    <tl-editor-station-mode-tabs :station="station" :feed-key="feedKey" :feed-version-key="feedVersionKey" :station-key="stationKey" />
+    <tl-editor-station-mode-tabs
+      :station="station"
+      :feed-key="feedKey"
+      :feed-version-key="feedVersionKey"
+      :station-key="stationKey"
+      :stop-associations-enabled="stopAssociationsEnabled"
+    />
 
     <tl-loading v-if="$apollo.loading" />
     <div v-else>

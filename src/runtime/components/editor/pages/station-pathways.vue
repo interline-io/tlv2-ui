@@ -10,6 +10,7 @@
       :feed-key="feedKey"
       :feed-version-key="feedVersionKey"
       :station-key="stationKey"
+      :stop-associations-enabled="stopAssociationsEnabled"
     />
 
     <div v-if="ready" class="columns">
@@ -321,7 +322,6 @@ export default {
     'station.levels' () {
       // only call once
       // if (this.selectedLevels.length === 0) {
-      console.log('this.staiton.levels', this.station.levels)
       this.selectedLevels = this.station.levels.map(mapLevelKeyFn)
       this.selectedLevel = this.station.levels.length > 0 ? this.station.levels[0].id : null
       // }
