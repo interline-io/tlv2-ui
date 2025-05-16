@@ -6,7 +6,7 @@
 
     <slot name="description" />
 
-    <div class="field" v-if="placeLevelInt > 2">
+    <div class="field" v-if="placeLevelInt < 2">
       <label for="sortBy" class="label">Sort places by</label>
       <o-radio v-model="sortBy" native-value="alphabetical">
         Alphabetical
