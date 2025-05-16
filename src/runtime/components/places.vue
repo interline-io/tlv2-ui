@@ -5,8 +5,7 @@
     </slot>
 
     <slot name="description" />
-
-    <div class="field">
+    <div class="field" v-if="sortedPlaces.length > 1 && showSortBy">
       <label for="sortBy" class="label">Sort places by</label>
       <o-radio v-model="sortBy" native-value="alphabetical">
         Alphabetical
@@ -129,7 +128,8 @@ export default {
     placeLevel: { type: String, default: 'ADM0' },
     adm0: { type: String, default: null },
     adm1: { type: String, default: null },
-    city: { type: String, default: null }
+    city: { type: String, default: null },
+    showSortBy: { type: Boolean, default: true }
   },
   data() {
     return {
