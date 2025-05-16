@@ -5,8 +5,7 @@
     </slot>
 
     <slot name="description" />
-    {{  placeLevelInt }}
-    <div class="field" v-if="sortedPlaces.length > 1 && placeLevelInt < 2">
+    <div class="field" v-if="sortedPlaces.length > 1 && placeLevelInt < 3">
       <label for="sortBy" class="label">Sort places by</label>
       <o-radio v-model="sortBy" native-value="alphabetical">
         Alphabetical
@@ -166,6 +165,9 @@ export default {
       }
       if (this.placeLevel === 'ADM0_ADM1_CITY') {
         return 2
+      }
+      if (this.placeLevel === 'ADM0_ADM1_CITY_SELECTED') {
+        return 3
       }
       return 0
     },
