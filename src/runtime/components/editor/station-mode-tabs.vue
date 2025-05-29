@@ -13,7 +13,7 @@
           <nuxt-link
             :to="{name:routeKeys['stops'], params: {feedKey:feedKey,feedVersionKey:feedVersionKey,stationKey:stationKey}}"
           >
-            <i class="mdi mdi-map-marker mdi-16px" /> &nbsp; Assign Stops to Platforms
+            <i class="mdi mdi-map-marker mdi-16px" /> &nbsp; Associate Stops
           </nuxt-link></span>
       </li>
       <li :class="(activeTab === 'pathways') ? 'is-active' : ''">

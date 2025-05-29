@@ -184,6 +184,10 @@ query stationStopQuery($stop_ids: [Int!]!) {
   }
 }`
 
+export function mapLevelKeyFn (level) {
+  return `mapLevelKey-${level.id || 'unassigned'}`
+}
+
 function def (v, d) {
   if (v == null) {
     return d
@@ -231,6 +235,7 @@ export class Stop {
       this.geometry = { type: 'Point', coordinates: stop.geometry.coordinates }
     }
     this.location_type = stop.location_type
+
     // objects
     this.route_stops = stop.route_stops || []
     this.parent = { id: null }
@@ -241,20 +246,27 @@ export class Stop {
     for (const c of (stop.children || [])) {
       this.children.push(new Stop(c))
     }
+
     // levels
-    this.level = { id: null, level_name: 'Unassigned' }
     if (stop.level) {
       this.level = new Level(stop.level)
+    } else {
+      this.level = new Level({ id: null, level_name: 'Unassigned' })
     }
+
+    // Child levels
     this.levels = []
     if (stop.child_levels) {
       this.levels = stop.child_levels.map((s) => { return new Level(s) })
     }
+
     // pathways
     this.pathways_from_stop = (stop.pathways_from_stop || []).map((s) => { return new Pathway(s) })
     this.pathways_to_stop = (stop.pathways_to_stop || []).map((s) => { return new Pathway(s) })
+
     // feed version
     this.feed_version = new FeedVersion(stop.feed_version)
+
     // stop ext
     this.external_reference = stop.external_reference
   }
@@ -404,6 +416,7 @@ export class Station {
     for (const level of (this.stop.levels || [])) {
       this.levels.push(new Level(level))
     }
+    this.levels.push(new Level({ level_name: 'Unassigned' }))
   }
 
   get id () {
@@ -645,13 +658,25 @@ export class Station {
   }
 
   // Associations
-  importStop ($apollo, ent, _cb) {
-    console.log('node:', ent, 'this.stop:', this.stop)
-    if (ent.feed_version?.id === this.stop.feed_version?.id) {
-      ent.parent = { id: this.stop.id }
-      return this.updateStop($apollo, ent)
-    }
-    throw new Error('temporarily unsupported')
+  importStop ($apollo, ent) {
+    const sourceFeed = ent.feed_version?.feed?.onestop_id
+    const stop = new Stop({
+      feed_version: { id: this.stop.feed_version.id },
+      parent: { id: this.stop.id },
+      stop_id: `import-${sourceFeed}-${ent.stop_id}`,
+      level: { id: ent.level.id },
+      stop_name: ent.stop_name,
+      stop_code: ent.stop_code,
+      platform_code: ent.platform_code,
+      location_type: ent.location_type,
+      geometry: ent.geometry,
+      external_reference: {
+        target_feed_onestop_id: sourceFeed,
+        target_stop_id: ent.stop_id
+      }
+    })
+    console.log('import stop:', stop.value())
+    return this.createStop($apollo, stop)
   }
 
   deleteAssociation ($apollo, ent) {

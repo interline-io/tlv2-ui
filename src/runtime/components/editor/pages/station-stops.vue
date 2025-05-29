@@ -112,7 +112,7 @@
                 </div>
                 <div class="media-content">
                   <h3>
-                    {{ level.id == null ? 'Unassigned' : level.level_name }}
+                    {{ level.level_name }}
                   </h3>
                   <small>{{ level.stops.length }} nodes </small>
                 </div>
@@ -124,7 +124,7 @@
         </o-field>
         <tl-editor-pathway-map
           :center="station.geometry.coordinates"
-          :other-stops="filteredNearbyStops"
+          :other-stops="filteredStops"
           :basemap="basemap"
           :station="stationFiltered"
           :selected-stops="selectedStops"
@@ -139,7 +139,7 @@
 
 <script>
 import { gql } from 'graphql-tag'
-import { Stop } from '../station'
+import { Stop, mapLevelKeyFn } from '../station'
 import StationMixin from './station-mixin'
 import { navigateTo } from '#imports'
 
@@ -255,50 +255,68 @@ export default {
     }
   },
   computed: {
-    filteredNearbyStops () {
+    filteredStops () {
       // Get nearby stops that are NOT associated with the station and NOT in the excluded feed list.
       // Also apply agency selection.
       if (!this.station) {
         return []
       }
-      const excludeFeeds = []
+
+      // Exclude specified feeds and stops that are already associated with the station
+      const excludeFeeds = new Set(['RG', 'historic', 'mtc'])
       const excludeStops = new Set()
-      for (const stop of this.station.stops) {
-        if (stop.external_reference) {
-          const key = stop.external_reference.target_feed_onestop_id + ':' + stop.external_reference.target_stop_id
-          excludeStops.add(key, true)
-        }
+      const associatedStops = this.station.stops.filter((s) => {
+        return s.external_reference?.target_active_stop
+      })
+      for (const stop of associatedStops) {
+        const key = `${stop.external_reference.target_feed_onestop_id}:${stop.external_reference.target_stop_id}`
+        excludeStops.add(key)
       }
-      let filtered = this.nearbyStops.filter((stop) => {
-        if (stop.location_type !== 0 && stop.location_type !== 1) {
-          return false
-        }
-        const key = stop.feed_version.feed.onestop_id + ':' + stop.stop_id
+
+      const filteredStops = this.nearbyStops.filter((stop) => {
+        // Exclude stops that are already imported into the station
+        const key = `${stop.feed_version?.feed?.onestop_id}:${stop.stop_id}`
         if (excludeStops.has(key)) {
           return false
         }
-        if (excludeFeeds.includes(stop.feed_version.feed.onestop_id)) {
+        // Exclude stops that are already associated with the station
+        if (stop.parent?.id === this.station.id) {
+          return false
+        }
+        // Exclude stops that are in the same feed version as the station
+        if (stop.feed_version?.id === this.station.stop?.feed_version?.id) {
+          return false
+        }
+        // Exclude stops that are in the excluded feeds
+        if (stop.feed_version?.feed?.onestop_id && excludeFeeds.has(stop.feed_version.feed.onestop_id)) {
+          return false
+        }
+        // Exclude stations
+        if (stop.location_type === 1) {
           return false
         }
         return true
       })
-      if (this.selectedAgencies?.length > 0) {
-        const check = new Set(this.selectedAgencies)
-        filtered = filtered.filter((stop) => {
-          let rss = stop.route_stops || []
-          if (stop.external_reference && stop.external_reference.target_active_stop) {
-            rss = stop.external_reference.target_active_stop.route_stops
-          }
-          const stopAgencies = []
-          for (const rs of rss) {
-            if (rs.route && rs.route.agency) {
-              stopAgencies.push(rs.route.agency.agency_id)
-            }
-          }
-          return intersection(check, stopAgencies).size > 0
-        })
-      }
-      return filtered
+
+      console.log('Filtered nearby stops:', filteredStops.length, 'of', this.nearbyStops.length)
+      // if (this.selectedAgencies?.length > 0) {
+      //   const check = new Set(this.selectedAgencies)
+      //   filtered = filtered.filter((stop) => {
+      //     let rss = stop.route_stops || []
+      //     if (stop.external_reference && stop.external_reference.target_active_stop) {
+      //       rss = stop.external_reference.target_active_stop.route_stops
+      //     }
+      //     const stopAgencies = []
+      //     for (const rs of rss) {
+      //       if (rs.route && rs.route.agency) {
+      //         stopAgencies.push(rs.route.agency.agency_id)
+      //       }
+      //     }
+      //     return intersection(check, stopAgencies).size > 0
+      //   })
+      // }
+      // return [...filteredStops, ...associatedStops]
+      return filteredStops
     },
     stationFiltered () {
       return {
@@ -353,11 +371,10 @@ export default {
   },
   watch: {
     'station.levels' () {
-      if ((this.selectedLevels || []).filter((s) => { return s }).length === 0) {
-        this.selectedLevels = this.station.levels.map((s) => { return s.id })
-        this.selectedLevels.push(null)
-      }
-    }
+      this.selectedLevels = this.station.levels.map(mapLevelKeyFn)
+      this.selectedLevel = this.station.levels.length > 0 ? this.station.levels[0].id : null
+      console.log('Station levels updated:', this.selectedLevels)
+    },
   },
   methods: {
     importStopHandler (ent) {

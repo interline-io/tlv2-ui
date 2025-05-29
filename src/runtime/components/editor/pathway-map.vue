@@ -151,6 +151,9 @@ export default {
     'station.stops' () {
       this.drawStops()
     },
+    otherStops () {
+      this.drawStops()
+    },
     routes () {
       this.drawRoutes()
     }
@@ -205,7 +208,15 @@ export default {
           continue
         }
         const mapLevelKey = mapLevelKeyFn(level)
-        features.push({ type: 'Feature', id: level.id, properties: { id: level.id, mapLevelKey: mapLevelKey }, geometry: level.geometry })
+        features.push({
+          type: 'Feature',
+          id: level.id,
+          geometry: level.geometry,
+          properties: {
+            id: level.id,
+            mapLevelKey: mapLevelKey
+          },
+        })
         this.addLevelLayer(mapLevelKey,
           {
             id: `${mapLevelKey}-level`,
@@ -242,11 +253,10 @@ export default {
       if (!this.ready || !this.station) {
         return
       }
-
-      // filter stops based on agency
-      const allStops = [...this.station.stops, ...this.otherStops].filter(s => (s.location_type !== 1))
+      console.log('drawing stops', this.station.stops, this.otherStops)
 
       // get geoms
+      const allStops = [...this.station.stops, ...this.otherStops].filter(s => (s.location_type !== 1))
       const geoms = {}
       for (const stop of allStops) {
         geoms[stop.id] = stop.geometry.coordinates
@@ -261,6 +271,7 @@ export default {
           LEVEL_COLORS[i % LEVEL_COLORS.length]
         )
       }
+      console.log('levelColors:', levelColors)
 
       for (const [mapLevelKey, color] of levelColors) {
         this.addLevelLayer(
@@ -360,10 +371,16 @@ export default {
         })
       }
 
+      console.log('newStops:', newStops)
       this.map.getSource('stops').setData(newStops)
+      console.log('stops source set')
 
       const stopParentStationGeoms = allStops.filter((s) => {
-        return s.parent?.id && s.parent?.id !== this.station.id
+        return s.parent?.id
+          && s.parent?.id > 0
+          && s.parent?.id !== this.station?.id
+          && s.geometry?.coordinates
+          && geoms[s.parent?.id]
       }).map((s) => {
         return {
           type: 'Feature',
