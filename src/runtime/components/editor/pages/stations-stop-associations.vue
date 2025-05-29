@@ -32,7 +32,7 @@
         field="target_feed_onestop_id"
         label="Target feed Onestop ID"
       >
-        <code>{{ props.row.stop_ext.target_feed_onestop_id }}</code>
+        <code>{{ props.row.external_reference.target_feed_onestop_id }}</code>
       </o-table-column>
       <o-table-column
         v-slot="props"
@@ -40,7 +40,7 @@
         field="target_stop_id"
         label="Target stop ID"
       >
-        <code>{{ props.row.stop_ext.target_stop_id }}</code>
+        <code>{{ props.row.external_reference.target_stop_id }}</code>
       </o-table-column>
       <o-table-column
         v-slot="props"
@@ -48,7 +48,7 @@
         label="Stop ID association found?"
         sortable
       >
-        <span v-if="props.row.stop_ext.target_active_stop">
+        <span v-if="props.row.external_reference.target_active_stop">
           <span class="icon"><i class="mdi mdi-check mdi-24px" /></span>
         </span><span v-else>
           <span class="icon has-text-warning"><i class="mdi mdi-alert mdi-24px" /></span>
@@ -58,9 +58,9 @@
         v-slot="props"
         label="Routes serving stop"
       >
-        <span v-if="props.row.stop_ext.target_active_stop && props.row.stop_ext.target_active_stop.route_stops">
+        <span v-if="props.row.external_reference.target_active_stop && props.row.external_reference.target_active_stop.route_stops">
           <ul>
-            <li v-for="rs of props.row.stop_ext.target_active_stop.route_stops" :key="rs.route.id">
+            <li v-for="rs of props.row.external_reference.target_active_stop.route_stops" :key="rs.route.id">
               {{ rs.route.agency.agency_name }}: {{ rs.route.route_short_name || rs.route.route_long_name }}
             </li>
           </ul>
@@ -99,7 +99,7 @@ const q = gql`
         stop_id
         stop_name
       }
-      stop_ext: external_reference {
+      external_reference {
         id
         target_stop_id
         target_feed_onestop_id
@@ -153,7 +153,7 @@ export default {
     stopsWithRefs () {
       const ret = []
       for (const stop of this.stops) {
-        if (!stop.stop_ext || !stop) {
+        if (!stop.external_reference || !stop) {
           continue
         }
         ret.push(stop)

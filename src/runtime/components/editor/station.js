@@ -161,7 +161,7 @@ query stationStopQuery($stop_ids: [Int!]!) {
             }
           }
     }    
-    stop_ext: external_reference {
+    external_reference {
       id
       target_stop_id
       target_feed_onestop_id
@@ -256,7 +256,7 @@ export class Stop {
     // feed version
     this.feed_version = new FeedVersion(stop.feed_version)
     // stop ext
-    this.stop_ext = stop.stop_ext
+    this.external_reference = stop.external_reference
   }
 
   setCoords (lon, lat) {
@@ -294,10 +294,10 @@ export class Stop {
       parent: this.parent?.id > 0 ? { id: this.parent.id } : { id: null },
       level: this.level?.id > 0 ? { id: this.level.id } : { id: null },
       feed_version: { id: this.feed_version.id },
-      external_reference: this.stop_ext
+      external_reference: this.external_reference
         ? {
-            target_feed_onestop_id: this.stop_ext?.target_feed_onestop_id || null,
-            target_stop_id: this.stop_ext?.target_stop_id || null,
+            target_feed_onestop_id: this.external_reference?.target_feed_onestop_id || null,
+            target_stop_id: this.external_reference?.target_stop_id || null,
           }
         : null
     }

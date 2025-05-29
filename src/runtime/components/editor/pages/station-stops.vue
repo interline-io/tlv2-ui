@@ -190,7 +190,7 @@ const nearbyStopsQuery = gql`
           }
         }
       }
-      stop_ext: external_reference {
+      external_reference {
         id
         target_stop_id
         target_feed_onestop_id
@@ -264,8 +264,8 @@ export default {
       const excludeFeeds = []
       const excludeStops = new Set()
       for (const stop of this.station.stops) {
-        if (stop.stop_ext) {
-          const key = stop.stop_ext.target_feed_onestop_id + ':' + stop.stop_ext.target_stop_id
+        if (stop.external_reference) {
+          const key = stop.external_reference.target_feed_onestop_id + ':' + stop.external_reference.target_stop_id
           excludeStops.add(key, true)
         }
       }
@@ -286,8 +286,8 @@ export default {
         const check = new Set(this.selectedAgencies)
         filtered = filtered.filter((stop) => {
           let rss = stop.route_stops || []
-          if (stop.stop_ext && stop.stop_ext.target_active_stop) {
-            rss = stop.stop_ext.target_active_stop.route_stops
+          if (stop.external_reference && stop.external_reference.target_active_stop) {
+            rss = stop.external_reference.target_active_stop.route_stops
           }
           const stopAgencies = []
           for (const rs of rss) {
@@ -312,8 +312,8 @@ export default {
     agencies () {
       const ret = {}
       for (const stop of this.station.stops) {
-        if (stop.stop_ext && stop.stop_ext.target_active_stop && stop.stop_ext.target_active_stop.route_stops) {
-          for (const rs of stop.stop_ext.target_active_stop.route_stops || []) {
+        if (stop.external_reference && stop.external_reference.target_active_stop && stop.external_reference.target_active_stop.route_stops) {
+          for (const rs of stop.external_reference.target_active_stop.route_stops || []) {
             ret[rs.route.agency.agency_id] = rs.route.agency.agency_name
           }
         }
