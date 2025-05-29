@@ -295,6 +295,11 @@ export class Stop {
       level: this.level?.id > 0 ? { id: this.level.id } : { id: null },
       feed_version: { id: this.feed_version.id },
       external_reference: this.stop_ext
+        ? {
+            target_feed_onestop_id: this.stop_ext?.target_feed_onestop_id || null,
+            target_stop_id: this.stop_ext?.target_stop_id || null,
+          }
+        : null
     }
   }
 }
