@@ -118,12 +118,12 @@
         <!-- Association editor -->
         <template v-if="showStopAssociations">
           <!-- A target association is set (from result) -->
-          <o-field v-if="value.stop_ext?.target_feed_onestop_id" label="Target">
+          <o-field v-if="value.external_reference?.target_feed_onestop_id" label="Target">
             <span v-if="targetActiveStop" class="button is-info">
               <o-icon icon="check" class="mr-2" /> {{ targetActiveStop.stop_name }} ({{ targetActiveStop.stop_id }})
             </span>
             <span v-else class="button is-danger">
-              <o-icon icon="alert-circle-outline" class="mr-2" /> Not found: {{ value.stop_ext.target_feed_onestop_id }}:{{ value.stop_ext.target_stop_id }}
+              <o-icon icon="alert-circle-outline" class="mr-2" /> Not found: {{ value.external_reference.target_feed_onestop_id }}:{{ value.external_reference.target_stop_id }}
             </span>
           </o-field>
           <!-- Show target routes -->
@@ -136,10 +136,10 @@
           </o-field>
           <!-- Edit target -->
           <o-field label="Target Feed">
-            <o-input v-model="entity.stop_ext.target_feed_onestop_id" />
+            <o-input v-model="entity.external_reference.target_feed_onestop_id" />
           </o-field>
           <o-field label="Target Stop">
-            <o-input v-model="entity.stop_ext.target_stop_id" />
+            <o-input v-model="entity.external_reference.target_stop_id" />
           </o-field>
           <span v-if="!readOnly" class="button" @click="deleteAssociation">Remove association</span>
         </template>
@@ -206,16 +206,16 @@ export default {
       wheelchair_boarding: stopCopy.wheelchair_boarding,
       parent: { id: stopCopy.parent?.id },
       level: { id: stopCopy.level?.id },
-      stop_ext: stopCopy.stop_ext
+      external_reference: stopCopy.external_reference
         ? {
-            target_feed_onestop_id: stopCopy.stop_ext?.target_feed_onestop_id || null,
-            target_stop_id: stopCopy.stop_ext?.target_stop_id || null,
+            target_feed_onestop_id: stopCopy.external_reference?.target_feed_onestop_id || null,
+            target_stop_id: stopCopy.external_reference?.target_stop_id || null,
           }
         : null
     }
     return {
-      showStopAssociations: stopCopy.stop_ext ? true : false,
-      targetActiveStop: stopCopy.stop_ext?.target_active_stop || null,
+      showStopAssociations: stopCopy.external_reference ? true : false,
+      targetActiveStop: stopCopy.external_reference?.target_active_stop || null,
       pathwaysFromStop: stopCopy.pathways_from_stop || [],
       pathwaysToStop: stopCopy.pathways_to_stop || [],
       entity: entity,
@@ -252,7 +252,7 @@ export default {
       this.$emit('delete', new Stop(this.entity))
     },
     createAssociation () {
-      this.entity.stop_ext = {
+      this.entity.external_reference = {
         target_feed_onestop_id: '',
         target_stop_id: ''
       }
@@ -260,7 +260,7 @@ export default {
     },
     deleteAssociation () {
       this.showStopAssociations = false
-      this.entity.stop_ext = { target_feed_onestop_id: null, target_stop_id: null }
+      this.entity.external_reference = { target_feed_onestop_id: null, target_stop_id: null }
     },
     pathwayIcon (mode) {
       const m = PathwayModeIcons[mode]
@@ -270,7 +270,7 @@ export default {
       return { url: `/icons/${m.altIcon ? m.altIcon : m.icon}.png`, label: m.label }
     },
     routeSummary (ss) {
-      return (ss?.stop_ext?.target_active_stop?.route_stops || [])
+      return (ss?.external_reference?.target_active_stop?.route_stops || [])
         .map((rs) => { return `${rs.route.agency.agency_id}:${rs.route.route_short_name || rs.route.route_long_name}` })
         .join(', ')
     }

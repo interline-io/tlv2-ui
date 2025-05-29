@@ -248,8 +248,8 @@ export default {
   },
   methods: {
     routeSummary (stop) {
-      if (stop && stop.stop_ext && stop.stop_ext.target_active_stop && stop.stop_ext.target_active_stop.route_stops) {
-        return stop.stop_ext.target_active_stop.route_stops.map((rs) => { return `${rs.route.agency.agency_id}:${rs.route.route_short_name || rs.route.route_long_name}` }).join(', ')
+      if (stop && stop.external_reference && stop.external_reference.target_active_stop && stop.external_reference.target_active_stop.route_stops) {
+        return stop.external_reference.target_active_stop.route_stops.map((rs) => { return `${rs.route.agency.agency_id}:${rs.route.route_short_name || rs.route.route_long_name}` }).join(', ')
       }
       return ''
     },
@@ -284,9 +284,9 @@ export default {
           message: 'Boarding areas require a Platform (location_type = 0) as a parent_station'
         })
       }
-      if (stop.stop_ext && stop.stop_ext.target_active_stop == null) {
+      if (stop.external_reference && stop.external_reference.target_active_stop == null) {
         errs.push({
-          message: `Cannot resolve reference to stop ${stop.stop_ext.target_feed_onestop_id}:${stop.stop_ext.target_stop_id}`
+          message: `Cannot resolve reference to stop ${stop.external_reference.target_feed_onestop_id}:${stop.external_reference.target_stop_id}`
         })
       }
       if (stop.location_type !== 1 && stop.location_type !== 0 && (stop.pathways_from_stop || []).length === 0 && (stop.pathways_to_stop || []).length === 0) {
