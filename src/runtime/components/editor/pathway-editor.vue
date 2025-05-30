@@ -40,7 +40,7 @@
           </o-switch>
         </o-field>
 
-        <o-field>
+        <o-field label="Signposted as">
           <span v-if="readOnly">{{ pathway.signposted_as }}</span>
           <o-input v-else v-model="pathway.signposted_as" placeholder="Forward" />
         </o-field>
