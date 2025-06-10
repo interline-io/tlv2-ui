@@ -37,11 +37,11 @@
                     Unselect All
                   </o-button>
                 </p>
-                <o-field label="Select Stops: by type">
+                <o-field label="Select Stops">
                   <div class="buttons has-addons">
                     <a v-for="pwm of LocationTypes" :key="pwm[0]" class="button is-small" @click="selectLocationTypes(pwm[0])">{{ pwm[1] }}</a>
                   </div>
-                </o-field><o-field label="Select Stops: by property">
+                </o-field><o-field>
                   <div class="buttons has-addons">
                     <a class="button is-small" @click="selectStopsWithAssociations()">With associations</a>
                     <a class="button is-small" @click="selectStopsWithPairedPathways()">With paired pathways</a>
@@ -58,6 +58,9 @@
                 <o-field label="Select Pathways">
                   <div class="buttons has-addons">
                     <a v-for="pwm of PathwayModes" :key="pwm[0]" class="button is-small" @click="selectPathwayModes(pwm[0])">{{ pwm[1] }}</a>
+                  </div>
+                  <div class="buttons has-addons">
+                    <a class="button is-small" @click="selectPathwaysWithPairs()">With pairs</a>
                   </div>
                 </o-field>
                 <ul>
@@ -536,6 +539,24 @@ export default {
     },
     selectPathwayModes (stype) {
       this.selectedPathways = this.station.pathways.filter((s) => { return s.pathway_mode === stype })
+    },
+    selectPathwaysWithPairs () {
+      const pwPairs = new Map()
+      this.selectedPathways = this.station.pathways.filter((s) => {
+        const pwKeys = [
+          `${s.from_stop.id}-${s.to_stop.id}`,
+          `${s.to_stop.id}-${s.from_stop.id}`
+        ]
+        let matched = false
+        for (const pwkey of pwKeys) {
+          if (pwPairs.has(pwkey)) {
+            matched = true
+          }
+          pwPairs.set(pwkey, true)
+        }
+        return matched
+      })
+      this.selectMode = 'select'
     },
     unselectAll () {
       this.selectedStops = []
