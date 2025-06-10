@@ -28,18 +28,39 @@
           <tl-msg-card v-if="selectMode === 'select'">
             <template #trigger>
               Select
-              <o-button v-if="selectedStops.length > 0 || selectedPathways.length > 0" class="is-pulled-right m-2" variant="primary is-small" outlined @click="unselectAll">
-                Unselect All
-              </o-button>
             </template>
             <div class="card-content">
               <div class="mb-2">
-                <p v-if="selectedPathways.length > 0" class="label">
-                  {{ selectedPathways.length }} Pathways Selected
+                <p class="label">
+                  {{ selectedStops.length }} stops selected
+                  <o-button v-if="selectedStops.length > 0" class="is-pulled-right m-2" variant="primary is-small" outlined @click="unselectAll">
+                    Unselect All
+                  </o-button>
                 </p>
-                <o-field v-else label="Select Pathways">
+                <o-field label="Select Stops">
+                  <div class="buttons has-addons">
+                    <a v-for="pwm of LocationTypes" :key="pwm[0]" class="button is-small" @click="selectLocationTypes(pwm[0])">{{ pwm[1] }}</a>
+                  </div>
+                </o-field><o-field>
+                  <div class="buttons has-addons">
+                    <a class="button is-small" @click="selectStopsWithAssociations()">With associations</a>
+                    <a class="button is-small" @click="selectStopsWithPairedPathways()">With paired pathways</a>
+                  </div>
+                </o-field>
+              </div>
+              <div class="mb-2">
+                <p class="label">
+                  {{ selectedPathways.length }} pathways selected
+                  <o-button v-if="selectedPathways.length > 0" class="is-pulled-right m-2" variant="primary is-small" outlined @click="unselectAll">
+                    Unselect All
+                  </o-button>
+                </p>
+                <o-field label="Select Pathways">
                   <div class="buttons has-addons">
                     <a v-for="pwm of PathwayModes" :key="pwm[0]" class="button is-small" @click="selectPathwayModes(pwm[0])">{{ pwm[1] }}</a>
+                  </div>
+                  <div class="buttons has-addons">
+                    <a class="button is-small" @click="selectPathwaysWithPairs()">With pairs</a>
                   </div>
                 </o-field>
                 <ul>
@@ -50,16 +71,6 @@
                     red pathways connect two separate levels
                   </li>
                 </ul>
-              </div>
-              <div class="mt-2">
-                <p v-if="selectedStops.length > 0" class="label">
-                  {{ selectedStops.length }} Stops Selected
-                </p>
-                <o-field v-else label="Select Stops">
-                  <div class="buttons has-addons">
-                    <a v-for="pwm of LocationTypes" :key="pwm[0]" class="button is-small" @click="selectLocationTypes(pwm[0])">{{ pwm[1] }}</a>
-                  </div>
-                </o-field>
               </div>
             </div>
           </tl-msg-card>
@@ -498,11 +509,54 @@ export default {
         this.createStopHandler(stop)
       }
     },
+    selectStopsWithAssociations () {
+      this.selectedStops = this.station.stops.filter((s) => { return s.external_reference?.target_stop_id })
+      this.selectMode = 'select'
+    },
+    selectStopsWithPairedPathways () {
+      const pairedPathways = new Map()
+      this.selectedStops = this.station.stops.filter((s) => {
+        const pwKeys = []
+        for (const pw of s.pathways_from_stop) {
+          pwKeys.push(`${pw.from_stop.id}-${pw.to_stop.id}`)
+        }
+        for (const pw of s.pathways_to_stop) {
+          pwKeys.push(`${pw.to_stop.id}-${pw.from_stop.id}`)
+        }
+        let matched = false
+        for (const pwkey of pwKeys) {
+          if (pairedPathways.has(pwkey)) {
+            matched = true
+          }
+          pairedPathways.set(pwkey, true)
+        }
+        return matched
+      })
+      this.selectMode = 'select'
+    },
     selectLocationTypes (stype) {
       this.selectedStops = this.station.stops.filter((s) => { return s.location_type === stype })
     },
     selectPathwayModes (stype) {
       this.selectedPathways = this.station.pathways.filter((s) => { return s.pathway_mode === stype })
+    },
+    selectPathwaysWithPairs () {
+      const pwPairs = new Map()
+      this.selectedPathways = this.station.pathways.filter((s) => {
+        const pwKeys = [
+          `${s.from_stop.id}-${s.to_stop.id}`,
+          `${s.to_stop.id}-${s.from_stop.id}`
+        ]
+        let matched = false
+        for (const pwkey of pwKeys) {
+          if (pwPairs.has(pwkey)) {
+            matched = true
+          }
+          pwPairs.set(pwkey, true)
+        }
+        return matched
+      })
+      this.selectMode = 'select'
     },
     unselectAll () {
       this.selectedStops = []
