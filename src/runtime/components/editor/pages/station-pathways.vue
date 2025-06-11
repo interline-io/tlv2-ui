@@ -272,8 +272,6 @@ export default {
       selectedPoint: null,
       selectedStops: [],
       selectedPathways: [],
-      selectedLevels: [],
-      selectedLevel: null,
       openStationValidator: false,
       basemap: 'carto',
       PathwayModes,
@@ -326,10 +324,6 @@ export default {
     }
   },
   watch: {
-    'station.levels' () {
-      this.selectedLevels = this.station.levels.map(mapLevelKeyFn)
-      this.selectedLevel = this.station.levels.length > 0 ? this.station.levels[0].id : null
-    },
     'station.stops' () {
       if (this.station.stops.length > 0 && this.$route.query.selectedStop) {
         this.selectStop(Number(this.$route.query.selectedStop))

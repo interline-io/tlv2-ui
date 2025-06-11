@@ -1,6 +1,6 @@
 <script>
 import { gql } from 'graphql-tag'
-import { Stop, Station, stationQuery, stationStopQuery } from '../station'
+import { Stop, Station, stationQuery, stationStopQuery, mapLevelKeyFn } from '../station'
 
 const currentFeeds = gql`
 query currentFeeds ($feed_onestop_id: String, $feed_version_ids: [Int!]) {
@@ -120,7 +120,10 @@ export default {
       ready: false,
       station: null,
       stations: [],
-      stopList: []
+      stopList: [],
+      selectedAgenciesShadow: null,
+      selectedLevelShadow: null,
+      selectedLevelsShadow: null,
     }
   },
   computed: {
@@ -141,6 +144,47 @@ export default {
     },
     stopAssociationsEnabled () {
       return (this.feedVersion?.agencies || []).length === 0
+    },
+    selectedAgencies: {
+      get () {
+        if (this.selectedAgenciesShadow != null) {
+          return this.selectedAgenciesShadow
+        }
+        const allAgencies = new Map()
+        for (const stop of this.station?.stops || []) {
+          for (const rs of stop.route_stops || []) {
+            if (rs.agency) {
+              allAgencies.set(rs.agency.agency_id, true)
+            }
+          }
+        }
+        return Array.from(allAgencies.keys())
+      },
+      set (v) {
+        this.selectedAgenciesShadow = v
+      }
+    },
+    selectedLevel: {
+      get () {
+        if (this.selectedLevelShadow != null) {
+          return this.selectedLevelShadow
+        }
+        return this.station?.levels[0]?.id || null
+      },
+      set (v) {
+        this.selectedLevelShadow = v
+      }
+    },
+    selectedLevels: {
+      get () {
+        if (this.selectedLevelsShadow != null) {
+          return this.selectedLevelsShadow
+        }
+        return this.station?.levels?.map(mapLevelKeyFn) || []
+      },
+      set (v) {
+        this.selectedLevelsShadow = v
+      }
     },
   },
   methods: {
