@@ -249,8 +249,6 @@ export default {
     return {
       nearbyStops: [],
       selectMode: 'select',
-      selectedAgencies: [],
-      selectedLevels: [],
       basemap: 'carto'
     }
   },
@@ -298,25 +296,20 @@ export default {
         return true
       })
 
-      console.log('Filtered nearby stops:', filteredStops.length, 'of', this.nearbyStops.length)
-      // if (this.selectedAgencies?.length > 0) {
-      //   const check = new Set(this.selectedAgencies)
-      //   filtered = filtered.filter((stop) => {
-      //     let rss = stop.route_stops || []
-      //     if (stop.external_reference && stop.external_reference.target_active_stop) {
-      //       rss = stop.external_reference.target_active_stop.route_stops
-      //     }
-      //     const stopAgencies = []
-      //     for (const rs of rss) {
-      //       if (rs.route && rs.route.agency) {
-      //         stopAgencies.push(rs.route.agency.agency_id)
-      //       }
-      //     }
-      //     return intersection(check, stopAgencies).size > 0
-      //   })
-      // }
-      // return [...filteredStops, ...associatedStops]
-      return filteredStops
+      const check = new Set(this.selectedAgencies)
+      return filteredStops.filter((stop) => {
+        let rss = stop.route_stops || []
+        if (stop.external_reference && stop.external_reference.target_active_stop) {
+          rss = stop.external_reference.target_active_stop.route_stops
+        }
+        const stopAgencies = []
+        for (const rs of rss) {
+          if (rs.route && rs.route.agency) {
+            stopAgencies.push(rs.route.agency.agency_id)
+          }
+        }
+        return intersection(check, stopAgencies).size > 0
+      })
     },
     stationFiltered () {
       return {
@@ -325,6 +318,33 @@ export default {
         levels: this.station.levels,
         pathways: [],
         stops: []
+      }
+    },
+    selectedAgencies: {
+      // We need to override selectedAgencies to incorporate nearby stops
+      get () {
+        if (this.selectedAgenciesShadow != null) {
+          return this.selectedAgenciesShadow
+        }
+        const allAgencies = new Map()
+        for (const stop of this.station?.stops || []) {
+          for (const rs of stop.route_stops || []) {
+            if (rs.route?.agency?.agency_id) {
+              allAgencies.set(rs.route.agency.agency_id, true)
+            }
+          }
+        }
+        for (const stop of this.nearbyStops || []) {
+          for (const rs of stop.route_stops || []) {
+            if (rs.route?.agency?.agency_id) {
+              allAgencies.set(rs.route.agency.agency_id, true)
+            }
+          }
+        }
+        return Array.from(allAgencies.keys())
+      },
+      set (v) {
+        this.selectedAgenciesShadow = v || []
       }
     },
     agencies () {
@@ -368,13 +388,6 @@ export default {
       }
       return null
     }
-  },
-  watch: {
-    'station.levels' () {
-      this.selectedLevels = this.station.levels.map(mapLevelKeyFn)
-      this.selectedLevel = this.station.levels.length > 0 ? this.station.levels[0].id : null
-      console.log('Station levels updated:', this.selectedLevels)
-    },
   },
   methods: {
     importStopHandler (ent) {
