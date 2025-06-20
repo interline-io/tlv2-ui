@@ -22,18 +22,18 @@
               <o-slider v-model="levelHeightScale" :min="0.1" :max="2.0" :step="0.1" />
             </o-field>
 
-              <o-field label="Rotation X (Tilt)">
-                <o-slider v-model="rotationX" :min="-90" :max="90" :step="1" />
-              </o-field>
-              <o-field label="Rotation Y (Azimuth)">
-                <o-slider v-model="rotationY" :min="-180" :max="180" :step="1" />
-              </o-field>
-              <o-field label="Rotation Z (Roll)">
-                <o-slider v-model="rotation" :min="0" :max="360" :step="1" />
-              </o-field>
-              <o-field label="Zoom">
-                <o-slider v-model="zoom" :min="0.1" :max="5.0" :step="0.1" />
-              </o-field>
+            <o-field label="Rotation X (Tilt)">
+              <o-slider v-model="rotationX" :min="-90" :max="90" :step="1" />
+            </o-field>
+            <o-field label="Rotation Y (Azimuth)">
+              <o-slider v-model="rotationY" :min="-180" :max="180" :step="1" />
+            </o-field>
+            <o-field label="Rotation Z (Roll)">
+              <o-slider v-model="rotation" :min="0" :max="360" :step="1" />
+            </o-field>
+            <o-field label="Zoom">
+              <o-slider v-model="zoom" :min="0.1" :max="5.0" :step="0.1" />
+            </o-field>
 
             <div class="field" v-if="!isDefaultView">
               <button class="button is-small is-fullwidth" @click="resetView">
@@ -123,6 +123,7 @@
 <script>
 import StationMixin from './station-mixin'
 import { select, pointer } from 'd3-selection'
+import { drag } from 'd3-drag'
 import { schemeCategory10 } from 'd3-scale-chromatic'
 
 const DEFAULT_VIEW_PARAMS = {
@@ -236,7 +237,9 @@ export default {
     geoToXY (lng, lat) {
       // Simple conversion: treat longitude as X, latitude as Y
       // Scale by a factor to make the station fit nicely in the view
-      const x = (lng - this.centerX) * this.scale
+      // Apply aspect ratio correction for longitude based on latitude
+      const aspectRatio = Math.cos(this.centerY * Math.PI / 180)
+      const x = (lng - this.centerX) * this.scale * aspectRatio
       const y = (lat - this.centerY) * this.scale
       return [x, y]
     },
@@ -282,6 +285,9 @@ export default {
       if (!this.svg) {
         this.svg = select(container).append('svg')
         this.g = this.svg.append('g')
+        // Add drag and zoom handlers
+        this.svg.call(drag().on('drag', this.dragged))
+        this.svg.on('wheel', this.wheeled)
       }
 
       this.svg.attr('width', width).attr('height', height)
@@ -293,12 +299,18 @@ export default {
         this.centerX = bbox.centerLng
         this.centerY = bbox.centerLat
         
-        // Calculate scale to fit in view
-        const bboxWidth = bbox.maxLng - bbox.minLng
-        const bboxHeight = bbox.maxLat - bbox.minLat
-        const maxDimension = Math.max(bboxWidth, bboxHeight)
+        // Calculate scale to fit in view, correcting for geo aspect ratio
+        const bboxWidthDegrees = bbox.maxLng - bbox.minLng
+        const bboxHeightDegrees = bbox.maxLat - bbox.minLat
+        const aspectRatio = Math.cos(this.centerY * Math.PI / 180)
+        const correctedBboxWidth = bboxWidthDegrees * aspectRatio
+
         const padding = 40
-        this.scale = Math.min((width - padding) / maxDimension, (height - padding) / maxDimension) * this.zoom
+        const scaleX = bboxWidthDegrees > 0 ? (width - padding) / correctedBboxWidth : Infinity
+        const scaleY = bboxHeightDegrees > 0 ? (height - padding) / bboxHeightDegrees : Infinity
+
+        const baseScale = Math.min(scaleX, scaleY)
+        this.scale = baseScale * this.zoom
       }
 
       // Center the view
@@ -307,6 +319,20 @@ export default {
       if (this.showLevels) this.drawLevels()
       if (this.showPathways) this.drawPathways()
       if (this.showStops) this.drawStops()
+    },
+
+    dragged (event) {
+      const sensitivity = 0.4
+      this.rotationY += event.dx * sensitivity
+      this.rotationX -= event.dy * sensitivity
+    },
+
+    wheeled (event) {
+      event.preventDefault()
+      const oldZoom = this.zoom
+      const zoomFactor = event.deltaY > 0 ? 0.95 : 1.05
+      const newZoom = oldZoom * zoomFactor
+      this.zoom = Math.max(0.1, Math.min(newZoom, 5.0))
     },
 
     calculateBoundingBox () {
