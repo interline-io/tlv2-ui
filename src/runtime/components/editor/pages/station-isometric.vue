@@ -22,24 +22,21 @@
               <o-slider v-model="levelHeightScale" :min="0.1" :max="2.0" :step="0.1" />
             </o-field>
 
-              <o-field label="Rotation X (Azimuth)">
-                <o-slider v-model="rotationX" :min="-180" :max="180" :step="1" />
+              <o-field label="Rotation X (Tilt)">
+                <o-slider v-model="rotationX" :min="-90" :max="90" :step="1" />
               </o-field>
-              <o-field label="Rotation Y (Tilt)">
-                <o-slider v-model="rotationY" :min="-90" :max="90" :step="1" />
+              <o-field label="Rotation Y (Azimuth)">
+                <o-slider v-model="rotationY" :min="-180" :max="180" :step="1" />
               </o-field>
               <o-field label="Rotation Z (Roll)">
                 <o-slider v-model="rotation" :min="0" :max="360" :step="1" />
               </o-field>
-            <!-- NOTE: zoom doesn't work so we'll hide it for now -->
-            <!-- <div class="column is-half">
               <o-field label="Zoom">
                 <o-slider v-model="zoom" :min="0.1" :max="5.0" :step="0.1" />
               </o-field>
-            </div> -->
 
-            <div class="field" v-if="levelHeightScale !== 1.0 || rotation !== 150 || rotationX !== 45 || rotationY !== -30 || zoom !== 1.0">
-              <button class="button is-small is-fullwidth" @click="fitToView">
+            <div class="field" v-if="!isDefaultView">
+              <button class="button is-small is-fullwidth" @click="resetView">
                 Reset View
               </button>
             </div>
@@ -125,20 +122,23 @@
 
 <script>
 import StationMixin from './station-mixin'
-import { select } from 'd3-selection'
-import { geoPath, geoOrthographic } from 'd3-geo'
+import { select, pointer } from 'd3-selection'
 import { schemeCategory10 } from 'd3-scale-chromatic'
+
+const DEFAULT_VIEW_PARAMS = {
+  levelHeightScale: 1.0,
+  rotation: 0,
+  rotationX: -90,
+  rotationY: 0,
+  zoom: 1.0
+}
 
 export default {
   mixins: [StationMixin],
   layout: 'wide',
   data () {
     return {
-      levelHeightScale: 1.0,
-      rotation: 150,
-      rotationX: 45,
-      rotationY: -30,
-      zoom: 1.0,
+      ...DEFAULT_VIEW_PARAMS,
       showPathways: true,
       showStops: true,
       showLevels: true,
@@ -146,11 +146,23 @@ export default {
       visibleLevelIndexes: [],
       svg: null,
       g: null,
-      projection: null,
-      isMounted: false
+      isMounted: false,
+      // XY coordinate system
+      centerX: 0,
+      centerY: 0,
+      scale: 1
     }
   },
   computed: {
+    isDefaultView () {
+      return (
+        this.levelHeightScale === DEFAULT_VIEW_PARAMS.levelHeightScale &&
+        this.rotation === DEFAULT_VIEW_PARAMS.rotation &&
+        this.rotationX === DEFAULT_VIEW_PARAMS.rotationX &&
+        this.rotationY === DEFAULT_VIEW_PARAMS.rotationY &&
+        this.zoom === DEFAULT_VIEW_PARAMS.zoom
+      )
+    },
     stopTypesLegend () {
       return [
         { type: 0, name: 'Platform' },
@@ -178,55 +190,6 @@ export default {
         ...level,
         color: schemeCategory10[i % schemeCategory10.length]
       }))
-    },
-    stationGeometry () {
-      if (!this.station) return null
-      
-      const features = []
-      
-      // Add level geometries
-      this.station.levels.forEach(level => {
-        if (level.geometry) {
-          features.push({
-            type: 'Feature',
-            properties: { type: 'level', id: level.id },
-            geometry: level.geometry
-          })
-        }
-      })
-      
-      // Add stop geometries
-      this.station.stops.forEach(stop => {
-        if (stop.geometry) {
-          features.push({
-            type: 'Feature',
-            properties: { type: 'stop', id: stop.id },
-            geometry: stop.geometry
-          })
-        }
-      })
-      
-      // Add pathway geometries
-      this.station.pathways.forEach(pathway => {
-        if (pathway.from_stop.geometry && pathway.to_stop.geometry) {
-          features.push({
-            type: 'Feature',
-            properties: { type: 'pathway', id: pathway.id },
-            geometry: {
-              type: 'LineString',
-              coordinates: [
-                pathway.from_stop.geometry.coordinates,
-                pathway.to_stop.geometry.coordinates
-              ]
-            }
-          })
-        }
-      })
-      
-      return {
-        type: 'FeatureCollection',
-        features
-      }
     }
   },
   watch: {
@@ -240,22 +203,17 @@ export default {
     },
     levelHeightScale () {
       this.updateIsometricView()
-      this.updateIsometricView()
     },
     rotation () {
       this.updateIsometricView()
-      this.updateIsometricView() // TODO: figure out why it only correctly renders on second call
     },
     rotationX () {
-      this.updateIsometricView()
       this.updateIsometricView()
     },
     rotationY () {
       this.updateIsometricView()
-      this.updateIsometricView()
     },
     zoom () {
-      this.updateIsometricView()
       this.updateIsometricView()
     },
     showPathways () { this.$nextTick(() => this.updateIsometricView()) },
@@ -267,7 +225,6 @@ export default {
     'station.pathways' () { this.$nextTick(() => this.updateIsometricView()) },
     visibleLevelIndexes () {
       this.updateIsometricView()
-      this.updateIsometricView()
     }
   },
   mounted () {
@@ -275,6 +232,45 @@ export default {
     this.$nextTick(() => this.updateIsometricView())
   },
   methods: {
+    // Convert geographic coordinates to local XY coordinates
+    geoToXY (lng, lat) {
+      // Simple conversion: treat longitude as X, latitude as Y
+      // Scale by a factor to make the station fit nicely in the view
+      const x = (lng - this.centerX) * this.scale
+      const y = (lat - this.centerY) * this.scale
+      return [x, y]
+    },
+
+    // Apply isometric transformation to a 3D point
+    transform3D (x, y, z) {
+      const radX = (this.rotationX * Math.PI) / 180
+      const radY = (this.rotationY * Math.PI) / 180
+      const radZ = (this.rotation * Math.PI) / 180
+
+      // Rotation matrices
+      const cosX = Math.cos(radX)
+      const sinX = Math.sin(radX)
+      const cosY = Math.cos(radY)
+      const sinY = Math.sin(radY)
+      const cosZ = Math.cos(radZ)
+      const sinZ = Math.sin(radZ)
+
+      // Apply rotations: Z -> Y -> X
+      let x1 = x * cosZ - y * sinZ
+      let y1 = x * sinZ + y * cosZ
+      let z1 = z
+
+      let x2 = x1 * cosY + z1 * sinY
+      let y2 = y1
+      let z2 = -x1 * sinY + z1 * cosY
+
+      let x3 = x2
+      let y3 = y2 * cosX - z2 * sinX
+      let z3 = y2 * sinX + z2 * cosX
+
+      return [x3, y3]
+    },
+
     updateIsometricView () {
       const container = this.$refs.isometricContainer
       if (!this.station || !this.isMounted || !container) return
@@ -286,38 +282,80 @@ export default {
       if (!this.svg) {
         this.svg = select(container).append('svg')
         this.g = this.svg.append('g')
-        this.projection = geoOrthographic().clipAngle(90)
       }
 
       this.svg.attr('width', width).attr('height', height)
-      this.projection.translate([width / 2, height / 2])
       this.g.selectAll('*').remove()
 
-      const padding = 40
-      const allPoints = []
-      this.station.levels.forEach(level => {
-        if (level.geometry && level.geometry.coordinates) {
-          level.geometry.coordinates.forEach(ring => ring.forEach(p => allPoints.push(p)))
-        }
-      })
-      this.station.stops.forEach(stop => {
-        if (stop.geometry && stop.geometry.coordinates) {
-          allPoints.push(stop.geometry.coordinates)
-        }
-      })
-
-      if (allPoints.length > 0) {
-        const fitFeature = { type: 'MultiPoint', coordinates: allPoints }
-        this.projection.fitSize([width - padding, height - padding], fitFeature)
-        const baseScale = this.projection.scale()
-        this.projection
-          .scale(baseScale * this.zoom)
-          .rotate([this.rotationX, this.rotationY, this.rotation])
+      // Calculate bounding box and center
+      const bbox = this.calculateBoundingBox()
+      if (bbox) {
+        this.centerX = bbox.centerLng
+        this.centerY = bbox.centerLat
+        
+        // Calculate scale to fit in view
+        const bboxWidth = bbox.maxLng - bbox.minLng
+        const bboxHeight = bbox.maxLat - bbox.minLat
+        const maxDimension = Math.max(bboxWidth, bboxHeight)
+        const padding = 40
+        this.scale = Math.min((width - padding) / maxDimension, (height - padding) / maxDimension) * this.zoom
       }
+
+      // Center the view
+      this.g.attr('transform', `translate(${width / 2}, ${height / 2})`)
 
       if (this.showLevels) this.drawLevels()
       if (this.showPathways) this.drawPathways()
       if (this.showStops) this.drawStops()
+    },
+
+    calculateBoundingBox () {
+      if (!this.station || !this.station.levels || this.station.levels.length === 0) {
+        return null
+      }
+
+      let minLng = Infinity
+      let maxLng = -Infinity
+      let minLat = Infinity
+      let maxLat = -Infinity
+
+      this.station.levels.forEach(level => {
+        if (level.geometry && level.geometry.coordinates) {
+          level.geometry.coordinates.forEach(ring => {
+            ring.forEach(point => {
+              const [lng, lat] = point
+              minLng = Math.min(minLng, lng)
+              maxLng = Math.max(maxLng, lng)
+              minLat = Math.min(minLat, lat)
+              maxLat = Math.max(maxLat, lat)
+            })
+          })
+        }
+      })
+
+      // Also include stops in the bounding box calculation
+      this.station.stops.forEach(stop => {
+        if (stop.geometry && stop.geometry.coordinates) {
+          const [lng, lat] = stop.geometry.coordinates
+          minLng = Math.min(minLng, lng)
+          maxLng = Math.max(maxLng, lng)
+          minLat = Math.min(minLat, lat)
+          maxLat = Math.max(maxLat, lat)
+        }
+      })
+
+      if (minLng === Infinity || maxLng === -Infinity) {
+        return null
+      }
+
+      return {
+        minLng,
+        maxLng,
+        minLat,
+        maxLat,
+        centerLng: (minLng + maxLng) / 2,
+        centerLat: (minLat + maxLat) / 2
+      }
     },
 
     drawLevels () {
@@ -330,10 +368,10 @@ export default {
 
         const pathData = level.geometry.coordinates.map(ring => {
           const projectedRing = ring.map(point => {
-            const p = this.projection(point)
-            if (!p) return null
-            p[1] -= height
-            return p
+            const [lng, lat] = point
+            const [x, y] = this.geoToXY(lng, lat)
+            const [tx, ty] = this.transform3D(x, y, -height)
+            return [tx, ty]
           }).filter(p => p)
 
           if (projectedRing.length < 2) return ''
@@ -360,21 +398,22 @@ export default {
           
           // Add level label (only for visible levels)
           if (this.showLabels && isVisible && level.level_name && level.geometry.coordinates[0].length > 0) {
-            const labelPoint = this.projection(level.geometry.coordinates[0][0])
-            if (labelPoint) {
-              this.g.append('text')
-                .attr('x', labelPoint[0] - 10)
-                .attr('y', labelPoint[1] - height - 10)
-                .attr('text-anchor', 'end')
-                .attr('font-size', '12px')
-                .attr('fill', '#333')
-                .style('paint-order', 'stroke')
-                .style('stroke', 'white')
-                .style('stroke-width', '3px')
-                .style('stroke-linecap', 'butt')
-                .style('stroke-linejoin', 'miter')
-                .text(`${level.level_name} (${level.level_index})`)
-            }
+            const [lng, lat] = level.geometry.coordinates[0][0]
+            const [x, y] = this.geoToXY(lng, lat)
+            const [tx, ty] = this.transform3D(x, y, -height)
+            
+            this.g.append('text')
+              .attr('x', tx - 10)
+              .attr('y', ty - 10)
+              .attr('text-anchor', 'end')
+              .attr('font-size', '12px')
+              .attr('fill', '#333')
+              .style('paint-order', 'stroke')
+              .style('stroke', 'white')
+              .style('stroke-width', '3px')
+              .style('stroke-linecap', 'butt')
+              .style('stroke-linejoin', 'miter')
+              .text(`${level.level_name} (${level.level_index})`)
           }
         }
       })
@@ -392,23 +431,24 @@ export default {
 
         if (!fromLevelVisible && !toLevelVisible) return
 
-        const fromProjected = this.projection(fromStop.geometry.coordinates)
-        const toProjected = this.projection(toStop.geometry.coordinates)
-
-        if (!fromProjected || !toProjected) return
+        const [fromLng, fromLat] = fromStop.geometry.coordinates
+        const [toLng, toLat] = toStop.geometry.coordinates
+        
+        const [fromX, fromY] = this.geoToXY(fromLng, fromLat)
+        const [toX, toY] = this.geoToXY(toLng, toLat)
 
         const fromLevelIndex = fromStop.level?.level_index ?? 0
         const toLevelIndex = toStop.level?.level_index ?? 0
         const fromHeight = fromLevelIndex * 60 * this.levelHeightScale
         const toHeight = toLevelIndex * 60 * this.levelHeightScale
 
-        const p1 = [fromProjected[0], fromProjected[1] - fromHeight]
-        const p2 = [toProjected[0], toProjected[1] - toHeight]
+        const [p1x, p1y] = this.transform3D(fromX, fromY, -fromHeight)
+        const [p2x, p2y] = this.transform3D(toX, toY, -toHeight)
 
-        const drawGhostNode = (point) => {
+        const drawGhostNode = (x, y) => {
           this.g.append('circle')
-            .attr('cx', point[0])
-            .attr('cy', point[1])
+            .attr('cx', x)
+            .attr('cy', y)
             .attr('r', 4)
             .attr('fill', 'none')
             .attr('stroke', '#888')
@@ -416,8 +456,8 @@ export default {
             .attr('stroke-dasharray', '2,2')
         }
 
-        if (!fromLevelVisible) drawGhostNode(p1)
-        if (!toLevelVisible) drawGhostNode(p2)
+        if (!fromLevelVisible) drawGhostNode(p1x, p1y)
+        if (!toLevelVisible) drawGhostNode(p2x, p2y)
 
         // Pathway tooltip
         const tooltip = select(this.$refs.tooltip)
@@ -432,26 +472,28 @@ export default {
         `
 
         const line = this.g.append('line')
-          .attr('x1', p1[0])
-          .attr('y1', p1[1])
-          .attr('x2', p2[0])
-          .attr('y2', p2[1])
+          .attr('x1', p1x)
+          .attr('y1', p1y)
+          .attr('x2', p2x)
+          .attr('y2', p2y)
           .attr('stroke', this.getPathwayColor(pathway.pathway_mode))
           .attr('stroke-width', 2)
         line.on('mouseover', (event) => {
+          const [mx, my] = pointer(event, this.$refs.isometricContainer)
           const el = select(event.currentTarget)
           el.raise() // raise the line to the top of the stack
           el.attr('stroke', 'yellow')
           tooltip
             .style('opacity', 1)
             .html(tooltipHtml)
-            .style('left', `${event.layerX + 15}px`)
-            .style('top', `${event.layerY}px`)
+            .style('left', `${mx + 15}px`)
+            .style('top', `${my}px`)
         })
         line.on('mousemove', (event) => {
+          const [mx, my] = pointer(event, this.$refs.isometricContainer)
           tooltip
-            .style('left', `${event.layerX + 15}px`)
-            .style('top', `${event.layerY}px`)
+            .style('left', `${mx + 15}px`)
+            .style('top', `${my}px`)
         })
         line.on('mouseout', (event) => {
           const el = select(event.currentTarget)
@@ -471,15 +513,14 @@ export default {
           return
         }
 
-        const projectedPoint = this.projection(stop.geometry.coordinates)
-        if (!projectedPoint) return
+        const [lng, lat] = stop.geometry.coordinates
+        const [x, y] = this.geoToXY(lng, lat)
 
         const level = stop.level
         const levelIndex = (level && level.level_index != null) ? level.level_index : 0
         const height = levelIndex * 60 * this.levelHeightScale
 
-        const cx = projectedPoint[0]
-        const cy = projectedPoint[1] - height
+        const [cx, cy] = this.transform3D(x, y, -height)
 
         const circle = this.g.append('circle')
           .attr('cx', cx)
@@ -510,6 +551,7 @@ export default {
 
       circle
         .on('mouseover', (event) => {
+          const [mx, my] = pointer(event, this.$refs.isometricContainer)
           const el = select(event.currentTarget)
           el.raise() // raise the circle to the top of the stack
           el.attr('stroke', 'yellow')
@@ -518,13 +560,14 @@ export default {
           tooltip
             .style('opacity', 1)
             .html(tooltipHtml)
-            .style('left', `${event.layerX + 15}px`)
-            .style('top', `${event.layerY}px`)
+            .style('left', `${mx + 15}px`)
+            .style('top', `${my}px`)
         })
         .on('mousemove', (event) => {
+          const [mx, my] = pointer(event, this.$refs.isometricContainer)
           tooltip
-            .style('left', `${event.layerX + 15}px`)
-            .style('top', `${event.layerY}px`)
+            .style('left', `${mx + 15}px`)
+            .style('top', `${my}px`)
         })
         .on('mouseout', (event) => {
           const el = select(event.currentTarget)
@@ -534,19 +577,6 @@ export default {
         })
         
       })
-    },
-
-    getPathwayModeName (mode) {
-      const names = {
-        1: 'Walkway',
-        2: 'Stairs',
-        3: 'Moving Sidewalk',
-        4: 'Escalator',
-        5: 'Elevator',
-        6: 'Fare Gate',
-        7: 'Exit Gate'
-      }
-      return names[mode] || 'Unknown'
     },
 
     getPathwayColor (pathwayMode) {
@@ -572,13 +602,13 @@ export default {
       return colors[locationType] || '#95a5a6'
     },
 
-    fitToView () {
-      this.zoom = 1.0
-      this.rotation = 150
-      this.rotationX = 45
-      this.rotationY = -30
+    resetView () {
+      this.zoom = DEFAULT_VIEW_PARAMS.zoom
+      this.rotation = DEFAULT_VIEW_PARAMS.rotation
+      this.rotationX = DEFAULT_VIEW_PARAMS.rotationX
+      this.rotationY = DEFAULT_VIEW_PARAMS.rotationY
+      this.levelHeightScale = DEFAULT_VIEW_PARAMS.levelHeightScale
       this.$nextTick(() => {
-        this.updateIsometricView()
         this.updateIsometricView()
       })
     },
