@@ -55,7 +55,7 @@ fragment pathwayStop on Stop {
   location_type
   platform_code
   level {
-    id
+    ...level
   }
   parent {
     id
@@ -195,7 +195,8 @@ export const routeKeys = {
   levels: 'editor-feedKey-feedVersionKey-stations-stationKey',
   stops: 'editor-feedKey-feedVersionKey-stations-stationKey-stops',
   pathways: 'editor-feedKey-feedVersionKey-stations-stationKey-pathways',
-  diagram: 'editor-feedKey-feedVersionKey-stations-stationKey-diagram'
+  diagram: 'editor-feedKey-feedVersionKey-stations-stationKey-diagram',
+  isometric: 'editor-feedKey-feedVersionKey-stations-stationKey-isometric'
 }
 
 export class FeedVersion {

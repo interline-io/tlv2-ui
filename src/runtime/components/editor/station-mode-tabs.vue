@@ -32,6 +32,13 @@
           <i class="mdi mdi-chart-timeline mdi-16px" /> &nbsp; Station Diagram
         </nuxt-link>
       </li>
+      <li :class="(activeTab === 'isometric') ? 'is-active' : ''">
+        <nuxt-link
+          :to="{name:routeKeys['isometric'], params: {feedKey:feedKey,feedVersionKey:feedVersionKey,stationKey:stationKey}}"
+        >
+          <i class="mdi mdi-cube-outline mdi-16px" /> &nbsp; Isometric View
+        </nuxt-link>
+      </li>
     </ul>
   </div>
 </template>
