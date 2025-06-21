@@ -39,12 +39,12 @@
               </p>
               <p class="control is-expanded">
                 <button class="button is-small is-fullwidth" @click="setView({ rotation: 0, rotationX: -90, rotationY: 0, zoom: 1.0 })">
-                  Top Down
+                  Side Profile
                 </button>
               </p>
               <p class="control is-expanded">
                 <button class="button is-small is-fullwidth" @click="setView({ rotation: -90, rotationX: 0, rotationY: 0, zoom: 1.0 })">
-                  Side Profile
+                  Top Down
                 </button>
               </p>
             </div>
