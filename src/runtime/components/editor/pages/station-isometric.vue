@@ -31,20 +31,20 @@
               <o-slider v-model="zoom" :min="0.1" :max="5.0" :step="1" />
             </o-field>
 
-            <div class="field has-addons">
-              <p class="control">
-                <button class="button is-small" @click="setView(ISOMETRIC_VIEW)">
+            <div class="field is-grouped">
+              <p class="control is-expanded">
+                <button class="button is-small is-fullwidth" @click="setView(ISOMETRIC_VIEW)">
                   Isometric
                 </button>
               </p>
-              <p class="control">
-                <button class="button is-small" @click="setView({ rotation: 0, rotationX: -90, rotationY: 0, zoom: 1.0 })">
-                  Side Profile
+              <p class="control is-expanded">
+                <button class="button is-small is-fullwidth" @click="setView({ rotation: 0, rotationX: -90, rotationY: 0, zoom: 1.0 })">
+                  Top Down
                 </button>
               </p>
-              <p class="control">
-                <button class="button is-small" @click="setView({ rotation: 0, rotationX: 0, rotationY: 0, zoom: 1.0 })">
-                  Top Down
+              <p class="control is-expanded">
+                <button class="button is-small is-fullwidth" @click="setView({ rotation: -90, rotationX: 0, rotationY: 0, zoom: 1.0 })">
+                  Side Profile
                 </button>
               </p>
             </div>
