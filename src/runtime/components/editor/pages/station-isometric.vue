@@ -18,10 +18,6 @@
       <div class="column is-narrow">
         <div class="block tl-editor-info">
           <div class="box">
-            <o-field label="Level Height Scale">
-              <o-slider v-model="levelHeightScale" :min="0.1" :max="2.0" :step="0.1" />
-            </o-field>
-
             <o-field label="Rotation X (Tilt)">
               <o-slider v-model="rotationX" :min="-90" :max="90" :step="1" />
             </o-field>
@@ -127,7 +123,6 @@ import { drag } from 'd3-drag'
 import { schemeCategory10 } from 'd3-scale-chromatic'
 
 const DEFAULT_VIEW_PARAMS = {
-  levelHeightScale: 1.0,
   rotation: 0,
   rotationX: -90,
   rotationY: 0,
@@ -157,7 +152,6 @@ export default {
   computed: {
     isDefaultView () {
       return (
-        this.levelHeightScale === DEFAULT_VIEW_PARAMS.levelHeightScale &&
         this.rotation === DEFAULT_VIEW_PARAMS.rotation &&
         this.rotationX === DEFAULT_VIEW_PARAMS.rotationX &&
         this.rotationY === DEFAULT_VIEW_PARAMS.rotationY &&
@@ -201,9 +195,6 @@ export default {
           this.updateIsometricView()
         })
       }
-    },
-    levelHeightScale () {
-      this.updateIsometricView()
     },
     rotation () {
       this.updateIsometricView()
@@ -390,7 +381,7 @@ export default {
 
         const isVisible = this.visibleLevelIndexes.includes(level.level_index)
         const levelIndex = level.level_index != null ? level.level_index : 0
-        const height = levelIndex * 60 * this.levelHeightScale
+        const height = levelIndex * 60 * this.zoom
 
         const pathData = level.geometry.coordinates.map(ring => {
           const projectedRing = ring.map(point => {
@@ -465,8 +456,8 @@ export default {
 
         const fromLevelIndex = fromStop.level?.level_index ?? 0
         const toLevelIndex = toStop.level?.level_index ?? 0
-        const fromHeight = fromLevelIndex * 60 * this.levelHeightScale
-        const toHeight = toLevelIndex * 60 * this.levelHeightScale
+        const fromHeight = fromLevelIndex * 60 * this.zoom
+        const toHeight = toLevelIndex * 60 * this.zoom
 
         const [p1x, p1y] = this.transform3D(fromX, fromY, -fromHeight)
         const [p2x, p2y] = this.transform3D(toX, toY, -toHeight)
@@ -544,7 +535,7 @@ export default {
 
         const level = stop.level
         const levelIndex = (level && level.level_index != null) ? level.level_index : 0
-        const height = levelIndex * 60 * this.levelHeightScale
+        const height = levelIndex * 60 * this.zoom
 
         const [cx, cy] = this.transform3D(x, y, -height)
 
@@ -633,7 +624,6 @@ export default {
       this.rotation = DEFAULT_VIEW_PARAMS.rotation
       this.rotationX = DEFAULT_VIEW_PARAMS.rotationX
       this.rotationY = DEFAULT_VIEW_PARAMS.rotationY
-      this.levelHeightScale = DEFAULT_VIEW_PARAMS.levelHeightScale
       this.$nextTick(() => {
         this.updateIsometricView()
       })
