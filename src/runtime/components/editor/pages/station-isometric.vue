@@ -43,7 +43,7 @@
                 </button>
               </p>
               <p class="control is-expanded">
-                <button class="button is-small is-fullwidth" @click="setView({ rotation: -90, rotationX: 0, rotationY: 0, zoom: 1.0 })">
+                <button class="button is-small is-fullwidth" @click="setView({ rotation: 0, rotationX: 0, rotationY: 0, zoom: 1.0 })">
                   Top Down
                 </button>
               </p>
