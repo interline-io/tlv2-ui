@@ -22,19 +22,31 @@
               <o-slider v-model="rotationX" :min="-90" :max="90" :step="1" />
             </o-field>
             <o-field label="Rotation Y (Azimuth)">
-              <o-slider v-model="rotationY" :min="-180" :max="180" :step="1" />
+              <o-slider v-model="rotation" :min="-180" :max="180" :step="1" />
             </o-field>
             <o-field label="Rotation Z (Roll)">
-              <o-slider v-model="rotation" :min="0" :max="360" :step="1" />
+              <o-slider v-model="rotationY" :min="-180" :max="180" :step="1" />
             </o-field>
             <o-field label="Zoom">
-              <o-slider v-model="zoom" :min="0.1" :max="5.0" :step="0.1" />
+              <o-slider v-model="zoom" :min="0.1" :max="5.0" :step="1" />
             </o-field>
 
-            <div class="field" v-if="!isDefaultView">
-              <button class="button is-small is-fullwidth" @click="resetView">
-                Reset View
-              </button>
+            <div class="field has-addons">
+              <p class="control">
+                <button class="button is-small" @click="setView(ISOMETRIC_VIEW)">
+                  Isometric
+                </button>
+              </p>
+              <p class="control">
+                <button class="button is-small" @click="setView({ rotation: 0, rotationX: -90, rotationY: 0, zoom: 1.0 })">
+                  Side Profile
+                </button>
+              </p>
+              <p class="control">
+                <button class="button is-small" @click="setView({ rotation: 0, rotationX: 0, rotationY: 0, zoom: 1.0 })">
+                  Top Down
+                </button>
+              </p>
             </div>
           </div>
 
@@ -122,19 +134,14 @@ import { select, pointer } from 'd3-selection'
 import { drag } from 'd3-drag'
 import { schemeCategory10 } from 'd3-scale-chromatic'
 
-const DEFAULT_VIEW_PARAMS = {
-  rotation: 0,
-  rotationX: -90,
-  rotationY: 0,
-  zoom: 1.0
-}
+const ISOMETRIC_VIEW = { rotation: -35, rotationX: -45, rotationY: 0, zoom: 1.0 }
 
 export default {
   mixins: [StationMixin],
   layout: 'wide',
   data () {
     return {
-      ...DEFAULT_VIEW_PARAMS,
+      ...ISOMETRIC_VIEW,
       showPathways: true,
       showStops: true,
       showLevels: true,
@@ -150,14 +157,7 @@ export default {
     }
   },
   computed: {
-    isDefaultView () {
-      return (
-        this.rotation === DEFAULT_VIEW_PARAMS.rotation &&
-        this.rotationX === DEFAULT_VIEW_PARAMS.rotationX &&
-        this.rotationY === DEFAULT_VIEW_PARAMS.rotationY &&
-        this.zoom === DEFAULT_VIEW_PARAMS.zoom
-      )
-    },
+    ISOMETRIC_VIEW: () => ISOMETRIC_VIEW,
     stopTypesLegend () {
       return [
         { type: 0, name: 'Platform' },
@@ -262,7 +262,7 @@ export default {
       let y3 = y2 * cosX - z2 * sinX
       let z3 = y2 * sinX + z2 * cosX
 
-      return [x3, y3]
+      return [x3, -y3]
     },
 
     updateIsometricView () {
@@ -310,11 +310,93 @@ export default {
       if (this.showLevels) this.drawLevels()
       if (this.showPathways) this.drawPathways()
       if (this.showStops) this.drawStops()
+
+      this.drawCompass()
+    },
+
+    drawCompass () {
+      const compassSize = 30
+      const compassPadding = 40
+      
+      const container = this.$refs.isometricContainer
+      const width = container.clientWidth
+      const height = container.clientHeight
+      
+      const compassX = -width / 2 + compassPadding
+      const compassY = -height / 2 + compassPadding
+
+      const compass = this.g.append('g')
+        .attr('id', 'compass')
+        .attr('transform', `translate(${compassX}, ${compassY})`)
+
+      // Define the 3D axes. Y is North, Z is Up.
+      const origin = { x: 0, y: 0, z: 0 }
+      const xAxisEnd = { x: compassSize, y: 0, z: 0 }
+      const yAxisEnd = { x: 0, y: compassSize, z: 0 }
+      const zAxisEnd = { x: 0, y: 0, z: compassSize }
+      const negXAxisEnd = { x: -compassSize, y: 0, z: 0 }
+      const negYAxisEnd = { x: 0, y: -compassSize, z: 0 }
+
+      // Project the 3D points to 2D screen space
+      const [p0x, p0y] = this.transform3D(origin.x, origin.y, origin.z)
+      const [pXx, pXy] = this.transform3D(xAxisEnd.x, xAxisEnd.y, xAxisEnd.z)
+      const [pYx, pYy] = this.transform3D(yAxisEnd.x, yAxisEnd.y, yAxisEnd.z)
+      const [pZx, pZy] = this.transform3D(zAxisEnd.x, zAxisEnd.y, zAxisEnd.z)
+      const [pNegXx, pNegXy] = this.transform3D(negXAxisEnd.x, negXAxisEnd.y, negXAxisEnd.z)
+      const [pNegYx, pNegYy] = this.transform3D(negYAxisEnd.x, negYAxisEnd.y, negYAxisEnd.z)
+
+      // Draw the Z-axis (Up) first, so it's in the back
+      compass.append('line')
+        .attr('x1', p0x).attr('y1', p0y)
+        .attr('x2', pZx).attr('y2', pZy)
+        .attr('stroke', '#3498db').attr('stroke-width', 2)
+
+      compass.append('text')
+        .attr('x', pZx + 5).attr('y', pZy)
+        .attr('text-anchor', 'start').attr('font-size', '12px')
+        .attr('font-weight', 'bold').attr('fill', '#3498db')
+        .text('Up')
+
+      // Draw the X-axis (East-West)
+      compass.append('line')
+        .attr('x1', pNegXx).attr('y1', pNegXy)
+        .attr('x2', pXx).attr('y2', pXy)
+        .attr('stroke', '#e74c3c').attr('stroke-width', 2)
+      
+      compass.append('text')
+        .attr('x', pXx + 5).attr('y', pXy)
+        .attr('text-anchor', 'start').attr('font-size', '12px')
+        .attr('font-weight', 'bold').attr('fill', '#e74c3c')
+        .text('E')
+
+      // Draw the Y-axis (North-South)
+      compass.append('line')
+        .attr('x1', pNegYx).attr('y1', pNegYy)
+        .attr('x2', pYx).attr('y2', pYy)
+        .attr('stroke', '#2ecc71').attr('stroke-width', 2)
+
+      compass.append('text')
+        .attr('x', pYx + 5).attr('y', pYy)
+        .attr('text-anchor', 'start').attr('font-size', '12px')
+        .attr('font-weight', 'bold').attr('fill', '#2ecc71')
+        .text('N')
+
+      compass.append('text')
+        .attr('x', pNegYx - 5).attr('y', pNegYy)
+        .attr('text-anchor', 'end').attr('font-size', '12px')
+        .attr('font-weight', 'bold').attr('fill', '#2ecc71')
+        .text('S')
+
+      compass.append('text')
+        .attr('x', pNegXx - 5).attr('y', pNegXy)
+        .attr('text-anchor', 'end').attr('font-size', '12px')
+        .attr('font-weight', 'bold').attr('fill', '#e74c3c')
+        .text('W')
     },
 
     dragged (event) {
       const sensitivity = 0.4
-      this.rotationY += event.dx * sensitivity
+      this.rotation += event.dx * sensitivity
       this.rotationX -= event.dy * sensitivity
     },
 
@@ -381,13 +463,13 @@ export default {
 
         const isVisible = this.visibleLevelIndexes.includes(level.level_index)
         const levelIndex = level.level_index != null ? level.level_index : 0
-        const height = levelIndex * 60 * this.zoom
+        const z = levelIndex * 60 * this.zoom
 
         const pathData = level.geometry.coordinates.map(ring => {
           const projectedRing = ring.map(point => {
             const [lng, lat] = point
             const [x, y] = this.geoToXY(lng, lat)
-            const [tx, ty] = this.transform3D(x, y, -height)
+            const [tx, ty] = this.transform3D(x, y, z)
             return [tx, ty]
           }).filter(p => p)
 
@@ -417,7 +499,7 @@ export default {
           if (this.showLabels && isVisible && level.level_name && level.geometry.coordinates[0].length > 0) {
             const [lng, lat] = level.geometry.coordinates[0][0]
             const [x, y] = this.geoToXY(lng, lat)
-            const [tx, ty] = this.transform3D(x, y, -height)
+            const [tx, ty] = this.transform3D(x, y, z)
             
             this.g.append('text')
               .attr('x', tx - 10)
@@ -456,11 +538,11 @@ export default {
 
         const fromLevelIndex = fromStop.level?.level_index ?? 0
         const toLevelIndex = toStop.level?.level_index ?? 0
-        const fromHeight = fromLevelIndex * 60 * this.zoom
-        const toHeight = toLevelIndex * 60 * this.zoom
+        const fromZ = fromLevelIndex * 60 * this.zoom
+        const toZ = toLevelIndex * 60 * this.zoom
 
-        const [p1x, p1y] = this.transform3D(fromX, fromY, -fromHeight)
-        const [p2x, p2y] = this.transform3D(toX, toY, -toHeight)
+        const [p1x, p1y] = this.transform3D(fromX, fromY, fromZ)
+        const [p2x, p2y] = this.transform3D(toX, toY, toZ)
 
         const drawGhostNode = (x, y) => {
           this.g.append('circle')
@@ -535,9 +617,9 @@ export default {
 
         const level = stop.level
         const levelIndex = (level && level.level_index != null) ? level.level_index : 0
-        const height = levelIndex * 60 * this.zoom
+        const z = levelIndex * 60 * this.zoom
 
-        const [cx, cy] = this.transform3D(x, y, -height)
+        const [cx, cy] = this.transform3D(x, y, z)
 
         const circle = this.g.append('circle')
           .attr('cx', cx)
@@ -619,11 +701,11 @@ export default {
       return colors[locationType] || '#95a5a6'
     },
 
-    resetView () {
-      this.zoom = DEFAULT_VIEW_PARAMS.zoom
-      this.rotation = DEFAULT_VIEW_PARAMS.rotation
-      this.rotationX = DEFAULT_VIEW_PARAMS.rotationX
-      this.rotationY = DEFAULT_VIEW_PARAMS.rotationY
+    setView (params) {
+      this.rotation = params.rotation
+      this.rotationX = params.rotationX
+      this.rotationY = params.rotationY
+      this.zoom = params.zoom
       this.$nextTick(() => {
         this.updateIsometricView()
       })
