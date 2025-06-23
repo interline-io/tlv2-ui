@@ -65,7 +65,7 @@ fragment pathwayStop on Stop {
     feed {
       id
       onestop_id
-    }    
+    }
   }
 }
 
@@ -136,6 +136,9 @@ query stationStopQuery($stop_ids: [Int!]!) {
     }
     level {
       ...level
+      stops {
+        id
+      }
     }
     parent {
       ...childStop
@@ -160,7 +163,7 @@ query stationStopQuery($stop_ids: [Int!]!) {
               agency_name
             }
           }
-    }    
+    }
     external_reference {
       id
       target_stop_id
@@ -180,7 +183,7 @@ query stationStopQuery($stop_ids: [Int!]!) {
           }
         }
       }
-    }    
+    }
   }
 }`
 
@@ -383,7 +386,9 @@ export class Level {
     this.feed_version = { id: lvl.feed_version?.id }
     this.parent = { id: lvl.parent?.id }
     this.stops = []
-    this.stops = lvl.stops || []
+    for (const s of (lvl.stops || [])) {
+      this.stops.push(new Stop(s))
+    }
   }
 
   setDefaults () {
@@ -496,6 +501,9 @@ export class Station {
       }
       for (const c of stop.children || []) {
         checkStops.add(c.id)
+      }
+      for (const s of stop.level?.stops || []) {
+        checkStops.add(s.id)
       }
     }
     const toFetch = new Set()
