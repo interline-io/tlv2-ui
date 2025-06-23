@@ -208,7 +208,7 @@ const nearbyStopsQuery = gql`
                 id
                 agency_id
                 agency_name
-              }            
+              }
             }
           }
         }
@@ -298,6 +298,9 @@ export default {
 
       const check = new Set(this.selectedAgencies)
       return filteredStops.filter((stop) => {
+        if (stop.location_type !== 1) {
+          return true
+        }
         let rss = stop.route_stops || []
         if (stop.external_reference && stop.external_reference.target_active_stop) {
           rss = stop.external_reference.target_active_stop.route_stops

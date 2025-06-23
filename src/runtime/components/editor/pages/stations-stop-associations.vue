@@ -54,6 +54,20 @@
           <span class="icon has-text-warning"><i class="mdi mdi-alert mdi-24px" /></span>
         </span>
       </o-table-column>
+
+      <o-table-column
+        v-slot="props"
+        field="location_type"
+        label="Target location type"
+        sortable
+      >
+        <span v-if="props.row.external_reference?.target_active_stop">
+          <span class="icon">{{ props.row.external_reference?.target_active_stop?.location_type }}</span>
+        </span><span v-else>
+          <span class="icon has-text-warning"><i class="mdi mdi-alert mdi-24px" /></span>
+        </span>
+      </o-table-column>
+
       <o-table-column
         v-slot="props"
         label="Routes serving stop"
@@ -108,6 +122,7 @@ const q = gql`
           stop_id
           stop_name
           geometry
+          location_type
           route_stops {
             route {
               id
