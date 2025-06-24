@@ -300,8 +300,8 @@ export default {
             type: 'line',
             source: 'stops-associations',
             paint: {
-              'line-color': '#00ff00',
-              'line-opacity': 0.5,
+              'line-color': '#e04aff',
+              'line-opacity': 0.8,
               'line-width': 4
             },
             filter: ['==', mapLevelKey, ['get', 'mapLevelKey']]
@@ -378,7 +378,7 @@ export default {
               mapLevelKey: mapLevelKeyFn(s.level),
               level_id: s.level?.id || 0,
               level_index: s.level?.level_index,
-              stop_name: s.stop_name
+              stop_name: s.external_reference?.target_active_stop?.stop_name || s.stop_name
             },
             geometry: s.geometry
           }
@@ -430,7 +430,6 @@ export default {
             mapLevelKey: mapLevelKeyFn(s.level),
             level_id: s.level?.id || 0,
             level_index: s.level?.level_index,
-            stop_name: s.stop_name
           },
           geometry: {
             type: 'LineString',

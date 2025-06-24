@@ -87,6 +87,25 @@
       <div class="column">
         <o-field>
           <o-dropdown
+            v-model="selectedSources"
+            :width="300"
+            aria-role="list"
+            multiple
+          >
+            <template #trigger>
+              <button class="button" type="button">
+                Sources &nbsp;
+                <o-icon icon="menu-down" />
+              </button>
+            </template>
+            <o-dropdown-item v-for="(sourceType,key) of SourceTypes" :key="sourceType" :value="key" aria-role="listitem">
+              <div class="media">
+                {{ sourceType }}
+              </div>
+            </o-dropdown-item>
+          </o-dropdown>
+
+          <o-dropdown
             v-model="selectedLocationTypes"
             :width="300"
             aria-role="list"
@@ -104,6 +123,7 @@
               </div>
             </o-dropdown-item>
           </o-dropdown>
+
           <o-dropdown
             v-model="selectedAgencies"
             :width="300"
@@ -283,6 +303,11 @@ export default {
       basemap: 'carto',
       LocationTypes: LocationTypes,
       selectedLocationTypes: ['0', '2'], // must be stringy
+      selectedSources: ['nearby', 'station'],
+      SourceTypes: {
+        nearby: 'Unassociated Stops',
+        station: 'Associated Stops'
+      },
     }
   },
   computed: {
@@ -290,6 +315,9 @@ export default {
       // Get nearby stops that are NOT associated with the station and NOT in the excluded feed list.
       // Also apply agency selection.
       if (!this.station) {
+        return []
+      }
+      if (!this.selectedSources.includes('nearby')) {
         return []
       }
 
@@ -355,10 +383,12 @@ export default {
         geometry: this.station.geometry,
         levels: this.station.levels,
         pathways: [],
-        stops: this.station.stops.filter((s) => {
-          const target = s.external_reference?.target_active_stop
-          return target && this.selectedLocationTypes.includes(target.location_type.toString())
-        })
+        stops: !this.selectedSources.includes('station')
+          ? []
+          : this.station.stops.filter((s) => {
+              const target = s.external_reference?.target_active_stop
+              return target && this.selectedLocationTypes.includes(target.location_type.toString())
+            })
       }
     },
     selectedAgencies: {

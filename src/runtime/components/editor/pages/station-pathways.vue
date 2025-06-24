@@ -29,7 +29,7 @@
             <template #trigger>
               Select
             </template>
-            <div class="card-content">
+            <div>
               <div class="mb-2">
                 <p class="label">
                   {{ selectedStops.length }} stops selected
@@ -44,6 +44,7 @@
                 </o-field><o-field>
                   <div class="buttons has-addons">
                     <a class="button is-small" @click="selectStopsWithAssociations()">With associations</a>
+                    <a class="button is-small" @click="selectStopsPlatformsWithoutAssociations()">Platforms w/o associations</a>
                     <a class="button is-small" @click="selectStopsWithPairedPathways()">With paired pathways</a>
                   </div>
                 </o-field>
@@ -61,6 +62,8 @@
                   </div>
                   <div class="buttons has-addons">
                     <a class="button is-small" @click="selectPathwaysWithPairs()">With pairs</a>
+                    <a class="button is-small" @click="selectPathwaysOneway()">One-directional</a>
+                    <a class="button is-small" @click="selectPathwaysBidirectional()">Bi-directional</a>
                   </div>
                 </o-field>
                 <ul>
@@ -78,7 +81,7 @@
             <template #trigger>
               Add Pathway
             </template>
-            <div class="card-content">
+            <div>
               <tl-editor-pathway-editor
                 :station="station"
                 :value="newPathway()"
@@ -507,6 +510,10 @@ export default {
       this.selectedStops = this.station.stops.filter((s) => { return s.external_reference?.target_stop_id })
       this.selectMode = 'select'
     },
+    selectStopsPlatformsWithoutAssociations () {
+      this.selectedStops = this.station.stops.filter((s) => { return s.location_type === 0 && !s.external_reference })
+      this.selectMode = 'select'
+    },
     selectStopsWithPairedPathways () {
       const pairedPathways = new Map()
       this.selectedStops = this.station.stops.filter((s) => {
@@ -551,6 +558,12 @@ export default {
         return matched
       })
       this.selectMode = 'select'
+    },
+    selectPathwaysOneway () {
+      this.selectedPathways = this.station.pathways.filter((s) => { return !s.is_bidirectional })
+    },
+    selectPathwaysBidirectional () {
+      this.selectedPathways = this.station.pathways.filter((s) => { return s.is_bidirectional })
     },
     unselectAll () {
       this.selectedStops = []
