@@ -98,10 +98,9 @@
                 <o-icon icon="menu-down" />
               </button>
             </template>
-            lt: {{ selectedLocationTypes }}
-            <o-dropdown-item v-for="[key,locationType] of LocationTypes.entries()" :key="locationType" :native-value="key" aria-role="listitem">
+            <o-dropdown-item v-for="[key,locationType] of LocationTypes.entries()" :key="locationType" :value="key.toString()" aria-role="listitem">
               <div class="media">
-                key:{{ key }} {{ locationType }}
+                {{ locationType }}
               </div>
             </o-dropdown-item>
           </o-dropdown>
@@ -283,7 +282,7 @@ export default {
       selectMode: 'select',
       basemap: 'carto',
       LocationTypes: LocationTypes,
-      selectedLocationTypes: [0, 2]
+      selectedLocationTypes: ['0', '2'], // must be stringy
     }
   },
   computed: {
@@ -332,20 +331,22 @@ export default {
 
       const check = new Set(this.selectedAgencies)
       return filteredStops.filter((stop) => {
-        if (stop.location_type !== 1) {
-          return true
-        }
-        let rss = stop.route_stops || []
-        if (stop.external_reference && stop.external_reference.target_active_stop) {
-          rss = stop.external_reference.target_active_stop.route_stops
-        }
-        const stopAgencies = []
-        for (const rs of rss) {
-          if (rs.route && rs.route.agency) {
-            stopAgencies.push(rs.route.agency.agency_id)
+        if (stop.location_type === 1) {
+          let rss = stop.route_stops || []
+          if (stop.external_reference && stop.external_reference.target_active_stop) {
+            rss = stop.external_reference.target_active_stop.route_stops
+          }
+          const stopAgencies = []
+          for (const rs of rss) {
+            if (rs.route && rs.route.agency) {
+              stopAgencies.push(rs.route.agency.agency_id)
+            }
+          }
+          if (intersection(check, stopAgencies).size === 0) {
+            return false
           }
         }
-        return intersection(check, stopAgencies).size > 0
+        return this.selectedLocationTypes.includes(stop.location_type.toString())
       })
     },
     stationFiltered () {
@@ -355,7 +356,8 @@ export default {
         levels: this.station.levels,
         pathways: [],
         stops: this.station.stops.filter((s) => {
-          return s.external_reference?.target_active_stop
+          const target = s.external_reference?.target_active_stop
+          return target && this.selectedLocationTypes.includes(target.location_type.toString())
         })
       }
     },
