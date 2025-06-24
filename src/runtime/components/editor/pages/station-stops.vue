@@ -28,12 +28,24 @@
                 This stop is already associated with the station. Use the pathways editor.
               </template>
               <div v-else-if="selectedStop">
+                <o-field label="Feed ID">
+                  <o-input v-model="selectedStop.feed_version.feed.onestop_id" :disabled="true" />
+                </o-field>
                 <o-field label="Stop ID">
                   <o-input v-model="selectedStop.stop_id" :disabled="true" />
                 </o-field>
                 <o-field label="Name">
                   <o-input v-model="selectedStop.stop_name" :disabled="true" />
                 </o-field>
+
+                <o-field label="Location Type">
+                  <o-select v-model="selectedStop.location_type" :disabled="readOnly">
+                    <option v-for="[type,label] of LocationTypes.entries()" :key="type" :value="type">
+                      {{ label }}
+                    </option>
+                  </o-select>
+                </o-field>
+
                 <o-field label="Import to Level">
                   <o-select v-model="selectedStop.level.id">
                     <option v-for="level of station.levels" :key="level.id" :value="level.id">
@@ -41,7 +53,7 @@
                     </option>
                   </o-select>
                 </o-field>
-                <o-field label="Routes">
+                <o-field v-if="selectedStop.route_stops.length > 0" label="Routes">
                   <ul>
                     <li v-for="rt of selectedStop.route_stops" :key="rt.route.id">
                       {{ rt.route.agency.agency_id }}: {{ rt.route.route_short_name || rt.route.route_long_name }}
@@ -74,6 +86,25 @@
 
       <div class="column">
         <o-field>
+          <o-dropdown
+            v-model="selectedLocationTypes"
+            :width="300"
+            aria-role="list"
+            multiple
+          >
+            <template #trigger>
+              <button class="button" type="button">
+                Location Types &nbsp;
+                <o-icon icon="menu-down" />
+              </button>
+            </template>
+            lt: {{ selectedLocationTypes }}
+            <o-dropdown-item v-for="[key,locationType] of LocationTypes.entries()" :key="locationType" :native-value="key" aria-role="listitem">
+              <div class="media">
+                key:{{ key }} {{ locationType }}
+              </div>
+            </o-dropdown-item>
+          </o-dropdown>
           <o-dropdown
             v-model="selectedAgencies"
             :width="300"
@@ -142,6 +173,7 @@ import { gql } from 'graphql-tag'
 import { Stop, mapLevelKeyFn } from '../station'
 import StationMixin from './station-mixin'
 import { navigateTo } from '#imports'
+import { LocationTypes } from '../basemaps'
 
 function intersection (setA, setB) {
   const _intersection = new Set()
@@ -249,7 +281,9 @@ export default {
     return {
       nearbyStops: [],
       selectMode: 'select',
-      basemap: 'carto'
+      basemap: 'carto',
+      LocationTypes: LocationTypes,
+      selectedLocationTypes: [0, 2]
     }
   },
   computed: {
@@ -320,7 +354,9 @@ export default {
         geometry: this.station.geometry,
         levels: this.station.levels,
         pathways: [],
-        stops: []
+        stops: this.station.stops.filter((s) => {
+          return s.external_reference?.target_active_stop
+        })
       }
     },
     selectedAgencies: {

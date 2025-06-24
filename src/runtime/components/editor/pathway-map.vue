@@ -296,6 +296,20 @@ export default {
         this.addLevelLayer(
           mapLevelKey,
           {
+            id: `${mapLevelKey}-stops-associations`,
+            type: 'line',
+            source: 'stops-associations',
+            paint: {
+              'line-color': '#00ff00',
+              'line-opacity': 0.5,
+              'line-width': 4
+            },
+            filter: ['==', mapLevelKey, ['get', 'mapLevelKey']]
+          }
+        )
+        this.addLevelLayer(
+          mapLevelKey,
+          {
             id: `${mapLevelKey}-stops`,
             type: 'circle',
             source: 'stops',
@@ -403,6 +417,34 @@ export default {
       this.map.getSource('stops-parent-stations').setData({
         type: 'FeatureCollection',
         features: stopParentStationGeoms
+      })
+
+      // Association geoms
+      const stopAssociationGeoms = allStops.filter((s) => {
+        return s.external_reference?.target_active_stop
+      }).map((s) => {
+        return {
+          type: 'Feature',
+          id: s.id,
+          properties: {
+            mapLevelKey: mapLevelKeyFn(s.level),
+            level_id: s.level?.id || 0,
+            level_index: s.level?.level_index,
+            stop_name: s.stop_name
+          },
+          geometry: {
+            type: 'LineString',
+            coordinates: [
+              s.geometry.coordinates,
+              s.external_reference?.target_active_stop?.geometry?.coordinates
+            ]
+          }
+        }
+      })
+      console.log('stopAssociationGeoms:', stopAssociationGeoms)
+      this.map.getSource('stops-associations').setData({
+        type: 'FeatureCollection',
+        features: stopAssociationGeoms
       })
     },
     drawPathways () {
@@ -612,6 +654,10 @@ export default {
         data: { type: 'FeatureCollection', features: [] }
       })
       this.map.addSource('stops-parent-stations', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] }
+      })
+      this.map.addSource('stops-associations', {
         type: 'geojson',
         data: { type: 'FeatureCollection', features: [] }
       })

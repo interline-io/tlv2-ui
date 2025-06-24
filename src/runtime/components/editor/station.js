@@ -74,6 +74,7 @@ fragment childStop on Stop {
   stop_id
   stop_name
   location_type
+  geometry
   level {
     id
   }
