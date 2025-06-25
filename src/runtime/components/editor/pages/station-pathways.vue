@@ -44,7 +44,10 @@
                 </o-field><o-field>
                   <div class="buttons has-addons">
                     <a class="button is-small" @click="selectStopsWithAssociations()">With associations</a>
-                    <a class="button is-small" @click="selectStopsPlatformsWithoutAssociations()">Platforms w/o associations</a>
+                    <a class="button is-small" @click="selectStopsPlatformsWithoutAssociations()">Platforms w/o assoc.</a>
+                    <a class="button is-small" @click="selectStopsEntrancesWithoutAssociations()">Entrances w/o assoc.</a>
+                  </div>
+                  <div class="buttons has-addons">
                     <a class="button is-small" @click="selectStopsWithPairedPathways()">With paired pathways</a>
                   </div>
                 </o-field>
@@ -72,6 +75,9 @@
                   </li>
                   <li class="red-rectangle">
                     red pathways connect two separate levels
+                  </li>
+                  <li class="purple-rectangle">
+                    purple lines show distance to associated stop
                   </li>
                 </ul>
               </div>
@@ -182,7 +188,39 @@
 
       <div class="column">
         <o-field grouped>
-          <o-field label="Map Mode">
+          <o-field>
+            <o-dropdown
+              v-model="selectedLevels"
+              :width="300"
+              aria-role="list"
+              multiple
+            >
+              <template #trigger>
+                <button class="button" type="button">
+                  Levels &nbsp;
+                  <o-icon icon="menu-down" />
+                </button>
+              </template>
+              <o-dropdown-item v-for="level of sortedStationLevels" :key="level.id" :value="mapLevelKeyFn(level)" aria-role="listitem">
+                <div class="media">
+                  <div class="media-left">
+                    {{ level.level_index == null ? '&nbsp;&nbsp;&nbsp;' : level.level_index }}
+                  </div>
+                  <div class="media-content">
+                    <h3>{{ level.level_name }}</h3>
+                    <small>{{ level.stops.length }} nodes </small>
+                  </div>
+                </div>
+              </o-dropdown-item>
+            </o-dropdown>
+            <tl-editor-basemap-control v-model="basemap" />
+          </o-field>
+          <o-field>
+            <o-button icon-left="download" @click="downloadGeojson">
+              GeoJSON
+            </o-button>
+          </o-field>
+          <o-field>
             <o-radio
               v-model="selectMode"
               native-value="select"
@@ -208,36 +246,6 @@
             >
               Add Node
             </o-radio>
-          </o-field>
-          <o-field label="Map Display">
-            <o-dropdown
-              v-model="selectedLevels"
-              :width="300"
-              aria-role="list"
-              multiple
-            >
-              <template #trigger>
-                <button class="button" type="button">
-                  Levels &nbsp;
-                  <o-icon icon="menu-down" />
-                </button>
-              </template>
-              <o-dropdown-item v-for="level of sortedStationLevels" :key="level.id" :value="mapLevelKeyFn(level)" aria-role="listitem">
-                <div class="media">
-                  <div class="media-left">
-                    {{ level.level_index }}
-                  </div>
-                  <div class="media-content">
-                    <h3>{{ level.level_name }}</h3>
-                    <small>{{ level.stops.length }} nodes </small>
-                  </div>
-                </div>
-              </o-dropdown-item>
-            </o-dropdown>
-            <tl-editor-basemap-control v-model="basemap" />
-          </o-field>
-          <o-field label="Download">
-            <span class="button" @click="downloadGeojson">GeoJSON</span>
           </o-field>
         </o-field>
 
@@ -323,7 +331,9 @@ export default {
       return pwi
     },
     sortedStationLevels () {
-      return this.station.levels.slice(0).sort((a, b) => { return b.level_index - a.level_index })
+      return this.station.levels.slice(0).sort(
+        (a, b) => (b.level_index != null ? b.level_index : -Infinity) - (a.level_index != null ? a.level_index : -Infinity)
+      )
     }
   },
   watch: {
@@ -514,6 +524,10 @@ export default {
       this.selectedStops = this.station.stops.filter((s) => { return s.location_type === 0 && !s.external_reference })
       this.selectMode = 'select'
     },
+    selectStopsEntrancesWithoutAssociations () {
+      this.selectedStops = this.station.stops.filter((s) => { return s.location_type === 2 && !s.external_reference })
+      this.selectMode = 'select'
+    },
     selectStopsWithPairedPathways () {
       const pairedPathways = new Map()
       this.selectedStops = this.station.stops.filter((s) => {
@@ -661,6 +675,9 @@ export default {
   }
   .red-rectangle::before {
     content: "🟥 "
+  }
+  .purple-rectangle::before {
+    content: "🟪 "
   }
   .tl-editor-info {
     width: 540px;

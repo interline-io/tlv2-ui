@@ -261,7 +261,23 @@ export default {
     validateStop (stop) {
       const fromPathways = stop.pathways_from_stop || []
       const toPathways = stop.pathways_to_stop || []
+      const targetStop = stop.external_reference?.target_active_stop || null
       const errs = []
+      if (stop.location_type === 0 && !targetStop) {
+        errs.push({
+          message: 'Platform (location_type = 0) must have a stop association'
+        })
+      }
+      if (targetStop && targetStop.location_type !== stop.location_type) {
+        errs.push({
+          message: `Stop must have the same location_type as the target stop (location_type = ${targetStop.location_type})`
+        })
+      }
+      // if (stop.location_type === 2 && !stop.external_reference?.target_active_stop) {
+      //   errs.push({
+      //     message: 'Entrance (location_type = 2) must have a stop association'
+      //   })
+      // }
       if (stop.location_type === 1 && (fromPathways.length > 0 || toPathways.length > 0)) {
         errs.push({
           message: 'Pathways cannot use Station (location_type = 1)'
@@ -297,6 +313,11 @@ export default {
       if (stop.location_type === 3 && (fromPathways.length + toPathways.length < 2)) {
         errs.push({
           message: 'Dangling generic node - must be able to transit through node to another node'
+        })
+      }
+      if (stop.location_type === 0 && (fromPathways.length + toPathways.length > 1)) {
+        errs.push({
+          message: 'Do not transit through platforms'
         })
       }
       return errs

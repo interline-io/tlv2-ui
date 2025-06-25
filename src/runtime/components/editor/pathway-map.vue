@@ -748,7 +748,7 @@ export default {
 
   <style scoped>
   #map {
-    height: 600px;
+    height: 800px;
   }
   </style>
 

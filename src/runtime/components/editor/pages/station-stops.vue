@@ -39,7 +39,7 @@
                 </o-field>
 
                 <o-field label="Location Type">
-                  <o-select v-model="selectedStop.location_type" :disabled="readOnly">
+                  <o-select v-model="selectedStop.location_type" :disabled="true">
                     <option v-for="[type,label] of LocationTypes.entries()" :key="type" :value="type">
                       {{ label }}
                     </option>
@@ -86,6 +86,35 @@
 
       <div class="column">
         <o-field>
+          <o-dropdown
+            v-model="selectedLevels"
+            :width="300"
+            aria-role="list"
+            multiple
+          >
+            <template #trigger>
+              <button class="button" type="button">
+                Levels &nbsp;
+                <o-icon icon="menu-down" />
+              </button>
+            </template>
+            <o-dropdown-item v-for="level of station.levels" :key="level.id" :value="level.id" aria-role="listitem">
+              <div class="media">
+                <div class="media-left">
+                  {{ level.level_index !== undefined ? level.level_index : ' ' }}
+                </div>
+                <div class="media-content">
+                  <h3>
+                    {{ level.level_name }}
+                  </h3>
+                  <small>{{ level.stops.length }} nodes </small>
+                </div>
+              </div>
+            </o-dropdown-item>
+          </o-dropdown>
+
+          <tl-editor-basemap-control v-model="basemap" />
+
           <o-dropdown
             v-model="selectedSources"
             :width="300"
@@ -142,35 +171,6 @@
               </div>
             </o-dropdown-item>
           </o-dropdown>
-          <o-dropdown
-            v-model="selectedLevels"
-            class="ml-4"
-            :width="300"
-            aria-role="list"
-            multiple
-          >
-            <template #trigger>
-              <button class="button" type="button">
-                Levels &nbsp;
-                <o-icon icon="menu-down" />
-              </button>
-            </template>
-            <o-dropdown-item v-for="level of station.levels" :key="level.id" :value="level.id" aria-role="listitem">
-              <div class="media">
-                <div class="media-left">
-                  {{ level.level_index !== undefined ? level.level_index : ' ' }}
-                </div>
-                <div class="media-content">
-                  <h3>
-                    {{ level.level_name }}
-                  </h3>
-                  <small>{{ level.stops.length }} nodes </small>
-                </div>
-              </div>
-            </o-dropdown-item>
-          </o-dropdown>
-
-          <tl-editor-basemap-control v-model="basemap" />
         </o-field>
         <tl-editor-pathway-map
           :center="station.geometry.coordinates"
@@ -305,8 +305,8 @@ export default {
       selectedLocationTypes: ['0', '2'], // must be stringy
       selectedSources: ['nearby', 'station'],
       SourceTypes: {
-        nearby: 'Unassociated Stops',
-        station: 'Associated Stops'
+        station: 'Associated Stops',
+        nearby: 'Unassociated Stops'
       },
     }
   },

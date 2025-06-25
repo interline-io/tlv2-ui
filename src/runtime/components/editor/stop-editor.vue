@@ -1,159 +1,165 @@
 <template>
   <div>
-    <div>
-      <o-field label="Stop ID">
-        <code v-if="readOnly">{{ entity.stop_id }}</code>
-        <span v-else-if="targetActiveStop">
-          <o-input v-model="targetActiveStop.stop_id" disabled icon-right="target" /><br>
-          <o-input v-model="entity.stop_id" class="mt-2" />
-        </span>
-        <o-input v-else v-model="entity.stop_id" />
-      </o-field>
+    <div class="columns">
+      <div class="column is-one-half">
+        <o-field label="Stop ID">
+          <code v-if="readOnly">{{ entity.stop_id }}</code>
+          <span v-else-if="targetActiveStop">
+            <o-input v-model="targetActiveStop.stop_id" disabled icon-right="target" /><br>
+            <o-input v-model="entity.stop_id" class="mt-2" />
+          </span>
+          <o-input v-else v-model="entity.stop_id" />
+        </o-field>
 
-      <o-field label="Name">
-        <span v-if="readOnly">{{ entity.stop_name }}</span>
-        <span v-else-if="targetActiveStop">
-          <o-input v-model="targetActiveStop.stop_name" disabled icon-right="target" /><br>
-          <o-input v-model="entity.stop_name" class="mt-2" />
-        </span>
-        <o-input v-else v-model="entity.stop_name" />
-      </o-field>
+        <o-field label="Name">
+          <span v-if="readOnly">{{ entity.stop_name }}</span>
+          <span v-else-if="targetActiveStop">
+            <o-input v-model="targetActiveStop.stop_name" disabled icon-right="target" /><br>
+            <o-input v-model="entity.stop_name" class="mt-2" />
+          </span>
+          <o-input v-else v-model="entity.stop_name" />
+        </o-field>
 
-      <o-field label="Platform Code">
-        <span v-if="readOnly">{{ entity.platform_code }}</span>
-        <o-input v-else v-model="entity.platform_code" />
-      </o-field>
+        <o-field label="Platform Code">
+          <span v-if="readOnly">{{ entity.platform_code }}</span>
+          <o-input v-else v-model="entity.platform_code" />
+        </o-field>
 
-      <o-field label="Location Type">
-        <o-select v-model="entity.location_type" :disabled="readOnly">
-          <option v-for="[type,label] of LocationTypes.entries()" :key="type" :value="type">
-            {{ label }}
-          </option>
-        </o-select>
-      </o-field>
+        <o-field label="Location Type">
+          <o-select v-model="entity.location_type" :disabled="readOnly">
+            <option v-for="[type,label] of LocationTypes.entries()" :key="type" :value="type">
+              {{ label }}
+            </option>
+          </o-select>
+        </o-field>
 
-      <o-field>
-        <o-switch v-model="entity.wheelchair_boarding" :true-value="1" :false-value="0" :disabled="readOnly">
-          Wheelchair boarding
-        </o-switch>
-      </o-field>
+        <o-field>
+          <o-switch v-model="entity.wheelchair_boarding" :true-value="1" :false-value="0" :disabled="readOnly">
+            Wheelchair boarding
+          </o-switch>
+        </o-field>
+      </div>
 
-      <o-field label="Level">
-        <o-select v-model="entity.level.id" :disabled="readOnly">
-          <option v-for="level of station.levels" :key="level.id" :value="level.id">
-            {{ level.level_name }}
-          </option>
-        </o-select>
-      </o-field>
+      <div class="column is-one-half">
+        <o-field label="Level">
+          <o-select v-model="entity.level.id" :disabled="readOnly">
+            <option v-for="level of station.levels" :key="level.id" :value="level.id">
+              {{ level.level_name }}
+            </option>
+          </o-select>
+        </o-field>
 
-      <o-field v-if="(entity.location_type === 4 || (entity.parent && entity.parent?.id !== station.id))" label="Parent">
-        <o-dropdown
-          v-model="entity.parent.id"
-          aria-role="list"
-          :scrollable="true"
-          :max-height="200"
-        >
-          <template #trigger>
-            <button class="button" type="button">
-              <template v-if="parentStop">
-                {{ parentStop.stop_name }} &nbsp;
-              </template>
-              <template v-else>
-                None
-              </template>
-              <o-icon icon="menu-down" />
-            </button>
-          </template>
-          <o-dropdown-item :value="station.stop.id" aria-role="listitem">
-            <h3>{{ station.stop.stop_name }}</h3>
-            <small> Station </small>
-          </o-dropdown-item>
-          <!-- Stops can be "lost" if parent is unset completely. Don't allow this in UI -->
-          <!-- <o-dropdown-item :value="-1" aria-role="listitem">
+        <o-field v-if="(entity.location_type === 4 || (entity.parent && entity.parent?.id !== station.id))" label="Parent">
+          <o-dropdown
+            v-model="entity.parent.id"
+            aria-role="list"
+            :scrollable="true"
+            :max-height="200"
+          >
+            <template #trigger>
+              <button class="button stop-label" type="button">
+                <template v-if="parentStop">
+                  {{ parentStop.stop_name }} &nbsp;
+                </template>
+                <template v-else>
+                  None
+                </template>
+                <o-icon icon="menu-down" />
+              </button>
+            </template>
+            <o-dropdown-item :value="station.stop.id" aria-role="listitem">
+              <h3>{{ station.stop.stop_name }}</h3>
+              <small> Station </small>
+            </o-dropdown-item>
+            <!-- Stops can be "lost" if parent is unset completely. Don't allow this in UI -->
+            <!-- <o-dropdown-item :value="-1" aria-role="listitem">
               <h3>No parent</h3>
             </o-dropdown-item> -->
-          <o-dropdown-item v-for="ss of platformStops" :key="ss.id" :value="ss.id" aria-role="listitem" :disabled="ss.id === entity.id">
-            <h3>{{ ss.stop_name }}</h3>
-            <small> Platform: {{ routeSummary(ss) }}</small>
-          </o-dropdown-item>
-        </o-dropdown>
-      </o-field>
+            <o-dropdown-item v-for="ss of platformStops" :key="ss.id" :value="ss.id" aria-role="listitem" :disabled="ss.id === entity.id">
+              <h3>{{ ss.stop_name }}</h3>
+              <small> Platform: {{ routeSummary(ss) }}</small>
+            </o-dropdown-item>
+          </o-dropdown>
+        </o-field>
 
-      <!-- Pathways viewer -->
-      <o-field v-if="pathwaysFromStop.length > 0" label="Pathways (From)">
-        <ul>
-          <li v-for="pw of pathwaysFromStop" :key="pw.id">
-            <span class="button" :title="pw.pathway_id" @click="$emit('select-pathway', pw.id)">
-              <span class="tl-path-icon"><img :src="pathwayIcon(pw.pathway_mode).url" :title="pathwayIcon(pw.pathway_mode).label"></span>
-              <span v-if="pw.is_bidirectional === 1">
-                ↔
-              </span>
-              <span v-else>
-                →
-              </span>
-              {{ pw.to_stop.stop_name }}
+        <!-- Association editor -->
+        <template v-if="showStopAssociations">
+          <!-- A target association is set (from result) -->
+          <o-field v-if="value.external_reference?.target_feed_onestop_id" label="Target">
+            <span v-if="targetActiveStop" class="button stop-label is-info">
+              <o-icon icon="check" class="mr-2" /> {{ targetActiveStop.stop_name }} ({{ targetActiveStop.stop_id }})
             </span>
-          </li>
-        </ul>
-      </o-field>
-      <o-field v-if="pathwaysToStop.length" label="Pathways (To)">
-        <ul>
-          <li v-for="pw of pathwaysToStop" :key="pw.id">
-            <span class="button" :title="pw.pathway_id" @click="$emit('select-pathway', pw.id)">
-              <span class="tl-path-icon"><img :src="pathwayIcon(pw.pathway_mode).url" :title="pathwayIcon(pw.pathway_mode).label"></span>
-              <span v-if="pw.is_bidirectional === 1">
-                ↔
-              </span>
-              <span v-else>
-                ←
-              </span>
-              {{ pw.from_stop.stop_name }}
+            <span v-else class="button stop-label is-danger">
+              <o-icon icon="alert-circle-outline" class="mr-2" /> Not found: {{ value.external_reference.target_feed_onestop_id }}:{{ value.external_reference.target_stop_id }}
             </span>
-          </li>
-        </ul>
-      </o-field>
+          </o-field>
 
-      <!-- Associated routes viewer -->
-      <o-field v-if="value.route_stops?.length" label="Routes (Direct)">
-        <ul>
-          <li v-for="rt of value.route_stops || []" :key="rt.route.id">
-            {{ rt.route.agency.agency_id }}:{{ rt.route.route_short_name || rt.route.route_long_name }}
-          </li>
-        </ul>
-      </o-field>
-
-      <!-- Association editor -->
-      <template v-if="showStopAssociations">
-        <!-- A target association is set (from result) -->
-        <o-field v-if="value.external_reference?.target_feed_onestop_id" label="Target">
-          <span v-if="targetActiveStop" class="button is-info">
-            <o-icon icon="check" class="mr-2" /> {{ targetActiveStop.stop_name }} ({{ targetActiveStop.stop_id }})
-          </span>
-          <span v-else class="button is-danger">
-            <o-icon icon="alert-circle-outline" class="mr-2" /> Not found: {{ value.external_reference.target_feed_onestop_id }}:{{ value.external_reference.target_stop_id }}
-          </span>
-        </o-field>
-        <!-- Show target routes -->
-        <o-field v-if="targetActiveStop" label="Routes (Associated)">
-          <ul>
-            <li v-for="rt of targetActiveStop.route_stops" :key="rt.route.id">
-              {{ rt.route.agency.agency_id }}:{{ rt.route.route_short_name || rt.route.route_long_name }}
-            </li>
-          </ul>
-        </o-field>
-        <!-- Edit target -->
-        <o-field label="Target Feed">
-          <o-input v-model="entity.external_reference.target_feed_onestop_id" />
-        </o-field>
-        <o-field label="Target Stop">
-          <o-input v-model="entity.external_reference.target_stop_id" />
-        </o-field>
-        <span v-if="!readOnly" class="button" @click="deleteAssociation">Remove association</span><br><br>
-      </template>
-      <template v-else-if="stopAssociationsEnabled && !readOnly">
-        <span class="button" @click="createAssociation">Add association</span>
-      </template>
+          <!-- Edit target -->
+          <o-field label="Target Feed">
+            <o-input v-model="entity.external_reference.target_feed_onestop_id" />
+          </o-field>
+          <o-field label="Target Stop">
+            <o-input v-model="entity.external_reference.target_stop_id" />
+          </o-field>
+          <span v-if="!readOnly" class="button stop-label" @click="deleteAssociation">Remove association</span><br><br>
+        </template>
+        <template v-else-if="stopAssociationsEnabled && !readOnly">
+          <span class="button" @click="createAssociation">Add association</span>
+        </template>
+      </div>
     </div>
+
+    <!-- Pathways viewer -->
+    <o-field v-if="pathwaysFromStop.length > 0" label="Pathways (From)">
+      <ul>
+        <li v-for="pw of pathwaysFromStop" :key="pw.id">
+          <span class="button" :title="pw.pathway_id" @click="$emit('select-pathway', pw.id)">
+            <span class="tl-path-icon"><img :src="pathwayIcon(pw.pathway_mode).url" :title="pathwayIcon(pw.pathway_mode).label"></span>
+            <span v-if="pw.is_bidirectional === 1">
+              ↔
+            </span>
+            <span v-else>
+              →
+            </span>
+            {{ pw.to_stop.stop_name }}
+          </span>
+        </li>
+      </ul>
+    </o-field>
+    <o-field v-if="pathwaysToStop.length" label="Pathways (To)">
+      <ul>
+        <li v-for="pw of pathwaysToStop" :key="pw.id">
+          <span class="button" :title="pw.pathway_id" @click="$emit('select-pathway', pw.id)">
+            <span class="tl-path-icon"><img :src="pathwayIcon(pw.pathway_mode).url" :title="pathwayIcon(pw.pathway_mode).label"></span>
+            <span v-if="pw.is_bidirectional === 1">
+              ↔
+            </span>
+            <span v-else>
+              ←
+            </span>
+            {{ pw.from_stop.stop_name }}
+          </span>
+        </li>
+      </ul>
+    </o-field>
+
+    <!-- Show target routes -->
+    <o-field v-if="targetActiveStop" label="Routes (Associated)">
+      <ul>
+        <li v-for="rt of targetActiveStop.route_stops" :key="rt.route.id">
+          {{ rt.route.agency.agency_id }}:{{ rt.route.route_short_name || rt.route.route_long_name }}
+        </li>
+      </ul>
+    </o-field>
+
+    <!-- Associated routes viewer -->
+    <o-field v-if="value.route_stops?.length" label="Routes (Direct)">
+      <ul>
+        <li v-for="rt of value.route_stops || []" :key="rt.route.id">
+          {{ rt.route.agency.agency_id }}:{{ rt.route.route_short_name || rt.route.route_long_name }}
+        </li>
+      </ul>
+    </o-field>
 
     <template v-if="!readOnly">
       <div v-if="entity.id" class="buttons">
@@ -290,5 +296,12 @@ export default {
 }
 .tl-path-icon img {
   height: 20px;
+}
+.stop-label {
+  max-width:200px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  justify-content: left;
 }
 </style>
