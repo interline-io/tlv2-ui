@@ -28,12 +28,24 @@
                 This stop is already associated with the station. Use the pathways editor.
               </template>
               <div v-else-if="selectedStop">
+                <o-field label="Feed ID">
+                  <o-input v-model="selectedStop.feed_version.feed.onestop_id" :disabled="true" />
+                </o-field>
                 <o-field label="Stop ID">
                   <o-input v-model="selectedStop.stop_id" :disabled="true" />
                 </o-field>
                 <o-field label="Name">
                   <o-input v-model="selectedStop.stop_name" :disabled="true" />
                 </o-field>
+
+                <o-field label="Location Type">
+                  <o-select v-model="selectedStop.location_type" :disabled="true">
+                    <option v-for="[type,label] of LocationTypes.entries()" :key="type" :value="type">
+                      {{ label }}
+                    </option>
+                  </o-select>
+                </o-field>
+
                 <o-field label="Import to Level">
                   <o-select v-model="selectedStop.level.id">
                     <option v-for="level of station.levels" :key="level.id" :value="level.id">
@@ -41,7 +53,7 @@
                     </option>
                   </o-select>
                 </o-field>
-                <o-field label="Routes">
+                <o-field v-if="selectedStop.route_stops.length > 0" label="Routes">
                   <ul>
                     <li v-for="rt of selectedStop.route_stops" :key="rt.route.id">
                       {{ rt.route.agency.agency_id }}: {{ rt.route.route_short_name || rt.route.route_long_name }}
@@ -75,26 +87,7 @@
       <div class="column">
         <o-field>
           <o-dropdown
-            v-model="selectedAgencies"
-            :width="300"
-            aria-role="list"
-            multiple
-          >
-            <template #trigger>
-              <button class="button" type="button">
-                Agencies &nbsp;
-                <o-icon icon="menu-down" />
-              </button>
-            </template>
-            <o-dropdown-item v-for="(agency,key) of agencies" :key="key" :value="key" aria-role="listitem">
-              <div class="media">
-                {{ key }} {{ agency }}
-              </div>
-            </o-dropdown-item>
-          </o-dropdown>
-          <o-dropdown
             v-model="selectedLevels"
-            class="ml-4"
             :width="300"
             aria-role="list"
             multiple
@@ -121,6 +114,63 @@
           </o-dropdown>
 
           <tl-editor-basemap-control v-model="basemap" />
+
+          <o-dropdown
+            v-model="selectedSources"
+            :width="300"
+            aria-role="list"
+            multiple
+          >
+            <template #trigger>
+              <button class="button" type="button">
+                Sources &nbsp;
+                <o-icon icon="menu-down" />
+              </button>
+            </template>
+            <o-dropdown-item v-for="(sourceType,key) of SourceTypes" :key="sourceType" :value="key" aria-role="listitem">
+              <div class="media">
+                {{ sourceType }}
+              </div>
+            </o-dropdown-item>
+          </o-dropdown>
+
+          <o-dropdown
+            v-model="selectedLocationTypes"
+            :width="300"
+            aria-role="list"
+            multiple
+          >
+            <template #trigger>
+              <button class="button" type="button">
+                Location Types &nbsp;
+                <o-icon icon="menu-down" />
+              </button>
+            </template>
+            <o-dropdown-item v-for="[key,locationType] of LocationTypes.entries()" :key="locationType" :value="key.toString()" aria-role="listitem">
+              <div class="media">
+                {{ locationType }}
+              </div>
+            </o-dropdown-item>
+          </o-dropdown>
+
+          <o-dropdown
+            v-model="selectedAgencies"
+            :width="300"
+            aria-role="list"
+            multiple
+          >
+            <template #trigger>
+              <button class="button" type="button">
+                Agencies &nbsp;
+                <o-icon icon="menu-down" />
+              </button>
+            </template>
+            <o-dropdown-item v-for="(agency,key) of agencies" :key="key" :value="key" aria-role="listitem">
+              <div class="media">
+                {{ key }} {{ agency }}
+              </div>
+            </o-dropdown-item>
+          </o-dropdown>
         </o-field>
         <tl-editor-pathway-map
           :center="station.geometry.coordinates"
@@ -142,6 +192,7 @@ import { gql } from 'graphql-tag'
 import { Stop, mapLevelKeyFn } from '../station'
 import StationMixin from './station-mixin'
 import { navigateTo } from '#imports'
+import { LocationTypes } from '../basemaps'
 
 function intersection (setA, setB) {
   const _intersection = new Set()
@@ -208,7 +259,7 @@ const nearbyStopsQuery = gql`
                 id
                 agency_id
                 agency_name
-              }            
+              }
             }
           }
         }
@@ -249,7 +300,14 @@ export default {
     return {
       nearbyStops: [],
       selectMode: 'select',
-      basemap: 'carto'
+      basemap: 'carto',
+      LocationTypes: LocationTypes,
+      selectedLocationTypes: ['0', '2'], // must be stringy
+      selectedSources: ['nearby', 'station'],
+      SourceTypes: {
+        station: 'Associated Stops',
+        nearby: 'Unassociated Stops'
+      },
     }
   },
   computed: {
@@ -257,6 +315,9 @@ export default {
       // Get nearby stops that are NOT associated with the station and NOT in the excluded feed list.
       // Also apply agency selection.
       if (!this.station) {
+        return []
+      }
+      if (!this.selectedSources.includes('nearby')) {
         return []
       }
 
@@ -298,17 +359,22 @@ export default {
 
       const check = new Set(this.selectedAgencies)
       return filteredStops.filter((stop) => {
-        let rss = stop.route_stops || []
-        if (stop.external_reference && stop.external_reference.target_active_stop) {
-          rss = stop.external_reference.target_active_stop.route_stops
-        }
-        const stopAgencies = []
-        for (const rs of rss) {
-          if (rs.route && rs.route.agency) {
-            stopAgencies.push(rs.route.agency.agency_id)
+        if (stop.location_type === 1) {
+          let rss = stop.route_stops || []
+          if (stop.external_reference && stop.external_reference.target_active_stop) {
+            rss = stop.external_reference.target_active_stop.route_stops
+          }
+          const stopAgencies = []
+          for (const rs of rss) {
+            if (rs.route && rs.route.agency) {
+              stopAgencies.push(rs.route.agency.agency_id)
+            }
+          }
+          if (intersection(check, stopAgencies).size === 0) {
+            return false
           }
         }
-        return intersection(check, stopAgencies).size > 0
+        return this.selectedLocationTypes.includes(stop.location_type.toString())
       })
     },
     stationFiltered () {
@@ -317,7 +383,12 @@ export default {
         geometry: this.station.geometry,
         levels: this.station.levels,
         pathways: [],
-        stops: []
+        stops: !this.selectedSources.includes('station')
+          ? []
+          : this.station.stops.filter((s) => {
+              const target = s.external_reference?.target_active_stop
+              return target && this.selectedLocationTypes.includes(target.location_type.toString())
+            })
       }
     },
     selectedAgencies: {

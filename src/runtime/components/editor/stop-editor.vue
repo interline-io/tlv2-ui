@@ -4,11 +4,19 @@
       <div class="column is-one-half">
         <o-field label="Stop ID">
           <code v-if="readOnly">{{ entity.stop_id }}</code>
+          <span v-else-if="targetActiveStop">
+            <o-input v-model="targetActiveStop.stop_id" disabled icon-right="target" /><br>
+            <o-input v-model="entity.stop_id" class="mt-2" />
+          </span>
           <o-input v-else v-model="entity.stop_id" />
         </o-field>
 
         <o-field label="Name">
           <span v-if="readOnly">{{ entity.stop_name }}</span>
+          <span v-else-if="targetActiveStop">
+            <o-input v-model="targetActiveStop.stop_name" disabled icon-right="target" /><br>
+            <o-input v-model="entity.stop_name" class="mt-2" />
+          </span>
           <o-input v-else v-model="entity.stop_name" />
         </o-field>
 
@@ -30,7 +38,9 @@
             Wheelchair boarding
           </o-switch>
         </o-field>
+      </div>
 
+      <div class="column is-one-half">
         <o-field label="Level">
           <o-select v-model="entity.level.id" :disabled="readOnly">
             <option v-for="level of station.levels" :key="level.id" :value="level.id">
@@ -47,7 +57,7 @@
             :max-height="200"
           >
             <template #trigger>
-              <button class="button" type="button">
+              <button class="button stop-label" type="button">
                 <template v-if="parentStop">
                   {{ parentStop.stop_name }} &nbsp;
                 </template>
@@ -72,68 +82,18 @@
           </o-dropdown>
         </o-field>
 
-        <!-- Pathways viewer -->
-        <o-field v-if="pathwaysFromStop.length > 0" label="Pathways (From)">
-          <ul>
-            <li v-for="pw of pathwaysFromStop" :key="pw.id">
-              <span class="button" :title="pw.pathway_id" @click="$emit('select-pathway', pw.id)">
-                <span class="tl-path-icon"><img :src="pathwayIcon(pw.pathway_mode).url" :title="pathwayIcon(pw.pathway_mode).label"></span>
-                <span v-if="pw.is_bidirectional === 1">
-                  ↔
-                </span>
-                <span v-else>
-                  →
-                </span>
-                {{ pw.to_stop.stop_name }}
-              </span>
-            </li>
-          </ul>
-        </o-field>
-        <o-field v-if="pathwaysToStop.length" label="Pathways (To)">
-          <ul>
-            <li v-for="pw of pathwaysToStop" :key="pw.id">
-              <span class="button" :title="pw.pathway_id" @click="$emit('select-pathway', pw.id)">
-                <span class="tl-path-icon"><img :src="pathwayIcon(pw.pathway_mode).url" :title="pathwayIcon(pw.pathway_mode).label"></span>
-                <span v-if="pw.is_bidirectional === 1">
-                  ↔
-                </span>
-                <span v-else>
-                  ←
-                </span>
-                {{ pw.from_stop.stop_name }}
-              </span>
-            </li>
-          </ul>
-        </o-field>
-
-        <!-- Associated routes viewer -->
-        <o-field v-if="value.route_stops?.length" label="Routes (Direct)">
-          <ul>
-            <li v-for="rt of value.route_stops || []" :key="rt.route.id">
-              {{ rt.route.agency.agency_id }}:{{ rt.route.route_short_name || rt.route.route_long_name }}
-            </li>
-          </ul>
-        </o-field>
-
         <!-- Association editor -->
         <template v-if="showStopAssociations">
           <!-- A target association is set (from result) -->
           <o-field v-if="value.external_reference?.target_feed_onestop_id" label="Target">
-            <span v-if="targetActiveStop" class="button is-info">
+            <span v-if="targetActiveStop" class="button stop-label is-info">
               <o-icon icon="check" class="mr-2" /> {{ targetActiveStop.stop_name }} ({{ targetActiveStop.stop_id }})
             </span>
-            <span v-else class="button is-danger">
+            <span v-else class="button stop-label is-danger">
               <o-icon icon="alert-circle-outline" class="mr-2" /> Not found: {{ value.external_reference.target_feed_onestop_id }}:{{ value.external_reference.target_stop_id }}
             </span>
           </o-field>
-          <!-- Show target routes -->
-          <o-field v-if="targetActiveStop" label="Routes (Associated)">
-            <ul>
-              <li v-for="rt of targetActiveStop.route_stops" :key="rt.route.id">
-                {{ rt.route.agency.agency_id }}:{{ rt.route.route_short_name || rt.route.route_long_name }}
-              </li>
-            </ul>
-          </o-field>
+
           <!-- Edit target -->
           <o-field label="Target Feed">
             <o-input v-model="entity.external_reference.target_feed_onestop_id" />
@@ -141,13 +101,65 @@
           <o-field label="Target Stop">
             <o-input v-model="entity.external_reference.target_stop_id" />
           </o-field>
-          <span v-if="!readOnly" class="button" @click="deleteAssociation">Remove association</span>
+          <span v-if="!readOnly" class="button stop-label" @click="deleteAssociation">Remove association</span><br><br>
         </template>
         <template v-else-if="stopAssociationsEnabled && !readOnly">
           <span class="button" @click="createAssociation">Add association</span>
         </template>
       </div>
     </div>
+
+    <!-- Pathways viewer -->
+    <o-field v-if="pathwaysFromStop.length > 0" label="Pathways (From)">
+      <ul>
+        <li v-for="pw of pathwaysFromStop" :key="pw.id">
+          <span class="button" :title="pw.pathway_id" @click="$emit('select-pathway', pw.id)">
+            <span class="tl-path-icon"><img :src="pathwayIcon(pw.pathway_mode).url" :title="pathwayIcon(pw.pathway_mode).label"></span>
+            <span v-if="pw.is_bidirectional === 1">
+              ↔
+            </span>
+            <span v-else>
+              →
+            </span>
+            {{ pw.to_stop.stop_name }}
+          </span>
+        </li>
+      </ul>
+    </o-field>
+    <o-field v-if="pathwaysToStop.length" label="Pathways (To)">
+      <ul>
+        <li v-for="pw of pathwaysToStop" :key="pw.id">
+          <span class="button" :title="pw.pathway_id" @click="$emit('select-pathway', pw.id)">
+            <span class="tl-path-icon"><img :src="pathwayIcon(pw.pathway_mode).url" :title="pathwayIcon(pw.pathway_mode).label"></span>
+            <span v-if="pw.is_bidirectional === 1">
+              ↔
+            </span>
+            <span v-else>
+              ←
+            </span>
+            {{ pw.from_stop.stop_name }}
+          </span>
+        </li>
+      </ul>
+    </o-field>
+
+    <!-- Show target routes -->
+    <o-field v-if="targetActiveStop" label="Routes (Associated)">
+      <ul>
+        <li v-for="rt of targetActiveStop.route_stops" :key="rt.route.id">
+          {{ rt.route.agency.agency_id }}:{{ rt.route.route_short_name || rt.route.route_long_name }}
+        </li>
+      </ul>
+    </o-field>
+
+    <!-- Associated routes viewer -->
+    <o-field v-if="value.route_stops?.length" label="Routes (Direct)">
+      <ul>
+        <li v-for="rt of value.route_stops || []" :key="rt.route.id">
+          {{ rt.route.agency.agency_id }}:{{ rt.route.route_short_name || rt.route.route_long_name }}
+        </li>
+      </ul>
+    </o-field>
 
     <template v-if="!readOnly">
       <div v-if="entity.id" class="buttons">
@@ -284,5 +296,12 @@ export default {
 }
 .tl-path-icon img {
   height: 20px;
+}
+.stop-label {
+  max-width:200px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  justify-content: left;
 }
 </style>
