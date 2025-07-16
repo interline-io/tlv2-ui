@@ -242,7 +242,9 @@
         <h4 class="title is-4">
           GTFS Realtime Feed Messages
         </h4>
-        <tl-msg-info>When a feed's license allows redistribution, you can view or downloaded Transitland's latest cached copy of each GTFS Realtime endpoint.</tl-msg-info>
+        <tl-msg-info>When a feed's license allows redistribution, you can view or downloaded Transitland's latest cached copy of each GTFS Realtime endpoint. <a
+            href="/documentation/concepts/source-feeds/#gtfs-realtime-feed-fetching-and-caching">Learn
+            more.</a></tl-msg-info>
         
         <div class="columns">
           <div class="column">
