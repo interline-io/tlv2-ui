@@ -73,7 +73,8 @@
     "typescript-eslint": "^8.26.1",
     "unstorage": "^1.15.0",
     "vitest": "^3.0.9",
-    "vue": "^3.5.13"
+    "vue": "^3.5.13",
+    "vue-json-pretty": "^2.5.0"
   },
   "packageManager": "yarn@4.3.0",
   "devDependencies": {

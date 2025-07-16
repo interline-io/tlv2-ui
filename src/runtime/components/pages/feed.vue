@@ -237,6 +237,42 @@
         />
         <slot name="add-feed-version" :entity="entity" />
       </div>
+
+      <div v-if="entity.spec == 'GTFS_RT'">
+        <h4 class="title is-4">
+          GTFS Realtime Feed Messages
+        </h4>
+        <tl-msg-info>When a feed's license allows redistribution, you can view or downloaded Transitland's latest cached copy of each GTFS Realtime endpoint.</tl-msg-info>
+        
+        <div class="columns">
+          <div class="column">
+            <div v-if="entity.urls.realtime_vehicle_positions" class="mb-4">
+              <h5 class="title is-5">Vehicle Positions</h5>
+              <tl-feed-rt-download
+                :feed-onestop-id="entity.onestop_id"
+                rt-type="vehicle_positions"
+                :last-fetched-at="lastSuccessfulFetch?.fetched_at ? `${$filters.formatDate(lastSuccessfulFetch.fetched_at)} (${$filters.fromNow(lastSuccessfulFetch.fetched_at)})` : null"
+              />
+            </div>
+            <div v-if="entity.urls.realtime_trip_updates" class="mb-4">
+              <h5 class="title is-5">Trip Updates</h5>
+              <tl-feed-rt-download
+                :feed-onestop-id="entity.onestop_id"
+                rt-type="trip_updates"
+                :last-fetched-at="lastSuccessfulFetch?.fetched_at ? `${$filters.formatDate(lastSuccessfulFetch.fetched_at)} (${$filters.fromNow(lastSuccessfulFetch.fetched_at)})` : null"
+              />
+            </div>
+            <div v-if="entity.urls.realtime_alerts" class="mb-4">
+              <h5 class="title is-5">Service Alerts</h5>
+              <tl-feed-rt-download
+                :feed-onestop-id="entity.onestop_id"
+                rt-type="alerts"
+                :last-fetched-at="lastSuccessfulFetch?.fetched_at ? `${$filters.formatDate(lastSuccessfulFetch.fetched_at)} (${$filters.fromNow(lastSuccessfulFetch.fetched_at)})` : null"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
