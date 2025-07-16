@@ -18,6 +18,7 @@
       <div class="column is-narrow">
         <div class="block tl-editor-info">
           <div class="box">
+            <div ref="viewCubeContainer" style="width: fit-content; height: fit-content; margin-bottom: 1rem; display: flex; justify-content: center; align-items: center;"></div>
             <o-field label="Rotation X (Tilt)">
               <o-slider v-model="rotationX" :min="-90" :max="90" :step="1" />
             </o-field>
@@ -238,10 +239,10 @@ export default {
     // Apply isometric transformation to a 3D point
     transform3D (x, y, z) {
       const radX = (this.rotationX * Math.PI) / 180
-      const radY = (this.rotationY * Math.PI) / 180
+      const radY = (-this.rotationY * Math.PI) / 180  // Negate roll to fix 180° offset
       const radZ = (this.rotation * Math.PI) / 180
 
-      // Rotation matrices
+      // Create rotation matrix (Z * Y * X order)
       const cosX = Math.cos(radX)
       const sinX = Math.sin(radX)
       const cosY = Math.cos(radY)
@@ -249,20 +250,19 @@ export default {
       const cosZ = Math.cos(radZ)
       const sinZ = Math.sin(radZ)
 
-      // Apply rotations: Z -> Y -> X
-      let x1 = x * cosZ - y * sinZ
-      let y1 = x * sinZ + y * cosZ
-      let z1 = z
+      // Combined rotation matrix (Z * Y * X)
+      const rotationMatrix = [
+        cosY * cosZ, cosY * sinZ, -sinY,
+        sinX * sinY * cosZ - cosX * sinZ, sinX * sinY * sinZ + cosX * cosZ, sinX * cosY,
+        cosX * sinY * cosZ + sinX * sinZ, cosX * sinY * sinZ - sinX * cosZ, cosX * cosY
+      ]
 
-      let x2 = x1 * cosY + z1 * sinY
-      let y2 = y1
-      let z2 = -x1 * sinY + z1 * cosY
+      // Apply rotation matrix directly
+      const x2 = rotationMatrix[0] * x + rotationMatrix[1] * y + rotationMatrix[2] * z
+      const y2 = rotationMatrix[3] * x + rotationMatrix[4] * y + rotationMatrix[5] * z
+      const z2 = rotationMatrix[6] * x + rotationMatrix[7] * y + rotationMatrix[8] * z
 
-      let x3 = x2
-      let y3 = y2 * cosX - z2 * sinX
-      let z3 = y2 * sinX + z2 * cosX
-
-      return [x3, -y3]
+      return [x2, -y2]
     },
 
     updateIsometricView () {
@@ -276,8 +276,7 @@ export default {
       if (!this.svg) {
         this.svg = select(container).append('svg')
         this.g = this.svg.append('g')
-        // Add drag and zoom handlers
-        this.svg.call(drag().on('drag', this.dragged))
+        // Dragging is now on the view cube, not the main canvas.
         this.svg.on('wheel', this.wheeled)
       }
 
@@ -311,93 +310,89 @@ export default {
       if (this.showPathways) this.drawPathways()
       if (this.showStops) this.drawStops()
 
-      this.drawCompass()
+      this.drawViewCube()
     },
 
-    drawCompass () {
-      const compassSize = 30
-      const compassPadding = 40
-      
-      const container = this.$refs.isometricContainer
-      const width = container.clientWidth
-      const height = container.clientHeight
-      
-      const compassX = -width / 2 + compassPadding
-      const compassY = -height / 2 + compassPadding
+    drawViewCube () {
+      const container = this.$refs.viewCubeContainer
+      if (!container) return
 
-      const compass = this.g.append('g')
-        .attr('id', 'compass')
-        .attr('transform', `translate(${compassX}, ${compassY})`)
+      const size = 140;
+      container.style.width = size + 'px';
+      container.style.height = size + 'px';
 
-      // Define the 3D axes. Y is North, Z is Up.
-      const origin = { x: 0, y: 0, z: 0 }
-      const xAxisEnd = { x: compassSize, y: 0, z: 0 }
-      const yAxisEnd = { x: 0, y: compassSize, z: 0 }
-      const zAxisEnd = { x: 0, y: 0, z: compassSize }
-      const negXAxisEnd = { x: -compassSize, y: 0, z: 0 }
-      const negYAxisEnd = { x: 0, y: -compassSize, z: 0 }
+      let svg = select(container).select('svg')
+      if (svg.empty()) {
+        svg = select(container).append('svg')
+      }
+      svg.attr('width', size).attr('height', size)
+      svg.selectAll('*').remove()
+      const width = size;
+      const height = size;
 
-      // Project the 3D points to 2D screen space
-      const [p0x, p0y] = this.transform3D(origin.x, origin.y, origin.z)
-      const [pXx, pXy] = this.transform3D(xAxisEnd.x, xAxisEnd.y, xAxisEnd.z)
-      const [pYx, pYy] = this.transform3D(yAxisEnd.x, yAxisEnd.y, yAxisEnd.z)
-      const [pZx, pZy] = this.transform3D(zAxisEnd.x, zAxisEnd.y, zAxisEnd.z)
-      const [pNegXx, pNegXy] = this.transform3D(negXAxisEnd.x, negXAxisEnd.y, negXAxisEnd.z)
-      const [pNegYx, pNegYy] = this.transform3D(negYAxisEnd.x, negYAxisEnd.y, negYAxisEnd.z)
+      const centerX = width / 2
+      const centerY = height / 2
+      const outerRadius = Math.min(width, height) / 2 - 10
 
-      // Draw the Z-axis (Up) first, so it's in the back
-      compass.append('line')
-        .attr('x1', p0x).attr('y1', p0y)
-        .attr('x2', pZx).attr('y2', pZy)
-        .attr('stroke', '#3498db').attr('stroke-width', 2)
+      const navigatorGroup = svg.append('g')
+        .attr('transform', `translate(${centerX}, ${centerY})`)
 
-      compass.append('text')
-        .attr('x', pZx + 5).attr('y', pZy)
-        .attr('text-anchor', 'start').attr('font-size', '12px')
-        .attr('font-weight', 'bold').attr('fill', '#3498db')
-        .text('Up')
+      // Create the outer ring for azimuth (Y) rotation
+      navigatorGroup.append('circle')
+        .attr('cx', 0)
+        .attr('cy', 0)
+        .attr('r', outerRadius)
+        .attr('fill', 'rgba(255,255,255,0.95)')
+        .attr('stroke', '#666')
+        .attr('stroke-width', 2)
+        .style('cursor', 'pointer')
+        .call(drag().on('drag', (event) => {
+          // Only rotate azimuth (Y)
+          const sensitivity = 0.5
+          this.rotation += event.dx * sensitivity
+        }))
 
-      // Draw the X-axis (East-West)
-      compass.append('line')
-        .attr('x1', pNegXx).attr('y1', pNegXy)
-        .attr('x2', pXx).attr('y2', pXy)
-        .attr('stroke', '#e74c3c').attr('stroke-width', 2)
-      
-      compass.append('text')
-        .attr('x', pXx + 5).attr('y', pXy)
-        .attr('text-anchor', 'start').attr('font-size', '12px')
-        .attr('font-weight', 'bold').attr('fill', '#e74c3c')
-        .text('E')
+      // Add north indicator arrow that rotates with the view
+      const northArrow = navigatorGroup.append('g')
+        .attr('transform', `rotate(${-this.rotation})`)
+        .style('cursor', 'pointer')
+        .on('click', () => {
+          this.resetToNorth()
+        })
 
-      // Draw the Y-axis (North-South)
-      compass.append('line')
-        .attr('x1', pNegYx).attr('y1', pNegYy)
-        .attr('x2', pYx).attr('y2', pYy)
-        .attr('stroke', '#2ecc71').attr('stroke-width', 2)
+      northArrow.append('path')
+        .attr('d', `M 0 -${outerRadius - 8} L -7 -${outerRadius - 20} L 0 -${outerRadius - 12} L 7 -${outerRadius - 20} Z`)
+        .attr('fill', '#2196F3')
+        .attr('stroke', '#1976D2')
+        .attr('stroke-width', 1)
 
-      compass.append('text')
-        .attr('x', pYx + 5).attr('y', pYy)
-        .attr('text-anchor', 'start').attr('font-size', '12px')
-        .attr('font-weight', 'bold').attr('fill', '#2ecc71')
+      northArrow.append('text')
+        .attr('x', 0)
+        .attr('y', -(outerRadius - 28))
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '11px')
+        .attr('font-weight', 'bold')
+        .attr('fill', '#2196F3')
         .text('N')
-
-      compass.append('text')
-        .attr('x', pNegYx - 5).attr('y', pNegYy)
-        .attr('text-anchor', 'end').attr('font-size', '12px')
-        .attr('font-weight', 'bold').attr('fill', '#2ecc71')
-        .text('S')
-
-      compass.append('text')
-        .attr('x', pNegXx - 5).attr('y', pNegXy)
-        .attr('text-anchor', 'end').attr('font-size', '12px')
-        .attr('font-weight', 'bold').attr('fill', '#e74c3c')
-        .text('W')
     },
 
-    dragged (event) {
-      const sensitivity = 0.4
-      this.rotation += event.dx * sensitivity
-      this.rotationX -= event.dy * sensitivity
+    snapToView (face) {
+      const views = {
+        SKY: { rotation: 0, rotationX: 90, rotationY: 0 },
+        GROUND: { rotation: 0, rotationX: -90, rotationY: 0 },
+        N: { rotation: 0, rotationX: 0, rotationY: 0 },
+        S: { rotation: 180, rotationX: 0, rotationY: 0 },
+        E: { rotation: -90, rotationX: 0, rotationY: 0 },
+        W: { rotation: 90, rotationX: 0, rotationY: 0 }
+      }
+      
+      if (views[face]) {
+        this.setView({ ...views[face], zoom: this.zoom })
+      }
+    },
+
+    resetToNorth () {
+      this.setView({ rotation: 0, rotationX: this.rotationX, rotationY: 0, zoom: this.zoom })
     },
 
     wheeled (event) {
