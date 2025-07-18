@@ -6,37 +6,27 @@
     <div v-else>
       <div class="buttons">
         <o-button 
-          v-if="loading" 
-          disabled
-          variant="primary"
-          icon-left="loading"
-          size="medium"
-        >
-          Downloading...
-        </o-button>
-        <template v-else>
-          <o-button 
             variant="info" 
             icon-left="code-json"
             size="small"
             @click="viewJson"
           >
             View as JSON
-          </o-button>
+        </o-button>
           <o-button 
             variant="primary" 
             icon-left="file-download"
             size="small"
             @click="download('pb')"
+            :loading="loading"
           >
             Download as Protocol Buffer
           </o-button>
-        </template>
       </div>
     </div>
 
     <!-- JSON Viewer Modal -->
-    <tl-modal v-model="showJsonModal" :title="`${rtTypeDisplay} JSON Data`">
+    <tl-modal v-model="showJsonModal" :title="`GTFS Realtime: ${rtTypeDisplay}`">
       <div v-if="jsonLoading" class="has-text-centered">
         <o-icon icon="loading" size="large" class="is-spinning" />
         <p class="mt-2">Loading JSON data from Transitland API...</p>
@@ -68,17 +58,19 @@
                 Download as JSON
               </o-button>
               <o-button 
+                v-if="!isJsonTooLargeToDisplay"
                 size="small" 
                 variant="secondary" 
                 icon-left="content-copy"
                 @click="copyToClipboard"
               >
-                Copy
+                Copy as JSON
               </o-button>
             </div>
           </div>
           <div class="json-content">
             <vue-json-pretty 
+              v-if="!isJsonTooLargeToInteractivelyRender"
               ref="jsonViewerRef"
               :data="jsonData" 
               :deep="2"
@@ -89,7 +81,39 @@
               theme="light"
               class="json-pretty-viewer"
             />
+            <div v-else-if="!isJsonTooLargeToDisplay" class="json-fallback-container">
+              <pre class="json-fallback"><code>{{ displayedJson }}</code></pre>
+              <div v-if="isJsonTruncated" class="json-truncated-info">
+                <div class="notification is-warning is-light">
+                  <p class="is-size-7">
+                    <strong>Large file truncated:</strong> Showing first {{ truncateAtKb }} KB of {{ jsonSizeMbString }} file. 
+                    <a @click="showFullJson = true" class="has-text-link">Show full content</a> or use the download button above.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div v-else class="json-too-large">
+              <div class="notification is-warning">
+                <p class="has-text-centered">
+                  <o-icon icon="file-alert" size="large" class="mb-3" />
+                </p>
+                <p class="has-text-centered">
+                  <strong>File too large to display</strong>
+                </p>
+                <p class="has-text-centered is-size-7">
+                  This JSON file is {{ jsonSizeMbString }}, which may be too large to display here in your web browser. 
+                  Please use the download button above to save the file and view locally.
+                </p>
+              </div>
+            </div>
           </div>
+          
+          <div v-if="isJsonTooLargeToInteractivelyRender && !isJsonTooLargeToDisplay" class="notification is-info is-light mt-3">
+            <p class="is-size-7">
+              <strong>Note:</strong> This JSON file is large ({{ jsonSizeMbString }}), so the interactive JSON tree view is disabled.
+            </p>
+          </div>
+
         </div>
     </tl-modal>
   </div>
@@ -100,7 +124,6 @@ import Loadable from './loadable'
 import { useToastNotification } from '../composables/useToastNotification'
 import VueJsonPretty from 'vue-json-pretty'
 import 'vue-json-pretty/lib/styles.css'
-
 export default {
   components: {
     VueJsonPretty
@@ -121,7 +144,8 @@ export default {
       jsonData: null,
       jsonLoading: false,
       jsonError: null,
-      jsonViewerRef: null
+      jsonViewerRef: null,
+      showFullJson: false
     }
   },
   computed: {
@@ -140,6 +164,47 @@ export default {
       } catch (e) {
         return JSON.stringify(this.jsonData)
       }
+    },
+    jsonSizeKb() {
+      if (!this.formattedJson) return 0
+      return Math.round(new Blob([this.formattedJson]).size / 1024)
+    },
+    isJsonTooLargeToInteractivelyRender() {
+      // Use plain text for JSON files larger than 2Mb
+      return this.jsonSizeKb > 2000
+    },
+    isJsonTooLargeToDisplay() {
+      // Don't display JSON files larger than 20MB at all
+      return this.jsonSizeKb > 20000
+    },
+    jsonSizeMbString() {
+      if (!this.formattedJson) return '0 Mb'
+      const sizeKb = Math.round(new Blob([this.formattedJson]).size / 1024)
+      const sizeMb = sizeKb / 1024
+      return `${sizeMb.toLocaleString()} Mb`
+    },
+    truncateAtKb() {
+      return 1000 // Truncate at 1MB for display
+    },
+    isJsonTruncated() {
+      return this.isJsonTooLarge && this.jsonSizeKb > this.truncateAtKb && !this.showFullJson
+    },
+    displayedJson() {
+      if (!this.isJsonTooLarge || this.showFullJson) {
+        return this.formattedJson
+      }
+      
+      // Truncate the JSON string to approximately 1MB
+      const targetBytes = this.truncateAtKb * 1024
+      let truncated = this.formattedJson.substring(0, targetBytes)
+      
+      // Try to end at a reasonable point (end of a line)
+      const lastNewline = truncated.lastIndexOf('\n')
+      if (lastNewline > targetBytes * 0.8) { // If we're close to the target, use the newline
+        truncated = truncated.substring(0, lastNewline)
+      }
+      
+      return truncated + '\n\n... (truncated for display performance)'
     }
   },
   methods: {
@@ -299,6 +364,53 @@ export default {
 
 .json-pretty-viewer :deep(.vjs-tree__value--null) {
   color: #999;
+}
+
+.json-fallback {
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 1rem;
+  margin: 0;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: #495057;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.json-fallback code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  font-size: inherit;
+  font-family: inherit;
+}
+
+.json-fallback-container {
+  position: relative;
+}
+
+.json-truncated-info {
+  margin-top: 1rem;
+}
+
+.json-truncated-info .notification {
+  margin-bottom: 0;
+}
+
+.json-too-large {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+
+.json-too-large .notification {
+  max-width: 400px;
+  margin: 0 auto;
 }
 
 .is-spinning {
