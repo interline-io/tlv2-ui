@@ -28,7 +28,7 @@ export default {
       const url = this.$filters.sanitizeUrl(this.url)
       if (url && this.$config.public.tlv2.safelinkUtmSource) {
         const separator = url.includes('?') ? '&' : '?'
-        return `${url}${separator}utm_source=${this.$config.public.tlv2.safelinkUtmSource}`
+        return `${url}${separator}utm_source=${encodeURIComponent(this.$config.public.tlv2.safelinkUtmSource)}`
       }
       return url
     }
