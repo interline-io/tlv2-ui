@@ -12466,6 +12466,7 @@ __metadata:
     unstorage: "npm:^1.15.0"
     vitest: "npm:^3.0.9"
     vue: "npm:^3.5.13"
+    vue-json-pretty: "npm:^2.5.0"
   languageName: unknown
   linkType: soft
 
@@ -13577,6 +13578,15 @@ __metadata:
   peerDependencies:
     eslint: ">=6.0.0"
   checksum: 10/228e43f0067e5f1fa87a4192f355ebbb4a224f0c7e170b1fbd4205fdf42fe7b3c6820a7e467496a8174e51ba351bc9caed00389d05519206cfa1615cac44516c
+  languageName: node
+  linkType: hard
+
+"vue-json-pretty@npm:^2.5.0":
+  version: 2.5.0
+  resolution: "vue-json-pretty@npm:2.5.0"
+  peerDependencies:
+    vue: ">=3.0.0"
+  checksum: 10/9c98a46987d6ce181a4a35b86df5b3c6320adc1dc51bfdc60662b7c8defecf0b9587d0af28efd5f958fe1bd8264d4faac8383e6603fc7f2e829010ca04eb316c
   languageName: node
   linkType: hard
 

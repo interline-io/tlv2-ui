@@ -237,6 +237,90 @@
         />
         <slot name="add-feed-version" :entity="entity" />
       </div>
+
+      <div v-if="entity.spec == 'GTFS_RT'">
+        <h4 class="title is-4">
+          GTFS Realtime Feed Messages
+        </h4>
+
+        <template v-if="entity.license.redistribution_allowed !== 'no'">
+          <tl-msg-info>
+            When a feed's license allows redistribution, you can view or download Transitland's recently cached copy of each GTFS Realtime endpoint. <a
+              href="/documentation/concepts/source-feeds/#gtfs-realtime-feed-fetching-and-caching"
+            >Learn
+              more.</a>
+          </tl-msg-info>
+          <tl-login-gate role="tl_download_fv_current">
+            <div class="columns">
+              <div class="column">
+                <div v-if="entity.urls.realtime_vehicle_positions" class="mb-4">
+                  <h5 class="title is-5">
+                    Vehicle Positions
+                  </h5>
+                  <div class="buttons">
+                    <tl-feed-rt-download
+                      :feed-onestop-id="entity.onestop_id"
+                      rt-type="vehicle_positions"
+                      :last-fetched-at="lastSuccessfulFetch?.fetched_at ? `${$filters.formatDate(lastSuccessfulFetch.fetched_at)} (${$filters.fromNow(lastSuccessfulFetch.fetched_at)})` : null"
+                    />
+                    <tl-feed-rt-api-query
+                      :feed-onestop-id="entity.onestop_id"
+                      rt-type="vehicle_positions"
+                    />
+                  </div>
+                </div>
+                <div v-if="entity.urls.realtime_trip_updates" class="mb-4">
+                  <h5 class="title is-5">
+                    Trip Updates
+                  </h5>
+                  <div class="buttons">
+                    <tl-feed-rt-download
+                      :feed-onestop-id="entity.onestop_id"
+                      rt-type="trip_updates"
+                      :last-fetched-at="lastSuccessfulFetch?.fetched_at ? `${$filters.formatDate(lastSuccessfulFetch.fetched_at)} (${$filters.fromNow(lastSuccessfulFetch.fetched_at)})` : null"
+                    />
+                    <tl-feed-rt-api-query
+                      :feed-onestop-id="entity.onestop_id"
+                      rt-type="trip_updates"
+                    />
+                  </div>
+                </div>
+                <div v-if="entity.urls.realtime_alerts" class="mb-4">
+                  <h5 class="title is-5">
+                    Service Alerts
+                  </h5>
+                  <div class="buttons">
+                    <tl-feed-rt-download
+                      :feed-onestop-id="entity.onestop_id"
+                      rt-type="alerts"
+                      :last-fetched-at="lastSuccessfulFetch?.fetched_at ? `${$filters.formatDate(lastSuccessfulFetch.fetched_at)} (${$filters.fromNow(lastSuccessfulFetch.fetched_at)})` : null"
+                    />
+                    <tl-feed-rt-api-query
+                      :feed-onestop-id="entity.onestop_id"
+                      rt-type="alerts"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <template #loginText>
+              <o-notification icon="lock">
+                To view or download GTFS Realtime data, please sign into an Interline account with a Transitland subscription.
+              </o-notification>
+            </template>
+            <template #roleText>
+              <o-notification icon="lock">
+                Your account does not have permission to view or download GTFS Realtime data. Please <a href="https://app.interline.io/products/tlv2_api/orders/new">sign up for a Transitland subscription</a>.
+              </o-notification>
+            </template>
+          </tl-login-gate>
+        </template>
+        <template v-else>
+          <tl-msg-warning>
+            This feed's license does not allow redistribution. Therefore feed contents are used to provide <a href="/documentation/concepts/alerts/">alerts</a> and <a href="/documentation/rest-api/departures">departures</a> through Transitland APIs, but cannot be downloaded in full raw format.
+          </tl-msg-warning>
+        </template>
+      </div>
     </div>
   </div>
 </template>
@@ -287,7 +371,7 @@ query($pathKey: String) {
         agency_id
         agency_name
       }
-    }    
+    }
     last_fetch: feed_fetches(limit:1) {
       fetch_error
       fetched_at
@@ -313,7 +397,7 @@ query($pathKey: String) {
         feed_end_date
         feed_contact_email
         feed_contact_url
-      }      
+      }
     }
     feed_versions(limit:100) {
       id
@@ -442,7 +526,7 @@ export default {
         description += ` There are ${fvCount} versions of this feed.`
       }
       return description
-    }
+    },
   }
 }
 </script>
