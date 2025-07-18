@@ -7,7 +7,7 @@
       <a v-if="text || sanitizedUrl" class="linker" @click="clipboard">
         <i class="mdi mdi-content-paste" title="Copy to clipboard" role="button" />
       </a>
-      <a v-if="url && sanitizedUrl" target="_blank" :href="sanitizedUrl" class="linker">
+      <a v-if="url && sanitizedUrl" target="_blank" :href="linkUrl" class="linker">
         <i class="mdi mdi-link" title="Open URL" role="button" />
       </a>
     </div>
@@ -25,11 +25,22 @@ export default {
   },
   computed: {
     sanitizedUrl () {
+      // Clean URL for display and copying (no UTM parameters)
       return this.$filters.sanitizeUrl(this.url)
+    },
+    linkUrl () {
+      // URL with UTM parameters for external links
+      const url = this.sanitizedUrl
+      if (url && this.$config.public.tlv2.safelinkUtmSource) {
+        const separator = url.includes('?') ? '&' : '?'
+        return `${url}${separator}utm_source=${encodeURIComponent(this.$config.public.tlv2.safelinkUtmSource)}`
+      }
+      return url
     }
   },
   methods: {
     clipboard () {
+      // Always copy the clean URL without UTM parameters
       navigator.clipboard.writeText(this.text || this.sanitizedUrl)
       useToastNotification().showToast('Copied to clipboard')
     }
