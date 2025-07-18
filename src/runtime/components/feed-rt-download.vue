@@ -85,14 +85,6 @@
           />
           <div v-else-if="!isJsonTooLargeToDisplay" class="json-fallback-container">
             <pre class="json-fallback"><code>{{ displayedJson }}</code></pre>
-            <div v-if="isJsonTruncated" class="json-truncated-info">
-              <div class="notification is-warning is-light">
-                <p class="is-size-7">
-                  <strong>Large file truncated:</strong> Showing first {{ truncateAtKb }} KB of {{ jsonSizeMbString }} file.
-                  <a class="has-text-link" @click="showFullJson = true">Show full content</a> or use the download button above.
-                </p>
-              </div>
-            </div>
           </div>
           <div v-else class="json-too-large">
             <div class="notification is-warning">
@@ -145,8 +137,7 @@ export default {
       jsonData: null,
       jsonLoading: false,
       jsonError: null,
-      jsonViewerRef: null,
-      showFullJson: false
+      jsonViewerRef: null
     }
   },
   computed: {
@@ -184,28 +175,8 @@ export default {
       const sizeMb = sizeKb / 1024
       return `${sizeMb.toLocaleString()} Mb`
     },
-    truncateAtKb () {
-      return 1000 // Truncate at 1MB for display
-    },
-    isJsonTruncated () {
-      return this.isJsonTooLarge && this.jsonSizeKb > this.truncateAtKb && !this.showFullJson
-    },
     displayedJson () {
-      if (!this.isJsonTooLarge || this.showFullJson) {
-        return this.formattedJson
-      }
-
-      // Truncate the JSON string to approximately 1MB
-      const targetBytes = this.truncateAtKb * 1024
-      let truncated = this.formattedJson.substring(0, targetBytes)
-
-      // Try to end at a reasonable point (end of a line)
-      const lastNewline = truncated.lastIndexOf('\n')
-      if (lastNewline > targetBytes * 0.8) { // If we're close to the target, use the newline
-        truncated = truncated.substring(0, lastNewline)
-      }
-
-      return truncated + '\n\n... (truncated for display performance)'
+      return this.formattedJson
     }
   },
   methods: {
@@ -392,14 +363,6 @@ export default {
 
 .json-fallback-container {
   position: relative;
-}
-
-.json-truncated-info {
-  margin-top: 1rem;
-}
-
-.json-truncated-info .notification {
-  margin-bottom: 0;
 }
 
 .json-too-large {
