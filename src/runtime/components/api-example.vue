@@ -5,7 +5,7 @@
         <div class="level-item">
           <span class="icon-text">
             <span class="icon has-text-info">
-              <i class="mdi mdi-api"></i>
+              <i class="mdi mdi-api" />
             </span>
             <span class="has-text-weight-semibold">{{ title || 'API Example' }}</span>
           </span>
@@ -14,7 +14,7 @@
       <div class="level-right">
         <div class="level-item">
           <div class="buttons">
-            <a 
+            <a
               v-if="learnMoreUrl"
               :href="learnMoreUrl"
               class="button is-small is-outlined is-info"
@@ -22,17 +22,17 @@
               rel="noopener"
             >
               <span class="icon is-small">
-                <i class="mdi mdi-book-open-variant"></i>
+                <i class="mdi mdi-book-open-variant" />
               </span>
               <span>Learn more</span>
             </a>
-            <button 
+            <button
               class="button is-small is-outlined"
-              @click="copyToClipboard"
               :disabled="copying"
+              @click="copyToClipboard"
             >
               <span class="icon is-small">
-                <i class="mdi mdi-content-copy"></i>
+                <i class="mdi mdi-content-copy" />
               </span>
               <span>{{ copying ? 'Copied!' : 'Copy Query URL' }}</span>
             </button>
@@ -40,9 +40,11 @@
         </div>
       </div>
     </div>
-    
+
     <div class="content">
-      <p class="is-size-7 mb-2">{{ description }}</p>
+      <p class="is-size-7 mb-2">
+        {{ description }}
+      </p>
       <pre class="api-example-code"><code>{{ apiUrl }}</code></pre>
     </div>
   </div>
@@ -71,17 +73,17 @@ export default {
       default: null
     }
   },
-  data() {
+  data () {
     return {
       copying: false
     }
   },
   methods: {
-    async copyToClipboard() {
+    async copyToClipboard () {
       if (!this.apiUrl) return
-      
+
       this.copying = true
-      
+
       try {
         await navigator.clipboard.writeText(this.apiUrl)
         useToastNotification().showToast('API URL copied to clipboard')
@@ -96,7 +98,7 @@ export default {
         document.body.removeChild(textArea)
         useToastNotification().showToast('API URL copied to clipboard')
       }
-      
+
       // Reset button text after a short delay
       setTimeout(() => {
         this.copying = false
@@ -122,4 +124,4 @@ pre {
   padding: 0;
   color: var(--bulma-code)
 }
-</style> 
+</style>
