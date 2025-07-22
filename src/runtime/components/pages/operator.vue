@@ -69,7 +69,7 @@
               </tr>
               <tr>
                 <td>
-                  Contact
+                  {{ agencyURLs.length > 1 ? 'Websites' : 'Website' }}
                 </td>
                 <td>
                   <ul>
@@ -208,6 +208,7 @@ import { gql } from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
 import { useEventBus } from '#imports'
 
+
 const q = gql`
 query ($onestopId: String, $feedOnestopId: String, $limit: Int=10) {
   entities: operators(limit: $limit, where: {feed_onestop_id: $feedOnestopId, onestop_id: $onestopId, merged: true}) {
@@ -217,6 +218,7 @@ query ($onestopId: String, $feedOnestopId: String, $limit: Int=10) {
     file
     name
     short_name
+    website
     tags
     feeds {
       onestop_id
@@ -285,7 +287,11 @@ export default {
       return [...new Set(this.agencies.map((s) => { return s.agency_name }))]
     },
     agencyURLs () {
-      return [...new Set(this.agencies.map((s) => { return s.agency_url }))]
+      const urls = this.agencies.map((s) => { return s.agency_url })
+      if (this.entity && this.entity.website) {
+        urls.push(this.entity.website)
+      }
+      return [...new Set(urls)] // remove duplicates
     },
     generatedOperator () {
       return this.entity && this.entity.generated
@@ -384,6 +390,96 @@ export default {
         return raw
       }
     }
+  },
+  // for use in www-transit-land-v2 (which has nuxt-jsonld NPM package)
+  jsonld () {
+    if (!this.entity) {
+      return {
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        name: 'Transit Operator',
+        description: 'Transit operator information',
+      }
+    }
+
+    // Get website URLs
+    const sameAs = []
+    if (this.entity.website) {
+      sameAs.push(this.entity.website)
+    }
+    
+    // Add agency URLs
+    if (this.entity.agencies) {
+      this.entity.agencies.forEach(agency => {
+        if (agency.agency_url && !sameAs.includes(agency.agency_url)) {
+          sameAs.push(agency.agency_url)
+        }
+      })
+    }
+
+    // Add Wikidata URL if available
+    if (this.entity.tags && this.entity.tags.wikidata_id) {
+      const wikidataUrl = `https://www.wikidata.org/wiki/${this.entity.tags.wikidata_id}`
+      if (!sameAs.includes(wikidataUrl)) {
+        sameAs.push(wikidataUrl)
+      }
+    }
+
+    // Create areaServed from locations data using specific Schema.org types
+    const areaServed = []
+    if (this.locations && this.locations.length > 0) {
+      this.locations.forEach(location => {
+        // Create individual administrative areas based on available data
+        if (location.adm0_name) {
+          areaServed.push({
+            '@type': 'Country',
+            name: location.adm0_name
+          })
+        }
+        
+        if (location.adm1_name) {
+          areaServed.push({
+            '@type': 'State',
+            name: location.adm1_name
+          })
+        }
+        
+        if (location.city_name) {
+          areaServed.push({
+            '@type': 'City',
+            name: location.city_name
+          })
+        }
+      })
+    }
+
+    const schema = {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: this.operatorName,
+      description: this.staticDescription,
+      identifier: this.entity.onestop_id
+    }
+
+    if (sameAs.length > 0) {
+      schema.sameAs = sameAs
+    }
+
+    if (areaServed.length > 0) {
+      schema.areaServed = areaServed
+    }
+
+    // Add telephone if available
+    const phoneNumbers = this.agencies
+      .map(agency => agency.agency_phone)
+      .filter(phone => phone && phone.trim())
+    
+    if (phoneNumbers.length > 0) {
+      // Use the first available phone number
+      schema.telephone = phoneNumbers[0]
+    }
+
+    return schema
   }
 }
 </script>
