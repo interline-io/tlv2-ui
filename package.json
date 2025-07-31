@@ -16,7 +16,9 @@
     ".": {
       "import": "./dist/module.mjs",
       "require": "./dist/module.cjs"
-    }
+    },
+    "./src/*": "./src/*"
+    
   },
   "main": "./dist/module.cjs",
   "types": "./dist/types.d.ts",
