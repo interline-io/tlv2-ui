@@ -1,5 +1,6 @@
 // eslint.config.js
 import stylistic, { StylisticCustomizeOptions } from '@stylistic/eslint-plugin'
+import { ResolvableFlatConfig, FlatConfigComposer } from 'eslint-flat-config-utils'
 import pluginVue from 'eslint-plugin-vue'
 import typescriptEslint from 'typescript-eslint'
 
@@ -25,19 +26,19 @@ export const eslintRules = {
   '@stylistic/max-statements-per-line': ['error', { max: 3 }],
 }
 
-export const stylisticConfig = {
+export const stylisticConfig: StylisticCustomizeOptions = {
   flat: true, // required for flat config
   indent: 2,
   quotes: 'single',
   semi: false,
 }
 
-export const eslintConfig = [
+export const eslintConfig: ResolvableFlatConfig = [
   {
     ignores: ['.nuxt/**', '**/.nuxt', '.output/**', 'dist/**', 'node_modules/**', '.yarn/**']
   },
   ...pluginVue.configs['flat/recommended'],
-  stylistic.configs.customize(stylisticConfig as StylisticCustomizeOptions),
+  stylistic.configs.customize(stylisticConfig),
   {
     files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
