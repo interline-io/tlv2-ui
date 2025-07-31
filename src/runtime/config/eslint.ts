@@ -5,6 +5,7 @@ import typescriptEslint from 'typescript-eslint'
 
 export const eslintRules = {
   'no-console': 'off',
+  '@typescript-eslint/no-explicit-any': 'off',
   'vue/multi-word-component-names': 'off',
   'vue/max-attributes-per-line': ['error', {
     singleline: {
