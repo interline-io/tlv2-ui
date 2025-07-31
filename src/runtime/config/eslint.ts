@@ -1,5 +1,5 @@
 // eslint.config.js
-import stylistic from '@stylistic/eslint-plugin'
+import stylistic, { StylisticCustomizeOptions } from '@stylistic/eslint-plugin'
 import pluginVue from 'eslint-plugin-vue'
 import typescriptEslint from 'typescript-eslint'
 
@@ -36,7 +36,7 @@ export const eslintConfig = [
     ignores: ['.nuxt/**', '**/.nuxt', '.output/**', 'dist/**', 'node_modules/**', '.yarn/**']
   },
   ...pluginVue.configs['flat/recommended'],
-  stylistic.configs.customize(stylisticConfig),
+  stylistic.configs.customize(stylisticConfig as StylisticCustomizeOptions),
   {
     files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {

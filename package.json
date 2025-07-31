@@ -16,15 +16,13 @@
     ".": {
       "import": "./dist/module.mjs",
       "require": "./dist/module.cjs"
-    },
-    "./config/*": "./config/*"
+    }
   },
   "main": "./dist/module.cjs",
   "types": "./dist/types.d.ts",
   "type": "module",
   "files": [
-    "dist",
-    "config"
+    "dist"
   ],
   "dependencies": {
     "@apollo/client": "^3.13.4",
