@@ -1,0 +1,92 @@
+name: Create Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build the module
+        run: yarn prepack
+
+      - name: Generate version
+        id: version
+        run: |
+          # Get current date in YYYY-MM-DD format
+          DATE=$(date +%Y-%m-%d)
+          
+          # Check if we already have a release for today
+          EXISTING_TAGS=$(git tag --list "v${DATE}*" | sort -V | tail -1)
+          
+          if [ -z "$EXISTING_TAGS" ]; then
+            # First release of the day
+            VERSION="${DATE}-1"
+          else
+            # Extract the trailing number and increment
+            LAST_SUFFIX=$(echo "$EXISTING_TAGS" | sed "s/v${DATE}-//")
+            NEW_NUM=$((10#$LAST_SUFFIX + 1))
+            VERSION="${DATE}-${NEW_NUM}"
+          fi
+          
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Generated version: ${VERSION}"
+
+      - name: Create and push tag
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git tag -a "v${{ steps.version.outputs.version }}" -m "Release v${{ steps.version.outputs.version }}"
+          git push origin "v${{ steps.version.outputs.version }}"
+
+      - name: Create Release with Auto-generated Notes
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          release_name: Release v${{ steps.version.outputs.version }}
+          body: |
+            ## Release v${{ steps.version.outputs.version }}
+            
+            ### Auto-generated Changes
+            This release includes automatically generated release notes based on merged pull requests and commits since the last release.
+          draft: false
+          prerelease: false
+
+      - name: Update package.json version
+        run: |
+          # Configure git for the commit
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # Use yarn version to update package.json with the new version
+          yarn version ${{ steps.version.outputs.version }} --immediate
+          
+          # Commit and push the updated package.json
+          git add package.json
+          git commit -m "Bump version to ${{ steps.version.outputs.version }}"
+          git push origin main
+
+      - name: Output release info
+        run: |
+          echo "🎉 Release created successfully!"
+          echo "Version: ${{ steps.version.outputs.version }}"
+          echo "Tag: v${{ steps.version.outputs.version }}"
+          echo "Release URL: https://github.com/${{ github.repository }}/releases/tag/v${{ steps.version.outputs.version }}" 
