@@ -1,23 +1,17 @@
 # tlv2-ui
 
-Widgets to query Transitland servers and render interactive transit data
+Vue-based widgets for interactive transit data analysis and visualization
 
-Based on [Vue 3](https://vuejs.org/) rendering library, with [Oruga](https://github.com/oruga-ui/oruga) components, and [Bulma](https://bulma.io/) styling, for use primarily but not exclusively in [Nuxt 3](https://nuxt.com/) framework
+Used by www.transit.land and other Interline client applications
 
-Used to construct https://www.transit.land and other web apps created by Interline for our clients
+## Release
 
-## How to Create a Release
+1. Go to [Actions](https://github.com/interline-io/tlv2-ui/actions)
+2. Run "Create Release" workflow
+3. Version format: `YYYY-MM-DD-number` (e.g., `2024-01-15-1`)
 
-1. Go to the [Actions](https://github.com/interline-io/tlv2-ui/actions) tab in this repository
-2. Click on "Create Release" workflow
-3. Click "Run workflow" button
+## License
 
-## Versioning Scheme
+Copyright (C) Interline Technologies LLC
 
-This library uses a date-based versioning scheme (not semantic versioning):
-
-- Format: `YYYY-MM-DD-number`
-- Examples:
-  - `2024-01-15-1` (first release on January 15, 2024)
-  - `2024-01-15-2` (second release on January 15, 2024)
-  - etc.
+Dual license: GPLv3 or flexible commercial license from [Interline](mailto:info@interline.io).
