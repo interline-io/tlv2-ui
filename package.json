@@ -68,6 +68,7 @@
     "destr": "^2.0.3",
     "dotenv": "^16.5.0",
     "eslint-plugin-vue": "^10.3.0",
+    "eslint-typegen": "^2.3.0",
     "eslint": "^9.31.0",
     "graphql-tag": "^2.12.6",
     "graphql": "^16.10.0",
