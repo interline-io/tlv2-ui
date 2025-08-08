@@ -67,7 +67,6 @@
     "defu": "^6.1.4",
     "destr": "^2.0.3",
     "dotenv": "^16.5.0",
-    "drizzle-kit": "^0.31.2",
     "eslint-plugin-vue": "^10.3.0",
     "eslint": "^9.31.0",
     "graphql-tag": "^2.12.6",
