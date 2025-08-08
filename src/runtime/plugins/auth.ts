@@ -15,6 +15,7 @@ let authInit = false
 let authClient: Auth0Client
 let requireLogin = false
 let logoutUri = '/'
+let graphqlUser = true
 
 export function getAuth0Client() {
   if (process.server) {
@@ -30,6 +31,7 @@ export function getAuth0Client() {
     // Update global config
     requireLogin = !!config.public.requireLogin
     logoutUri = String(config.public.auth0LogoutUri || window?.location?.origin || '/')
+    graphqlUser = config.public.graphqlUser !== false
 
     // Create and return global auth0 client
     authClient = new Auth0Client({
@@ -162,23 +164,32 @@ async function buildUser() {
   // Get auth0 user data
   debugLog('buildUser')
   const auth0user = await client.getUser()
+  if (!auth0user) {
+    debugLog('buildUser: missing auth0 data, clearing user')
+    clearUser()
+    return
+  }
+
+
   debugLog('buildUser: auth0 user:', auth0user)
 
   // Get additional user metadata from GraphQL
-  const apolloClient = getApolloClient()
-  const meData = await apolloClient.query({
-    query: gql`query{me{id name email external_data roles}}`
-  }).then((data) => {
-    debugLog('buildUser: me graphql response:', data.data.me)
-    return data.data.me
-  }).catch((e) => {
-    debugLog('buildUser: graphql failed:', e)
-  })
-
-  if (!auth0user || !meData) {
-    debugLog('buildUser: missing auth0 or graphql data, clearing user')
-    clearUser()
-    return
+  let meData: any = null
+  if (graphqlUser) {
+    const apolloClient = getApolloClient()
+    const meData = await apolloClient.query({
+      query: gql`query{me{id name email external_data roles}}`
+    }).then((data) => {
+      debugLog('buildUser: me graphql response:', data.data.me)
+      return data.data.me
+    }).catch((e) => {
+      debugLog('buildUser: graphql failed:', e)
+    })
+    if (!meData) {
+      debugLog('buildUser: missing graphql data, clearing user')
+      clearUser()
+      return
+    }
   }
 
   // Set user state
