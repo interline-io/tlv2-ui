@@ -328,8 +328,13 @@ export default {
       },
       variables () {
         const vars = this.searchKey
-        console.log('Route component - GraphQL variables:', vars)
-        return vars
+        console.log('Route GraphQL variables (searchKey):', vars)
+        console.log('Raw pathKey for comparison:', this.pathKey)
+        
+        // TEMPORARY TEST: Try using raw pathKey like working components
+        const testVars = { onestopId: this.pathKey }
+        console.log('Testing with raw pathKey variables:', testVars)
+        return testVars
       }
     }
   },
