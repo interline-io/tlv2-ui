@@ -182,17 +182,21 @@ async function buildUser () {
   // Get additional user metadata from GraphQL
   let meData: any = null
   if (graphqlUser) {
-    const apolloClient = getApolloClient()
-    const meData = await apolloClient.query({
-      query: gql`query{me{id name email external_data roles}}`
-    }).then((data) => {
-      debugLog('buildUser: me graphql response:', data.data.me)
-      return data.data.me
-    }).catch((e) => {
+    try {
+      const apolloClient = getApolloClient()
+      const response = await apolloClient.query({
+        query: gql`query{me{id name email external_data roles}}`
+      })
+      meData = response.data?.me || null
+      debugLog('buildUser: me graphql response:', meData)
+
+      if (!meData) {
+        debugLog('buildUser: missing graphql data')
+        clearUser()
+        return
+      }
+    } catch (e) {
       debugLog('buildUser: graphql failed:', e)
-    })
-    if (!meData) {
-      debugLog('buildUser: missing graphql data, clearing user')
       clearUser()
       return
     }
