@@ -1626,13 +1626,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mapbox/mapbox-gl-rtl-text@npm:0.3.0":
-  version: 0.3.0
-  resolution: "@mapbox/mapbox-gl-rtl-text@npm:0.3.0"
-  checksum: 10/b1f7de24edc816e7bcf5bfc07a50fa770a0e80328f8a1b6b88fec7f1c09da0da6e993d2d54e7018e73e4742a2a5e28e5c7417e7305263fa77be78de46ea9efe5
-  languageName: node
-  linkType: hard
-
 "@mapbox/mapbox-gl-supported@npm:^3.0.0":
   version: 3.0.0
   resolution: "@mapbox/mapbox-gl-supported@npm:3.0.0"
@@ -14508,7 +14501,6 @@ __metadata:
     "@apollo/client": "npm:3.13.4"
     "@auth0/auth0-spa-js": "npm:2.1.3"
     "@mapbox/mapbox-gl-draw": "npm:1.4.3"
-    "@mapbox/mapbox-gl-rtl-text": "npm:0.3.0"
     "@maplibre/maplibre-gl-geocoder": "npm:1.9.0"
     "@mdi/font": "npm:7.4.47"
     "@nuxt/eslint": "npm:1.2.0"

@@ -39,8 +39,7 @@ export default defineNuxtConfig({
       'tslib', // https://github.com/nuxt/nuxt/issues/19265#issuecomment-1702014262
       '@vue/apollo-composable',
       '@apollo/client',
-      'protomaps-themes-base',
-      '@mapbox/mapbox-gl-rtl-text'
+      'protomaps-themes-base'
     ]
   },
 
@@ -61,7 +60,6 @@ export default defineNuxtConfig({
         'maplibre-gl',
         'haversine',
         '@mapbox/mapbox-gl-draw',
-        '@mapbox/mapbox-gl-rtl-text',
         'cytoscape',
         'mixpanel-browser'
       ]

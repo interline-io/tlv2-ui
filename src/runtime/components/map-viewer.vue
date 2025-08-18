@@ -134,9 +134,8 @@ export default {
       }
 
       // Enable RTL text plugin for proper Hebrew and Arabic text rendering
-      // Use local npm package with native URL constructor (recommended by Vite)
-      const rtlPluginUrl = new URL('@mapbox/mapbox-gl-rtl-text/dist/mapbox-gl-rtl-text.js', import.meta.url).href
-      maplibre.setRTLTextPlugin(rtlPluginUrl, null, true)
+      // Use local file to avoid ESM module resolution issues and external CDN dependency
+      maplibre.setRTLTextPlugin('/js/mapbox-gl-rtl-text.js', null, true)
       this.map = new maplibre.Map(opts)
       this.map.addControl(new maplibre.FullscreenControl())
       this.map.addControl(new maplibre.NavigationControl())
