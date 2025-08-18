@@ -1,4 +1,4 @@
-const pathRegex = /(?<osid>[ors]-[a-z0-9~-]*)?:?(?<feed>[a-z0-9~-]*)?@?((?<sha>[a-z0-9]{40})?)?:?(?<eid>.*)*$/
+const pathRegex = /(?<osid>[ors]-[^:@]*)?:?(?<feed>[^:@]*)?@?((?<sha>[a-z0-9]{40})?)?:?(?<eid>.*)*$/u
 // console.log(pathRegex.exec('r-osid').groups)
 // console.log(pathRegex.exec('r-osid:feed').groups)
 // console.log(pathRegex.exec('s-osid').groups)
