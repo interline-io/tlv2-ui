@@ -124,14 +124,17 @@ export default {
         return v
       },
       result({ data }) {
-        if (data.places.length === 0 && (this.adm0 || this.adm1 || this.city)) {
-          throw createError({
-            statusCode: 404,
-            statusMessage: 'Place Not Found',
-            message: `Could not find any places with this ID`
-          })
+          // Check for 404 before assigning data
+          if (!data?.places || (data.places.length === 0 && (this.adm0 || this.adm1 || this.city))) {
+            throw createError({
+              statusCode: 404,
+              statusMessage: 'Place Not Found',
+              message: `Could not find any places with this ID`
+            })
+          }
+          // Only assign data if we haven't thrown a 404
+          this.places = data.places
         }
-      }
     }
   },
   props: {
@@ -193,7 +196,7 @@ export default {
       })
     },
     sortedPlaces() {
-      return this.places.slice(0).sort((a, b) => {
+      return (this.places || []).slice(0).sort((a, b) => {
         if (this.sortBy === 'count') {
           return b.count - a.count
         } else if (this.sortBy === 'alphabetical') {
