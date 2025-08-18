@@ -43,12 +43,14 @@ export default {
     searchKey () {
       let pk = String(this.pathKey || '')
       
-      // Decode URL-encoded characters in the path key
-      try {
-        pk = decodeURIComponent(pk)
-      } catch (e) {
-        // If decoding fails, use the original string
-        console.warn('Failed to decode URL parameter:', pk, e)
+      // Only decode if the path key contains URL-encoded characters (%)
+      if (pk.includes('%')) {
+        try {
+          pk = decodeURIComponent(pk)
+        } catch (e) {
+          // If decoding fails, use the original string
+          console.warn('Failed to decode URL parameter:', pk, e)
+        }
       }
       
       if (this.feedOnestopId && this.feedVersionSha1 && this.entityId) {
