@@ -185,15 +185,17 @@ async function buildUser () {
   let meData: any = null
   if (graphqlUser) {
     const apolloClient = getApolloClient()
-    try {
-      const response = await apolloClient.query({
-        query: gql`query{me{id name email external_data roles}}`
-      })
-      meData = response.data.me
-      debugLog('buildUser: me graphql response:', meData)
-    } catch (e) {
+    const meData = await apolloClient.query({
+      query: gql`query{me{id name email external_data roles}}`
+    }).then((data) => {
+      debugLog('buildUser: me graphql response:', data.data.me)
+      return data.data.me
+    }).catch((e) => {
       debugLog('buildUser: graphql failed:', e)
-      // Don't clear user on GraphQL failure - they may still have valid Auth0 session
+    })
+    if (!meData) {
+      debugLog('buildUser: missing graphql data, clearing user')
+      clearUser()
       return
     }
   }
