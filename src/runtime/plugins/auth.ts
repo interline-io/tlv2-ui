@@ -33,17 +33,15 @@ export function getAuth0Client () {
     logoutUri = String(config.public.auth0LogoutUri || window?.location?.origin || '/')
     graphqlUser = config.public.graphqlUser !== false
 
-    // Check if refresh tokens are supported based on scope
     const scope = String(config.public.auth0Scope)
-    const hasOfflineAccess = scope.includes('offline_access')
-    debugLog('auth0 init:', { scope, hasOfflineAccess })
+    debugLog('auth0 init:', { scope })
 
     // Create and return global auth0 client
     authClient = new Auth0Client({
       domain: String(config.public.auth0Domain),
       clientId: String(config.public.auth0ClientId),
       cacheLocation: 'localstorage',
-      useRefreshTokens: hasOfflineAccess,
+      useRefreshTokens: false, // Use iframe method for token refresh
       authorizationParams: {
         redirect_uri: String(config.public.auth0RedirectUri || window?.location?.origin || '/'),
         audience: String(config.public.auth0Audience),
