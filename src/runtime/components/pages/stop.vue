@@ -356,7 +356,7 @@ export default {
       query: q,
       skip () { return this.checkSearchSkip(this.$route.query.stop_id) },
       variables () {
-        return this.searchKey
+        return this.entityVariables
       }
     }
   },
