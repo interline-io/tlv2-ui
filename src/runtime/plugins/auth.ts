@@ -305,8 +305,11 @@ export default defineNuxtPlugin(() => {
       try {
         debugLog('auth mw: handle login')
         const { appState } = await client.handleRedirectCallback()
+        debugLog('auth mw: got appState:', appState)
         await buildUser()
-        return navigateTo(appState.targetUrl || '/')
+        const targetPath = appState?.targetUrl || '/'
+        debugLog('auth mw: navigating to:', targetPath)
+        return navigateTo(targetPath, { replace: true })
       } catch (e) {
         debugLog('auth mw: handleRedirectCallback failed:', e)
         clearUser()
