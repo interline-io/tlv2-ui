@@ -327,7 +327,9 @@ export default {
         return this.checkSearchSkip(this.entityId)
       },
       variables () {
-        return this.searchKey
+        const vars = this.searchKey
+        console.log('Route component - GraphQL variables:', vars)
+        return vars
       }
     }
   },

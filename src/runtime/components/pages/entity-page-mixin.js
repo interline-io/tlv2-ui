@@ -14,11 +14,17 @@ export default {
   apollo: {
     $query: {
       client: 'transitland',
-      error (e) { this.error = e },
+      error (e) { 
+        console.log('EntityPageMixin - GraphQL error:', e)
+        this.error = e 
+      },
       update (data) {
+        console.log('EntityPageMixin - GraphQL response data:', data)
         if (data && data.entities && data.entities.length === 0) {
+          console.log('EntityPageMixin - No entities found, setting 404 error')
           return this.setError(404, 'Not found')
         }
+        console.log('EntityPageMixin - Returning entities:', data.entities || [])
         return data.entities || []
       }
     }
@@ -42,21 +48,30 @@ export default {
   computed: {
     searchKey () {
       let pk = String(this.pathKey || '')
+      console.log('EntityPageMixin searchKey - original pathKey:', this.pathKey)
+      console.log('EntityPageMixin searchKey - pk after String():', pk)
       
       // Only decode if the path key contains URL-encoded characters (%)
       if (pk.includes('%')) {
+        console.log('EntityPageMixin searchKey - contains %, attempting decode')
         try {
-          pk = decodeURIComponent(pk)
+          const decoded = decodeURIComponent(pk)
+          console.log('EntityPageMixin searchKey - decoded:', decoded)
+          pk = decoded
         } catch (e) {
           // If decoding fails, use the original string
           console.warn('Failed to decode URL parameter:', pk, e)
         }
+      } else {
+        console.log('EntityPageMixin searchKey - no % found, not decoding')
       }
       
       if (this.feedOnestopId && this.feedVersionSha1 && this.entityId) {
         pk = `${this.feedOnestopId}@${this.feedVersionSha1}:${this.entityId}`
+        console.log('EntityPageMixin searchKey - using feedOnestopId+sha1+entityId:', pk)
       } else if (this.feedOnestopId && this.entityId) {
         pk = `${this.feedOnestopId}:${this.entityId}`
+        console.log('EntityPageMixin searchKey - using feedOnestopId+entityId:', pk)
       }
 
       // Note: OnestopIDs cannot normally contain ':' or '@' or ',' or be completely numeric
@@ -67,18 +82,23 @@ export default {
         return { ids: kInts }
       }
 
+      console.log('EntityPageMixin searchKey - final pk for regex:', pk)
       const match = pathRegex.exec(pk)?.groups
+      console.log('EntityPageMixin searchKey - regex match result:', match)
       if (!match) {
+        console.log('EntityPageMixin searchKey - no regex match, returning empty object')
         return {} // not found
       }
       const fv = match.sha || this.feedVersionSha1
-      return {
+      const result = {
         onestopId: match.osid,
         feedOnestopId: match.feed || this.feedOnestopId,
         feedVersionSha1: fv,
         entityId: match.eid,
         allowPreviousOnestopIds: !!fv
       }
+      console.log('EntityPageMixin searchKey - final result:', result)
+      return result
     },
     linkVersion () {
       if (this.searchKey.feedVersionSha1) {
