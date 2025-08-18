@@ -82,6 +82,7 @@
 
 <script>
 import { gql } from 'graphql-tag'
+import { createError } from '#imports'
 
 const q = gql`
 query($level: PlaceAggregationLevel, $where: PlaceFilter, $include_operators: Boolean!) {
@@ -121,6 +122,15 @@ export default {
         }
         v.where = w
         return v
+      },
+      result({ data }) {
+        if (data.places.length === 0 && (this.adm0 || this.adm1 || this.city)) {
+          throw createError({
+            statusCode: 404,
+            statusMessage: 'Place Not Found',
+            message: `Could not find any places with this ID`
+          })
+        }
       }
     }
   },
