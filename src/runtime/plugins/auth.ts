@@ -2,7 +2,7 @@ import { Auth0Client } from '@auth0/auth0-spa-js'
 import { useStorage } from '@vueuse/core'
 import { gql } from 'graphql-tag'
 import { getApolloClient } from './apollo'
-import { defineNuxtPlugin, addRouteMiddleware, navigateTo, useRuntimeConfig, useCsrf, useMixpanel } from '#imports'
+import { defineNuxtPlugin, addRouteMiddleware, navigateTo, useRuntimeConfig, useCsrf, useMixpanel, useRoute } from '#imports'
 
 /// ////////////////////
 // Auth0 client initialization
@@ -109,7 +109,10 @@ export const useApiEndpoint = () => {
 // Login
 export const useLogin = async (targetUrl: null | string) => {
   debugLog('useLogin')
-  targetUrl = targetUrl || `${window?.location?.pathname}${window?.location?.search}`
+  // Get current route's full path if no targetUrl provided
+  const route = useRoute()
+  targetUrl = targetUrl || route.fullPath
+  debugLog('useLogin with targetUrl:', targetUrl)
   return navigateTo(await getAuthorizeUrl(targetUrl), { external: true })
 }
 
