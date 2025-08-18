@@ -3,6 +3,7 @@ import { useStorage } from '@vueuse/core'
 import { gql } from 'graphql-tag'
 import { getApolloClient } from './apollo'
 import { defineNuxtPlugin, addRouteMiddleware, navigateTo, useRuntimeConfig, useCsrf, useMixpanel, useRoute } from '#imports'
+import { useToastNotification } from '../composables/useToastNotification'
 
 /// ////////////////////
 // Auth0 client initialization
@@ -307,6 +308,11 @@ export default defineNuxtPlugin(() => {
         const { appState } = await client.handleRedirectCallback()
         debugLog('auth mw: got appState:', appState)
         await buildUser()
+
+        // Show welcome message
+        const { showToast } = useToastNotification()
+        showToast(`Welcome to Transitland!`)
+
         const targetPath = appState?.targetUrl || '/'
         debugLog('auth mw: navigating to:', targetPath)
         return navigateTo(targetPath, { replace: true })
