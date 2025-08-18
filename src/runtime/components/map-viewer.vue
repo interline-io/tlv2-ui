@@ -4,6 +4,7 @@
 
 <script>
 import maplibre from 'maplibre-gl'
+import { setRTLTextPlugin } from '@mapbox/mapbox-gl-rtl-text'
 import { noLabels, labels } from 'protomaps-themes-base'
 import { nextTick } from 'vue'
 import { useAuthHeaders, useApiEndpoint } from '../plugins/auth'
@@ -133,7 +134,8 @@ export default {
         opts.zoom = this.zoom
       }
 
-      // maplibre.setRTLTextPlugin("https://unpkg.com/@mapbox/mapbox-gl-rtl-text@0.2.3/mapbox-gl-rtl-text.min.js")
+      // Enable RTL text plugin for proper Hebrew and Arabic text rendering
+      setRTLTextPlugin()
       this.map = new maplibre.Map(opts)
       this.map.addControl(new maplibre.FullscreenControl())
       this.map.addControl(new maplibre.NavigationControl())

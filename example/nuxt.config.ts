@@ -60,6 +60,7 @@ export default defineNuxtConfig({
         'maplibre-gl',
         'haversine',
         '@mapbox/mapbox-gl-draw',
+        '@mapbox/mapbox-gl-rtl-text',
         'cytoscape',
         'mixpanel-browser'
       ]
