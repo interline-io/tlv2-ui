@@ -69,6 +69,31 @@ export default {
         allowPreviousOnestopIds: !!fv
       }
     },
+    /**
+     * Centralized logic for determining GraphQL variables for entity pages.
+     * This handles the hybrid approach between simple onestop IDs and complex feed version specific URLs.
+     */
+    entityVariables () {
+      // If we have explicit feed version parameters from query params, use searchKey
+      if (this.feedOnestopId || this.feedVersionSha1 || this.entityId) {
+        return this.searchKey
+      }
+      
+      // Check if pathKey contains complex syntax (: or @)
+      const pathKeyStr = String(this.pathKey || '')
+      if (pathKeyStr.includes(':') || pathKeyStr.includes('@')) {
+        return this.searchKey
+      }
+      
+      // Check if pathKey is comma-separated database IDs
+      const kInts = pathKeyStr.split(',').map((s) => parseInt(s)).filter((s) => !isNaN(s))
+      if (kInts.length > 0) {
+        return { ids: kInts }
+      }
+      
+      // For simple cases (basic onestop IDs), use direct pathKey
+      return { onestopId: this.pathKey }
+    },
     linkVersion () {
       if (this.searchKey.feedVersionSha1) {
         return true

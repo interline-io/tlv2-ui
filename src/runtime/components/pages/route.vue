@@ -327,7 +327,7 @@ export default {
         return this.checkSearchSkip(this.entityId)
       },
       variables () {
-        return this.searchKey
+        return this.entityVariables
       }
     }
   },
