@@ -1,3 +1,5 @@
+import { createError } from '#app'
+
 const pathRegex = /(?<osid>[ors]-[^:@]*)?:?(?<feed>[^:@]*)?@?((?<sha>[a-z0-9]{40})?)?:?(?<eid>.*)$/u
 // console.log(pathRegex.exec('r-osid').groups)
 // console.log(pathRegex.exec('r-osid:feed').groups)
@@ -133,8 +135,11 @@ export default {
       return false
     },
     setError (statusCode, message) {
-      // this.$nuxt.error({ statusCode, message })
-      this.error = message
+      // Use Nuxt 3's createError to properly handle errors
+      throw createError({
+        statusCode,
+        statusMessage: message
+      })
     },
     setTab (value) {
       // TODO
