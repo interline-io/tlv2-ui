@@ -130,26 +130,52 @@
           <tr>
             <td>Service</td>
             <td>
-              <o-tooltip v-if="entity.service_window?.feed_start_date && entity.service_window?.feed_end_date">
+              <template v-if="entity.service_window?.feed_start_date && entity.service_window?.feed_end_date">
                 {{ $filters.formatDate(entity.service_window?.feed_start_date) }} to {{ $filters.formatDate(entity.service_window?.feed_end_date) }}
-                <template #content>
-                  <p>These service dates are sourced from the information in <code>feed_info.txt</code>.</p>
-                  <p>The full span of service contained in <code>calendar.txt</code> is {{ $filters.formatDate(entity.earliest_calendar_date) }} to {{ $filters.formatDate(entity.latest_calendar_date) }}</p>
-                </template>
-              </o-tooltip>
-              <o-tooltip v-else>
+                <o-tooltip>
+                  <template #content>
+                    <p>These service dates are sourced from the information in <code>feed_info.txt</code>.</p>
+                    <p>The full span of service contained in <code>calendar.txt</code> is {{ $filters.formatDate(entity.earliest_calendar_date) }} to {{ $filters.formatDate(entity.latest_calendar_date) }}</p>
+                  </template>
+                  <i class="fas fa-info-circle" />
+                </o-tooltip>
+              </template>
+              <template v-else>
                 {{ $filters.formatDate(entity.earliest_calendar_date) }} to {{ $filters.formatDate(entity.latest_calendar_date) }}
-                <template #content>
-                  <p>The full span of service contained in <code>calendar.txt</code>.</p>
-                </template>
-              </o-tooltip>
+                <o-tooltip>
+                  <template #content>
+                    <p>The full span of service contained in <code>calendar.txt</code>.</p>
+                  </template>
+                  <i class="fas fa-info-circle" />
+                </o-tooltip>
+              </template>
             </td>
           </tr>
 
-          <tr>
+          <tr v-if="entity.feed_infos && entity.feed_infos.length > 0">
             <td>Details</td>
-            <td v-if="entity.feed_infos && entity.feed_infos.length > 0">
+            <td>
               <tl-feed-info :show-dates="true" :feed-info="entity.feed_infos[0]" />
+            </td>
+          </tr>
+          <tr v-if="entity">
+            <td>API Import Status</td>
+            <td>
+              <tl-feed-version-import-status
+                :feed-version-gtfs-import="entity.feed_version_gtfs_import"
+                :show-not-imported-status="true"
+              />
+            </td>
+          </tr>
+
+          <tr v-if="entity.feed_version_gtfs_import && entity.feed">
+            <td>API Active Status</td>
+            <td>
+              <tl-feed-version-active-status
+                :feed="entity.feed"
+                :feed-version-id="entity.id"
+                :show-description="true"
+              />
             </td>
           </tr>
         </tbody>
@@ -192,14 +218,33 @@
       </slot>
 
       <o-tabs v-model="activeTab" class="tl-tabs" type="boxed" :animated="false" @update:model-value="setTab">
-        <o-tab-item :value="tabNames.files" label="Files">
-          <tl-file-info-table :files="entity.files" />
+        <o-tab-item :value="tabNames.timeline" label="Service coverage timeline">
+          <template v-if="activeTab === tabNames.timeline">
+            <div class="mb-4">
+              <p class="content">
+                Use this timeline view to see the range of dates for which service is scheduled in this feed version:
+              </p>
+              <tl-feed-version-timeline-chart-plot
+                v-if="entity"
+                :feed="entity.feed"
+                :feed-versions="[entity]"
+                :show-status-legend="false"
+              />
+            </div>
+          </template>
         </o-tab-item>
 
-        <o-tab-item :value="tabNames.service" label="Service levels">
+        <o-tab-item :value="tabNames.service" label="Service levels calendar">
           <template v-if="activeTab === tabNames.service">
+            <p class="content">
+              Use this calendar view to compare the relative number of service hours scheduled for each day in this feed version:
+            </p>
             <tl-multi-service-levels :show-group-info="false" :show-service-relative="false" :fvids="[entity.id]" :week-agg="false" />
           </template>
+        </o-tab-item>
+
+        <o-tab-item :value="tabNames.files" label="Files">
+          <tl-file-info-table :files="entity.files" />
         </o-tab-item>
 
         <o-tab-item :value="tabNames.map" label="Map">
@@ -323,6 +368,7 @@ query ($feedVersionSha1: String!) {
       feed_end_date
       earliest_calendar_date
       latest_calendar_date
+      fallback_week
     }
     agencies {
       id
@@ -334,6 +380,11 @@ query ($feedVersionSha1: String!) {
       associated_operators {
         name
         onestop_id
+      }
+      feed_state {
+        feed_version {
+          id
+        }
       }
     }
   }
@@ -367,8 +418,8 @@ export default {
       showEditModal: false,
       showPermissionsModal: false,
       features: [],
-      tabNames: this.makeTabNames(['files', 'service', 'map', 'agencies', 'routes', 'stops', 'imports']),
-      activeTab: 'files'
+      tabNames: this.makeTabNames(['timeline', 'service', 'map', 'agencies', 'routes', 'stops', 'imports', 'files']),
+      activeTab: 'timeline'
     }
   },
   computed: {
