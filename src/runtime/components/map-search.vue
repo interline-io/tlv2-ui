@@ -158,12 +158,14 @@ export default {
       for (const route of this.boundedRoutes) {
         boundedRoutes[route.id] = true
         const geometry = (route.route_stops.length > 0) ? route.route_stops[0].stop.geometry : null
-        routes.push({ name: route.route_short_name, agencyName: route.agency.agency_name, geometry })
+        const routeName = route.route_short_name || route.route_long_name || 'Unnamed Route'
+        routes.push({ name: routeName, agencyName: route.agency.agency_name, geometry })
       }
       for (const route of this.unboundedRoutes) {
         if (!boundedRoutes[route.id]) {
           const geometry = (route.route_stops.length > 0) ? route.route_stops[0].stop.geometry : null
-          routes.push({ name: route.route_short_name, agencyName: route.agency.agency_name, geometry })
+          const routeName = route.route_short_name || route.route_long_name || 'Unnamed Route'
+          routes.push({ name: routeName, agencyName: route.agency.agency_name, geometry })
         }
       }
       console.log('routes:', routes)

@@ -46,7 +46,7 @@
                 <td class="itin-prop">
                   <strong>Route:</strong>
                 </td>
-                <td>{{ leg.trip.route.route_short_name }} {{ leg.trip.route.route_long_name }}</td>
+                <td>{{ [leg.trip.route.route_short_name, leg.trip.route.route_long_name].filter(Boolean).join(' ') }}</td>
               </tr>
               <tr>
                 <td class="itin-prop">

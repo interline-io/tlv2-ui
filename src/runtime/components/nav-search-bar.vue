@@ -46,7 +46,7 @@
       <a v-for="item in routeLinks" :key="item.name" class="navbar-item">
         Route:
         <nuxt-link :to="{name:'routes-routeKey', params:{routeKey:item.onestop_id}}">
-          {{ item.route_short_name }} {{ item.route_long_name }}
+          {{ [item.route_short_name, item.route_long_name].filter(Boolean).join(' ') }}
         </nuxt-link>
       </a>
     </div>

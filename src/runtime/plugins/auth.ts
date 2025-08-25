@@ -2,7 +2,7 @@ import { Auth0Client } from '@auth0/auth0-spa-js'
 import { useStorage } from '@vueuse/core'
 import { gql } from 'graphql-tag'
 import { getApolloClient } from './apollo'
-import { defineNuxtPlugin, addRouteMiddleware, navigateTo, useRuntimeConfig, useCsrf, useMixpanel } from '#imports'
+import { defineNuxtPlugin, addRouteMiddleware, navigateTo, useRuntimeConfig, useCsrf, useMixpanel, useRoute } from '#imports'
 
 /// ////////////////////
 // Auth0 client initialization
@@ -17,7 +17,7 @@ let requireLogin = false
 let logoutUri = '/'
 let graphqlUser = true
 
-export function getAuth0Client() {
+export function getAuth0Client () {
   if (process.server) {
     return
   }
@@ -33,15 +33,19 @@ export function getAuth0Client() {
     logoutUri = String(config.public.auth0LogoutUri || window?.location?.origin || '/')
     graphqlUser = config.public.graphqlUser !== false
 
+    const scope = String(config.public.auth0Scope)
+    debugLog('auth0 init:', { scope })
+
     // Create and return global auth0 client
     authClient = new Auth0Client({
       domain: String(config.public.auth0Domain),
       clientId: String(config.public.auth0ClientId),
       cacheLocation: 'localstorage',
+      useRefreshTokens: false, // Use iframe method for token refresh
       authorizationParams: {
         redirect_uri: String(config.public.auth0RedirectUri || window?.location?.origin || '/'),
         audience: String(config.public.auth0Audience),
-        scope: String(config.public.auth0Scope)
+        scope: scope
       }
     })
   }
@@ -57,7 +61,7 @@ export function getAuth0Client() {
 /// ////////////////////
 
 // JWT
-export const useJwt = async() => {
+export const useJwt = async () => {
   const { token, mustReauthorize } = await checkToken()
   if (mustReauthorize) {
     debugLog('useJwt: mustReauthorize')
@@ -73,14 +77,14 @@ export const useUser = () => {
 }
 
 // Headers, including CSRF
-export const useAuthHeaders = async() => {
+export const useAuthHeaders = async () => {
   const config = useRuntimeConfig()
   const headers: Record<string, string> = {}
 
   // CSRF
   // NOTE: For unknown reasons, useCsrf will panic if called after useJwt.
   if (config.public.useProxy) {
-    const { headerName: csrfHeader, csrf: csrfToken } = useCsrf()  
+    const { headerName: csrfHeader, csrf: csrfToken } = useCsrf()
     headers[csrfHeader] = csrfToken
   }
 
@@ -100,20 +104,23 @@ export const useAuthHeaders = async() => {
 
 export const useApiEndpoint = () => {
   const config = useRuntimeConfig()
-  return import.meta.server ? 
-    (config.proxyBase) :
-    (config.public.apiBase || window?.location?.origin + '/api/v2')
+  return import.meta.server
+    ? (config.proxyBase)
+    : (config.public.apiBase || window?.location?.origin + '/api/v2')
 }
 
 // Login
-export const useLogin = async(targetUrl: null | string) => {
+export const useLogin = async (targetUrl: null | string) => {
   debugLog('useLogin')
-  targetUrl = targetUrl || `${window?.location?.pathname}${window?.location?.search}`
+  // Get current route's full path if no targetUrl provided
+  const route = useRoute()
+  targetUrl = targetUrl || route.fullPath
+  debugLog('useLogin with targetUrl:', targetUrl)
   return navigateTo(await getAuthorizeUrl(targetUrl), { external: true })
 }
 
 // Logout
-export const useLogout = async() => {
+export const useLogout = async () => {
   debugLog('useLogout')
   // Reset Mixpanel before redirecting
   const mixpanel = useMixpanel()
@@ -133,11 +140,11 @@ export class User {
   roles = []
   externalData = {}
   checked = 0
-  constructor(v: any) {
+  constructor (v: any) {
     Object.assign(this, v)
   }
 
-  hasRole(v: string): boolean {
+  hasRole (v: string): boolean {
     for (const s of this.roles) {
       if (s === v) {
         return true
@@ -147,14 +154,14 @@ export class User {
   }
 }
 
-function clearUser() {
+function clearUser () {
   debugLog('clearUser')
   const checkUser = useStorage('user', {})
   checkUser.value = new User({ loggedIn: false })
 }
 
 // Build the user from auth0 data and GraphQL me response
-async function buildUser() {
+async function buildUser () {
   // Build user object
   const client = getAuth0Client()
   if (!client) {
@@ -170,23 +177,26 @@ async function buildUser() {
     return
   }
 
-
   debugLog('buildUser: auth0 user:', auth0user)
 
   // Get additional user metadata from GraphQL
   let meData: any = null
   if (graphqlUser) {
-    const apolloClient = getApolloClient()
-    const meData = await apolloClient.query({
-      query: gql`query{me{id name email external_data roles}}`
-    }).then((data) => {
-      debugLog('buildUser: me graphql response:', data.data.me)
-      return data.data.me
-    }).catch((e) => {
+    try {
+      const apolloClient = getApolloClient()
+      const response = await apolloClient.query({
+        query: gql`query{me{id name email external_data roles}}`
+      })
+      meData = response.data?.me || null
+      debugLog('buildUser: me graphql response:', meData)
+
+      if (!meData) {
+        debugLog('buildUser: missing graphql data')
+        clearUser()
+        return
+      }
+    } catch (e) {
       debugLog('buildUser: graphql failed:', e)
-    })
-    if (!meData) {
-      debugLog('buildUser: missing graphql data, clearing user')
       clearUser()
       return
     }
@@ -213,7 +223,7 @@ async function buildUser() {
 
 // Check the client token, return { token, loggedIn, mustReauthorize }
 // mustReauthorize will be set to true if a user is logged in but token fails
-async function checkToken() {
+async function checkToken () {
   let token = ''
   let loggedIn = false
   let mustReauthorize = false
@@ -222,25 +232,32 @@ async function checkToken() {
     debugLog('checkToken: no client')
     return { token, loggedIn, mustReauthorize }
   }
-  if (await client.isAuthenticated()) {
-    loggedIn = true
-    try {
-      // Everything is OK
-      const tokenResponse = await client.getTokenSilently({ timeoutInSeconds: 1, detailedResponse: true })
-      token = tokenResponse.access_token
-    } catch (error) {
-      // Invalid token
-      debugLog('checkToken: error in getTokenSilently; must authorize again:', error)
-      mustReauthorize = true
+
+  try {
+    // First check if we're authenticated
+    loggedIn = await client.isAuthenticated()
+    if (!loggedIn) {
+      debugLog('checkToken: not logged in')
+      return { token, loggedIn, mustReauthorize }
     }
-  } else {
-    debugLog('checkToken: not logged in')
+
+    // Get a fresh token
+    const tokenResponse = await client.getTokenSilently({ detailedResponse: true })
+    token = tokenResponse.access_token
+    loggedIn = true
+  } catch (error: any) {
+    debugLog('checkToken: error:', error)
+    if (error.error === 'login_required') {
+      mustReauthorize = true
+      clearUser()
+    }
   }
+
   return { token, loggedIn, mustReauthorize }
 }
 
 // Get an auth0 /authorize url that also includes targetUrl in app state
-async function getAuthorizeUrl(targetUrl: null | string): Promise<string> {
+async function getAuthorizeUrl (targetUrl: null | string): Promise<string> {
   targetUrl = targetUrl || '/'
   const client = getAuth0Client()
   if (!client) {
@@ -249,7 +266,7 @@ async function getAuthorizeUrl(targetUrl: null | string): Promise<string> {
   let authorizationUrl = ''
   await client.loginWithRedirect({
     appState: { targetUrl },
-    openUrl(url) {
+    openUrl (url) {
       authorizationUrl = url
     }
   })
@@ -257,7 +274,7 @@ async function getAuthorizeUrl(targetUrl: null | string): Promise<string> {
 }
 
 // Get an auth0 logout url
-async function getLogoutUrl(targetUrl: null | string): Promise<string> {
+async function getLogoutUrl (targetUrl: null | string): Promise<string> {
   targetUrl = targetUrl || '/'
   const client = getAuth0Client()
   if (!client) {
@@ -268,14 +285,14 @@ async function getLogoutUrl(targetUrl: null | string): Promise<string> {
     logoutParams: {
       returnTo: targetUrl
     },
-    openUrl(url) {
+    openUrl (url) {
       authorizationUrl = url
     }
   })
   return authorizationUrl
 }
 
-function debugLog(msg: string, ...args: any) {
+function debugLog (msg: string, ...args: any) {
   console.log(msg, ...args)
 }
 
@@ -291,39 +308,42 @@ export default defineNuxtPlugin(() => {
       return
     }
 
-    // Check if we have state/code returned from successful auth0 login
+    // Handle auth0 redirect callback
     const query = to?.query
     if (query && query.code && query.state) {
-      // OK login, set client auth details and get targetUrl from appState
-      debugLog('auth mw: handle login')
-      const { appState } = await client.handleRedirectCallback()
-      await buildUser()
-      debugLog('auth mw: redirecting to', appState.targetUrl)
-      return navigateTo(appState.targetUrl || '/')
+      try {
+        debugLog('auth mw: handle login')
+        const { appState } = await client.handleRedirectCallback()
+        debugLog('auth mw: got appState:', appState)
+        await buildUser()
+
+        const targetPath = appState?.targetUrl || '/'
+        debugLog('auth mw: navigating to:', targetPath)
+        return navigateTo(targetPath, { replace: true })
+      } catch (e) {
+        debugLog('auth mw: handleRedirectCallback failed:', e)
+        clearUser()
+        return navigateTo(await getAuthorizeUrl(to.fullPath), { external: true })
+      }
     }
 
-    // Force login
+    // Check token state
     const { loggedIn, mustReauthorize } = await checkToken()
-    if (mustReauthorize) {
-      debugLog('auth mw: mustReauthorize')
-      return navigateTo(await getAuthorizeUrl(to.fullPath), { external: true })
-    }
-    if (requireLogin && !loggedIn) {
-      debugLog('auth mw: force login')
+
+    if (mustReauthorize || (requireLogin && !loggedIn)) {
+      debugLog('auth mw: need auth')
       return navigateTo(await getAuthorizeUrl(to.fullPath), { external: true })
     }
 
-    // Check user and data freshness
+    // Check user data freshness
     const user = useUser()
     if (loggedIn) {
-      // Recheck user every 10 minutes
       const lastChecked = Date.now() - (user?.checked || 0)
-      if (lastChecked > RECHECK_INTERVAL) {
-        debugLog('auth mw: recheck user', 'lastChecked:', lastChecked, 'recheck interval:', RECHECK_INTERVAL)
-        buildUser() // don't await
+      if (lastChecked > RECHECK_INTERVAL || !user?.id) {
+        debugLog('auth mw: recheck user')
+        await buildUser()
       }
     } else {
-      // Clear any stale user state
       clearUser()
     }
   }, {

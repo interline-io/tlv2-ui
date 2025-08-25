@@ -1,5 +1,13 @@
 <template>
   <div>
+    <!-- Feed Version Timeline Chart -->
+    <div v-if="showTimelineChart" class="mb-5">
+      <tl-feed-version-timeline-chart-plot
+        :feed="feed"
+        :feed-versions="entities"
+      />
+    </div>
+
     <div class="table-container">
       <table class="table is-striped is-fullwidth">
         <thead>
@@ -60,32 +68,15 @@
               </template>
             </td>
             <td>
-              <template v-if="fv.feed_version_gtfs_import">
-                <o-tooltip
-                  v-if="fv.feed_version_gtfs_import.schedule_removed"
-                  label="Agencies, stops, and routes available"
-                >
-                  <o-icon icon="check" />
-                </o-tooltip>
-                <o-tooltip v-else-if="fv.feed_version_gtfs_import.success" label="Successfully imported">
-                  <o-icon icon="check-all" />
-                </o-tooltip>
-                <o-tooltip v-else-if="fv.feed_version_gtfs_import.in_progress">
-                  <o-icon icon="clock" />
-                </o-tooltip>
-                <o-tooltip
-                  v-else-if="fv.feed_version_gtfs_import.success == false"
-                  :label="fv.feed_version_gtfs_import.exception_log"
-                  position="top"
-                >
-                  <o-icon icon="alert" />
-                </o-tooltip>
-              </template>
+              <tl-feed-version-import-status
+                :feed-version-gtfs-import="fv.feed_version_gtfs_import"
+              />
             </td>
             <td v-if="showActiveColumn">
-              <o-icon
-                v-if="feed.feed_state && feed.feed_state.feed_version && feed.feed_state.feed_version.id === fv.id"
-                icon="check"
+              <tl-feed-version-active-status
+                :feed="feed"
+                :feed-version-id="fv.id"
+                :show-description="false"
               />
             </td>
             <td v-if="showDownloadColumn">
@@ -139,6 +130,7 @@ query ($limit:Int=100, $onestop_id: String, $after:Int) {
       feed_end_date
       earliest_calendar_date
       latest_calendar_date
+      fallback_week
     }
     feed_infos {
       feed_publisher_name
@@ -162,6 +154,7 @@ export default {
     showDescriptionColumn: { type: Boolean, default: true },
     showDateColumns: { type: Boolean, default: true },
     showActiveColumn: { type: Boolean, default: true },
+    showTimelineChart: { type: Boolean, default: false },
     issueDownloadRequest: { type: Boolean, default: true },
     limit: { type: Number, default: 20 }
   },

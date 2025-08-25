@@ -36,6 +36,7 @@
     "@nuxt/test-utils": "3.19.2",
     "@nuxt/types": "2.18.1",
     "@nuxtjs/eslint-config-typescript": "12.1.0",
+    "@observablehq/plot": "0.6.17",
     "@oruga-ui/oruga-next": "0.9.3",
     "@oruga-ui/theme-bulma": "0.5.3",
     "@pollyjs/adapter-fetch": "6.0.7",

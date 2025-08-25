@@ -23,7 +23,7 @@
             </o-select>
           </o-field>
 
-          <o-field label="Import status">
+          <o-field label="API Import status">
             <o-select v-model="importStatus">
               <option value="">
                 All
@@ -71,12 +71,24 @@
     <table class="table is-striped is-fullwidth">
       <thead>
         <tr>
-          <th v-if="showColumns.includes('onestop_id')">Onestop ID</th>
-          <th v-if="showColumns.includes('spec')">Format</th>
-          <th v-if="showColumns.includes('last_fetched')" class="has-text-right">Last Fetched</th>
-          <th v-if="importStatus || showColumns.includes('last_imported')" class="has-text-right">Last Imported</th>
-          <th v-if="fetchError === 'true' || showColumns.includes('fetch_errors')" class="has-text-right">Fetch Errors</th>
-          <th v-if="tagUnstableUrl || showColumns.includes('tags')" class="has-text-right">Tags</th>
+          <th v-if="showColumns.includes('onestop_id')">
+            Onestop ID
+          </th>
+          <th v-if="showColumns.includes('spec')">
+            Format
+          </th>
+          <th v-if="showColumns.includes('last_fetched')" class="has-text-right">
+            Last Fetched
+          </th>
+          <th v-if="importStatus || showColumns.includes('last_imported')" class="has-text-right">
+            Last Imported
+          </th>
+          <th v-if="fetchError === 'true' || showColumns.includes('fetch_errors')" class="has-text-right">
+            Fetch Errors
+          </th>
+          <th v-if="tagUnstableUrl || showColumns.includes('tags')" class="has-text-right">
+            Tags
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -118,10 +130,10 @@
           </td>
           <td v-if="tagUnstableUrl || showColumns.includes('tags')" class="has-text-right">
             <div class="tags is-right">
-                <span v-for="(value, key) in row.tags" :key="key" class="tag is-info is-light">
-                    <strong class="mr-1">{{ key.replace(/_/g, ' ') }}:</strong>
-                    {{ value }}
-                </span>
+              <span v-for="(value, key) in row.tags" :key="key" class="tag is-info is-light">
+                <strong class="mr-1">{{ key.replace(/_/g, ' ') }}:</strong>
+                {{ value }}
+              </span>
             </div>
           </td>
         </tr>
@@ -204,8 +216,8 @@ const feedSpecs = defineModel('feedSpecs')
 
 const props = defineProps({
   limit: { type: Number, default: 100 },
-  showColumns: { 
-    type: Array, 
+  showColumns: {
+    type: Array,
     default: () => ['onestop_id', 'spec', 'last_fetched']
     // by default excludes fetch_errors, last_imported and tags
   }

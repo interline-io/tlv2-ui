@@ -384,14 +384,19 @@ export default {
     },
     routeName () {
       if (this.entity) {
-        return `${this.entity.agency.agency_name} - ${this.entity.route_short_name} ${this.entity.route_long_name}`
+        const shortName = this.entity.route_short_name || ''
+        const longName = this.entity.route_long_name || ''
+        const nameParts = [shortName, longName].filter(Boolean).join(' ')
+        return `${this.entity.agency.agency_name} - ${nameParts}`
       }
       return 'route'
     },
     routeNames () {
       const rs = new Map()
       for (const ent of this.entities) {
-        const key = `${ent.agency.agency_name}-${ent.route_short_name}-${ent.route_long_name}-${ent.route_type}`
+        const shortName = ent.route_short_name || ''
+        const longName = ent.route_long_name || ''
+        const key = `${ent.agency.agency_name}-${shortName}-${longName}-${ent.route_type}`
         rs.set(key, ent)
       }
       return Array.from(rs.values()).slice(0, 4)
