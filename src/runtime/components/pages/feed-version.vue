@@ -218,7 +218,7 @@
       </slot>
 
       <o-tabs v-model="activeTab" class="tl-tabs" type="boxed" :animated="false" @update:model-value="setTab">
-        <o-tab-item :value="tabNames.timeline" label="Service timeline">
+        <o-tab-item :value="tabNames.timeline" label="Service coverage timeline">
           <template v-if="activeTab === tabNames.timeline">
             <div class="mb-4">
               <p class="content">
