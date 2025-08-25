@@ -209,46 +209,6 @@ export default {
       // Extract y domain for explicit ordering
       const yDomain = sortedData.map(d => d.y)
 
-      // Debug: Check fallback week data
-      console.log('Chart data with fallback weeks:', sortedData.map(d => ({
-        y: d.y,
-        representativeWeek: d.representativeWeek,
-        fallback_week: d.fallback_week
-      })))
-
-      // Debug: Check day of week for fallback_week dates
-      console.log('Fallback week day analysis:', sortedData
-        .filter(d => d.fallback_week)
-        .map((d) => {
-          const date = new Date(d.fallback_week)
-          const dayOfWeek = date.getDay() // 0 = Sunday, 1 = Monday, etc.
-          const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-          return {
-            y: d.y,
-            fallback_week: d.fallback_week,
-            dayOfWeek: dayOfWeek,
-            dayName: dayNames[dayOfWeek]
-          }
-        }))
-
-      // Debug: Check the actual date ranges
-      console.log('Date ranges for each feed version:', sortedData.map(d => ({
-        y: d.y,
-        feedInfoRange: `${d.feed_start_date} to ${d.feed_end_date}`,
-        fullServiceRange: `${d.earliest_calendar_date} to ${d.latest_calendar_date}`,
-        feedStart: d.feedStart,
-        feedEnd: d.feedEnd,
-        earliestService: d.earliestService,
-        latestService: d.latestService
-      })))
-
-      // Debug: Show height calculation
-      console.log('Chart height calculation:', {
-        feedVersionsCount: this.feedVersions.length,
-        calculatedHeight: this.chartHeight,
-        containerWidth: this.containerWidth
-      })
-
       const data = sortedData
 
       return {

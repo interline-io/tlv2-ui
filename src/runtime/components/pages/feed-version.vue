@@ -192,10 +192,6 @@
       </slot>
 
       <o-tabs v-model="activeTab" class="tl-tabs" type="boxed" :animated="false" @update:model-value="setTab">
-        <o-tab-item :value="tabNames.files" label="Files">
-          <tl-file-info-table :files="entity.files" />
-        </o-tab-item>
-
         <o-tab-item :value="tabNames.service" label="Service levels">
           <template v-if="activeTab === tabNames.service">
             <div class="mb-4">
@@ -209,6 +205,10 @@
             </div>
             <tl-multi-service-levels :show-group-info="false" :show-service-relative="false" :fvids="[entity.id]" :week-agg="false" />
           </template>
+        </o-tab-item>
+
+        <o-tab-item :value="tabNames.files" label="Files">
+          <tl-file-info-table :files="entity.files" />
         </o-tab-item>
 
         <o-tab-item :value="tabNames.map" label="Map">
@@ -377,8 +377,8 @@ export default {
       showEditModal: false,
       showPermissionsModal: false,
       features: [],
-      tabNames: this.makeTabNames(['files', 'service', 'map', 'agencies', 'routes', 'stops', 'imports']),
-      activeTab: 'files'
+      tabNames: this.makeTabNames(['service', 'map', 'agencies', 'routes', 'stops', 'imports', 'files']),
+      activeTab: 'service'
     }
   },
   computed: {
