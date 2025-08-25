@@ -127,26 +127,6 @@
             </td>
           </tr>
 
-          <tr v-if="entity.feed_version_gtfs_import">
-            <td>Import Status</td>
-            <td>
-              <tl-feed-version-import-status
-                :feed-version-gtfs-import="entity.feed_version_gtfs_import"
-              />
-            </td>
-          </tr>
-
-          <tr v-if="entity.feed">
-            <td>Active Status</td>
-            <td>
-              <tl-feed-version-active-status
-                :feed="entity.feed"
-                :feed-version-id="entity.id"
-                :show-description="true"
-              />
-            </td>
-          </tr>
-
           <tr>
             <td>Service</td>
             <td>
@@ -176,6 +156,26 @@
             <td>Details</td>
             <td>
               <tl-feed-info :show-dates="true" :feed-info="entity.feed_infos[0]" />
+            </td>
+          </tr>
+          <tr v-if="entity">
+            <td>API Import Status</td>
+            <td>
+              <tl-feed-version-import-status
+                :feed-version-gtfs-import="entity.feed_version_gtfs_import"
+                :show-not-imported-status="true"
+              />
+            </td>
+          </tr>
+
+          <tr v-if="entity.feed_version_gtfs_import && entity.feed">
+            <td>API Active Status</td>
+            <td>
+              <tl-feed-version-active-status
+                :feed="entity.feed"
+                :feed-version-id="entity.id"
+                :show-description="true"
+              />
             </td>
           </tr>
         </tbody>

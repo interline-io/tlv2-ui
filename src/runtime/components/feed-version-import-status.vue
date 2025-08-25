@@ -21,6 +21,11 @@
         <o-icon icon="alert" />
       </o-tooltip>
     </template>
+    <template v-else-if="showNotImportedStatus">
+      <o-tooltip label="Not currently imported into API. Still available for download from the Feed Archive.">
+        <o-icon icon="close" class="text-danger" />
+      </o-tooltip>
+    </template>
   </div>
 </template>
 
@@ -30,6 +35,10 @@ export default {
     feedVersionGtfsImport: {
       type: Object,
       default: null
+    },
+    showNotImportedStatus: {
+      type: Boolean,
+      default: false
     }
   }
 }
