@@ -91,11 +91,11 @@
     "vitest": "3.2.4",
     "vue": "3.5.13",
     "vue-eslint-parser": "10.2.0",
-    "vue-json-pretty": "2.5.0",
-    "vue-tsc": "^2.0.0"
+    "vue-json-pretty": "2.5.0"
   },
   "packageManager": "yarn@4.3.0",
   "devDependencies": {
-    "nuxi": "3.23.0"
+    "nuxi": "3.23.0",
+    "vue-tsc": "^2.0.0"
   }
 }
