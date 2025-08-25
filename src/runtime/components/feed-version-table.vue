@@ -1,5 +1,13 @@
 <template>
   <div>
+    <!-- Feed Version Timeline Chart -->
+    <div v-if="showTimelineChart" class="mb-5">
+      <tl-feed-version-timeline-chart-plot
+        :feed="feed"
+        :feed-versions="entities"
+      />
+    </div>
+
     <div class="table-container">
       <table class="table is-striped is-fullwidth">
         <thead>
@@ -139,6 +147,7 @@ query ($limit:Int=100, $onestop_id: String, $after:Int) {
       feed_end_date
       earliest_calendar_date
       latest_calendar_date
+      fallback_week
     }
     feed_infos {
       feed_publisher_name
@@ -162,6 +171,7 @@ export default {
     showDescriptionColumn: { type: Boolean, default: true },
     showDateColumns: { type: Boolean, default: true },
     showActiveColumn: { type: Boolean, default: true },
+    showTimelineChart: { type: Boolean, default: false },
     issueDownloadRequest: { type: Boolean, default: true },
     limit: { type: Number, default: 20 }
   },

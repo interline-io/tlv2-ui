@@ -198,6 +198,15 @@
 
         <o-tab-item :value="tabNames.service" label="Service levels">
           <template v-if="activeTab === tabNames.service">
+            <div class="mb-4">
+              <h3 class="title is-4">
+                Service Coverage Timeline
+              </h3>
+              <tl-feed-version-timeline-chart-plot
+                v-if="entity"
+                :feed-versions="[entity]"
+              />
+            </div>
             <tl-multi-service-levels :show-group-info="false" :show-service-relative="false" :fvids="[entity.id]" :week-agg="false" />
           </template>
         </o-tab-item>
@@ -323,6 +332,7 @@ query ($feedVersionSha1: String!) {
       feed_end_date
       earliest_calendar_date
       latest_calendar_date
+      fallback_week
     }
     agencies {
       id
