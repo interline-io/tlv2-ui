@@ -218,12 +218,12 @@
       </slot>
 
       <o-tabs v-model="activeTab" class="tl-tabs" type="boxed" :animated="false" @update:model-value="setTab">
-        <o-tab-item :value="tabNames.service" label="Service levels">
-          <template v-if="activeTab === tabNames.service">
+        <o-tab-item :value="tabNames.timeline" label="Service timeline">
+          <template v-if="activeTab === tabNames.timeline">
             <div class="mb-4">
-              <h3 class="title is-4">
-                Service Coverage Timeline
-              </h3>
+              <p class="content">
+                Use this timeline view to see the range of dates for which service is scheduled in this feed version:
+              </p>
               <tl-feed-version-timeline-chart-plot
                 v-if="entity"
                 :feed="entity.feed"
@@ -231,6 +231,14 @@
                 :show-status-legend="false"
               />
             </div>
+          </template>
+        </o-tab-item>
+
+        <o-tab-item :value="tabNames.service" label="Service levels calendar">
+          <template v-if="activeTab === tabNames.service">
+            <p class="content">
+              Use this calendar view to compare the relative number of service hours scheduled for each day in this feed version:
+            </p>
             <tl-multi-service-levels :show-group-info="false" :show-service-relative="false" :fvids="[entity.id]" :week-agg="false" />
           </template>
         </o-tab-item>
@@ -410,8 +418,8 @@ export default {
       showEditModal: false,
       showPermissionsModal: false,
       features: [],
-      tabNames: this.makeTabNames(['service', 'map', 'agencies', 'routes', 'stops', 'imports', 'files']),
-      activeTab: 'service'
+      tabNames: this.makeTabNames(['timeline', 'service', 'map', 'agencies', 'routes', 'stops', 'imports', 'files']),
+      activeTab: 'timeline'
     }
   },
   computed: {
