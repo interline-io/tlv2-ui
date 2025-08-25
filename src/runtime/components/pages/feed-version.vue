@@ -127,28 +127,54 @@
             </td>
           </tr>
 
-          <tr>
-            <td>Service</td>
+          <tr v-if="entity.feed_version_gtfs_import">
+            <td>Import Status</td>
             <td>
-              <o-tooltip v-if="entity.service_window?.feed_start_date && entity.service_window?.feed_end_date">
-                {{ $filters.formatDate(entity.service_window?.feed_start_date) }} to {{ $filters.formatDate(entity.service_window?.feed_end_date) }}
-                <template #content>
-                  <p>These service dates are sourced from the information in <code>feed_info.txt</code>.</p>
-                  <p>The full span of service contained in <code>calendar.txt</code> is {{ $filters.formatDate(entity.earliest_calendar_date) }} to {{ $filters.formatDate(entity.latest_calendar_date) }}</p>
-                </template>
-              </o-tooltip>
-              <o-tooltip v-else>
-                {{ $filters.formatDate(entity.earliest_calendar_date) }} to {{ $filters.formatDate(entity.latest_calendar_date) }}
-                <template #content>
-                  <p>The full span of service contained in <code>calendar.txt</code>.</p>
-                </template>
-              </o-tooltip>
+              <tl-feed-version-import-status
+                :feed-version-gtfs-import="entity.feed_version_gtfs_import"
+              />
+            </td>
+          </tr>
+
+          <tr v-if="entity.feed">
+            <td>Active Status</td>
+            <td>
+              <tl-feed-version-active-status
+                :feed="entity.feed"
+                :feed-version-id="entity.id"
+                :show-description="true"
+              />
             </td>
           </tr>
 
           <tr>
+            <td>Service</td>
+            <td>
+              <template v-if="entity.service_window?.feed_start_date && entity.service_window?.feed_end_date">
+                {{ $filters.formatDate(entity.service_window?.feed_start_date) }} to {{ $filters.formatDate(entity.service_window?.feed_end_date) }}
+                <o-tooltip>
+                  <template #content>
+                    <p>These service dates are sourced from the information in <code>feed_info.txt</code>.</p>
+                    <p>The full span of service contained in <code>calendar.txt</code> is {{ $filters.formatDate(entity.earliest_calendar_date) }} to {{ $filters.formatDate(entity.latest_calendar_date) }}</p>
+                  </template>
+                  <i class="fas fa-info-circle" />
+                </o-tooltip>
+              </template>
+              <template v-else>
+                {{ $filters.formatDate(entity.earliest_calendar_date) }} to {{ $filters.formatDate(entity.latest_calendar_date) }}
+                <o-tooltip>
+                  <template #content>
+                    <p>The full span of service contained in <code>calendar.txt</code>.</p>
+                  </template>
+                  <i class="fas fa-info-circle" />
+                </o-tooltip>
+              </template>
+            </td>
+          </tr>
+
+          <tr v-if="entity.feed_infos && entity.feed_infos.length > 0">
             <td>Details</td>
-            <td v-if="entity.feed_infos && entity.feed_infos.length > 0">
+            <td>
               <tl-feed-info :show-dates="true" :feed-info="entity.feed_infos[0]" />
             </td>
           </tr>
@@ -200,7 +226,9 @@
               </h3>
               <tl-feed-version-timeline-chart-plot
                 v-if="entity"
+                :feed="entity.feed"
                 :feed-versions="[entity]"
+                :show-status-legend="false"
               />
             </div>
             <tl-multi-service-levels :show-group-info="false" :show-service-relative="false" :fvids="[entity.id]" :week-agg="false" />
@@ -344,6 +372,11 @@ query ($feedVersionSha1: String!) {
       associated_operators {
         name
         onestop_id
+      }
+      feed_state {
+        feed_version {
+          id
+        }
       }
     }
   }
