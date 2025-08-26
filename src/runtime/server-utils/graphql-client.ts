@@ -13,6 +13,11 @@ import { useRuntimeConfig } from '#imports'
 export const createGraphQLClientOnBackend = (event: H3Event, userJwt: string) => {
   const runtimeConfig = useRuntimeConfig(event)
 
+  console.log('createGraphQLClientOnBackend: event type:', typeof event)
+  console.log('createGraphQLClientOnBackend: event headers:', event.headers)
+  console.log('createGraphQLClientOnBackend: userJwt length:', userJwt?.length || 0)
+  console.log('createGraphQLClientOnBackend: proxyBase:', runtimeConfig.proxyBase)
+
   const client = {
     async query<T = any>(query: string | DocumentNode, variables?: Record<string, any>): Promise<{ data?: T }> {
       // Forward the GraphQL query through the proxy
@@ -21,6 +26,9 @@ export const createGraphQLClientOnBackend = (event: H3Event, userJwt: string) =>
         path: '/api/v2/graphql',
         method: 'POST'
       } as H3Event
+
+      console.log('createGraphQLClientOnBackend: proxyEvent headers:', proxyEvent.headers)
+      console.log('createGraphQLClientOnBackend: About to call proxyHandler...')
 
       const response = await proxyHandler(
         proxyEvent,
