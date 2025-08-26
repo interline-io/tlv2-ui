@@ -37,8 +37,21 @@ export const createGraphQLClientOnBackend = (event: H3Event, userJwt: string) =>
         userJwt
       )
 
+      console.log('createGraphQLClientOnBackend: proxyHandler response type:', typeof response)
+      console.log('createGraphQLClientOnBackend: proxyHandler response:', response)
+      console.log('createGraphQLClientOnBackend: response methods:', response ? Object.getOwnPropertyNames(response) : 'N/A')
+
       // Parse the response
-      const result = await response.json()
+      let result
+      if (response && typeof response.json === 'function') {
+        result = await response.json()
+      } else if (response && typeof response.text === 'function') {
+        const text = await response.text()
+        result = JSON.parse(text)
+      } else {
+        console.error('Unexpected response type from proxyHandler:', response)
+        throw new Error('Invalid response from proxy handler')
+      }
 
       if (result.errors) {
         throw new Error(`GraphQL errors: ${result.errors.map((e: any) => e.message).join(', ')}`)

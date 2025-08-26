@@ -33,6 +33,11 @@ export function proxyHandler (
     newPath,
     proxyBaseUrl.toString()
   )
+  console.log('proxyHandler: target URL:', target.toString())
+  console.log('proxyHandler: event.path:', event.path)
+  console.log('proxyHandler: newPath:', newPath)
+  console.log('proxyHandler: headers being sent:', headers)
+
   // console.log('proxyHandler', target.toString(), 'headers:', headers)
   return proxyRequest(event, target.toString(), {
     fetchOptions: {
