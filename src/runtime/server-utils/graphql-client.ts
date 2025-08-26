@@ -20,6 +20,10 @@ export const createGraphQLClientOnBackend = (event: H3Event, userJwt: string) =>
 
   const client = {
     async query<T = any>(query: string | DocumentNode, variables?: Record<string, any>): Promise<{ data?: T }> {
+      // Log the GraphQL query and variables being sent
+      console.log('createGraphQLClientOnBackend: GraphQL query:', query)
+      console.log('createGraphQLClientOnBackend: GraphQL variables:', variables)
+
       // Forward the GraphQL query through the proxy
       const proxyEvent = {
         ...event,
@@ -53,6 +57,8 @@ export const createGraphQLClientOnBackend = (event: H3Event, userJwt: string) =>
       } else if (response && typeof response === 'object' && 'statusCode' in response) {
         // This is a Node.js ServerResponse - we need to handle it differently
         console.log('createGraphQLClientOnBackend: Handling Node.js ServerResponse')
+        console.log('createGraphQLClientOnBackend: Response status:', (response as any).statusCode)
+        console.log('createGraphQLClientOnBackend: Response headers:', (response as any)._outHeaders)
 
         // Check if the response has a readable stream
         if (response.req && response.req._events && response.req._events.data) {
@@ -71,6 +77,7 @@ export const createGraphQLClientOnBackend = (event: H3Event, userJwt: string) =>
               chunks.push(value)
             }
             const bodyText = new TextDecoder().decode(Buffer.concat(chunks))
+            console.log('createGraphQLClientOnBackend: Response body:', bodyText)
             result = JSON.parse(bodyText)
           } catch (error) {
             console.error('createGraphQLClientOnBackend: Error reading response stream:', error)
@@ -96,7 +103,9 @@ export const createGraphQLClientOnBackend = (event: H3Event, userJwt: string) =>
         throw new Error('Invalid response from proxy handler')
       }
 
+      console.log('createGraphQLClientOnBackend: Parsed result:', result)
       if (result.errors) {
+        console.error('createGraphQLClientOnBackend: GraphQL errors:', result.errors)
         throw new Error(`GraphQL errors: ${result.errors.map((e: any) => e.message).join(', ')}`)
       }
 
