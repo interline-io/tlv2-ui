@@ -54,16 +54,43 @@ export const createGraphQLClientOnBackend = (event: H3Event, userJwt: string) =>
         // This is a Node.js ServerResponse - we need to handle it differently
         console.log('createGraphQLClientOnBackend: Handling Node.js ServerResponse')
 
-        // For now, let's check if we can get the response body
+        // Check if the response has a readable stream
         if (response.req && response.req._events && response.req._events.data) {
-          // Try to get the response data from the request events
           console.log('createGraphQLClientOnBackend: Found request data events')
-          // This is complex - let's try a different approach
         }
 
-        // Since we can't easily extract the body from ServerResponse,
-        // let's throw a more helpful error
-        throw new Error(`Proxy returned Node.js ServerResponse (status: ${(response as any).statusCode}). The proxy needs to be configured to return fetch Response objects.`)
+        // For Node.js responses, we need to read the response body differently
+        // The response body is typically available in the _data property or as a stream
+        if (response._data && response._data instanceof ReadableStream) {
+          try {
+            const reader = response._data.getReader()
+            const chunks = []
+            while (true) {
+              const { done, value } = await reader.read()
+              if (done) break
+              chunks.push(value)
+            }
+            const bodyText = new TextDecoder().decode(Buffer.concat(chunks))
+            result = JSON.parse(bodyText)
+          } catch (error) {
+            console.error('createGraphQLClientOnBackend: Error reading response stream:', error)
+            throw new Error(`Failed to read response body: ${error.message}`)
+          }
+        } else {
+          // If we can't read the body, check if it's a redirect and follow it
+          const statusCode = (response as any).statusCode
+          if (statusCode === 301 || statusCode === 302) {
+            const location = (response as any)._outHeaders?.location?.[1]
+              || (response as any)._header?.match(/location: (.+)/i)?.[1]
+            if (location) {
+              console.log('createGraphQLClientOnBackend: Following redirect to:', location)
+              // For now, throw an error indicating we need to handle redirects
+              throw new Error(`Received ${statusCode} redirect to ${location}. The proxy needs to handle redirects automatically.`)
+            }
+          }
+
+          throw new Error(`Cannot read response body from Node.js ServerResponse (status: ${statusCode}). The proxy needs to return fetch Response objects.`)
+        }
       } else {
         console.error('Unexpected response type from proxyHandler:', response)
         throw new Error('Invalid response from proxy handler')
