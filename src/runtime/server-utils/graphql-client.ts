@@ -23,7 +23,7 @@ export const createGraphQLClientOnBackend = (event: H3Event, userJwt: string) =>
       // Forward the GraphQL query through the proxy
       const proxyEvent = {
         ...event,
-        path: '/api/v2/graphql',
+        path: '/api/v2/query',
         method: 'POST',
         headers: event.headers // Explicitly preserve headers
       } as H3Event
