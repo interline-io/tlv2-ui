@@ -12,20 +12,16 @@
     "dev:build": "nuxi build example",
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare example"
   },
-  "exports": {
-    ".": {
-      "types": "./dist/types.d.mts",
-      "import": "./dist/module.mjs"
-    },
-    "./composables": {
-      "types": "./dist/runtime/composables/index.d.ts",
-      "import": "./dist/runtime/composables/index.js"
-    },
-    "./server-utils": {
-      "types": "./dist/runtime/server-utils/index.d.ts",
-      "import": "./dist/runtime/server-utils/index.js"
-    }
-  },
+          "exports": {
+          ".": {
+            "types": "./dist/types.d.mts",
+            "import": "./dist/module.mjs"
+          },
+          "./server-utils": {
+            "types": "./dist/runtime/server-utils/index.d.ts",
+            "import": "./dist/runtime/server-utils/index.js"
+          }
+        },
   "main": "./dist/module.mjs",
   "type": "module",
   "files": [
