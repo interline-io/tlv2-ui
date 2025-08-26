@@ -41,24 +41,10 @@ export const useJwtOnBackend = (event: any) => {
     return getJwt() !== null
   }
 
-  /**
-   * Get JWT token with optional validation
-   * @param required - If true, throws error when no token (default: false)
-   * @returns JWT token string or null
-   * @throws 401 error if required=true and no token provided
-   */
-  const getJwtToken = (required: boolean = false): string | null => {
-    if (required) {
-      return requireJwt()
-    }
-    return getJwt()
-  }
-
   return {
     getJwt,
     requireJwt,
-    hasJwt,
-    getJwtToken
+    hasJwt
   }
 }
 
