@@ -1,6 +1,7 @@
 import { proxyHandler } from '../plugins/proxy'
 import type { H3Event } from 'h3'
 import type { DocumentNode } from 'graphql'
+import { useRuntimeConfig } from '#imports'
 
 /**
  * Server-side utility for creating proxy-based GraphQL clients on the backend
