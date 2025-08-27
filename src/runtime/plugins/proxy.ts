@@ -1,5 +1,6 @@
 import { proxyRequest, getQuery, H3Event, defineEventHandler } from 'h3'
 import { useRuntimeConfig } from '#imports'
+import { safeStringify } from '../utils/log-sanitizer'
 
 // Use sessions and/or nuxt-csurf to protect this in nuxt.config.ts
 export function proxyHandler (
@@ -8,7 +9,7 @@ export function proxyHandler (
   graphqlApikey: string
 ) {
   console.log('proxyHandler: event type:', typeof event)
-  console.log('proxyHandler: event headers:', event.headers)
+  console.log('proxyHandler: event headers:', safeStringify(event.headers))
   console.log('proxyHandler: event headers type:', typeof event.headers)
   console.log('proxyHandler: event headers methods:', event.headers ? Object.getOwnPropertyNames(event.headers) : 'N/A')
 
@@ -36,7 +37,7 @@ export function proxyHandler (
   console.log('proxyHandler: target URL:', target.toString())
   console.log('proxyHandler: event.path:', event.path)
   console.log('proxyHandler: newPath:', newPath)
-  console.log('proxyHandler: headers being sent:', headers)
+  console.log('proxyHandler: headers being sent:', safeStringify(headers))
 
   // console.log('proxyHandler', target.toString(), 'headers:', headers)
   return proxyRequest(event, target.toString(), {
