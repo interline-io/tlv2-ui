@@ -1,109 +1,53 @@
 import { useJwt } from '../plugins/auth'
 
 /**
- * Authenticated fetch utility that automatically includes JWT tokens when making requests to backend endpoints
- * Usage: const authFetch = useAuthenticatedFetchToBackend()
+ * Returns both a pre-configured $fetch instance and raw fetch function with automatic JWT authentication
+ * Usage: const { nuxtFetch, fetch } = useAuthenticatedFetchToBackend()
+ *
+ * - nuxtFetch: Nuxt's enhanced $fetch with automatic JSON parsing
+ * - fetch: Native fetch API with headers pre-applied (for streaming, etc.)
  */
 export const useAuthenticatedFetchToBackend = () => {
   /**
-   * Authenticated fetch function that includes JWT token
-   * @param url - The URL to fetch from (typically backend endpoints like /api/wsdot)
-   * @param options - Fetch options (method, body, headers, etc.)
-   * @returns Promise with the response
+   * Pre-configured $fetch function with JWT authentication
    */
-  const authFetch = async <T = any>(url: string, options: any = {}): Promise<T> => {
-    try {
+  const nuxtFetch = $fetch.create({
+    async onRequest ({ request, options }) {
       // Get fresh JWT token
       const token = await useJwt()
 
-      // Prepare headers with authentication
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-        ...options.headers
-      }
-
-      // Add JWT token if available
+      // Inject auth header if token exists
       if (token) {
-        headers['Authorization'] = `Bearer ${token}`
+        const headers = new Headers(options.headers)
+        headers.set('Authorization', `Bearer ${token}`)
+        options.headers = headers
       }
-
-      // Make the authenticated request
-      const response = await $fetch<T>(url, {
-        ...options,
-        headers
-      })
-
-      return response
-    } catch (error) {
-      // Re-throw the error for handling by the caller
-      throw error
     }
-  }
+  })
 
   /**
-   * POST request with authentication
+   * Raw fetch function with JWT authentication pre-applied
+   * Returns the native Response object for streaming, custom parsing, etc.
    */
-  const post = async <T = any>(url: string, body: any, options: any = {}): Promise<T> => {
-    return authFetch<T>(url, {
-      method: 'POST',
-      body,
-      ...options
-    })
-  }
+  const fetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+    // Get fresh JWT token
+    const token = await useJwt()
 
-  /**
-   * GET request with authentication
-   */
-  const get = async <T = any>(url: string, options: any = {}): Promise<T> => {
-    return authFetch<T>(url, {
-      method: 'GET',
-      ...options
-    })
-  }
+    // Prepare headers
+    const headers = new Headers(init?.headers)
+    if (token) {
+      headers.set('Authorization', `Bearer ${token}`)
+    }
 
-  /**
-   * PUT request with authentication
-   */
-  const put = async <T = any>(url: string, body: any, options: any = {}): Promise<T> => {
-    return authFetch<T>(url, {
-      method: 'PUT',
-      body,
-      ...options
-    })
-  }
-
-  /**
-   * DELETE request with authentication
-   */
-  const del = async <T = any>(url: string, options: any = {}): Promise<T> => {
-    return authFetch<T>(url, {
-      method: 'DELETE',
-      ...options
-    })
-  }
-
-  /**
-   * PATCH request with authentication
-   */
-  const patch = async <T = any>(url: string, body: any, options: any = {}): Promise<T> => {
-    return authFetch<T>(url, {
-      method: 'PATCH',
-      body,
-      ...options
+    // Call native fetch with enhanced headers
+    return fetch(input, {
+      ...init,
+      headers
     })
   }
 
   return {
-    fetch: authFetch,
-    post,
-    get,
-    put,
-    delete: del,
-    patch
+    nuxtFetch,
+    fetch
   }
 }
-
-/**
- * Type for the authenticated fetch to backend composable
- */
-export type AuthenticatedFetchToBackend = ReturnType<typeof useAuthenticatedFetchToBackend>
