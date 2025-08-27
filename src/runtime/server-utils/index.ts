@@ -1,3 +1,10 @@
 // Export utility functions for server-side use
-export { extractJwtFromEvent } from './jwt'
-export { createGraphQLClientOnBackend } from './graphql-client'
+export { 
+    GraphQLClient, 
+    BasicGraphQLClient,
+    BasicGraphQLClientOptions
+} from './graphql-client'
+
+export { 
+    safeStringify
+} from './log-sanitizer'

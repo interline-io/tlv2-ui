@@ -1,8 +1,8 @@
+import { defineNuxtPlugin, addRouteMiddleware, navigateTo, useRuntimeConfig, useCsrf, useMixpanel, useRoute } from '#imports'
 import { Auth0Client } from '@auth0/auth0-spa-js'
 import { useStorage } from '@vueuse/core'
 import { gql } from 'graphql-tag'
 import { getApolloClient } from './apollo'
-import { defineNuxtPlugin, addRouteMiddleware, navigateTo, useRuntimeConfig, useCsrf, useMixpanel, useRoute } from '#imports'
 
 /// ////////////////////
 // Auth0 client initialization
@@ -76,89 +76,6 @@ export const useUser = () => {
   return new User(user?.value || {})
 }
 
-// Headers, including CSRF
-export const useAuthHeaders = async () => {
-  const config = useRuntimeConfig()
-  const headers: Record<string, string> = {}
-
-  // CSRF
-  // NOTE: For unknown reasons, useCsrf will panic if called after useJwt.
-  if (config.public.useProxy) {
-    const { headerName: csrfHeader, csrf: csrfToken } = useCsrf()
-    headers[csrfHeader] = csrfToken
-  }
-
-  // JWT
-  const token = await useJwt()
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`
-  }
-
-  // Api key
-  if (import.meta.server && config.graphqlApikey) {
-    headers['apikey'] = config.graphqlApikey
-  }
-
-  return headers
-}
-
-/**
- * Returns both a pre-configured $fetch instance and raw fetch function with automatic authentication
- * Usage: const { nuxtFetch, fetch } = useAuthenticatedFetchToBackend()
- *
- * - nuxtFetch: Nuxt's enhanced $fetch with automatic JSON parsing and full auth headers (JWT, CSRF, API key)
- * - fetch: Native fetch API with auth headers pre-applied (for streaming, etc.)
- */
-export const useAuthenticatedFetchToBackend = () => {
-  /**
-   * Pre-configured $fetch function with full authentication
-   */
-  const nuxtFetch = $fetch.create({
-    async onRequest ({ options }) {
-      // Get all auth headers (JWT, CSRF, API key)
-      const authHeaders = await useAuthHeaders()
-
-      // Merge with existing headers
-      options.headers = {
-        ...options.headers,
-        ...authHeaders
-      }
-    }
-  })
-
-  /**
-   * Raw fetch function with authentication pre-applied
-   * Returns the native Response object for streaming, custom parsing, etc.
-   */
-  const fetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
-    // Get all auth headers (JWT, CSRF, API key)
-    const authHeaders = await useAuthHeaders()
-
-    // Merge headers
-    const headers = new Headers(init?.headers)
-    Object.entries(authHeaders).forEach(([key, value]) => {
-      headers.set(key, value)
-    })
-
-    // Call native fetch with enhanced headers
-    return globalThis.fetch(input, {
-      ...init,
-      headers
-    })
-  }
-
-  return {
-    nuxtFetch,
-    fetch
-  }
-}
-
-export const useApiEndpoint = () => {
-  const config = useRuntimeConfig()
-  return import.meta.server
-    ? (config.proxyBase)
-    : (config.public.apiBase || window?.location?.origin + '/api/v2')
-}
 
 // Login
 export const useLogin = async (targetUrl: null | string) => {
