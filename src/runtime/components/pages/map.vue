@@ -136,7 +136,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { useRoute, useRuntimeConfig, navigateTo } from '#imports'
-import { useApiEndpoint } from '../../plugins/auth'
+import { useApiEndpoint } from '../../plugins/fetch'
 
 const config = useRuntimeConfig()
 

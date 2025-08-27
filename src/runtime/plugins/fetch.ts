@@ -40,42 +40,46 @@ export const useAuthHeaders = async () => {
 }
 
 // Return url relative to public API base, or proxy if configured
-export const useApiEndpoint = () => {
+export const useApiEndpoint = (path?: string) => {
   const config = useRuntimeConfig()
-  return import.meta.server
+  const base = import.meta.server
     ? (config.proxyBase)
     : (config.public.apiBase || window?.location?.origin + '/api/v2')
+  if (path) {
+    return base + path
+  }
+  return base
 }
 
 /**
- * Returns both a pre-configured $fetch instance and raw fetch function with automatic authentication
- * Usage: const { nuxtFetch, fetch } = useAuthenticatedFetch()
+ * Returns authenticated fetch functions with automatic API base path resolution
+ * Usage: const { nuxtFetch, fetch } = useApiFetch()
  *
- * - nuxtFetch: Nuxt's enhanced $fetch with automatic JSON parsing and full auth headers (JWT, CSRF, API key)
- * - fetch: Native fetch API with auth headers pre-applied (for streaming, etc.)
+ * - nuxtFetch: Nuxt's enhanced $fetch with automatic JSON parsing, auth headers, and API base path
+ * - fetch: Native fetch API with auth headers and API base path pre-applied
+ *
+ * Relative paths (starting with '/') are automatically resolved to the API base.
+ * Absolute URLs (with protocol) are used as-is.
  */
-export const useAuthenticatedFetch = () => {
-  /**
-   * Pre-configured $fetch function with full authentication
-   */
-  const nuxtFetch = $fetch.create({
-    async onRequest ({ options }) {
-      // Get all auth headers (JWT, CSRF, API key)
-      const authHeaders = await useAuthHeaders()
-
-      // Merge with existing headers
-      options.headers = {
-        ...options.headers,
-        ...authHeaders
+export const useApiFetch = () => {
+  const resolveUrl = (input: string | URL | Request): string => {
+    if (typeof input === 'string') {
+      // If it's a relative path starting with '/', prepend API base
+      if (input.startsWith('/')) {
+        return useApiEndpoint(input)
+      }
+      // If it doesn't start with protocol, assume it's relative and prepend API base
+      if (!input.includes('://')) {
+        return useApiEndpoint('/' + input)
       }
     }
-  })
+    return input.toString()
+  }
 
-  /**
-   * Raw fetch function with authentication pre-applied
-   * Returns the native Response object for streaming, custom parsing, etc.
-   */
   const fetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+    // Resolve URL to API base if needed
+    const resolvedInput = typeof input === 'string' ? resolveUrl(input) : input
+
     // Get all auth headers (JWT, CSRF, API key)
     const authHeaders = await useAuthHeaders()
 
@@ -85,15 +89,14 @@ export const useAuthenticatedFetch = () => {
       headers.set(key, value)
     })
 
-    // Call native fetch with enhanced headers
-    return globalThis.fetch(input, {
+    // Call native fetch with resolved URL and enhanced headers
+    return globalThis.fetch(resolvedInput, {
       ...init,
       headers
     })
   }
 
   return {
-    nuxtFetch,
     fetch
   }
 }
@@ -109,21 +112,6 @@ export const useAuthenticatedFetch = () => {
  */
 export const useAuthenticatedFetchFromEvent = (event: H3Event) => {
   const { getEventJwt } = extractJwtFromEvent(event)
-
-  /**
-   * Pre-configured $fetch function with JWT authentication from server context
-   */
-  const nuxtFetch = $fetch.create({
-    onRequest ({ options }) {
-      const token = getEventJwt()
-
-      if (token) {
-        const headers = new Headers(options.headers)
-        headers.set('Authorization', `Bearer ${token}`)
-        options.headers = headers
-      }
-    }
-  })
 
   /**
    * Raw fetch function with JWT authentication pre-applied
@@ -144,7 +132,6 @@ export const useAuthenticatedFetchFromEvent = (event: H3Event) => {
   }
 
   return {
-    nuxtFetch,
     fetch
   }
 }

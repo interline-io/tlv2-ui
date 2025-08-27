@@ -1,10 +1,10 @@
+import { defineNuxtPlugin } from '#imports'
 import { destr } from 'destr'
 import { ApolloClients, provideApolloClients } from '@vue/apollo-composable'
 import { createApolloProvider } from '@vue/apollo-option'
 import { ApolloClient, ApolloLink, concat, InMemoryCache } from '@apollo/client/core/index.js'
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
 import { useApiEndpoint, useAuthHeaders } from './fetch'
-import { defineNuxtPlugin } from '#imports'
 
 export function getApolloClient () {
   return initApolloClient(useApiEndpoint())

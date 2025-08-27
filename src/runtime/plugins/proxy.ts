@@ -1,5 +1,5 @@
-import { proxyRequest, getQuery, H3Event, defineEventHandler } from 'h3'
 import { useRuntimeConfig } from '#imports'
+import { proxyRequest, getQuery, H3Event, defineEventHandler } from 'h3'
 import { safeStringify } from '../server-utils/log-sanitizer'
 
 // Use sessions and/or nuxt-csurf to protect this in nuxt.config.ts

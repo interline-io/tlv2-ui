@@ -6,7 +6,7 @@
 import maplibre from 'maplibre-gl'
 import { noLabels, labels } from 'protomaps-themes-base'
 import { nextTick } from 'vue'
-import { useAuthHeaders, useApiEndpoint } from '../plugins/auth'
+import { useAuthHeaders, useApiEndpoint } from '../plugins/fetch'
 import mapLayers from './map-layers'
 
 export default {

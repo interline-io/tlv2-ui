@@ -1,5 +1,5 @@
 <script lang="ts">
-import { useAuthHeaders, useApiEndpoint } from '../plugins/auth'
+import { useAuthHeaders, useApiEndpoint } from '../plugins/fetch'
 export default {
   data () {
     return {
