@@ -3,7 +3,7 @@ import { useRuntimeConfig } from '#imports'
 import { safeStringify } from '../server-utils/log-sanitizer'
 
 // Use sessions and/or nuxt-csurf to protect this in nuxt.config.ts
-export function proxyHandler (
+function proxyHandler (
   event: H3Event,
   proxyBase: string,
   graphqlApikey: string
