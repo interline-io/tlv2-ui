@@ -1,22 +1,25 @@
-import { useJwt } from '../plugins/auth'
+import type { H3Event } from 'h3'
+import { extractJwtFromEvent } from '../server-utils/jwt'
 
 /**
- * Returns both a pre-configured $fetch instance and raw fetch function with automatic JWT authentication
- * Usage: const { nuxtFetch, fetch } = useAuthenticatedFetchToBackend()
+ * Server-side composable that returns pre-configured fetch handlers with JWT authentication
+ * extracted from the H3 event context.
+ *
+ * Usage: const { nuxtFetch, fetch } = useAuthenticatedFetchToBackendServer(event)
  *
  * - nuxtFetch: Nuxt's enhanced $fetch with automatic JSON parsing
  * - fetch: Native fetch API with headers pre-applied (for streaming, etc.)
  */
-export const useAuthenticatedFetchToBackend = () => {
+export const useAuthenticatedFetchToBackendServer = (event: H3Event) => {
+  const { getJwt } = extractJwtFromEvent(event)
+
   /**
-   * Pre-configured $fetch function with JWT authentication
+   * Pre-configured $fetch function with JWT authentication from server context
    */
   const nuxtFetch = $fetch.create({
-    async onRequest ({ request, options }) {
-      // Get fresh JWT token
-      const token = await useJwt()
+    onRequest ({ options }) {
+      const token = getJwt()
 
-      // Inject auth header if token exists
       if (token) {
         const headers = new Headers(options.headers)
         headers.set('Authorization', `Bearer ${token}`)
@@ -30,17 +33,14 @@ export const useAuthenticatedFetchToBackend = () => {
    * Returns the native Response object for streaming, custom parsing, etc.
    */
   const fetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
-    // Get fresh JWT token
-    const token = await useJwt()
+    const token = getJwt()
 
-    // Prepare headers
     const headers = new Headers(init?.headers)
     if (token) {
       headers.set('Authorization', `Bearer ${token}`)
     }
 
-    // Call native fetch with enhanced headers
-    return fetch(input, {
+    return globalThis.fetch(input, {
       ...init,
       headers
     })
@@ -51,3 +51,8 @@ export const useAuthenticatedFetchToBackend = () => {
     fetch
   }
 }
+
+/**
+ * Type for the server-side authenticated fetch composable
+ */
+export type AuthenticatedFetchToBackendServer = ReturnType<typeof useAuthenticatedFetchToBackendServer>
