@@ -1,1 +1,1 @@
-export { useApiEndpoint } from '../plugins/fetch'
+export { useApiEndpoint } from '../plugins/auth'

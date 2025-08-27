@@ -1,6 +1,5 @@
-import { useRuntimeConfig, useCsrf } from '#imports'
 import { getHeader, createError, type H3Event } from 'h3'
-import { useJwt } from './auth'
+import { useAuthHeaders, useApiEndpoint } from './auth'
 
 // Headers, configured from JWT on H3Event
 export const useAuthHeadersFromEvent = async (event: H3Event) => {
@@ -11,44 +10,6 @@ export const useAuthHeadersFromEvent = async (event: H3Event) => {
     headers['Authorization'] = `Bearer ${token}`
   }
   return headers
-}
-
-// Headers, configured from user context, including CSRF
-export const useAuthHeaders = async () => {
-  const config = useRuntimeConfig()
-  const headers: Record<string, string> = {}
-
-  // CSRF
-  // NOTE: For unknown reasons, useCsrf will panic if called after useJwt.
-  if (config.public.useProxy) {
-    const { headerName: csrfHeader, csrf: csrfToken } = useCsrf()
-    headers[csrfHeader] = csrfToken
-  }
-
-  // JWT
-  const token = await useJwt()
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`
-  }
-
-  // Api key
-  if (import.meta.server && config.graphqlApikey) {
-    headers['apikey'] = config.graphqlApikey
-  }
-
-  return headers
-}
-
-// Return url relative to public API base, or proxy if configured
-export const useApiEndpoint = (path?: string) => {
-  const config = useRuntimeConfig()
-  const base = import.meta.server
-    ? (config.proxyBase)
-    : (config.public.apiBase || window?.location?.origin + '/api/v2')
-  if (path) {
-    return base + path
-  }
-  return base
 }
 
 /**

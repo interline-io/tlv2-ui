@@ -1,1 +1,1 @@
-export { useAuthHeaders } from '../plugins/fetch'
+export { useAuthHeaders } from '../plugins/auth'
