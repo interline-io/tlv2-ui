@@ -17,7 +17,7 @@ let requireLogin = false
 let logoutUri = '/'
 let graphqlUser = true
 
-export function getAuth0Client () {
+function getAuth0Client () {
   if (process.server) {
     return
   }
@@ -75,7 +75,6 @@ export const useUser = () => {
   const user = useStorage('user', {})
   return new User(user?.value || {})
 }
-
 
 // Login
 export const useLogin = async (targetUrl: null | string) => {
