@@ -1,10 +1,10 @@
 // Export utility functions for server-side use
-export { 
-    GraphQLClient, 
-    BasicGraphQLClient,
-    BasicGraphQLClientOptions
+export {
+  GraphQLClient,
+  BasicGraphQLClient,
+  BasicGraphQLClientOptions
 } from './graphql-client'
 
-export { 
-    safeStringify
+export {
+  safeStringify
 } from './log-sanitizer'
