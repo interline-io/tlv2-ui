@@ -21,7 +21,7 @@ export default defineNuxtModule<ModuleOptions>({
     const { resolve } = createResolver(import.meta.url)
     const resolveRuntimeModule = (path: string) => resolve('./runtime', path)
 
-    // add nuxt-csurf
+    // Setup nuxt-csurf
     await installModule('nuxt-csurf', {
       config: {
         addCsrfTokenToEventCtx: true,
@@ -44,18 +44,38 @@ export default defineNuxtModule<ModuleOptions>({
     addPlugin(resolveRuntimeModule('plugins/mixpanel.client'))
     addImportsDir(resolveRuntimeModule('composables'))
 
-    // Proxy and module options
+    // Proxy options
     const useProxy = options.useProxy ? true : false
-    nuxt.options.runtimeConfig.public.tlv2 = defu(nuxt.options.runtimeConfig.public.tlv2, {
-      useProxy: useProxy,
-      safelinkUtmSource: options.safelinkUtmSource
-    })
     if (useProxy) {
       addServerHandler({
         route: '/api/v2/**',
         handler: resolveRuntimeModule('plugins/proxy')
       })
     }
+
+    // Public runtime options (available on both server and client)
+    nuxt.options.runtimeConfig.tlv2 = defu(nuxt.options.runtimeConfig.tlv2, {
+      proxyBase: '',
+      graphqlApikey: '',
+    })
+
+    // Public runtime options (available on both server and client)
+    // TODO: move all config under public.tlv2
+    nuxt.options.runtimeConfig.public = defu(nuxt.options.runtimeConfig.public, {
+      apiBase: '',
+      protomapsApikey: '',
+      nearmapsApikey: '',
+      auth0Domain: '',
+      auth0ClientId: '',
+      auth0RedirectUri: '',
+      auth0Audience: '',
+      auth0Scope: '',
+      loginGate: '',
+      tlv2: {
+        useProxy: useProxy,
+        safelinkUtmSource: options.safelinkUtmSource
+      }
+    })
 
     // Add assets
     nuxt.hook('nitro:config', (nitroConfig) => {
@@ -73,6 +93,17 @@ export default defineNuxtModule<ModuleOptions>({
         prefix: 'tl'
       })
     })
+
+    nuxt.options.build.transpile.push(
+      'tslib', // https://github.com/nuxt/nuxt/issues/19265#issuecomment-1702014262
+      'tlv2-ui',
+      '@vue/apollo-composable',
+      '@apollo/client',
+      'protomaps-themes-base',
+      'markdown-it',
+      'markdown-it-anchor',
+      'interval-tree-1d' // fix for SSR error with @observablehq/plot
+    )
 
     // Add Vite configuration
     nuxt.hook('vite:extendConfig', (viteConfig, { isClient, isServer }) => {
