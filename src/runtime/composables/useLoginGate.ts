@@ -1,7 +1,7 @@
-import { useUser } from '../plugins/auth'
 import { useRuntimeConfig } from '#imports'
+import { useUser } from '../plugins/auth.client'
 
-export const useLoginGate = (role?: string):boolean => {
+export const useLoginGate = (role?: string): boolean => {
   // console.log('useLoginGate')
   const config = useRuntimeConfig()
   // console.log(config.public.loginGate)

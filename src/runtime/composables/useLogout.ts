@@ -1,1 +1,1 @@
-export { useLogout } from '../plugins/auth'
+export { useLogout } from '../plugins/auth.client'

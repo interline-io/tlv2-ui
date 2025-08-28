@@ -1,4 +1,4 @@
-import routeTypes from './routetypesdata.json'
+import routeTypes from './route-types-data.json'
 
 interface RouteType {
     code: number;

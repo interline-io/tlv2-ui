@@ -1,0 +1,1 @@
+No Nuxt imports should exist in this directory.

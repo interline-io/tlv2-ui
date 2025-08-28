@@ -6,7 +6,7 @@
 import maplibre from 'maplibre-gl'
 import { noLabels, labels } from 'protomaps-themes-base'
 import { nextTick } from 'vue'
-import { useAuthHeaders, useApiBase } from '../plugins/auth'
+import { useAuthHeaders, useTransitlandApiBase } from '~/plugins/auth.client'
 import mapLayers from './map-layers'
 
 export default {
@@ -100,7 +100,7 @@ export default {
       if (this.map) {
         return
       }
-      const apiBase = useApiBase()
+      const transitlandApiBase = useTransitlandApiBase()
       const authHeaders = await useAuthHeaders()
       const opts = {
         hash: this.hash,
@@ -121,7 +121,7 @@ export default {
           layers: noLabels('protomaps-base', 'grayscale')
         },
         transformRequest: (url, resourceType) => {
-          if (resourceType === 'Tile' && url.startsWith(apiBase)) {
+          if (resourceType === 'Tile' && url.startsWith(transitlandApiBase)) {
             return { url: url, headers: authHeaders, credentials: 'include' }
           }
         }

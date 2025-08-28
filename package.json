@@ -17,17 +17,13 @@
       "types": "./dist/types.d.mts",
       "import": "./dist/module.mjs"
     },
-    "./server-utils": {
-      "types": "./dist/runtime/server-utils/index.d.ts",
-      "import": "./dist/runtime/server-utils/index.js"
+    "./lib": {
+      "types": "./dist/runtime/lib/index.d.ts",
+      "import": "./dist/runtime/lib/index.js"
     },
     "./config": {
       "types": "./dist/runtime/config/index.d.ts",
       "import": "./dist/runtime/config/index.js"
-    },
-    "./plugins": {
-      "types": "./dist/runtime/plugins/index.d.ts",
-      "import": "./dist/runtime/plugins/index.js"
     }
   },
   "main": "./dist/module.mjs",

@@ -17,7 +17,7 @@ import {
   round,
   nameSort,
   routeTypeToWords
-} from './filters-fn'
+} from './filters'
 
 describe('parseHMS', () => {
   const tcs = [

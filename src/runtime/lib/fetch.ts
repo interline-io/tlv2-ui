@@ -1,4 +1,4 @@
-import { getHeader, createError, type H3Event } from 'h3'
+import { getHeader, type H3Event } from 'h3'
 
 // Options interface for useApiFetch
 export interface ApiFetchOptions {
@@ -8,6 +8,7 @@ export interface ApiFetchOptions {
   jwt?: string
   event?: H3Event
 }
+
 /**
  * Returns authenticated fetch functions with automatic API base path resolution
  * Usage: const { nuxtFetch, fetch } = useApiFetch()
@@ -43,11 +44,16 @@ export function useApiFetch (options: ApiFetchOptions = {}) {
     // Get auth headers based on context
     let authHeaders: Record<string, string> = { ...headers }
     if (jwt) {
+      console.log('jwt?', jwt)
       authHeaders['Authorization'] = `Bearer ${jwt}`
     } else if (event) {
+      console.log('jwt from event?', extractJwtFromEvent(event))
       authHeaders['Authorization'] = `Bearer ${extractJwtFromEvent(event)}`
     } else if (apiKey) {
+      console.log('apikey?', apiKey)
       authHeaders['apikey'] = apiKey
+    } else {
+      console.log('header based auth...')
     }
 
     // Merge headers
@@ -65,15 +71,11 @@ export function useApiFetch (options: ApiFetchOptions = {}) {
   return fetch
 }
 
-export const extractJwtFromEvent = (event: H3Event) => {
-  const getEventJwt = (): string | null => {
-    const authHeader = getHeader(event, 'authorization')
-    if (authHeader?.startsWith('Bearer ')) {
-      return authHeader.replace('Bearer ', '')
-    }
-    return null
+export const extractJwtFromEvent = (event: H3Event): string | null => {
+  const authHeader = getHeader(event, 'authorization')
+  console.log('authHeader:', authHeader)
+  if (authHeader?.startsWith('Bearer ')) {
+    return authHeader.replace('Bearer ', '')
   }
-  return {
-    getEventJwt,
-  }
+  return null
 }

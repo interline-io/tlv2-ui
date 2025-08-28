@@ -70,7 +70,7 @@ function sanitizeForLogging (obj: any, redactedValue = '[REDACTED]'): any {
  * @param redactedValue - What to replace sensitive values with
  * @returns String representation safe for logging
  */
-export function safeStringify (value: any, redactedValue = '[REDACTED]'): string {
+export function sanitizeStringify (value: any, redactedValue = '[REDACTED]'): string {
   const sanitized = sanitizeForLogging(value, redactedValue)
 
   try {

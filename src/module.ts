@@ -37,11 +37,11 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.css.push(resolveRuntimeModule('assets/main.css'))
 
     // Setup plugins
-    addPlugin(resolveRuntimeModule('plugins/auth'))
-    addPlugin(resolveRuntimeModule('plugins/apollo'))
-    addPlugin(resolveRuntimeModule('plugins/oruga'))
-    addPlugin(resolveRuntimeModule('plugins/filters'))
+    addPlugin(resolveRuntimeModule('plugins/auth.client'))
+    addPlugin(resolveRuntimeModule('plugins/apollo.client'))
     addPlugin(resolveRuntimeModule('plugins/mixpanel.client'))
+    addPlugin(resolveRuntimeModule('plugins/filters'))
+    addPlugin(resolveRuntimeModule('plugins/oruga'))
     addImportsDir(resolveRuntimeModule('composables'))
 
     // Proxy options
@@ -49,7 +49,7 @@ export default defineNuxtModule<ModuleOptions>({
     if (useProxy) {
       addServerHandler({
         route: '/api/v2/**',
-        handler: resolveRuntimeModule('plugins/proxy')
+        handler: resolveRuntimeModule('plugins/proxy.server')
       })
     }
 
@@ -62,7 +62,7 @@ export default defineNuxtModule<ModuleOptions>({
     // Public runtime options (available on both server and client)
     // TODO: move all config under public.tlv2
     nuxt.options.runtimeConfig.public = defu(nuxt.options.runtimeConfig.public, {
-      apiBase: '',
+      transitlandApiBase: '',
       protomapsApikey: '',
       nearmapsApikey: '',
       auth0Domain: '',

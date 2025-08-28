@@ -109,7 +109,7 @@ describe('sanitizeUrl', () => {
   })
 
   it(`replaces undefined values with ${BLANK_URL}`, () => {
-    expect(sanitizeUrl()).toBe(BLANK_URL)
+    expect(sanitizeUrl('')).toBe(BLANK_URL)
   })
 
   it('removes whitespace from urls', () => {

@@ -17,12 +17,12 @@ import {
   routeTypeToWords,
   shortenName,
   thousands
-} from './filters-fn'
+} from '../lib/filters'
 import {
   sanitizeUrl,
   sanitizeFilename
-} from './sanitize'
-import { defineNuxtPlugin } from '#imports'
+} from '../lib/sanitize'
+import { defineNuxtPlugin } from 'nuxt/app'
 
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.config.globalProperties.$filters = {
@@ -45,7 +45,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     sanitizeUrl,
     shortenName,
     thousands,
-    makeRouteLink(onestopId:string, feedId:string, sha1:string, entityId:string, id:number, linkVer: boolean) {
+    makeRouteLink (onestopId: string, feedId: string, sha1: string, entityId: string, id: number, linkVer: boolean) {
       if (linkVer && onestopId) {
         return {
           name: 'routes-routeKey',
@@ -62,7 +62,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         params: { routeKey: makePathKey(onestopId, feedId, sha1, entityId, id, linkVer) }
       }
     },
-    makeStopLink(onestopId:string, feedId:string, sha1:string, entityId:string, id:number, linkVer: boolean) {
+    makeStopLink (onestopId: string, feedId: string, sha1: string, entityId: string, id: number, linkVer: boolean) {
       if (linkVer && onestopId) {
         return {
           name: 'stops-stopKey',

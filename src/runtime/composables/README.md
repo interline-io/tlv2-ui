@@ -1,0 +1,1 @@
+Composables. These can access Nuxt runtime. There should be almost no code in this directory, just re-exports from plugins.
