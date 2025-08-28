@@ -4,10 +4,10 @@ import { ApolloClients, provideApolloClients } from '@vue/apollo-composable'
 import { createApolloProvider } from '@vue/apollo-option'
 import { ApolloClient, ApolloLink, concat, InMemoryCache } from '@apollo/client/core/index.js'
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
-import { useApiEndpoint, useAuthHeaders } from './auth'
+import { useApiBase, useAuthHeaders } from './auth'
 
 export function getApolloClient () {
-  return initApolloClient(useApiEndpoint())
+  return initApolloClient(useApiBase())
 }
 
 function initApolloClient (apiBase: string) {

@@ -6,7 +6,7 @@
 import maplibre from 'maplibre-gl'
 import { noLabels, labels } from 'protomaps-themes-base'
 import { nextTick } from 'vue'
-import { useAuthHeaders, useApiEndpoint } from '../plugins/auth'
+import { useAuthHeaders, useApiBase } from '../plugins/auth'
 import mapLayers from './map-layers'
 
 export default {
@@ -100,7 +100,7 @@ export default {
       if (this.map) {
         return
       }
-      const apiBase = useApiEndpoint()
+      const apiBase = useApiBase()
       const authHeaders = await useAuthHeaders()
       const opts = {
         hash: this.hash,

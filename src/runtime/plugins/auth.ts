@@ -347,7 +347,7 @@ export const useAuthHeaders = async () => {
 }
 
 // Return url relative to public API base, or proxy if configured
-export const useApiEndpoint = (path?: string) => {
+export const useApiBase = (path?: string) => {
   const config = useRuntimeConfig()
   const base = import.meta.server
     ? (config.proxyBase)

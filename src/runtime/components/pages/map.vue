@@ -134,9 +134,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
 import { useRoute, useRuntimeConfig, navigateTo } from '#imports'
-import { useApiEndpoint } from '../../plugins/auth'
+import { ref, computed, watch } from 'vue'
+import { useApiBase } from '../../plugins/auth'
 
 const config = useRuntimeConfig()
 
@@ -322,7 +322,7 @@ function splitCoords (v: any): number[] {
 const routeTiles = computed(() => {
   return {
     id: 'routes',
-    url: `${useApiEndpoint()}/tiles/routes/tiles/{z}/{x}/{y}.pbf`,
+    url: `${useApiBase()}/tiles/routes/tiles/{z}/{x}/{y}.pbf`,
     minzoom: 0,
     maxzoom: 14
   }
@@ -331,7 +331,7 @@ const routeTiles = computed(() => {
 const stopTiles = computed(() => {
   return {
     id: 'stops',
-    url: `${useApiEndpoint}/tiles/stops/tiles/{z}/{x}/{y}.pbf`,
+    url: `${useApiBase()}/tiles/stops/tiles/{z}/{x}/{y}.pbf`,
     minzoom: 14,
     maxzoom: 14
   }

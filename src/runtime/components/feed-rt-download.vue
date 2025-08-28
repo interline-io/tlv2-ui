@@ -184,7 +184,7 @@ export default {
       this.loading = true
       this.error = null
 
-      const url = `${this.apiEndpoint()}/rest/feeds/${this.feedOnestopId}/download_latest_rt/${this.rtType}.${format}`
+      const url = `${this.apiBase()}/rest/feeds/${this.feedOnestopId}/download_latest_rt/${this.rtType}.${format}`
       const filename = `${this.feedOnestopId}-${this.rtType}-latest.${format}`
 
       try {
@@ -216,7 +216,7 @@ export default {
       this.jsonError = null
       this.jsonData = null
 
-      const url = `${this.apiEndpoint()}/rest/feeds/${this.feedOnestopId}/download_latest_rt/${this.rtType}.json`
+      const url = `${this.apiBase()}/rest/feeds/${this.feedOnestopId}/download_latest_rt/${this.rtType}.json`
 
       try {
         const response = await fetch(url, { headers: await this.authHeaders() })

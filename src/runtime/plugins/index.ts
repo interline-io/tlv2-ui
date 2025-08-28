@@ -1,7 +1,7 @@
 export {
   useJwt,
   useAuthHeaders,
-  useApiEndpoint,
+  useApiBase,
   useUser,
   useLogin,
   useLogout,

@@ -28,8 +28,8 @@ export default {
       this.loading = true
       console.log('download')
       const url = this.latest
-        ? `${this.apiEndpoint()}/rest/feeds/${this.feedOnestopId}/download_latest_feed_version`
-        : `${this.apiEndpoint()}/rest/feed_versions/${this.feedVersionSha1}/download`
+        ? `${this.apiBase()}/rest/feeds/${this.feedOnestopId}/download_latest_feed_version`
+        : `${this.apiBase()}/rest/feed_versions/${this.feedVersionSha1}/download`
       let filename = ''
       await fetch(url, { headers: await this.authHeaders() })
         .then((result) => {
