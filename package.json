@@ -24,6 +24,10 @@
     "./config": {
       "types": "./dist/runtime/config/index.d.ts",
       "import": "./dist/runtime/config/index.js"
+    },
+    "./plugins": {
+      "types": "./dist/runtime/plugins/index.d.ts",
+      "import": "./dist/runtime/plugins/index.js"
     }
   },
   "main": "./dist/module.mjs",

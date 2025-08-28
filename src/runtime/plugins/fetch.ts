@@ -1,17 +1,13 @@
 import { getHeader, createError, type H3Event } from 'h3'
 import { useAuthHeaders, useApiEndpoint } from './auth'
 
-// Headers, configured from JWT on H3Event
-export const useAuthHeadersFromEvent = async (event: H3Event) => {
-  const { getEventJwt } = extractJwtFromEvent(event)
-  const token = getEventJwt()
-  const headers: Record<string, string> = {}
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`
-  }
-  return headers
+// Options interface for useApiFetch
+export interface ApiFetchOptions {
+  apiBase?: string
+  jwt?: string
+  apiKey?: string
+  event?: H3Event
 }
-
 /**
  * Returns authenticated fetch functions with automatic API base path resolution
  * Usage: const { nuxtFetch, fetch } = useApiFetch()
@@ -22,16 +18,19 @@ export const useAuthHeadersFromEvent = async (event: H3Event) => {
  * Relative paths (starting with '/') are automatically resolved to the API base.
  * Absolute URLs (with protocol) are used as-is.
  */
-export const useApiFetch = () => {
+export const useApiFetch = (options: ApiFetchOptions = {}) => {
+  const { apiBase, jwt, event, apiKey } = options
+
   const resolveUrl = (input: string | URL | Request): string => {
     if (typeof input === 'string') {
       // If it's a relative path starting with '/', prepend API base
       if (input.startsWith('/')) {
-        return useApiEndpoint(input)
+        return apiBase ? apiBase + input : useApiEndpoint(input)
       }
       // If it doesn't start with protocol, assume it's relative and prepend API base
       if (!input.includes('://')) {
-        return useApiEndpoint('/' + input)
+        const path = '/' + input
+        return apiBase ? apiBase + path : useApiEndpoint(path)
       }
     }
     return input.toString()
@@ -41,8 +40,17 @@ export const useApiFetch = () => {
     // Resolve URL to API base if needed
     const resolvedInput = typeof input === 'string' ? resolveUrl(input) : input
 
-    // Get all auth headers (JWT, CSRF, API key)
-    const authHeaders = await useAuthHeaders()
+    // Get auth headers based on context
+    let authHeaders: Record<string, string>
+    if (jwt) {
+      authHeaders['Authorization'] = `Bearer ${jwt}`
+    } else if (event) {
+      authHeaders['Authorization'] = `Bearer ${extractJwtFromEvent(event)}`
+    } else if (apiKey) {
+      authHeaders['apikey'] = apiKey
+    } else {
+      authHeaders = await useAuthHeaders()
+    }
 
     // Merge headers
     const headers = new Headers(init?.headers)
@@ -62,41 +70,6 @@ export const useApiFetch = () => {
   }
 }
 
-/**
- * Server-side composable that returns pre-configured fetch handlers with authentication
- * extracted from the H3 event context.
- *
- * Usage: const { nuxtFetch, fetch } = useAuthenticatedFetchFromEvent(event)
- *
- * - nuxtFetch: Nuxt's enhanced $fetch with automatic JSON parsing
- * - fetch: Native fetch API with headers pre-applied (for streaming, etc.)
- */
-export const useAuthenticatedFetchFromEvent = (event: H3Event) => {
-  const { getEventJwt } = extractJwtFromEvent(event)
-
-  /**
-   * Raw fetch function with JWT authentication pre-applied
-   * Returns the native Response object for streaming, custom parsing, etc.
-   */
-  const fetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
-    const token = getEventJwt()
-
-    const headers = new Headers(init?.headers)
-    if (token) {
-      headers.set('Authorization', `Bearer ${token}`)
-    }
-
-    return globalThis.fetch(input, {
-      ...init,
-      headers
-    })
-  }
-
-  return {
-    fetch
-  }
-}
-
 export const extractJwtFromEvent = (event: H3Event) => {
   const getEventJwt = (): string | null => {
     const authHeader = getHeader(event, 'authorization')
@@ -106,24 +79,7 @@ export const extractJwtFromEvent = (event: H3Event) => {
     return null
   }
 
-  const requireJwt = (): string => {
-    const token = getEventJwt()
-    if (!token) {
-      throw createError({
-        statusCode: 401,
-        statusMessage: 'Authentication required - JWT token not provided'
-      })
-    }
-    return token
-  }
-
-  const hasJwt = (): boolean => {
-    return getEventJwt() !== null
-  }
-
   return {
     getEventJwt,
-    requireJwt,
-    hasJwt
   }
 }
