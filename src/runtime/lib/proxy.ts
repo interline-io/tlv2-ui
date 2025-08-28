@@ -13,13 +13,12 @@ export function proxyHandler (
 
   // Check user provided bearer
   const requestBearer = event.headers.get('authorization') || ''
-  console.log('requestBearer?', requestBearer)
   // Auth headers
   const headers = {
     authorization: requestBearer,
     apikey: requestApikey || graphqlApikey
   }
-  console.log('outgoing request headers:', headers)
+
   // Proxy request
   const proxyBaseUrl = new URL(proxyBase)
   const proxyBasePathname = proxyBaseUrl.pathname === '/' ? '' : proxyBaseUrl.pathname
@@ -28,10 +27,6 @@ export function proxyHandler (
     newPath,
     proxyBaseUrl.toString()
   )
-  console.log('proxyHandler: target URL:', target.toString())
-  console.log('proxyHandler: event.path:', event.path)
-  console.log('proxyHandler: newPath:', newPath)
-  console.log('proxyHandler: headers being sent:', sanitizeStringify(headers))
 
   // console.log('proxyHandler', target.toString(), 'headers:', headers)
   return proxyRequest(event, target.toString(), {

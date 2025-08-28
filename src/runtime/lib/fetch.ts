@@ -44,16 +44,11 @@ export function useApiFetch (options: ApiFetchOptions = {}) {
     // Get auth headers based on context
     let authHeaders: Record<string, string> = { ...headers }
     if (jwt) {
-      console.log('jwt?', jwt)
       authHeaders['Authorization'] = `Bearer ${jwt}`
     } else if (event) {
-      console.log('jwt from event?', extractJwtFromEvent(event))
       authHeaders['Authorization'] = `Bearer ${extractJwtFromEvent(event)}`
     } else if (apiKey) {
-      console.log('apikey?', apiKey)
       authHeaders['apikey'] = apiKey
-    } else {
-      console.log('header based auth...')
     }
 
     // Merge headers
@@ -73,7 +68,6 @@ export function useApiFetch (options: ApiFetchOptions = {}) {
 
 export const extractJwtFromEvent = (event: H3Event): string | null => {
   const authHeader = getHeader(event, 'authorization')
-  console.log('authHeader:', authHeader)
   if (authHeader?.startsWith('Bearer ')) {
     return authHeader.replace('Bearer ', '')
   }
