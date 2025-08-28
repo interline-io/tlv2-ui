@@ -18,7 +18,7 @@ export interface ApiFetchOptions {
  * Relative paths (starting with '/') are automatically resolved to the API base.
  * Absolute URLs (with protocol) are used as-is.
  */
-export const useApiFetch = (options: ApiFetchOptions = {}) => {
+export function useApiFetch (options: ApiFetchOptions = {}) {
   const { apiBase, jwt, event, apiKey, headers } = options
 
   const resolveUrl = (input: string | URL | Request): string => {
@@ -62,10 +62,7 @@ export const useApiFetch = (options: ApiFetchOptions = {}) => {
       headers: requestHeaders
     })
   }
-
-  return {
-    fetch
-  }
+  return fetch
 }
 
 export const extractJwtFromEvent = (event: H3Event) => {
