@@ -18,16 +18,16 @@
       "import": "./dist/module.mjs"
     },
     "./server-utils": {
-      "types": "./dist/runtime/server-utils/index.d.ts",
-      "import": "./dist/runtime/server-utils/index.js"
+      "types": "./dist/runtime/server-utils/index.d.mts",
+      "import": "./dist/runtime/server-utils/index.mjs"
     },
     "./config": {
-      "types": "./dist/runtime/config/index.d.ts",
-      "import": "./dist/runtime/config/index.js"
+      "types": "./dist/runtime/config/index.d.mts",
+      "import": "./dist/runtime/config/index.mjs"
     },
     "./plugins": {
-      "types": "./dist/runtime/plugins/index.d.ts",
-      "import": "./dist/runtime/plugins/index.js"
+      "types": "./dist/runtime/plugins/index.d.mts",
+      "import": "./dist/runtime/plugins/index.mjs"
     }
   },
   "main": "./dist/module.mjs",

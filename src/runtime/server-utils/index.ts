@@ -1,6 +1,6 @@
 // Export utility functions for server-side use
 export {
-  GraphQLClient,
+  type GraphQLClient,
   BasicGraphQLClient,
   BasicGraphQLClientOptions
 } from './graphql-client'
