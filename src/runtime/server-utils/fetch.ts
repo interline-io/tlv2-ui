@@ -1,11 +1,11 @@
 import { getHeader, createError, type H3Event } from 'h3'
-import { useAuthHeaders, useApiEndpoint } from './auth'
 
 // Options interface for useApiFetch
 export interface ApiFetchOptions {
+  headers?: Record<string, string>
   apiBase?: string
-  jwt?: string
   apiKey?: string
+  jwt?: string
   event?: H3Event
 }
 /**
@@ -19,18 +19,18 @@ export interface ApiFetchOptions {
  * Absolute URLs (with protocol) are used as-is.
  */
 export const useApiFetch = (options: ApiFetchOptions = {}) => {
-  const { apiBase, jwt, event, apiKey } = options
+  const { apiBase, jwt, event, apiKey, headers } = options
 
   const resolveUrl = (input: string | URL | Request): string => {
     if (typeof input === 'string') {
       // If it's a relative path starting with '/', prepend API base
       if (input.startsWith('/')) {
-        return apiBase ? apiBase + input : useApiEndpoint(input)
+        return apiBase + input
       }
       // If it doesn't start with protocol, assume it's relative and prepend API base
       if (!input.includes('://')) {
         const path = '/' + input
-        return apiBase ? apiBase + path : useApiEndpoint(path)
+        return apiBase + path
       }
     }
     return input.toString()
@@ -41,27 +41,25 @@ export const useApiFetch = (options: ApiFetchOptions = {}) => {
     const resolvedInput = typeof input === 'string' ? resolveUrl(input) : input
 
     // Get auth headers based on context
-    let authHeaders: Record<string, string>
+    let authHeaders: Record<string, string> = { ...headers }
     if (jwt) {
       authHeaders['Authorization'] = `Bearer ${jwt}`
     } else if (event) {
       authHeaders['Authorization'] = `Bearer ${extractJwtFromEvent(event)}`
     } else if (apiKey) {
       authHeaders['apikey'] = apiKey
-    } else {
-      authHeaders = await useAuthHeaders()
     }
 
     // Merge headers
-    const headers = new Headers(init?.headers)
+    const requestHeaders = new Headers(init?.headers)
     Object.entries(authHeaders).forEach(([key, value]) => {
-      headers.set(key, value)
+      requestHeaders.set(key, value)
     })
 
     // Call native fetch with resolved URL and enhanced headers
     return globalThis.fetch(resolvedInput, {
       ...init,
-      headers
+      headers: requestHeaders
     })
   }
 
@@ -78,7 +76,6 @@ export const extractJwtFromEvent = (event: H3Event) => {
     }
     return null
   }
-
   return {
     getEventJwt,
   }

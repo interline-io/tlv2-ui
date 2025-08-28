@@ -7,8 +7,3 @@ export {
   useLogout,
   User,
 } from './auth'
-
-export {
-  useApiFetch,
-  extractJwtFromEvent
-} from './fetch'

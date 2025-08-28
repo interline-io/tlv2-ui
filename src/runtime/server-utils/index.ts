@@ -8,3 +8,7 @@ export {
 export {
   safeStringify
 } from './log-sanitizer'
+
+export {
+  useApiFetch
+} from './fetch'
