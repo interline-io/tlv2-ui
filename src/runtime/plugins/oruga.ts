@@ -1,4 +1,4 @@
-import { defineNuxtPlugin } from 'nuxt/app'
+import { defineNuxtPlugin } from '#imports'
 import { bulmaConfig } from '@oruga-ui/theme-bulma'
 import '@mdi/font/css/materialdesignicons.min.css'
 

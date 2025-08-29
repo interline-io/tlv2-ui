@@ -1,4 +1,4 @@
-import { defineNuxtPlugin } from 'nuxt/app'
+import { defineNuxtPlugin } from '#imports'
 import { destr } from 'destr'
 import { ApolloClients, provideApolloClients } from '@vue/apollo-composable'
 import { createApolloProvider } from '@vue/apollo-option'

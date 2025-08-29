@@ -22,7 +22,7 @@ import {
   sanitizeUrl,
   sanitizeFilename
 } from '../lib/sanitize'
-import { defineNuxtPlugin } from 'nuxt/app'
+import { defineNuxtPlugin } from '#imports'
 
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.config.globalProperties.$filters = {
