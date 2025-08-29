@@ -1,7 +1,7 @@
 import { Auth0Client } from '@auth0/auth0-spa-js'
 import { useStorage } from '@vueuse/core'
 import { gql } from 'graphql-tag'
-import { getApolloClient } from './apollo.client'
+import { getApolloClient } from './apollo'
 import { useMixpanel } from './mixpanel.client'
 
 // For unknown reasons, this import must come last. I love this.
@@ -336,7 +336,7 @@ export const useAuthHeaders = async () => {
 
   // CSRF
   // NOTE: For unknown reasons, useCsrf will panic if called after useJwt.
-  if (config.public.useProxy) {
+  if (config.public.tlv2?.useProxy) {
     const { headerName: csrfHeader, csrf: csrfToken } = await useCsrf()
     headers[csrfHeader] = csrfToken
   }

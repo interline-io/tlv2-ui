@@ -37,11 +37,11 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.css.push(resolveRuntimeModule('assets/main.css'))
 
     // Setup plugins
-    addPlugin(resolveRuntimeModule('plugins/auth.client'))
-    addPlugin(resolveRuntimeModule('plugins/apollo.client'))
-    addPlugin(resolveRuntimeModule('plugins/mixpanel.client'))
+    addPlugin(resolveRuntimeModule('plugins/apollo'))
     addPlugin(resolveRuntimeModule('plugins/filters'))
     addPlugin(resolveRuntimeModule('plugins/oruga'))
+    addPlugin(resolveRuntimeModule('plugins/auth.client'))
+    addPlugin(resolveRuntimeModule('plugins/mixpanel.client'))
     addImportsDir(resolveRuntimeModule('composables'))
 
     // Proxy options
