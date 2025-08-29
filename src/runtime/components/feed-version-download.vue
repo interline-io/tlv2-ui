@@ -13,6 +13,7 @@
 </template>
 
 <script>
+import { useTransitlandApiBase } from '../plugins/auth.client'
 import Loadable from './loadable'
 
 export default {
@@ -28,8 +29,8 @@ export default {
       this.loading = true
       console.log('download')
       const url = this.latest
-        ? this.transitlandApiBase(`/rest/feeds/${this.feedOnestopId}/download_latest_feed_version`)
-        : this.transitlandApiBase(`/rest/feed_versions/${this.feedVersionSha1}/download`)
+        ? useTransitlandApiBase(`/rest/feeds/${this.feedOnestopId}/download_latest_feed_version`)
+        : useTransitlandApiBase(`/rest/feed_versions/${this.feedVersionSha1}/download`)
       let filename = ''
       await fetch(url, { headers: await this.authHeaders() })
         .then((result) => {
