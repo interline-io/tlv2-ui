@@ -1,5 +1,4 @@
 import { proxyRequest, getQuery, H3Event } from 'h3'
-import { sanitizeStringify } from './sanitize-log'
 
 // Use sessions and/or nuxt-csurf to protect this in nuxt.config.ts
 export function proxyHandler (
