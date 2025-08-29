@@ -3,7 +3,7 @@
     <o-modal
       :active="modelValue"
       has-modal-card
-      can-cancel
+      :can-cancel="closable"
       @update:model-value="$emit('update:modelValue', $event)"
       @close="close"
     >
@@ -13,6 +13,7 @@
             {{ title }}
           </p>
           <button
+            v-if="closable"
             type="button"
             class="delete"
             @click="close"
@@ -34,7 +35,8 @@ export default {
   props: {
     text: { type: String, default: '+' },
     title: { type: String, default: '' },
-    modelValue: { type: Boolean }
+    modelValue: { type: Boolean },
+    closable: { type: Boolean, default: true }
   },
   emits: ['input', 'update:modelValue'],
   data () {
