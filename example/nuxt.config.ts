@@ -21,7 +21,7 @@ export default defineNuxtConfig({
     proxyBase: '',
     graphqlApikey: '',
     public: {
-      apiBase: '',
+      transitlandApiBase: '',
       protomapsApikey: '',
       nearmapsApikey: '',
       auth0Domain: '',

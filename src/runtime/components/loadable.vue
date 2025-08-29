@@ -1,5 +1,5 @@
 <script lang="ts">
-import { useAuthHeaders, useApiEndpoint } from '../plugins/auth'
+import { useAuthHeaders, useTransitlandApiBase } from '../plugins/auth.client'
 export default {
   data () {
     return {
@@ -8,16 +8,15 @@ export default {
     }
   },
   methods: {
-    apiEndpoint: () => (useApiEndpoint()),
     authHeaders: () => (useAuthHeaders()),
-    async fetchRest (path: String, data: Object, method: String) {
+    async fetchRest (path: string, data: Object, method: string) {
       method = method || 'GET'
       const body = {
         'Content-Type': 'application/json',
         'headers': await this.authHeaders(),
         method
       }
-      const target = new URL(`${this.apiEndpoint()}${path}`)
+      const target = new URL(useTransitlandApiBase(path))
       if (data) {
         if (method === 'PUT' || method === 'POST' || method === 'DELETE') {
           body.body = JSON.stringify(data)

@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { useUser } from '../plugins/auth'
+import { useUser } from '../plugins/auth.client'
 import { useLoginGate } from '../composables/useLoginGate'
 
 export default {

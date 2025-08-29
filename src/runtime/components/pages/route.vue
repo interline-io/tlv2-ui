@@ -252,6 +252,7 @@
 </template>
 
 <script>
+import { useTransitlandApiBase } from '../../plugins/auth.client'
 import { gql } from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
 import { useEventBus } from '#imports'
@@ -429,7 +430,7 @@ export default {
       }
     },
     staticImage () {
-      return `${this.$config.public.apiBase}/rest/routes/${this.pathKey}.png`
+      return useTransitlandApiBase(`/rest/routes/${this.pathKey}.png`)
     },
     staticTitle () {
       return `${this.routeName} • ${this.routeType} route`

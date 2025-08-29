@@ -1,6 +1,6 @@
-import mixpanel from 'mixpanel-browser'
 import { defineNuxtPlugin, useRuntimeConfig } from '#imports'
-import { useUser } from './auth'
+import mixpanel from 'mixpanel-browser'
+import { useUser } from './auth.client'
 
 interface User {
   id: string
@@ -20,7 +20,7 @@ let hasUser = false
 
 const createMixpanel = (): MixpanelInstance => {
   if (process.server) {
-    return { 
+    return {
       track: (msg: string, args: any) => { },
       identify: () => {},
       reset: () => {}
@@ -29,7 +29,7 @@ const createMixpanel = (): MixpanelInstance => {
 
   const config = useRuntimeConfig()
   if (!config.public.mixpanelApikey) {
-    return { 
+    return {
       track: (msg: string, args: any) => { console.log('mixpanel dummy track (no API key):', msg, args) },
       identify: () => {},
       reset: () => {}
@@ -88,4 +88,4 @@ export const useMixpanel = (): MixpanelInstance => {
   const mp = createMixpanel()
   mp.identify()
   return mp
-} 
+}

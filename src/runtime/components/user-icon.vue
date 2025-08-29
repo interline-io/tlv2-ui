@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useLogin, useLogout, useUser } from '../plugins/auth'
+import { useLogin, useLogout, useUser } from '../plugins/auth.client'
 const user = useUser()
 </script>
 

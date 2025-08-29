@@ -2,7 +2,17 @@ import { Auth0Client } from '@auth0/auth0-spa-js'
 import { useStorage } from '@vueuse/core'
 import { gql } from 'graphql-tag'
 import { getApolloClient } from './apollo'
-import { defineNuxtPlugin, addRouteMiddleware, navigateTo, useRuntimeConfig, useCsrf, useMixpanel, useRoute } from '#imports'
+import { useMixpanel } from './mixpanel.client'
+
+// For unknown reasons, this import must come last. I love this.
+import {
+  addRouteMiddleware,
+  navigateTo,
+  useRoute,
+  defineNuxtPlugin,
+  useRuntimeConfig,
+  useCsrf,
+} from '#imports'
 
 /// ////////////////////
 // Auth0 client initialization
@@ -17,7 +27,7 @@ let requireLogin = false
 let logoutUri = '/'
 let graphqlUser = true
 
-export function getAuth0Client () {
+function getAuth0Client () {
   if (process.server) {
     return
   }
@@ -60,53 +70,9 @@ export function getAuth0Client () {
 // Composables
 /// ////////////////////
 
-// JWT
-export const useJwt = async () => {
-  const { token, mustReauthorize } = await checkToken()
-  if (mustReauthorize) {
-    debugLog('useJwt: mustReauthorize')
-    await useLogin(null)
-    return ''
-  }
-  return token
-}
-
 export const useUser = () => {
   const user = useStorage('user', {})
   return new User(user?.value || {})
-}
-
-// Headers, including CSRF
-export const useAuthHeaders = async () => {
-  const config = useRuntimeConfig()
-  const headers: Record<string, string> = {}
-
-  // CSRF
-  // NOTE: For unknown reasons, useCsrf will panic if called after useJwt.
-  if (config.public.useProxy) {
-    const { headerName: csrfHeader, csrf: csrfToken } = useCsrf()
-    headers[csrfHeader] = csrfToken
-  }
-
-  // JWT
-  const token = await useJwt()
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`
-  }
-
-  // Api key
-  if (import.meta.server && config.graphqlApikey) {
-    headers['apikey'] = config.graphqlApikey
-  }
-
-  return headers
-}
-
-export const useApiEndpoint = () => {
-  const config = useRuntimeConfig()
-  return import.meta.server
-    ? (config.proxyBase)
-    : (config.public.apiBase || window?.location?.origin + '/api/v2')
 }
 
 // Login
@@ -220,6 +186,16 @@ async function buildUser () {
 /// ////////////////////
 // Helpers
 /// ////////////////////
+
+const useJwt = async () => {
+  const { token, mustReauthorize } = await checkToken()
+  if (mustReauthorize) {
+    debugLog('useJwt: mustReauthorize')
+    await useLogin(null)
+    return ''
+  }
+  return token
+}
 
 // Check the client token, return { token, loggedIn, mustReauthorize }
 // mustReauthorize will be set to true if a user is logged in but token fails
@@ -350,3 +326,42 @@ export default defineNuxtPlugin(() => {
     global: true
   })
 })
+
+// Helpers
+
+// Headers, configured from user context, including CSRF
+export const useAuthHeaders = async () => {
+  const config = useRuntimeConfig()
+  const headers: Record<string, string> = {}
+
+  // CSRF
+  // NOTE: For unknown reasons, useCsrf will panic if called after useJwt.
+  if (config.public.tlv2?.useProxy) {
+    const { headerName: csrfHeader, csrf: csrfToken } = await useCsrf()
+    headers[csrfHeader] = csrfToken
+  }
+
+  // JWT
+  const token = await useJwt()
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`
+  }
+
+  // Api key
+  if (import.meta.server && config.graphqlApikey) {
+    headers['apikey'] = String(config.graphqlApikey || '')
+  }
+
+  return headers
+}
+
+export const useTransitlandApiBase = (path?: string): string => {
+  const config = useRuntimeConfig()
+  const base: string = config.public.transitlandApiBase
+    ? config.public.transitlandApiBase
+    : String(window?.location?.origin || '') + '/api/v2'
+  if (path) {
+    return base + path
+  }
+  return base
+}
