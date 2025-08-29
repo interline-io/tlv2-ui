@@ -1,3 +1,10 @@
+import { Auth0Client } from '@auth0/auth0-spa-js'
+import { useStorage } from '@vueuse/core'
+import { gql } from 'graphql-tag'
+import { getApolloClient } from './apollo.client'
+import { useMixpanel } from './mixpanel.client'
+
+// For unknown reasons, this import must come last. I love this.
 import {
   addRouteMiddleware,
   navigateTo,
@@ -6,11 +13,6 @@ import {
   useRuntimeConfig,
   useCsrf,
 } from '#imports'
-import { Auth0Client } from '@auth0/auth0-spa-js'
-import { useStorage } from '@vueuse/core'
-import { gql } from 'graphql-tag'
-import { getApolloClient } from './apollo.client'
-import { useMixpanel } from './mixpanel.client'
 
 /// ////////////////////
 // Auth0 client initialization
