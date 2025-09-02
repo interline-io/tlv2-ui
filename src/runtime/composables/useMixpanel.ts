@@ -1,1 +1,1 @@
-export { useMixpanel } from '../plugins/mixpanel.client'
+export { useMixpanel } from '../nuxt/mixpanel'

@@ -1,9 +1,10 @@
-import { defineNuxtPlugin, addRouteMiddleware, navigateTo, useRuntimeConfig, useCsrf, useRoute } from '#imports'
+import { navigateTo, useRuntimeConfig, useCsrf, useRoute, addRouteMiddleware, defineNuxtPlugin } from '#imports'
 import { Auth0Client } from '@auth0/auth0-spa-js'
 import { useStorage } from '@vueuse/core'
 import { gql } from 'graphql-tag'
-import { getApolloClient } from './apollo'
 import { useMixpanel } from '../composables/useMixpanel'
+import { User } from '../lib/user'
+import { getApolloClient } from './apollo'
 
 /// ////////////////////
 // Auth0 client initialization
@@ -133,36 +134,14 @@ export const useLogout = async () => {
 // User
 /// ////////////////////
 
-export class User {
-  loggedIn = false
-  id = ''
-  name = ''
-  email = ''
-  roles = []
-  externalData = {}
-  checked = 0
-  constructor (v: any) {
-    Object.assign(this, v)
-  }
-
-  hasRole (v: string): boolean {
-    for (const s of this.roles) {
-      if (s === v) {
-        return true
-      }
-    }
-    return false
-  }
-}
-
-function clearUser () {
+export function clearUser () {
   debugLog('clearUser')
   const checkUser = useStorage('user', {})
   checkUser.value = new User({ loggedIn: false })
 }
 
 // Build the user from auth0 data and GraphQL me response
-async function buildUser () {
+export async function buildUser () {
   // Build user object
   const client = getAuth0Client()
   if (!client) {
@@ -224,7 +203,7 @@ async function buildUser () {
 
 // Check the client token, return { token, loggedIn, mustReauthorize }
 // mustReauthorize will be set to true if a user is logged in but token fails
-async function checkToken () {
+export async function checkToken () {
   let token = ''
   let loggedIn = false
   let mustReauthorize = false
@@ -258,7 +237,7 @@ async function checkToken () {
 }
 
 // Get an auth0 /authorize url that also includes targetUrl in app state
-async function getAuthorizeUrl (targetUrl: null | string): Promise<string> {
+export async function getAuthorizeUrl (targetUrl: null | string): Promise<string> {
   targetUrl = targetUrl || '/'
   const client = getAuth0Client()
   if (!client) {
@@ -275,7 +254,7 @@ async function getAuthorizeUrl (targetUrl: null | string): Promise<string> {
 }
 
 // Get an auth0 logout url
-async function getLogoutUrl (targetUrl: null | string): Promise<string> {
+export async function getLogoutUrl (targetUrl: null | string): Promise<string> {
   targetUrl = targetUrl || '/'
   const client = getAuth0Client()
   if (!client) {
@@ -297,13 +276,31 @@ function debugLog (msg: string, ...args: any) {
   console.log(msg, ...args)
 }
 
-/// ////////////////////
-// Middleware
-/// ////////////////////
+export const useLoginGate = (role?: string): boolean => {
+  // console.log('useLoginGate')
+  const config = useRuntimeConfig()
+  // console.log(config.public.loginGate)
+  if (config.public.loginGate) {
+    // console.log('useLoginGate: config is true')
+    const user = useUser()
+    if (user?.loggedIn) {
+      // console.log('user??', user, 'role:', role, 'has role:', user.hasRole(role))
+      // console.log('useLoginGate: user is logged in')
+      if (role) {
+        return !user.hasRole(role)
+      }
+      return false
+    }
+    // console.log('useLoginGate: user not logged in, login required')
+    return true
+  }
+  return false
+}
 
-export default defineNuxtPlugin(() => {
+export const defineAuthPlugin = defineNuxtPlugin(() => {
   addRouteMiddleware('global-auth', async (to, _) => {
     // Check if client is configured
+    const config = useRuntimeConfig()
     const client = getAuth0Client()
     if (!client) {
       return
@@ -330,7 +327,7 @@ export default defineNuxtPlugin(() => {
 
     // Check token state
     const { loggedIn, mustReauthorize } = await checkToken()
-
+    const requireLogin = !!config.public.requireLogin
     if (mustReauthorize || (requireLogin && !loggedIn)) {
       debugLog('auth mw: need auth')
       return navigateTo(await getAuthorizeUrl(to.fullPath), { external: true })
