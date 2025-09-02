@@ -1,1 +1,1 @@
-export { eslintConfig as default } from './src/config/eslint'
+export { eslintConfig as default } from './src/runtime/config/eslint'
