@@ -2,12 +2,15 @@
   // https://v3.nuxtjs.org/concepts/typescript
   // "extends": "./.nuxt/tsconfig.json",
   "compilerOptions": {
-    "moduleResolution":"node",  
+    "moduleResolution": "node",
     "target": "esnext",
-    "module": "esnext",    
+    "module": "esnext",
     "types": [
       "@nuxt/types",
       "@types/node"
     ]
-  }
+  },
+  "include": [
+    "src/**/*"
+  ]
 }
