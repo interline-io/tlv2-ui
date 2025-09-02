@@ -138,8 +138,6 @@ import { useRoute, useRuntimeConfig, navigateTo } from '#imports'
 import { ref, computed, watch } from 'vue'
 import { useApiEndpoint } from '../../composables/useApiEndpoint'
 
-const config = useRuntimeConfig()
-
 const route = useRoute()
 
 const props = defineProps({

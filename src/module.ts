@@ -1,11 +1,16 @@
 import { defineNuxtModule, addPlugin, addImportsDir, createResolver, addServerHandler, installModule } from '@nuxt/kit'
 import { defu } from 'defu'
+import { type Auth0Options } from './runtime/lib/auth0'
 
 // Config handler
-export interface ModuleOptions {
+export interface ModuleOptions extends Auth0Options {
   bulma: string
   useProxy: boolean
   safelinkUtmSource?: string
+  apiBase?: string
+  protomapsApikey?: string
+  nearmapsApikey?: string
+  loginGate?: string
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -20,6 +25,30 @@ export default defineNuxtModule<ModuleOptions>({
     // Create resolver to resolve relative paths
     const { resolve } = createResolver(import.meta.url)
     const resolveRuntimeModule = (path: string) => resolve('./runtime', path)
+    const useProxy = options.useProxy ? true : false
+
+    // Private runtime options
+    nuxt.options.runtimeConfig.tlv2 = defu(nuxt.options.runtimeConfig.tlv2, {
+      proxyBase: '',
+      graphqlApikey: '',
+    })
+
+    // Public runtime options (available on both server and client)
+    nuxt.options.runtimeConfig.public = defu(nuxt.options.runtimeConfig.public, {
+      tlv2: {
+        useProxy: useProxy,
+        safelinkUtmSource: options.safelinkUtmSource,
+        apiBase: options.apiBase,
+        protomapsApikey: options.protomapsApikey,
+        nearmapsApikey: options.nearmapsApikey,
+        loginGate: options.loginGate,
+        auth0Domain: options.auth0Domain,
+        auth0ClientId: options.auth0ClientId,
+        auth0RedirectUri: options.auth0RedirectUri,
+        auth0Audience: options.auth0Audience,
+        auth0Scope: options.auth0Scope,
+      }
+    })
 
     // Setup nuxt-csurf
     await installModule('nuxt-csurf', {
@@ -36,46 +65,21 @@ export default defineNuxtModule<ModuleOptions>({
     }
     nuxt.options.css.push(resolveRuntimeModule('assets/main.css'))
 
-    // Setup plugins
-    addPlugin(resolveRuntimeModule('plugins/auth'))
+    // Setup plugins... not sure why they seem to run in reverse order?
     addPlugin(resolveRuntimeModule('plugins/apollo'))
+    addPlugin(resolveRuntimeModule('plugins/mixpanel.client'))
+    addPlugin(resolveRuntimeModule('plugins/auth.client'))
     addPlugin(resolveRuntimeModule('plugins/oruga'))
     addPlugin(resolveRuntimeModule('plugins/filters'))
-    addPlugin(resolveRuntimeModule('plugins/mixpanel.client'))
     addImportsDir(resolveRuntimeModule('composables'))
 
     // Proxy options
-    const useProxy = options.useProxy ? true : false
     if (useProxy) {
       addServerHandler({
         route: '/api/v2/**',
         handler: resolveRuntimeModule('plugins/proxy')
       })
     }
-
-    // Public runtime options (available on both server and client)
-    nuxt.options.runtimeConfig.tlv2 = defu(nuxt.options.runtimeConfig.tlv2, {
-      proxyBase: '',
-      graphqlApikey: '',
-    })
-
-    // Public runtime options (available on both server and client)
-    // TODO: move all config under public.tlv2
-    nuxt.options.runtimeConfig.public = defu(nuxt.options.runtimeConfig.public, {
-      apiBase: '',
-      protomapsApikey: '',
-      nearmapsApikey: '',
-      auth0Domain: '',
-      auth0ClientId: '',
-      auth0RedirectUri: '',
-      auth0Audience: '',
-      auth0Scope: '',
-      loginGate: '',
-      tlv2: {
-        useProxy: useProxy,
-        safelinkUtmSource: options.safelinkUtmSource
-      }
-    })
 
     // Add assets
     nuxt.hook('nitro:config', (nitroConfig) => {

@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import { getBasicRouteType } from '../plugins/routetypes'
+import { getBasicRouteType } from '../lib/routetypes'
 
 export default {
   props: {

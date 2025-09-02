@@ -1,1 +1,1 @@
-export { useLogin } from '../plugins/auth'
+export { useLogin } from '../auth'

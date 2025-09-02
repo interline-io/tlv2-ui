@@ -13,9 +13,9 @@
 
 <script>
 // Note: this uses FeedMixin, not station mixin.
+import { navigateTo } from '#imports'
 import { Station, Stop } from '../station'
 import FeedMixin from './feed-mixin'
-import { navigateTo } from '#imports'
 
 export default {
   mixins: [FeedMixin],

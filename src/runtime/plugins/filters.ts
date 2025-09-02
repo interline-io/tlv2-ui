@@ -1,3 +1,4 @@
+import { defineNuxtPlugin } from 'nuxt/app'
 import {
   capitalize,
   formatDate,
@@ -17,12 +18,11 @@ import {
   routeTypeToWords,
   shortenName,
   thousands
-} from './filters-fn'
+} from '../lib/filters'
 import {
   sanitizeUrl,
   sanitizeFilename
-} from './sanitize'
-import { defineNuxtPlugin } from '#imports'
+} from '../lib/sanitize'
 
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.config.globalProperties.$filters = {
