@@ -2,6 +2,7 @@ import { navigateTo, useRuntimeConfig, useCsrf, useRoute } from '#imports'
 import { createMixpanel } from '../lib/mixpanel'
 import { getAuthorizeUrl, getLogoutUrl, checkToken } from '../lib/auth0'
 import { useUser, clearUser } from './user'
+import { debugLog } from '../lib/log'
 
 const logoutUri = '/'
 
@@ -43,7 +44,7 @@ export const useAuthHeaders = async () => {
   if (import.meta.server && config.tlv2?.graphqlApikey) {
     headers['apikey'] = config.tlv2?.graphqlApikey
   }
-
+  // debugLog('useAuthHeaders:', headers)
   return headers
 }
 
@@ -97,8 +98,4 @@ export const useLoginGate = (role?: string): boolean => {
     return true
   }
   return false
-}
-
-function debugLog (msg: string, ...args: any) {
-  console.log(msg, ...args)
 }

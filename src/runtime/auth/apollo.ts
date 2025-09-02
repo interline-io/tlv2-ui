@@ -4,6 +4,7 @@ import { destr } from 'destr'
 import { ApolloClients, provideApolloClients } from '@vue/apollo-composable'
 import { createApolloProvider } from '@vue/apollo-option'
 import { useApiEndpoint, useAuthHeaders } from './auth'
+import { debugLog } from '../lib/log'
 
 export function initApolloClient (endpoint: string, headers: Record<string, string>) {
   const httpLink = createUploadLink({ uri: endpoint })
@@ -21,10 +22,10 @@ export function initApolloClient (endpoint: string, headers: Record<string, stri
 }
 
 export async function getApolloClient () {
-  const apolloClient = initApolloClient(
-    useApiEndpoint('/query'),
-    await useAuthHeaders()
-  )
+  const endpoint = useApiEndpoint('/query')
+  const headers = await useAuthHeaders()
+  const apolloClient = initApolloClient(endpoint, headers)
+  // debugLog('getApolloClient', endpoint, headers)
   return apolloClient
 }
 

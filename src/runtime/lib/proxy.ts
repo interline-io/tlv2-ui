@@ -27,7 +27,14 @@ export function proxyHandler (
     newPath,
     proxyBaseUrl.toString()
   )
-  // console.log('proxyHandler', target.toString(), 'headers:', headers)
+  // console.log('proxy:', {
+  //   eventPath: event.path,
+  //   eventHeaders: Object.fromEntries(event.headers.entries()),
+  //   proxyBaseUrl: proxyBaseUrl.toString(),
+  //   target: target.toString(),
+  //   headers: headers
+  // })
+
   return proxyRequest(event, target.toString(), {
     fetchOptions: {
       redirect: 'manual'

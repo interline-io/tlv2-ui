@@ -1,4 +1,5 @@
 import { Auth0Client } from '@auth0/auth0-spa-js'
+import { debugLog } from '../lib/log'
 
 /// ////////////////////
 // Auth0 client initialization
@@ -136,8 +137,4 @@ export async function getLogoutUrl (targetUrl: null | string): Promise<string> {
     }
   })
   return authorizationUrl
-}
-
-function debugLog (msg: string, ...args: any) {
-  // console.log(msg, ...args)
 }

@@ -3,6 +3,7 @@ import { gql } from 'graphql-tag'
 import { useStorage } from '@vueuse/core'
 import { configureAuth0Client, getAuth0Client, getAuthorizeUrl, checkToken } from '../lib/auth0'
 import { getApolloClient } from './apollo'
+import { debugLog } from '../lib/log'
 
 const RECHECK_INTERVAL = 600_000
 const buildGraphqlUser = true
@@ -149,6 +150,3 @@ export const defineAuthPlugin = () => {
   })
 }
 
-function debugLog (msg: string, ...args: any) {
-  console.log(msg, ...args)
-}

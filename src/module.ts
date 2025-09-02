@@ -65,12 +65,12 @@ export default defineNuxtModule<ModuleOptions>({
     }
     nuxt.options.css.push(resolveRuntimeModule('assets/main.css'))
 
-    // Setup plugins
+    // Setup plugins... not sure why they seem to run in reverse order?
+    addPlugin(resolveRuntimeModule('plugins/apollo'))
+    addPlugin(resolveRuntimeModule('plugins/mixpanel.client'))
     addPlugin(resolveRuntimeModule('plugins/auth.client'))
     addPlugin(resolveRuntimeModule('plugins/oruga'))
     addPlugin(resolveRuntimeModule('plugins/filters'))
-    addPlugin(resolveRuntimeModule('plugins/mixpanel.client'))
-    addPlugin(resolveRuntimeModule('plugins/apollo'))
     addImportsDir(resolveRuntimeModule('composables'))
 
     // Proxy options
