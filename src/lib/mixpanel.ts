@@ -1,12 +1,12 @@
 import mixpanel from 'mixpanel-browser'
 
-interface User {
+export interface MixpanelUser {
   id: string
   email: string
   name: string
 }
 
-interface MixpanelInstance {
+export interface MixpanelInstance {
   track: (msg: string, args: any) => void
   identify: (properties?: Record<string, any>) => void
   reset: () => void
@@ -16,7 +16,7 @@ interface MixpanelInstance {
 let init = false
 let hasUser = false
 
-export const createMixpanel = (apikey: string, user: User): MixpanelInstance => {
+export const createMixpanel = (apikey: string, user: MixpanelUser): MixpanelInstance => {
   if (process.server) {
     return {
       track: (msg: string, args: any) => { },
