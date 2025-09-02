@@ -2109,36 +2109,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nuxt/kit@npm:3.16.0":
-  version: 3.16.0
-  resolution: "@nuxt/kit@npm:3.16.0"
-  dependencies:
-    c12: "npm:^3.0.2"
-    consola: "npm:^3.4.0"
-    defu: "npm:^6.1.4"
-    destr: "npm:^2.0.3"
-    errx: "npm:^0.1.0"
-    exsolve: "npm:^1.0.2"
-    globby: "npm:^14.1.0"
-    ignore: "npm:^7.0.3"
-    jiti: "npm:^2.4.2"
-    klona: "npm:^2.0.6"
-    knitwork: "npm:^1.2.0"
-    mlly: "npm:^1.7.4"
-    ohash: "npm:^2.0.11"
-    pathe: "npm:^2.0.3"
-    pkg-types: "npm:^2.1.0"
-    scule: "npm:^1.3.0"
-    semver: "npm:^7.7.1"
-    std-env: "npm:^3.8.1"
-    ufo: "npm:^1.5.4"
-    unctx: "npm:^2.4.1"
-    unimport: "npm:^4.1.2"
-    untyped: "npm:^2.0.0"
-  checksum: 10/ba68c510d735662abb8ff47aaa9e501941f5a2053a44f5a1d2092cdcea44fa6264780f94a95679962f78e00b9a4ce42c0672f7bd2903cef089c6e19fd2996f54
-  languageName: node
-  linkType: hard
-
 "@nuxt/kit@npm:3.18.1, @nuxt/kit@npm:^3.13.2, @nuxt/kit@npm:^3.15.4, @nuxt/kit@npm:^3.16.0, @nuxt/kit@npm:^3.17.5, @nuxt/kit@npm:^3.17.6, @nuxt/kit@npm:^3.18.1":
   version: 3.18.1
   resolution: "@nuxt/kit@npm:3.18.1"
@@ -6067,7 +6037,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"c12@npm:^3.0.2, c12@npm:^3.0.4, c12@npm:^3.1.0, c12@npm:^3.2.0":
+"c12@npm:^3.0.4, c12@npm:^3.1.0, c12@npm:^3.2.0":
   version: 3.2.0
   resolution: "c12@npm:3.2.0"
   dependencies:
@@ -8972,7 +8942,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"exsolve@npm:^1.0.2, exsolve@npm:^1.0.5, exsolve@npm:^1.0.7":
+"exsolve@npm:^1.0.5, exsolve@npm:^1.0.7":
   version: 1.0.7
   resolution: "exsolve@npm:1.0.7"
   checksum: 10/0c9fc0964da0154f38b55e612ed29bf5040f753d5d2db3a63559762237d0a86290e2f18997973343bb9900c07ab1e48596321de9d9d338e373b1f3f1a015e4c9
@@ -12222,15 +12192,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nuxi@npm:3.23.0":
-  version: 3.23.0
-  resolution: "nuxi@npm:3.23.0"
+"nuxi@npm:3.28.0":
+  version: 3.28.0
+  resolution: "nuxi@npm:3.28.0"
   bin:
     nuxi: bin/nuxi.mjs
     nuxi-ng: bin/nuxi.mjs
     nuxt: bin/nuxi.mjs
     nuxt-cli: bin/nuxi.mjs
-  checksum: 10/a5dc7a410f918d2354aabe75913ed8ad82bbe557446e6230dbd7587473d7b4738c0046fecc244a28dbf4e1d2eda4bbb7cc53ee23ecf12ea21c6c837ab859ff3e
+  checksum: 10/522ba4b65a7bbf17bb061996eda900f11cca4bbb61f458ecdaf57ca8af92444679f920e2d412598aa26240f58da3f521ec2d267e26f5cfa4a0d5a38ee927ba49
   languageName: node
   linkType: hard
 
@@ -15579,7 +15549,7 @@ __metadata:
     "@mdi/font": "npm:7.4.47"
     "@nuxt/eslint": "npm:1.2.0"
     "@nuxt/eslint-config": "npm:1.2.0"
-    "@nuxt/kit": "npm:3.16.0"
+    "@nuxt/kit": "npm:3.18.1"
     "@nuxt/module-builder": "npm:1.0.2"
     "@nuxt/test-utils": "npm:3.19.2"
     "@nuxt/types": "npm:2.18.1"
@@ -15626,7 +15596,7 @@ __metadata:
     jsdom: "npm:26.1.0"
     maplibre-gl: "npm:5.2.0"
     mixpanel-browser: "npm:2.61.2"
-    nuxi: "npm:3.23.0"
+    nuxi: "npm:3.28.0"
     nuxt: "npm:3.18.1"
     nuxt-csurf: "npm:1.6.5"
     playwright-core: "npm:1.54.2"

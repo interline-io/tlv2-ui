@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useUser, useLogin, useLogout } from '../libnuxt/useUser.server'
+import { useUser, useLogin, useLogout } from '../composables/useUser'
 const user = useUser()
 </script>
 

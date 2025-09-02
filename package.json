@@ -39,7 +39,7 @@
     "@mdi/font": "7.4.47",
     "@nuxt/eslint": "1.2.0",
     "@nuxt/eslint-config": "1.2.0",
-    "@nuxt/kit": "3.16.0",
+    "@nuxt/kit": "3.18.1",
     "@nuxt/module-builder": "1.0.2",
     "@nuxt/test-utils": "3.19.2",
     "@nuxt/types": "2.18.1",
@@ -103,7 +103,7 @@
   },
   "packageManager": "yarn@4.3.0",
   "devDependencies": {
-    "nuxi": "3.23.0",
+    "nuxi": "3.28.0",
     "vue-tsc": "^2.0.0"
   }
 }

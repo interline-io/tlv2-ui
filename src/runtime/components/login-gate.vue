@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { useUser } from '../libnuxt/useUser.server'
+import { useUser } from '../../composables/useUser'
 
 export default {
   props: {
