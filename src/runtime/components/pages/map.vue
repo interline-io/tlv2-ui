@@ -134,9 +134,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
 import { useRoute, useRuntimeConfig, navigateTo } from '#imports'
-import { useApiEndpoint } from '../../plugins/auth'
+import { ref, computed, watch } from 'vue'
+import { useApiEndpoint } from '../../composables/useApiEndpoint'
 
 const config = useRuntimeConfig()
 

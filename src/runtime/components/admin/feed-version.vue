@@ -50,8 +50,8 @@
 <script>
 import { gql } from 'graphql-tag'
 import Loadable from '../loadable'
-import { useUser } from '../../composables/useUser'
 import AuthzMixin from './authz-mixin'
+import { useUser } from '../../composables/useUser'
 
 const feedVersionQuery = gql`
 query($ids:[Int!]!) {
