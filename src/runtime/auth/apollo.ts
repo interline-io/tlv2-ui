@@ -29,7 +29,6 @@ export async function getApolloClient () {
 }
 
 export const defineApolloPlugin = async (nuxtApp) => {
-  console.log('APOLLO PLUGIN')
   const apolloClient = await getApolloClient()
 
   // options api
