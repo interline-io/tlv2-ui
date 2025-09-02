@@ -1,5 +1,5 @@
-import { useUser } from '../plugins/auth'
 import { useRuntimeConfig } from '#imports'
+import { useUser } from '../composables/useUser'
 
 export const useLoginGate = (role?: string): boolean => {
   // console.log('useLoginGate')
