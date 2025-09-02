@@ -1,4 +1,3 @@
-import { useRuntimeConfig } from '#imports'
 import { Auth0Client } from '@auth0/auth0-spa-js'
 
 /// ////////////////////
@@ -10,38 +9,47 @@ const RECHECK_INTERVAL = 600_000
 // Auth0 client init
 let authInit = false
 let authClient: Auth0Client
-let requireLogin = false
 let logoutUri = '/'
 let graphqlUser = true
 
-export function getAuth0Client () {
-  if (process.server) {
-    return
-  }
+export interface Auth0Options {
+  auth0ClientId?: string
+  auth0Domain?: string
+  auth0Audience?: string
+  auth0Scope?: string
+  auth0RedirectUri?: string
+  auth0LogoutUri?: string
+  graphqlUser?: boolean
+}
+
+export function configureAuth0Client (options: Auth0Options): Auth0Client | null {
+  console.log('configureAuth0Client:', options)
   if (authInit) {
     return authClient
   }
+  authInit = true
+  if (process.server) {
+    return
+  }
 
   // Check if we are configured correctly
-  const config = useRuntimeConfig()
-  if (config.public.auth0ClientId) {
+  if (options.auth0ClientId) {
     // Update global config
-    requireLogin = !!config.public.requireLogin
-    logoutUri = String(config.public.auth0LogoutUri || window?.location?.origin || '/')
-    graphqlUser = config.public.graphqlUser !== false
+    logoutUri = String(options.auth0LogoutUri || window?.location?.origin || '/')
+    graphqlUser = options.graphqlUser !== false
 
-    const scope = String(config.public.auth0Scope)
+    const scope = String(options.auth0Scope)
     debugLog('auth0 init:', { scope })
 
     // Create and return global auth0 client
     authClient = new Auth0Client({
-      domain: String(config.public.auth0Domain),
-      clientId: String(config.public.auth0ClientId),
+      domain: String(options.auth0Domain),
+      clientId: String(options.auth0ClientId),
       cacheLocation: 'localstorage',
       useRefreshTokens: false, // Use iframe method for token refresh
       authorizationParams: {
-        redirect_uri: String(config.public.auth0RedirectUri || window?.location?.origin || '/'),
-        audience: String(config.public.auth0Audience),
+        redirect_uri: String(options.auth0RedirectUri || window?.location?.origin || '/'),
+        audience: String(options.auth0Audience),
         scope: scope
       }
     })
@@ -49,7 +57,15 @@ export function getAuth0Client () {
 
   // Set as initialized
   // (even if not available, to avoid future runtime config check)
-  authInit = true
+  return authClient
+}
+
+// Client MUST be configured
+export function getAuth0Client (): Auth0Client | null {
+  if (!authInit) {
+    debugLog('getAuth0Client called before client configured')
+    return null
+  }
   return authClient
 }
 
@@ -123,5 +139,5 @@ export async function getLogoutUrl (targetUrl: null | string): Promise<string> {
 }
 
 function debugLog (msg: string, ...args: any) {
-  console.log(msg, ...args)
+  // console.log(msg, ...args)
 }

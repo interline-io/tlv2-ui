@@ -1,7 +1,7 @@
 import { navigateTo, useRuntimeConfig, useCsrf, useRoute } from '#imports'
 import { createMixpanel } from '../../lib/mixpanel'
 import { useUser, clearUser } from './user'
-import { getAuthorizeUrl, getLogoutUrl, checkToken } from './auth0'
+import { getAuthorizeUrl, getLogoutUrl, checkToken } from '../../lib/auth0'
 
 const logoutUri = '/'
 
@@ -28,7 +28,7 @@ export const useAuthHeaders = async () => {
 
   // CSRF
   // NOTE: For unknown reasons, useCsrf will panic if called after useJwt.
-  if (config.public.useProxy) {
+  if (config.public.tlv2?.useProxy) {
     const { headerName: csrfHeader, csrf: csrfToken } = useCsrf()
     headers[csrfHeader] = csrfToken
   }
@@ -40,8 +40,8 @@ export const useAuthHeaders = async () => {
   }
 
   // Api key
-  if (import.meta.server && config.graphqlApikey) {
-    headers['apikey'] = config.graphqlApikey
+  if (import.meta.server && config.tlv2?.graphqlApikey) {
+    headers['apikey'] = config.tlv2?.graphqlApikey
   }
 
   return headers
@@ -50,8 +50,8 @@ export const useAuthHeaders = async () => {
 export const useApiEndpoint = (path?: string) => {
   const config = useRuntimeConfig()
   const apiBase = import.meta.server
-    ? (config.proxyBase)
-    : (config.public.apiBase || window?.location?.origin + '/api/v2')
+    ? (config.tlv2?.proxyBase)
+    : (config.public.tlv2?.apiBase || window?.location?.origin + '/api/v2')
   return apiBase + (path || '')
 }
 
@@ -70,7 +70,7 @@ export const useLogout = async () => {
   debugLog('useLogout')
   // Reset Mixpanel before redirecting
   const config = useRuntimeConfig()
-  const mixpanel = createMixpanel(config.public.mixpanelApikey, useUser())
+  const mixpanel = createMixpanel(config.public.tlv2?.mixpanelApikey, useUser())
   mixpanel.reset()
   return navigateTo(await getLogoutUrl(logoutUri), { external: true })
 }
@@ -82,8 +82,7 @@ export const useLogout = async () => {
 export const useLoginGate = (role?: string): boolean => {
   // console.log('useLoginGate')
   const config = useRuntimeConfig()
-  // console.log(config.public.loginGate)
-  if (config.public.loginGate) {
+  if (config.public.tlv2?.loginGate) {
     // console.log('useLoginGate: config is true')
     const user = useUser()
     if (user?.loggedIn) {

@@ -5,7 +5,7 @@ import { useUser } from '../auth'
 // Composable for use in components
 export const useMixpanel = () => {
   const config = useRuntimeConfig()
-  const mp = createMixpanel(config.public.mixpanelApikey, useUser())
+  const mp = createMixpanel(config.public.tlv2?.mixpanelApikey, useUser())
   mp.identify()
   return mp
 }

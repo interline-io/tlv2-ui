@@ -1,7 +1,7 @@
 import { useRuntimeConfig, navigateTo, addRouteMiddleware } from '#imports'
 import { gql } from 'graphql-tag'
 import { useStorage } from '@vueuse/core'
-import { getAuth0Client, getAuthorizeUrl, checkToken } from './auth0'
+import { configureAuth0Client, getAuth0Client, getAuthorizeUrl, checkToken } from '../../lib/auth0'
 import { getApolloClient } from './apollo'
 
 const RECHECK_INTERVAL = 600_000
@@ -97,14 +97,15 @@ export async function buildUser () {
 }
 
 export const defineAuthPlugin = () => {
-  addRouteMiddleware('global-auth', async (to, _) => {
-    // Check if client is configured
-    const config = useRuntimeConfig()
-    const client = getAuth0Client()
-    if (!client) {
-      return
-    }
+  console.log('AUTH PLUGIN')
+  // Check if client is configured
+  const config = useRuntimeConfig()
+  const client = configureAuth0Client(config.public.tlv2 || {})
+  if (!client) {
+    return
+  }
 
+  addRouteMiddleware('global-auth', async (to, _) => {
     // Handle auth0 redirect callback
     const query = to?.query
     if (query && query.code && query.state) {
@@ -126,7 +127,7 @@ export const defineAuthPlugin = () => {
 
     // Check token state
     const { loggedIn, mustReauthorize } = await checkToken()
-    const requireLogin = !!config.public.requireLogin
+    const requireLogin = !!config.public.tlv2?.requireLogin
     if (mustReauthorize || (requireLogin && !loggedIn)) {
       debugLog('auth mw: need auth')
       clearUser()

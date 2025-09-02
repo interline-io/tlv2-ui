@@ -7,7 +7,7 @@ export default defineEventHandler((event) => {
   const config = useRuntimeConfig(event)
   return proxyHandler(
     event,
-    String(config.proxyBase),
-    String(config.graphqlApikey)
+    String(config.tlv2.proxyBase),
+    String(config.tlv2.graphqlApikey)
   )
 })

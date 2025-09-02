@@ -429,7 +429,7 @@ export default {
       }
     },
     staticImage () {
-      return `${this.$config.public.apiBase}/rest/routes/${this.pathKey}.png`
+      return `${this.$config.public.tlv2?.apiBase}/rest/routes/${this.pathKey}.png`
     },
     staticTitle () {
       return `${this.routeName} • ${this.routeType} route`

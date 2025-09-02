@@ -5,7 +5,7 @@ import { useUser } from '../auth'
 
 export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig()
-  const mp = createMixpanel(config.public.mixpanelApikey, useUser())
+  const mp = createMixpanel(config.public.tlv2?.mixpanelApikey, useUser())
   return {
     provide: {
       mixpanel: mp
