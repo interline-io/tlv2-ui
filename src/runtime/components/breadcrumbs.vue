@@ -15,7 +15,8 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute, useRouter, useEventBus, ref, computed } from '#imports'
+import { useRoute, useRouter, ref, computed } from '#imports'
+import { useEventBus } from '../composables/useEventBus'
 import { type RouteParams } from '#vue-router'
 interface nameOpts { [index: string]: string }
 

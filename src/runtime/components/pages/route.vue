@@ -254,7 +254,7 @@
 <script>
 import { gql } from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
-import { useEventBus } from '#imports'
+import { useEventBus } from '../composables/useEventBus'
 
 const q = gql`
 query ($onestopId: String, $ids: [Int!], $entityId: String, $feedOnestopId: String, $feedVersionSha1: String, $include_stops: Boolean! = true, $limit: Int=10, $allowPreviousOnestopIds: Boolean = false) {
