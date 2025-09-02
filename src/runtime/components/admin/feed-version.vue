@@ -50,7 +50,7 @@
 <script>
 import { gql } from 'graphql-tag'
 import Loadable from '../loadable'
-import { useUser } from '../../plugins/auth.client'
+import { useUser } from '../../libnuxt/useUser.server'
 import AuthzMixin from './authz-mixin'
 
 const feedVersionQuery = gql`

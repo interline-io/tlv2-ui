@@ -1,24 +1,20 @@
 import { Auth0Client } from '@auth0/auth0-spa-js'
 import { useStorage } from '@vueuse/core'
-import { gql } from 'graphql-tag'
-import { getApolloClient } from './apollo'
-import { useMixpanel } from './mixpanel.client'
+import { useMixpanel } from './useMixpanel.client'
+import { User } from '../lib/user'
 
-// For unknown reasons, this import must come last. I love this.
+import { gql } from 'graphql-tag'
+// import { getApolloClient } from './apollo'
+
 import {
-  addRouteMiddleware,
   navigateTo,
   useRoute,
-  defineNuxtPlugin,
   useRuntimeConfig,
-  useCsrf,
 } from '#imports'
 
 /// ////////////////////
 // Auth0 client initialization
 /// ////////////////////
-
-const RECHECK_INTERVAL = 600_000
 
 // Auth0 client init
 let authInit = false
@@ -27,10 +23,7 @@ let requireLogin = false
 let logoutUri = '/'
 let graphqlUser = true
 
-function getAuth0Client () {
-  if (process.server) {
-    return
-  }
+export function getAuth0Client () {
   if (authInit) {
     return authClient
   }
@@ -98,36 +91,14 @@ export const useLogout = async () => {
 // User
 /// ////////////////////
 
-export class User {
-  loggedIn = false
-  id = ''
-  name = ''
-  email = ''
-  roles = []
-  externalData = {}
-  checked = 0
-  constructor (v: any) {
-    Object.assign(this, v)
-  }
-
-  hasRole (v: string): boolean {
-    for (const s of this.roles) {
-      if (s === v) {
-        return true
-      }
-    }
-    return false
-  }
-}
-
-function clearUser () {
+export function clearUser () {
   debugLog('clearUser')
   const checkUser = useStorage('user', {})
   checkUser.value = new User({ loggedIn: false })
 }
 
 // Build the user from auth0 data and GraphQL me response
-async function buildUser () {
+export async function buildUser () {
   // Build user object
   const client = getAuth0Client()
   if (!client) {
@@ -148,24 +119,23 @@ async function buildUser () {
   // Get additional user metadata from GraphQL
   let meData: any = null
   if (graphqlUser) {
-    try {
-      const apolloClient = getApolloClient()
-      const response = await apolloClient.query({
-        query: gql`query{me{id name email external_data roles}}`
-      })
-      meData = response.data?.me || null
-      debugLog('buildUser: me graphql response:', meData)
-
-      if (!meData) {
-        debugLog('buildUser: missing graphql data')
-        clearUser()
-        return
-      }
-    } catch (e) {
-      debugLog('buildUser: graphql failed:', e)
-      clearUser()
-      return
-    }
+    // try {
+    //   const apolloClient = getApolloClient()
+    //   const response = await apolloClient.query({
+    //     query: gql`query{me{id name email external_data roles}}`
+    //   })
+    //   meData = response.data?.me || null
+    //   debugLog('buildUser: me graphql response:', meData)
+    //   if (!meData) {
+    //     debugLog('buildUser: missing graphql data')
+    //     clearUser()
+    //     return
+    //   }
+    // } catch (e) {
+    //   debugLog('buildUser: graphql failed:', e)
+    //   clearUser()
+    //   return
+    // }
   }
 
   // Set user state
@@ -187,19 +157,9 @@ async function buildUser () {
 // Helpers
 /// ////////////////////
 
-const useJwt = async () => {
-  const { token, mustReauthorize } = await checkToken()
-  if (mustReauthorize) {
-    debugLog('useJwt: mustReauthorize')
-    await useLogin(null)
-    return ''
-  }
-  return token
-}
-
 // Check the client token, return { token, loggedIn, mustReauthorize }
 // mustReauthorize will be set to true if a user is logged in but token fails
-async function checkToken () {
+export async function checkToken () {
   let token = ''
   let loggedIn = false
   let mustReauthorize = false
@@ -233,7 +193,7 @@ async function checkToken () {
 }
 
 // Get an auth0 /authorize url that also includes targetUrl in app state
-async function getAuthorizeUrl (targetUrl: null | string): Promise<string> {
+export async function getAuthorizeUrl (targetUrl: null | string): Promise<string> {
   targetUrl = targetUrl || '/'
   const client = getAuth0Client()
   if (!client) {
@@ -250,7 +210,7 @@ async function getAuthorizeUrl (targetUrl: null | string): Promise<string> {
 }
 
 // Get an auth0 logout url
-async function getLogoutUrl (targetUrl: null | string): Promise<string> {
+export async function getLogoutUrl (targetUrl: null | string): Promise<string> {
   targetUrl = targetUrl || '/'
   const client = getAuth0Client()
   if (!client) {
@@ -272,96 +232,23 @@ function debugLog (msg: string, ...args: any) {
   console.log(msg, ...args)
 }
 
-/// ////////////////////
-// Middleware
-/// ////////////////////
-
-export default defineNuxtPlugin(() => {
-  addRouteMiddleware('global-auth', async (to, _) => {
-    // Check if client is configured
-    const client = getAuth0Client()
-    if (!client) {
-      return
-    }
-
-    // Handle auth0 redirect callback
-    const query = to?.query
-    if (query && query.code && query.state) {
-      try {
-        debugLog('auth mw: handle login')
-        const { appState } = await client.handleRedirectCallback()
-        debugLog('auth mw: got appState:', appState)
-        await buildUser()
-
-        const targetPath = appState?.targetUrl || '/'
-        debugLog('auth mw: navigating to:', targetPath)
-        return navigateTo(targetPath, { replace: true })
-      } catch (e) {
-        debugLog('auth mw: handleRedirectCallback failed:', e)
-        clearUser()
-        return navigateTo(await getAuthorizeUrl(to.fullPath), { external: true })
-      }
-    }
-
-    // Check token state
-    const { loggedIn, mustReauthorize } = await checkToken()
-
-    if (mustReauthorize || (requireLogin && !loggedIn)) {
-      debugLog('auth mw: need auth')
-      return navigateTo(await getAuthorizeUrl(to.fullPath), { external: true })
-    }
-
-    // Check user data freshness
+export const useLoginGate = (role?: string): boolean => {
+  // console.log('useLoginGate')
+  const config = useRuntimeConfig()
+  // console.log(config.public.loginGate)
+  if (config.public.loginGate) {
+    // console.log('useLoginGate: config is true')
     const user = useUser()
-    if (loggedIn) {
-      const lastChecked = Date.now() - (user?.checked || 0)
-      if (lastChecked > RECHECK_INTERVAL || !user?.id) {
-        debugLog('auth mw: recheck user')
-        await buildUser()
+    if (user?.loggedIn) {
+      // console.log('user??', user, 'role:', role, 'has role:', user.hasRole(role))
+      // console.log('useLoginGate: user is logged in')
+      if (role) {
+        return !user.hasRole(role)
       }
-    } else {
-      clearUser()
+      return false
     }
-  }, {
-    global: true
-  })
-})
-
-// Helpers
-
-// Headers, configured from user context, including CSRF
-export const useAuthHeaders = async () => {
-  const config = useRuntimeConfig()
-  const headers: Record<string, string> = {}
-
-  // CSRF
-  // NOTE: For unknown reasons, useCsrf will panic if called after useJwt.
-  if (config.public.tlv2?.useProxy) {
-    const { headerName: csrfHeader, csrf: csrfToken } = await useCsrf()
-    headers[csrfHeader] = csrfToken
+    // console.log('useLoginGate: user not logged in, login required')
+    return true
   }
-
-  // JWT
-  const token = await useJwt()
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`
-  }
-
-  // Api key
-  if (import.meta.server && config.graphqlApikey) {
-    headers['apikey'] = String(config.graphqlApikey || '')
-  }
-
-  return headers
-}
-
-export const useTransitlandApiBase = (path?: string): string => {
-  const config = useRuntimeConfig()
-  const base: string = config.public.transitlandApiBase
-    ? config.public.transitlandApiBase
-    : String(window?.location?.origin || '') + '/api/v2'
-  if (path) {
-    return base + path
-  }
-  return base
+  return false
 }

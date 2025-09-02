@@ -1,5 +1,5 @@
 export {
-  useApiFetch,
+  apiFetch,
   extractJwtFromEvent
 } from './fetch'
 

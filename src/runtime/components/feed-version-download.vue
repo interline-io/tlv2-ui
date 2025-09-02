@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { useTransitlandApiBase } from '../plugins/auth.client'
+import { useTransitlandApiBase } from '#imports'
 import Loadable from './loadable'
 
 export default {

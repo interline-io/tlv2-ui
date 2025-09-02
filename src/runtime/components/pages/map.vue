@@ -135,7 +135,7 @@
 
 <script setup lang="ts">
 import { useRoute, navigateTo } from '#imports'
-import { useTransitlandApiBase } from '../../plugins/auth.client'
+import { useTransitlandApiBase } from '#imports'
 
 import { ref, computed, watch } from 'vue'
 

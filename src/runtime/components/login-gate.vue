@@ -19,8 +19,7 @@
 </template>
 
 <script>
-import { useUser } from '../plugins/auth.client'
-import { useLoginGate } from '../composables/useLoginGate'
+import { useUser } from '../libnuxt/useUser.server'
 
 export default {
   props: {

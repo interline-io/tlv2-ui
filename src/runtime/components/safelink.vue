@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { useToastNotification } from '../composables/useToastNotification'
+import { useToastNotification } from '../libnuxt/toast'
 
 export default {
   props: {

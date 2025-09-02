@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import { useUser } from '../../plugins/auth.client'
+import { useUser } from '../../libnuxt/useUser.server'
 import Loadable from '../loadable'
 
 export default {

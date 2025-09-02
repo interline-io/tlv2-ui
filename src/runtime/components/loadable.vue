@@ -1,5 +1,5 @@
 <script lang="ts">
-import { useAuthHeaders, useTransitlandApiBase } from '../plugins/auth.client'
+import { useAuthHeaders, useTransitlandApiBase } from '#imports'
 export default {
   data () {
     return {

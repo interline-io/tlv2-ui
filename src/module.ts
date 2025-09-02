@@ -40,7 +40,7 @@ export default defineNuxtModule<ModuleOptions>({
     addPlugin(resolveRuntimeModule('plugins/apollo'))
     addPlugin(resolveRuntimeModule('plugins/filters'))
     addPlugin(resolveRuntimeModule('plugins/oruga'))
-    addPlugin(resolveRuntimeModule('plugins/auth.client'))
+    addPlugin(resolveRuntimeModule('plugins/user.client'))
     addPlugin(resolveRuntimeModule('plugins/mixpanel.client'))
     addImportsDir(resolveRuntimeModule('composables'))
 

@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useLogin, useLogout, useUser } from '../plugins/auth.client'
+import { useUser, useLogin, useLogout } from '../libnuxt/useUser.server'
 const user = useUser()
 </script>
 

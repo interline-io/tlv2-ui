@@ -252,7 +252,7 @@
 </template>
 
 <script>
-import { useTransitlandApiBase } from '../../plugins/auth.client'
+import { useTransitlandApiBase } from '#imports'
 import { gql } from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
 import { useEventBus } from '#imports'

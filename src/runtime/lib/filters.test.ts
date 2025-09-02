@@ -101,7 +101,7 @@ describe('median', () => {
 
 describe('fromNowDate', () => {
   const now = new Date()
-  const addHours = function(v: Date, h: number): Date {
+  const addHours = function (v: Date, h: number): Date {
     const b = new Date(v)
     b.setHours(b.getHours() + h)
     return b
@@ -122,7 +122,7 @@ describe('fromNowDate', () => {
 
 describe('fromNow', () => {
   const now = new Date()
-  const addHours = function(v: Date, h: number): string {
+  const addHours = function (v: Date, h: number): string {
     const b = new Date(v)
     b.setHours(b.getHours() + h)
     return b.toISOString()

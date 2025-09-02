@@ -113,9 +113,9 @@
 </template>
 
 <script>
-import { useTransitlandApiBase } from '../plugins/auth.client'
+import { useTransitlandApiBase } from '#imports'
 import Loadable from './loadable'
-import { useToastNotification } from '../composables/useToastNotification'
+import { useToastNotification } from '../libnuxt/toast'
 import VueJsonPretty from 'vue-json-pretty'
 import 'vue-json-pretty/lib/styles.css'
 export default {

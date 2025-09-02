@@ -12,6 +12,7 @@ export function proxyHandler (
 
   // Check user provided bearer
   const requestBearer = event.headers.get('authorization') || ''
+
   // Auth headers
   const headers = {
     authorization: requestBearer,
@@ -21,11 +22,18 @@ export function proxyHandler (
   // Proxy request
   const proxyBaseUrl = new URL(proxyBase)
   const proxyBasePathname = proxyBaseUrl.pathname === '/' ? '' : proxyBaseUrl.pathname
-  const newPath = proxyBasePathname + event.path.replace('/api/v2', '')
+  const newPath = proxyBasePathname + event.path.replace(/^\/api\/v2\//, '/')
   const target = new URL(
     newPath,
     proxyBaseUrl.toString()
   )
+  console.log('proxy:', {
+    eventPath: event.path,
+    eventHeaders: Object.fromEntries(event.headers.entries()),
+    proxyBaseUrl: proxyBaseUrl.toString(),
+    target: target.toString(),
+    headers: headers
+  })
 
   // console.log('proxyHandler', target.toString(), 'headers:', headers)
   return proxyRequest(event, target.toString(), {

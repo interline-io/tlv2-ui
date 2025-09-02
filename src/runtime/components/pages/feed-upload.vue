@@ -191,7 +191,7 @@
 
 <script>
 import { gql } from 'graphql-tag'
-import { useMixpanel } from '../../composables/useMixpanel'
+import { useMixpanel } from '../../libnuxt/useMixpanel.client'
 import EntityPageMixin from './entity-page-mixin'
 import { navigateTo } from '#imports'
 

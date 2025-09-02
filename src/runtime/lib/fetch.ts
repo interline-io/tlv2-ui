@@ -1,6 +1,6 @@
 import { getHeader, type H3Event } from 'h3'
 
-// Options interface for useApiFetch
+// Options interface for apiFetch
 export interface ApiFetchOptions {
   headers?: Record<string, string>
   apiBase?: string
@@ -11,15 +11,12 @@ export interface ApiFetchOptions {
 
 /**
  * Returns authenticated fetch functions with automatic API base path resolution
- * Usage: const { nuxtFetch, fetch } = useApiFetch()
- *
- * - nuxtFetch: Nuxt's enhanced $fetch with automatic JSON parsing, auth headers, and API base path
- * - fetch: Native fetch API with auth headers and API base path pre-applied
+ * Usage: const fetch = useApiFetch()
  *
  * Relative paths (starting with '/') are automatically resolved to the API base.
  * Absolute URLs (with protocol) are used as-is.
  */
-export function useApiFetch (options: ApiFetchOptions = {}) {
+export function apiFetch (options: ApiFetchOptions = {}) {
   const { apiBase, jwt, event, apiKey, headers } = options
 
   const resolveUrl = (input: string | URL | Request): string => {
