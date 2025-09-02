@@ -64,7 +64,7 @@ export function getAuth0Client () {
 /// ////////////////////
 
 // JWT
-export const useJwt = async () => {
+const useJwt = async () => {
   const { token, mustReauthorize } = await checkToken()
   if (mustReauthorize) {
     debugLog('useJwt: mustReauthorize')
@@ -298,7 +298,7 @@ export const useLoginGate = (role?: string): boolean => {
   return false
 }
 
-export const defineAuthPlugin = defineNuxtPlugin(() => {
+export const defineAuthPlugin = () => {
   addRouteMiddleware('global-auth', async (to, _) => {
     // Check if client is configured
     const config = useRuntimeConfig()
@@ -348,4 +348,4 @@ export const defineAuthPlugin = defineNuxtPlugin(() => {
   }, {
     global: true
   })
-})
+}

@@ -1,0 +1,1 @@
+The composables directory should contain the minimal amount of code to bind lib to the nuxt runtime.

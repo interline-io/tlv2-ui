@@ -252,7 +252,7 @@
 <script>
 import { gql } from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
-import { useEventBus } from '../composables/useEventBus'
+import { useEventBus } from '../../composables/useEventBus'
 
 const q = gql`
 fragment rs on RouteStop {

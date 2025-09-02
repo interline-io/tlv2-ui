@@ -1,10 +1,9 @@
 import { ApolloClient, ApolloLink, concat, InMemoryCache } from '@apollo/client/core/index.js'
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
-import { useApiEndpoint, useAuthHeaders } from '../auth/auth'
-import { defineNuxtPlugin } from 'nuxt/app'
 import { destr } from 'destr'
 import { ApolloClients, provideApolloClients } from '@vue/apollo-composable'
 import { createApolloProvider } from '@vue/apollo-option'
+import { useApiEndpoint, useAuthHeaders } from '../auth/auth'
 
 export function getApolloClient () {
   return initApolloClient(useApiEndpoint())
@@ -25,7 +24,7 @@ export function initApolloClient (apiBase: string) {
   return apolloClient
 }
 
-export const defineApolloPlugin = defineNuxtPlugin((nuxtApp) => {
+export const defineApolloPlugin = (nuxtApp) => {
   const apolloClient = getApolloClient()
   // options api
   const apolloProvider = createApolloProvider({
@@ -49,4 +48,4 @@ export const defineApolloPlugin = defineNuxtPlugin((nuxtApp) => {
   if (process.client && nuxtApp.payload.data[cacheKey]) {
     apolloClient.cache.restore(destr(JSON.stringify(nuxtApp.payload.data[cacheKey])))
   }
-})
+}

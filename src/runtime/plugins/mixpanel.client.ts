@@ -3,7 +3,7 @@ import { defineNuxtPlugin } from 'nuxt/app'
 import { createMixpanel } from '../lib/mixpanel'
 import { useUser } from '../auth/auth'
 
-export const defineMixpanelPlugin = defineNuxtPlugin(() => {
+export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig()
   const mp = createMixpanel(config.public.mixpanelApikey, useUser())
   return {
