@@ -1,1 +1,1 @@
-export { useAuthHeaders } from '../auth/auth'
+export { useAuthHeaders } from '../auth'

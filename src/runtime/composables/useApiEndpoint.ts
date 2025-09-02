@@ -1,1 +1,1 @@
-export { useApiEndpoint } from '../auth/auth'
+export { useApiEndpoint } from '../auth'

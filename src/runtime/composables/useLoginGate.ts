@@ -1,1 +1,1 @@
-export { useLoginGate } from '../auth/auth'
+export { useLoginGate } from '../auth'

@@ -1,3 +1,3 @@
 import { defineNuxtPlugin } from 'nuxt/app'
-import { defineAuthPlugin } from '../auth/auth'
+import { defineAuthPlugin } from '../auth/user'
 export default defineNuxtPlugin(defineAuthPlugin)

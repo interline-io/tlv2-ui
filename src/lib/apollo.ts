@@ -3,7 +3,7 @@ import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
 import { destr } from 'destr'
 import { ApolloClients, provideApolloClients } from '@vue/apollo-composable'
 import { createApolloProvider } from '@vue/apollo-option'
-import { useApiEndpoint, useAuthHeaders } from '../auth/auth'
+import { useApiEndpoint, useAuthHeaders } from '../auth'
 
 export function getApolloClient () {
   return initApolloClient(useApiEndpoint())
