@@ -1,3 +1,4 @@
 import { defineNuxtPlugin } from 'nuxt/app'
-import { defineApolloPlugin } from '../lib/apollo'
+import { defineApolloPlugin } from '../auth/apollo'
+
 export default defineNuxtPlugin(defineApolloPlugin)

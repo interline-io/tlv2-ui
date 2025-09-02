@@ -1,5 +1,5 @@
 import { navigateTo, useRuntimeConfig, useCsrf, useRoute } from '#imports'
-import { useMixpanel } from '../composables/useMixpanel'
+import { createMixpanel } from '../../lib/mixpanel'
 import { useUser, clearUser } from './user'
 import { getAuthorizeUrl, getLogoutUrl, checkToken } from './auth0'
 
@@ -47,11 +47,12 @@ export const useAuthHeaders = async () => {
   return headers
 }
 
-export const useApiEndpoint = () => {
+export const useApiEndpoint = (path?: string) => {
   const config = useRuntimeConfig()
-  return import.meta.server
+  const apiBase = import.meta.server
     ? (config.proxyBase)
     : (config.public.apiBase || window?.location?.origin + '/api/v2')
+  return apiBase + (path || '')
 }
 
 // Login
@@ -68,7 +69,8 @@ export const useLogin = async (targetUrl: null | string) => {
 export const useLogout = async () => {
   debugLog('useLogout')
   // Reset Mixpanel before redirecting
-  const mixpanel = useMixpanel()
+  const config = useRuntimeConfig()
+  const mixpanel = createMixpanel(config.public.mixpanelApikey, useUser())
   mixpanel.reset()
   return navigateTo(await getLogoutUrl(logoutUri), { external: true })
 }

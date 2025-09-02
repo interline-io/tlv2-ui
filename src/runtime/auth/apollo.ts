@@ -3,17 +3,13 @@ import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
 import { destr } from 'destr'
 import { ApolloClients, provideApolloClients } from '@vue/apollo-composable'
 import { createApolloProvider } from '@vue/apollo-option'
-import { useApiEndpoint, useAuthHeaders } from '../auth'
+import { useApiEndpoint, useAuthHeaders } from './auth'
 
-export function getApolloClient () {
-  return initApolloClient(useApiEndpoint())
-}
-
-export function initApolloClient (apiBase: string) {
-  const httpLink = createUploadLink({ uri: apiBase + '/query' })
-  const authMiddleware = new ApolloLink(async (operation, forward) => {
+export function initApolloClient (endpoint: string, headers: Record<string, string>) {
+  const httpLink = createUploadLink({ uri: endpoint })
+  const authMiddleware = new ApolloLink((operation, forward) => {
     // Add authorization headers
-    operation.setContext({ headers: await useAuthHeaders() })
+    operation.setContext({ headers: headers })
     return forward(operation)
   })
   const cache = new InMemoryCache()
@@ -24,8 +20,17 @@ export function initApolloClient (apiBase: string) {
   return apolloClient
 }
 
-export const defineApolloPlugin = (nuxtApp) => {
-  const apolloClient = getApolloClient()
+export async function getApolloClient () {
+  const apolloClient = initApolloClient(
+    useApiEndpoint('/query'),
+    await useAuthHeaders()
+  )
+  return apolloClient
+}
+
+export const defineApolloPlugin = async (nuxtApp) => {
+  const apolloClient = await getApolloClient()
+
   // options api
   const apolloProvider = createApolloProvider({
     defaultClient: apolloClient,

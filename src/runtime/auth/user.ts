@@ -2,7 +2,7 @@ import { useRuntimeConfig, navigateTo, addRouteMiddleware } from '#imports'
 import { gql } from 'graphql-tag'
 import { useStorage } from '@vueuse/core'
 import { getAuth0Client, getAuthorizeUrl, checkToken } from './auth0'
-import { getApolloClient } from '../lib/apollo'
+import { getApolloClient } from './apollo'
 
 const RECHECK_INTERVAL = 600_000
 const buildGraphqlUser = true
@@ -62,7 +62,7 @@ export async function buildUser () {
   let meData: any = null
   if (buildGraphqlUser) {
     try {
-      const apolloClient = getApolloClient()
+      const apolloClient = await getApolloClient()
       const response = await apolloClient.query({
         query: gql`query{me{id name email external_data roles}}`
       })
