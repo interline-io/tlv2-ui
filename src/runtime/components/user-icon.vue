@@ -16,7 +16,10 @@
 </template>
 
 <script lang="ts" setup>
-import { useLogin, useLogout, useUser } from '../plugins/auth'
+import { useUser } from '../composables/useUser'
+import { useLogin } from '../composables/useLogin'
+import { useLogout } from '../composables/useLogout'
+
 const user = useUser()
 </script>
 

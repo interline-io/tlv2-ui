@@ -105,7 +105,7 @@
 
 <script>
 import { gql } from 'graphql-tag'
-import { useApiEndpoint } from '../plugins/auth'
+import { useApiEndpoint } from '../composables/useApiEndpoint'
 
 const fvQuery = gql`
 query ($limit:Int=100, $onestop_id: String, $after:Int) {
