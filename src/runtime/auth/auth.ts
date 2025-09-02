@@ -16,7 +16,6 @@ const useJwt = async () => {
   if (mustReauthorize) {
     debugLog('useJwt: mustReauthorize')
     clearUser()
-    await useLogin(null)
     return ''
   }
   return token
