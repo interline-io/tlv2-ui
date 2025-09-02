@@ -1,1 +1,14 @@
-export { defineMixpanelPlugin as default } from '../nuxt/mixpanel'
+import { useRuntimeConfig } from '#imports'
+import { defineNuxtPlugin } from 'nuxt/app'
+import { createMixpanel } from '../lib/mixpanel'
+import { useUser } from '../auth/auth'
+
+export const defineMixpanelPlugin = defineNuxtPlugin(() => {
+  const config = useRuntimeConfig()
+  const mp = createMixpanel(config.public.mixpanelApikey, useUser())
+  return {
+    provide: {
+      mixpanel: mp
+    }
+  }
+})

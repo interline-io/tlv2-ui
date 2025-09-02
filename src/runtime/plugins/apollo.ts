@@ -1,1 +1,1 @@
-export { defineApolloPlugin as default } from '../nuxt/apollo'
+export { defineApolloPlugin as default } from '../lib/apollo'

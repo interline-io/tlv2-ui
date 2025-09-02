@@ -1,1 +1,1 @@
-export { defineAuthPlugin as default } from '../nuxt/auth'
+export { defineAuthPlugin as default } from '../auth/auth'

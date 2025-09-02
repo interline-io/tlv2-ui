@@ -1,1 +1,1 @@
-export { useLoginGate } from '../nuxt/auth'
+export { useLoginGate } from '../auth/auth'

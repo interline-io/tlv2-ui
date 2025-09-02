@@ -1,6 +1,4 @@
-import { defineNuxtPlugin, useRuntimeConfig } from '#imports'
 import mixpanel from 'mixpanel-browser'
-import { useUser } from './auth'
 
 interface User {
   id: string
@@ -18,7 +16,7 @@ interface MixpanelInstance {
 let init = false
 let hasUser = false
 
-export const createMixpanel = (): MixpanelInstance => {
+export const createMixpanel = (apikey: string, user: User): MixpanelInstance => {
   if (process.server) {
     return {
       track: (msg: string, args: any) => { },
@@ -27,8 +25,7 @@ export const createMixpanel = (): MixpanelInstance => {
     }
   }
 
-  const config = useRuntimeConfig()
-  if (!config.public.mixpanelApikey) {
+  if (!apikey) {
     return {
       track: (msg: string, args: any) => { console.log('mixpanel dummy track (no API key):', msg, args) },
       identify: () => {},
@@ -38,7 +35,7 @@ export const createMixpanel = (): MixpanelInstance => {
 
   if (!init) {
     console.log('mixpanel: init')
-    mixpanel.init(config.public.mixpanelApikey, {
+    mixpanel.init(apikey, {
       debug: true,
       persistence: 'localStorage',
       ignore_dnt: true
@@ -52,8 +49,9 @@ export const createMixpanel = (): MixpanelInstance => {
       mixpanel.track(msg, args)
     },
     identify: (properties?: Record<string, any>) => {
-      if (hasUser) return
-      const user = useUser() as User
+      if (hasUser) {
+        return
+      }
       if (user && user.id) {
         const mpUser: any = {
           $email: user.email,
@@ -73,28 +71,3 @@ export const createMixpanel = (): MixpanelInstance => {
     }
   }
 }
-
-export default defineNuxtPlugin(() => {
-  const mp = createMixpanel()
-  return {
-    provide: {
-      mixpanel: mp
-    }
-  }
-})
-
-// Composable for use in components
-export const useMixpanel = (): MixpanelInstance => {
-  const mp = createMixpanel()
-  mp.identify()
-  return mp
-}
-
-export const defineMixpanelPlugin = defineNuxtPlugin(() => {
-  const mp = createMixpanel()
-  return {
-    provide: {
-      mixpanel: mp
-    }
-  }
-})

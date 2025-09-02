@@ -1,1 +1,1 @@
-export { useApiEndpoint } from '../nuxt/auth'
+export { useApiEndpoint } from '../auth/auth'

@@ -1,1 +1,1 @@
-export { useAuthHeaders } from '../nuxt/auth'
+export { useAuthHeaders } from '../auth/auth'

@@ -1,1 +1,1 @@
-export { useJwt } from '../nuxt/auth'
+export { useJwt } from '../auth/auth'

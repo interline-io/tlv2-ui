@@ -1,10 +1,11 @@
-import { navigateTo, useRuntimeConfig, useCsrf, useRoute, addRouteMiddleware, defineNuxtPlugin } from '#imports'
+import { navigateTo, useRuntimeConfig, useCsrf, useRoute, addRouteMiddleware } from '#imports'
+import { defineNuxtPlugin } from 'nuxt/app'
 import { Auth0Client } from '@auth0/auth0-spa-js'
 import { useStorage } from '@vueuse/core'
 import { gql } from 'graphql-tag'
 import { useMixpanel } from '../composables/useMixpanel'
 import { User } from '../lib/user'
-import { getApolloClient } from './apollo'
+import { getApolloClient } from '../lib/apollo'
 
 /// ////////////////////
 // Auth0 client initialization

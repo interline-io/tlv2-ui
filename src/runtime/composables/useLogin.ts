@@ -1,1 +1,1 @@
-export { useLogin } from '../nuxt/auth'
+export { useLogin } from '../auth/auth'
