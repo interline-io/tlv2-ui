@@ -130,12 +130,12 @@ describe('sanitizeUrl', () => {
       '&#0000106&#0000097&#0000118&#0000097&#0000115&#0000099&#0000114&#0000105&#0000112&#0000116&#0000058&#0000097&#0000108&#0000101&#0000114&#0000116&#0000040&#0000039&#0000088&#0000083&#0000083&#0000039&#0000041',
       '&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;&#97;&#108;&#101;&#114;&#116;&#40;&#39;&#88;&#83;&#83;&#39;&#41;',
       '&#x6A&#x61&#x76&#x61&#x73&#x63&#x72&#x69&#x70&#x74&#x3A&#x61&#x6C&#x65&#x72&#x74&#x28&#x27&#x58&#x53&#x53&#x27&#x29',
-      "jav&#x09;ascript:alert('XSS');",
-      " &#14; javascript:alert('XSS');",
-      "javasc&Tab;ript: alert('XSS');",
+      'jav&#x09;ascript:alert(\'XSS\');',
+      ' &#14; javascript:alert(\'XSS\');',
+      'javasc&Tab;ript: alert(\'XSS\');',
       'javasc&#\u0000x09;ript:alert(1)',
       'java&#38;&#38;&#35;78&#59;ewLine&#38;newline&#59;&#59;script&#58;alert&#40;&#39;XSS&#39;&#41;',
-      "java&&#78;ewLine&newline;;script:alert('XSS')"
+      'java&&#78;ewLine&newline;;script:alert(\'XSS\')'
     ]
 
     attackVectors.forEach((vector) => {
@@ -149,22 +149,22 @@ describe('sanitizeUrl', () => {
       sanitizeUrl(
         '&#104;&#116;&#116;&#112;&#115;&#0000058//&#101;&#120;&#97;&#109;&#112;&#108;&#101;&#46;&#99;&#111;&#109;/&#0000106&#0000097&#0000118&#0000097&#0000115&#0000099&#0000114&#0000105&#0000112&#0000116&#0000058&#0000097&#0000108&#0000101&#0000114&#0000116&#0000040&#0000039&#0000088&#0000083&#0000083&#0000039&#0000041'
       )
-    ).toBe("https://example.com/javascript:alert('XSS')")
+    ).toBe('https://example.com/javascript:alert(\'XSS\')')
   })
 
   it('removes whitespace escape sequences', () => {
     const attackVectors = [
-      "javascri\npt:alert('xss')",
-      "javascri\rpt:alert('xss')",
-      "javascri\tpt:alert('xss')",
-      "javascrip\\%74t:alert('XSS')",
+      'javascri\npt:alert(\'xss\')',
+      'javascri\rpt:alert(\'xss\')',
+      'javascri\tpt:alert(\'xss\')',
+      'javascrip\\%74t:alert(\'XSS\')',
       'javascrip%5c%72t:alert()',
       'javascrip%5Ctt:alert()',
       'javascrip%255Ctt:alert()',
       'javascrip%25%35Ctt:alert()',
       'javascrip%25%35%43tt:alert()',
       'javascrip%25%32%35%25%33%35%25%34%33rt:alert()',
-      "javascrip%255Crt:alert('%25xss')"
+      'javascrip%255Crt:alert(\'%25xss\')'
     ]
 
     attackVectors.forEach((vector) => {
@@ -182,7 +182,7 @@ describe('sanitizeUrl', () => {
 
       it(`allows ${protocol} urls that start with a letter prefix`, () => {
         expect(sanitizeUrl(`not_${protocol}:alert(document.domain)`)).toBe(
-            `not_${protocol}:alert(document.domain)`
+          `not_${protocol}:alert(document.domain)`
         )
       })
 
@@ -234,7 +234,7 @@ describe('sanitizeUrl', () => {
         expect(
           sanitizeUrl(
             decodeURIComponent(
-                `${protocolWithControlCharacters}:alert(document.domain)`
+              `${protocolWithControlCharacters}:alert(document.domain)`
             )
           )
         ).toBe(BLANK_URL)
@@ -256,7 +256,7 @@ describe('sanitizeUrl', () => {
 
       it(`does not replace ${protocol}: if it is not in the scheme of the URL`, () => {
         expect(sanitizeUrl(`http://example.com#${protocol}:foo`)).toBe(
-            `http://example.com#${protocol}:foo`
+          `http://example.com#${protocol}:foo`
         )
       })
     })

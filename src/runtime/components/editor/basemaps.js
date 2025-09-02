@@ -1,6 +1,6 @@
 import { useRuntimeConfig } from '#imports'
 
-export function getBasemapLayers() {
+export function getBasemapLayers () {
   const config = useRuntimeConfig()
   return {
     carto: {

@@ -125,7 +125,6 @@ function makeNav () {
     const slug = routeParams.slug
     let routeName = routeId
 
-
     // Get matching parameters
     if (routeParams[element]) {
       foundParams[element] = routeParams[element]
@@ -158,12 +157,11 @@ function makeNav () {
       tag = props.extraRouteTags[routeId]
     }
 
-    
     // Check if route exists
     if (slug?.length > 0 && router.hasRoute(routeId + '-slug')) {
       routeName = routeId + '-slug'
     }
-    
+
     // Do not try to create a link if route name does not exist
     if (!router.hasRoute(routeName)) {
       routeName = ''
@@ -173,7 +171,6 @@ function makeNav () {
     if (!routeName && !text) {
       continue
     }
-
 
     // Add to crumbs
     ret.push({

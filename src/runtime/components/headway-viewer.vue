@@ -85,7 +85,7 @@
 <script>
 import { parseHMS, median, formatDuration } from '../plugins/filters-fn'
 
-function departureFilter(values, vmin, vmax) {
+function departureFilter (values, vmin, vmax) {
   const ret = []
   for (let i = 0; i < values.length - 1; i++) {
     const a = values[i]
@@ -101,7 +101,7 @@ function departureFilter(values, vmin, vmax) {
   return ret
 }
 
-export function formatHeadway(hw, tod) {
+export function formatHeadway (hw, tod) {
   if (!hw) {
     return ''
   }
@@ -130,14 +130,14 @@ export function formatHeadway(hw, tod) {
 
 export default {
   props: {
-    headways: { type: Array, default() { return [] } },
+    headways: { type: Array, default () { return [] } },
     showMorning: { type: Boolean, default: true },
     showMidday: { type: Boolean, default: true },
     showAfternoon: { type: Boolean, default: true },
     showNight: { type: Boolean, default: true }
   },
   computed: {
-    hws() {
+    hws () {
       const hwlookup = {
         1: 'weekday',
         6: 'saturday',

@@ -39,7 +39,7 @@
 <script>
 export default {
   props: {
-    files: { type: Array, default() { return [] } }
+    files: { type: Array, default () { return [] } }
   }
 }
 </script>

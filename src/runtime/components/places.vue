@@ -5,7 +5,7 @@
     </slot>
 
     <slot name="description" />
-    <div class="field" v-if="sortedPlaces.length > 1 && showSortBy">
+    <div v-if="sortedPlaces.length > 1 && showSortBy" class="field">
       <label for="sortBy" class="label">Sort places by</label>
       <o-radio v-model="sortBy" native-value="alphabetical">
         Alphabetical
@@ -104,7 +104,7 @@ export default {
     places: {
       client: 'transitland',
       query: q,
-      variables() {
+      variables () {
         const v = {
           level: this.placeLevel,
           include_operators: this.placeLevelInt > 0
@@ -131,20 +131,20 @@ export default {
     city: { type: String, default: null },
     showSortBy: { type: Boolean, default: true }
   },
-  data() {
+  data () {
     return {
       places: [],
       sortBy: 'alphabetical'
     }
   },
   computed: {
-    staticDescription() {
+    staticDescription () {
       if (this.placeTitleName?.length > 0) {
         return `Find transit operators and source data feeds in ${this.placeTitleName}`
       }
       return 'Find transit operators and source data feeds'
     },
-    placeTitleName() {
+    placeTitleName () {
       if (this.city && this.adm1 && this.adm0) {
         return `${this.city}, ${this.adm1}, ${this.adm0}`
       } else if (this.adm1 && this.adm0) {
@@ -154,13 +154,13 @@ export default {
       }
       return ''
     },
-    staticTitle() {
+    staticTitle () {
       if (this.placeTitleName) {
         return `Browse places: ${this.placeTitleName}`
       }
       return 'Browse places'
     },
-    placeLevelInt() {
+    placeLevelInt () {
       if (this.placeLevel === 'ADM0_ADM1') {
         return 1
       }
@@ -169,7 +169,7 @@ export default {
       }
       return 0
     },
-    allOperators() {
+    allOperators () {
       const ret = {}
       for (const p of this.places) {
         for (const o of p.operators || []) {
@@ -182,7 +182,7 @@ export default {
         return an.localeCompare(bn)
       })
     },
-    sortedPlaces() {
+    sortedPlaces () {
       return this.places.slice(0).sort((a, b) => {
         if (this.sortBy === 'count') {
           return b.count - a.count

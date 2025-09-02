@@ -2,7 +2,7 @@ import { proxyRequest, getQuery, H3Event, defineEventHandler } from 'h3'
 import { useRuntimeConfig } from '#imports'
 
 // Use sessions and/or nuxt-csurf to protect this in nuxt.config.ts
-export function proxyHandler(
+export function proxyHandler (
   event: H3Event,
   proxyBase: string,
   graphqlApikey: string
@@ -10,7 +10,6 @@ export function proxyHandler(
   // Check user provided apikey
   const query = getQuery(event)
   const requestApikey = (query.apikey ? query.apikey.toString() : '') || event.headers.get('apikey') || ''
-
 
   // Check user provided bearer
   const requestBearer = event.headers.get('authorization') || ''
@@ -30,12 +29,12 @@ export function proxyHandler(
     proxyBaseUrl.toString()
   )
   // console.log('proxyHandler', target.toString(), 'headers:', headers)
-  return proxyRequest(event, target.toString(), { 
+  return proxyRequest(event, target.toString(), {
     fetchOptions: {
       redirect: 'manual'
     },
     headers
-   })
+  })
 }
 
 export default defineEventHandler((event) => {
