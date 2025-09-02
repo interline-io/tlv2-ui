@@ -1,7 +1,7 @@
 import { navigateTo, useRuntimeConfig, useCsrf, useRoute } from '#imports'
-import { createMixpanel } from '../../lib/mixpanel'
+import { createMixpanel } from '../lib/mixpanel'
+import { getAuthorizeUrl, getLogoutUrl, checkToken } from '../lib/auth0'
 import { useUser, clearUser } from './user'
-import { getAuthorizeUrl, getLogoutUrl, checkToken } from '../../lib/auth0'
 
 const logoutUri = '/'
 

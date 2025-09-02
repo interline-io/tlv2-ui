@@ -1,6 +1,6 @@
 import { defineNuxtModule, addPlugin, addImportsDir, createResolver, addServerHandler, installModule } from '@nuxt/kit'
 import { defu } from 'defu'
-import { type Auth0Options } from './lib/auth0'
+import { type Auth0Options } from './runtime/lib/auth0'
 
 // Config handler
 export interface ModuleOptions extends Auth0Options {

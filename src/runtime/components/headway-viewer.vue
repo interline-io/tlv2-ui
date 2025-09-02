@@ -83,7 +83,7 @@
 </template>
 
 <script>
-import { parseHMS, median, formatDuration } from '../../lib/filters'
+import { parseHMS, median, formatDuration } from '../lib/filters'
 
 function departureFilter (values, vmin, vmax) {
   const ret = []

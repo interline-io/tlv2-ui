@@ -18,11 +18,11 @@ import {
   routeTypeToWords,
   shortenName,
   thousands
-} from '../../lib/filters'
+} from '../lib/filters'
 import {
   sanitizeUrl,
   sanitizeFilename
-} from '../../lib/sanitize'
+} from '../lib/sanitize'
 
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.config.globalProperties.$filters = {

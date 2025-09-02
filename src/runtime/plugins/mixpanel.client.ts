@@ -1,6 +1,6 @@
 import { useRuntimeConfig } from '#imports'
 import { defineNuxtPlugin } from 'nuxt/app'
-import { createMixpanel } from '../../lib/mixpanel'
+import { createMixpanel } from '../lib/mixpanel'
 import { useUser } from '../auth'
 
 export default defineNuxtPlugin(() => {
