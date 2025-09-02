@@ -12,7 +12,7 @@ export default {
     fetched: { type: String, default: null }
   },
   computed: {
-    dataFreshness() {
+    dataFreshness () {
       const daysAgo = []
       const n = new Date()
       try {

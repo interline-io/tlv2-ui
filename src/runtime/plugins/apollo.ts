@@ -6,15 +6,15 @@ import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
 import { useApiEndpoint, useAuthHeaders } from './auth'
 import { defineNuxtPlugin } from '#imports'
 
-export function getApolloClient() {
+export function getApolloClient () {
   return initApolloClient(useApiEndpoint())
 }
 
-export function initApolloClient(apiBase: string) {
-  const httpLink = createUploadLink({uri: apiBase + '/query'})
+export function initApolloClient (apiBase: string) {
+  const httpLink = createUploadLink({ uri: apiBase + '/query' })
   const authMiddleware = new ApolloLink(async (operation, forward) => {
     // Add authorization headers
-    operation.setContext({headers: await useAuthHeaders()})
+    operation.setContext({ headers: await useAuthHeaders() })
     return forward(operation)
   })
   const cache = new InMemoryCache()

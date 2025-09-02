@@ -201,7 +201,7 @@ export default {
       }
       return pats
     },
-    activePattern() {
+    activePattern () {
       for (const pat of this.processedPatterns) {
         if (pat.stop_pattern_id === this.selectedPatternId) {
           return pat
@@ -213,7 +213,7 @@ export default {
       return null
     },
     activePatternId: {
-      get() {
+      get () {
         if (this.selectedPatternId) {
           return this.selectedPatternId
         }
@@ -222,7 +222,7 @@ export default {
         }
         return null
       },
-      set(v) {
+      set (v) {
         this.selectedPatternId = v
       }
     },
@@ -289,10 +289,10 @@ export default {
       ret.sort((a, b) => { return b.count - a.count })
       return ret
     },
-    inboundPatterns() {
+    inboundPatterns () {
       return this.processedPatterns.filter((s) => { return s.direction_id === 0 })
     },
-    outboundPatterns() {
+    outboundPatterns () {
       return this.processedPatterns.filter((s) => { return s.direction_id !== 0 })
     }
   },
