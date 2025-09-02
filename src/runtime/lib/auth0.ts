@@ -24,7 +24,6 @@ export interface Auth0Options {
 }
 
 export function configureAuth0Client (options: Auth0Options): Auth0Client | null {
-  console.log('configureAuth0Client:', options)
   if (authInit) {
     return authClient
   }
