@@ -21,9 +21,9 @@
       "types": "./dist/runtime/config/index.d.ts",
       "import": "./dist/runtime/config/index.js"
     },
-    "./auth": {
-      "types": "./dist/runtime/auth/index.d.ts",
-      "import": "./dist/runtime/auth/index.js"
+    "./lib": {
+      "types": "./dist/runtime/lib/index.d.ts",
+      "import": "./dist/runtime/lib/index.js"
     }
   },
   "main": "./dist/module.mjs",
