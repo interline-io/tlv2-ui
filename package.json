@@ -24,6 +24,10 @@
     "./lib": {
       "types": "./dist/runtime/lib/index.d.ts",
       "import": "./dist/runtime/lib/index.js"
+    },
+    "./auth": {
+      "types": "./dist/runtime/auth/index.d.ts",
+      "import": "./dist/runtime/auth/index.js"
     }
   },
   "main": "./dist/module.mjs",

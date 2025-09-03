@@ -3,11 +3,11 @@
     <client-only>
       <template v-if="user && user.id">
         <span class="name">{{ user.name }}</span>
-        <span class="button is-primary" @click="useLogout">Sign out</span>
+        <span class="button is-primary" @click="emit('logout')">Sign out</span>
       </template>
       <template v-else>
         <div class="field has-addons">
-          <span class="button is-primary" @click="useLogin">Sign in</span>
+          <span class="button is-primary" @click="emit('login')">Sign in</span>
           <a href="https://app.interline.io/products/tlv2_api/orders/new" class="button is-secondary">Sign up</a>
         </div>
       </template>
@@ -17,9 +17,7 @@
 
 <script lang="ts" setup>
 import { useUser } from '../composables/useUser'
-import { useLogin } from '../composables/useLogin'
-import { useLogout } from '../composables/useLogout'
-
+const emit = defineEmits(['login', 'logout'])
 const user = useUser()
 </script>
 

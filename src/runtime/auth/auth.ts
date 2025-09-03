@@ -1,53 +1,21 @@
-import { navigateTo, useRuntimeConfig, useCsrf, useRoute } from '#imports'
-import { createMixpanel } from '../lib/mixpanel'
-import { getAuthorizeUrl, getLogoutUrl, checkToken } from '../lib/auth0'
-import { useUser, clearUser } from './user'
-import { debugLog } from '../lib/log'
-
-const logoutUri = '/'
+import { useRuntimeConfig } from '#imports'
+import { User } from './user'
 
 /// ////////////////////
 // Composables
 /// ////////////////////
 
-// JWT
-const useJwt = async () => {
-  const { token, mustReauthorize } = await checkToken()
-  if (mustReauthorize) {
-    debugLog('useJwt: mustReauthorize')
-    clearUser()
-    return ''
-  }
-  return token
-}
-
 // Headers, including CSRF
-export const useAuthHeaders = async () => {
+export const useAuthHeaders = async (): Promise<Record<string, string>> => {
   const config = useRuntimeConfig()
-  const headers: Record<string, string> = {}
-
-  // CSRF
-  // NOTE: For unknown reasons, useCsrf will panic if called after useJwt.
-  if (config.public.tlv2?.useProxy) {
-    const { headerName: csrfHeader, csrf: csrfToken } = useCsrf()
-    headers[csrfHeader] = csrfToken
+  if (config.public.tlv2?.authCheck) {
+    const { headers } = await config.public.tlv2.authCheck()
+    return headers
   }
-
-  // JWT
-  const token = await useJwt()
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`
-  }
-
-  // Api key
-  if (import.meta.server && config.tlv2?.graphqlApikey) {
-    headers['apikey'] = config.tlv2?.graphqlApikey
-  }
-  // debugLog('useAuthHeaders:', headers)
-  return headers
+  return {}
 }
 
-export const useApiEndpoint = (path?: string) => {
+export const useApiEndpoint = (path?: string): string => {
   const config = useRuntimeConfig()
   const apiBase = import.meta.server
     ? (config.tlv2?.proxyBase)
@@ -55,36 +23,28 @@ export const useApiEndpoint = (path?: string) => {
   return apiBase + (path || '')
 }
 
-// Login
-export const useLogin = async (targetUrl: null | string) => {
-  debugLog('useLogin')
-  // Get current route's full path if no targetUrl provided
-  const route = useRoute()
-  targetUrl = targetUrl || route.fullPath
-  debugLog('useLogin with targetUrl:', targetUrl)
-  return navigateTo(await getAuthorizeUrl(targetUrl), { external: true })
-}
-
-// Logout
-export const useLogout = async () => {
-  debugLog('useLogout')
-  // Reset Mixpanel before redirecting
+export const useUser = async (): Promise<User> => {
   const config = useRuntimeConfig()
-  const mixpanel = createMixpanel(config.public.tlv2?.mixpanelApikey, useUser())
-  mixpanel.reset()
-  return navigateTo(await getLogoutUrl(logoutUri), { external: true })
+  if (config.public.tlv2?.authCheck) {
+    const { user } = await config.public.tlv2.authCheck()
+    return user
+  }
+  return new User({ loggedIn: false })
+}
+export const clearUser = async (): Promise<void> => {
+  const config = useRuntimeConfig()
+  if (config.public.tlv2?.clearUser) {
+    return await config.public.tlv2.clearUser()
+  }
+  return
 }
 
-/// ////////////////////
-// User
-/// ////////////////////
-
-export const useLoginGate = (role?: string): boolean => {
+export const useLoginGate = async (role?: string): Promise<boolean> => {
   // console.log('useLoginGate')
   const config = useRuntimeConfig()
   if (config.public.tlv2?.loginGate) {
     // console.log('useLoginGate: config is true')
-    const user = useUser()
+    const user = await useUser()
     if (user?.loggedIn) {
       // console.log('user??', user, 'role:', role, 'has role:', user.hasRole(role))
       // console.log('useLoginGate: user is logged in')

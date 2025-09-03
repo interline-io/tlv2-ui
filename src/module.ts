@@ -1,9 +1,22 @@
 import { defineNuxtModule, addPlugin, addImportsDir, createResolver, addServerHandler, installModule } from '@nuxt/kit'
 import { defu } from 'defu'
 import { type Auth0Options } from './runtime/lib/auth0'
+import { User } from './runtime/auth/user'
+import { H3Event } from 'h3'
+
+interface AuthCheck {
+  user: User
+  headers: Record<string, string>
+}
+
+interface MixpanelInstance {
+  track: (msg: string, args: any) => void
+  identify: (properties?: Record<string, any>) => void
+  reset: () => void
+}
 
 // Config handler
-export interface ModuleOptions extends Auth0Options {
+export interface ModuleOptions {
   bulma: string
   useProxy: boolean
   safelinkUtmSource?: string
@@ -12,6 +25,10 @@ export interface ModuleOptions extends Auth0Options {
   nearmapsApikey?: string
   loginGate?: boolean
   requireLogin?: boolean
+  auth0?: Auth0Options
+  mixpanel?: MixpanelInstance
+  authCheck: (event: H3Event) => Promise<AuthCheck>
+  clearUser: () => Promise<void>
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -43,18 +60,15 @@ export default defineNuxtModule<ModuleOptions>({
       nearmapsApikey: options.nearmapsApikey,
       loginGate: options.loginGate,
       requireLogin: options.requireLogin,
-      auth0Domain: options.auth0Domain,
-      auth0ClientId: options.auth0ClientId,
-      auth0RedirectUri: options.auth0RedirectUri,
-      auth0Audience: options.auth0Audience,
-      auth0Scope: options.auth0Scope,
-    })
-
-    // Setup nuxt-csurf
-    await installModule('nuxt-csurf', {
-      config: {
-        addCsrfTokenToEventCtx: true,
-      }
+      auth0: {
+        auth0Domain: options.auth0.auth0Domain,
+        auth0ClientId: options.auth0.auth0ClientId,
+        auth0RedirectUri: options.auth0.auth0RedirectUri,
+        auth0Audience: options.auth0.auth0Audience,
+        auth0Scope: options.auth0.auth0Scope,
+      },
+      authCheck: options.authCheck,
+      clearUser: options.clearUser
     })
 
     // Setup CSS
@@ -67,8 +81,6 @@ export default defineNuxtModule<ModuleOptions>({
 
     // Setup plugins... not sure why they seem to run in reverse order?
     addPlugin(resolveRuntimeModule('plugins/apollo'))
-    addPlugin(resolveRuntimeModule('plugins/mixpanel.client'))
-    addPlugin(resolveRuntimeModule('plugins/auth.client'))
     addPlugin(resolveRuntimeModule('plugins/oruga'))
     addPlugin(resolveRuntimeModule('plugins/filters'))
     addImportsDir(resolveRuntimeModule('composables'))
