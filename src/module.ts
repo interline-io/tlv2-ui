@@ -35,21 +35,19 @@ export default defineNuxtModule<ModuleOptions>({
     })
 
     // Public runtime options (available on both server and client)
-    nuxt.options.runtimeConfig.public = defu(nuxt.options.runtimeConfig.public, {
-      tlv2: {
-        useProxy: useProxy,
-        safelinkUtmSource: options.safelinkUtmSource,
-        apiBase: options.apiBase,
-        protomapsApikey: options.protomapsApikey,
-        nearmapsApikey: options.nearmapsApikey,
-        loginGate: options.loginGate,
-        requireLogin: options.requireLogin,
-        auth0Domain: options.auth0Domain,
-        auth0ClientId: options.auth0ClientId,
-        auth0RedirectUri: options.auth0RedirectUri,
-        auth0Audience: options.auth0Audience,
-        auth0Scope: options.auth0Scope,
-      }
+    nuxt.options.runtimeConfig.public.tlv2 = defu(nuxt.options.runtimeConfig.public.tlv2, {
+      useProxy: useProxy,
+      safelinkUtmSource: options.safelinkUtmSource,
+      apiBase: options.apiBase,
+      protomapsApikey: options.protomapsApikey,
+      nearmapsApikey: options.nearmapsApikey,
+      loginGate: options.loginGate,
+      requireLogin: options.requireLogin,
+      auth0Domain: options.auth0Domain,
+      auth0ClientId: options.auth0ClientId,
+      auth0RedirectUri: options.auth0RedirectUri,
+      auth0Audience: options.auth0Audience,
+      auth0Scope: options.auth0Scope,
     })
 
     // Setup nuxt-csurf
