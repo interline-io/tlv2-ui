@@ -10,7 +10,8 @@ export interface ModuleOptions extends Auth0Options {
   apiBase?: string
   protomapsApikey?: string
   nearmapsApikey?: string
-  loginGate?: string
+  loginGate?: boolean
+  requireLogin?: boolean
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -42,6 +43,7 @@ export default defineNuxtModule<ModuleOptions>({
         protomapsApikey: options.protomapsApikey,
         nearmapsApikey: options.nearmapsApikey,
         loginGate: options.loginGate,
+        requireLogin: options.requireLogin,
         auth0Domain: options.auth0Domain,
         auth0ClientId: options.auth0ClientId,
         auth0RedirectUri: options.auth0RedirectUri,
