@@ -98,6 +98,7 @@ export async function buildUser () {
 }
 
 export const defineAuthPlugin = () => {
+  debugLog('auth plugin: start')
   // Check if client is configured
   const config = useRuntimeConfig()
   const client = configureAuth0Client(config.public.tlv2 || {})

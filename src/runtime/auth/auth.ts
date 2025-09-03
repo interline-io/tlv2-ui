@@ -61,7 +61,6 @@ export const useLogin = async (targetUrl: null | string) => {
   // Get current route's full path if no targetUrl provided
   const route = useRoute()
   targetUrl = targetUrl || route.fullPath
-  debugLog('useLogin with targetUrl:', targetUrl)
   return navigateTo(await getAuthorizeUrl(targetUrl), { external: true })
 }
 

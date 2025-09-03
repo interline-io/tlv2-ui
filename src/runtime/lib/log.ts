@@ -1,3 +1,3 @@
 export function debugLog (msg: string, ...args: any) {
-  // console.log(msg, ...args)
+  console.log('debug:', msg, ...args)
 }
