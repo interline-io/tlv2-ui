@@ -29,7 +29,8 @@ export default defineNuxtConfig({
       auth0RedirectUri: '',
       auth0Audience: '',
       auth0Scope: '',
-      loginGate: ''
+      loginGate: '',
+      requireLogin: ''
     }
   },
 
