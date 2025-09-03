@@ -11,7 +11,6 @@ const RECHECK_INTERVAL = 600_000
 let authInit = false
 let authClient: Auth0Client
 let logoutUri = '/'
-let graphqlUser = true
 
 export interface Auth0Options {
   auth0ClientId?: string
@@ -20,7 +19,6 @@ export interface Auth0Options {
   auth0Scope?: string
   auth0RedirectUri?: string
   auth0LogoutUri?: string
-  graphqlUser?: boolean
 }
 
 export function configureAuth0Client (options: Auth0Options): Auth0Client | null {
@@ -36,7 +34,6 @@ export function configureAuth0Client (options: Auth0Options): Auth0Client | null
   if (options.auth0ClientId) {
     // Update global config
     logoutUri = String(options.auth0LogoutUri || window?.location?.origin || '/')
-    graphqlUser = options.graphqlUser !== false
 
     const scope = String(options.auth0Scope)
     debugLog('auth0 init:', { scope })
