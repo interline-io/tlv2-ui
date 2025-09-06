@@ -3,7 +3,7 @@
     <o-modal
       :active="modelValue"
       has-modal-card
-      :can-cancel="closable"
+      :cancelable="closable"
       @update:model-value="$emit('update:modelValue', $event)"
       @close="close"
     >
