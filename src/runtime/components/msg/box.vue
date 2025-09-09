@@ -65,6 +65,11 @@ export default {
       return `message mb-4`
     }
   },
+  watch: {
+    collapsed (newVal) {
+      this.isCollapsed = newVal
+    }
+  },
   methods: {
     toggleCollapsed () {
       this.isCollapsed = !this.isCollapsed
