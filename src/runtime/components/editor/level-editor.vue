@@ -37,8 +37,11 @@
 
     <div class="field">
       <o-field label="Location">
-        <span v-if="!geometry" class="is-pulled-right">Draw a polygon by clicking on map; click twice to end</span>
-        <span v-else class="is-pulled-right">Click the polygon twice to enter edit mode</span>
+        <o-button v-if="geometry" class="is-pulled-right" @click="showGeojsonEditor = true">
+          Edit GeoJSON
+        </o-button>
+        <span v-if="!geometry" class="p-2 is-pulled-right">Draw a polygon by clicking on map; click twice to end</span>
+        <span v-else class="p-2 is-pulled-right">Click the polygon twice to enter edit mode</span>
       </o-field>
 
       <o-field>
@@ -87,12 +90,73 @@
           Create Level
         </o-button>
       </template>
+
+      <tl-modal
+        v-model="showGeojsonEditor"
+        title="Edit GeoJSON"
+      >
+        <o-input
+          v-model="geojsonGeometry"
+          :variant="geojsonError ? 'danger' : 'primary'"
+          message="asd"
+          type="textarea"
+          expanded
+          rows="20"
+          :style="{'max-height': '50vh'}"
+        />
+        <o-button class="is-pulled-right" :disabled="!!geojsonError" :variant="geojsonError ? 'danger' : 'primary'" @click="showGeojsonEditor = false">
+          {{ geojsonError ? geojsonError : 'OK' }}
+        </o-button>
+      </tl-modal>
     </div>
   </div>
 </template>
 
 <script>
 import { Level } from './station'
+
+// Helper to recursively strip Z/M dimensions from coordinates
+const stripZandM = (coords) => {
+  if (Array.isArray(coords[0])) {
+    return coords.map(stripZandM)
+  }
+  return coords.slice(0, 2)
+}
+
+const convertToMultiPolygon = (parsed) => {
+  let coords = []
+  if (parsed.type === 'FeatureCollection') {
+    for (const feat of parsed.features) {
+      if (feat.geometry.type === 'Polygon') {
+        coords.push(stripZandM(feat.geometry.coordinates))
+      } else if (feat.geometry.type === 'MultiPolygon') {
+        for (const poly of feat.geometry.coordinates) {
+          coords.push(stripZandM(poly))
+        }
+      }
+    }
+  } else if (parsed.type === 'Feature') {
+    if (parsed.geometry.type === 'Polygon') {
+      coords.push(stripZandM(parsed.geometry.coordinates))
+    } else if (parsed.geometry.type === 'MultiPolygon') {
+      for (const poly of parsed.geometry.coordinates) {
+        coords.push(stripZandM(poly))
+      }
+    }
+  } else if (parsed.type === 'Polygon') {
+    coords.push(stripZandM(parsed.coordinates))
+  } else if (parsed.type === 'MultiPolygon') {
+    for (const poly of parsed.coordinates) {
+      coords.push(stripZandM(poly))
+    }
+  } else {
+    throw 'GeoJSON must be a Polygon or MultiPolygon'
+  }
+  return {
+    type: 'MultiPolygon',
+    coordinates: coords
+  }
+}
 
 export default {
   props: {
@@ -119,10 +183,29 @@ export default {
   data () {
     return {
       level: new Level(this.value).setDefaults(),
-      basemap: 'carto'
+      basemap: 'carto',
+      showGeojsonEditor: false,
+      geojsonError: null,
+      geojsonGeometryBuffer: ''
     }
   },
   computed: {
+    geojsonGeometry: {
+      get () {
+        return this.geojsonGeometryBuffer || JSON.stringify(this.geometry, null, 2)
+      },
+      set (value) {
+        this.geojsonGeometryBuffer = value
+        let parsed = null
+        try {
+          parsed = JSON.parse(value)
+        } catch (e) {
+          this.geojsonError = 'Invalid JSON'
+          return
+        }
+        this.setGeometry(parsed)
+      }
+    },
     geometry () {
       return this.level.geometry
     },
@@ -131,8 +214,8 @@ export default {
       return [
         {
           type: 'Feature',
-          geometry: { type: 'Polygon', coordinates: this.geometry.coordinates },
-          properties: {}
+          properties: {},
+          geometry: this.geometry
         }
       ]
     },
@@ -154,10 +237,13 @@ export default {
   },
   methods: {
     setGeometry (e) {
-      if (e.features.length !== 1) {
-        return this.error('exactly one feature is required')
+      try {
+        const mp = convertToMultiPolygon(e)
+        this.level.geometry = mp
+        this.geojsonError = null
+      } catch (e) {
+        this.geojsonError = e
       }
-      this.level.geometry = e.features[0].geometry
     }
   }
 }
