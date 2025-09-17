@@ -37,7 +37,7 @@
 
     <div class="field">
       <o-field label="Location">
-        <o-button v-if="geometry" class="is-pulled-right" @click="showGeojsonEditor = true">
+        <o-button class="is-pulled-right" @click="showGeojsonEditor = true">
           Edit GeoJSON
         </o-button>
         <span v-if="!geometry" class="p-2 is-pulled-right">Draw a polygon by clicking on map; click twice to end</span>
@@ -90,7 +90,6 @@
           Create Level
         </o-button>
       </template>
-
       <tl-modal
         v-model="showGeojsonEditor"
         title="Edit GeoJSON"
