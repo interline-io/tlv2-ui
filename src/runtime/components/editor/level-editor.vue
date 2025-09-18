@@ -149,7 +149,7 @@ const convertToMultiPolygon = (parsed) => {
       coords.push(stripZandM(poly))
     }
   } else {
-    throw 'GeoJSON must be a Polygon or MultiPolygon'
+    throw new Error('GeoJSON must be a Polygon or MultiPolygon')
   }
   return {
     type: 'MultiPolygon',
