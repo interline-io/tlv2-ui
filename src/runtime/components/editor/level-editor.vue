@@ -241,7 +241,7 @@ export default {
         this.level.geometry = mp
         this.geojsonError = null
       } catch (e) {
-        this.geojsonError = e
+        this.geojsonError = e.message || e.toString()
       }
     }
   }
