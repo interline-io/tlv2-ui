@@ -97,7 +97,7 @@
         <o-input
           v-model="geojsonGeometry"
           :variant="geojsonError ? 'danger' : 'primary'"
-          message="asd"
+          :message="geojsonError || ''"
           type="textarea"
           expanded
           rows="20"
