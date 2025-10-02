@@ -121,7 +121,7 @@ export default {
     routes: {
       query: routeQuery,
       skip () { return this.servedRouteIds.length === 0 },
-      variables() {
+      variables () {
         return {
           ids: this.servedRouteIds
         }
@@ -160,7 +160,7 @@ export default {
     }
   },
   computed: {
-    searchOrEntityCoords() {
+    searchOrEntityCoords () {
       return this.searchCoords || this.entities[0]?.geometry?.coordinates
     },
     stopFeatures () {

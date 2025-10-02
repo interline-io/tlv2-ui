@@ -29,7 +29,8 @@ export default defineNuxtConfig({
       auth0RedirectUri: '',
       auth0Audience: '',
       auth0Scope: '',
-      loginGate: ''
+      loginGate: '',
+      requireLogin: ''
     }
   },
 
@@ -61,8 +62,15 @@ export default defineNuxtConfig({
         'haversine',
         '@mapbox/mapbox-gl-draw',
         'cytoscape',
-        'mixpanel-browser'
-      ]
+        'mixpanel-browser',
+        '@observablehq/plot',
+        'interval-tree-1d' // distributed as CJS, rather than ESM
+      ],
+      build: {
+        commonjsOptions: {
+          transformMixedEsModules: true // helps with mixed ESM/CJS dependencies
+        }
+      }
     }
   },
 

@@ -1,5 +1,7 @@
 <script lang="ts">
-import { useAuthHeaders, useApiEndpoint } from '../plugins/auth'
+import { useApiEndpoint } from '../composables/useApiEndpoint'
+import { useAuthHeaders } from '../composables/useAuthHeaders'
+
 export default {
   data () {
     return {

@@ -232,6 +232,7 @@
           :show-description-column="showDescriptionColumn"
           :show-date-columns="showDateColumns"
           :show-active-column="showActiveColumn"
+          :show-timeline-chart="true"
           :issue-download-request="issueDownloadRequest"
           @download-triggered="(sha1, isLatest) => $emit('downloadTriggered', sha1, isLatest)"
         />

@@ -22,7 +22,7 @@ export default {
   },
   emits: ['update:modelValue'],
   methods: {
-    clearSearch() {
+    clearSearch () {
       this.$emit('update:modelValue', '')
     }
   }

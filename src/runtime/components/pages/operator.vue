@@ -206,8 +206,7 @@
 <script>
 import { gql } from 'graphql-tag'
 import EntityPageMixin from './entity-page-mixin'
-import { useEventBus } from '#imports'
-
+import { useEventBus } from '../../composables/useEventBus'
 
 const q = gql`
 query ($onestopId: String, $feedOnestopId: String, $limit: Int=10) {
@@ -397,8 +396,8 @@ export default {
       return {
         '@context': 'https://schema.org',
         '@type': 'Organization',
-        name: 'Transit Operator',
-        description: 'Transit operator information',
+        'name': 'Transit Operator',
+        'description': 'Transit operator information',
       }
     }
 
@@ -407,10 +406,10 @@ export default {
     if (this.entity.website) {
       sameAs.push(this.entity.website)
     }
-    
+
     // Add agency URLs
     if (this.entity.agencies) {
-      this.entity.agencies.forEach(agency => {
+      this.entity.agencies.forEach((agency) => {
         if (agency.agency_url && !sameAs.includes(agency.agency_url)) {
           sameAs.push(agency.agency_url)
         }
@@ -428,26 +427,26 @@ export default {
     // Create areaServed from locations data using specific Schema.org types
     const areaServed = []
     if (this.locations && this.locations.length > 0) {
-      this.locations.forEach(location => {
+      this.locations.forEach((location) => {
         // Create individual administrative areas based on available data
         if (location.adm0_name) {
           areaServed.push({
             '@type': 'Country',
-            name: location.adm0_name
+            'name': location.adm0_name
           })
         }
-        
+
         if (location.adm1_name) {
           areaServed.push({
             '@type': 'State',
-            name: location.adm1_name
+            'name': location.adm1_name
           })
         }
-        
+
         if (location.city_name) {
           areaServed.push({
             '@type': 'City',
-            name: location.city_name
+            'name': location.city_name
           })
         }
       })
@@ -456,9 +455,9 @@ export default {
     const schema = {
       '@context': 'https://schema.org',
       '@type': 'Organization',
-      name: this.operatorName,
-      description: this.staticDescription,
-      identifier: this.entity.onestop_id
+      'name': this.operatorName,
+      'description': this.staticDescription,
+      'identifier': this.entity.onestop_id
     }
 
     if (sameAs.length > 0) {
@@ -473,7 +472,7 @@ export default {
     const phoneNumbers = this.agencies
       .map(agency => agency.agency_phone)
       .filter(phone => phone && phone.trim())
-    
+
     if (phoneNumbers.length > 0) {
       // Use the first available phone number
       schema.telephone = phoneNumbers[0]

@@ -8,10 +8,10 @@
 
     <tl-feeds-table
       v-model:search="search"
-      v-model:importStatus="importStatus"
-      v-model:feedSpecs="feedSpecs"
-      v-model:fetchError="fetchError"
-      v-model:tagUnstableUrl="tagUnstableUrl"
+      v-model:import-status="importStatus"
+      v-model:feed-specs="feedSpecs"
+      v-model:fetch-error="fetchError"
+      v-model:tag-unstable-url="tagUnstableUrl"
       :limit="limit"
     />
 
@@ -25,53 +25,53 @@ export default {
     limit: { type: Number, default: 100 }
   },
   computed: {
-    staticTitle() {
+    staticTitle () {
       return 'Feeds index'
     },
-    staticDescription() {
+    staticDescription () {
       return 'An index of data souurces'
     },
     search: {
-      get() { return this.$route.query.search },
-      set(v) {
+      get () { return this.$route.query.search },
+      set (v) {
         this.$router.replace({ query: { ...this.$route.query, search: v } })
       }
     },
     fetchError: {
-      get() { return this.$route.query.fetchError },
-      set(v) {
+      get () { return this.$route.query.fetchError },
+      set (v) {
         this.$router.replace({ query: { ...this.$route.query, fetchError: v } })
       }
     },
     importStatus: {
-      get() { return this.$route.query.importStatus },
-      set(v) {
+      get () { return this.$route.query.importStatus },
+      set (v) {
         this.$router.replace({ query: { ...this.$route.query, importStatus: v } })
       }
     },
     feedSpecs: {
-      get() { 
+      get () {
         const specs = this.$route.query.feedSpecs
         // Handle both string and array values
         return specs ? (Array.isArray(specs) ? specs : [specs]) : ['GTFS', 'GTFS_RT', 'GBFS']
       },
-      set(v) {
+      set (v) {
         // If v is empty array or contains all default values, remove query param
         const defaultSpecs = ['GTFS', 'GTFS_RT', 'GBFS']
-        const shouldRemoveParam = !v?.length || 
-          (v.length === defaultSpecs.length && v.every(spec => defaultSpecs.includes(spec)))
-        
-        this.$router.replace({ 
-          query: { 
-            ...this.$route.query, 
-            feedSpecs: shouldRemoveParam ? undefined : v 
-          } 
+        const shouldRemoveParam = !v?.length
+          || (v.length === defaultSpecs.length && v.every(spec => defaultSpecs.includes(spec)))
+
+        this.$router.replace({
+          query: {
+            ...this.$route.query,
+            feedSpecs: shouldRemoveParam ? undefined : v
+          }
         })
       }
     },
     tagUnstableUrl: {
-      get() { return this.$route.query.tagUnstableUrl },
-      set(v) {
+      get () { return this.$route.query.tagUnstableUrl },
+      set (v) {
         this.$router.replace({ query: { ...this.$route.query, tagUnstableUrl: v } })
       }
     }

@@ -40,9 +40,9 @@ export default {
       default: () => {}
     }
   },
-  data() { return { routeKeys } },
+  data () { return { routeKeys } },
   computed: {
-    selectedMode() {
+    selectedMode () {
       // TODO: pass this in?
       const currentRoute = this.$route.name
       for (const [k, r] in Object.entries(routeKeys)) {

@@ -15,8 +15,8 @@
 </template>
 
 <script>
-import StationMixin from './station-mixin'
 import { navigateTo } from '#imports'
+import StationMixin from './station-mixin'
 
 export default {
   mixins: [StationMixin],

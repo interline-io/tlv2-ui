@@ -233,7 +233,7 @@ export default {
     }
   },
   computed: {
-    coordsOrStops() {
+    coordsOrStops () {
       return (this.searchCoords?.length === 2 || this.stopIds.length > 0)
     },
     routeFeatures () {

@@ -64,7 +64,7 @@ mutation($id:Int!) {
 
 export default {
   props: {
-    entity: { type: Object, default() { return null }, required: true }
+    entity: { type: Object, default () { return null }, required: true }
   },
   emits: ['update'],
   data () {

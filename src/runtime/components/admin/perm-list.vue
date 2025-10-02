@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import { useUser } from '../../plugins/auth'
+import { useUser } from '../../composables/useUser'
 import Loadable from '../loadable'
 
 export default {

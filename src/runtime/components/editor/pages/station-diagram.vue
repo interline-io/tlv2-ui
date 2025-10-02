@@ -75,11 +75,10 @@
 </template>
 
 <script>
+import { navigateTo } from '#imports'
 import { schemeRdGy, schemeDark2 } from 'd3-scale-chromatic'
 import { nextTick } from 'vue'
 import StationMixin from './station-mixin'
-import { navigateTo } from '#imports'
-
 import cytoscape from 'cytoscape'
 import fcose from 'cytoscape-fcose'
 

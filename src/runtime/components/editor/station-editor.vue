@@ -105,11 +105,11 @@ export default {
       ]
     },
     valid () {
-      return this.station.stop.geometry &&
-      this.station.stop.stop_name &&
-      this.station.stop.stop_name.length > 0 &&
-      this.station.stop.stop_id &&
-      this.station.stop.stop_id.length > 0
+      return this.station.stop.geometry
+        && this.station.stop.stop_name
+        && this.station.stop.stop_name.length > 0
+        && this.station.stop.stop_id
+        && this.station.stop.stop_id.length > 0
     }
   },
   watch: {

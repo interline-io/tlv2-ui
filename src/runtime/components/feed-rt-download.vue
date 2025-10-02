@@ -113,10 +113,10 @@
 </template>
 
 <script>
-import Loadable from './loadable'
-import { useToastNotification } from '../composables/useToastNotification'
 import VueJsonPretty from 'vue-json-pretty'
 import 'vue-json-pretty/lib/styles.css'
+import Loadable from './loadable'
+import { useToastNotification } from '../composables/useToastNotification'
 export default {
   components: {
     VueJsonPretty

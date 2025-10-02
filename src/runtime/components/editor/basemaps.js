@@ -1,6 +1,6 @@
 import { useRuntimeConfig } from '#imports'
 
-export function getBasemapLayers() {
+export function getBasemapLayers () {
   const config = useRuntimeConfig()
   return {
     carto: {
@@ -24,7 +24,7 @@ export function getBasemapLayers() {
       source: {
         type: 'raster',
         tiles: [
-          `https://api.nearmap.com/tiles/v3/Vert/{z}/{x}/{y}.jpg?apikey=${config.public.nearmapsApikey}`
+          `https://api.nearmap.com/tiles/v3/Vert/{z}/{x}/{y}.jpg?apikey=${config.public.tlv2?.nearmapsApikey}`
         ],
         tileSize: 256,
         attribution: 'Transitland | Interline | &copy; Nearmap'

@@ -188,10 +188,10 @@
 </template>
 
 <script>
+import { navigateTo } from '#imports'
 import { gql } from 'graphql-tag'
 import { Stop, mapLevelKeyFn } from '../station'
 import StationMixin from './station-mixin'
-import { navigateTo } from '#imports'
 import { LocationTypes } from '../basemaps'
 
 function intersection (setA, setB) {

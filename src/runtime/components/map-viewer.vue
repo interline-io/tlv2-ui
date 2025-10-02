@@ -6,7 +6,8 @@
 import maplibre from 'maplibre-gl'
 import { noLabels, labels } from 'protomaps-themes-base'
 import { nextTick } from 'vue'
-import { useAuthHeaders, useApiEndpoint } from '../plugins/auth'
+import { useApiEndpoint } from '../composables/useApiEndpoint'
+import { useAuthHeaders } from '../composables/useAuthHeaders'
 import mapLayers from './map-layers'
 
 export default {
@@ -113,7 +114,7 @@ export default {
           sources: {
             'protomaps-base': {
               type: 'vector',
-              tiles: [`https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf?key=${this.$config.public.protomapsApikey}`],
+              tiles: [`https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf?key=${this.$config.public.tlv2?.protomapsApikey}`],
               maxzoom: 14,
               attribution: '<a href="https://www.transit.land/terms">Transitland</a> | <a href="https://protomaps.com">Protomaps</a> | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             }

@@ -2,7 +2,7 @@ export default {
   props: {
     limit: { type: Number, default: 100 }
   },
-  data() {
+  data () {
     return {
       hasMore: false,
       prevAfter: null,
@@ -12,7 +12,7 @@ export default {
     }
   },
   methods: {
-    showAll() {
+    showAll () {
       const newLimit = 1000
       const lastId = this.entities.length > 0 ? this.entities[this.entities.length - 1].id : 0
       this.$apollo.queries.entities.fetchMore({

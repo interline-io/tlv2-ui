@@ -80,19 +80,19 @@ export default {
       if (this.feedOnestopId || this.feedVersionSha1 || this.entityId) {
         return this.searchKey
       }
-      
+
       // Check if pathKey contains complex syntax (: or @)
       const pathKeyStr = String(this.pathKey || '')
       if (pathKeyStr.includes(':') || pathKeyStr.includes('@')) {
         return this.searchKey
       }
-      
+
       // Check if pathKey is comma-separated database IDs
-      const kInts = pathKeyStr.split(',').map((s) => parseInt(s)).filter((s) => !isNaN(s))
+      const kInts = pathKeyStr.split(',').map(s => parseInt(s)).filter(s => !isNaN(s))
       if (kInts.length > 0) {
         return { ids: kInts }
       }
-      
+
       // For simple cases (basic onestop IDs), use direct pathKey
       return { onestopId: this.pathKey }
     },

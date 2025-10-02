@@ -15,8 +15,9 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute, useRouter, useEventBus, ref, computed } from '#imports'
+import { useRoute, useRouter, ref, computed } from '#imports'
 import { type RouteParams } from '#vue-router'
+import { useEventBus } from '../composables/useEventBus'
 interface nameOpts { [index: string]: string }
 
 interface nameVal { [index: string]: number }
@@ -125,7 +126,6 @@ function makeNav () {
     const slug = routeParams.slug
     let routeName = routeId
 
-
     // Get matching parameters
     if (routeParams[element]) {
       foundParams[element] = routeParams[element]
@@ -158,12 +158,11 @@ function makeNav () {
       tag = props.extraRouteTags[routeId]
     }
 
-    
     // Check if route exists
     if (slug?.length > 0 && router.hasRoute(routeId + '-slug')) {
       routeName = routeId + '-slug'
     }
-    
+
     // Do not try to create a link if route name does not exist
     if (!router.hasRoute(routeName)) {
       routeName = ''
@@ -173,7 +172,6 @@ function makeNav () {
     if (!routeName && !text) {
       continue
     }
-
 
     // Add to crumbs
     ret.push({
