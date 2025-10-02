@@ -6,7 +6,9 @@ import FsPersister from '@pollyjs/persister-fs'
 Polly.register(FetchAdapter)
 Polly.register(FsPersister)
 
-interface PollyConfig {
+export { Polly }
+
+export interface PollyConfig {
   // Patterns for requests that should pass through without recording
   passthroughPatterns?: string[]
   // Patterns for requests that should be recorded/replayed
