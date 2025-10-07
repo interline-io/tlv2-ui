@@ -48,7 +48,7 @@
         </div>
       </div>
 
-      <tl-loading v-if="$apollo.loading" />
+      <tl-loading v-if="loading" />
 
       <div v-else-if="!coordsOrStops">
         <h6 class="title is-6">
@@ -102,9 +102,153 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import haversine from 'haversine'
 import { gql } from 'graphql-tag'
+import { ref, computed, watch, onMounted, withDefaults } from 'vue'
+import { useQuery } from '@vue/apollo-composable'
+
+// Type definitions
+
+interface Departure {
+  delay?: number
+  estimated?: string
+  estimated_utc?: string
+  scheduled: string
+  stop_timezone?: string
+  uncertainty?: number
+}
+
+interface Agency {
+  id: number
+  agency_id: string
+  agency_name: string
+}
+
+interface Route {
+  id: number
+  route_id: string
+  onestop_id?: string
+  route_short_name?: string
+  route_long_name?: string
+  route_color?: string
+  route_text_color?: string
+  route_type: number
+  route_url?: string
+  feed_onestop_id: string
+  geometry?: any
+  agency: Agency
+}
+
+interface Trip {
+  id: number
+  trip_id: string
+  trip_headsign?: string
+  direction_id: number
+  route: Route
+}
+
+interface DepartureTime {
+  departure_time: string
+  departure: Departure
+  trip: Trip
+}
+
+interface RouteStop {
+  route: Route
+}
+
+interface Stop {
+  id: number
+  onestop_id: string
+  stop_id: string
+  stop_name: string
+  stop_code?: string
+  location_type: number
+  geometry: {
+    type: string
+    coordinates: number[]
+  }
+  route_stops: RouteStop[]
+  departures: DepartureTime[]
+}
+
+interface Feature {
+  type: 'Feature'
+  geometry: any
+  properties: any
+  id: number
+}
+
+interface Point {
+  type: 'Point'
+  coordinates: number[]
+}
+
+interface RouteGroup {
+  route: Route
+  trip_headsign?: string
+  direction_id: number
+  id: string
+  departures: DepartureTime[]
+}
+
+interface AgencyGroup {
+  agency: Agency
+  routes: RouteGroup[]
+}
+
+interface AgencyGroupRecord {
+  agency: Agency
+  routes: Record<string, RouteGroup>
+}
+
+interface StopTimeFilter {
+  use_service_window?: boolean
+  next?: number
+}
+
+interface StopFilter {
+  near?: {
+    lon: number
+    lat: number
+    radius: number
+  }
+}
+
+interface QueryVariables {
+  stopIds?: number[]
+  where?: StopFilter
+  stwhere: StopTimeFilter
+}
+
+interface Props {
+  searchCoords?: number[] | null
+  searchRadius?: number
+  nextSeconds?: number
+  routesPerAgency?: number
+  showDateSelector?: boolean
+  showRadiusSelector?: boolean
+  showFallbackSelector?: boolean
+  showAutoRefresh?: boolean
+  showLastFetched?: boolean
+  autoRefreshInterval?: number
+  stopIds?: number[]
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  searchCoords: null,
+  searchRadius: 200,
+  nextSeconds: 7200,
+  routesPerAgency: 10,
+  showDateSelector: false,
+  showRadiusSelector: false,
+  showFallbackSelector: false,
+  showAutoRefresh: false,
+  showLastFetched: false,
+  autoRefreshInterval: 60,
+  stopIds: () => []
+})
 
 const query = gql`
 query( $stopIds: [Int!], $where: StopFilter, $stwhere: StopTimeFilter, $includeGeometry: Boolean! = false) {
@@ -167,253 +311,254 @@ query( $stopIds: [Int!], $where: StopFilter, $stwhere: StopTimeFilter, $includeG
 }
 `
 
-export default {
-  layout: 'map',
-  props: {
-    searchCoords: { type: Array, default () { return null } },
-    searchRadius: { type: Number, default () { return 200 } },
-    nextSeconds: { type: Number, default () { return 7200 } },
-    routesPerAgency: { type: Number, default () { return 10 } },
-    showDateSelector: { type: Boolean, default () { return false } },
-    showRadiusSelector: { type: Boolean, default () { return false } },
-    showFallbackSelector: { type: Boolean, default () { return false } },
-    showAutoRefresh: { type: Boolean, default () { return false } },
-    showLastFetched: { type: Boolean, default () { return false } },
-    autoRefreshInterval: { type: Number, default () { return 60 } },
-    stopIds: { type: Array, default () { return [] } }
-  },
-  apollo: {
-    departureQuery: {
-      query,
-      skip () { return !this.coordsOrStops },
-      variables () {
-        const q = {
-          stwhere: {
-            use_service_window: this.useServiceWindow,
-            next: this.nextSeconds
-          }
-        }
-        if (this.stopIds.length > 0) {
-          q.stopIds = this.stopIds
-        } else if (this.searchCoords && this.radius > 0) {
-          q.where = {
-            near: {
-              lon: this.searchCoords[0],
-              lat: this.searchCoords[1],
-              radius: this.radius
-            }
-          }
-        }
-        return q
-      },
-      update (data) {
-        this.resetTimer()
-        this.stops = data.stops
-        this.lastFetched = new Date()
-      },
-      error (e) {
-        this.error = e
-      }
-    }
-  },
-  data () {
-    return {
-      timer: null,
-      error: null,
-      lastFetched: null,
-      lastFetchedDisplayKey: 0, // force redraw
-      autoRefresh: true,
-      useServiceWindow: false,
-      displayStartDate: null,
-      allowedRadius: [0, 50, 100, 150, 200, 500, 1000],
-      routesPerAgencyShadow: this.routesPerAgency,
-      stops: [],
-      debug: false,
-      radius: this.searchRadius
-    }
-  },
-  computed: {
-    coordsOrStops () {
-      return (this.searchCoords?.length === 2 || this.stopIds.length > 0)
-    },
-    routeFeatures () {
-      const features = new Map()
-      for (const stop of this.stops || []) {
-        for (const rs of stop.route_stops) {
-          const route = rs.route
-          if (features.has(route.id)) {
-            continue
-          }
-          let routeColor = route.route_color
-          if (routeColor && routeColor.substr(0, 1) !== '#') {
-            routeColor = '#' + routeColor
-          }
-          features.set(route.id,
-            {
-              type: 'Feature',
-              geometry: route.geometry,
-              properties: {
-                id: route.id,
-                route_short_name: route.route_short_name,
-                route_long_name: route.route_long_name,
-                route_type: route.route_type,
-                route_color: routeColor,
-                headway_secs: -1
+// Reactive data
+const timer = ref<NodeJS.Timeout | null>(null)
+const error = ref<string | null>(null)
+const lastFetched = ref<Date | null>(null)
+const lastFetchedDisplayKey = ref<number>(0) // force redraw
+const autoRefresh = ref<boolean>(true)
+const useServiceWindow = ref<boolean>(false)
+const displayStartDate = ref<Date | null>(null)
+const allowedRadius = ref<number[]>([0, 50, 100, 150, 200, 500, 1000])
+const routesPerAgencyShadow = ref<number>(props.routesPerAgency)
+const stops = ref<Stop[]>([])
+const debug = ref<boolean>(false)
+const radius = ref<number>(props.searchRadius)
 
-              },
-              id: route.id
-            })
-        }
-      }
-      return Array.from(features.values())
-    },
-    stopFeatures () {
-      const features = []
-      for (const g of this.stops || []) {
-        features.push({
-          type: 'Feature',
-          geometry: g.geometry,
-          properties: { stop_id: g.stop_id, stop_name: g.stop_name },
-          id: g.id
-        })
-      }
-      return features
-    },
-    currentPoint () {
-      return {
-        type: 'Point',
-        coordinates: this.searchCoords
-      }
-    },
-    filteredStops () {
-      return this.stops.filter((s) => {
-        return s.departures.length > 0 && s.location_type === 0 && s.geometry.coordinates
-      }).sort((a, b) => {
-        const ad = this.haversine(this.currentPoint, a.geometry)
-        const bd = this.haversine(this.currentPoint, b.geometry)
-        return ad - bd
-      })
-    },
-    filteredStopsGroupRoutes () {
-      const makeRouteKey = function (d) {
-        return `${d.trip.direction_id}:${d.trip.route.route_short_name}:${d.trip.route.route_long_name}:${d.trip.trip_headsign}`
-      }
-      // group routes by agency
-      const agencyGroups = {}
-      const seenRoutes = {}
-      for (const stop of this.filteredStops) {
-        for (const d of stop.departures) {
-          // d.stop = stop
-          const agencyKey = d.trip.route.agency.agency_name // d.trip.route.agency.id
-          const routeKey = makeRouteKey(d)
-          if (seenRoutes[routeKey]) {
-            continue
-          }
-          const a = agencyGroups[agencyKey] || {
-            agency: d.trip.route.agency,
-            routes: {}
-          }
-          const r = a.routes[routeKey] || {
-            route: d.trip.route,
-            trip_headsign: d.trip.trip_headsign,
-            direction_id: d.trip.direction_id,
-            id: routeKey,
-            departures: []
-          }
-          r.departures.push(d)
-          a.routes[routeKey] = r
-          agencyGroups[agencyKey] = a
-        }
-        for (const d of stop.departures) {
-          seenRoutes[makeRouteKey(d)] = true
-        }
-      }
-      const ret = []
-      for (const agencyGroup of Object.values(agencyGroups)) {
-        const routes = Object.values(agencyGroup.routes).sort((a, b) => {
-          const aa = a.departures[0].departure.estimated || a.departures[0].departure.scheduled
-          const bb = b.departures[0].departure.estimated || b.departures[0].departure.scheduled
-          if (aa > bb) {
-            return 1
-          }
-          if (aa < bb) {
-            return -1
-          }
-          return 0
-        })
-        ret.push({
-          agency: agencyGroup.agency,
-          routes
-        })
-      }
-      // order by nunber of departures
-      ret.sort((a, b) => {
-        let aa = 0
-        for (const r of a.routes) {
-          aa += r.departures.length
-        }
-        let bb = 0
-        for (const r of b.routes) {
-          bb += r.departures.length
-        }
-        if (aa < bb) {
-          return 1
-        }
-        if (aa > bb) {
-          return -1
-        }
-        return 0
-      })
-      return ret
-    }
-  },
-  watch: {
-    autoRefresh (v) {
-      // Helper to restart interval
-      if (v) {
-        this.refetch()
-      }
-    },
-    searchCoords (v) {
-      this.stops = []
-    }
-  },
-  mounted () {
-    // Force redraw
-    setInterval(() => {
-      this.lastFetchedDisplayKey += 1
-    }, 1000)
-  },
-  methods: {
-    startTimer () {
-      this.timer = setInterval(() => {
-        if (this.autoRefresh) {
-          this.refetch()
-        }
-      }, this.autoRefreshInterval * 1000)
-    },
-    resetTimer () {
-      window.clearInterval(this.timer)
-      this.startTimer()
-    },
-    refetch () {
-      this.$apollo?.queries?.departureQuery.refetch()
-    },
-    expandRoutesPerAgency () {
-      this.routesPerAgencyShadow = 1000
-    },
-    haversine (fromPoint, toPoint) {
-      const d = haversine({
-        latitude: fromPoint.coordinates[1],
-        longitude: fromPoint.coordinates[0]
-      }, {
-        latitude: toPoint.coordinates[1],
-        longitude: toPoint.coordinates[0]
-      }, { unit: 'meter' })
-      return d
+// Computed properties for Apollo query
+const coordsOrStops = computed<boolean>(() => {
+  return (props.searchCoords?.length === 2 || props.stopIds.length > 0)
+})
+
+const queryVariables = computed<QueryVariables>(() => {
+  const q: QueryVariables = {
+    stwhere: {
+      use_service_window: useServiceWindow.value,
+      next: props.nextSeconds
     }
   }
+  if (props.stopIds.length > 0) {
+    q.stopIds = props.stopIds
+  } else if (props.searchCoords && radius.value > 0) {
+    q.where = {
+      near: {
+        lon: props.searchCoords[0],
+        lat: props.searchCoords[1],
+        radius: radius.value
+      }
+    }
+  }
+  return q
+})
+
+// Apollo query
+const { result, loading, refetch, onResult, onError } = useQuery<{ stops: Stop[] }>(
+  query,
+  queryVariables,
+  {
+    enabled: coordsOrStops
+  }
+)
+
+// Handle Apollo results
+onResult((queryResult) => {
+  if (queryResult.data?.stops) {
+    resetTimer()
+    stops.value = queryResult.data.stops
+    lastFetched.value = new Date()
+  }
+})
+
+onError((e) => {
+  error.value = e.message
+})
+// Computed properties
+const routeFeatures = computed<Feature[]>(() => {
+  const features = new Map<number, Feature>()
+  for (const stop of stops.value || []) {
+    for (const rs of stop.route_stops) {
+      const route = rs.route
+      if (features.has(route.id)) {
+        continue
+      }
+      let routeColor = route.route_color
+      if (routeColor && routeColor.substr(0, 1) !== '#') {
+        routeColor = '#' + routeColor
+      }
+      features.set(route.id, {
+        type: 'Feature',
+        geometry: route.geometry,
+        properties: {
+          id: route.id,
+          route_short_name: route.route_short_name,
+          route_long_name: route.route_long_name,
+          route_type: route.route_type,
+          route_color: routeColor,
+          headway_secs: -1
+        },
+        id: route.id
+      })
+    }
+  }
+  return Array.from(features.values())
+})
+
+const stopFeatures = computed<Feature[]>(() => {
+  const features: Feature[] = []
+  for (const g of stops.value || []) {
+    features.push({
+      type: 'Feature',
+      geometry: g.geometry,
+      properties: { stop_id: g.stop_id, stop_name: g.stop_name },
+      id: g.id
+    })
+  }
+  return features
+})
+
+const currentPoint = computed<Point>(() => {
+  return {
+    type: 'Point',
+    coordinates: props.searchCoords || []
+  }
+})
+
+const filteredStops = computed<Stop[]>(() => {
+  return stops.value.filter((s) => {
+    return s.departures.length > 0 && s.location_type === 0 && s.geometry.coordinates
+  }).sort((a, b) => {
+    const ad = haversineDistance(currentPoint.value, a.geometry)
+    const bd = haversineDistance(currentPoint.value, b.geometry)
+    return ad - bd
+  })
+})
+
+const filteredStopsGroupRoutes = computed<AgencyGroup[]>(() => {
+  const makeRouteKey = function (d: DepartureTime): string {
+    return `${d.trip.direction_id}:${d.trip.route.route_short_name}:${d.trip.route.route_long_name}:${d.trip.trip_headsign}`
+  }
+  // group routes by agency
+  const agencyGroups: Record<string, AgencyGroupRecord> = {}
+  const seenRoutes: Record<string, boolean> = {}
+  for (const stop of filteredStops.value) {
+    for (const d of stop.departures) {
+      const agencyKey = d.trip.route.agency.agency_name
+      const routeKey = makeRouteKey(d)
+      if (seenRoutes[routeKey]) {
+        continue
+      }
+      const a = agencyGroups[agencyKey] || {
+        agency: d.trip.route.agency,
+        routes: {}
+      }
+      const r = a.routes[routeKey] || {
+        route: d.trip.route,
+        trip_headsign: d.trip.trip_headsign,
+        direction_id: d.trip.direction_id,
+        id: routeKey,
+        departures: []
+      }
+      r.departures.push(d)
+      a.routes[routeKey] = r
+      agencyGroups[agencyKey] = a
+    }
+    for (const d of stop.departures) {
+      seenRoutes[makeRouteKey(d)] = true
+    }
+  }
+  const ret: AgencyGroup[] = []
+  for (const agencyGroup of Object.values(agencyGroups)) {
+    const routes = Object.values(agencyGroup.routes).sort((a, b) => {
+      const aa = a.departures[0].departure.estimated || a.departures[0].departure.scheduled
+      const bb = b.departures[0].departure.estimated || b.departures[0].departure.scheduled
+      if (aa > bb) {
+        return 1
+      }
+      if (aa < bb) {
+        return -1
+      }
+      return 0
+    })
+    ret.push({
+      agency: agencyGroup.agency,
+      routes
+    })
+  }
+  // order by number of departures
+  ret.sort((a, b) => {
+    let aa = 0
+    for (const r of a.routes) {
+      aa += r.departures.length
+    }
+    let bb = 0
+    for (const r of b.routes) {
+      bb += r.departures.length
+    }
+    if (aa < bb) {
+      return 1
+    }
+    if (aa > bb) {
+      return -1
+    }
+    return 0
+  })
+  return ret
+})
+
+// Methods
+const haversineDistance = (fromPoint: Point, toPoint: { coordinates: number[] }): number => {
+  const d = haversine({
+    latitude: fromPoint.coordinates[1],
+    longitude: fromPoint.coordinates[0]
+  }, {
+    latitude: toPoint.coordinates[1],
+    longitude: toPoint.coordinates[0]
+  }, { unit: 'meter' })
+  return d
 }
+
+const startTimer = (): void => {
+  timer.value = setInterval(() => {
+    if (autoRefresh.value) {
+      refetchDepartures()
+    }
+  }, props.autoRefreshInterval * 1000)
+}
+
+const resetTimer = (): void => {
+  if (timer.value) {
+    clearInterval(timer.value)
+  }
+  startTimer()
+}
+
+const refetchDepartures = (): void => {
+  refetch()
+}
+
+const expandRoutesPerAgency = (): void => {
+  routesPerAgencyShadow.value = 1000
+}
+
+// Watchers
+watch(autoRefresh, (v) => {
+  // Helper to restart interval
+  if (v) {
+    refetchDepartures()
+  }
+})
+
+watch(() => props.searchCoords, () => {
+  stops.value = []
+})
+
+// Lifecycle
+onMounted(() => {
+  // Force redraw
+  setInterval(() => {
+    lastFetchedDisplayKey.value += 1
+  }, 1000)
+})
 </script>
 
 <style scoped>
@@ -427,7 +572,7 @@ export default {
   white-space: nowrap;
   min-width:240px;
   -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1) 90%, rgba(0,0,0,0));
-
+  mask-image: linear-gradient(to right, rgba(0,0,0,1) 90%, rgba(0,0,0,0));
 }
 .tl-departure-times {
   display: flex;
@@ -463,8 +608,8 @@ export default {
   width:20px;
 }
 
-.tl-route-icon-fade-out {
-}
+/* .tl-route-icon-fade-out {
+} */
 
 .button-like {
     padding-bottom: 0.5em;
