@@ -2,26 +2,28 @@
   <div>
     <o-field grouped expanded>
       <o-field expanded>
-        <o-autocomplete
-          class="tl-map-search-autocomplete"
-          expanded
-          placeholder="Search stops. Example: Penn Station"
-          group-field="type"
-          group-options="items"
-          :data="searchFiltered"
-          :clearable="true"
-          icon="magnify"
-          @typing="typing"
-          @select="option => setLocation(option.geometry.coordinates)"
-        >
-          <template #default="slotProps">
-            {{ slotProps.option.name }}
-            <span v-if="slotProps.option.agencyName" class="tag">{{ slotProps.option.agencyName }}</span>
-            <div v-for="rs of slotProps.option.routeStops || []" :key="rs.route.id" class="clearfix tag">
-              {{ rs.route.agency.agency_name }} :{{ rs.route.route_short_name }}
-            </div>
-          </template>
-        </o-autocomplete>
+        <div style="position: relative;">
+          <o-autocomplete
+            v-model:input="searchInput"
+            class="tl-map-search-autocomplete"
+            expanded
+            placeholder="Search stops. Example: Penn Station"
+            :options="searchFilteredOptions"
+            :clearable="true"
+            icon="magnify"
+            @input="handleInput"
+            @select="handleSelect"
+          >
+            <template #default="{ option }">
+              {{ option.label }}
+              <span v-if="option.agencyName" class="tag">{{ option.agencyName }}</span>
+              <div v-for="rs of option.routeStops || []" :key="rs.route.id" class="clearfix tag">
+                {{ rs.route.agency.agency_name }} :{{ rs.route.route_short_name }}
+              </div>
+            </template>
+          </o-autocomplete>
+          <div v-if="isLoading" class="loading-indicator" style="position: absolute; top: 12px; right: 40px;" />
+        </div>
       </o-field>
       <o-field>
         <tl-geolocation @set-location="setLocation" />
@@ -32,7 +34,7 @@
 
 <script setup lang="ts">
 import { gql } from 'graphql-tag'
-import { useQuery } from '@vue/apollo-composable'
+import { useLazyQuery } from '@vue/apollo-composable'
 import { ref, computed, watch, withDefaults } from 'vue'
 
 // Type definitions
@@ -89,7 +91,7 @@ interface Polygon {
   coordinates: number[][][]
 }
 
-interface QueryVariables {
+interface QueryVariables extends Record<string, unknown> {
   includeStops: boolean
   includeRoutes: boolean
   routeFilter: {
@@ -166,6 +168,7 @@ query($stopFilter: StopFilter, $routeFilter: RouteFilter, $includeStops: Boolean
 
 // Reactive data
 const search = ref('')
+const searchInput = ref('')
 const error = ref<string | null>(null)
 const minSearchLength = 4
 const coords = ref<number[] | null>(null)
@@ -189,51 +192,26 @@ const bboxPolygon = computed<Polygon | null>(() => {
   return { type: 'Polygon', coordinates: coords }
 })
 
+// Computed property to check if any query is loading
+const isLoading = computed<boolean>(() => {
+  return boundedLoading.value || unboundedLoading.value
+})
+
 // Bounded query (with bbox)
 const {
+  load: loadBoundedQuery,
   result: boundedResult,
   loading: boundedLoading,
   error: boundedError
-} = useQuery<QueryResult, QueryVariables>(
-  searchQuery,
-  () => ({
-    includeStops: props.includeStops,
-    includeRoutes: props.includeRoutes,
-    routeFilter: {
-      search: search.value,
-      within: bboxPolygon.value || undefined
-    },
-    stopFilter: {
-      search: search.value,
-      within: bboxPolygon.value || undefined
-    }
-  }),
-  () => ({
-    enabled: search.value.length >= minSearchLength && !!bboxPolygon.value
-  })
-)
+} = useLazyQuery<QueryResult, QueryVariables>(searchQuery)
 
 // Unbounded query (no bbox)
 const {
+  load: loadUnboundedQuery,
   result: unboundedResult,
   loading: unboundedLoading,
   error: unboundedError
-} = useQuery<QueryResult, QueryVariables>(
-  searchQuery,
-  () => ({
-    includeStops: props.includeStops,
-    includeRoutes: props.includeRoutes,
-    routeFilter: {
-      search: search.value
-    },
-    stopFilter: {
-      search: search.value
-    }
-  }),
-  () => ({
-    enabled: search.value.length >= minSearchLength
-  })
-)
+} = useLazyQuery<QueryResult, QueryVariables>(searchQuery)
 
 // Watch for query results and update local state
 watch(boundedResult, (data) => {
@@ -250,26 +228,45 @@ watch(unboundedResult, (data) => {
   }
 }, { immediate: true })
 
-const searchFiltered = computed<SearchGroup[]>(() => {
-  const stops: SearchItem[] = []
-  const boundedStopIds: Record<number, boolean> = {}
+// Watch for bbox changes and re-execute search if we have a search term
+watch(() => props.bbox, () => {
+  if (search.value.length >= minSearchLength) {
+    executeSearchQueries()
+  }
+})
 
+// Sync searchInput with search for consistency
+watch(searchInput, (newValue) => {
+  if (newValue !== search.value) {
+    handleInput(newValue)
+  }
+})
+
+// For Oruga autocomplete, we need a flat array of options with grouped structure
+const searchFilteredOptions = computed(() => {
+  const options: any[] = []
+  const boundedStopIds: Record<number, boolean> = {}
+  const boundedRouteIds: Record<number, boolean> = {}
+
+  // Process stops
+  const stops: SearchItem[] = []
   for (const stop of boundedStops.value) {
     boundedStopIds[stop.id] = true
     const agencyName = (stop.route_stops.length > 0) ? stop.route_stops[0].route.agency.agency_name : ''
+    console.log('Processing bounded stop:', stop.stop_name, 'geometry:', stop.geometry)
     stops.push({ name: stop.stop_name, routeStops: stop.route_stops, agencyName, geometry: stop.geometry })
   }
 
   for (const stop of unboundedStops.value) {
     if (!boundedStopIds[stop.id]) {
       const agencyName = (stop.route_stops.length > 0) ? stop.route_stops[0].route.agency.agency_name : ''
+      console.log('Processing unbounded stop:', stop.stop_name, 'geometry:', stop.geometry)
       stops.push({ name: stop.stop_name, routeStops: stop.route_stops, agencyName, geometry: stop.geometry })
     }
   }
 
+  // Process routes
   const routes: SearchItem[] = []
-  const boundedRouteIds: Record<number, boolean> = {}
-
   for (const route of boundedRoutes.value) {
     boundedRouteIds[route.id] = true
     const geometry = (route.route_stops.length > 0) ? route.route_stops[0].stop?.geometry || null : null
@@ -285,26 +282,130 @@ const searchFiltered = computed<SearchGroup[]>(() => {
     }
   }
 
-  console.log('routes:', routes)
+  // Create grouped options for Oruga
+  if (props.includeRoutes && routes.length > 0) {
+    options.push({
+      label: 'Routes',
+      options: routes.map(route => ({
+        label: route.name,
+        value: route,
+        agencyName: route.agencyName,
+        geometry: route.geometry
+      }))
+    })
+  }
 
-  const ret: SearchGroup[] = []
-  if (props.includeRoutes) {
-    ret.push({ type: 'Routes', items: routes })
+  if (props.includeStops && stops.length > 0) {
+    options.push({
+      label: 'Stops',
+      options: stops.map(stop => ({
+        label: stop.name,
+        value: stop,
+        agencyName: stop.agencyName,
+        geometry: stop.geometry,
+        routeStops: stop.routeStops
+      }))
+    })
   }
-  if (props.includeStops) {
-    ret.push({ type: 'Stops', items: stops })
-  }
-  return ret
+
+  console.log('options:', options)
+  return options
 })
+
+// Execute search queries
+function executeSearchQueries (): void {
+  if (search.value.length < minSearchLength) {
+    // Clear results if search is too short
+    boundedStops.value = []
+    unboundedStops.value = []
+    boundedRoutes.value = []
+    unboundedRoutes.value = []
+    return
+  }
+
+  // Execute unbounded query (always runs when search is long enough)
+  loadUnboundedQuery(undefined, {
+    includeStops: props.includeStops,
+    includeRoutes: props.includeRoutes,
+    routeFilter: {
+      search: search.value
+    },
+    stopFilter: {
+      search: search.value
+    }
+  })
+
+  // Execute bounded query only if bbox is available
+  if (bboxPolygon.value) {
+    loadBoundedQuery(undefined, {
+      includeStops: props.includeStops,
+      includeRoutes: props.includeRoutes,
+      routeFilter: {
+        search: search.value,
+        within: bboxPolygon.value
+      },
+      stopFilter: {
+        search: search.value,
+        within: bboxPolygon.value
+      }
+    })
+  } else {
+    // Clear bounded results if no bbox
+    boundedStops.value = []
+    boundedRoutes.value = []
+  }
+}
 
 // Methods
 function setLocation (coords: number[]): void {
   emit('setLocation', coords)
 }
 
-function typing (val: string): void {
-  if (val.length >= minSearchLength) {
-    search.value = val
+function handleInput (val: string): void {
+  search.value = val
+  console.log('handleInput:', val)
+  executeSearchQueries()
+}
+
+function handleSelect (option: any): void {
+  console.log('selected option:', JSON.stringify(option, null, 2))
+
+  // Try to get coordinates from multiple possible locations
+  let coordinates: number[] | null = null
+
+  if (option?.geometry?.coordinates) {
+    console.log('Found coordinates at option.geometry.coordinates:', option.geometry.coordinates)
+    coordinates = option.geometry.coordinates
+  } else if (option?.value?.geometry?.coordinates) {
+    console.log('Found coordinates at option.value.geometry.coordinates:', option.value.geometry.coordinates)
+    coordinates = option.value.geometry.coordinates
+  }
+
+  if (coordinates && Array.isArray(coordinates) && coordinates.length >= 2) {
+    console.log('Setting location to:', coordinates)
+    setLocation(coordinates)
+  } else {
+    console.log('No valid coordinates found in option. Geometry structures found:')
+    console.log('option.geometry:', option?.geometry)
+    console.log('option.value?.geometry:', option?.value?.geometry)
   }
 }
 </script>
+
+<style scoped>
+/* Simple loading indicator */
+.loading-indicator {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #3498db;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
