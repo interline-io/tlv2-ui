@@ -5,13 +5,13 @@
         <o-slider
           v-model="radius"
           size="medium"
-          :min="0"
-          :max="2000"
+          :min="100"
+          :max="1000"
           :step="100"
           ticks
           lazy
         >
-          <template v-for="val in [400,1000,2000]" :key="val">
+          <template v-for="val in [100,200,400,800,1000]" :key="val">
             <o-slider-tick :value="val">
               {{ val }}
             </o-slider-tick>
@@ -56,8 +56,7 @@
       </o-field>
     </o-field>
 
-    <tl-loading v-if="$apollo.loading" />
-    <div v-else class="block">
+    <div class="block">
       <o-field grouped>
         <o-field label="Download GeoJSON">
           <tl-geojson-downloader v-if="routeFeatures.length > 0" :features="routeFeatures" label="Routes" :filename="routeName" />
@@ -74,60 +73,88 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue'
 
-export default {
-  props: {
-    routeName: { type: String, default: 'export' },
-    stopIds: { type: Array, default () { return null } },
-    routeIds: { type: Array, default () { return null } },
-    agencyIds: { type: Array, default () { return null } },
-    routeFeatures: { type: Array, default () { return [] } },
-    stopFeatures: { type: Array, default () { return [] } }
-  },
-  data () {
-    return {
-      showOnMap: ['census', 'hull', 'buffer'],
-      censusFeatures: [],
-      bufferFeatures: [],
-      hullFeatures: [],
-      radius: 400.0,
-      layer: 'tract',
-      layerInfo: {
-        tract: { name: 'Tract', plural: 'Tracts' },
-        county: { name: 'County', plural: 'Counties' }
-        // bg: { name: 'Block Group', plural: 'Block Groups' }
-        // state: { name: 'State', plural: 'States' },
-        // city: { name: 'City (Census Designated Place)', plural: 'Cities' },
-        // cd: { name: 'Congressional District', plural: 'Congressional Districts' }
-      }
-    }
-  },
-  computed: {
-    features () {
-      if (this.$apollo.loading) { return [] }
-      let ret = []
-      if (this.showOnMap.includes('buffer')) {
-        ret = ret.concat(this.bufferFeatures)
-      }
-      if (this.showOnMap.includes('hull')) {
-        ret = ret.concat(this.hullFeatures)
-      }
-      if (this.showOnMap.includes('census')) {
-        ret = ret.concat(this.censusFeatures)
-      }
-      return ret
-    }
-  },
-  watch: {
-    features () {
-      this.$emit('setFeatures', this.features)
-    }
-  },
-  methods: {
-    titleize (s) {
-      return s.substr(0, 1).toUpperCase() + s.substr(1)
-    }
-  }
+// TypeScript interfaces
+interface GeoJSONFeature {
+  type: 'Feature'
+  geometry: any
+  properties: Record<string, any>
 }
+
+interface LayerInfo {
+  name: string
+  plural: string
+}
+
+type MapLayerType = 'buffer' | 'hull' | 'census'
+
+// Props
+interface Props {
+  routeName?: string
+  stopIds?: number[] | null
+  routeIds?: number[] | null
+  agencyIds?: number[] | null
+  routeFeatures?: GeoJSONFeature[]
+  stopFeatures?: GeoJSONFeature[]
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  routeName: 'export',
+  stopIds: null,
+  routeIds: null,
+  agencyIds: null,
+  routeFeatures: () => [],
+  stopFeatures: () => []
+})
+
+// Emits
+const emit = defineEmits<{
+  setFeatures: [features: GeoJSONFeature[]]
+}>()
+
+// Reactive data
+const showOnMap = ref<MapLayerType[]>(['census', 'hull', 'buffer'])
+const censusFeatures = ref<GeoJSONFeature[]>([])
+const bufferFeatures = ref<GeoJSONFeature[]>([])
+const hullFeatures = ref<GeoJSONFeature[]>([])
+const radius = ref<number>(400.0)
+const layer = ref<string>('tract')
+
+const layerInfo: Record<string, LayerInfo> = {
+  tract: { name: 'Tract', plural: 'Tracts' },
+  county: { name: 'County', plural: 'Counties' },
+  // bg: { name: 'Block Group', plural: 'Block Groups' }
+  state: { name: 'State', plural: 'States' },
+  // city: { name: 'City (Census Designated Place)', plural: 'Cities' },
+  // cd: { name: 'Congressional District', plural: 'Congressional Districts' }
+}
+
+// Utility functions
+const titleize = (s: string): string => {
+  return s.charAt(0).toUpperCase() + s.slice(1)
+}
+
+// Computed properties
+const features = computed<GeoJSONFeature[]>(() => {
+  const result: GeoJSONFeature[] = []
+
+  if (showOnMap.value.includes('buffer')) {
+    result.push(...bufferFeatures.value)
+  }
+  if (showOnMap.value.includes('hull')) {
+    result.push(...hullFeatures.value)
+  }
+  if (showOnMap.value.includes('census')) {
+    result.push(...censusFeatures.value)
+  }
+
+  return result
+})
+
+// Watch for features changes and emit
+watch(features, (newFeatures) => {
+  emit('setFeatures', newFeatures)
+}, { immediate: true })
 </script>
