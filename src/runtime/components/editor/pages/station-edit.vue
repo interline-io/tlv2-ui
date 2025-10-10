@@ -26,7 +26,7 @@ export default {
       this.station.updateStation(this.$apollo, station.stop)
         .then(() => {
           navigateTo({
-            name: 'editor-feedKey-feedVersionKey-stations-stationKey',
+            name: this.editorRoutes.stationIndex,
             params: {
               feedKey: this.feedKey,
               feedVersionKey: this.feedVersionKey,
@@ -50,7 +50,7 @@ export default {
       this.station.deleteStation(this.$apollo, station)
         .then(() => {
           navigateTo({
-            name: 'editor-feedKey-feedVersionKey-stations',
+            name: this.editorRoutes.stations,
             params: {
               feedKey: this.feedKey,
               feedVersionKey: this.feedVersionKey

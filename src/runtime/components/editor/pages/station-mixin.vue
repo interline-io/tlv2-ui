@@ -1,6 +1,7 @@
 <script>
 import { gql } from 'graphql-tag'
 import { Stop, Station, stationQuery, stationStopQuery, mapLevelKeyFn } from '../station'
+import { useEditorRoutes } from '../../../composables/useEditorRoutes'
 
 const currentFeeds = gql`
 query currentFeeds ($feed_onestop_id: String, $feed_version_ids: [Int!]) {
@@ -117,6 +118,8 @@ export default {
   },
   data () {
     return {
+      // TODO: Remove after upgrading components to Vue Composition API
+      editorRoutes: useEditorRoutes(),
       ready: false,
       station: null,
       stations: [],

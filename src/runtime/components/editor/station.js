@@ -199,11 +199,14 @@ function def (v, d) {
   return v
 }
 
-export const routeKeys = {
-  levels: 'editor-feedKey-feedVersionKey-stations-stationKey',
-  stops: 'editor-feedKey-feedVersionKey-stations-stationKey-stops',
-  pathways: 'editor-feedKey-feedVersionKey-stations-stationKey-pathways',
-  diagram: 'editor-feedKey-feedVersionKey-stations-stationKey-diagram'
+// Helper function to build route keys with prefix
+export function getRouteKeys (prefix = 'editor') {
+  return {
+    levels: `${prefix}-feedKey-feedVersionKey-stations-stationKey`,
+    stops: `${prefix}-feedKey-feedVersionKey-stations-stationKey-stops`,
+    pathways: `${prefix}-feedKey-feedVersionKey-stations-stationKey-pathways`,
+    diagram: `${prefix}-feedKey-feedVersionKey-stations-stationKey-diagram`
+  }
 }
 
 export class FeedVersion {

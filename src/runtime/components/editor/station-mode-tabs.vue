@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import { routeKeys } from './station'
+import { useEditorRoutes } from '../../composables/useEditorRoutes'
 
 export default {
   props: {
@@ -62,7 +62,17 @@ export default {
       default: null
     }
   },
-  data () { return { routeKeys } },
+  data () {
+    const routes = useEditorRoutes()
+    return {
+      routeKeys: {
+        levels: routes.stationIndex,
+        stops: routes.stationStops,
+        pathways: routes.stationPathways,
+        diagram: routes.stationDiagram
+      }
+    }
+  },
   computed: {
     pathwaysModeEnabled () {
       return true
@@ -72,7 +82,7 @@ export default {
       return this.$route.name
     },
     activeTab () {
-      for (const [k, r] of Object.entries(routeKeys)) {
+      for (const [k, r] of Object.entries(this.routeKeys)) {
         if (this.currentRoute === r) {
           return k
         }
