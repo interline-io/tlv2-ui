@@ -2,9 +2,9 @@
   <div>
     <div v-for="(group, i) in groupedSortedStationLevels" :key="i" class="columns">
       <div v-for="level in group" :key="level.level_id" class="column">
-        <div class="box m-1 p-1 columns">
+        <div :class="level.level_index != null ? 'box m-1 p-1 columns' : 'm-1 p-1 columns'">
           <div class="column is-2">
-            <span class="tag is-light is-large">{{ level.level_index }}</span>
+            <span v-if="level.level_index != null" class="tag is-light is-large">{{ level.level_index }}</span>
           </div>
           <div class="column">
             <h5 class="title is-5">

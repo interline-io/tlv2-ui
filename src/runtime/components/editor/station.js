@@ -425,7 +425,11 @@ export class Station {
     for (const level of (this.stop.levels || [])) {
       this.levels.push(new Level(level))
     }
-    this.levels.push(new Level({ level_name: 'Unassigned' }))
+    // Only add an Unassigned level if one doesn't already exist
+    const hasUnassigned = this.levels.some(level => level.level_name === 'Unassigned' && level.level_index == null)
+    if (!hasUnassigned) {
+      this.levels.push(new Level({ level_name: 'Unassigned' }))
+    }
   }
 
   get id () {
@@ -524,17 +528,21 @@ export class Station {
     // update levels
     const lvls = new Map()
     for (const lvl of this.levels || []) {
-      lvls.set(lvl.id, lvl)
+      // Normalize null/undefined to a consistent key for unassigned levels
+      const levelKey = lvl.id ?? 'unassigned'
+      lvls.set(levelKey, lvl)
     }
     for (const stop of newStops) {
       let lvl = stop.level
-      if (lvl && lvls.has(lvl.id)) {
-        lvl = lvls.get(lvl.id)
+      // Normalize null/undefined to a consistent key for unassigned levels
+      const levelKey = lvl?.id ?? 'unassigned'
+      if (lvl && lvls.has(levelKey)) {
+        lvl = lvls.get(levelKey)
       } else {
         lvl = new Level(lvl)
       }
       lvl.stops.push(stop)
-      lvls.set(lvl.id, lvl)
+      lvls.set(levelKey, lvl)
     }
     // Update
     this.stops = newStops
