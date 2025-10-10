@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import { routeKeys } from './station'
+import { getRouteKeys } from './station'
 
 export default {
   props: {
@@ -62,7 +62,11 @@ export default {
       default: null
     }
   },
-  data () { return { routeKeys } },
+  data () {
+    const config = useRuntimeConfig()
+    const prefix = config.public.tlv2?.editorRoutePrefix || 'editor'
+    return { routeKeys: getRouteKeys(prefix) }
+  },
   computed: {
     pathwaysModeEnabled () {
       return true
@@ -72,7 +76,7 @@ export default {
       return this.$route.name
     },
     activeTab () {
-      for (const [k, r] of Object.entries(routeKeys)) {
+      for (const [k, r] of Object.entries(this.routeKeys)) {
         if (this.currentRoute === r) {
           return k
         }

@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { routeKeys } from './station'
+import { getRouteKeys } from './station'
 
 export default {
   props: {
@@ -40,12 +40,16 @@ export default {
       default: () => {}
     }
   },
-  data () { return { routeKeys } },
+  data () {
+    const config = useRuntimeConfig()
+    const prefix = config.public.tlv2?.editorRoutePrefix || 'editor'
+    return { routeKeys: getRouteKeys(prefix) }
+  },
   computed: {
     selectedMode () {
       // TODO: pass this in?
       const currentRoute = this.$route.name
-      for (const [k, r] in Object.entries(routeKeys)) {
+      for (const [k, r] in Object.entries(this.routeKeys)) {
         if (currentRoute === r) {
           return k
         }

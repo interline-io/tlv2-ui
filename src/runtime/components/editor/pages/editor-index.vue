@@ -24,7 +24,7 @@
             <td>
               <nuxt-link
                 v-if="feed_version.id"
-                :to="{name:'editor-feedKey-feedVersionKey-stations', params: {
+                :to="{name:editorRoutes.stations, params: {
                   feedKey:feed.onestop_id || 'unknown',
                   feedVersionKey:feed_version.id || 'unknown'
                 }}"
@@ -44,6 +44,11 @@ import FeedMixin from './feed-mixin'
 
 export default {
   mixins: [FeedMixin],
+  data () {
+    return {
+      editorRoutes: useEditorRoutes()
+    }
+  },
   head: {
     title: 'Editor'
   }
