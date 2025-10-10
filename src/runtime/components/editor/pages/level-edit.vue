@@ -12,6 +12,7 @@
       :center="station.geometry.coordinates"
       @update="updateLevelHandler"
       @delete="deleteLevelHandler"
+      @cancel="cancelHandler"
     />
   </div>
 </template>
@@ -64,6 +65,16 @@ export default {
           })
         })
         .catch(this.setError)
+    },
+    cancelHandler () {
+      navigateTo({
+        name: this.editorRoutes.stationIndex,
+        params: {
+          feedKey: this.feedKey,
+          feedVersionKey: this.feedVersionKey,
+          stationKey: this.stationKey
+        }
+      })
     }
   }
 }
