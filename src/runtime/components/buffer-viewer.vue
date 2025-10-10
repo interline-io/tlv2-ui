@@ -2,85 +2,130 @@
   <div />
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, watch } from 'vue'
+import { useQuery } from '@vue/apollo-composable'
 import { gql } from 'graphql-tag'
 
-const q = gql`
-query ($route_ids: [Int!], $radius: Float!) {
-  routes: routes(ids: $route_ids) {
-    id
-    route_stop_buffer(radius: $radius) {
-      stop_points
-      stop_buffer
-      stop_convexhull
+// TypeScript interfaces
+interface GeoJSONGeometry {
+  type: string
+  coordinates: any[]
+}
+
+interface GeoJSONFeature {
+  type: 'Feature'
+  geometry: GeoJSONGeometry
+  properties: Record<string, any>
+}
+
+interface RouteStopBuffer {
+  stop_points: GeoJSONGeometry
+  stop_buffer: GeoJSONGeometry
+  stop_convexhull: GeoJSONGeometry
+}
+
+interface Route {
+  id: number
+  route_stop_buffer?: RouteStopBuffer | null
+}
+
+interface RoutesQueryResponse {
+  routes: Route[]
+}
+
+// Props
+interface Props {
+  radius?: number
+  stopIds?: number[] | null
+  routeIds?: number[] | null
+  agencyIds?: number[] | null
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  radius: 400,
+  stopIds: null,
+  routeIds: null,
+  agencyIds: null
+})
+
+// Emits
+const emit = defineEmits<{
+  setBufferFeatures: [features: GeoJSONFeature[]]
+  setHullFeatures: [features: GeoJSONFeature[]]
+}>()
+
+// GraphQL query
+const routesQuery = gql`
+  query ($route_ids: [Int!], $radius: Float!) {
+    routes: routes(ids: $route_ids) {
+      id
+      route_stop_buffer(radius: $radius) {
+        stop_points
+        stop_buffer
+        stop_convexhull
+      }
     }
   }
-}
 `
 
-export default {
-  props: {
-    radius: { type: Number, default: 400 },
-    stopIds: { type: Array, default () { return null } },
-    routeIds: { type: Array, default () { return null } },
-    agencyIds: { type: Array, default () { return null } }
-  },
-  data () {
-    return {
-      routes: []
-    }
-  },
-  apollo: {
-    routes: {
-      client: 'transitland',
-      query: q,
-      variables () {
-        return {
-          radius: this.radius,
-          route_ids: this.routeIds
-        }
-      }
-    }
-  },
-  computed: {
-    bufferFeatures () {
-      if (this.$apollo.loading) { return [] }
-      const ret = []
-      for (const route of this.routes || []) {
-        if (!route.route_stop_buffer) {
-          continue
-        }
-        ret.push({
-          type: 'Feature',
-          geometry: route.route_stop_buffer.stop_buffer,
-          properties: { radius: this.radius }
-        })
-      }
-      return ret
-    },
-    hullFeatures () {
-      if (this.$apollo.loading) { return [] }
-      const ret = []
-      for (const route of this.routes || []) {
-        if (!route.route_stop_buffer) {
-          continue
-        }
-        ret.push({
-          type: 'Feature',
-          geometry: route.route_stop_buffer.stop_convexhull,
-          properties: {}
-        })
-      }
-      return ret
-    }
-  },
-  watch: {
-    bufferFeatures () {
-      this.$emit('setBufferFeatures', this.bufferFeatures)
-    },
-    hullFeatures () {
-      this.$emit('setHullFeatures', this.hullFeatures)
-    }
+// Apollo query
+const { result, loading } = useQuery<RoutesQueryResponse>(
+  routesQuery,
+  () => ({
+    radius: props.radius,
+    route_ids: props.routeIds
+  }),
+  {
+    clientId: 'transitland'
   }
-}
+)
+
+// Computed properties
+const routes = computed((): Route[] => {
+  return result.value?.routes || []
+})
+
+const bufferFeatures = computed((): GeoJSONFeature[] => {
+  if (loading.value) { return [] }
+
+  const features: GeoJSONFeature[] = []
+  for (const route of routes.value) {
+    if (!route.route_stop_buffer) {
+      continue
+    }
+    features.push({
+      type: 'Feature',
+      geometry: route.route_stop_buffer.stop_buffer,
+      properties: { radius: props.radius }
+    })
+  }
+  return features
+})
+
+const hullFeatures = computed((): GeoJSONFeature[] => {
+  if (loading.value) { return [] }
+
+  const features: GeoJSONFeature[] = []
+  for (const route of routes.value) {
+    if (!route.route_stop_buffer) {
+      continue
+    }
+    features.push({
+      type: 'Feature',
+      geometry: route.route_stop_buffer.stop_convexhull,
+      properties: {}
+    })
+  }
+  return features
+})
+
+// Watchers
+watch(bufferFeatures, (newFeatures) => {
+  emit('setBufferFeatures', newFeatures)
+})
+
+watch(hullFeatures, (newFeatures) => {
+  emit('setHullFeatures', newFeatures)
+})
 </script>
