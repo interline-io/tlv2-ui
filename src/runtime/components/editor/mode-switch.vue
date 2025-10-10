@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { getRouteKeys } from './station'
+import { useEditorRoutes } from '../../composables/useEditorRoutes'
 
 export default {
   props: {
@@ -41,9 +41,13 @@ export default {
     }
   },
   data () {
-    const config = useRuntimeConfig()
-    const prefix = config.public.tlv2?.editorRoutePrefix || 'editor'
-    return { routeKeys: getRouteKeys(prefix) }
+    const routes = useEditorRoutes()
+    return {
+      routeKeys: {
+        pathways: routes.stationPathways,
+        diagram: routes.stationDiagram
+      }
+    }
   },
   computed: {
     selectedMode () {
