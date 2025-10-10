@@ -50,61 +50,55 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref } from 'vue'
 import { useToastNotification } from '../composables/useToastNotification'
 
-export default {
-  name: 'ApiExample',
-  props: {
-    title: {
-      type: String,
-      default: 'API Example'
-    },
-    description: {
-      type: String,
-      default: 'Use this endpoint to query the API:'
-    },
-    apiUrl: {
-      type: String,
-      required: true
-    },
-    learnMoreUrl: {
-      type: String,
-      default: null
-    }
-  },
-  data () {
-    return {
-      copying: false
-    }
-  },
-  methods: {
-    async copyToClipboard () {
-      if (!this.apiUrl) return
+// TypeScript interfaces
+interface Props {
+  title?: string
+  description?: string
+  apiUrl: string
+  learnMoreUrl?: string | null
+}
 
-      this.copying = true
+const props = withDefaults(defineProps<Props>(), {
+  title: 'API Example',
+  description: 'Use this endpoint to query the API:',
+  learnMoreUrl: null
+})
 
-      try {
-        await navigator.clipboard.writeText(this.apiUrl)
-        useToastNotification().showToast('API URL copied to clipboard')
-      } catch (err) {
-        console.error('Copy to clipboard failed:', err)
-        // Fallback for older browsers
-        const textArea = document.createElement('textarea')
-        textArea.value = this.apiUrl
-        document.body.appendChild(textArea)
-        textArea.select()
-        document.execCommand('copy')
-        document.body.removeChild(textArea)
-        useToastNotification().showToast('API URL copied to clipboard')
-      }
+// Reactive data
+const copying = ref<boolean>(false)
 
-      // Reset button text after a short delay
-      setTimeout(() => {
-        this.copying = false
-      }, 1500)
-    }
+// Get toast notification composable
+const { showToast } = useToastNotification()
+
+// Methods
+const copyToClipboard = async (): Promise<void> => {
+  if (!props.apiUrl) return
+
+  copying.value = true
+
+  try {
+    await navigator.clipboard.writeText(props.apiUrl)
+    showToast('API URL copied to clipboard')
+  } catch (err) {
+    console.error('Copy to clipboard failed:', err)
+    // Fallback for older browsers
+    const textArea = document.createElement('textarea')
+    textArea.value = props.apiUrl
+    document.body.appendChild(textArea)
+    textArea.select()
+    document.execCommand('copy')
+    document.body.removeChild(textArea)
+    showToast('API URL copied to clipboard')
   }
+
+  // Reset button text after a short delay
+  setTimeout(() => {
+    copying.value = false
+  }, 1500)
 }
 </script>
 
