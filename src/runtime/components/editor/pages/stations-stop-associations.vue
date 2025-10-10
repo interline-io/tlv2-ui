@@ -9,12 +9,12 @@
       :data="stopsWithRefs"
       narrowed
       striped
-      :default-sort="['target_stops', 'asc']"
+      :default-sort="['external_reference.target_active_stop', 'asc']"
     >
       <o-table-column
         v-slot="props"
         sortable
-        field="stop.parent.stop_name"
+        field="parent.stop_name"
         label="Station"
       >
         <template v-if="props.row.parent">
@@ -29,7 +29,7 @@
       <o-table-column
         v-slot="props"
         sortable
-        field="target_feed_onestop_id"
+        field="external_reference.target_feed_onestop_id"
         label="Target feed Onestop ID"
       >
         <code>{{ props.row.external_reference.target_feed_onestop_id }}</code>
@@ -37,14 +37,14 @@
       <o-table-column
         v-slot="props"
         sortable
-        field="target_stop_id"
+        field="external_reference.target_stop_id"
         label="Target stop ID"
       >
         <code>{{ props.row.external_reference.target_stop_id }}</code>
       </o-table-column>
       <o-table-column
         v-slot="props"
-        field="target_stops"
+        field="external_reference.target_active_stop"
         label="Stop ID association found?"
         sortable
       >
@@ -57,7 +57,7 @@
 
       <o-table-column
         v-slot="props"
-        field="location_type"
+        field="external_reference.target_active_stop.location_type"
         label="Target location type"
         sortable
       >
@@ -173,17 +173,7 @@ export default {
         }
         ret.push(stop)
       }
-      return ret.sort((a, b) => {
-        const nameA = (a.parent ? a.parent.stop_name : 'zzz') + a.stop_id
-        const nameB = (b.parent ? b.parent.stop_name : 'zzz') + b.stop_id
-        if (nameA < nameB) {
-          return -1
-        }
-        if (nameA > nameB) {
-          return 1
-        }
-        return 0
-      })
+      return ret
     }
   },
   mounted () {
