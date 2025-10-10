@@ -41,15 +41,9 @@
 
 <script>
 import FeedMixin from './feed-mixin'
-import { useEditorRoutes } from '../../../composables/useEditorRoutes'
 
 export default {
   mixins: [FeedMixin],
-  data () {
-    return {
-      editorRoutes: useEditorRoutes()
-    }
-  },
   head: {
     title: 'Editor'
   }

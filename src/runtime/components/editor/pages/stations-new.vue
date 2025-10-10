@@ -32,7 +32,7 @@ export default {
       station.createStation(this.$apollo, station.stop)
         .then(() => {
           navigateTo({
-            name: 'editor-feedKey-feedVersionKey-stations-stationKey',
+            name: this.editorRoutes.stationIndex,
             params: {
               feedKey: this.feedKey,
               feedVersionKey: this.feedVersionKey,

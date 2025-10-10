@@ -27,7 +27,7 @@ export default {
     createLevelHandler (level) {
       this.station.createLevel(this.$apollo, level).then(() => {
         navigateTo({
-          name: 'editor-feedKey-feedVersionKey-stations-stationKey',
+          name: this.editorRoutes.stationIndex,
           params: {
             feedKey: this.feedKey,
             feedVersionKey: this.feedVersionKey,
