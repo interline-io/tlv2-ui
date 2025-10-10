@@ -146,7 +146,7 @@ const valid = computed((): boolean => {
 const save = async () => {
   mutationLoading.value = true
   error.value = null
-  
+
   try {
     const result = await updateFeedVersion({
       set: {
@@ -155,9 +155,9 @@ const save = async () => {
         description: entity.value.description
       }
     })
-    
+
     mutationLoading.value = false
-    
+
     if (result?.data?.feed_version_update) {
       emit('update', { feed_version: result.data.feed_version_update })
     }
