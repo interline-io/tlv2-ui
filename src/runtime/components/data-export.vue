@@ -75,13 +75,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-
-// TypeScript interfaces
-interface GeoJSONFeature {
-  type: 'Feature'
-  geometry: any
-  properties: Record<string, any>
-}
+import type { Feature } from 'geojson'
 
 interface LayerInfo {
   name: string
@@ -96,8 +90,8 @@ interface Props {
   stopIds?: number[] | null
   routeIds?: number[] | null
   agencyIds?: number[] | null
-  routeFeatures?: GeoJSONFeature[]
-  stopFeatures?: GeoJSONFeature[]
+  routeFeatures?: Feature[]
+  stopFeatures?: Feature[]
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -111,14 +105,14 @@ const props = withDefaults(defineProps<Props>(), {
 
 // Emits
 const emit = defineEmits<{
-  setFeatures: [features: GeoJSONFeature[]]
+  setFeatures: [features: Feature[]]
 }>()
 
 // Reactive data
 const showOnMap = ref<MapLayerType[]>(['census', 'hull', 'buffer'])
-const censusFeatures = ref<GeoJSONFeature[]>([])
-const bufferFeatures = ref<GeoJSONFeature[]>([])
-const hullFeatures = ref<GeoJSONFeature[]>([])
+const censusFeatures = ref<Feature[]>([])
+const bufferFeatures = ref<Feature[]>([])
+const hullFeatures = ref<Feature[]>([])
 const radius = ref<number>(400.0)
 const layer = ref<string>('tract')
 
@@ -137,8 +131,8 @@ const titleize = (s: string): string => {
 }
 
 // Computed properties
-const features = computed<GeoJSONFeature[]>(() => {
-  const result: GeoJSONFeature[] = []
+const features = computed<Feature[]>(() => {
+  const result: Feature[] = []
 
   if (showOnMap.value.includes('buffer')) {
     result.push(...bufferFeatures.value)

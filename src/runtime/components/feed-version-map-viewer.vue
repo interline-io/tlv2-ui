@@ -40,10 +40,11 @@
 import { nextTick, ref, computed, watch, withDefaults } from 'vue'
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
+import type { Geometry } from 'geojson'
 
 interface RouteGeometry {
-  geometry: any
-  combined_geometry: any
+  geometry: Geometry
+  combined_geometry: Geometry
   generated: boolean
   length?: number
   max_segment_length?: number
@@ -59,7 +60,7 @@ interface Stop {
   id: number
   stop_id: string
   stop_name: string
-  geometry: any
+  geometry: Geometry
   location_type?: number
 }
 
@@ -92,11 +93,11 @@ interface Route {
   __typename?: string
 }
 
-interface Feature {
+interface MapFeature {
   id: number
   type: 'Feature'
   properties: any
-  geometry: any
+  geometry: Geometry
 }
 
 interface Props {
@@ -138,8 +139,8 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  setRouteFeatures: [features: Feature[]]
-  setSopFeatures: [features: Feature[]]
+  setRouteFeatures: [features: MapFeature[]]
+  setSopFeatures: [features: MapFeature[]]
 }>()
 
 const q = gql`
@@ -225,8 +226,8 @@ watch(result, (data) => {
 }, { immediate: true })
 
 // Computed properties
-const routeFeatures = computed<Feature[]>(() => {
-  const features: Feature[] = []
+const routeFeatures = computed<MapFeature[]>(() => {
+  const features: MapFeature[] = []
   for (const feature of routes.value) {
     if (!feature.geometries || feature.geometries.length === 0) {
       continue
@@ -259,8 +260,8 @@ const routeFeatures = computed<Feature[]>(() => {
   return features
 })
 
-const stopFeatures = computed<Feature[]>(() => {
-  const features: Feature[] = []
+const stopFeatures = computed<MapFeature[]>(() => {
+  const features: MapFeature[] = []
   for (const feature of routes.value) {
     for (const g of feature.route_stops || []) {
       if (g.stop.location_type === 0 || g.stop.location_type === 2) {

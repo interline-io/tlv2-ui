@@ -5,23 +5,12 @@
 </template>
 
 <script setup lang="ts">
+import type { Feature, FeatureCollection } from 'geojson'
 import { sanitizeFilename } from '../lib/sanitize'
-
-// Types
-interface GeoJSONFeature {
-  type: 'Feature'
-  geometry: any
-  properties?: Record<string, any>
-}
-
-interface GeoJSONFeatureCollection {
-  type: 'FeatureCollection'
-  features: GeoJSONFeature[]
-}
 
 // Props
 const props = withDefaults(defineProps<{
-  features?: GeoJSONFeature[]
+  features?: Feature[]
   filename?: string
   label?: string
 }>(), {
@@ -35,7 +24,7 @@ const saveFile = () => {
   const data = JSON.stringify({
     type: 'FeatureCollection',
     features: props.features
-  } as GeoJSONFeatureCollection)
+  } as FeatureCollection)
 
   const blob = new Blob([data], { type: 'application/json' })
   const a = document.createElement('a')

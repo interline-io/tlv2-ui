@@ -107,8 +107,28 @@ import haversine from 'haversine'
 import { gql } from 'graphql-tag'
 import { ref, computed, watch, onMounted, withDefaults } from 'vue'
 import { useQuery } from '@vue/apollo-composable'
+import type { Geometry, Feature, Point } from 'geojson'
 
 // Type definitions
+
+// Feature property interfaces
+interface StopProperties {
+  stop_id: string
+  stop_name: string
+}
+
+interface RouteProperties {
+  id: number
+  route_short_name: string
+  route_long_name: string
+  route_type: number
+  route_color: string
+  headway_secs: number
+}
+
+// Typed GeoJSON Features
+type StopFeature = Feature<Geometry, StopProperties> & { id: number }
+type RouteFeature = Feature<Geometry, RouteProperties> & { id: number }
 
 interface Departure {
   delay?: number
@@ -136,7 +156,7 @@ interface Route {
   route_type: number
   route_url?: string
   feed_onestop_id: string
-  geometry?: any
+  geometry?: Geometry
   agency: Agency
 }
 
@@ -171,18 +191,6 @@ interface Stop {
   }
   route_stops: RouteStop[]
   departures: DepartureTime[]
-}
-
-interface Feature {
-  type: 'Feature'
-  geometry: any
-  properties: any
-  id: number
-}
-
-interface Point {
-  type: 'Point'
-  coordinates: number[]
 }
 
 interface RouteGroup {
@@ -373,8 +381,8 @@ onError((e) => {
   error.value = e.message
 })
 // Computed properties
-const routeFeatures = computed<Feature[]>(() => {
-  const features = new Map<number, Feature>()
+const routeFeatures = computed<RouteFeature[]>(() => {
+  const features = new Map<number, RouteFeature>()
   for (const stop of stops.value || []) {
     for (const rs of stop.route_stops) {
       const route = rs.route
@@ -403,12 +411,12 @@ const routeFeatures = computed<Feature[]>(() => {
   return Array.from(features.values())
 })
 
-const stopFeatures = computed<Feature[]>(() => {
-  const features: Feature[] = []
+const stopFeatures = computed<StopFeature[]>(() => {
+  const features: StopFeature[] = []
   for (const g of stops.value || []) {
     features.push({
       type: 'Feature',
-      geometry: g.geometry,
+      geometry: g.geometry as Geometry,
       properties: { stop_id: g.stop_id, stop_name: g.stop_name },
       id: g.id
     })
@@ -505,8 +513,8 @@ const filteredStopsGroupRoutes = computed<AgencyGroup[]>(() => {
   return ret
 })
 
-// Methods
-const haversineDistance = (fromPoint: Point, toPoint: { coordinates: number[] }): number => {
+// Methods  
+const haversineDistance = (fromPoint: Point, toPoint: Geometry): number => {
   const d = haversine({
     latitude: fromPoint.coordinates[1],
     longitude: fromPoint.coordinates[0]

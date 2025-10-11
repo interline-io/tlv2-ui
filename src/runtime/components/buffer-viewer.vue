@@ -7,22 +7,13 @@ import { computed, watch } from 'vue'
 import { useQuery } from '@vue/apollo-composable'
 import { gql } from 'graphql-tag'
 
+import type { Geometry, Feature } from 'geojson'
+
 // TypeScript interfaces
-interface GeoJSONGeometry {
-  type: string
-  coordinates: any[]
-}
-
-interface GeoJSONFeature {
-  type: 'Feature'
-  geometry: GeoJSONGeometry
-  properties: Record<string, any>
-}
-
 interface RouteStopBuffer {
-  stop_points: GeoJSONGeometry
-  stop_buffer: GeoJSONGeometry
-  stop_convexhull: GeoJSONGeometry
+  stop_points: Geometry
+  stop_buffer: Geometry
+  stop_convexhull: Geometry
 }
 
 interface Route {
@@ -51,8 +42,8 @@ const props = withDefaults(defineProps<Props>(), {
 
 // Emits
 const emit = defineEmits<{
-  setBufferFeatures: [features: GeoJSONFeature[]]
-  setHullFeatures: [features: GeoJSONFeature[]]
+  setBufferFeatures: [features: Feature[]]
+  setHullFeatures: [features: Feature[]]
 }>()
 
 // GraphQL query
@@ -86,10 +77,10 @@ const routes = computed((): Route[] => {
   return result.value?.routes || []
 })
 
-const bufferFeatures = computed((): GeoJSONFeature[] => {
+const bufferFeatures = computed((): Feature[] => {
   if (loading.value) { return [] }
 
-  const features: GeoJSONFeature[] = []
+  const features: Feature[] = []
   for (const route of routes.value) {
     if (!route.route_stop_buffer) {
       continue
@@ -103,10 +94,10 @@ const bufferFeatures = computed((): GeoJSONFeature[] => {
   return features
 })
 
-const hullFeatures = computed((): GeoJSONFeature[] => {
+const hullFeatures = computed((): Feature[] => {
   if (loading.value) { return [] }
 
-  const features: GeoJSONFeature[] = []
+  const features: Feature[] = []
   for (const route of routes.value) {
     if (!route.route_stop_buffer) {
       continue
