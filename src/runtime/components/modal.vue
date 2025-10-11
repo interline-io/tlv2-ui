@@ -39,7 +39,7 @@ interface Props {
   closable?: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   text: '+',
   title: '',
   modelValue: false,
