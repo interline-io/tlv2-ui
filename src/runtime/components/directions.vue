@@ -60,7 +60,7 @@
           <tl-directions-stops v-if="leg.stops" :stops="leg.stops" />
 
           <div class="itin-duration">
-            {{ $filters.formatDuration(leg.duration.duration) }} /
+            {{ formatDuration(leg.duration.duration) }} /
             {{ leg.distance.distance.toFixed(2) }} {{ leg.distance.units.toLowerCase() }}
           </div>
         </div>
@@ -177,7 +177,7 @@
                 </span>
               </div>
               <div class="itin-duration">
-                {{ $filters.formatDuration(itin.duration.duration) }} /
+                {{ formatDuration(itin.duration.duration) }} /
                 {{ itin.distance.distance.toFixed(2) }} {{ itin.distance.units.toLowerCase() }}
               </div>
             </div>
@@ -194,6 +194,7 @@ import { useLazyQuery } from '@vue/apollo-composable'
 import { gql } from 'graphql-tag'
 import { parseISO, format } from 'date-fns'
 import type { Geometry } from 'geojson'
+import { formatDuration } from '../lib/filters'
 
 // Type definitions
 

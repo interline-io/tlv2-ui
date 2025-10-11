@@ -44,7 +44,7 @@
         </o-field>
         <div v-if="lastFetched" :key="lastFetchedDisplayKey" class="tags has-addons">
           <span class="tag is-small">Last checked</span>
-          <span class="tag is-success is-small">{{ $filters.fromNowDate(lastFetched) }}</span>
+          <span class="tag is-success is-small">{{ fromNowDate(lastFetched) }}</span>
         </div>
       </div>
 
@@ -73,7 +73,7 @@
             class="tl-departure-route"
           >
             <nuxt-link
-              :to="$filters.makeRouteLink(sr.route.onestop_id, sr.route.feed_onestop_id, sr.route.feed_version_sha1, sr.route.route_id, sr.route.id, false)"
+              :to="makeRouteLink(sr.route.onestop_id, sr.route.feed_onestop_id, sr.route.feed_version_sha1, sr.route.route_id, sr.route.id, false)"
             >
               <tl-route-icon
                 :key="'icon'+sr.route.id"
@@ -87,9 +87,9 @@
           <div class="tl-departure-times">
             <span v-for="st of sr.departures.slice(0,3)" :key="st.trip.id" class="tl-departure-time tag">
               <template v-if="st.departure.estimated">
-                {{ $filters.reformatHMS(st.departure.estimated) }} &nbsp;<o-icon variant="success" size="small" icon="wifi" />
+                {{ reformatHMS(st.departure.estimated) }} &nbsp;<o-icon variant="success" size="small" icon="wifi" />
               </template><template v-else>
-                {{ $filters.reformatHMS(st.departure.scheduled) }} &nbsp;<o-icon variant="success" size="small" icon="blank" />
+                {{ reformatHMS(st.departure.scheduled) }} &nbsp;<o-icon variant="success" size="small" icon="blank" />
               </template>
             </span>
           </div>
@@ -108,6 +108,7 @@ import { gql } from 'graphql-tag'
 import { ref, computed, watch, onMounted, withDefaults } from 'vue'
 import { useQuery } from '@vue/apollo-composable'
 import type { Geometry, Feature, Point } from 'geojson'
+import { fromNowDate, makeRouteLink, reformatHMS } from '../lib/filters'
 
 // Type definitions
 
