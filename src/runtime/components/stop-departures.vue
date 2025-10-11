@@ -157,6 +157,7 @@ interface Route {
   route_type: number
   route_url?: string
   feed_onestop_id: string
+  feed_version_sha1?: string
   geometry?: Geometry
   agency: Agency
 }

@@ -4,23 +4,25 @@
       <slot>{{ title }}</slot>
     </h1>
     <Head>
-      <Title>{{ title }} </Title>
+      <Title>{{ title }}</Title>
       <Meta name="description" :content="description || title" />
       <Meta name="twitter:title" :content="title" />
-      <Meta name="twitter:description" :content="description || description" />
+      <Meta name="twitter:description" :content="description || title" />
       <Meta name="og:title" :content="title" />
       <Meta name="og:description" :content="description || title" />
     </Head>
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    title: { type: String, default: '', required: true },
-    description: { type: String, default: '' }
-  }
-}
+<script setup lang="ts">
+// Props
+withDefaults(defineProps<{
+  title?: string
+  description?: string
+}>(), {
+  title: '',
+  description: ''
+})
 </script>
 
 <style scoped>
