@@ -30,6 +30,6 @@ const props = withDefaults(defineProps<{
 })
 
 // Composables
+const { loggedIn } = useUser()
 const notOk = useLoginGate(props.role)
-const loggedIn = useUser()?.loggedIn
 </script>
