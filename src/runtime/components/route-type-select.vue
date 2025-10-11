@@ -1,8 +1,8 @@
 <template>
   <o-select
-    :value="modelValue"
+    :model-value="modelValue"
     placeholder="Route vehicle type"
-    @update:model-value="$emit('update:modelValue', $event)"
+    @update:model-value="emit('update:modelValue', $event)"
   >
     <option :value="null">
       All
@@ -38,7 +38,7 @@ withDefaults(defineProps<Props>(), {
 })
 
 // Emits
-defineEmits<{
+const emit = defineEmits<{
   'update:modelValue': [value: string | number | null]
 }>()
 </script>
