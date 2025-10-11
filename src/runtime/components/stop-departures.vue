@@ -127,7 +127,7 @@ interface RouteProperties {
 }
 
 // Typed GeoJSON Features
-type StopFeature = Feature<Geometry, StopProperties> & { id: number }
+type StopFeature = Feature<Point, StopProperties> & { id: number }
 type RouteFeature = Feature<Geometry, RouteProperties> & { id: number }
 
 interface Departure {
@@ -185,10 +185,7 @@ interface Stop {
   stop_name: string
   stop_code?: string
   location_type: number
-  geometry: {
-    type: string
-    coordinates: number[]
-  }
+  geometry: Point
   route_stops: RouteStop[]
   departures: DepartureTime[]
 }
@@ -416,7 +413,7 @@ const stopFeatures = computed<StopFeature[]>(() => {
   for (const g of stops.value || []) {
     features.push({
       type: 'Feature',
-      geometry: g.geometry as Geometry,
+      geometry: g.geometry,
       properties: { stop_id: g.stop_id, stop_name: g.stop_name },
       id: g.id
     })
@@ -513,8 +510,8 @@ const filteredStopsGroupRoutes = computed<AgencyGroup[]>(() => {
   return ret
 })
 
-// Methods  
-const haversineDistance = (fromPoint: Point, toPoint: Geometry): number => {
+// Methods
+const haversineDistance = (fromPoint: Point, toPoint: Point): number => {
   const d = haversine({
     latitude: fromPoint.coordinates[1],
     longitude: fromPoint.coordinates[0]

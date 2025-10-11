@@ -40,7 +40,7 @@
 import { nextTick, ref, computed, watch, withDefaults } from 'vue'
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
-import type { Geometry } from 'geojson'
+import type { Geometry, Point } from 'geojson'
 
 interface RouteGeometry {
   geometry: Geometry
@@ -60,7 +60,7 @@ interface Stop {
   id: number
   stop_id: string
   stop_name: string
-  geometry: Geometry
+  geometry: Point
   location_type?: number
 }
 

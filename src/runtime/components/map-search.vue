@@ -36,12 +36,9 @@
 import { gql } from 'graphql-tag'
 import { useLazyQuery } from '@vue/apollo-composable'
 import { ref, computed, watch, withDefaults } from 'vue'
+import type { Geometry, Polygon, Point } from 'geojson'
 
 // Type definitions
-interface Geometry {
-  type: string
-  coordinates: number[]
-}
 
 interface Agency {
   id: number
@@ -63,7 +60,7 @@ interface RouteStop {
 
 interface Stop {
   id: number
-  geometry: Geometry
+  geometry: Point
   onestop_id: string
   stop_name: string
   route_stops: RouteStop[]
@@ -84,11 +81,6 @@ interface SearchGroup {
 interface BboxCoordinate {
   0: number
   1: number
-}
-
-interface Polygon {
-  type: 'Polygon'
-  coordinates: number[][][]
 }
 
 interface QueryVariables extends Record<string, unknown> {

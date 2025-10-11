@@ -63,6 +63,7 @@ import { computed, ref, watch } from 'vue'
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
 import { thousands } from '../lib/filters'
+import type { Geometry, Feature } from 'geojson'
 
 // TypeScript interfaces
 interface Table {
@@ -77,7 +78,7 @@ interface TableValue {
 
 interface Geography {
   id: string
-  geometry: any // GeoJSON geometry
+  geometry: Geometry
   geoid: string
   name: string
   values: TableValue[]
@@ -117,11 +118,7 @@ interface TableGroup {
   geography: Geography
 }
 
-interface GeoJSONFeature {
-  type: 'Feature'
-  geometry: any
-  properties: Omit<Geography, 'geometry'>
-}
+type CensusFeature = Feature<Geometry, Omit<Geography, 'geometry'>>
 
 // Props
 interface Props {
@@ -146,7 +143,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 // Emits
 const emit = defineEmits<{
-  setFeatures: [features: GeoJSONFeature[]]
+  setFeatures: [features: CensusFeature[]]
 }>()
 
 // GraphQL Query
@@ -322,12 +319,12 @@ const bufferAdjustedSums = computed<Record<string, Record<string, number>>>(() =
   return sums
 })
 
-const features = computed<GeoJSONFeature[]>(() => {
+const features = computed<CensusFeature[]>(() => {
   if (loading.value) {
     return []
   }
 
-  const geoJsonFeatures: GeoJSONFeature[] = []
+  const geoJsonFeatures: CensusFeature[] = []
 
   for (const geography of Object.values(geographiesByID.value)) {
     const { geometry, ...properties } = geography

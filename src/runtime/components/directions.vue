@@ -193,6 +193,7 @@ import { ref, computed, watch, withDefaults } from 'vue'
 import { useLazyQuery } from '@vue/apollo-composable'
 import { gql } from 'graphql-tag'
 import { parseISO, format } from 'date-fns'
+import type { Geometry } from 'geojson'
 
 // Type definitions
 
@@ -250,7 +251,7 @@ interface Leg {
   mode: string
   stops?: Stop[]
   trip?: Trip
-  geometry?: any
+  geometry?: Geometry
 }
 
 interface Itinerary {
