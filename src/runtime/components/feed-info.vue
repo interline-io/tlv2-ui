@@ -33,25 +33,71 @@
   </dl>
 </template>
 
-<script>
-export default {
-  props: {
-    feedInfo: { type: Object, default: {} },
-    showDates: { type: Boolean },
-    showLinks: { type: Boolean }
-  },
-  computed: {
-    feedStartDate () { return this.feedInfo.feed_start_date },
-    feedEndDate () { return this.feedInfo.feed_end_date },
-    feedPublisherName () { return this.feedInfo.feed_publisher_name },
-    feedPublisherUrl () { return this.feedInfo.feed_publisher_url },
-    feedContactEmail () { return this.feedInfo.feed_contact_email },
-    feedContactUrl () { return this.feedInfo.feed_contact_url },
-    feedLang () { return this.feedInfo.feed_lang },
-    feedVersion () { return this.feedInfo.feed_version },
-    defaultLang () { return this.feedInfo.default_lang }
-  }
+<script setup lang="ts">
+import { computed } from 'vue'
+
+// TypeScript interfaces
+interface FeedInfo {
+  feed_start_date?: string | null
+  feed_end_date?: string | null
+  feed_publisher_name?: string | null
+  feed_publisher_url?: string | null
+  feed_contact_email?: string | null
+  feed_contact_url?: string | null
+  feed_lang?: string | null
+  feed_version?: string | null
+  default_lang?: string | null
 }
+
+// Props
+interface Props {
+  feedInfo?: FeedInfo
+  showDates?: boolean
+  showLinks?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  feedInfo: () => ({}),
+  showDates: false,
+  showLinks: false
+})
+
+// Computed properties
+const feedStartDate = computed((): string | null | undefined => {
+  return props.feedInfo?.feed_start_date
+})
+
+const feedEndDate = computed((): string | null | undefined => {
+  return props.feedInfo?.feed_end_date
+})
+
+const feedPublisherName = computed((): string | null | undefined => {
+  return props.feedInfo?.feed_publisher_name
+})
+
+const feedPublisherUrl = computed((): string | null | undefined => {
+  return props.feedInfo?.feed_publisher_url
+})
+
+const feedContactEmail = computed((): string | null | undefined => {
+  return props.feedInfo?.feed_contact_email
+})
+
+const feedContactUrl = computed((): string | null | undefined => {
+  return props.feedInfo?.feed_contact_url
+})
+
+const feedLang = computed((): string | null | undefined => {
+  return props.feedInfo?.feed_lang
+})
+
+const feedVersion = computed((): string | null | undefined => {
+  return props.feedInfo?.feed_version
+})
+
+const defaultLang = computed((): string | null | undefined => {
+  return props.feedInfo?.default_lang
+})
 </script>
 
 <style scoped>
