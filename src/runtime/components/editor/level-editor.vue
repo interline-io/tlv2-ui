@@ -64,50 +64,69 @@
         @changed="setGeometry"
       />
     </div>
-    <div class="buttons is-pulled-right">
-      <template v-if="level.id">
-        <o-button
-          class="button is-primary"
-          :disabled="!valid"
-          @click="$emit('update', level)"
-        >
-          Save
-        </o-button>
-
-        <o-button
-          class="button is-danger"
-          @click="$emit('delete', level)"
-        >
-          Delete
-        </o-button>
-      </template>
-      <template v-else>
-        <o-button
-          class="button is-primary"
-          :disabled="!valid"
-          @click="$emit('create', level)"
-        >
-          Create Level
-        </o-button>
-      </template>
-      <tl-modal
-        v-model="showGeojsonEditor"
-        title="Edit GeoJSON"
-      >
-        <o-input
-          v-model="geojsonGeometry"
-          :variant="geojsonError ? 'danger' : 'primary'"
-          :message="geojsonError || ''"
-          type="textarea"
-          expanded
-          rows="20"
-          :style="{'max-height': '50vh'}"
-        />
-        <o-button class="is-pulled-right" :disabled="!!geojsonError" :variant="geojsonError ? 'danger' : 'primary'" @click="showGeojsonEditor = false">
-          {{ geojsonError ? geojsonError : 'OK' }}
-        </o-button>
-      </tl-modal>
+    <div class="block">
+      <div class="level mt-5">
+        <div class="level-left">
+          <div class="level-item">
+            <o-button
+              class="button is-outlined"
+              @click="$emit('cancel')"
+            >
+              Cancel
+            </o-button>
+          </div>
+        </div>
+        <div class="level-right">
+          <template v-if="level.id">
+            <div class="level-item">
+              <o-button
+                class="button is-primary"
+                :disabled="!valid"
+                @click="$emit('update', level)"
+              >
+                Save
+              </o-button>
+            </div>
+            <div class="level-item">
+              <o-button
+                class="button is-danger"
+                @click="$emit('delete', level)"
+              >
+                Delete
+              </o-button>
+            </div>
+          </template>
+          <template v-else>
+            <div class="level-item">
+              <o-button
+                class="button is-primary"
+                :disabled="!valid"
+                @click="$emit('create', level)"
+              >
+                Create Level
+              </o-button>
+            </div>
+          </template>
+        </div>
+      </div>
     </div>
+    <tl-modal
+      v-model="showGeojsonEditor"
+      title="Edit GeoJSON"
+    >
+      <o-input
+        v-model="geojsonGeometry"
+        :variant="geojsonError ? 'danger' : 'primary'"
+        :message="geojsonError || ''"
+        type="textarea"
+        expanded
+        rows="20"
+        :style="{'max-height': '50vh'}"
+      />
+      <o-button class="is-pulled-right" :disabled="!!geojsonError" :variant="geojsonError ? 'danger' : 'primary'" @click="showGeojsonEditor = false">
+        {{ geojsonError ? geojsonError : 'OK' }}
+      </o-button>
+    </tl-modal>
   </div>
 </template>
 
@@ -178,7 +197,7 @@ export default {
       default () { return {} }
     }
   },
-  emits: ['update', 'delete', 'create'],
+  emits: ['update', 'delete', 'create', 'cancel'],
   data () {
     return {
       level: new Level(this.value).setDefaults(),

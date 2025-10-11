@@ -42,32 +42,51 @@
         @changed="setGeometry"
       />
     </div>
-    <div class="buttons is-pulled-right">
-      <template v-if="station.id">
-        <o-button
-          class="button is-primary"
-          :disabled="!valid"
-          @click="$emit('update', station)"
-        >
-          Save
-        </o-button>
-
-        <o-button
-          class="button is-danger"
-          @click="$emit('delete', station)"
-        >
-          Delete
-        </o-button>
-      </template>
-      <template v-else>
-        <o-button
-          class="button is-primary"
-          :disabled="!valid"
-          @click="$emit('create', station)"
-        >
-          Create Station
-        </o-button>
-      </template>
+    <div class="block">
+      <div class="level mt-5">
+        <div class="level-left">
+          <div class="level-item">
+            <o-button
+              class="button is-outlined"
+              @click="$emit('cancel')"
+            >
+              Cancel
+            </o-button>
+          </div>
+        </div>
+        <div class="level-right">
+          <template v-if="station.id">
+            <div class="level-item">
+              <o-button
+                class="button is-primary"
+                :disabled="!valid"
+                @click="$emit('update', station)"
+              >
+                Save
+              </o-button>
+            </div>
+            <div class="level-item">
+              <o-button
+                class="button is-danger"
+                @click="$emit('delete', station)"
+              >
+                Delete
+              </o-button>
+            </div>
+          </template>
+          <template v-else>
+            <div class="level-item">
+              <o-button
+                class="button is-primary"
+                :disabled="!valid"
+                @click="$emit('create', station)"
+              >
+                Create Station
+              </o-button>
+            </div>
+          </template>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -86,7 +105,7 @@ export default {
       default () { return {} }
     }
   },
-  emits: ['update', 'delete', 'create'],
+  emits: ['update', 'delete', 'create', 'cancel'],
   data () {
     return {
       station: new Station(this.value.stop),
