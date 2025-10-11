@@ -49,7 +49,7 @@
               <td class="has-text-right">
                 <nuxt-link
                   class="button is-small is-primary"
-                  :to="$filters.makeRouteLink(route.onestop_id, route.feed_onestop_id, route.feed_version_sha1, route.route_id, route.id, linkVersion)"
+                  :to="makeRouteLink(route.onestop_id || '', route.feed_onestop_id || '', route.feed_version_sha1 || '', route.route_id, route.id, linkVersion)"
                 >
                   Route
                 </nuxt-link>
@@ -67,6 +67,7 @@
 import { computed, ref } from 'vue'
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
+import { makeRouteLink } from '../lib/filters'
 
 // TypeScript interfaces
 interface Agency {
@@ -184,17 +185,6 @@ onError((err) => {
 const entities = computed<Route[]>(() => result.value?.entities || [])
 
 // Utility functions
-const makeRouteLink = (onestopId?: string, feedOnestopId?: string, feedVersionSha1?: string, routeId?: string, id?: number, linkVersion?: boolean): string => {
-  // Simple implementation - in a real app this would construct the proper route
-  if (onestopId) {
-    return `/routes/${onestopId}`
-  } else if (feedVersionSha1 && routeId) {
-    return `/routes/${feedVersionSha1}/${routeId}`
-  } else if (id) {
-    return `/routes/${id}`
-  }
-  return '/routes'
-}
 
 const headwayTooltip = (hws: HeadwayData[]): string => {
   // Buefy 0.9 will have a tooltip slot and we can use HeadwaysViewer
@@ -213,10 +203,5 @@ const headwayTooltip = (hws: HeadwayData[]): string => {
 const showAll = () => {
   // TODO: Implement pagination logic when needed
   // This was part of the TableViewerMixin functionality
-}
-
-// Filter functions for template
-const $filters = {
-  makeRouteLink
 }
 </script>

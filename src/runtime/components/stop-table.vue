@@ -48,7 +48,7 @@
               </td>
               <td v-if="showLinks" class="has-text-right">
                 <nuxt-link
-                  :to="$filters.makeStopLink(stop.onestop_id, stop.feed_onestop_id, stop.feed_version_sha1, stop.stop_id, stop.id, linkVersion)"
+                  :to="makeStopLink(stop.onestop_id || '', stop.feed_onestop_id || '', stop.feed_version_sha1 || '', stop.stop_id, stop.id, linkVersion)"
                   class="button is-primary is-small"
                 >
                   Stop
@@ -67,7 +67,7 @@
 import { computed, ref } from 'vue'
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
-import { joinUnique } from '../lib/filters'
+import { joinUnique, makeStopLink } from '../lib/filters'
 
 // TypeScript interfaces
 interface Route {
@@ -270,20 +270,7 @@ const stops = computed<Stop[]>(() => {
 })
 
 // Filter functions for template
-const makeStopLink = (onestopId?: string, feedOnestopId?: string, feedVersionSha1?: string, stopId?: string, id?: number, linkVersion?: boolean): string => {
-  // Simple implementation - in a real app this would construct the proper route
-  if (onestopId) {
-    return `/stops/${onestopId}`
-  } else if (feedVersionSha1 && stopId) {
-    return `/stops/${feedVersionSha1}/${stopId}`
-  } else if (id) {
-    return `/stops/${id}`
-  }
-  return '/stops'
-}
-
 const $filters = {
-  joinUnique: (items: string[]) => joinUnique(items),
-  makeStopLink
+  joinUnique: (items: string[]) => joinUnique(items)
 }
 </script>

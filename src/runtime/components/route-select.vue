@@ -11,7 +11,7 @@
         <div v-for="route in routes" :key="route.id">
           <nuxt-link
             v-if="link"
-            :to="$filters.makeRouteLink(route.onestop_id, route.feed_onestop_id, route.feed_version_sha1, route.route_id, route.id, linkVersion)"
+            :to="makeRouteLink(route.onestop_id, route.feed_onestop_id, route.feed_version_sha1, route.route_id, route.id, linkVersion)"
           >
             <tl-route-icon
               :key="route.id"
@@ -34,26 +34,53 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    link: { type: Boolean, default: false },
-    maxAgencyRows: { type: Number, default () { return 5 } },
-    collapse: { type: Boolean },
-    linkVersion: { type: Boolean, default: false },
-    agencyFeatures: { type: Object, default () { return {} } }
-  },
-  computed: {
-    isCollapsed () {
-      return this.routeCount > this.maxAgencyRows && this.collapse
-    },
-    routeCount () {
-      let count = 0
-      for (const v of Object.values(this.agencyFeatures)) {
-        count = count + Object.keys(v).length
-      }
-      return count
-    }
-  }
+<script setup lang="ts">
+import { computed } from 'vue'
+import { makeRouteLink } from '../lib/filters'
+
+// TypeScript interfaces
+interface Route {
+  id: number
+  onestop_id: string
+  feed_onestop_id: string
+  feed_version_sha1: string
+  route_id: string
+  route_type: number
+  route_short_name?: string | null
+  route_long_name?: string | null
 }
+
+interface AgencyFeatures {
+  [agencyName: string]: Route[]
+}
+
+// Props
+interface Props {
+  link?: boolean
+  maxAgencyRows?: number
+  collapse?: boolean
+  linkVersion?: boolean
+  agencyFeatures?: AgencyFeatures
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  link: false,
+  maxAgencyRows: 5,
+  collapse: false,
+  linkVersion: false,
+  agencyFeatures: () => ({})
+})
+
+// Computed properties
+const routeCount = computed((): number => {
+  let count = 0
+  for (const routes of Object.values(props.agencyFeatures)) {
+    count = count + routes.length
+  }
+  return count
+})
+
+const isCollapsed = computed((): boolean => {
+  return routeCount.value > props.maxAgencyRows && !!props.collapse
+})
 </script>
