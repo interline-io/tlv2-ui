@@ -3,10 +3,34 @@ import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
 import { destr } from 'destr'
 import { ApolloClients, provideApolloClients } from '@vue/apollo-composable'
 import { createApolloProvider } from '@vue/apollo-option'
-import { useApiEndpoint, useAuthHeaders } from './auth'
-import { useStationEditorApiEndpoint } from '../composables/useStationEditorApiEndpoint'
-import { useFeedManagementApiEndpoint } from '../composables/useFeedManagementApiEndpoint'
+import { useRuntimeConfig } from 'nuxt/app'
+import { useAuthHeaders } from './auth'
 import { debugLog } from '../lib/log'
+
+function getApiEndpoint (clientType: 'default' | 'stationEditor' | 'feedManagement', path?: string) {
+  const config = useRuntimeConfig()
+  const tlv2Config = config.public.tlv2 as any
+  const defaultEndpoint = typeof window !== 'undefined' ? window.location.origin + '/api/v2' : ''
+
+  let apiBase: string
+  if (clientType === 'feedManagement') {
+    // Fallback chain: feedManagementApiBase → stationEditorApiBase → apiBase → window origin
+    apiBase = tlv2Config?.feedManagementApiBase
+      || tlv2Config?.stationEditorApiBase
+      || tlv2Config?.apiBase
+      || defaultEndpoint
+  } else if (clientType === 'stationEditor') {
+    // Fallback chain: stationEditorApiBase → apiBase → window origin
+    apiBase = tlv2Config?.stationEditorApiBase
+      || tlv2Config?.apiBase
+      || defaultEndpoint
+  } else {
+    // Fallback chain: apiBase → window origin
+    apiBase = tlv2Config?.apiBase || defaultEndpoint
+  }
+
+  return apiBase + (path || '')
+}
 
 export function initApolloClient (endpoint: string, headers: Record<string, string>) {
   const httpLink = createUploadLink({ uri: endpoint })
@@ -24,7 +48,7 @@ export function initApolloClient (endpoint: string, headers: Record<string, stri
 }
 
 export async function getApolloClient () {
-  const endpoint = useApiEndpoint('/query')
+  const endpoint = getApiEndpoint('default', '/query')
   const headers = await useAuthHeaders()
   const apolloClient = initApolloClient(endpoint, headers)
   debugLog('getApolloClient', endpoint)
@@ -32,7 +56,7 @@ export async function getApolloClient () {
 }
 
 export async function getStationEditorApolloClient () {
-  const endpoint = useStationEditorApiEndpoint('/query')
+  const endpoint = getApiEndpoint('stationEditor', '/query')
   const headers = await useAuthHeaders()
   const apolloClient = initApolloClient(endpoint, headers)
   debugLog('getStationEditorApolloClient', endpoint)
@@ -40,7 +64,7 @@ export async function getStationEditorApolloClient () {
 }
 
 export async function getFeedManagementApolloClient () {
-  const endpoint = useFeedManagementApiEndpoint('/query')
+  const endpoint = getApiEndpoint('feedManagement', '/query')
   const headers = await useAuthHeaders()
   const apolloClient = initApolloClient(endpoint, headers)
   debugLog('getFeedManagementApolloClient', endpoint)
