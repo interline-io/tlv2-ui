@@ -71,14 +71,14 @@ export const defineApolloPlugin = async (nuxtApp) => {
   nuxtApp.vueApp.use(apolloProvider)
 
   // composition api
-  nuxtApp.vueApp.provide(ApolloClients, { 
-    default: apolloClient, 
+  nuxtApp.vueApp.provide(ApolloClients, {
+    default: apolloClient,
     transitland: apolloClient,
     stationEditor: stationEditorClient,
     feedManagement: feedManagementClient
   })
-  provideApolloClients({ 
-    default: apolloClient, 
+  provideApolloClients({
+    default: apolloClient,
     transitland: apolloClient,
     stationEditor: stationEditorClient,
     feedManagement: feedManagementClient
