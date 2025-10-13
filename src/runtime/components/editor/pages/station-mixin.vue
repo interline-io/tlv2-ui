@@ -45,7 +45,7 @@ function symmetricDifference (setA, setB) {
 export default {
   apollo: {
     feeds: {
-      client: 'transitland',
+      client: 'stationEditor',
       query: currentFeeds,
       fetchPolicy: 'network-only',
       error (e) {
@@ -59,7 +59,7 @@ export default {
       }
     },
     stationQuery: {
-      client: 'transitland',
+      client: 'stationEditor',
       query: stationQuery,
       fetchPolicy: 'network-only',
       variables () {
@@ -85,7 +85,7 @@ export default {
       }
     },
     stationStopsQuery: {
-      client: 'transitland',
+      client: 'stationEditor',
       query: stationStopQuery,
       fetchPolicy: 'network-only',
       skip () { return this.stopList.length === 0 },

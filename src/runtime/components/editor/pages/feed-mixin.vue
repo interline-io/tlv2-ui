@@ -28,7 +28,7 @@ query currentFeeds ($feed_onestop_id: String, $feed_version_ids: [Int!]) {
 export default {
   apollo: {
     feeds: {
-      client: 'transitland',
+      client: 'stationEditor',
       query: currentFeeds,
       fetchPolicy: 'cache-and-network',
       error (e) {

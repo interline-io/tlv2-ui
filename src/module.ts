@@ -8,6 +8,7 @@ export interface ModuleOptions extends Auth0Options {
   useProxy: boolean
   safelinkUtmSource?: string
   apiBase?: string
+  stationEditorApiBase?: string
   protomapsApikey?: string
   nearmapsApikey?: string
   loginGate?: boolean
@@ -40,6 +41,7 @@ export default defineNuxtModule<ModuleOptions>({
       useProxy: useProxy,
       safelinkUtmSource: options.safelinkUtmSource,
       apiBase: options.apiBase,
+      stationEditorApiBase: options.stationEditorApiBase,
       protomapsApikey: options.protomapsApikey,
       nearmapsApikey: options.nearmapsApikey,
       loginGate: options.loginGate,
