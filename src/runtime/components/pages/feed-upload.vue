@@ -374,7 +374,7 @@ export default {
       this.mutationLoading = true
       this.$apollo
         .mutate({
-          client: 'transitland',
+          client: 'feedManagement',
           mutation: q,
           variables: {
             file,
@@ -397,7 +397,7 @@ export default {
       this.fetchLoading = true
       this.$apollo
         .mutate({
-          client: 'transitland',
+          client: 'feedManagement',
           mutation: fetchQuery,
           variables: {
             file: this.selectedFiles[0],
@@ -421,7 +421,7 @@ export default {
       this.importResult = null
       this.$apollo
         .mutate({
-          client: 'transitland',
+          client: 'feedManagement',
           mutation: importQuery,
           variables: {
             id: fvid

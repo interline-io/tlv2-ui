@@ -41,10 +41,22 @@ export async function getStationEditorApolloClient () {
   return apolloClient
 }
 
+export async function getFeedManagementApolloClient () {
+  const config = useRuntimeConfig()
+  // Fallback chain: feedManagementApiBase → stationEditorApiBase → apiBase
+  const apiBase = config.public.tlv2?.feedManagementApiBase || config.public.tlv2?.stationEditorApiBase || config.public.tlv2?.apiBase || (typeof window !== 'undefined' ? window.location.origin + '/api/v2' : '')
+  const endpoint = apiBase + '/query'
+  const headers = await useAuthHeaders()
+  const apolloClient = initApolloClient(endpoint, headers)
+  debugLog('getFeedManagementApolloClient', endpoint)
+  return apolloClient
+}
+
 export const defineApolloPlugin = async (nuxtApp) => {
   debugLog('apollo plugin: start')
   const apolloClient = await getApolloClient()
   const stationEditorClient = await getStationEditorApolloClient()
+  const feedManagementClient = await getFeedManagementApolloClient()
 
   // options api
   const apolloProvider = createApolloProvider({
@@ -52,21 +64,24 @@ export const defineApolloPlugin = async (nuxtApp) => {
     clients: {
       default: apolloClient,
       transitland: apolloClient,
-      stationEditor: stationEditorClient
+      stationEditor: stationEditorClient,
+      feedManagement: feedManagementClient
     }
   })
   nuxtApp.vueApp.use(apolloProvider)
 
   // composition api
-  nuxtApp.vueApp.provide(ApolloClients, {
-    default: apolloClient,
+  nuxtApp.vueApp.provide(ApolloClients, { 
+    default: apolloClient, 
     transitland: apolloClient,
-    stationEditor: stationEditorClient
+    stationEditor: stationEditorClient,
+    feedManagement: feedManagementClient
   })
-  provideApolloClients({
-    default: apolloClient,
+  provideApolloClients({ 
+    default: apolloClient, 
     transitland: apolloClient,
-    stationEditor: stationEditorClient
+    stationEditor: stationEditorClient,
+    feedManagement: feedManagementClient
   })
 
   // handle cache

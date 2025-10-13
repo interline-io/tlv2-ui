@@ -150,7 +150,7 @@ export default {
   },
   apollo: {
     stops: {
-      client: 'transitland',
+      client: 'stationEditor',
       query: q,
       variables () {
         return {

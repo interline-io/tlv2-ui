@@ -54,7 +54,7 @@ export default {
   },
   apollo: {
     fvs: {
-      client: 'transitland',
+      client: 'feedManagement',
       query: feedVersionQuery,
       variables () {
         return { ids: [this.id] }
@@ -97,7 +97,7 @@ export default {
       this.mutationLoading = true
       this.$apollo
         .mutate({
-          client: 'transitland',
+          client: 'feedManagement',
           mutation: saveFeedVersionMutation,
           variables: {
             set: {

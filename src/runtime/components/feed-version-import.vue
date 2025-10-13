@@ -86,7 +86,7 @@ export default {
       this.mutationLoading = true
       this.$apollo
         .mutate({
-          client: 'transitland',
+          client: 'feedManagement',
           mutation: importFeedVersionQuery,
           variables: {
             id: this.entity.id
@@ -103,7 +103,7 @@ export default {
       this.mutationLoading = true
       this.$apollo
         .mutate({
-          client: 'transitland',
+          client: 'feedManagement',
           mutation: unimportFeedVersionQuery,
           variables: {
             id: this.entity.id

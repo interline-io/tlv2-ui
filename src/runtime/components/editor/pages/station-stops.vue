@@ -279,7 +279,7 @@ export default {
   mixins: [StationMixin],
   apollo: {
     nearbyStopsQuery: {
-      client: 'transitland',
+      client: 'stationEditor',
       query: nearbyStopsQuery,
       skip () { return !this.station }, // run after stations
       error (e) {

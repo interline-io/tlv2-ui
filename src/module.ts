@@ -9,6 +9,7 @@ export interface ModuleOptions extends Auth0Options {
   safelinkUtmSource?: string
   apiBase?: string
   stationEditorApiBase?: string
+  feedManagementApiBase?: string
   protomapsApikey?: string
   nearmapsApikey?: string
   loginGate?: boolean
@@ -42,6 +43,7 @@ export default defineNuxtModule<ModuleOptions>({
       safelinkUtmSource: options.safelinkUtmSource,
       apiBase: options.apiBase,
       stationEditorApiBase: options.stationEditorApiBase,
+      feedManagementApiBase: options.feedManagementApiBase,
       protomapsApikey: options.protomapsApikey,
       nearmapsApikey: options.nearmapsApikey,
       loginGate: options.loginGate,
