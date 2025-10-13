@@ -3,8 +3,9 @@ import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
 import { destr } from 'destr'
 import { ApolloClients, provideApolloClients } from '@vue/apollo-composable'
 import { createApolloProvider } from '@vue/apollo-option'
-import { useRuntimeConfig } from '#imports'
 import { useApiEndpoint, useAuthHeaders } from './auth'
+import { useStationEditorApiEndpoint } from '../composables/useStationEditorApiEndpoint'
+import { useFeedManagementApiEndpoint } from '../composables/useFeedManagementApiEndpoint'
 import { debugLog } from '../lib/log'
 
 export function initApolloClient (endpoint: string, headers: Record<string, string>) {
@@ -31,10 +32,7 @@ export async function getApolloClient () {
 }
 
 export async function getStationEditorApolloClient () {
-  const config = useRuntimeConfig()
-  // Use stationEditorApiBase if configured, otherwise fall back to regular apiBase
-  const apiBase = config.public.tlv2?.stationEditorApiBase || config.public.tlv2?.apiBase || (typeof window !== 'undefined' ? window.location.origin + '/api/v2' : '')
-  const endpoint = apiBase + '/query'
+  const endpoint = useStationEditorApiEndpoint('/query')
   const headers = await useAuthHeaders()
   const apolloClient = initApolloClient(endpoint, headers)
   debugLog('getStationEditorApolloClient', endpoint)
@@ -42,10 +40,7 @@ export async function getStationEditorApolloClient () {
 }
 
 export async function getFeedManagementApolloClient () {
-  const config = useRuntimeConfig()
-  // Fallback chain: feedManagementApiBase → stationEditorApiBase → apiBase
-  const apiBase = config.public.tlv2?.feedManagementApiBase || config.public.tlv2?.stationEditorApiBase || config.public.tlv2?.apiBase || (typeof window !== 'undefined' ? window.location.origin + '/api/v2' : '')
-  const endpoint = apiBase + '/query'
+  const endpoint = useFeedManagementApiEndpoint('/query')
   const headers = await useAuthHeaders()
   const apolloClient = initApolloClient(endpoint, headers)
   debugLog('getFeedManagementApolloClient', endpoint)
