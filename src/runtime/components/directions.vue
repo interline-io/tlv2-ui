@@ -60,7 +60,7 @@
           <tl-directions-stops v-if="leg.stops" :stops="leg.stops" />
 
           <div class="itin-duration">
-            {{ $filters.formatDuration(leg.duration.duration) }} /
+            {{ formatDuration(leg.duration.duration) }} /
             {{ leg.distance.distance.toFixed(2) }} {{ leg.distance.units.toLowerCase() }}
           </div>
         </div>
@@ -177,7 +177,7 @@
                 </span>
               </div>
               <div class="itin-duration">
-                {{ $filters.formatDuration(itin.duration.duration) }} /
+                {{ formatDuration(itin.duration.duration) }} /
                 {{ itin.distance.distance.toFixed(2) }} {{ itin.distance.units.toLowerCase() }}
               </div>
             </div>
@@ -188,46 +188,127 @@
   </div>
 </template>
 
-<script setup>
-import { ref, computed, watch } from 'vue'
+<script setup lang="ts">
+import { ref, computed, watch, withDefaults } from 'vue'
 import { useLazyQuery } from '@vue/apollo-composable'
 import { gql } from 'graphql-tag'
 import { parseISO, format } from 'date-fns'
+import type { Geometry } from 'geojson'
+import { formatDuration } from '../lib/filters'
 
-// State
+// Type definitions
 
-const props = defineProps({
-  fromPlace: {
-    type: Array,
-    default: () => []
-  },
-  toPlace: {
-    type: Array,
-    default: () => []
-  },
-  mode: {
-    type: String,
-    default: () => 'WALK'
-  },
-  departAt: {
-    type: String,
-    default: () => new Date().toISOString()
-  }
+interface Duration {
+  duration: number
+  units: string
+}
+
+interface Distance {
+  distance: number
+  units: string
+}
+
+interface Location {
+  lon: number
+  lat: number
+  name?: string
+}
+
+interface Agency {
+  agency_id: string
+  agency_name: string
+}
+
+interface Route {
+  route_id: string
+  route_short_name?: string
+  route_long_name?: string
+  route_type: number
+  route_color?: string
+  agency: Agency
+}
+
+interface Trip {
+  trip_id: string
+  headsign?: string
+  route: Route
+}
+
+interface Stop {
+  lon: number
+  lat: number
+  departure: string
+  stop_id: string
+  stop_name: string
+}
+
+interface Leg {
+  duration: Duration
+  distance: Distance
+  start_time: string
+  end_time: string
+  from: Location
+  to: Location
+  mode: string
+  stops?: Stop[]
+  trip?: Trip
+  geometry?: Geometry
+}
+
+interface Itinerary {
+  duration: Duration
+  distance: Distance
+  from: Location
+  to: Location
+  start_time: string
+  end_time: string
+  legs: Leg[]
+}
+
+interface DirectionsResponse {
+  success: boolean
+  itineraries?: Itinerary[]
+}
+
+interface DirectionRequest {
+  from: Location
+  to: Location
+  mode: string
+  depart_at: string
+}
+
+interface LegIcon {
+  icon: string
+  route: string | null
+}
+
+interface Props {
+  fromPlace?: number[]
+  toPlace?: number[]
+  mode?: string
+  departAt?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  fromPlace: () => [],
+  toPlace: () => [],
+  mode: 'WALK',
+  departAt: () => new Date().toISOString()
 })
 
-const activeItinIdx = ref(null)
-const selectedItinIdx = ref(null)
-const departAtDate = ref(parseISO(props.departAt))
-const departAtTime = ref(format(parseISO(props.departAt), 'HH:mm:ss'))
+const activeItinIdx = ref<number | null>(null)
+const selectedItinIdx = ref<number | null>(null)
+const departAtDate = ref<Date>(parseISO(props.departAt))
+const departAtTime = ref<string>(format(parseISO(props.departAt), 'HH:mm:ss'))
 
-const emit = defineEmits([
-  'setMode',
-  'setPlaces',
-  'setFeatures',
-  'setMarkers',
-  'setDepartAt',
-  'reset'
-])
+const emit = defineEmits<{
+  setMode: [mode: string]
+  setPlaces: [places: any]
+  setFeatures: [features: any[]]
+  setMarkers: [markers: any[]]
+  setDepartAt: [departAt: string]
+  reset: []
+}>()
 
 // Apollo setup
 
@@ -317,14 +398,14 @@ const vars = computed(() => ({
 }))
 
 // Setup query
-const { result, loading, error, load, refetch } = useLazyQuery(query, null, { clientId: 'transitland' })
+const { result, loading, error, load, refetch } = useLazyQuery<{ directions: DirectionsResponse }>(query, null, { clientId: 'transitland' })
 
 // Watch for changes
 const loadReady = computed(() => {
   return (props.fromPlace || []).length && (props.toPlace || []).length && props.mode
 })
 
-function loadReload () {
+function loadReload (): void {
   selectedItinIdx.value = null
   activeItinIdx.value = null
   if (loadReady.value) {
@@ -336,7 +417,7 @@ watch(vars, loadReload)
 loadReload()
 
 // Get directions from result
-const directions = computed(() => loadReady.value ? result.value?.directions : null)
+const directions = computed<DirectionsResponse | null>(() => loadReady.value ? result.value?.directions : null)
 
 // Computed properties
 
@@ -354,14 +435,14 @@ const toPlaceStr = computed(() =>
   (props.toPlace || []).slice(0).reverse().join(',')
 )
 
-const selectedItin = computed(() => {
+const selectedItin = computed<Itinerary | null>(() => {
   if (directions.value && selectedItinIdx.value !== null) {
-    return directions.value.itineraries[selectedItinIdx.value] || null
+    return directions.value.itineraries?.[selectedItinIdx.value] || null
   }
   return null
 })
 
-const activeOrFirstItin = computed(() => {
+const activeOrFirstItin = computed<Itinerary | null>(() => {
   if (!directions.value?.itineraries) { return null }
   let idx = 0
   if (activeItinIdx.value !== null) {
@@ -369,17 +450,17 @@ const activeOrFirstItin = computed(() => {
   } else if (selectedItinIdx.value !== null) {
     idx = selectedItinIdx.value
   }
-  if (idx > directions.value.itineraries.length) { return null }
+  if (idx >= directions.value.itineraries.length) { return null }
   return directions.value.itineraries[idx]
 })
 
 const activeFeatures = computed(() => {
-  const feats = []
+  const feats: any[] = []
   let featId = 0
   if (directions.value && activeOrFirstItin.value) {
     for (const leg of activeOrFirstItin.value.legs) {
       if (!leg.geometry) { continue }
-      const props = {
+      const props: any = {
         'stroke-width': 6,
         'id': featId++,
         'stroke': '#666'
@@ -407,29 +488,29 @@ const activeFeatures = computed(() => {
 
 // Methods
 
-const modeIcons = {
+const modeIcons: Record<string, string> = {
   WALK: 'walk',
   AUTO: 'car',
   TRANSIT: 'bus'
   // LINE: 'map-marker'
 }
 
-const routeTypeIcons = {
+const routeTypeIcons: Record<number, string> = {
   0: 'subway',
   1: 'subway',
   2: 'train',
   3: 'bus'
 }
 
-const formatDateTime = (value) => {
+const formatDateTime = (value: string): string => {
   return format(parseISO(value), 'h:mm aaa')
 }
 
-const legModeIcon = (leg) => {
+const legModeIcon = (leg: Leg): LegIcon => {
   if (leg.trip && leg.trip.route) {
     const rt = leg.trip.route.route_type
     return {
-      icon: routeTypeIcons[rt],
+      icon: routeTypeIcons[rt] || 'walk',
       route: leg.trip.route.route_id
     }
   } else if (leg.mode === 'WALK') {
@@ -449,16 +530,16 @@ const legModeIcon = (leg) => {
   }
 }
 
-const itinLegIcons = (itin) => {
+const itinLegIcons = (itin: Itinerary): LegIcon[] => {
   return itin.legs.map(legModeIcon)
 }
 
-const itinModeIcons = (itin) => {
-  const icons = {}
+const itinModeIcons = (itin: Itinerary): string[] => {
+  const icons: Record<string, LegIcon> = {}
   for (const ic of itin.legs.map(legModeIcon)) {
     icons[ic.icon] = ic
   }
-  if (icons.walk && Object.keys(icons).length > 1) {
+  if ('walk' in icons && Object.keys(icons).length > 1) {
     delete icons.walk
   }
   return Object.keys(icons)
@@ -466,11 +547,11 @@ const itinModeIcons = (itin) => {
 
 // Setters
 
-const reset = () => {
+const reset = (): void => {
   emit('reset')
 }
 
-const setMode = (m) => {
+const setMode = (m: string): void => {
   console.log('setMode', m)
   emit('setMode', m)
 }

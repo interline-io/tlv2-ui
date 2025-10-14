@@ -71,55 +71,69 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, ref } from 'vue'
 import ApiExample from './api-example.vue'
 
-export default {
-  name: 'FeedRtApiQuery',
-  components: {
-    ApiExample
-  },
-  props: {
-    feedOnestopId: {
-      type: String,
-      required: true
-    },
-    rtType: {
-      type: String,
-      required: true,
-      validator: value => ['alerts', 'trip_updates', 'vehicle_positions'].includes(value)
-    }
-  },
-  data () {
-    return {
-      selectedFormat: 'json',
-      showModal: false
-    }
-  },
-  computed: {
-    rtTypeDisplay () {
-      const types = {
-        vehicle_positions: 'Vehicle Positions',
-        trip_updates: 'Trip Updates',
-        alerts: 'Service Alerts'
-      }
-      return types[this.rtType] || this.rtType
-    },
-    apiDescription () {
-      return `To download ${this.rtTypeDisplay} data in ${this.selectedFormat.toUpperCase()} format using the Transitland REST API:`
-    },
-    apiUrl () {
-      return `https://transit.land/api/v2/rest/feeds/${this.feedOnestopId}/download_latest_rt/${this.rtType}.${this.selectedFormat}?apikey=REPLACE_WITH_YOUR_API_KEY`
-    },
-    modalTitle () {
-      return `GTFS Realtime: ${this.rtTypeDisplay}`
-    }
-  },
-  methods: {
-    showApiModal () {
-      this.showModal = true
-    }
-  }
+// TypeScript interfaces and types
+type RTType = 'alerts' | 'trip_updates' | 'vehicle_positions'
+type OutputFormat = 'json' | 'pb'
+
+interface RTTypeDisplayMap {
+  vehicle_positions: string
+  trip_updates: string
+  alerts: string
+}
+
+// Props
+interface Props {
+  feedOnestopId: string
+  rtType: RTType
+}
+
+const props = defineProps<Props>()
+
+// Reactive data
+const selectedFormat = ref<OutputFormat>('json')
+const showModal = ref<boolean>(false)
+
+// RT Type display mapping
+const rtTypeDisplayMap: RTTypeDisplayMap = {
+  vehicle_positions: 'Vehicle Positions',
+  trip_updates: 'Trip Updates',
+  alerts: 'Service Alerts'
+}
+
+// Computed properties
+const rtTypeDisplay = computed<string>(() => {
+  return rtTypeDisplayMap[props.rtType] || props.rtType
+})
+
+const apiDescription = computed<string>(() => {
+  return `To download ${rtTypeDisplay.value} data in ${selectedFormat.value.toUpperCase()} format using the Transitland REST API:`
+})
+
+const apiUrl = computed<string>(() => {
+  return `https://transit.land/api/v2/rest/feeds/${props.feedOnestopId}/download_latest_rt/${props.rtType}.${selectedFormat.value}?apikey=REPLACE_WITH_YOUR_API_KEY`
+})
+
+const modalTitle = computed<string>(() => {
+  return `GTFS Realtime: ${rtTypeDisplay.value}`
+})
+
+// Methods
+const showApiModal = (): void => {
+  showModal.value = true
+}
+
+// Props validation function (for runtime validation)
+const isValidRTType = (value: string): value is RTType => {
+  return ['alerts', 'trip_updates', 'vehicle_positions'].includes(value)
+}
+
+// Runtime validation
+if (!isValidRTType(props.rtType)) {
+  console.warn(`Invalid rtType: ${props.rtType}. Expected one of: alerts, trip_updates, vehicle_positions`)
 }
 </script>
 

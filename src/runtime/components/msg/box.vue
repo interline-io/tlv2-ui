@@ -34,48 +34,69 @@
   </article>
 </template>
 
-<script>
-export default {
-  props: {
-    variant: { type: String, default () { return 'info' } },
-    title: { type: String, default: null },
-    icon: { type: String, default: null },
-    noIcon: { type: Boolean, default: false },
-    collapsible: { type: Boolean, default: false },
-    collapsed: { type: Boolean, default: false },
-    defaultTitle: { type: String, default: 'Information' }
-  },
-  emits: ['toggle'],
-  data () {
-    return {
-      isCollapsed: this.collapsed
-    }
-  },
-  computed: {
-    getIcon () {
-      if (this.variant === 'info') { return 'information' }
-      if (this.variant === 'danger' || this.variant === 'warning') { return 'alert' }
-      return this.icon || this.variant
-    },
-    hasIcon () { return !this.noIcon },
-    msgClass () {
-      if (this.variant) {
-        return `message mb-4 is-${this.variant}`
-      }
-      return `message mb-4`
-    }
-  },
-  watch: {
-    collapsed (newVal) {
-      this.isCollapsed = newVal
-    }
-  },
-  methods: {
-    toggleCollapsed () {
-      this.isCollapsed = !this.isCollapsed
-      this.$emit('toggle', this.isCollapsed)
-    }
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue'
+
+// TypeScript types and interfaces
+type MessageVariant = 'info' | 'success' | 'warning' | 'danger' | 'primary' | 'link' | 'dark'
+
+interface Props {
+  variant?: MessageVariant
+  title?: string | null
+  icon?: string | null
+  noIcon?: boolean
+  collapsible?: boolean
+  collapsed?: boolean
+  defaultTitle?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  variant: 'info',
+  title: null,
+  icon: null,
+  noIcon: false,
+  collapsible: false,
+  collapsed: false,
+  defaultTitle: 'Information'
+})
+
+// Emits
+const emit = defineEmits<{
+  toggle: [isCollapsed: boolean]
+}>()
+
+// Reactive state
+const isCollapsed = ref<boolean>(props.collapsed)
+
+// Computed properties
+const getIcon = computed<string>(() => {
+  if (props.variant === 'info') {
+    return 'information'
   }
+  if (props.variant === 'danger' || props.variant === 'warning') {
+    return 'alert'
+  }
+  return props.icon || props.variant
+})
+
+const hasIcon = computed<boolean>(() => !props.noIcon)
+
+const msgClass = computed<string>(() => {
+  if (props.variant) {
+    return `message mb-4 is-${props.variant}`
+  }
+  return 'message mb-4'
+})
+
+// Watchers
+watch(() => props.collapsed, (newVal: boolean) => {
+  isCollapsed.value = newVal
+}, { immediate: true })
+
+// Methods
+const toggleCollapsed = (): void => {
+  isCollapsed.value = !isCollapsed.value
+  emit('toggle', isCollapsed.value)
 }
 </script>
 

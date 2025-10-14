@@ -47,326 +47,371 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
 import * as Plot from '@observablehq/plot'
 
-export default {
-  name: 'FeedVersionTimelineChartPlot',
-  props: {
-    feed: {
-      type: Object,
-      required: true,
-      default: () => ({})
-    },
-    feedVersions: {
-      type: Array,
-      required: true,
-      default: () => []
-    },
-    height: {
-      type: String,
-      default: '300px'
-    },
-    showTooltip: {
-      type: Boolean,
-      default: true
+interface ServiceWindow {
+  feed_start_date?: string
+  feed_end_date?: string
+  earliest_calendar_date?: string
+  latest_calendar_date?: string
+  fallback_week?: string
+}
+
+interface FeedVersionGtfsImport {
+  success?: boolean
+}
+
+interface FeedState {
+  feed_version?: {
+    id: string
+  }
+}
+
+interface FeedVersion {
+  id: string
+  sha1: string
+  name?: string
+  fetched_at?: string
+  service_window?: ServiceWindow
+  feed_version_gtfs_import?: FeedVersionGtfsImport
+}
+
+interface Feed {
+  feed_state?: FeedState
+}
+
+type StatusType = typeof STATUS_TYPES[keyof typeof STATUS_TYPES]
+
+interface ChartDataItem {
+  y: string
+  name: string
+  sha1: string
+  status: StatusType
+  feedStart: Date | null
+  feedEnd: Date | null
+  earliestService: Date | null
+  latestService: Date | null
+  fallbackWeek: Date | null
+  fetched_at: Date | null
+  feed_start_date?: string
+  feed_end_date?: string
+  earliest_calendar_date?: string
+  latest_calendar_date?: string
+  fallback_week?: string
+}
+
+interface Props {
+  feed: Feed
+  feedVersions: FeedVersion[]
+  height?: string
+  showTooltip?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  height: '300px',
+  showTooltip: true
+})
+
+const emit = defineEmits<{
+  feedVersionClick: [feedVersion: ChartDataItem]
+}>()
+
+// Template refs
+const chartContainer = ref<HTMLElement | null>(null)
+
+// Reactive data
+const loading = ref(false)
+const error = ref<string | null>(null)
+const plot = ref<any>(null)
+const resizeObserver = ref<ResizeObserver | null>(null)
+
+// Status constants to avoid magic strings
+const STATUS_TYPES = {
+  IMPORTED_AND_ACTIVE: 'Imported into API & Marked as Active',
+  IMPORTED: 'Imported into API',
+  NOT_IMPORTED: 'Archived'
+} as const
+
+// Color mapping for status types - using Transitland brand colors
+const STATUS_COLORS = {
+  [STATUS_TYPES.IMPORTED_AND_ACTIVE]: '#f7ae56', // Orange - most prominent
+  [STATUS_TYPES.IMPORTED]: '#60C6D5', // Blue - second level prominence
+  [STATUS_TYPES.NOT_IMPORTED]: '#7a7a7a' // Bulma gray for archived/neutral
+} as const
+
+const containerWidth = computed(() => {
+  if (chartContainer.value) {
+    return chartContainer.value.clientWidth
+  }
+  return 800 // fallback width
+})
+
+// Dynamic height calculation based on number of feed versions
+const chartHeight = computed(() => {
+  if (!props.feedVersions.length) return 300
+
+  // Base height for margins, labels, and axis spacing
+  const baseHeight = 160 // Increased to account for X-axis labels and margins
+  // Height per row (feed version) - adjust this value for more/less spacing
+  const heightPerRow = 20 // Reduced from 25 to prevent overflow issues
+
+  // Cap the maximum height to prevent rendering issues
+  return Math.min(800, Math.max(300, baseHeight + (props.feedVersions.length * heightPerRow)))
+})
+
+const chartData = computed((): ChartDataItem[] => {
+  if (!props.feedVersions.length) return []
+
+  // Transform data for the chart
+  const chartData = props.feedVersions.map((fv): ChartDataItem => {
+    // Determine status for coloring based on import and active status
+    // Use the same logic as the table: feed_version_gtfs_import for imported, feed_state for active
+    const isImported = fv.feed_version_gtfs_import && fv.feed_version_gtfs_import.success === true
+    const isActive = props.feed.feed_state && props.feed.feed_state.feed_version && props.feed.feed_state.feed_version.id === fv.id
+
+    let status: StatusType = STATUS_TYPES.NOT_IMPORTED
+    if (isImported && isActive) {
+      status = STATUS_TYPES.IMPORTED_AND_ACTIVE
+    } else if (isImported && !isActive) {
+      status = STATUS_TYPES.IMPORTED
     }
-  },
-  emits: ['feedVersionClick'],
-  data () {
+
+    // Parse dates
+    const feedStart = fv.service_window?.feed_start_date ? new Date(fv.service_window.feed_start_date) : null
+    const feedEnd = fv.service_window?.feed_end_date ? new Date(fv.service_window.feed_end_date) : null
+    const earliestService = fv.service_window?.earliest_calendar_date ? new Date(fv.service_window.earliest_calendar_date) : null
+    const latestService = fv.service_window?.latest_calendar_date ? new Date(fv.service_window.latest_calendar_date) : null
+    const fallbackWeek = fv.service_window?.fallback_week ? new Date(fv.service_window.fallback_week) : null
+
     return {
-      loading: false,
-      error: null,
-      plot: null,
-      resizeObserver: null
+      y: fv.sha1.substr(0, 6),
+      name: fv.name || 'Unknown',
+      sha1: fv.sha1,
+      status,
+      // Box and whisker data
+      feedStart,
+      feedEnd,
+      earliestService,
+      latestService,
+      fallbackWeek,
+      // For tooltip and sorting
+      fetched_at: fv.fetched_at ? new Date(fv.fetched_at) : null,
+      feed_start_date: fv.service_window?.feed_start_date,
+      feed_end_date: fv.service_window?.feed_end_date,
+      earliest_calendar_date: fv.service_window?.earliest_calendar_date,
+      latest_calendar_date: fv.service_window?.latest_calendar_date,
+      fallback_week: fv.service_window?.fallback_week
     }
-  },
-  computed: {
-    // Status constants to avoid magic strings
-    STATUS_TYPES () {
-      return {
-        IMPORTED_AND_ACTIVE: 'Imported into API & Marked as Active',
-        IMPORTED: 'Imported into API',
-        NOT_IMPORTED: 'Archived'
-      }
-    },
-    // Color mapping for status types - using Transitland brand colors
-    STATUS_COLORS () {
-      return {
-        [this.STATUS_TYPES.IMPORTED_AND_ACTIVE]: '#f7ae56', // Orange - most prominent
-        [this.STATUS_TYPES.IMPORTED]: '#60C6D5', // Blue - second level prominence
-        [this.STATUS_TYPES.NOT_IMPORTED]: '#7a7a7a' // Bulma gray for archived/neutral
-      }
-    },
-    containerWidth () {
-      if (this.$refs.chartContainer) {
-        return this.$refs.chartContainer.clientWidth
-      }
-      return 800 // fallback width
-    },
-    // Dynamic height calculation based on number of feed versions
-    chartHeight () {
-      if (!this.feedVersions.length) return 300
+  })
 
-      // Base height for margins, labels, and axis spacing
-      const baseHeight = 160 // Increased to account for X-axis labels and margins
-      // Height per row (feed version) - adjust this value for more/less spacing
-      const heightPerRow = 20 // Reduced from 25 to prevent overflow issues
+  return chartData
+})
 
-      // Cap the maximum height to prevent rendering issues
-      return Math.min(800, Math.max(300, baseHeight + (this.feedVersions.length * heightPerRow)))
-    },
-    chartData () {
-      if (!this.feedVersions.length) return []
+// Watch for chartData changes
+watch(chartData, () => {
+  nextTick(() => {
+    updatePlot()
+  })
+}, { deep: true })
 
-      // Transform data for the chart
-      const chartData = this.feedVersions.map((fv) => {
-        // Determine status for coloring based on import and active status
-        // Use the same logic as the table: feed_version_gtfs_import for imported, feed_state for active
-        const isImported = fv.feed_version_gtfs_import && fv.feed_version_gtfs_import.success === true
-        const isActive = this.feed.feed_state && this.feed.feed_state.feed_version && this.feed.feed_state.feed_version.id === fv.id
+// Lifecycle hooks
+onMounted(() => {
+  nextTick(() => {
+    initPlot()
 
-        let status = this.STATUS_TYPES.NOT_IMPORTED
-        if (isImported && isActive) {
-          status = this.STATUS_TYPES.IMPORTED_AND_ACTIVE
-        } else if (isImported && !isActive) {
-          status = this.STATUS_TYPES.IMPORTED
-        }
-
-        // Parse dates
-        const feedStart = fv.service_window?.feed_start_date ? new Date(fv.service_window.feed_start_date) : null
-        const feedEnd = fv.service_window?.feed_end_date ? new Date(fv.service_window.feed_end_date) : null
-        const earliestService = fv.service_window?.earliest_calendar_date ? new Date(fv.service_window.earliest_calendar_date) : null
-        const latestService = fv.service_window?.latest_calendar_date ? new Date(fv.service_window.latest_calendar_date) : null
-        const fallbackWeek = fv.service_window?.fallback_week ? new Date(fv.service_window.fallback_week) : null
-
-        return {
-          y: fv.sha1.substr(0, 6),
-          name: fv.name || 'Unknown',
-          sha1: fv.sha1,
-          status,
-          // Box and whisker data
-          feedStart,
-          feedEnd,
-          earliestService,
-          latestService,
-          fallbackWeek,
-          // For tooltip and sorting
-          fetched_at: fv.fetched_at ? new Date(fv.fetched_at) : null,
-          feed_start_date: fv.service_window?.feed_start_date,
-          feed_end_date: fv.service_window?.feed_end_date,
-          earliest_calendar_date: fv.service_window?.earliest_calendar_date,
-          latest_calendar_date: fv.service_window?.latest_calendar_date,
-          fallback_week: fv.service_window?.fallback_week
-        }
+    // Add ResizeObserver for better width handling
+    if (chartContainer.value) {
+      resizeObserver.value = new ResizeObserver(() => {
+        updatePlot()
       })
-
-      return chartData
+      resizeObserver.value.observe(chartContainer.value)
     }
-  },
-  watch: {
-    chartData: {
-      handler () {
-        this.$nextTick(() => {
-          this.updatePlot()
-        })
-      },
-      deep: true
-    }
-  },
-  mounted () {
-    this.$nextTick(() => {
-      this.initPlot()
+  })
+})
 
-      // Add ResizeObserver for better width handling
-      if (this.$refs.chartContainer) {
-        this.resizeObserver = new ResizeObserver(() => {
-          this.updatePlot()
-        })
-        this.resizeObserver.observe(this.$refs.chartContainer)
+onBeforeUnmount(() => {
+  if (plot.value) {
+    plot.value.remove()
+  }
+  window.removeEventListener('resize', handleResize)
+  if (resizeObserver.value) {
+    resizeObserver.value.disconnect()
+  }
+})
+
+// Methods
+const getPlotOptions = () => {
+  if (!chartData.value.length) return {}
+
+  // Sort data by fetched_at date (newest first) to match table order
+  const sortedData = [...chartData.value].sort((a, b) => {
+    if (!a.fetched_at || !b.fetched_at) return 0
+    return b.fetched_at.getTime() - a.fetched_at.getTime()
+  })
+
+  // Extract y domain for explicit ordering
+  const yDomain = sortedData.map(d => d.y)
+
+  const data = sortedData
+
+  return {
+    width: containerWidth.value,
+    height: chartHeight.value, // Use dynamic height
+    margin: 80, // Use standard margin that Plot handles well
+    x: {
+      type: 'time' as const,
+      label: 'Service Period',
+      labelOffset: 35
+    },
+    y: {
+      label: 'Feed Versions',
+      labelOffset: 60,
+      domain: yDomain, // Set explicit domain order
+      tickSize: 0 // Remove tick marks for cleaner look
+    },
+    color: {
+      domain: [STATUS_TYPES.IMPORTED_AND_ACTIVE, STATUS_TYPES.IMPORTED, STATUS_TYPES.NOT_IMPORTED],
+      range: ['#f7ae56', '#60C6D5', '#7a7a7a'],
+      legend: false
+    },
+    marks: [
+      // Lines for service period (broader service availability range)
+      Plot.ruleY(data.filter(d => d.earliestService && d.latestService), {
+        y: 'y',
+        x1: 'earliestService',
+        x2: 'latestService',
+        stroke: 'status',
+        strokeWidth: 4,
+        strokeOpacity: 0.8
+      }),
+      // Rectangles for feed info range (conservative GTFS coverage dates)
+      Plot.rect(data.filter(d => d.feedStart && d.feedEnd), {
+        y: 'y',
+        x1: 'feedStart',
+        x2: 'feedEnd',
+        fill: 'status',
+        fillOpacity: 0.6
+      }),
+      // Rectangles for fallback service week (full week span)
+      Plot.rect(data.filter(d => d.fallbackWeek).map((d) => {
+        const sunday = new Date(d.fallbackWeek!)
+        const saturday = new Date(sunday)
+        saturday.setDate(sunday.getDate() + 6)
+        return {
+          ...d,
+          fallbackWeekStart: sunday,
+          fallbackWeekEnd: saturday
+        }
+      }), {
+        y: 'y',
+        x1: 'fallbackWeekStart',
+        x2: 'fallbackWeekEnd',
+        fill: 'none',
+        stroke: 'status',
+        strokeWidth: 1
+      }),
+      // Tip for fallback week with detailed explanation
+      Plot.tip(data.filter(d => d.fallbackWeek).map((d) => {
+        const sunday = new Date(d.fallbackWeek!)
+        const saturday = new Date(sunday)
+        saturday.setDate(sunday.getDate() + 6)
+        return {
+          ...d,
+          fallbackWeekStart: sunday,
+          fallbackWeekEnd: saturday
+        }
+      }), Plot.pointer({
+        x: d => (d.fallbackWeekStart.getTime() + d.fallbackWeekEnd.getTime()) / 2, // Center of the week
+        y: 'y',
+        title: d => `Representative fallback service week: ${d.fallback_week} to ${d.fallbackWeekEnd.toISOString().split('T')[0]}`,
+        anchor: 'bottom',
+        pointerSize: 8
+      })),
+      // Dots for feed versions with only fetched_at dates
+      Plot.dot(data.filter(d => !d.feedStart && !d.earliestService && d.fetched_at), {
+        y: 'y',
+        x: 'fetched_at',
+        fill: 'status',
+        stroke: 'black',
+        strokeWidth: 1,
+        r: 4
+      }),
+      // Add tip mark for rich tooltips
+      Plot.tip(data, Plot.pointer({
+        x: (d) => {
+          // Use the center of the service period if available, otherwise feed period
+          if (d.earliestService && d.latestService) {
+            return (d.earliestService.getTime() + d.latestService.getTime()) / 2
+          } else if (d.feedStart && d.feedEnd) {
+            return (d.feedStart.getTime() + d.feedEnd.getTime()) / 2
+          }
+          return d.fallbackWeek ? d.fallbackWeek.getTime() : (d.fetched_at ? d.fetched_at.getTime() : 0)
+        },
+        y: 'y',
+        channels: {
+          'Feed Version': 'name',
+          'SHA1': 'sha1',
+          'Status': 'status',
+          'Feed Info Range': d => d.feed_start_date && d.feed_end_date ? `${d.feed_start_date} to ${d.feed_end_date}` : 'N/A',
+          'Full Service Range': d => d.earliest_calendar_date && d.latest_calendar_date ? `${d.earliest_calendar_date} to ${d.latest_calendar_date}` : 'N/A',
+          'Fallback Week': d => d.fallback_week || 'N/A'
+        },
+        format: {
+          'Feed Version': true,
+          'SHA1': true,
+          'Status': true,
+          'Feed Info Range': true,
+          'Full Service Range': true,
+          'Fallback Week': true
+        },
+        anchor: 'bottom',
+        pointerSize: 8,
+        textPadding: 6,
+        fontSize: 11,
+        lineWidth: 25
+      }))
+    ]
+  }
+}
+
+const initPlot = () => {
+  if (!chartContainer.value || !chartData.value.length) return
+
+  try {
+    plot.value = Plot.plot(getPlotOptions())
+    chartContainer.value.append(plot.value)
+
+    // Handle click events
+    plot.value.addEventListener('click', (event: Event) => {
+      const target = event.target as any
+      if (target && target.dataset && target.dataset.sha1) {
+        const feedVersion = chartData.value.find(item => item.sha1 === target.dataset.sha1)
+        if (feedVersion) {
+          emit('feedVersionClick', feedVersion)
+        }
       }
     })
-  },
-  beforeUnmount () {
-    if (this.plot) {
-      this.plot.remove()
-    }
-    window.removeEventListener('resize', this.handleResize)
-    if (this.resizeObserver) {
-      this.resizeObserver.disconnect()
-    }
-  },
-  methods: {
-    getPlotOptions () {
-      if (!this.chartData.length) return {}
 
-      // Sort data by fetched_at date (newest first) to match table order
-      const sortedData = [...this.chartData].sort((a, b) => {
-        if (!a.fetched_at || !b.fetched_at) return 0
-        return new Date(b.fetched_at) - new Date(a.fetched_at)
-      })
+    // Handle window resize
+    window.addEventListener('resize', handleResize)
+  } catch (err: any) {
+    error.value = `Failed to create plot: ${err.message}`
+    console.error('Plot error:', err)
+  }
+}
 
-      // Extract y domain for explicit ordering
-      const yDomain = sortedData.map(d => d.y)
+const updatePlot = () => {
+  if (plot.value) {
+    plot.value.remove()
+    initPlot()
+  }
+}
 
-      const data = sortedData
-
-      return {
-        width: this.containerWidth,
-        height: this.chartHeight, // Use dynamic height
-        margin: 80, // Use standard margin that Plot handles well
-        x: {
-          type: 'time',
-          label: 'Service Period',
-          labelOffset: 35
-        },
-        y: {
-          label: 'Feed Versions',
-          labelOffset: 60,
-          domain: yDomain, // Set explicit domain order
-          tickSize: 0 // Remove tick marks for cleaner look
-        },
-        color: {
-          domain: [this.STATUS_TYPES.IMPORTED_AND_ACTIVE, this.STATUS_TYPES.IMPORTED, this.STATUS_TYPES.NOT_IMPORTED],
-          range: ['#f7ae56', '#60C6D5', '#7a7a7a'],
-          legend: false
-        },
-        marks: [
-          // Lines for service period (broader service availability range)
-          Plot.ruleY(data.filter(d => d.earliestService && d.latestService), {
-            y: 'y',
-            x1: 'earliestService',
-            x2: 'latestService',
-            stroke: 'status',
-            strokeWidth: 4,
-            strokeOpacity: 0.8
-          }),
-          // Rectangles for feed info range (conservative GTFS coverage dates)
-          Plot.rect(data.filter(d => d.feedStart && d.feedEnd), {
-            y: 'y',
-            x1: 'feedStart',
-            x2: 'feedEnd',
-            fill: 'status',
-            fillOpacity: 0.6
-          }),
-          // Rectangles for fallback service week (full week span)
-          Plot.rect(data.filter(d => d.fallback_week).map((d) => {
-            const sunday = new Date(d.fallback_week)
-            const saturday = new Date(sunday)
-            saturday.setDate(sunday.getDate() + 6)
-            return {
-              ...d,
-              fallbackWeekStart: sunday,
-              fallbackWeekEnd: saturday
-            }
-          }), {
-            y: 'y',
-            x1: 'fallbackWeekStart',
-            x2: 'fallbackWeekEnd',
-            fill: 'none',
-            stroke: 'status',
-            strokeWidth: 1,
-            height: 8
-          }),
-          // Tip for fallback week with detailed explanation
-          Plot.tip(data.filter(d => d.fallback_week).map((d) => {
-            const sunday = new Date(d.fallback_week)
-            const saturday = new Date(sunday)
-            saturday.setDate(sunday.getDate() + 6)
-            return {
-              ...d,
-              fallbackWeekStart: sunday,
-              fallbackWeekEnd: saturday
-            }
-          }), Plot.pointer({
-            x: d => (d.fallbackWeekStart.getTime() + d.fallbackWeekEnd.getTime()) / 2, // Center of the week
-            y: 'y',
-            title: d => `Representative fallback service week: ${d.fallback_week} to ${d.fallbackWeekEnd.toISOString().split('T')[0]}`,
-            anchor: 'bottom',
-            pointerSize: 8
-          })),
-          // Dots for feed versions with only fetched_at dates
-          Plot.dot(data.filter(d => !d.feedStart && !d.earliestService && d.fetched_at), {
-            y: 'y',
-            x: 'fetched_at',
-            fill: 'status',
-            stroke: 'black',
-            strokeWidth: 1,
-            r: 4
-          }),
-          // Add tip mark for rich tooltips
-          Plot.tip(data, Plot.pointer({
-            x: (d) => {
-              // Use the center of the service period if available, otherwise feed period
-              if (d.earliestService && d.latestService) {
-                return (d.earliestService.getTime() + d.latestService.getTime()) / 2
-              } else if (d.feedStart && d.feedEnd) {
-                return (d.feedStart.getTime() + d.feedEnd.getTime()) / 2
-              }
-              return d.fallbackWeek ? d.fallbackWeek.getTime() : (d.fetched_at ? d.fetched_at.getTime() : 0)
-            },
-            y: 'y',
-            channels: {
-              'Feed Version': 'name',
-              'SHA1': 'sha1',
-              'Status': 'status',
-              'Feed Info Range': d => d.feed_start_date && d.feed_end_date ? `${d.feed_start_date} to ${d.feed_end_date}` : 'N/A',
-              'Full Service Range': d => d.earliest_calendar_date && d.latest_calendar_date ? `${d.earliest_calendar_date} to ${d.latest_calendar_date}` : 'N/A',
-              'Fallback Week': d => d.fallback_week || 'N/A'
-            },
-            format: {
-              'Feed Version': true,
-              'SHA1': true,
-              'Status': true,
-              'Feed Info Range': true,
-              'Full Service Range': true,
-              'Fallback Week': true
-            },
-            anchor: 'bottom',
-            pointerSize: 8,
-            textPadding: 6,
-            fontSize: 11,
-            lineWidth: 25
-          }))
-        ]
-      }
-    },
-    initPlot () {
-      if (!this.$refs.chartContainer || !this.chartData.length) return
-
-      try {
-        this.plot = Plot.plot(this.getPlotOptions())
-        this.$refs.chartContainer.append(this.plot)
-
-        // Handle click events
-        this.plot.addEventListener('click', (event) => {
-          const target = event.target
-          if (target && target.dataset && target.dataset.sha1) {
-            const feedVersion = this.chartData.find(item => item.sha1 === target.dataset.sha1)
-            if (feedVersion) {
-              this.$emit('feedVersionClick', feedVersion)
-            }
-          }
-        })
-
-        // Handle window resize
-        window.addEventListener('resize', this.handleResize)
-      } catch (err) {
-        this.error = `Failed to create plot: ${err.message}`
-        console.error('Plot error:', err)
-      }
-    },
-    updatePlot () {
-      if (this.plot) {
-        this.plot.remove()
-        this.initPlot()
-      }
-    },
-    handleResize () {
-      if (this.plot) {
-        this.updatePlot()
-      }
-    }
+const handleResize = () => {
+  if (plot.value) {
+    updatePlot()
   }
 }
 </script>

@@ -3385,7 +3385,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/geojson@npm:*, @types/geojson@npm:^7946.0.16":
+"@types/geojson@npm:*, @types/geojson@npm:7946.0.16, @types/geojson@npm:^7946.0.16":
   version: 7946.0.16
   resolution: "@types/geojson@npm:7946.0.16"
   checksum: 10/34d07421bdd60e7b99fa265441d17ac6e9aef48e3ce22d04324127d0de1daf7fbaa0bd3be1cece2092eb6995f21da84afa5231e24621a2910ff7340bc98f496f
@@ -14107,6 +14107,7 @@ __metadata:
     "@types/cytoscape": "npm:3.21.9"
     "@types/cytoscape-fcose": "npm:2.2.4"
     "@types/d3-scale-chromatic": "npm:3.1.0"
+    "@types/geojson": "npm:7946.0.16"
     "@types/jsdom": "npm:21.1.7"
     "@types/mapbox__mapbox-gl-draw": "npm:1.4.8"
     "@types/node": "npm:22.13.10"

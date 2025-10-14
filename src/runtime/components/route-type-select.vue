@@ -1,8 +1,8 @@
 <template>
   <o-select
-    :value="modelValue"
+    :model-value="modelValue"
     placeholder="Route vehicle type"
-    @update:model-value="$emit('update:modelValue', $event)"
+    @update:model-value="emit('update:modelValue', $event)"
   >
     <option :value="null">
       All
@@ -13,8 +13,9 @@
   </o-select>
 </template>
 
-<script>
-const routeTypes = {
+<script setup lang="ts">
+// GTFS route types mapping
+const routeTypes: Record<number, string> = {
   0: 'Tram',
   1: 'Metro',
   2: 'Rail',
@@ -27,16 +28,17 @@ const routeTypes = {
   12: 'Monorail'
 }
 
-export default {
-  props: {
-    modelValue: { type: [String, Number], default: 0 }
-  },
-  emits: ['update:modelValue'],
-  data () {
-    return {
-      routeTypes
-    }
-  }
+// Props
+interface Props {
+  modelValue?: string | number | null
 }
 
+withDefaults(defineProps<Props>(), {
+  modelValue: 0
+})
+
+// Emits
+const emit = defineEmits<{
+  'update:modelValue': [value: string | number | null]
+}>()
 </script>

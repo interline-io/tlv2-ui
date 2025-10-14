@@ -5,8 +5,16 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: { closable: { type: Boolean, default: false } }
+<script setup lang="ts">
+interface Props {
+  closable?: boolean
 }
+
+withDefaults(defineProps<Props>(), {
+  closable: false
+})
+
+defineEmits<{
+  close: []
+}>()
 </script>

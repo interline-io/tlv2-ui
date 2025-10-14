@@ -11,25 +11,33 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    feed: {
-      type: Object,
-      required: true
-    },
-    feedVersionId: {
-      type: [Number, String],
-      required: true
-    }
-  },
-  computed: {
-    isActive () {
-      return this.feed
-        && this.feed.feed_state
-        && this.feed.feed_state.feed_version
-        && this.feed.feed_state.feed_version.id === this.feedVersionId
-    }
-  }
+<script setup lang="ts">
+import { computed } from 'vue'
+
+// Types
+interface FeedVersion {
+  id: number | string
 }
+
+interface FeedState {
+  feed_version?: FeedVersion
+}
+
+interface Feed {
+  feed_state?: FeedState
+}
+
+// Props
+const props = defineProps<{
+  feed: Feed
+  feedVersionId: number | string
+}>()
+
+// Computed
+const isActive = computed(() => {
+  return props.feed
+    && props.feed.feed_state
+    && props.feed.feed_state.feed_version
+    && props.feed.feed_state.feed_version.id === props.feedVersionId
+})
 </script>

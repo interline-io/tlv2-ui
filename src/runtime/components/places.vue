@@ -15,7 +15,7 @@
       </o-radio>
     </div>
 
-    <o-loading v-model:active="$apollo.loading" :full-page="false" />
+    <o-loading v-model:active="loading" :full-page="false" />
 
     <p
       v-for="place of sortedPlaces"
@@ -80,119 +80,179 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue'
 import { gql } from 'graphql-tag'
+import { useQuery } from '@vue/apollo-composable'
 
-const q = gql`
-query($level: PlaceAggregationLevel, $where: PlaceFilter, $include_operators: Boolean!) {
-    places(level: $level, where: $where) {
-        adm0_name
-        adm1_name
-        city_name
-        count
-        operators @include(if: $include_operators) {
-            onestop_id
-            name
-            short_name
-        }
-  }
+// TypeScript interfaces
+interface Operator {
+  onestop_id: string
+  name: string
+  short_name?: string
 }
+
+interface Place {
+  adm0_name?: string
+  adm1_name?: string
+  city_name?: string
+  count?: number
+  operators?: Operator[]
+}
+
+interface PlaceFilter {
+  adm0_name?: string
+  adm1_name?: string
+  city_name?: string
+}
+
+interface QueryVariables {
+  level: string
+  where: PlaceFilter
+  include_operators: boolean
+}
+
+// Props
+interface Props {
+  placeLevel?: string
+  adm0?: string | null
+  adm1?: string | null
+  city?: string | null
+  showSortBy?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  placeLevel: 'ADM0',
+  adm0: null,
+  adm1: null,
+  city: null,
+  showSortBy: true
+})
+
+// GraphQL Query
+const PLACES_QUERY = gql`
+  query($level: PlaceAggregationLevel, $where: PlaceFilter, $include_operators: Boolean!) {
+    places(level: $level, where: $where) {
+      adm0_name
+      adm1_name
+      city_name
+      count
+      operators @include(if: $include_operators) {
+        onestop_id
+        name
+        short_name
+      }
+    }
+  }
 `
 
-export default {
-  apollo: {
-    places: {
-      client: 'transitland',
-      query: q,
-      variables () {
-        const v = {
-          level: this.placeLevel,
-          include_operators: this.placeLevelInt > 0
-        }
-        const w = {}
-        if (this.adm0) {
-          w.adm0_name = this.adm0
-        }
-        if (this.adm1) {
-          w.adm1_name = this.adm1
-        }
-        if (this.city) {
-          w.city_name = this.city
-        }
-        v.where = w
-        return v
-      }
-    }
-  },
-  props: {
-    placeLevel: { type: String, default: 'ADM0' },
-    adm0: { type: String, default: null },
-    adm1: { type: String, default: null },
-    city: { type: String, default: null },
-    showSortBy: { type: Boolean, default: true }
-  },
-  data () {
-    return {
-      places: [],
-      sortBy: 'alphabetical'
-    }
-  },
-  computed: {
-    staticDescription () {
-      if (this.placeTitleName?.length > 0) {
-        return `Find transit operators and source data feeds in ${this.placeTitleName}`
-      }
-      return 'Find transit operators and source data feeds'
-    },
-    placeTitleName () {
-      if (this.city && this.adm1 && this.adm0) {
-        return `${this.city}, ${this.adm1}, ${this.adm0}`
-      } else if (this.adm1 && this.adm0) {
-        return `${this.adm1}, ${this.adm0}`
-      } else if (this.adm0) {
-        return `${this.adm0}`
-      }
-      return ''
-    },
-    staticTitle () {
-      if (this.placeTitleName) {
-        return `Browse places: ${this.placeTitleName}`
-      }
-      return 'Browse places'
-    },
-    placeLevelInt () {
-      if (this.placeLevel === 'ADM0_ADM1') {
-        return 1
-      }
-      if (this.placeLevel === 'ADM0_ADM1_CITY') {
-        return 2
-      }
-      return 0
-    },
-    allOperators () {
-      const ret = {}
-      for (const p of this.places) {
-        for (const o of p.operators || []) {
-          ret[o.onestop_id] = o
-        }
-      }
-      return Object.values(ret).sort((a, b) => {
-        const an = a.name || a.short_name
-        const bn = b.name || b.short_name
-        return an.localeCompare(bn)
-      })
-    },
-    sortedPlaces () {
-      return this.places.slice(0).sort((a, b) => {
-        if (this.sortBy === 'count') {
-          return b.count - a.count
-        } else if (this.sortBy === 'alphabetical') {
-          return a.name > b.name
-        }
-        return false
-      })
+// Reactive data
+const sortBy = ref<'alphabetical' | 'count'>('alphabetical')
+
+// Computed properties
+const placeLevelInt = computed<number>(() => {
+  if (props.placeLevel === 'ADM0_ADM1') {
+    return 1
+  }
+  if (props.placeLevel === 'ADM0_ADM1_CITY') {
+    return 2
+  }
+  return 0
+})
+
+const queryVariables = computed<QueryVariables>(() => {
+  const variables: QueryVariables = {
+    level: props.placeLevel || 'ADM0',
+    include_operators: placeLevelInt.value > 0,
+    where: {}
+  }
+
+  if (props.adm0) {
+    variables.where.adm0_name = props.adm0
+  }
+  if (props.adm1) {
+    variables.where.adm1_name = props.adm1
+  }
+  if (props.city) {
+    variables.where.city_name = props.city
+  }
+
+  return variables
+})
+
+// Apollo Query
+const { result, loading } = useQuery<{ places: Place[] }>(
+  PLACES_QUERY,
+  queryVariables,
+  {
+    clientId: 'transitland'
+  }
+)
+
+const places = computed<Place[]>(() => result.value?.places || [])
+
+const placeTitleName = computed<string>(() => {
+  if (props.city && props.adm1 && props.adm0) {
+    return `${props.city}, ${props.adm1}, ${props.adm0}`
+  } else if (props.adm1 && props.adm0) {
+    return `${props.adm1}, ${props.adm0}`
+  } else if (props.adm0) {
+    return props.adm0
+  }
+  return ''
+})
+
+const staticDescription = computed<string>(() => {
+  if (placeTitleName.value?.length > 0) {
+    return `Find transit operators and source data feeds in ${placeTitleName.value}`
+  }
+  return 'Find transit operators and source data feeds'
+})
+
+const staticTitle = computed<string>(() => {
+  if (placeTitleName.value) {
+    return `Browse places: ${placeTitleName.value}`
+  }
+  return 'Browse places'
+})
+
+const allOperators = computed<Operator[]>(() => {
+  const operatorMap: Record<string, Operator> = {}
+
+  for (const place of places.value) {
+    for (const operator of place.operators || []) {
+      operatorMap[operator.onestop_id] = operator
     }
   }
-}
 
+  return Object.values(operatorMap).sort((a, b) => {
+    const nameA = a.name || a.short_name || ''
+    const nameB = b.name || b.short_name || ''
+    return nameA.localeCompare(nameB)
+  })
+})
+
+const sortedPlaces = computed<Place[]>(() => {
+  return [...places.value].sort((a, b) => {
+    if (sortBy.value === 'count') {
+      return (b.count || 0) - (a.count || 0)
+    } else if (sortBy.value === 'alphabetical') {
+      // Sort by the most specific available name for the place level
+      const getPlaceName = (place: Place): string => {
+        if (placeLevelInt.value > 1 && place.city_name) {
+          return place.city_name
+        } else if (placeLevelInt.value > 0 && place.adm1_name) {
+          return place.adm1_name
+        } else {
+          return place.adm0_name || ''
+        }
+      }
+
+      const nameA = getPlaceName(a)
+      const nameB = getPlaceName(b)
+      return nameA.localeCompare(nameB)
+    }
+    return 0
+  })
+})
 </script>

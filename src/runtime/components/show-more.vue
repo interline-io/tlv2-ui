@@ -4,11 +4,16 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    limit: { type: Number, default: 0 }
-  },
-  emits: ['showMore']
+<script setup lang="ts">
+interface Props {
+  limit?: number
 }
+
+withDefaults(defineProps<Props>(), {
+  limit: 0
+})
+
+defineEmits<{
+  showMore: []
+}>()
 </script>

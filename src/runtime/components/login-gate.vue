@@ -18,21 +18,18 @@
   </client-only>
 </template>
 
-<script>
+<script setup lang="ts">
 import { useUser } from '../composables/useUser'
 import { useLoginGate } from '../composables/useLoginGate'
 
-export default {
-  props: {
-    role: { type: String, default: null }
-  },
-  data () {
-    const notOk = useLoginGate(this.role)
-    const loggedIn = useUser()?.loggedIn
-    return {
-      notOk,
-      loggedIn
-    }
-  }
-}
+// Props
+const props = withDefaults(defineProps<{
+  role?: string | null
+}>(), {
+  role: null
+})
+
+// Composables
+const { loggedIn } = useUser()
+const notOk = useLoginGate(props.role)
 </script>

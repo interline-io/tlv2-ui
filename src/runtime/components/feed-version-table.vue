@@ -97,15 +97,106 @@
       </table>
     </div>
 
-    <div v-if="hasMore" @click="fetchMore">
+    <div v-if="hasMore" @click="fetchMoreFn">
       <a class="button is-primary is-small is-fullwidth">Show more feed versions</a>
     </div>
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import { gql } from 'graphql-tag'
+import { useQuery } from '@vue/apollo-composable'
+import { computed, withDefaults } from 'vue'
 import { useApiEndpoint } from '../composables/useApiEndpoint'
+
+// Type definitions
+interface FeedVersionGtfsImport {
+  id: number
+  success?: boolean
+  in_progress?: boolean
+  exception_log?: string
+  schedule_removed?: boolean
+}
+
+interface ServiceWindow {
+  feed_start_date?: string
+  feed_end_date?: string
+  earliest_calendar_date?: string
+  latest_calendar_date?: string
+  fallback_week?: boolean
+}
+
+interface FeedInfo {
+  feed_publisher_name?: string
+  feed_publisher_url?: string
+  feed_lang?: string
+  default_lang?: string
+  feed_version?: string
+  feed_start_date?: string
+  feed_end_date?: string
+  feed_contact_email?: string
+  feed_contact_url?: string
+}
+
+interface License {
+  redistribution_allowed?: string
+}
+
+interface Feed {
+  onestop_id: string
+  license: License
+}
+
+interface FeedVersion {
+  id: number
+  sha1: string
+  name?: string
+  description?: string
+  earliest_calendar_date?: string
+  latest_calendar_date?: string
+  fetched_at: string
+  url?: string
+  feed_version_gtfs_import?: FeedVersionGtfsImport
+  service_window?: ServiceWindow
+  feed_infos?: FeedInfo[]
+}
+
+interface QueryVariables {
+  limit?: number
+  onestop_id?: string
+  after?: number
+}
+
+interface QueryResult {
+  entities: FeedVersion[]
+}
+
+interface Props {
+  feed: Feed
+  showDownloadColumn?: boolean
+  showDescriptionColumn?: boolean
+  showDateColumns?: boolean
+  showActiveColumn?: boolean
+  showTimelineChart?: boolean
+  issueDownloadRequest?: boolean
+  limit?: number
+}
+
+interface Emits {
+  downloadTriggered: [sha1: string, isLatest: boolean]
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  showDownloadColumn: true,
+  showDescriptionColumn: true,
+  showDateColumns: true,
+  showActiveColumn: true,
+  showTimelineChart: false,
+  issueDownloadRequest: true,
+  limit: 20
+})
+
+const emit = defineEmits<Emits>()
 
 const fvQuery = gql`
 query ($limit:Int=100, $onestop_id: String, $after:Int) {
@@ -147,75 +238,59 @@ query ($limit:Int=100, $onestop_id: String, $after:Int) {
 }
 `
 
-export default {
-  props: {
-    feed: { type: Object, default () { return {} } },
-    showDownloadColumn: { type: Boolean, default: true },
-    showDescriptionColumn: { type: Boolean, default: true },
-    showDateColumns: { type: Boolean, default: true },
-    showActiveColumn: { type: Boolean, default: true },
-    showTimelineChart: { type: Boolean, default: false },
-    issueDownloadRequest: { type: Boolean, default: true },
-    limit: { type: Number, default: 20 }
-  },
-  emits: ['downloadTriggered'],
-  apollo: {
-    entities: {
-      client: 'transitland',
-      query: fvQuery,
-      variables () {
-        return {
-          after: 0,
-          onestop_id: this.feed.onestop_id,
-          limit: this.limit
-        }
-      }
-    }
-  },
-  data () {
-    return {
-      entities: [],
-      maxLimit: 10000
-    }
-  },
-  computed: {
-    hasMore () {
-      return (this.entities.length % this.limit) === 0
+const maxLimit = 10000
+
+const { result, loading, error, fetchMore } = useQuery<QueryResult, QueryVariables>(
+  fvQuery,
+  () => ({
+    after: 0,
+    onestop_id: props.feed.onestop_id,
+    limit: props.limit
+  }),
+  {
+    clientId: 'transitland'
+  }
+)
+
+const entities = computed<FeedVersion[]>(() => result.value?.entities ?? [])
+
+const hasMore = computed<boolean>(() => {
+  return (entities.value.length % props.limit) === 0
+})
+
+const latestFeedVersionSha1 = computed<string>(() => {
+  const s = entities.value.slice(0).sort((a, b) => new Date(a.fetched_at).getTime() - new Date(b.fetched_at).getTime())
+  if (s.length > 0) {
+    return s[0].sha1
+  }
+  return ''
+})
+
+function fetchMoreFn (): void {
+  if (entities.value.length > maxLimit) {
+    return
+  }
+  const lastId = entities.value.length > 0 ? entities.value[entities.value.length - 1].id : 0
+  fetchMore({
+    variables: {
+      after: lastId,
+      limit: props.limit
     },
-    latestFeedVersionSha1 () {
-      const s = this.entities.slice(0).sort((a, b) => { return a.fetched_at - b.fetched_at })
-      if (s.length > 0) {
-        return s[0].sha1
-      }
-      return ''
-    }
-  },
-  methods: {
-    fetchMore () {
-      if (this.entities.length > this.maxLimit) {
-        return
-      }
-      const lastId = this.entities.length > 0 ? this.entities[this.entities.length - 1].id : 0
-      this.$apollo.queries.entities.fetchMore({
-        variables: {
-          after: lastId,
-          limit: this.limit
-        },
-        updateQuery: (previousResult, { fetchMoreResult }) => {
-          const cur = [...previousResult.entities, ...fetchMoreResult.entities]
-          return {
-            entities: cur
-          }
-        }
-      })
-    },
-    triggerDownload (sha1) {
-      const isLatest = (sha1 === this.latestFeedVersionSha1)
-      this.$emit('downloadTriggered', sha1, isLatest)
-      if (this.issueDownloadRequest) {
-        window.open(`${useApiEndpoint()}/rest/feed_versions/${sha1}/download`, '_blank')
+    updateQuery: (previousResult: QueryResult, { fetchMoreResult }: { fetchMoreResult?: QueryResult }) => {
+      if (!fetchMoreResult) { return previousResult }
+      const cur = [...previousResult.entities, ...fetchMoreResult.entities]
+      return {
+        entities: cur
       }
     }
+  })
+}
+
+function triggerDownload (sha1: string): void {
+  const isLatest = (sha1 === latestFeedVersionSha1.value)
+  emit('downloadTriggered', sha1, isLatest)
+  if (props.issueDownloadRequest) {
+    window.open(`${useApiEndpoint()}/rest/feed_versions/${sha1}/download`, '_blank')
   }
 }
 </script>
