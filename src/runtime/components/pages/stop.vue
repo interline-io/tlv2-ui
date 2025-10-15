@@ -626,7 +626,7 @@ const features = computed(() => {
     if (!i.geometry) {
       continue
     }
-    if (i.location_type === 0 || i.location_type === 2) {
+    if (i.location_type !== 0 && i.location_type !== 2) {
       continue
     }
     ret.push({

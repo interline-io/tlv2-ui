@@ -118,19 +118,19 @@
                   <li v-if="entity.license.spdx_identifier">
                     License Identifier: {{ entity.license.spdx_identifier }}
                   </li>
-                  <li>
+                  <li v-if="entity.license.use_without_attribution">
                     Use allowed without attribution: {{ capitalize(entity.license.use_without_attribution || '') }}
                   </li>
-                  <li>
+                  <li v-if="entity.license.share_alike_optional">
                     Share-alike optional: {{ capitalize(entity.license.share_alike_optional || '') }}
                   </li>
-                  <li>
+                  <li v-if="entity.license.commercial_use_allowed">
                     Commercial use allowed: {{ capitalize(entity.license.commercial_use_allowed || '') }}
                   </li>
-                  <li>
+                  <li v-if="entity.license.create_derived_product">
                     Creating derived products allowed: {{ capitalize(entity.license.create_derived_product || '') }}
                   </li>
-                  <li>
+                  <li v-if="entity.license.redistribution_allowed">
                     Redistribution allowed: {{ capitalize(entity.license.redistribution_allowed || '') }}
                   </li>
                   <li v-if="entity.license.attribution_text">
