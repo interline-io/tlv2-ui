@@ -1,6 +1,6 @@
 <template>
   <div>
-    <tl-loading v-if="$apollo.loading" />
+    <tl-loading v-if="loading" />
     <tl-msg-error v-else-if="error">
       {{ error }}
     </tl-msg-error>
@@ -194,7 +194,7 @@
 
       <div class="is-clearfix mb-4">
         <slot v-if="showUpload" name="upload" :entity="entity">
-          <nuxt-link :to="{name:'feeds-feedKey-upload', params:{feedKey:pathKey}}" class="button is-primary is-pulled-right">
+          <nuxt-link :to="{name:'feeds-feedKey-upload', params:{feedKey:props.pathKey}}" class="button is-primary is-pulled-right">
             Upload
           </nuxt-link>
         </slot>
@@ -327,8 +327,7 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute } from '#app'
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
 import { useEntityPath } from '../../composables/useEntityPath'
@@ -429,6 +428,7 @@ interface Feed {
 }
 
 interface Props {
+  pathKey: string
   showPermissions?: boolean
   showUpload?: boolean
   showDownloadColumn?: boolean
@@ -454,11 +454,14 @@ const props = withDefaults(defineProps<Props>(), {
 // Emits
 const emit = defineEmits<{
   downloadTriggered: [sha1: string, isLatest: boolean]
+  entitiesLoaded: [entities: Feed[]]
+  staticDescriptionUpdated: [description: string]
+  operatorNamesUpdated: [names: string]
 }>()
 
 const q = gql`
-query($pathKey: String) {
-  entities: feeds(where: {onestop_id: $pathKey}, limit: 1) {
+query($onestopId: String, $ids: [Int!]) {
+  entities: feeds(ids: $ids, where: {onestop_id: $onestopId}, limit: 1) {
     id
     onestop_id
     name
@@ -559,13 +562,11 @@ function first<T> (v: T[]): T | null {
 }
 
 // Entity path setup
-const route = useRoute()
 const { searchKey, entityVariables } = useEntityPath({
-  pathKey: route.params.feedKey as string
+  pathKey: props.pathKey
 })
 
 // Reactive state
-const page = ref(1)
 const showPermissionsModal = ref(false)
 
 // GraphQL query
@@ -578,8 +579,6 @@ const entity = computed((): Feed | null => {
   return result.value?.entities?.[0] ?? null
 })
 
-// PathKey for templates
-const pathKey = computed(() => route.params.feedKey as string)
 // Computed properties
 const feedSpec = computed((): string | undefined => {
   return entity.value?.spec?.toUpperCase()?.replace('_', '-')
@@ -672,6 +671,25 @@ const staticDescription = computed((): string => {
 
   return description
 })
+
+// Watch for changes and emit events
+watch(result, (newResult) => {
+  if (newResult?.entities) {
+    emit('entitiesLoaded', newResult.entities)
+  }
+}, { immediate: true })
+
+watch(staticDescription, (newDescription) => {
+  if (newDescription) {
+    emit('staticDescriptionUpdated', newDescription)
+  }
+}, { immediate: true })
+
+watch(operatorNames, (newNames) => {
+  if (newNames) {
+    emit('operatorNamesUpdated', newNames)
+  }
+}, { immediate: true })
 </script>
 
 <style scoped>

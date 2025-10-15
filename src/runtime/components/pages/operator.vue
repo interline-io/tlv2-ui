@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="$apollo.loading" class="is-loading" />
+    <div v-if="loading" class="is-loading" />
     <div v-else-if="entity">
       <slot name="title">
         <tl-title :title="staticTitle" :description="staticDescription">
@@ -10,7 +10,7 @@
 
       <!-- Warnings for freshness and viewing a specific version -->
       <tl-check-fresh :fetched="dataFreshness" />
-      <tl-check-single :feed-onestop-id="feedOnestopId" :feed-version-sha1="feedVersionSha1" />
+      <tl-check-single :feed-onestop-id="searchKey.feedOnestopId" :feed-version-sha1="searchKey.feedVersionSha1" />
 
       <!-- Main content -->
       <div class="columns">
@@ -47,7 +47,7 @@
                 </td>
                 <td>
                   <ul>
-                    <li v-for="location of locations" :key="location.name">
+                    <li v-for="(location, index) of locations" :key="index">
                       <nuxt-link :to="{name:'places-adm0', params:{adm0: location.adm0_name}}">
                         {{ location.adm0_name }}
                       </nuxt-link>
@@ -134,7 +134,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="row of sources" :key="row.id">
+            <tr v-for="(row, index) of sources" :key="index">
               <td>
                 <tl-safelink :text="row.target_feed" />
               </td>
@@ -149,7 +149,7 @@
                   <o-icon icon="check" />
                   {{ row.target_match.agency_name }}
                 </template>
-                <template v-else-if="row.feed_spec == 'GTFS'">
+                <template v-else-if="row.target_feed_spec == 'GTFS'">
                   <o-tooltip label="The active version of this source feed does not contain a matching agency">
                     <o-icon icon="alert" />
                   </o-tooltip>
@@ -203,12 +203,118 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+/**
+ * Operator Page Component
+ *
+ * This component displays detailed information about a transit operator,
+ * including agencies, feeds, routes, stops, and geographic coverage.
+ */
 import { gql } from 'graphql-tag'
-import EntityPageMixin from './entity-page-mixin'
+import { useQuery } from '@vue/apollo-composable'
+import { computed, ref, watch, withDefaults } from 'vue'
 import { useEventBus } from '../../composables/useEventBus'
+import { useEntityPath } from '../../composables/useEntityPath'
 
-const q = gql`
+// Type definitions
+interface Place {
+  city_name?: string
+  adm0_name?: string
+  adm1_name?: string
+  rank?: number
+}
+
+interface Feed {
+  id: number
+  onestop_id: string
+  spec: string
+}
+
+interface FeedVersion {
+  id: number
+  fetched_at: string
+  feed: Feed
+}
+
+interface Agency {
+  id: number
+  feed_version_sha1?: string
+  feed_onestop_id?: string
+  agency_id: string
+  agency_name: string
+  agency_url?: string
+  agency_phone?: string
+  feed_version: FeedVersion
+  places: Place[]
+}
+
+interface OperatorFeed {
+  onestop_id: string
+  spec: string
+}
+
+interface Operator {
+  id: number
+  onestop_id: string
+  generated?: boolean
+  file?: string
+  name?: string
+  short_name?: string
+  website?: string
+  tags?: Record<string, string>
+  feeds: OperatorFeed[]
+  agencies: Agency[]
+}
+
+interface QueryData {
+  entities: Operator[]
+}
+
+interface QueryVariables {
+  onestopId?: string
+  feedOnestopId?: string
+  limit?: number
+}
+
+interface Source {
+  target_type: string
+  target_feed?: string
+  target_feed_spec?: string
+  target_match?: Agency
+}
+
+interface Props {
+  pathKey?: string
+  feedVersionSha1?: string
+  feedOnestopId?: string
+  entityId?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  pathKey: undefined,
+  feedVersionSha1: undefined,
+  feedOnestopId: undefined,
+  entityId: undefined
+})
+
+// Reactive data
+const activeTab = ref('map')
+
+// Tab names
+const tabNames = computed(() => {
+  const tabs = ['map', 'routes', 'stops', 'export']
+  const result: Record<string, string> = {}
+  for (const tab of tabs) {
+    result[tab] = tab
+  }
+  return result
+})
+
+// Use entity path composable for route parsing and entity logic
+const { searchKey, entityVariables, linkVersion, search } = useEntityPath(props)
+
+// GraphQL query
+const operatorQuery = gql`
 query ($onestopId: String, $feedOnestopId: String, $limit: Int=10) {
   entities: operators(limit: $limit, where: {feed_onestop_id: $feedOnestopId, onestop_id: $onestopId, merged: true}) {
     id
@@ -249,236 +355,253 @@ query ($onestopId: String, $feedOnestopId: String, $limit: Int=10) {
   }
 }
 `
-export default {
-  mixins: [EntityPageMixin],
-  data () {
-    return {
-      features: [],
-      tabNames: this.makeTabNames(['map', 'routes', 'stops', 'export']),
-      activeTab: 'map'
+
+// Apollo query
+const { result, loading, error } = useQuery<QueryData, QueryVariables>(
+  operatorQuery,
+  () => entityVariables.value,
+  {
+    clientId: 'transitland'
+  }
+)
+// Computed properties
+const entities = computed<Operator[]>(() => result.value?.entities ?? [])
+
+const entity = computed<Operator | null>(() => {
+  return entities.value.length > 0 ? entities.value[0] : null
+})
+
+const agencies = computed<Agency[]>(() => {
+  return entity.value?.agencies ?? []
+})
+
+const dataFreshness = computed<string | null>(() => {
+  if (agencies.value.length > 0) {
+    return agencies.value.map(a => a.feed_version.fetched_at).sort((a, b) => new Date(a) < new Date(b) ? 1 : -1)[0]
+  }
+  return null
+})
+
+const locations = computed<Place[]>(() => {
+  const ret = new Map<string, Place>()
+  for (const ent of agencies.value) {
+    if (!ent) { continue }
+    for (const p of ent.places || []) {
+      const key = `${p.adm0_name} / ${p.adm1_name} - ${p.city_name}`
+      ret.set(key, p)
     }
-  },
-  computed: {
-    dataFreshness () {
-      if (this.agencies.length > 0) {
-        return this.agencies.map(a => a.feed_version.fetched_at).sort((a, b) => new Date(a) < new Date(b))[0]
-      }
-      return null
-    },
-    locations () {
-      const ret = new Map()
-      for (const ent of this.agencies) {
-        if (!ent) { continue }
-        for (const p of ent.places || []) {
-          const key = `${p.adm0_name} / ${p.adm1_name} - ${p.city_name}`
-          ret.set(key, p)
-        }
-      }
-      return Array.from(ret.values()).sort(function (a, b) { return a.rank - b.rank })
-    },
-    agencies () {
-      return (this.entity || {}).agencies || []
-    },
-    agencyIds () {
-      return this.agencies.map((s) => { return s.id }).filter((s) => { return s })
-    },
-    agencyNames () {
-      return [...new Set(this.agencies.map((s) => { return s.agency_name }))]
-    },
-    agencyURLs () {
-      const urls = this.agencies.map((s) => { return s.agency_url })
-      if (this.entity && this.entity.website) {
-        urls.push(this.entity.website)
-      }
-      return [...new Set(urls)] // remove duplicates
-    },
-    generatedOperator () {
-      return this.entity && this.entity.generated
-    },
-    operatorName () {
-      if (this.entity && this.entity.name && this.entity.short_name) {
-        return `${this.entity.name} (${this.entity.short_name})`
-      } else if (this.entity && (this.entity.name || this.entity.short_name)) {
-        return this.entity.name || this.entity.short_name
-      } else if (this.agencies && this.agencies.length > 0) {
-        return this.agencies[0].agency_name
-      } else {
-        return ''
-      }
-    },
-    sources () {
-      const ret = []
-      const matchedFeeds = {}
-      if (!this.entity) {
-        return ret
-      }
-      for (const agency of this.agencies) {
+  }
+  return Array.from(ret.values()).sort((a, b) => (a.rank ?? 0) - (b.rank ?? 0))
+})
+
+const agencyIds = computed<number[]>(() => {
+  return agencies.value.map(s => s.id).filter(s => s)
+})
+
+const agencyNames = computed<string[]>(() => {
+  return [...new Set(agencies.value.map(s => s.agency_name))]
+})
+
+const agencyURLs = computed<string[]>(() => {
+  const urls = agencies.value.map(s => s.agency_url).filter(Boolean)
+  if (entity.value && entity.value.website) {
+    urls.push(entity.value.website)
+  }
+  return [...new Set(urls)] // remove duplicates
+})
+
+const generatedOperator = computed<boolean>(() => {
+  return entity.value ? entity.value.generated === true : false
+})
+
+const operatorName = computed<string>(() => {
+  if (entity.value && entity.value.name && entity.value.short_name) {
+    return `${entity.value.name} (${entity.value.short_name})`
+  } else if (entity.value && (entity.value.name || entity.value.short_name)) {
+    return entity.value.name || entity.value.short_name || ''
+  } else if (agencies.value && agencies.value.length > 0) {
+    return agencies.value[0].agency_name
+  } else {
+    return ''
+  }
+})
+
+const sources = computed<Source[]>(() => {
+  const ret: Source[] = []
+  const matchedFeeds: Record<string, boolean> = {}
+  if (!entity.value) {
+    return ret
+  }
+  for (const agency of agencies.value) {
+    ret.push({
+      target_type: 'Associated Feed',
+      target_feed: agency.feed_version.feed.onestop_id,
+      target_feed_spec: agency.feed_version.feed.spec.toUpperCase(),
+      target_match: agency
+    })
+    matchedFeeds[agency.feed_version.feed.onestop_id] = true
+  }
+  if (entity.value) {
+    for (const oif of entity.value.feeds || []) {
+      const fid = oif.onestop_id
+      if (!matchedFeeds[fid]) {
         ret.push({
           target_type: 'Associated Feed',
-          target_feed: agency.feed_version.feed.onestop_id,
-          target_feed_spec: agency.feed_version.feed.spec.toUpperCase(),
-          target_match: agency
-        })
-        matchedFeeds[agency.feed_version.feed.onestop_id] = true
-      }
-      if (this.entity) {
-        for (const oif of this.entity.feeds || []) {
-          const fid = oif.onestop_id
-          if (!matchedFeeds[fid]) {
-            ret.push({
-              target_type: 'Associated Feed',
-              target_feed: fid,
-              target_feed_spec: oif.spec.toUpperCase()
-            })
-          }
-        }
-      }
-      if (ret.length === 0) {
-        ret.push({
-          target_type: 'No Associations'
+          target_feed: fid,
+          target_feed_spec: oif.spec.toUpperCase()
         })
       }
-      return ret
-    },
-    uniqueFeedSourcesOnestopIds () {
-      const onestopIdsToSpec = {}
-      this.sources.forEach((s) => {
-        onestopIdsToSpec[s.target_feed] = s.target_feed_spec.toUpperCase()
-      })
-      return onestopIdsToSpec
-    },
-    feedCounts () {
-      return Object.keys(this.uniqueFeedSourcesOnestopIds).length
-    },
-    staticTitle () {
-      return `${this.operatorName} • Operator details`
-    },
-    staticDescription () {
-      const gtfsCount = this.sources.filter(s => s.target_feed_spec === 'GTFS').length
-      const gtfsRtCount = this.sources.filter(s => s.target_feed_spec === 'GTFS_RT').length
-      let feedCounts = `${gtfsCount} GTFS feed${gtfsCount > 1 ? 's' : ''}`
-      if (gtfsRtCount > 0) {
-        feedCounts += ` and ${gtfsRtCount} GTFS Realtime feed${gtfsRtCount > 1 ? 's' : ''}`
-      }
-      const locations = this.locations
-        .map(l => [l.adm0_name, l.adm1_name, l.city_name].filter(Boolean).join(', '))
-        .join('; ')
-      return `Data for ${this.operatorName} is sourced from ${feedCounts}. ${this.operatorName} provides transit services in the following locations: ${locations}.`
     }
-  },
-  watch: {
-    'entity.name' (v) {
+  }
+  if (ret.length === 0) {
+    ret.push({
+      target_type: 'No Associations'
+    })
+  }
+  return ret
+})
+
+const uniqueFeedSourcesOnestopIds = computed<Record<string, string>>(() => {
+  const onestopIdsToSpec: Record<string, string> = {}
+  sources.value.forEach((s) => {
+    if (s.target_feed && s.target_feed_spec) {
+      onestopIdsToSpec[s.target_feed] = s.target_feed_spec.toUpperCase()
+    }
+  })
+  return onestopIdsToSpec
+})
+
+const feedCounts = computed<number>(() => {
+  return Object.keys(uniqueFeedSourcesOnestopIds.value).length
+})
+
+const staticTitle = computed<string>(() => {
+  return `${operatorName.value} • Operator details`
+})
+
+const staticDescription = computed<string>(() => {
+  const gtfsCount = sources.value.filter(s => s.target_feed_spec === 'GTFS').length
+  const gtfsRtCount = sources.value.filter(s => s.target_feed_spec === 'GTFS_RT').length
+  let feedCounts = `${gtfsCount} GTFS feed${gtfsCount > 1 ? 's' : ''}`
+  if (gtfsRtCount > 0) {
+    feedCounts += ` and ${gtfsRtCount} GTFS Realtime feed${gtfsRtCount > 1 ? 's' : ''}`
+  }
+  const locationsList = locations.value
+    .map(l => [l.adm0_name, l.adm1_name, l.city_name].filter(Boolean).join(', '))
+    .join('; ')
+  return `Data for ${operatorName.value} is sourced from ${feedCounts}. ${operatorName.value} provides transit services in the following locations: ${locationsList}.`
+})
+// Watch for entity name changes
+watch(
+  () => entity.value?.name,
+  (v) => {
+    if (v) {
       useEventBus().$emit('setParamKey', 'operatorKey', v)
     }
-  },
-  apollo: {
-    entities: {
-      client: 'transitland',
-      query: q,
-      // skip () { return this.checkSearchSkip(this.$route.query.agency_id) }, // skip if search and no agency_id
-      variables () {
-        return this.searchKey
-      }
-    }
-  },
-  methods: {
-    formatSpec (raw) {
-      if (raw === 'GTFS_RT') {
-        return 'GTFS Realtime'
-      } else {
-        return raw
-      }
-    }
-  },
-  // for use in www-transit-land-v2 (which has nuxt-jsonld NPM package)
-  jsonld () {
-    if (!this.entity) {
-      return {
-        '@context': 'https://schema.org',
-        '@type': 'Organization',
-        'name': 'Transit Operator',
-        'description': 'Transit operator information',
-      }
-    }
+  }
+)
 
-    // Get website URLs
-    const sameAs = []
-    if (this.entity.website) {
-      sameAs.push(this.entity.website)
-    }
+// Methods
+function formatSpec (raw?: string): string {
+  if (raw === 'GTFS_RT') {
+    return 'GTFS Realtime'
+  } else {
+    return raw || ''
+  }
+}
 
-    // Add agency URLs
-    if (this.entity.agencies) {
-      this.entity.agencies.forEach((agency) => {
-        if (agency.agency_url && !sameAs.includes(agency.agency_url)) {
-          sameAs.push(agency.agency_url)
-        }
-      })
-    }
+function setTab (value: string): void {
+  activeTab.value = value
+}
 
-    // Add Wikidata URL if available
-    if (this.entity.tags && this.entity.tags.wikidata_id) {
-      const wikidataUrl = `https://www.wikidata.org/wiki/${this.entity.tags.wikidata_id}`
-      if (!sameAs.includes(wikidataUrl)) {
-        sameAs.push(wikidataUrl)
-      }
-    }
-
-    // Create areaServed from locations data using specific Schema.org types
-    const areaServed = []
-    if (this.locations && this.locations.length > 0) {
-      this.locations.forEach((location) => {
-        // Create individual administrative areas based on available data
-        if (location.adm0_name) {
-          areaServed.push({
-            '@type': 'Country',
-            'name': location.adm0_name
-          })
-        }
-
-        if (location.adm1_name) {
-          areaServed.push({
-            '@type': 'State',
-            'name': location.adm1_name
-          })
-        }
-
-        if (location.city_name) {
-          areaServed.push({
-            '@type': 'City',
-            'name': location.city_name
-          })
-        }
-      })
-    }
-
-    const schema = {
+// JSON-LD schema for SEO (for use in www-transit-land-v2)
+function jsonld (): Record<string, any> {
+  if (!entity.value) {
+    return {
       '@context': 'https://schema.org',
       '@type': 'Organization',
-      'name': this.operatorName,
-      'description': this.staticDescription,
-      'identifier': this.entity.onestop_id
+      'name': 'Transit Operator',
+      'description': 'Transit operator information'
     }
-
-    if (sameAs.length > 0) {
-      schema.sameAs = sameAs
-    }
-
-    if (areaServed.length > 0) {
-      schema.areaServed = areaServed
-    }
-
-    // Add telephone if available
-    const phoneNumbers = this.agencies
-      .map(agency => agency.agency_phone)
-      .filter(phone => phone && phone.trim())
-
-    if (phoneNumbers.length > 0) {
-      // Use the first available phone number
-      schema.telephone = phoneNumbers[0]
-    }
-
-    return schema
   }
+
+  // Get website URLs
+  const sameAs: string[] = []
+  if (entity.value.website) {
+    sameAs.push(entity.value.website)
+  }
+
+  // Add agency URLs
+  if (entity.value.agencies) {
+    entity.value.agencies.forEach((agency) => {
+      if (agency.agency_url && !sameAs.includes(agency.agency_url)) {
+        sameAs.push(agency.agency_url)
+      }
+    })
+  }
+
+  // Add Wikidata URL if available
+  if (entity.value.tags && entity.value.tags.wikidata_id) {
+    const wikidataUrl = `https://www.wikidata.org/wiki/${entity.value.tags.wikidata_id}`
+    if (!sameAs.includes(wikidataUrl)) {
+      sameAs.push(wikidataUrl)
+    }
+  }
+
+  // Create areaServed from locations data using specific Schema.org types
+  const areaServed: Array<Record<string, string>> = []
+  if (locations.value && locations.value.length > 0) {
+    locations.value.forEach((location) => {
+      // Create individual administrative areas based on available data
+      if (location.adm0_name) {
+        areaServed.push({
+          '@type': 'Country',
+          'name': location.adm0_name
+        })
+      }
+
+      if (location.adm1_name) {
+        areaServed.push({
+          '@type': 'State',
+          'name': location.adm1_name
+        })
+      }
+
+      if (location.city_name) {
+        areaServed.push({
+          '@type': 'City',
+          'name': location.city_name
+        })
+      }
+    })
+  }
+
+  const schema: Record<string, any> = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    'name': operatorName.value,
+    'description': staticDescription.value,
+    'identifier': entity.value.onestop_id
+  }
+
+  if (sameAs.length > 0) {
+    schema.sameAs = sameAs
+  }
+
+  if (areaServed.length > 0) {
+    schema.areaServed = areaServed
+  }
+
+  // Add telephone if available
+  const phoneNumbers = agencies.value
+    .map(agency => agency.agency_phone)
+    .filter(phone => phone && phone.trim())
+
+  if (phoneNumbers.length > 0) {
+    // Use the first available phone number
+    schema.telephone = phoneNumbers[0]
+  }
+
+  return schema
 }
 </script>
