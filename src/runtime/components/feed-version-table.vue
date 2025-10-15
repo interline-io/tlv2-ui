@@ -36,14 +36,19 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="fv of entities" :key="fv.id">
+          <tr
+            v-for="fv of entities"
+            :key="fv.id"
+            :class="{ 'is-latest': isLatestFeedVersion(fv.sha1) }"
+            :data-is-latest="isLatestFeedVersion(fv.sha1)"
+          >
             <td v-if="showDescriptionColumn">
               {{ fv.name }}
             </td>
             <td v-if="showDescriptionColumn">
               {{ fv.description }}
             </td>
-            <td>{{ $filters.formatDate(fv.fetched_at) }} ({{ $filters.fromNow(fv.fetched_at) }})</td>
+            <td>{{ formatDate(fv.fetched_at) }} ({{ fromNow(fv.fetched_at) }})</td>
             <td>
               <nuxt-link
                 :to="{ name: 'feeds-feedKey-versions-feedVersionKey', params: { feedKey: feed.onestop_id, feedVersionKey: fv.sha1 } }"
@@ -53,18 +58,18 @@
             </td>
             <td v-if="showDateColumns">
               <template v-if="fv.service_window?.feed_start_date && fv.service_window?.feed_end_date">
-                {{ $filters.formatDate(fv.service_window?.feed_start_date) }}
+                {{ formatDate(fv.service_window?.feed_start_date) }}
               </template>
               <template v-else>
-                {{ $filters.formatDate(fv.earliest_calendar_date) }}
+                {{ formatDate(fv.earliest_calendar_date) }}
               </template>
             </td>
             <td v-if="showDateColumns">
               <template v-if="fv.service_window?.feed_start_date && fv.service_window?.feed_end_date">
-                {{ $filters.formatDate(fv.service_window?.feed_end_date) }}
+                {{ formatDate(fv.service_window?.feed_end_date) }}
               </template>
               <template v-else>
-                {{ $filters.formatDate(fv.latest_calendar_date) }}
+                {{ formatDate(fv.latest_calendar_date) }}
               </template>
             </td>
             <td>
@@ -83,9 +88,9 @@
               <template v-if="feed.license.redistribution_allowed !== 'no'">
                 <a @click="triggerDownload(fv.sha1)">
                   <o-icon
-                    v-if="fv.sha1 === latestFeedVersionSha1"
+                    v-if="isLatestFeedVersion(fv.sha1)"
                     icon="download"
-                    title="Download feed version"
+                    title="Download latest feed version"
                     variant="success"
                   />
                   <o-icon v-else icon="download" title="Download feed version" />
@@ -104,10 +109,21 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * Feed Version Table Component
+ *
+ * This component displays a table of feed versions and is aware of which entry represents
+ * the latest/most recent feed version. This awareness affects:
+ * - Visual styling (latest version shows success variant download icon)
+ * - CSS classes (latest row has 'is-latest' class)
+ * - Data attributes (data-is-latest boolean attribute)
+ * - Download events (emits isLatest boolean with sha1)
+ */
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
 import { computed, withDefaults } from 'vue'
 import { useApiEndpoint } from '../composables/useApiEndpoint'
+import { formatDate, fromNow } from '../lib/filters'
 
 // Type definitions
 interface FeedVersionGtfsImport {
@@ -259,12 +275,16 @@ const hasMore = computed<boolean>(() => {
 })
 
 const latestFeedVersionSha1 = computed<string>(() => {
-  const s = entities.value.slice(0).sort((a, b) => new Date(a.fetched_at).getTime() - new Date(b.fetched_at).getTime())
+  const s = entities.value.slice(0).sort((a, b) => new Date(b.fetched_at).getTime() - new Date(a.fetched_at).getTime())
   if (s.length > 0) {
     return s[0].sha1
   }
   return ''
 })
+
+function isLatestFeedVersion (sha1: string): boolean {
+  return sha1 === latestFeedVersionSha1.value
+}
 
 function fetchMoreFn (): void {
   if (entities.value.length > maxLimit) {
@@ -287,7 +307,7 @@ function fetchMoreFn (): void {
 }
 
 function triggerDownload (sha1: string): void {
-  const isLatest = (sha1 === latestFeedVersionSha1.value)
+  const isLatest = isLatestFeedVersion(sha1)
   emit('downloadTriggered', sha1, isLatest)
   if (props.issueDownloadRequest) {
     window.open(`${useApiEndpoint()}/rest/feed_versions/${sha1}/download`, '_blank')
