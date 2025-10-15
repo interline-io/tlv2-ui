@@ -267,7 +267,6 @@ import { ref, computed, watch } from 'vue'
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
 import { useEntityPath } from '../../composables/useEntityPath'
-import { useEventBus } from '../../composables/useEventBus'
 import { shortenName, makeRouteLink, routeTypeToWords } from '../../lib/filters'
 
 // Types
@@ -576,7 +575,6 @@ watch(staticDescription, (newDescription) => {
 
 watch(routeName, (newName) => {
   if (newName) {
-    useEventBus().$emit('setParamKey', 'routeKey', newName)
     emit('routeNameUpdated', newName)
   }
 }, { immediate: true })

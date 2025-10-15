@@ -17,7 +17,6 @@
 <script setup lang="ts">
 import { useRoute, useRouter, ref, computed } from '#imports'
 import { type RouteParams } from '#vue-router'
-import { useEventBus } from '../composables/useEventBus'
 interface nameOpts { [index: string]: string }
 
 interface nameVal { [index: string]: number }
@@ -63,11 +62,6 @@ const classes = computed(() => {
 // Override names
 const mergedParams = new Map<string, string>()
 const forceUpdate = ref(0)
-useEventBus().$on('setParamKey', (k: string, v: string) => {
-  console.log('updating breadcrumbs:', k, v)
-  mergedParams.set(k, v)
-  forceUpdate.value += 1
-})
 
 // Watch on changes to route and forceUpdate
 const curRoute = useRoute()

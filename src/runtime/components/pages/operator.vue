@@ -213,7 +213,6 @@
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
 import { computed, ref, watch, withDefaults } from 'vue'
-import { useEventBus } from '../../composables/useEventBus'
 import { useEntityPath } from '../../composables/useEntityPath'
 
 // Type definitions
@@ -491,15 +490,6 @@ const staticDescription = computed<string>(() => {
     .join('; ')
   return `Data for ${operatorName.value} is sourced from ${feedCounts}. ${operatorName.value} provides transit services in the following locations: ${locationsList}.`
 })
-// Watch for entity name changes
-watch(
-  () => entity.value?.name,
-  (v) => {
-    if (v) {
-      useEventBus().$emit('setParamKey', 'operatorKey', v)
-    }
-  }
-)
 
 // Methods
 function formatSpec (raw?: string): string {

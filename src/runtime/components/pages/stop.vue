@@ -265,7 +265,6 @@ import { ref, computed, watch } from 'vue'
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
 import { useEntityPath } from '../../composables/useEntityPath'
-import { useEventBus } from '../../composables/useEventBus'
 import { shortenName, makeRouteLink, makeStopLink } from '../../lib/filters'
 
 // Types
@@ -690,7 +689,6 @@ watch(staticDescription, (newDescription) => {
 
 watch(() => entity.value?.stop_name, (newName) => {
   if (newName) {
-    useEventBus().$emit('setParamKey', 'stopKey', newName)
     emit('operatorNamesUpdated', newName)
   }
 }, { immediate: true })

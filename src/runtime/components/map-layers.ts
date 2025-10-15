@@ -1,10 +1,62 @@
-const headways = {
+// Types for MapLibre GL layer configurations
+type ExpressionValue = string | number | boolean | null
+type Expression = ExpressionValue | (ExpressionValue | Expression)[]
+
+interface LayerPaint {
+  'circle-color'?: string | Expression
+  'circle-radius'?: number | Expression
+  'circle-opacity'?: number | Expression
+  'line-color'?: string | Expression
+  'line-width'?: number | Expression
+  'line-gap-width'?: number | Expression
+  'line-opacity'?: number | Expression
+}
+
+interface MapLayer {
+  name: string
+  type?: 'circle' | 'line' | 'fill' | 'symbol'
+  source?: string
+  minzoom?: number
+  filter?: Expression[]
+  paint: LayerPaint
+}
+
+interface Headways {
+  high: number
+  medium: number
+  low: number
+}
+
+interface Colors {
+  active: string
+  busoutline: string
+  buslow: string
+  busmedium: string
+  bushigh: string
+  rail: string
+  railoutline: string
+  tram: string
+  tramoutline: string
+  metro: string
+  metrooutline: string
+  other: string
+  stop: string
+}
+
+interface MapLayersConfig {
+  headways: Headways
+  colors: Colors
+  stopLayers: MapLayer[]
+  routeLayers: MapLayer[]
+}
+
+const headways: Headways = {
   high: 600,
   medium: 1200,
   low: 1800
 }
 
-const colors = {
+const colors: Colors = {
   active: '#ffff66',
   busoutline: '#ffffff',
   buslow: '#8acaeb',
@@ -20,7 +72,7 @@ const colors = {
   stop: '#007cbf'
 }
 
-const stopLayers = [
+const stopLayers: MapLayer[] = [
   {
     name: 'stops',
     type: 'circle',
@@ -33,12 +85,12 @@ const stopLayers = [
   }
 ]
 
-const railRamp = ['interpolate', ['exponential', 0.5], ['zoom'],
+const railRamp: Expression = ['interpolate', ['exponential', 0.5], ['zoom'],
   10, 4,
   12, 2.5
 ]
 
-const headwayColorRamp = ['step', ['get', 'headway_secs'],
+const headwayColorRamp: Expression = ['step', ['get', 'headway_secs'],
   '#000000', 1,
   '#b0004c', 600,
   '#1c96d6', 1200,
@@ -46,7 +98,7 @@ const headwayColorRamp = ['step', ['get', 'headway_secs'],
   '#8acaeb'
 ]
 
-const headwayWidthRamp = ['step', ['get', 'headway_secs'],
+const headwayWidthRamp: Expression = ['step', ['get', 'headway_secs'],
   1.5, 1,
   2.5, 600,
   2, 1200,
@@ -54,7 +106,7 @@ const headwayWidthRamp = ['step', ['get', 'headway_secs'],
   1
 ]
 
-const routeLayers = [
+const routeLayers: MapLayer[] = [
   // hitbox / active
   {
     name: 'route-active',
@@ -203,4 +255,8 @@ const routeLayers = [
   }
 ]
 
-export default { headways, colors, stopLayers, routeLayers }
+const mapLayersConfig: MapLayersConfig = { headways, colors, stopLayers, routeLayers }
+
+export default mapLayersConfig
+export { headways, colors, stopLayers, routeLayers }
+export type { Headways, Colors, MapLayer, MapLayersConfig }
