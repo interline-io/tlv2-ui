@@ -1,6 +1,6 @@
 <template>
   <div>
-    <tl-loading v-if="$apollo.loading" />
+    <tl-loading v-if="loading" />
     <tl-msg-error v-else-if="error">
       {{ error }}
     </tl-msg-error>
@@ -48,10 +48,10 @@
               Earliest Date
             </p>
             <p v-if="entity.service_window?.feed_start_date && entity.service_window?.feed_end_date" class="title">
-              {{ $filters.formatDate(entity.service_window?.feed_start_date) }}
+              {{ formatDate(entity.service_window?.feed_start_date) }}
             </p>
             <p v-else class="title">
-              {{ $filters.formatDate(entity.earliest_calendar_date) }}
+              {{ formatDate(entity.earliest_calendar_date) }}
             </p>
           </div>
         </div>
@@ -61,10 +61,10 @@
               Latest Date
             </p>
             <p v-if="entity.service_window?.feed_start_date && entity.service_window?.feed_end_date" class="title">
-              {{ $filters.formatDate(entity.service_window?.feed_end_date) }}
+              {{ formatDate(entity.service_window?.feed_end_date) }}
             </p>
             <p v-else class="title">
-              {{ $filters.formatDate(entity.latest_calendar_date) }}
+              {{ formatDate(entity.latest_calendar_date) }}
             </p>
           </div>
         </div>
@@ -112,7 +112,7 @@
           </template>
           <tr>
             <td>Added</td>
-            <td>{{ $filters.formatDate(entity.fetched_at) }} ({{ $filters.fromNow(entity.fetched_at) }})</td>
+            <td>{{ formatDate(entity.fetched_at) }} ({{ fromNow(entity.fetched_at) }})</td>
           </tr>
           <tr>
             <td>URL</td>
@@ -131,17 +131,17 @@
             <td>Service</td>
             <td>
               <template v-if="entity.service_window?.feed_start_date && entity.service_window?.feed_end_date">
-                {{ $filters.formatDate(entity.service_window?.feed_start_date) }} to {{ $filters.formatDate(entity.service_window?.feed_end_date) }}
+                {{ formatDate(entity.service_window?.feed_start_date) }} to {{ formatDate(entity.service_window?.feed_end_date) }}
                 <o-tooltip>
                   <template #content>
                     <p>These service dates are sourced from the information in <code>feed_info.txt</code>.</p>
-                    <p>The full span of service contained in <code>calendar.txt</code> is {{ $filters.formatDate(entity.earliest_calendar_date) }} to {{ $filters.formatDate(entity.latest_calendar_date) }}</p>
+                    <p>The full span of service contained in <code>calendar.txt</code> is {{ formatDate(entity.earliest_calendar_date) }} to {{ formatDate(entity.latest_calendar_date) }}</p>
                   </template>
                   <i class="fas fa-info-circle" />
                 </o-tooltip>
               </template>
               <template v-else>
-                {{ $filters.formatDate(entity.earliest_calendar_date) }} to {{ $filters.formatDate(entity.latest_calendar_date) }}
+                {{ formatDate(entity.earliest_calendar_date) }} to {{ formatDate(entity.latest_calendar_date) }}
                 <o-tooltip>
                   <template #content>
                     <p>The full span of service contained in <code>calendar.txt</code>.</p>
@@ -208,7 +208,7 @@
 
         <slot v-if="showDownload" name="download" :entity="entity">
           <div class="is-pulled-right">
-            <tl-feed-version-download :feed-onestop-id="entity.feed.onestop_id" :feed-version-sha1="feedVersionKey" />
+            <tl-feed-version-download :feed-onestop-id="entity.feed.onestop_id" :feed-version-sha1="props.feedVersionKey" />
           </div>
         </slot>
       </div>
@@ -311,11 +311,157 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+/**
+ * Feed Version Page Component
+ *
+ * This component displays detailed information about a specific GTFS feed version,
+ * including metadata, files, import status, and various data views.
+ */
 import { gql } from 'graphql-tag'
-import EntityPageMixin from './entity-page-mixin'
+import { useQuery } from '@vue/apollo-composable'
+import { computed, ref, withDefaults } from 'vue'
+import { formatDate, fromNow } from '../../lib/filters'
 
-const q = gql`
+// Type definitions
+interface FeedVersionFile {
+  id: number
+  name: string
+  rows: number
+  size: number
+  sha1: string
+  csv_like: boolean
+  header: string
+}
+
+interface FeedInfo {
+  feed_publisher_name?: string
+  feed_publisher_url?: string
+  feed_lang?: string
+  default_lang?: string
+  feed_version?: string
+  feed_start_date?: string
+  feed_end_date?: string
+  feed_contact_email?: string
+  feed_contact_url?: string
+}
+
+interface FeedVersionGtfsImport {
+  id: number
+  exception_log?: string
+  in_progress?: boolean
+  success?: boolean
+  schedule_removed?: boolean
+  skip_entity_error_count?: Record<string, number>
+  skip_entity_reference_count?: Record<string, number>
+  skip_entity_filter_count?: Record<string, number>
+  skip_entity_marked_count?: Record<string, number>
+  warning_count?: Record<string, number>
+  entity_count?: Record<string, number>
+}
+
+interface ServiceWindow {
+  feed_start_date?: string
+  feed_end_date?: string
+  earliest_calendar_date?: string
+  latest_calendar_date?: string
+  fallback_week?: boolean
+}
+
+interface Agency {
+  id: number
+  agency_name: string
+}
+
+interface AssociatedOperator {
+  name: string
+  onestop_id: string
+}
+
+interface FeedState {
+  feed_version: {
+    id: number
+  }
+}
+
+interface Feed {
+  id: number
+  onestop_id: string
+  associated_operators: AssociatedOperator[]
+  feed_state?: FeedState
+}
+
+interface FeedVersion {
+  id: number
+  sha1: string
+  earliest_calendar_date?: string
+  latest_calendar_date?: string
+  url?: string
+  fetched_at: string
+  name?: string
+  description?: string
+  created_by?: string
+  updated_by?: string
+  files: FeedVersionFile[]
+  feed_infos: FeedInfo[]
+  feed_version_gtfs_import?: FeedVersionGtfsImport
+  service_window?: ServiceWindow
+  agencies: Agency[]
+  feed: Feed
+}
+
+interface QueryData {
+  entities: FeedVersion[]
+}
+
+interface QueryVariables {
+  feedVersionSha1: string
+}
+
+interface MergedCountItem {
+  count?: number
+  skip_error?: number
+  skip_reference?: number
+  skip_marked?: number
+  skip_filter?: number
+  warnings?: number
+}
+
+// Props
+interface Props {
+  showEdit?: boolean
+  showPermissions?: boolean
+  showUserInformation?: boolean
+  showDownload?: boolean
+  feedVersionKey: string
+  showImportStatus?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  showEdit: false,
+  showPermissions: false,
+  showUserInformation: false,
+  showDownload: true,
+  showImportStatus: true
+})
+
+// Reactive data
+const showEditModal = ref(false)
+const showPermissionsModal = ref(false)
+const activeTab = ref('timeline')
+
+// Tab names
+const tabNames = computed(() => {
+  const tabs = ['timeline', 'service', 'map', 'agencies', 'routes', 'stops', 'imports', 'files']
+  const result: Record<string, string> = {}
+  for (const tab of tabs) {
+    result[tab] = tab
+  }
+  return result
+})
+
+// GraphQL query
+const feedVersionQuery = gql`
 query ($feedVersionSha1: String!) {
   entities: feed_versions(limit: 1, where: {sha1: $feedVersionSha1}) {
     id
@@ -354,8 +500,6 @@ query ($feedVersionSha1: String!) {
       in_progress
       success
       schedule_removed
-      # generated_count
-      # interpolated_stop_time_count
       skip_entity_error_count
       skip_entity_reference_count
       skip_entity_filter_count
@@ -391,98 +535,108 @@ query ($feedVersionSha1: String!) {
 }
 `
 
-export default {
-  mixins: [EntityPageMixin],
-  apollo: {
-    entities: {
-      client: 'transitland',
-      query: q,
-      variables () {
-        return {
-          feedVersionSha1: this.feedVersionKey
-        }
-      }
-    }
-  },
-  props: {
-    showEdit: { type: Boolean, default: false },
-    showPermissions: { type: Boolean, default: false },
-    showUserInformation: { type: Boolean, default: false },
-    showDownload: { type: Boolean, default: true },
-    feedVersionKey: { type: String, default: '', required: true },
-    showImportStatus: { type: Boolean, default: true }
-  },
-
-  data () {
-    return {
-      showEditModal: false,
-      showPermissionsModal: false,
-      features: [],
-      tabNames: this.makeTabNames(['timeline', 'service', 'map', 'agencies', 'routes', 'stops', 'imports', 'files']),
-      activeTab: 'timeline'
-    }
-  },
-  computed: {
-    imported () {
-      return this.fvi && this.fvi.success
-    },
-    fvi () {
-      return (this.entity && this.entity.feed_version_gtfs_import) ? this.entity.feed_version_gtfs_import : null
-    },
-    rowCount () {
-      const ret = {}
-      for (const f of this.entity.files || []) {
-        ret[f.name] = f.rows
-      }
-      return ret
-    },
-    operatorOrAgencyNames () {
-      if (this.entity && this.entity.agencies && this.entity.agencies.length > 0) {
-        let names = this.entity.agencies.slice(0, 3).map(a => a.agency_name)
-        if (this.entity.agencies.length > 3) {
-          names = `${names.join(', ')} and ${this.entity.agencies.length - 3} additional operators`
-        } else if (names.length > 0 && names.length <= 3) {
-          names = names.slice(0, 3).join(', ')
-        }
-        return names
-      } else {
-        return this.entity.feed.onestop_id
-      }
-    },
-    staticTitle () {
-      return `${this.entity.feed.onestop_id} • ${this.entity.sha1} • Feed version`
-    },
-    staticDescription () {
-      return `An archived GTFS feed version for ${this.operatorOrAgencyNames} from the feed with a Onestop ID of ${this.pathKey} first fetched at ${this.entity.fetched_at}. This feed version contains ${this.rowCount['agency.txt'] ? this.rowCount['agency.txt'].toLocaleString() : '-'} agencies, ${this.rowCount['routes.txt'] ? this.rowCount['routes.txt'].toLocaleString() : '-'} routes, and ${this.rowCount['stops.txt'] ? this.rowCount['stops.txt'].toLocaleString() : '-'} stops.`
-    }
-  },
-  methods: {
-    mergedCount (fvi) {
-      const m = {}
-      if (!fvi) { return m }
-      for (const [a, b] of Object.entries(fvi.entity_count || {})) {
-        m[a] = m[a] ? m[a] : {}
-        m[a].count = b
-      }
-      for (const [a, b] of Object.entries(fvi.skip_entity_error_count || {})) {
-        m[a] = m[a] ? m[a] : {}
-        m[a].skip_error = b
-      }
-      for (const [a, b] of Object.entries(fvi.skip_entity_reference_count || {})) {
-        m[a] = m[a] ? m[a] : {}
-        m[a].skip_reference = b
-      }
-      for (const [a, b] of Object.entries(fvi.skip_entity_marked_count || {})) {
-        m[a] = m[a] ? m[a] : {}
-        m[a].skip_marked = b
-      }
-      for (const [a, b] of Object.entries(fvi.skip_entity_filter_count || {})) {
-        m[a] = m[a] ? m[a] : {}
-        m[a].skip_filter = b
-      }
-      return m
-    }
+// Apollo query
+const { result, loading, error, refetch } = useQuery<QueryData, QueryVariables>(
+  feedVersionQuery,
+  () => ({
+    feedVersionSha1: props.feedVersionKey
+  }),
+  {
+    clientId: 'transitland',
+    errorPolicy: 'all'
   }
+)
+
+// Computed properties
+const entities = computed<FeedVersion[]>(() => {
+  return result.value?.entities ?? []
+})
+
+const entity = computed<FeedVersion | null>(() => {
+  return entities.value.length > 0 ? entities.value[0] : null
+})
+
+const fvi = computed<FeedVersionGtfsImport | null>(() => {
+  return (entity.value && entity.value.feed_version_gtfs_import) ? entity.value.feed_version_gtfs_import : null
+})
+
+const imported = computed<boolean>(() => {
+  return fvi.value ? fvi.value.success === true : false
+})
+
+const rowCount = computed<Record<string, number>>(() => {
+  if (!entity.value) return {}
+  const ret: Record<string, number> = {}
+  for (const f of entity.value.files || []) {
+    ret[f.name] = f.rows
+  }
+  return ret
+})
+
+const operatorOrAgencyNames = computed<string>(() => {
+  if (!entity.value) return ''
+
+  if (entity.value.agencies && entity.value.agencies.length > 0) {
+    let names = entity.value.agencies.slice(0, 3).map(a => a.agency_name)
+    if (entity.value.agencies.length > 3) {
+      return `${names.join(', ')} and ${entity.value.agencies.length - 3} additional operators`
+    } else if (names.length > 0 && names.length <= 3) {
+      return names.slice(0, 3).join(', ')
+    }
+    return names.join(', ')
+  } else {
+    return entity.value.feed.onestop_id
+  }
+})
+
+const staticTitle = computed<string>(() => {
+  if (!entity.value) return ''
+  return `${entity.value.feed.onestop_id} • ${entity.value.sha1} • Feed version`
+})
+
+const staticDescription = computed<string>(() => {
+  if (!entity.value) return ''
+  const agencies = rowCount.value['agency.txt'] ? rowCount.value['agency.txt'].toLocaleString() : '-'
+  const routes = rowCount.value['routes.txt'] ? rowCount.value['routes.txt'].toLocaleString() : '-'
+  const stops = rowCount.value['stops.txt'] ? rowCount.value['stops.txt'].toLocaleString() : '-'
+
+  return `An archived GTFS feed version for ${operatorOrAgencyNames.value} from the feed with a Onestop ID of ${entity.value.feed.onestop_id} first fetched at ${entity.value.fetched_at}. This feed version contains ${agencies} agencies, ${routes} routes, and ${stops} stops.`
+})
+
+// Methods
+function mergedCount (fvi: FeedVersionGtfsImport | null): Record<string, MergedCountItem> {
+  const m: Record<string, MergedCountItem> = {}
+  if (!fvi) return m
+
+  for (const [a, b] of Object.entries(fvi.entity_count || {})) {
+    m[a] = m[a] || {}
+    m[a].count = b
+  }
+  for (const [a, b] of Object.entries(fvi.skip_entity_error_count || {})) {
+    m[a] = m[a] || {}
+    m[a].skip_error = b
+  }
+  for (const [a, b] of Object.entries(fvi.skip_entity_reference_count || {})) {
+    m[a] = m[a] || {}
+    m[a].skip_reference = b
+  }
+  for (const [a, b] of Object.entries(fvi.skip_entity_marked_count || {})) {
+    m[a] = m[a] || {}
+    m[a].skip_marked = b
+  }
+  for (const [a, b] of Object.entries(fvi.skip_entity_filter_count || {})) {
+    m[a] = m[a] || {}
+    m[a].skip_filter = b
+  }
+  return m
+}
+
+function refetchEntities (): void {
+  refetch()
+}
+
+function setTab (value: string): void {
+  activeTab.value = value
 }
 </script>
 
