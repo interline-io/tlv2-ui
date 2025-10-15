@@ -125,34 +125,45 @@ import { computed, withDefaults } from 'vue'
 import { useApiEndpoint } from '../composables/useApiEndpoint'
 import { formatDate, fromNow } from '../lib/filters'
 
-// Type definitions
-interface FeedVersionGtfsImport {
+// Types
+interface FeedVersionResponse {
   id: number
-  success?: boolean
-  in_progress?: boolean
-  exception_log?: string
-  schedule_removed?: boolean
-}
-
-interface ServiceWindow {
-  feed_start_date?: string
-  feed_end_date?: string
+  sha1: string
+  name?: string
+  description?: string
   earliest_calendar_date?: string
   latest_calendar_date?: string
-  fallback_week?: boolean
+  fetched_at: string
+  url?: string
+  feed_version_gtfs_import?: {
+    id: number
+    success?: boolean
+    in_progress?: boolean
+    exception_log?: string
+    schedule_removed?: boolean
+  }
+  service_window?: {
+    feed_start_date?: string
+    feed_end_date?: string
+    earliest_calendar_date?: string
+    latest_calendar_date?: string
+    fallback_week?: boolean
+  }
+  feed_infos?: {
+    feed_publisher_name?: string
+    feed_publisher_url?: string
+    feed_lang?: string
+    default_lang?: string
+    feed_version?: string
+    feed_start_date?: string
+    feed_end_date?: string
+    feed_contact_email?: string
+    feed_contact_url?: string
+  }[]
 }
 
-interface FeedInfo {
-  feed_publisher_name?: string
-  feed_publisher_url?: string
-  feed_lang?: string
-  default_lang?: string
-  feed_version?: string
-  feed_start_date?: string
-  feed_end_date?: string
-  feed_contact_email?: string
-  feed_contact_url?: string
-}
+// Extract individual types from the response type
+type FeedVersion = FeedVersionResponse
 
 interface License {
   redistribution_allowed?: string
@@ -163,31 +174,18 @@ interface Feed {
   license: License
 }
 
-interface FeedVersion {
-  id: number
-  sha1: string
-  name?: string
-  description?: string
-  earliest_calendar_date?: string
-  latest_calendar_date?: string
-  fetched_at: string
-  url?: string
-  feed_version_gtfs_import?: FeedVersionGtfsImport
-  service_window?: ServiceWindow
-  feed_infos?: FeedInfo[]
-}
-
 interface QueryVariables {
   limit?: number
   onestop_id?: string
   after?: number
 }
 
-interface QueryResult {
-  entities: FeedVersion[]
+interface Emits {
+  downloadTriggered: [sha1: string, isLatest: boolean]
 }
 
-interface Props {
+// Props
+const props = withDefaults(defineProps<{
   feed: Feed
   showDownloadColumn?: boolean
   showDescriptionColumn?: boolean
@@ -196,13 +194,7 @@ interface Props {
   showTimelineChart?: boolean
   issueDownloadRequest?: boolean
   limit?: number
-}
-
-interface Emits {
-  downloadTriggered: [sha1: string, isLatest: boolean]
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   showDownloadColumn: true,
   showDescriptionColumn: true,
   showDateColumns: true,
@@ -256,7 +248,7 @@ query ($limit:Int=100, $onestop_id: String, $after:Int) {
 
 const maxLimit = 10000
 
-const { result, loading, error, fetchMore } = useQuery<QueryResult, QueryVariables>(
+const { result, loading, error, fetchMore } = useQuery<{ entities: FeedVersionResponse[] }, QueryVariables>(
   fvQuery,
   () => ({
     after: 0,
@@ -296,7 +288,7 @@ function fetchMoreFn (): void {
       after: lastId,
       limit: props.limit
     },
-    updateQuery: (previousResult: QueryResult, { fetchMoreResult }: { fetchMoreResult?: QueryResult }) => {
+    updateQuery: (previousResult: { entities: FeedVersionResponse[] }, { fetchMoreResult }: { fetchMoreResult?: { entities: FeedVersionResponse[] } }) => {
       if (!fetchMoreResult) { return previousResult }
       const cur = [...previousResult.entities, ...fetchMoreResult.entities]
       return {

@@ -36,8 +36,22 @@ import { ref, computed } from 'vue'
 import { useQuery } from '@vue/apollo-composable'
 import { gql } from 'graphql-tag'
 
-// TypeScript interfaces
-interface Agency {
+// Props
+const props = withDefaults(defineProps<{
+  fvid?: string
+  limit?: number
+}>(), {
+  fvid: '',
+  limit: 100
+})
+
+// Reactive state
+const search = ref<string>('')
+const hasMore = ref(false)
+const error = ref<string | null>(null)
+
+// GraphQL query
+interface AgencyResponse {
   id: number
   agency_id: string
   agency_name: string
@@ -46,30 +60,8 @@ interface Agency {
   feed_version_sha1: string
 }
 
-interface AgenciesQueryResponse {
-  entities: Agency[]
-}
+type Agency = AgencyResponse
 
-// Props
-interface Props {
-  fvid?: string
-  limit?: number
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  fvid: '',
-  limit: 100
-})
-
-// Reactive state
-const search = ref<string>('')
-const hasMore = ref(false)
-const prevAfter = ref<number | null>(null)
-const sortField = ref('agency_id')
-const sortOrder = ref('asc')
-const error = ref<string | null>(null)
-
-// GraphQL query
 const agenciesQuery = gql`
   query ($feed_version_sha1: String, $limit: Int = 100, $after: Int, $search: String) {
     entities: agencies(after: $after, limit: $limit, where: {feed_version_sha1: $feed_version_sha1, search: $search}) {
@@ -84,7 +76,7 @@ const agenciesQuery = gql`
 `
 
 // Apollo query
-const { result, loading, error: queryError, fetchMore } = useQuery<AgenciesQueryResponse>(
+const { result, loading, error: queryError, fetchMore } = useQuery<{ entities: AgencyResponse[] }>(
   agenciesQuery,
   () => ({
     search: search.value,

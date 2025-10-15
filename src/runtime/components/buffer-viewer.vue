@@ -9,44 +9,19 @@ import { gql } from 'graphql-tag'
 
 import type { Geometry, Feature } from 'geojson'
 
-// TypeScript interfaces
-interface RouteStopBuffer {
-  stop_points: Geometry
-  stop_buffer: Geometry
-  stop_convexhull: Geometry
-}
-
-interface Route {
+// Types
+interface RouteResponse {
   id: number
-  route_stop_buffer?: RouteStopBuffer | null
+  route_stop_buffer?: {
+    stop_points: Geometry
+    stop_buffer: Geometry
+    stop_convexhull: Geometry
+  } | null
 }
 
-interface RoutesQueryResponse {
-  routes: Route[]
-}
+type Route = RouteResponse
 
-// Props
-interface Props {
-  radius?: number
-  stopIds?: number[] | null
-  routeIds?: number[] | null
-  agencyIds?: number[] | null
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  radius: 400,
-  stopIds: null,
-  routeIds: null,
-  agencyIds: null
-})
-
-// Emits
-const emit = defineEmits<{
-  setBufferFeatures: [features: Feature[]]
-  setHullFeatures: [features: Feature[]]
-}>()
-
-// GraphQL query
+// GraphQL Query
 const routesQuery = gql`
   query ($route_ids: [Int!], $radius: Float!) {
     routes: routes(ids: $route_ids) {
@@ -60,8 +35,27 @@ const routesQuery = gql`
   }
 `
 
+// Props
+const props = withDefaults(defineProps<{
+  radius?: number
+  stopIds?: number[] | null
+  routeIds?: number[] | null
+  agencyIds?: number[] | null
+}>(), {
+  radius: 400,
+  stopIds: null,
+  routeIds: null,
+  agencyIds: null
+})
+
+// Emits
+const emit = defineEmits<{
+  setBufferFeatures: [features: Feature[]]
+  setHullFeatures: [features: Feature[]]
+}>()
+
 // Apollo query
-const { result, loading } = useQuery<RoutesQueryResponse>(
+const { result, loading } = useQuery<{ routes: RouteResponse[] }>(
   routesQuery,
   () => ({
     radius: props.radius,

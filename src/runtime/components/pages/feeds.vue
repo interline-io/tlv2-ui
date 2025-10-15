@@ -23,11 +23,9 @@
 import { computed } from 'vue'
 import { useRoute, useRouter } from '#app'
 
-interface Props {
+const props = withDefaults(defineProps<{
   limit?: number
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   limit: 100
 })
 

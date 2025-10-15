@@ -65,36 +65,32 @@ import { useQuery } from '@vue/apollo-composable'
 import { thousands } from '../lib/filters'
 import type { Geometry, Feature } from 'geojson'
 
-// TypeScript interfaces
-interface Table {
-  id: string
-  table_name: string
-}
-
-interface TableValue {
-  values: Record<string, number>
-  table: Table
-}
-
-interface Geography {
-  id: string
-  geometry: Geometry
-  geoid: string
-  name: string
-  values: TableValue[]
-  intersection_area?: number
-  geometry_area?: number
-}
-
-interface Route {
+// Types
+interface RouteResponse {
   id: number
   route_short_name?: string
-  census_geographies: Geography[]
+  census_geographies: {
+    id: string
+    geometry: Geometry
+    geoid: string
+    name: string
+    values: {
+      values: Record<string, number>
+      table: {
+        id: string
+        table_name: string
+      }
+    }[]
+    intersection_area?: number
+    geometry_area?: number
+  }[]
 }
 
-interface QueryData {
-  routes: Route[]
-}
+// Extract individual types from the response type
+type Route = RouteResponse
+type Geography = RouteResponse['census_geographies'][0]
+type TableValue = Geography['values'][0]
+type Table = TableValue['table']
 
 interface QueryVariables {
   route_ids?: number[]
@@ -120,32 +116,6 @@ interface TableGroup {
 
 type CensusFeature = Feature<Geometry, Omit<Geography, 'geometry'>>
 
-// Props
-interface Props {
-  tableDataset?: string
-  geographyDataset?: string
-  layer?: string
-  radius?: number
-  stopIds?: number[] | null
-  routeIds?: number[] | null
-  agencyIds?: number[] | null
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  tableDataset: 'acsdt5y2022',
-  geographyDataset: 'tiger2024',
-  layer: 'tract',
-  radius: 400,
-  stopIds: null,
-  routeIds: null,
-  agencyIds: null
-})
-
-// Emits
-const emit = defineEmits<{
-  setFeatures: [features: CensusFeature[]]
-}>()
-
 // GraphQL Query
 const CENSUS_QUERY = gql`
   query($route_ids: [Int!], $layer_name: String!, $radius: Float!, $table_names: [String!]!, $table_dataset:String, $geography_dataset: String) {
@@ -170,6 +140,30 @@ const CENSUS_QUERY = gql`
     }
   }
 `
+
+// Props
+const props = withDefaults(defineProps<{
+  tableDataset?: string
+  geographyDataset?: string
+  layer?: string
+  radius?: number
+  stopIds?: number[] | null
+  routeIds?: number[] | null
+  agencyIds?: number[] | null
+}>(), {
+  tableDataset: 'acsdt5y2022',
+  geographyDataset: 'tiger2024',
+  layer: 'tract',
+  radius: 400,
+  stopIds: null,
+  routeIds: null,
+  agencyIds: null
+})
+
+// Emits
+const emit = defineEmits<{
+  setFeatures: [features: CensusFeature[]]
+}>()
 
 // Utility functions
 const dig = (object: any, ...path: string[]): any =>
@@ -218,7 +212,7 @@ const queryVariables = computed<QueryVariables>(() => {
 })
 
 // Apollo Query
-const { result, loading } = useQuery<QueryData>(
+const { result, loading } = useQuery<{ routes: RouteResponse[] }>(
   CENSUS_QUERY,
   queryVariables,
   {

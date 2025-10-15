@@ -1,14 +1,3 @@
-<!--
-Usage example:
-<tl-pages-stop
-  :path-key="$route.params.stopKey"
-  :show-departures="true"
-  @entities-loaded="entitiesLoaded"
-  @static-description-updated="staticDescriptionUpdated"
-  @operator-names-updated="operatorNamesUpdated"
-/>
--->
-
 <template>
   <div>
     <tl-loading v-if="loading" />
@@ -268,56 +257,7 @@ import { useEntityPath } from '../../composables/useEntityPath'
 import { shortenName, makeRouteLink, makeStopLink } from '../../lib/filters'
 
 // Types
-interface Geometry {
-  type: string
-  coordinates: [number, number]
-}
-
-interface Translation {
-  language: string
-  text: string
-}
-
-interface Alert {
-  cause: string
-  effect: string
-  severity_level: string
-  description_text: Translation[]
-  header_text: Translation[]
-  url: Translation[]
-}
-
-interface Agency {
-  id: number
-  agency_name: string
-  operator?: {
-    onestop_id: string
-  }
-}
-
-interface Route {
-  id: number
-  onestop_id: string
-  route_long_name?: string
-  route_short_name?: string
-  route_type: number
-  route_id: string
-  route_color?: string
-  route_url?: string
-  feed_onestop_id: string
-  feed_version_sha1: string
-  agency: Agency
-}
-
-interface RouteStop {
-  route: Route
-}
-
-interface FeedVersion {
-  fetched_at: string
-}
-
-interface Stop {
+interface StopResponse {
   id: number
   feed_version_sha1: string
   feed_onestop_id: string
@@ -330,22 +270,61 @@ interface Stop {
   location_type: number
   wheelchair_boarding?: number
   zone_id?: string
-  geometry: Geometry
-  feed_version: FeedVersion
-  alerts?: Alert[]
-  parent?: Stop
-  children?: Stop[]
-  route_stops?: RouteStop[]
-  nearby_stops?: Stop[]
+  geometry: {
+    type: string
+    coordinates: [number, number]
+  }
+  feed_version: {
+    fetched_at: string
+  }
+  alerts?: {
+    cause: string
+    effect: string
+    severity_level: string
+    description_text: {
+      language: string
+      text: string
+    }[]
+    header_text: {
+      language: string
+      text: string
+    }[]
+    url: {
+      language: string
+      text: string
+    }[]
+  }[]
+  parent?: StopResponse
+  children?: StopResponse[]
+  route_stops?: {
+    route: {
+      id: number
+      onestop_id: string
+      route_long_name?: string
+      route_short_name?: string
+      route_type: number
+      route_id: string
+      route_color?: string
+      route_url?: string
+      feed_onestop_id: string
+      feed_version_sha1: string
+      agency: {
+        id: number
+        agency_name: string
+        operator?: {
+          onestop_id: string
+        }
+      }
+    }
+  }[]
+  nearby_stops?: StopResponse[]
 }
 
-interface Props {
-  pathKey: string
-  showDepartures?: boolean
-  feedVersionSha1?: string
-  feedOnestopId?: string
-  entityId?: string
-}
+// Extract individual types from the response type
+type Stop = StopResponse
+type Alert = NonNullable<StopResponse['alerts']>[0]
+type Translation = Alert['description_text'][0]
+type RouteStop = NonNullable<StopResponse['route_stops']>[0]
 
 interface TabNames {
   summary: string
@@ -354,7 +333,13 @@ interface TabNames {
 }
 
 // Props
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<{
+  pathKey: string
+  showDepartures?: boolean
+  feedVersionSha1?: string
+  feedOnestopId?: string
+  entityId?: string
+}>(), {
   showDepartures: true,
   feedVersionSha1: undefined,
   feedOnestopId: undefined,
@@ -491,7 +476,7 @@ const activeTab = ref('summary')
 const tabNames = makeTabNames(['summary', 'sources', 'departures'])
 
 // GraphQL query
-const { result, loading, error } = useQuery<{ entities: Stop[] }>(q, entityVariables, {
+const { result, loading, error } = useQuery<{ entities: StopResponse[] }>(q, entityVariables, {
   clientId: 'transitland'
 })
 

@@ -324,74 +324,7 @@ import { computed, ref, withDefaults } from 'vue'
 import { formatDate, fromNow } from '../../lib/filters'
 
 // Type definitions
-interface FeedVersionFile {
-  id: number
-  name: string
-  rows: number
-  size: number
-  sha1: string
-  csv_like: boolean
-  header: string
-}
-
-interface FeedInfo {
-  feed_publisher_name?: string
-  feed_publisher_url?: string
-  feed_lang?: string
-  default_lang?: string
-  feed_version?: string
-  feed_start_date?: string
-  feed_end_date?: string
-  feed_contact_email?: string
-  feed_contact_url?: string
-}
-
-interface FeedVersionGtfsImport {
-  id: number
-  exception_log?: string
-  in_progress?: boolean
-  success?: boolean
-  schedule_removed?: boolean
-  skip_entity_error_count?: Record<string, number>
-  skip_entity_reference_count?: Record<string, number>
-  skip_entity_filter_count?: Record<string, number>
-  skip_entity_marked_count?: Record<string, number>
-  warning_count?: Record<string, number>
-  entity_count?: Record<string, number>
-}
-
-interface ServiceWindow {
-  feed_start_date?: string
-  feed_end_date?: string
-  earliest_calendar_date?: string
-  latest_calendar_date?: string
-  fallback_week?: boolean
-}
-
-interface Agency {
-  id: number
-  agency_name: string
-}
-
-interface AssociatedOperator {
-  name: string
-  onestop_id: string
-}
-
-interface FeedState {
-  feed_version: {
-    id: number
-  }
-}
-
-interface Feed {
-  id: number
-  onestop_id: string
-  associated_operators: AssociatedOperator[]
-  feed_state?: FeedState
-}
-
-interface FeedVersion {
+interface FeedVersionResponse {
   id: number
   sha1: string
   earliest_calendar_date?: string
@@ -402,17 +335,68 @@ interface FeedVersion {
   description?: string
   created_by?: string
   updated_by?: string
-  files: FeedVersionFile[]
-  feed_infos: FeedInfo[]
-  feed_version_gtfs_import?: FeedVersionGtfsImport
-  service_window?: ServiceWindow
-  agencies: Agency[]
-  feed: Feed
+  files: {
+    id: number
+    name: string
+    rows: number
+    size: number
+    sha1: string
+    csv_like: boolean
+    header: string
+  }[]
+  feed_infos: {
+    feed_publisher_name?: string
+    feed_publisher_url?: string
+    feed_lang?: string
+    default_lang?: string
+    feed_version?: string
+    feed_start_date?: string
+    feed_end_date?: string
+    feed_contact_email?: string
+    feed_contact_url?: string
+  }[]
+  feed_version_gtfs_import?: {
+    id: number
+    exception_log?: string
+    in_progress?: boolean
+    success?: boolean
+    schedule_removed?: boolean
+    skip_entity_error_count?: Record<string, number>
+    skip_entity_reference_count?: Record<string, number>
+    skip_entity_filter_count?: Record<string, number>
+    skip_entity_marked_count?: Record<string, number>
+    warning_count?: Record<string, number>
+    entity_count?: Record<string, number>
+  }
+  service_window?: {
+    feed_start_date?: string
+    feed_end_date?: string
+    earliest_calendar_date?: string
+    latest_calendar_date?: string
+    fallback_week?: boolean
+  }
+  agencies: {
+    id: number
+    agency_name: string
+  }[]
+  feed: {
+    id: number
+    onestop_id: string
+    associated_operators: {
+      name: string
+      onestop_id: string
+    }[]
+    feed_state?: {
+      feed_version: {
+        id: number
+      }
+    }
+  }
 }
 
-interface QueryData {
-  entities: FeedVersion[]
-}
+// Extract individual types from the response type
+type FeedVersion = FeedVersionResponse
+type FeedVersionGtfsImport = NonNullable<FeedVersionResponse['feed_version_gtfs_import']>
 
 interface QueryVariables {
   feedVersionSha1: string
@@ -428,16 +412,14 @@ interface MergedCountItem {
 }
 
 // Props
-interface Props {
+const props = withDefaults(defineProps<{
   showEdit?: boolean
   showPermissions?: boolean
   showUserInformation?: boolean
   showDownload?: boolean
   feedVersionKey: string
   showImportStatus?: boolean
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   showEdit: false,
   showPermissions: false,
   showUserInformation: false,
@@ -536,7 +518,7 @@ query ($feedVersionSha1: String!) {
 `
 
 // Apollo query
-const { result, loading, error, refetch } = useQuery<QueryData, QueryVariables>(
+const { result, loading, error, refetch } = useQuery<{ entities: FeedVersionResponse[] }, QueryVariables>(
   feedVersionQuery,
   () => ({
     feedVersionSha1: props.feedVersionKey

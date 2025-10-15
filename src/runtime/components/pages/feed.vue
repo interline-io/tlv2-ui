@@ -334,81 +334,7 @@ import { useEntityPath } from '../../composables/useEntityPath'
 import { formatDate, fromNow, capitalize } from '../../lib/filters'
 
 // Types
-interface Authorization {
-  type: string
-  info_url?: string
-  param_name?: string
-}
-
-interface License {
-  spdx_identifier?: string
-  url?: string
-  use_without_attribution?: string
-  create_derived_product?: string
-  redistribution_allowed?: string
-  commercial_use_allowed?: string
-  share_alike_optional?: string
-  attribution_text?: string
-  attribution_instructions?: string
-}
-
-interface FeedUrls {
-  static_current?: string
-  static_historic?: string[]
-  static_planned?: string
-  realtime_alerts?: string
-  realtime_trip_updates?: string
-  realtime_vehicle_positions?: string
-}
-
-interface Agency {
-  agency_id: string
-  agency_name: string
-}
-
-interface AssociatedOperator {
-  onestop_id: string
-  name: string
-  short_name?: string
-  agencies: Agency[]
-}
-
-interface FeedFetch {
-  fetch_error?: string
-  fetched_at: string
-}
-
-interface FeedInfo {
-  feed_publisher_name: string
-  feed_publisher_url?: string
-  feed_lang: string
-  default_lang?: string
-  feed_version?: string
-  feed_start_date?: string
-  feed_end_date?: string
-  feed_contact_email?: string
-  feed_contact_url?: string
-}
-
-interface FeedVersion {
-  id: number
-  sha1?: string
-  earliest_calendar_date?: string
-  latest_calendar_date?: string
-  fetched_at: string
-  url?: string
-  feed_infos?: FeedInfo[]
-}
-
-interface FeedState {
-  id: number
-  feed_version: {
-    sha1: string
-    id: number
-  }
-}
-
-interface Feed {
+interface FeedResponse {
   id: number
   onestop_id: string
   name?: string
@@ -416,18 +342,84 @@ interface Feed {
   languages?: string[]
   spec: string
   file?: string
-  authorization?: Authorization
-  license?: License
-  urls: FeedUrls
-  associated_operators: AssociatedOperator[]
-  last_fetch: FeedFetch[]
-  last_successful_fetch: FeedFetch[]
-  most_recent_feed_version: FeedVersion[]
+  authorization?: {
+    type: string
+    info_url?: string
+    param_name?: string
+  }
+  license?: {
+    spdx_identifier?: string
+    url?: string
+    use_without_attribution?: string
+    create_derived_product?: string
+    redistribution_allowed?: string
+    commercial_use_allowed?: string
+    share_alike_optional?: string
+    attribution_text?: string
+    attribution_instructions?: string
+  }
+  urls: {
+    static_current?: string
+    static_historic?: string[]
+    static_planned?: string
+    realtime_alerts?: string
+    realtime_trip_updates?: string
+    realtime_vehicle_positions?: string
+  }
+  associated_operators: {
+    onestop_id: string
+    name: string
+    short_name?: string
+    agencies: {
+      agency_id: string
+      agency_name: string
+    }[]
+  }[]
+  last_fetch: {
+    fetch_error?: string
+    fetched_at: string
+  }[]
+  last_successful_fetch: {
+    fetch_error?: string
+    fetched_at: string
+  }[]
+  most_recent_feed_version: {
+    id: number
+    sha1?: string
+    earliest_calendar_date?: string
+    latest_calendar_date?: string
+    fetched_at: string
+    url?: string
+    feed_infos?: {
+      feed_publisher_name: string
+      feed_publisher_url?: string
+      feed_lang: string
+      default_lang?: string
+      feed_version?: string
+      feed_start_date?: string
+      feed_end_date?: string
+      feed_contact_email?: string
+      feed_contact_url?: string
+    }[]
+  }[]
   feed_versions: Array<{ id: number }>
-  feed_state?: FeedState
+  feed_state?: {
+    id: number
+    feed_version: {
+      sha1: string
+      id: number
+    }
+  }
 }
 
-interface Props {
+// Extract individual types from the response type
+type Feed = FeedResponse
+type FeedFetch = FeedResponse['last_fetch'][0]
+type FeedVersion = FeedResponse['most_recent_feed_version'][0]
+type FeedInfo = NonNullable<FeedVersion['feed_infos']>[0]
+
+// Props
+const props = withDefaults(defineProps<{
   pathKey: string
   showPermissions?: boolean
   showUpload?: boolean
@@ -437,10 +429,7 @@ interface Props {
   showDateColumns?: boolean
   issueDownloadRequest?: boolean
   showOperators?: boolean
-}
-
-// Props
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   showPermissions: false,
   showUpload: false,
   showDownloadColumn: true,
@@ -570,7 +559,7 @@ const { searchKey, entityVariables } = useEntityPath({
 const showPermissionsModal = ref(false)
 
 // GraphQL query
-const { result, loading, error } = useQuery<{ entities: Feed[] }>(q, entityVariables, {
+const { result, loading, error } = useQuery<{ entities: FeedResponse[] }>(q, entityVariables, {
   clientId: 'transitland'
 })
 

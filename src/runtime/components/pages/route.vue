@@ -270,57 +270,7 @@ import { useEntityPath } from '../../composables/useEntityPath'
 import { shortenName, makeRouteLink, routeTypeToWords } from '../../lib/filters'
 
 // Types
-interface Geometry {
-  type: string
-  coordinates: any
-}
-
-interface Translation {
-  language: string
-  text: string
-}
-
-interface Alert {
-  cause: string
-  effect: string
-  severity_level: string
-  description_text: Translation[]
-  header_text: Translation[]
-  url: Translation[]
-}
-
-interface Agency {
-  id: number
-  agency_id: string
-  agency_name: string
-  onestop_id?: string
-}
-
-interface Stop {
-  id: number
-  stop_id: string
-  stop_name: string
-  geometry: Geometry
-}
-
-interface RouteStop {
-  stop: Stop
-}
-
-interface Headway {
-  dow_category: number
-  service_date: string
-  direction_id: number
-  headway_secs: number
-  departures: number
-}
-
-interface FeedVersion {
-  id: number
-  fetched_at: string
-}
-
-interface Route {
+interface RouteResponse {
   id: number
   onestop_id: string
   feed_onestop_id: string
@@ -333,21 +283,62 @@ interface Route {
   route_short_name?: string
   route_type: number
   route_url?: string
-  geometry: Geometry
-  alerts?: Alert[]
-  route_stops?: RouteStop[]
-  agency: Agency
-  headways?: Headway[]
-  feed_version: FeedVersion
+  geometry: {
+    type: string
+    coordinates: any
+  }
+  alerts?: {
+    cause: string
+    effect: string
+    severity_level: string
+    description_text: {
+      language: string
+      text: string
+    }[]
+    header_text: {
+      language: string
+      text: string
+    }[]
+    url: {
+      language: string
+      text: string
+    }[]
+  }[]
+  route_stops?: {
+    stop: {
+      id: number
+      stop_id: string
+      stop_name: string
+      geometry: {
+        type: string
+        coordinates: any
+      }
+    }
+  }[]
+  agency: {
+    id: number
+    agency_id: string
+    agency_name: string
+    onestop_id?: string
+  }
+  headways?: {
+    dow_category: number
+    service_date: string
+    direction_id: number
+    headway_secs: number
+    departures: number
+  }[]
+  feed_version: {
+    id: number
+    fetched_at: string
+  }
 }
 
-interface Props {
-  pathKey: string
-  includeStops?: boolean
-  feedVersionSha1?: string
-  feedOnestopId?: string
-  entityId?: string
-}
+// Extract individual types from the response type
+type Route = RouteResponse
+type Alert = NonNullable<RouteResponse['alerts']>[0]
+type Translation = Alert['description_text'][0]
+type RouteStop = NonNullable<RouteResponse['route_stops']>[0]
 
 interface TabNames {
   summary: string
@@ -357,7 +348,13 @@ interface TabNames {
 }
 
 // Props
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<{
+  pathKey: string
+  includeStops?: boolean
+  feedVersionSha1?: string
+  feedOnestopId?: string
+  entityId?: string
+}>(), {
   includeStops: true,
   feedVersionSha1: undefined,
   feedOnestopId: undefined,
@@ -465,7 +462,7 @@ const queryVariables = computed(() => ({
   limit: 10
 }))
 
-const { result, loading, error } = useQuery<{ entities: Route[] }>(q, queryVariables, {
+const { result, loading, error } = useQuery<{ entities: RouteResponse[] }>(q, queryVariables, {
   clientId: 'transitland'
 })
 // Computed entities

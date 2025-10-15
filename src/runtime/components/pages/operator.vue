@@ -216,43 +216,7 @@ import { computed, ref, watch, withDefaults } from 'vue'
 import { useEntityPath } from '../../composables/useEntityPath'
 
 // Type definitions
-interface Place {
-  city_name?: string
-  adm0_name?: string
-  adm1_name?: string
-  rank?: number
-}
-
-interface Feed {
-  id: number
-  onestop_id: string
-  spec: string
-}
-
-interface FeedVersion {
-  id: number
-  fetched_at: string
-  feed: Feed
-}
-
-interface Agency {
-  id: number
-  feed_version_sha1?: string
-  feed_onestop_id?: string
-  agency_id: string
-  agency_name: string
-  agency_url?: string
-  agency_phone?: string
-  feed_version: FeedVersion
-  places: Place[]
-}
-
-interface OperatorFeed {
-  onestop_id: string
-  spec: string
-}
-
-interface Operator {
+interface OperatorResponse {
   id: number
   onestop_id: string
   generated?: boolean
@@ -261,13 +225,40 @@ interface Operator {
   short_name?: string
   website?: string
   tags?: Record<string, string>
-  feeds: OperatorFeed[]
-  agencies: Agency[]
+  feeds: {
+    onestop_id: string
+    spec: string
+  }[]
+  agencies: {
+    id: number
+    feed_version_sha1?: string
+    feed_onestop_id?: string
+    agency_id: string
+    agency_name: string
+    agency_url?: string
+    agency_phone?: string
+    feed_version: {
+      id: number
+      fetched_at: string
+      feed: {
+        id: number
+        onestop_id: string
+        spec: string
+      }
+    }
+    places: {
+      city_name?: string
+      adm0_name?: string
+      adm1_name?: string
+      rank?: number
+    }[]
+  }[]
 }
 
-interface QueryData {
-  entities: Operator[]
-}
+// Extract individual types from the response type
+type Operator = OperatorResponse
+type Agency = OperatorResponse['agencies'][0]
+type Place = Agency['places'][0]
 
 interface QueryVariables {
   onestopId?: string
@@ -282,14 +273,12 @@ interface Source {
   target_match?: Agency
 }
 
-interface Props {
+const props = withDefaults(defineProps<{
   pathKey?: string
   feedVersionSha1?: string
   feedOnestopId?: string
   entityId?: string
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   pathKey: undefined,
   feedVersionSha1: undefined,
   feedOnestopId: undefined,
@@ -356,7 +345,7 @@ query ($onestopId: String, $feedOnestopId: String, $limit: Int=10) {
 `
 
 // Apollo query
-const { result, loading, error } = useQuery<QueryData, QueryVariables>(
+const { result, loading, error } = useQuery<{ entities: OperatorResponse[] }, QueryVariables>(
   operatorQuery,
   () => entityVariables.value,
   {
