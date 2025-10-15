@@ -119,19 +119,19 @@
                     License Identifier: {{ entity.license.spdx_identifier }}
                   </li>
                   <li>
-                    Use allowed without attribution: {{ capitalize(String(entity.license.use_without_attribution)) }}
+                    Use allowed without attribution: {{ capitalize(entity.license.use_without_attribution || '') }}
                   </li>
                   <li>
-                    Share-alike optional: {{ capitalize(String(entity.license.share_alike_optional)) }}
+                    Share-alike optional: {{ capitalize(entity.license.share_alike_optional || '') }}
                   </li>
                   <li>
-                    Commercial use allowed: {{ capitalize(String(entity.license.commercial_use_allowed)) }}
+                    Commercial use allowed: {{ capitalize(entity.license.commercial_use_allowed || '') }}
                   </li>
                   <li>
-                    Creating derived products allowed: {{ capitalize(String(entity.license.create_derived_product)) }}
+                    Creating derived products allowed: {{ capitalize(entity.license.create_derived_product || '') }}
                   </li>
                   <li>
-                    Redistribution allowed: {{ capitalize(String(entity.license.redistribution_allowed)) }}
+                    Redistribution allowed: {{ capitalize(entity.license.redistribution_allowed || '') }}
                   </li>
                   <li v-if="entity.license.attribution_text">
                     Required attribution text: {{ entity.license.attribution_text }}
@@ -244,7 +244,7 @@
           GTFS Realtime Feed Messages
         </h4>
 
-        <template v-if="entity.license.redistribution_allowed !== false">
+        <template v-if="entity.license.redistribution_allowed !== 'no'">
           <tl-msg-info>
             When a feed's license allows redistribution, you can view or download Transitland's recently cached copy of each GTFS Realtime endpoint. <a
               href="/documentation/concepts/source-feeds/#gtfs-realtime-feed-fetching-and-caching"
@@ -343,11 +343,11 @@ interface Authorization {
 interface License {
   spdx_identifier?: string
   url?: string
-  use_without_attribution?: boolean
-  create_derived_product?: boolean
-  redistribution_allowed?: boolean
-  commercial_use_allowed?: boolean
-  share_alike_optional?: boolean
+  use_without_attribution?: string
+  create_derived_product?: string
+  redistribution_allowed?: string
+  commercial_use_allowed?: string
+  share_alike_optional?: string
   attribution_text?: string
   attribution_instructions?: string
 }
