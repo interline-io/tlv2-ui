@@ -69,8 +69,8 @@
               </td>
               <td>
                 <template v-if="lastSuccessfulFetch && lastSuccessfulFetch.fetched_at">
-                  {{ $filters.formatDate(lastSuccessfulFetch.fetched_at) }} ({{
-                    $filters.fromNow(lastSuccessfulFetch.fetched_at) }})
+                  {{ formatDate(lastSuccessfulFetch.fetched_at) }} ({{
+                    fromNow(lastSuccessfulFetch.fetched_at) }})
                 </template>
                 <template v-else>
                   Unknown
@@ -118,27 +118,27 @@
                   <li v-if="entity.license.spdx_identifier">
                     License Identifier: {{ entity.license.spdx_identifier }}
                   </li>
-                  <li v-if="entity.license.use_without_attribution">
-                    Use allowed without attribution: {{ $filters.capitalize(entity.license.use_without_attribution) }}
+                  <li>
+                    Use allowed without attribution: {{ capitalize(String(entity.license.use_without_attribution)) }}
                   </li>
-                  <li v-if="entity.license.share_alike_optional">
-                    Share-alike optional: {{ $filters.capitalize(entity.license.share_alike_optional) }}
+                  <li>
+                    Share-alike optional: {{ capitalize(String(entity.license.share_alike_optional)) }}
                   </li>
-                  <li v-if="entity.license.commercial_use_allowed">
-                    Commercial use allowed: {{ $filters.capitalize(entity.license.commercial_use_allowed) }}
+                  <li>
+                    Commercial use allowed: {{ capitalize(String(entity.license.commercial_use_allowed)) }}
                   </li>
-                  <li v-if="entity.license.create_derived_product">
-                    Creating derived products allowed: {{ $filters.capitalize(entity.license.create_derived_product) }}
+                  <li>
+                    Creating derived products allowed: {{ capitalize(String(entity.license.create_derived_product)) }}
                   </li>
-                  <li v-if="entity.license.redistribution_allowed">
-                    Redistribution allowed: {{ $filters.capitalize(entity.license.redistribution_allowed) }}
+                  <li>
+                    Redistribution allowed: {{ capitalize(String(entity.license.redistribution_allowed)) }}
                   </li>
                   <li v-if="entity.license.attribution_text">
                     Required attribution text: {{ entity.license.attribution_text }}
                   </li>
                   <li v-if="entity.license.attribution_instructions" class="content">
                     Attribution instructions:
-                    <blockquote>{{ $filters.capitalize(entity.license.attribution_instructions) }}</blockquote>
+                    <blockquote>{{ capitalize(entity.license.attribution_instructions || '') }}</blockquote>
                   </li>
                 </ul>
               </td>
@@ -244,7 +244,7 @@
           GTFS Realtime Feed Messages
         </h4>
 
-        <template v-if="entity.license.redistribution_allowed !== 'no'">
+        <template v-if="entity.license.redistribution_allowed !== false">
           <tl-msg-info>
             When a feed's license allows redistribution, you can view or download Transitland's recently cached copy of each GTFS Realtime endpoint. <a
               href="/documentation/concepts/source-feeds/#gtfs-realtime-feed-fetching-and-caching"
@@ -262,7 +262,7 @@
                     <tl-feed-rt-download
                       :feed-onestop-id="entity.onestop_id"
                       rt-type="vehicle_positions"
-                      :last-fetched-at="lastSuccessfulFetch?.fetched_at ? `${$filters.formatDate(lastSuccessfulFetch.fetched_at)} (${$filters.fromNow(lastSuccessfulFetch.fetched_at)})` : null"
+                      :last-fetched-at="lastSuccessfulFetch?.fetched_at ? `${formatDate(lastSuccessfulFetch.fetched_at)} (${fromNow(lastSuccessfulFetch.fetched_at)})` : null"
                     />
                     <tl-feed-rt-api-query
                       :feed-onestop-id="entity.onestop_id"
@@ -278,7 +278,7 @@
                     <tl-feed-rt-download
                       :feed-onestop-id="entity.onestop_id"
                       rt-type="trip_updates"
-                      :last-fetched-at="lastSuccessfulFetch?.fetched_at ? `${$filters.formatDate(lastSuccessfulFetch.fetched_at)} (${$filters.fromNow(lastSuccessfulFetch.fetched_at)})` : null"
+                      :last-fetched-at="lastSuccessfulFetch?.fetched_at ? `${formatDate(lastSuccessfulFetch.fetched_at)} (${fromNow(lastSuccessfulFetch.fetched_at)})` : null"
                     />
                     <tl-feed-rt-api-query
                       :feed-onestop-id="entity.onestop_id"
@@ -294,7 +294,7 @@
                     <tl-feed-rt-download
                       :feed-onestop-id="entity.onestop_id"
                       rt-type="alerts"
-                      :last-fetched-at="lastSuccessfulFetch?.fetched_at ? `${$filters.formatDate(lastSuccessfulFetch.fetched_at)} (${$filters.fromNow(lastSuccessfulFetch.fetched_at)})` : null"
+                      :last-fetched-at="lastSuccessfulFetch?.fetched_at ? `${formatDate(lastSuccessfulFetch.fetched_at)} (${fromNow(lastSuccessfulFetch.fetched_at)})` : null"
                     />
                     <tl-feed-rt-api-query
                       :feed-onestop-id="entity.onestop_id"
@@ -326,9 +326,135 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { useRoute } from '#app'
+import { ref, computed } from 'vue'
 import { gql } from 'graphql-tag'
-import EntityPageMixin from './entity-page-mixin'
+import { useQuery } from '@vue/apollo-composable'
+import { useEntityPath } from '../../composables/useEntityPath'
+import { formatDate, fromNow, capitalize } from '../../lib/filters'
+
+// Types
+interface Authorization {
+  type: string
+  info_url?: string
+  param_name?: string
+}
+
+interface License {
+  spdx_identifier?: string
+  url?: string
+  use_without_attribution?: boolean
+  create_derived_product?: boolean
+  redistribution_allowed?: boolean
+  commercial_use_allowed?: boolean
+  share_alike_optional?: boolean
+  attribution_text?: string
+  attribution_instructions?: string
+}
+
+interface FeedUrls {
+  static_current?: string
+  static_historic?: string[]
+  static_planned?: string
+  realtime_alerts?: string
+  realtime_trip_updates?: string
+  realtime_vehicle_positions?: string
+}
+
+interface Agency {
+  agency_id: string
+  agency_name: string
+}
+
+interface AssociatedOperator {
+  onestop_id: string
+  name: string
+  short_name?: string
+  agencies: Agency[]
+}
+
+interface FeedFetch {
+  fetch_error?: string
+  fetched_at: string
+}
+
+interface FeedInfo {
+  feed_publisher_name: string
+  feed_publisher_url?: string
+  feed_lang: string
+  default_lang?: string
+  feed_version?: string
+  feed_start_date?: string
+  feed_end_date?: string
+  feed_contact_email?: string
+  feed_contact_url?: string
+}
+
+interface FeedVersion {
+  id: number
+  sha1?: string
+  earliest_calendar_date?: string
+  latest_calendar_date?: string
+  fetched_at: string
+  url?: string
+  feed_infos?: FeedInfo[]
+}
+
+interface FeedState {
+  id: number
+  feed_version: {
+    sha1: string
+    id: number
+  }
+}
+
+interface Feed {
+  id: number
+  onestop_id: string
+  name?: string
+  tags?: Record<string, any>
+  languages?: string[]
+  spec: string
+  file?: string
+  authorization?: Authorization
+  license?: License
+  urls: FeedUrls
+  associated_operators: AssociatedOperator[]
+  last_fetch: FeedFetch[]
+  last_successful_fetch: FeedFetch[]
+  most_recent_feed_version: FeedVersion[]
+  feed_versions: Array<{ id: number }>
+  feed_state?: FeedState
+}
+
+interface Props {
+  showPermissions?: boolean
+  showUpload?: boolean
+  showDownloadColumn?: boolean
+  showDescriptionColumn?: boolean
+  showActiveColumn?: boolean
+  showDateColumns?: boolean
+  issueDownloadRequest?: boolean
+  showOperators?: boolean
+}
+
+// Props
+const props = withDefaults(defineProps<Props>(), {
+  showPermissions: false,
+  showUpload: false,
+  showDownloadColumn: true,
+  showDescriptionColumn: true,
+  showActiveColumn: true,
+  showDateColumns: true,
+  issueDownloadRequest: true,
+  showOperators: true
+})
+
+// Emits
+const emit = defineEmits<{
+  downloadTriggered: [sha1: string, isLatest: boolean]
+}>()
 
 const q = gql`
 query($pathKey: String) {
@@ -414,122 +540,138 @@ query($pathKey: String) {
 }
 `
 
-function isEmpty (obj) {
+// Helper functions
+function isEmpty (obj: any): boolean {
   if (!obj) { return false }
   for (const [k, v] of Object.entries(obj)) {
-    if (k && k[0] !== '_' && v && v.length > 0) {
+    if (k && k[0] !== '_' && v && (v as any).length > 0) {
       return true
     }
   }
   return false
 }
 
-function first (v) {
+function first<T> (v: T[]): T | null {
   if (v && v.length > 0) {
     return v[0]
   }
   return null
 }
 
-export default {
-  mixins: [EntityPageMixin],
-  apollo: {
-    entities: {
-      client: 'transitland',
-      query: q,
-      variables () {
-        return { pathKey: this.pathKey }
-      }
+// Entity path setup
+const route = useRoute()
+const { searchKey, entityVariables } = useEntityPath({
+  pathKey: route.params.feedKey as string
+})
+
+// Reactive state
+const page = ref(1)
+const showPermissionsModal = ref(false)
+
+// GraphQL query
+const { result, loading, error } = useQuery<{ entities: Feed[] }>(q, entityVariables, {
+  clientId: 'transitland'
+})
+
+// Computed entity
+const entity = computed((): Feed | null => {
+  return result.value?.entities?.[0] ?? null
+})
+
+// PathKey for templates
+const pathKey = computed(() => route.params.feedKey as string)
+// Computed properties
+const feedSpec = computed((): string | undefined => {
+  return entity.value?.spec?.toUpperCase()?.replace('_', '-')
+})
+
+const mostRecentFeedInfo = computed((): FeedInfo | null => {
+  return entity.value?.most_recent_feed_version?.length > 0 ? entity.value.most_recent_feed_version[0]?.feed_infos?.[0] ?? null : null
+})
+
+const lastFetch = computed((): FeedFetch | null => {
+  return first(entity.value?.last_fetch ?? [])
+})
+
+const lastSuccessfulFetch = computed((): FeedFetch | null => {
+  return (entity.value?.last_successful_fetch && entity.value.last_successful_fetch.length > 0) ? entity.value.last_successful_fetch[0] : null
+})
+
+const operatorNames = computed((): string => {
+  if (!entity.value) return ''
+
+  let operatorNames: string | null = null
+  const names = (entity.value.associated_operators || []).map((o) => {
+    if (o.short_name) {
+      return `${o.name} (${o.short_name})`
+    } else {
+      return o.name
     }
-  },
-  props: {
-    showPermissions: { type: Boolean, default: false },
-    showUpload: { type: Boolean, default: false },
-    showDownloadColumn: { type: Boolean, default: true },
-    showDescriptionColumn: { type: Boolean, default: true },
-    showActiveColumn: { type: Boolean, default: true },
-    showDateColumns: { type: Boolean, default: true },
-    issueDownloadRequest: { type: Boolean, default: true },
-    showOperators: { type: Boolean, default: true }
-  },
-  emits: ['downloadTriggered'],
-  data () {
-    return {
-      page: 1,
-      showPermissionsModal: false,
-      tabNames: this.makeTabNames(['versions', 'service'])
-    }
-  },
-  computed: {
-    feedSpec () {
-      return this.entity?.spec?.toUpperCase()?.replace('_', '-')
-    },
-    mostRecentFeedInfo () {
-      return this.entity?.most_recent_feed_version?.length > 0 ? this.entity.most_recent_feed_version[0]?.feed_infos[0] : null
-    },
-    lastFetch () {
-      return first(this.entity.last_fetch)
-    },
-    lastSuccessfulFetch () {
-      return (this.entity.last_successful_fetch && this.entity.last_successful_fetch.length > 0) ? this.entity.last_successful_fetch[0] : null
-    },
-    operatorNames () {
-      let operatorNames = null
-      const names = (this.entity.associated_operators || []).map((o) => {
-        if (o.short_name) {
-          return `${o.name} (${o.short_name})`
-        } else {
-          return o.name
-        }
-      })
-      if (names.length > 3) {
-        operatorNames = `${names.slice(0, 3).join(', ')} and ${names.length - 3} additional operators`
-      } else if (names.length > 0 && names.length <= 3) {
-        operatorNames = names.slice(0, 3).join(', ')
-      }
-      return operatorNames || this.entity.onestop_id
-    },
-    displayLicense () {
-      if (this.entity) {
-        return isEmpty(this.entity.license)
-      }
-      return false
-    },
-    displayAuthorization () {
-      if (this.entity) {
-        return isEmpty(this.entity.authentication)
-      }
-      return false
-    },
-    displayUrls () {
-      if (this.entity) { return isEmpty(this.entity.urls) }
-      return false
-    },
-    displayTags () {
-      if (this.entity) { return isEmpty(this.entity.tags) }
-      return false
-    },
-    staticTitle () {
-      let title = `feed details: ${this.entity.onestop_id}`
-      title = this.feedSpec + ' ' + title
-      if (this.entity.associated_operators) {
-        title = `${this.operatorNames} • ` + title
-      }
-      return title
-    },
-    staticDescription () {
-      const operatorDescription = (this.entity && this.entity.associated_operators) ? ` with data for ${this.entity.name || this.operatorNames}` : ''
-      const fvCount = this.entity.feed_versions.length
-      let description = `This is a ${this.feedSpec} feed ${operatorDescription} with the Onestop ID of "${this.entity.onestop_id}".`
-      if (fvCount >= 100) {
-        description += ' There are over 100 versions of this feed.'
-      } else if (fvCount > 1) {
-        description += ` There are ${fvCount} versions of this feed.`
-      }
-      return description
-    },
+  })
+
+  if (names.length > 3) {
+    operatorNames = `${names.slice(0, 3).join(', ')} and ${names.length - 3} additional operators`
+  } else if (names.length > 0 && names.length <= 3) {
+    operatorNames = names.slice(0, 3).join(', ')
   }
-}
+
+  return operatorNames || entity.value.onestop_id
+})
+
+const displayLicense = computed((): boolean => {
+  if (entity.value) {
+    return isEmpty(entity.value.license)
+  }
+  return false
+})
+
+const displayAuthorization = computed((): boolean => {
+  if (entity.value) {
+    return isEmpty(entity.value.authorization)
+  }
+  return false
+})
+
+const displayUrls = computed((): boolean => {
+  if (entity.value) {
+    return isEmpty(entity.value.urls)
+  }
+  return false
+})
+
+const displayTags = computed((): boolean => {
+  if (entity.value) {
+    return isEmpty(entity.value.tags)
+  }
+  return false
+})
+
+const staticTitle = computed((): string => {
+  if (!entity.value) return ''
+
+  let title = `feed details: ${entity.value.onestop_id}`
+  title = feedSpec.value + ' ' + title
+  if (entity.value.associated_operators) {
+    title = `${operatorNames.value} • ` + title
+  }
+  return title
+})
+
+const staticDescription = computed((): string => {
+  if (!entity.value) return ''
+
+  const operatorDescription = (entity.value && entity.value.associated_operators) ? ` with data for ${entity.value.name || operatorNames.value}` : ''
+  const fvCount = entity.value.feed_versions.length
+  let description = `This is a ${feedSpec.value} feed ${operatorDescription} with the Onestop ID of "${entity.value.onestop_id}".`
+
+  if (fvCount >= 100) {
+    description += ' There are over 100 versions of this feed.'
+  } else if (fvCount > 1) {
+    description += ` There are ${fvCount} versions of this feed.`
+  }
+
+  return description
+})
 </script>
 
 <style scoped>
