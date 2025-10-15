@@ -17,6 +17,7 @@
 <script setup lang="ts">
 import { computed, getCurrentInstance } from 'vue'
 import { useToastNotification } from '../composables/useToastNotification'
+import { sanitizeUrl } from '../lib/sanitize'
 
 // Props
 interface Props {
@@ -33,13 +34,12 @@ const props = withDefaults(defineProps<Props>(), {
 
 // Get current Vue instance for accessing app context
 const instance = getCurrentInstance()
-const $filters = instance?.appContext.config.globalProperties.$filters
 const $config = instance?.appContext.config.globalProperties.$config
 
 // Computed properties
 const sanitizedUrl = computed((): string | null => {
   // Clean URL for display and copying (no UTM parameters)
-  return props.url && $filters ? $filters.sanitizeUrl(props.url) : props.url
+  return props.url ? sanitizeUrl(props.url) : null
 })
 
 const linkUrl = computed((): string | null => {

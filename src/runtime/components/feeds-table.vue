@@ -103,7 +103,7 @@
           </td>
           <td v-if="showColumns.includes('last_fetched')" class="has-text-right">
             <template v-if="row.last_successful_fetch && row.last_successful_fetch.length > 0">
-              {{ $filters.fromNow(row.last_successful_fetch[0].fetched_at) }}
+              {{ fromNow(row.last_successful_fetch[0].fetched_at) }}
             </template>
             <template v-else>
               Unknown
@@ -112,7 +112,7 @@
           <td v-if="importStatus || showColumns.includes('last_imported')" class="has-text-right">
             <span v-if="row.spec === 'GTFS'">
               <template v-if="row.last_successful_import && row.last_successful_import.length > 0">
-                {{ $filters.fromNow(row.last_successful_import[0].fetched_at) }}
+                {{ fromNow(row.last_successful_import[0].fetched_at) }}
               </template>
               <template v-else>
                 -
@@ -152,6 +152,7 @@
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
 import { computed, withDefaults } from 'vue'
+import { fromNow } from '../lib/filters'
 
 // Type definitions
 interface FeedFetch {

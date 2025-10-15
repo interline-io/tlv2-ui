@@ -64,8 +64,8 @@
                 Week of
               </template>
               {{ formatDay(col.key, j) }}<br>
-              Feed: {{ $filters.shortenName(cell.feed_onestop_id,16) }} ({{ $filters.shortenName(cell.feed_version_sha1,6) }})<br>
-              Fetched: {{ $filters.formatDate(cell.fetched_at) }}<br>
+              Feed: {{ shortenName(cell.feed_onestop_id,16) }} ({{ shortenName(cell.feed_version_sha1,6) }})<br>
+              Fetched: {{ formatDate(cell.fetched_at) }}<br>
               {{ Math.ceil(dayval / 3600) }} service hours <br>
               <template v-if="maxAggMode === 'all'">
                 {{ Math.ceil((dayval / cell.max) * 100) }}% of max (all groups)
@@ -85,7 +85,7 @@
           <span v-for="(dow,j) of daysOfWeek" :key="j" class="cell rowlabel">
             <template v-if="showGroupInfo">
               <nuxt-link :to="{name:'feeds-feedKey-versions-feedVersionKey', hash: '#service', params:{feedKey: cell.feed_onestop_id, feedVersionKey: cell.feed_version_sha1}}">
-                Fetched {{ $filters.formatDate(cell.fetched_at) }}
+                Fetched {{ formatDate(cell.fetched_at) }}
               </nuxt-link>
             </template>
           </span>
@@ -101,6 +101,7 @@ import { parseISO, format, add, isBefore } from 'date-fns'
 import { gql } from 'graphql-tag'
 import { ref, computed, withDefaults } from 'vue'
 import { useQuery } from '@vue/apollo-composable'
+import { shortenName, formatDate } from '../lib/filters'
 
 // Type definitions
 

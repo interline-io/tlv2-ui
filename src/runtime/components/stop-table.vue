@@ -41,7 +41,7 @@
               </td>
               <td><tl-safelink :text="stop.stop_id" max-width="100px" /></td>
               <td v-if="showAgencies">
-                {{ $filters.joinUnique(stop.route_stops.map((s) => { return s.agency.agency_name })) }}
+                {{ joinUnique(stop.route_stops.map((s) => { return s.agency.agency_name })) }}
               </td>
               <td v-if="showRoutes">
                 {{ servedByRoutes(stop) }}
@@ -268,9 +268,4 @@ const stops = computed<Stop[]>(() => {
   }
   return allStops
 })
-
-// Filter functions for template
-const $filters = {
-  joinUnique: (items: string[]) => joinUnique(items)
-}
 </script>

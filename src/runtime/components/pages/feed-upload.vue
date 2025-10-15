@@ -165,7 +165,7 @@
             variant="danger"
           >
             <slot name="existing-feed-version" :fetch-result="fetchResult">
-              This feed version already exists in the database, with SHA1 checksum value {{ fetchResult.feed_version.sha1 }}, uploaded on {{ $filters.formatDate(fetchResult.feed_version.fetched_at) }}. Existing feeds cannot be uploaded again.
+              This feed version already exists in the database, with SHA1 checksum value {{ fetchResult.feed_version.sha1 }}, uploaded on {{ formatDate(fetchResult.feed_version.fetched_at) }}. Existing feeds cannot be uploaded again.
             </slot>
           </o-notification>
 
@@ -193,6 +193,7 @@
 import { navigateTo } from '#imports'
 import { gql } from 'graphql-tag'
 import { useMixpanel } from '../../composables/useMixpanel'
+import { formatDate } from '../../lib/filters'
 import EntityPageMixin from './entity-page-mixin'
 
 const q = gql`
@@ -369,6 +370,7 @@ export default {
     }
   },
   methods: {
+    formatDate,
     validateFeed (file) {
       this.entities = []
       this.mutationLoading = true

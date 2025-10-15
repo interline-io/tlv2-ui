@@ -18,7 +18,7 @@
         tags
       >
         <tl-admin-tenant-item
-          v-for="v of $filters.nameSort(tenants || [])"
+          v-for="v of nameSort(tenants || [])"
           :key="v.id"
           :value="v"
           :action="canRemove ? 'remove' : null"
@@ -26,7 +26,7 @@
         />
 
         <tl-admin-group-item
-          v-for="v of $filters.nameSort(groups || [])"
+          v-for="v of nameSort(groups || [])"
           :key="v.id"
           :value="v"
           :action="canRemove ? 'remove' : null"
@@ -34,7 +34,7 @@
         />
 
         <tl-admin-user-item
-          v-for="v of $filters.nameSort(users || [])"
+          v-for="v of nameSort(users || [])"
           :key="v.id"
           :user="v"
           :action="canRemove ? 'remove' : null"
@@ -60,6 +60,8 @@
 </template>
 
 <script>
+import { nameSort } from '../../lib/filters'
+
 export default {
   props: {
     text: { type: String, default: '' },
@@ -89,6 +91,9 @@ export default {
     tenants () {
       return this.entrels.filter((v) => { return v.type === 1 })
     }
+  },
+  methods: {
+    nameSort
   }
 }
 </script>

@@ -50,7 +50,7 @@
       <li v-for="(st) of activePattern.stop_times" :key="st.stop_sequence">
         <p class="route-stop-name">
           <nuxt-link
-            :to="$filters.makeStopLink(st.stop.onestop_id, st.stop.feed_onestop_id, st.stop.feed_version_sha1, st.stop.stop_id, st.stop.id, linkVersion)"
+            :to="makeStopLink(st.stop.onestop_id, st.stop.feed_onestop_id, st.stop.feed_version_sha1, st.stop.stop_id, parseInt(st.stop.id), linkVersion)"
           >
             {{ st.stop.stop_name }}
           </nuxt-link>
@@ -66,7 +66,7 @@
             </div>
             <div v-for="rs of rss" :key="rs.id">
               <nuxt-link
-                :to="$filters.makeRouteLink(rs.onestop_id, rs.feed_onestop_id, rs.feed_version_sha1, rs.route_id, rs.id, linkVersion)"
+                :to="makeRouteLink(rs.onestop_id, rs.feed_onestop_id, rs.feed_version_sha1, rs.route_id, parseInt(rs.id), linkVersion)"
               >
                 <tl-route-icon
                   :agency-name="rs.agency_name"
@@ -88,6 +88,7 @@ import haversine from 'haversine'
 import { gql } from 'graphql-tag'
 import { ref, computed, watch, withDefaults } from 'vue'
 import { useQuery } from '@vue/apollo-composable'
+import { makeStopLink, makeRouteLink } from '../lib/filters'
 
 // Type definitions
 interface Geometry {
@@ -151,6 +152,7 @@ interface Pattern {
 }
 
 interface ProcessedStopTime {
+  stop_sequence: number
   stop: {
     id: string
     stop_id: string
@@ -165,6 +167,7 @@ interface ProcessedStopTime {
 interface ProcessedRoute {
   distance: number
   id: string
+  route_id: string
   onestop_id: string
   feed_onestop_id: string
   feed_version_sha1: string
@@ -334,6 +337,7 @@ const processedPatterns = computed<ProcessedPattern[]>(() => {
         routesByAgency[rs.agency_name] = a
       }
       p.stop_times.push({
+        stop_sequence: st.stop_sequence,
         stop: {
           id: st.stop.id,
           stop_id: st.stop.stop_id,
@@ -427,6 +431,7 @@ function nearbyRouteStops (stop: Stop): ProcessedRoute[] {
       ret.push({
         distance: stopDist,
         id: rs.route.id,
+        route_id: rs.route.route_id,
         onestop_id: rs.route.onestop_id,
         feed_onestop_id: rs.route.feed_onestop_id,
         feed_version_sha1: rs.route.feed_version_sha1,
