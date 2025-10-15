@@ -190,8 +190,10 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo, ref, computed, useRoute } from '#imports'
+import { ref, computed } from 'vue'
+import { useRoute, navigateTo } from 'nuxt/app'
 import { gql } from 'graphql-tag'
+import { useMutation } from '@vue/apollo-composable'
 import { useMixpanel } from '../../composables/useMixpanel'
 import { formatDate } from '../../lib/filters'
 
@@ -485,6 +487,19 @@ const IMPORT_FEED_VERSION_MUTATION = gql`
 
 // Extract pathKey from route params for feed upload
 
+// Apollo mutations setup
+const { mutate: validateGtfs } = useMutation(VALIDATE_GTFS_MUTATION, {
+  clientId: 'transitland'
+})
+
+const { mutate: fetchFeedVersionMutate } = useMutation(FETCH_FEED_VERSION_MUTATION, {
+  clientId: 'transitland'
+})
+
+const { mutate: importFeedVersionMutate } = useMutation(IMPORT_FEED_VERSION_MUTATION, {
+  clientId: 'transitland'
+})
+
 // Template refs
 const fileInput = ref<HTMLInputElement>()
 
@@ -512,75 +527,63 @@ const feedUrlIsValid = computed<boolean>(() => {
 })
 
 // Methods
-function validateFeed (file?: File): void {
+async function validateFeed (file?: File): Promise<void> {
   entities.value = []
   mutationLoading.value = true
 
-  const { $apollo } = useNuxtApp()
-
-  $apollo.mutate({
-    client: 'transitland',
-    mutation: VALIDATE_GTFS_MUTATION,
-    variables: {
+  try {
+    const { data } = await validateGtfs({
       file,
       url: feedUrl.value || null,
       realtime_urls: realtimeUrl.value ? [realtimeUrl.value] : null
-    }
-  }).then(({ data }) => {
+    })
+
     activeStep.value = '2'
     entities.value = [data.validate_gtfs]
     mutationLoading.value = false
-  }).catch((error: Error) => {
+  } catch (error) {
     mutationLoading.value = false
-    networkError.value = error
-  })
+    networkError.value = error as Error
+  }
 }
 
-function fetchFeedVersion (): void {
-  useMixpanel().track('Upload feed version: Fetch feed version')
+async function fetchFeedVersion (): Promise<void> {
+  useMixpanel().track('Upload feed version: Fetch feed version', {})
   fetchResult.value = null
   fetchLoading.value = true
 
-  const { $apollo } = useNuxtApp()
-
-  $apollo.mutate({
-    client: 'transitland',
-    mutation: FETCH_FEED_VERSION_MUTATION,
-    variables: {
+  try {
+    const { data } = await fetchFeedVersionMutate({
       file: selectedFiles.value[0] || null,
       url: feedUrl.value || null,
       feedOnestopId: pathKey.value
-    }
-  }).then(({ data }) => {
+    })
+
     activeStep.value = '3'
     fetchResult.value = data.feed_version_fetch
     fetchLoading.value = false
     importFeedVersion(fetchResult.value.feed_version.id)
-  }).catch((error: Error) => {
+  } catch (error) {
     fetchLoading.value = false
-    networkError.value = error
-  })
+    networkError.value = error as Error
+  }
 }
 
-function importFeedVersion (fvid: number): void {
-  useMixpanel().track('Upload feed version: Import feed version')
+async function importFeedVersion (fvid: number): Promise<void> {
+  useMixpanel().track('Upload feed version: Import feed version', {})
   importLoading.value = true
 
-  const { $apollo } = useNuxtApp()
-
-  $apollo.mutate({
-    client: 'transitland',
-    mutation: IMPORT_FEED_VERSION_MUTATION,
-    variables: {
+  try {
+    await importFeedVersionMutate({
       id: fvid
-    }
-  }).then(() => {
+    })
+
     importLoading.value = false
     activeStep.value = '4'
-  }).catch((error: Error) => {
+  } catch (error) {
     console.log('import feed version error:', error)
-    networkError.value = error
-  })
+    networkError.value = error as Error
+  }
 }
 
 function submitUrl (): void {
@@ -594,7 +597,7 @@ function upload (event: Event): void {
   const target = event.target as HTMLInputElement
   const files = target.files ? Array.from(target.files) : []
 
-  useMixpanel().track('Upload feed version: Upload')
+  useMixpanel().track('Upload feed version: Upload', {})
   selectedFiles.value = files
   if (!files.length) {
     return
@@ -603,7 +606,7 @@ function upload (event: Event): void {
 }
 
 function finished (): void {
-  useMixpanel().track('Upload feed version: Finished')
+  useMixpanel().track('Upload feed version: Finished', {})
   navigateTo({
     name: 'feeds-feedKey',
     params: { feedKey: pathKey.value }
