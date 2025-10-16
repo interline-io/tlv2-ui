@@ -86,7 +86,7 @@
 <script setup lang="ts">
 import haversine from 'haversine'
 import { gql } from 'graphql-tag'
-import { ref, computed, watch, withDefaults } from 'vue'
+import { ref, computed } from 'vue'
 import { useQuery } from '@vue/apollo-composable'
 import { makeStopLink, makeRouteLink } from '../lib/filters'
 

@@ -151,7 +151,7 @@
 <script setup lang="ts">
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
-import { computed, withDefaults } from 'vue'
+import { computed } from 'vue'
 import { fromNow } from '../lib/filters'
 
 // Types

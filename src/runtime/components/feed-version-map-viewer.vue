@@ -37,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, ref, computed, watch, withDefaults } from 'vue'
+import { nextTick, ref, computed, watch } from 'vue'
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
 import type { Geometry, Point } from 'geojson'
