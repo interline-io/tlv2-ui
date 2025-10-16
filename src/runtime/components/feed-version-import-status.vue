@@ -39,12 +39,10 @@ interface FeedVersionGtfsImport {
 }
 
 // Props
-interface Props {
+withDefaults(defineProps<{
   feedVersionGtfsImport?: FeedVersionGtfsImport | null
   showNotImportedStatus?: boolean
-}
-
-withDefaults(defineProps<Props>(), {
+}>(), {
   feedVersionGtfsImport: null,
   showNotImportedStatus: false
 })

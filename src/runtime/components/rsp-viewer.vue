@@ -50,7 +50,7 @@
       <li v-for="(st) of activePattern.stop_times" :key="st.stop_sequence">
         <p class="route-stop-name">
           <nuxt-link
-            :to="$filters.makeStopLink(st.stop.onestop_id, st.stop.feed_onestop_id, st.stop.feed_version_sha1, st.stop.stop_id, st.stop.id, linkVersion)"
+            :to="makeStopLink(st.stop.onestop_id, st.stop.feed_onestop_id, st.stop.feed_version_sha1, st.stop.stop_id, parseInt(st.stop.id), linkVersion)"
           >
             {{ st.stop.stop_name }}
           </nuxt-link>
@@ -66,7 +66,7 @@
             </div>
             <div v-for="rs of rss" :key="rs.id">
               <nuxt-link
-                :to="$filters.makeRouteLink(rs.onestop_id, rs.feed_onestop_id, rs.feed_version_sha1, rs.route_id, rs.id, linkVersion)"
+                :to="makeRouteLink(rs.onestop_id, rs.feed_onestop_id, rs.feed_version_sha1, rs.route_id, parseInt(rs.id), linkVersion)"
               >
                 <tl-route-icon
                   :agency-name="rs.agency_name"
@@ -88,69 +88,88 @@ import haversine from 'haversine'
 import { gql } from 'graphql-tag'
 import { ref, computed, watch, withDefaults } from 'vue'
 import { useQuery } from '@vue/apollo-composable'
+import { makeStopLink, makeRouteLink } from '../lib/filters'
 
-// Type definitions
-interface Geometry {
-  coordinates: [number, number]
-}
-
-interface Agency {
-  id: string
-  agency_id: string
-  agency_name: string
-}
-
-interface Route {
+// Types
+interface RouteResponse {
   id: string
   route_id: string
   route_short_name: string
   route_long_name: string
-  route_type: number
   onestop_id: string
   feed_onestop_id: string
   feed_version_sha1: string
-  agency: Agency
-  patterns: Pattern[]
+  patterns: {
+    direction_id: number
+    stop_pattern_id: string
+    count: number
+    trips: {
+      id: string
+      trip_id: string
+      trip_headsign: string
+      direction_id: number
+      stop_times: {
+        stop_sequence: number
+        stop: {
+          id: string
+          onestop_id: string
+          stop_id: string
+          stop_name: string
+          location_type: number
+          geometry: {
+            coordinates: [number, number]
+          }
+          feed_onestop_id: string
+          feed_version_sha1: string
+          nearby_stops?: {
+            id: string
+            onestop_id: string
+            stop_id: string
+            stop_name: string
+            location_type: number
+            geometry: {
+              coordinates: [number, number]
+            }
+            feed_onestop_id: string
+            feed_version_sha1: string
+            route_stops: {
+              route: {
+                id: string
+                route_id: string
+                route_short_name: string
+                route_long_name: string
+                route_type: number
+                onestop_id: string
+                feed_onestop_id: string
+                feed_version_sha1: string
+                agency: {
+                  id: string
+                  agency_id: string
+                  agency_name: string
+                }
+              }
+            }[]
+          }[]
+        }
+      }[]
+    }[]
+  }[]
 }
 
-interface RouteStop {
-  route: Route
-}
+// Extract individual types from the response type
+type Route = RouteResponse
+type Pattern = RouteResponse['patterns'][0]
+type Trip = Pattern['trips'][0]
+type StopTime = Trip['stop_times'][0]
+type Stop = StopTime['stop']
+type Geometry = Stop['geometry']
+type NearbyStop = NonNullable<Stop['nearby_stops']>[0]
+type RouteStop = NearbyStop['route_stops'][0]
+type Agency = RouteStop['route']['agency']
 
-interface Stop {
-  id: string
-  onestop_id: string
-  stop_id: string
-  stop_name: string
-  location_type: number
-  geometry: Geometry
-  feed_onestop_id: string
-  feed_version_sha1: string
-  nearby_stops?: Stop[]
-  route_stops?: RouteStop[]
-}
-
-interface StopTime {
-  stop_sequence: number
-  stop: Stop
-}
-
-interface Trip {
-  id: string
-  trip_id: string
-  trip_headsign: string
-  direction_id: number
-  stop_times: StopTime[]
-}
-
-interface Pattern {
-  direction_id: number
-  stop_pattern_id: string
-  count: number
-  trips: Trip[]
-}
-
+// Processing types
 interface ProcessedStopTime {
+  stop_sequence: number
   stop: {
     id: string
     stop_id: string
@@ -165,6 +184,7 @@ interface ProcessedStopTime {
 interface ProcessedRoute {
   distance: number
   id: string
+  route_id: string
   onestop_id: string
   feed_onestop_id: string
   feed_version_sha1: string
@@ -184,12 +204,6 @@ interface ProcessedPattern {
     trip_headsign: string
   }
   stop_times: ProcessedStopTime[]
-}
-
-interface Props {
-  routeIds: number[]
-  transferRadius?: number
-  linkVersion?: boolean
 }
 
 // GraphQL query
@@ -259,7 +273,11 @@ query ($route_ids: [Int!]!, $radius:Float!, $include_nearby_stops:Boolean!) {
 `
 
 // Props
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<{
+  routeIds: number[]
+  transferRadius?: number
+  linkVersion?: boolean
+}>(), {
   transferRadius: 0,
   linkVersion: false
 })
@@ -273,7 +291,7 @@ const error = ref<string | null>(null)
 const includeNearbyStops = computed(() => radius.value > 0)
 
 // Apollo query
-const { result: routesResult, loading, onError } = useQuery<{ routes: Route[] }>(q, () => ({
+const { result: routesResult, loading, onError } = useQuery<{ routes: RouteResponse[] }>(q, () => ({
   route_ids: props.routeIds,
   radius: radius.value,
   include_nearby_stops: includeNearbyStops.value
@@ -334,6 +352,7 @@ const processedPatterns = computed<ProcessedPattern[]>(() => {
         routesByAgency[rs.agency_name] = a
       }
       p.stop_times.push({
+        stop_sequence: st.stop_sequence,
         stop: {
           id: st.stop.id,
           stop_id: st.stop.stop_id,
@@ -427,6 +446,7 @@ function nearbyRouteStops (stop: Stop): ProcessedRoute[] {
       ret.push({
         distance: stopDist,
         id: rs.route.id,
+        route_id: rs.route.route_id,
         onestop_id: rs.route.onestop_id,
         feed_onestop_id: rs.route.feed_onestop_id,
         feed_version_sha1: rs.route.feed_version_sha1,

@@ -18,14 +18,12 @@ import { useApiEndpoint } from '../composables/useApiEndpoint'
 import { useAuthHeaders } from '../composables/useAuthHeaders'
 
 // Props
-interface Props {
+const props = withDefaults(defineProps<{
   text?: string
   feedOnestopId: string
   feedVersionSha1?: string
   latest?: boolean
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   text: 'Download',
   feedVersionSha1: '',
   latest: false

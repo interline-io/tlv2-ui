@@ -42,39 +42,8 @@ import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
 import type { Geometry, Point } from 'geojson'
 
-interface RouteGeometry {
-  geometry: Geometry
-  combined_geometry: Geometry
-  generated: boolean
-  length?: number
-  max_segment_length?: number
-}
-
-interface Headway {
-  dow_category: number
-  direction_id: number
-  headway_secs: number
-}
-
-interface Stop {
-  id: number
-  stop_id: string
-  stop_name: string
-  geometry: Point
-  location_type?: number
-}
-
-interface RouteStop {
-  stop: Stop
-}
-
-interface Agency {
-  id: number
-  agency_id: string
-  agency_name: string
-}
-
-interface Route {
+// Types
+interface RouteResponse {
   id: number
   onestop_id: string
   feed_onestop_id: string
@@ -86,12 +55,37 @@ interface Route {
   route_short_name?: string
   route_type: number
   route_url?: string
-  geometries: RouteGeometry[]
-  headways?: Headway[]
-  route_stops?: RouteStop[]
-  agency?: Agency
+  geometries: {
+    geometry: Geometry
+    combined_geometry: Geometry
+    generated: boolean
+    length?: number
+    max_segment_length?: number
+  }[]
+  headways?: {
+    dow_category: number
+    direction_id: number
+    headway_secs: number
+  }[]
+  route_stops?: {
+    stop: {
+      id: number
+      stop_id: string
+      stop_name: string
+      geometry: Point
+      location_type?: number
+    }
+  }[]
+  agency?: {
+    id: number
+    agency_id: string
+    agency_name: string
+  }
   __typename?: string
 }
+
+// Extract individual types from the response type
+type Route = RouteResponse
 
 interface MapFeature {
   id: number
@@ -100,7 +94,8 @@ interface MapFeature {
   geometry: Geometry
 }
 
-interface Props {
+// Props
+const props = withDefaults(defineProps<{
   autoFit?: boolean
   limit?: number
   maxLimit?: number
@@ -117,9 +112,7 @@ interface Props {
   enableScrollZoom?: boolean
   circleRadius?: number
   circleColor?: string
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   autoFit: true,
   limit: 1000,
   maxLimit: 10000,
@@ -195,7 +188,7 @@ const agencyFeatures = ref<Record<string, any>>({})
 const currentZoom = ref(props.zoom)
 
 // Apollo query
-const { result, fetchMore: apolloFetchMore, onError } = useQuery<{ routes: Route[] }>(
+const { result, fetchMore: apolloFetchMore, onError } = useQuery<{ routes: RouteResponse[] }>(
   q,
   () => ({
     include_stops: props.includeStops,

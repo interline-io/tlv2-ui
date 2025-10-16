@@ -6,11 +6,9 @@
 </template>
 
 <script setup lang="ts">
-interface Props {
+withDefaults(defineProps<{
   closable?: boolean
-}
-
-withDefaults(defineProps<Props>(), {
+}>(), {
   closable: false
 })
 

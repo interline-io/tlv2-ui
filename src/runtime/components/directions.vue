@@ -196,100 +196,95 @@ import { parseISO, format } from 'date-fns'
 import type { Geometry } from 'geojson'
 import { formatDuration } from '../lib/filters'
 
-// Type definitions
-
-interface Duration {
-  duration: number
-  units: string
+// Types
+interface DirectionsQueryResponse {
+  directions: {
+    success: boolean
+    itineraries?: {
+      duration: {
+        duration: number
+        units: string
+      }
+      distance: {
+        distance: number
+        units: string
+      }
+      from: {
+        lon: number
+        lat: number
+      }
+      to: {
+        lon: number
+        lat: number
+      }
+      start_time: string
+      end_time: string
+      legs: {
+        duration: {
+          duration: number
+          units: string
+        }
+        distance: {
+          distance: number
+          units: string
+        }
+        start_time: string
+        end_time: string
+        from: {
+          lon: number
+          lat: number
+          name?: string
+        }
+        to: {
+          lon: number
+          lat: number
+          name?: string
+        }
+        mode: string
+        stops?: {
+          lon: number
+          lat: number
+          departure: string
+          stop_id: string
+          stop_name: string
+        }[]
+        trip?: {
+          trip_id: string
+          headsign?: string
+          route: {
+            route_id: string
+            route_short_name?: string
+            route_long_name?: string
+            route_type: number
+            route_color?: string
+            agency: {
+              agency_id: string
+              agency_name: string
+            }
+          }
+        }
+        geometry?: Geometry
+      }[]
+    }[]
+  }
 }
 
-interface Distance {
-  distance: number
-  units: string
-}
-
-interface Location {
-  lon: number
-  lat: number
-  name?: string
-}
-
-interface Agency {
-  agency_id: string
-  agency_name: string
-}
-
-interface Route {
-  route_id: string
-  route_short_name?: string
-  route_long_name?: string
-  route_type: number
-  route_color?: string
-  agency: Agency
-}
-
-interface Trip {
-  trip_id: string
-  headsign?: string
-  route: Route
-}
-
-interface Stop {
-  lon: number
-  lat: number
-  departure: string
-  stop_id: string
-  stop_name: string
-}
-
-interface Leg {
-  duration: Duration
-  distance: Distance
-  start_time: string
-  end_time: string
-  from: Location
-  to: Location
-  mode: string
-  stops?: Stop[]
-  trip?: Trip
-  geometry?: Geometry
-}
-
-interface Itinerary {
-  duration: Duration
-  distance: Distance
-  from: Location
-  to: Location
-  start_time: string
-  end_time: string
-  legs: Leg[]
-}
-
-interface DirectionsResponse {
-  success: boolean
-  itineraries?: Itinerary[]
-}
-
-interface DirectionRequest {
-  from: Location
-  to: Location
-  mode: string
-  depart_at: string
-}
+// Extract individual types from the response type
+type DirectionsResponse = DirectionsQueryResponse['directions']
+type Itinerary = NonNullable<DirectionsResponse['itineraries']>[0]
+type Leg = Itinerary['legs'][0]
 
 interface LegIcon {
   icon: string
   route: string | null
 }
 
-interface Props {
+const props = withDefaults(defineProps<{
   fromPlace?: number[]
   toPlace?: number[]
   mode?: string
   departAt?: string
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   fromPlace: () => [],
   toPlace: () => [],
   mode: 'WALK',
@@ -398,7 +393,7 @@ const vars = computed(() => ({
 }))
 
 // Setup query
-const { result, loading, error, load, refetch } = useLazyQuery<{ directions: DirectionsResponse }>(query, null, { clientId: 'transitland' })
+const { result, loading, error, load, refetch } = useLazyQuery<DirectionsQueryResponse>(query, null, { clientId: 'transitland' })
 
 // Watch for changes
 const loadReady = computed(() => {

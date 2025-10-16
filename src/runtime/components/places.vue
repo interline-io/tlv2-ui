@@ -85,20 +85,22 @@ import { computed, ref, watch } from 'vue'
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
 
-// TypeScript interfaces
-interface Operator {
-  onestop_id: string
-  name: string
-  short_name?: string
-}
-
-interface Place {
+// Types
+interface PlaceResponse {
   adm0_name?: string
   adm1_name?: string
   city_name?: string
   count?: number
-  operators?: Operator[]
+  operators?: {
+    onestop_id: string
+    name: string
+    short_name?: string
+  }[]
 }
+
+// Extract individual types from the response type
+type Place = PlaceResponse
+type Operator = NonNullable<PlaceResponse['operators']>[0]
 
 interface PlaceFilter {
   adm0_name?: string
@@ -113,15 +115,13 @@ interface QueryVariables {
 }
 
 // Props
-interface Props {
+const props = withDefaults(defineProps<{
   placeLevel?: string
   adm0?: string | null
   adm1?: string | null
   city?: string | null
   showSortBy?: boolean
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   placeLevel: 'ADM0',
   adm0: null,
   adm1: null,
@@ -181,7 +181,7 @@ const queryVariables = computed<QueryVariables>(() => {
 })
 
 // Apollo Query
-const { result, loading } = useQuery<{ places: Place[] }>(
+const { result, loading } = useQuery<{ places: PlaceResponse[] }>(
   PLACES_QUERY,
   queryVariables,
   {

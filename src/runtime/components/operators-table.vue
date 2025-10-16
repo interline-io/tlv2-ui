@@ -94,25 +94,28 @@ import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
 import { ref, watch, computed, withDefaults } from 'vue'
 
-// Type definitions
-interface Place {
-  city_name?: string
-  adm0_name?: string
-  adm1_name?: string
-  rank: number
+// Types
+interface OperatorsTableResponse {
+  entities: {
+    id: number
+    onestop_id: string
+    name: string
+    short_name?: string
+    agencies?: {
+      places?: {
+        city_name?: string
+        adm0_name?: string
+        adm1_name?: string
+        rank: number
+      }[]
+    }[]
+  }[]
 }
 
-interface Agency {
-  places?: Place[]
-}
-
-interface Operator {
-  id: number
-  onestop_id: string
-  name: string
-  short_name?: string
-  agencies?: Agency[]
-}
+// Extract individual types from the response type
+type Operator = OperatorsTableResponse['entities'][0]
+type Agency = NonNullable<Operator['agencies']>[0]
+type Place = NonNullable<Agency['places']>[0]
 
 interface ProcessedOperator extends Operator {
   adm0_name?: string
@@ -129,10 +132,6 @@ interface QueryVariables {
   adm0_name?: string | null
   adm1_name?: string | null
   city_name?: string | null
-}
-
-interface QueryResult {
-  entities: Operator[]
 }
 
 const query = gql`
@@ -170,16 +169,14 @@ function nullBool (v: boolean | undefined): boolean | null {
   return null
 }
 
-interface Props {
+const props = withDefaults(defineProps<{
   search?: string | null
   limit?: number
   adm0Name?: string | null
   adm1Name?: string | null
   cityName?: string | null
   merged?: boolean
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   search: null,
   limit: 100,
   adm0Name: null,
@@ -213,7 +210,7 @@ watch(adm1Name, (v) => { emit('update:adm1Name', v) })
 watch(cityName, (v) => { emit('update:cityName', v) })
 watch(merged, (v) => { emit('update:merged', v) })
 
-const { result, loading, error, fetchMore } = useQuery<QueryResult, QueryVariables>(
+const { result, loading, error, fetchMore } = useQuery<OperatorsTableResponse, QueryVariables>(
   query,
   () => ({
     search: nullString(search.value),
@@ -268,7 +265,7 @@ function fetchMoreFn (): void {
       after: lastId,
       limit: 100
     },
-    updateQuery: (previousResult: QueryResult, { fetchMoreResult }: { fetchMoreResult?: QueryResult }) => {
+    updateQuery: (previousResult: OperatorsTableResponse, { fetchMoreResult }: { fetchMoreResult?: OperatorsTableResponse }) => {
       if (!fetchMoreResult) { return previousResult }
       return {
         ...previousResult,

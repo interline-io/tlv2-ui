@@ -29,11 +29,9 @@ const routeTypes: Record<number, string> = {
 }
 
 // Props
-interface Props {
+withDefaults(defineProps<{
   modelValue?: string | number | null
-}
-
-withDefaults(defineProps<Props>(), {
+}>(), {
   modelValue: 0
 })
 

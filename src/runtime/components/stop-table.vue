@@ -41,7 +41,7 @@
               </td>
               <td><tl-safelink :text="stop.stop_id" max-width="100px" /></td>
               <td v-if="showAgencies">
-                {{ $filters.joinUnique(stop.route_stops.map((s) => { return s.agency.agency_name })) }}
+                {{ joinUnique(stop.route_stops.map((s) => { return s.agency.agency_name })) }}
               </td>
               <td v-if="showRoutes">
                 {{ servedByRoutes(stop) }}
@@ -69,46 +69,52 @@ import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
 import { joinUnique, makeStopLink } from '../lib/filters'
 
-// TypeScript interfaces
-interface Route {
-  id: number
-  route_id: string
-  route_short_name?: string
-  route_long_name?: string
+// Types
+interface FeedVersionResponse {
+  stops: {
+    id: number
+    feed_onestop_id?: string
+    feed_version_sha1?: string
+    onestop_id?: string
+    stop_id: string
+    stop_name: string
+    stop_code?: string
+    stop_desc?: string
+    stop_url?: string
+    location_type?: number
+    wheelchair_boarding?: number
+    children?: {
+      id: number
+      stop_id: string
+      route_stops: {
+        route: {
+          id: number
+          route_id: string
+          route_short_name?: string
+          route_long_name?: string
+        }
+      }[]
+    }[]
+    route_stops: {
+      route: {
+        id: number
+        route_id: string
+        route_short_name?: string
+        route_long_name?: string
+      }
+      agency: {
+        agency_name: string
+      }
+    }[]
+  }[]
 }
 
-interface RouteStop {
-  route: Route
-  agency: Agency
-}
-
-interface Agency {
-  agency_name: string
-}
-
-interface Stop {
-  id: number
-  feed_onestop_id?: string
-  feed_version_sha1?: string
-  onestop_id?: string
-  stop_id: string
-  stop_name: string
-  stop_code?: string
-  stop_desc?: string
-  stop_url?: string
-  location_type?: number
-  wheelchair_boarding?: number
-  children?: Stop[]
-  route_stops: RouteStop[]
-}
-
-interface FeedVersion {
-  stops: Stop[]
-}
-
-interface QueryData {
-  feed_versions: FeedVersion[]
-}
+// Extract individual types from the response type
+type FeedVersion = FeedVersionResponse
+type Stop = FeedVersionResponse['stops'][0]
+type RouteStop = Stop['route_stops'][0]
+type Route = RouteStop['route']
+type Agency = RouteStop['agency']
 
 interface QueryVariables {
   feed_version_sha1?: string | null
@@ -122,7 +128,7 @@ interface QueryVariables {
 }
 
 // Props
-interface Props {
+const props = withDefaults(defineProps<{
   showRoutes?: boolean
   showAgencies?: boolean
   feedVersionSha1?: string | null
@@ -134,9 +140,7 @@ interface Props {
   showOnestopId?: boolean
   showLinks?: boolean
   limit?: number
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   showRoutes: true,
   showAgencies: false,
   feedVersionSha1: null,
@@ -210,7 +214,7 @@ const queryVariables = computed<QueryVariables>(() => ({
 }))
 
 // Apollo Query
-const { result, loading, onError } = useQuery<QueryData>(
+const { result, loading, onError } = useQuery<{ feed_versions: FeedVersionResponse[] }>(
   STOPS_QUERY,
   queryVariables,
   {
@@ -268,9 +272,4 @@ const stops = computed<Stop[]>(() => {
   }
   return allStops
 })
-
-// Filter functions for template
-const $filters = {
-  joinUnique: (items: string[]) => joinUnique(items)
-}
 </script>

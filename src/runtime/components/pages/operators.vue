@@ -21,58 +21,85 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+/**
+ * Operators Page Component
+ *
+ * This component provides a page for browsing and filtering operators.
+ * It manages query parameters for filtering by location, search terms, and merge status.
+ */
+import { computed } from 'vue'
+import { useRoute, useRouter } from 'nuxt/app'
 
-export default {
-  data () {
-    return {
-    }
+// Composables
+const route = useRoute()
+const router = useRouter()
+
+// Computed properties
+const filteringByOperatorLocation = computed<boolean>(() => {
+  return !!(route.query.adm0_name || route.query.adm1_name || route.query.city_name)
+})
+
+const staticTitle = computed<string>(() => {
+  return 'Browse all operators'
+})
+
+const staticDescription = computed<string>(() => {
+  return 'Operators group together source feeds and other relevant data'
+})
+
+// Query parameter computed properties with getters and setters
+const search = computed<string | undefined>({
+  get () {
+    return typeof route.query.search === 'string' ? route.query.search : undefined
   },
-  computed: {
-    filteringByOperatorLocation () {
-      return (this.$route.query.adm0_name || this.$route.query.adm1_name || this.$route.query.city_name)
-    },
-    staticTitle () {
-      return 'Browse all operators'
-    },
-    staticDescription () {
-      return 'Operators group together source feeds and other relevant data'
-    },
-    search: {
-      get () { return this.$route.query.search },
-      set (v) {
-        this.$router.replace({ query: { ...this.$route.query, search: v } })
-      }
-    },
-    adm0Name: {
-      get () { return this.$route.query.adm0_name },
-      set (v) {
-        this.$router.replace({ query: { ...this.$route.query, adm0_name: v } })
-      }
-    },
-    adm1Name: {
-      get () { return this.$route.query.adm1_name },
-      set (v) {
-        this.$router.replace({ query: { ...this.$route.query, adm1_name: v } })
-      }
-    },
-    cityName: {
-      get () { return this.$route.query.city_name },
-      set (v) {
-        this.$router.replace({ query: { ...this.$route.query, city_name: v } })
-      }
-    },
-    merged: {
-      get () { return this.$route.query.merged },
-      set (v) {
-        this.$router.replace({ query: { ...this.$route.query, merged: v } })
-      }
-    }
-  },
-  methods: {
-    clearQuery () {
-      this.$router.replace({ query: { } })
-    }
+  set (v: string | undefined) {
+    router.replace({ query: { ...route.query, search: v } })
   }
+})
+
+const adm0Name = computed<string | undefined>({
+  get () {
+    return typeof route.query.adm0_name === 'string' ? route.query.adm0_name : undefined
+  },
+  set (v: string | undefined) {
+    router.replace({ query: { ...route.query, adm0_name: v } })
+  }
+})
+
+const adm1Name = computed<string | undefined>({
+  get () {
+    return typeof route.query.adm1_name === 'string' ? route.query.adm1_name : undefined
+  },
+  set (v: string | undefined) {
+    router.replace({ query: { ...route.query, adm1_name: v } })
+  }
+})
+
+const cityName = computed<string | undefined>({
+  get () {
+    return typeof route.query.city_name === 'string' ? route.query.city_name : undefined
+  },
+  set (v: string | undefined) {
+    router.replace({ query: { ...route.query, city_name: v } })
+  }
+})
+
+const merged = computed<string | boolean | undefined>({
+  get () {
+    const value = route.query.merged
+    if (typeof value === 'string') return value
+    if (typeof value === 'boolean') return value
+    return undefined
+  },
+  set (v: string | boolean | undefined) {
+    const queryValue = v === undefined ? undefined : String(v)
+    router.replace({ query: { ...route.query, merged: queryValue } })
+  }
+})
+
+// Methods
+function clearQuery (): void {
+  router.replace({ query: {} })
 }
 </script>

@@ -54,15 +54,12 @@
 import { ref } from 'vue'
 import { useToastNotification } from '../composables/useToastNotification'
 
-// TypeScript interfaces
-interface Props {
+const props = withDefaults(defineProps<{
   title?: string
   description?: string
   apiUrl: string
   learnMoreUrl?: string | null
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   title: 'API Example',
   description: 'Use this endpoint to query the API:',
   learnMoreUrl: null

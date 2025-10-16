@@ -40,22 +40,18 @@ import type { Geometry, Polygon, Point } from 'geojson'
 
 // Type definitions
 
-interface Agency {
-  id: number
-  agency_name: string
-}
-
 interface Route {
   id: number
   route_short_name?: string
   route_long_name?: string
-  agency: Agency
-  route_stops: RouteStop[]
-}
-
-interface RouteStop {
-  route: Route
-  stop?: Stop
+  agency: {
+    id: number
+    agency_name: string
+  }
+  route_stops: {
+    route: Route
+    stop?: Stop
+  }[]
 }
 
 interface Stop {
@@ -63,12 +59,22 @@ interface Stop {
   geometry: Point
   onestop_id: string
   stop_name: string
-  route_stops: RouteStop[]
+  route_stops: {
+    route: {
+      id: number
+      route_short_name?: string
+      route_long_name?: string
+      agency: {
+        id: number
+        agency_name: string
+      }
+    }
+  }[]
 }
 
 interface SearchItem {
   name: string
-  routeStops?: RouteStop[]
+  routeStops?: Stop['route_stops']
   agencyName: string
   geometry: Geometry | null
 }
@@ -101,24 +107,20 @@ interface QueryResult {
   routes?: Route[]
 }
 
-interface Props {
+// Props and emits
+const props = withDefaults(defineProps<{
   bbox?: [BboxCoordinate, BboxCoordinate] | null
   includeStops?: boolean
   includeRoutes?: boolean
-}
-
-interface Emits {
-  setLocation: [coords: number[]]
-}
-
-// Props and emits
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   bbox: null,
   includeStops: false,
   includeRoutes: false
 })
 
-const emit = defineEmits<Emits>()
+const emit = defineEmits<{
+  setLocation: [coords: number[]]
+}>()
 
 // GraphQL query
 const searchQuery = gql`

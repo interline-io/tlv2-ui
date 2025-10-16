@@ -60,12 +60,9 @@ interface Operator {
   onestop_id: string
 }
 
-// Props
-interface Props {
+const props = withDefaults(defineProps<{
   associatedOperators?: Operator[]
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   associatedOperators: () => []
 })
 

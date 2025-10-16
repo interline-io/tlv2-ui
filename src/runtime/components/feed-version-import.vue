@@ -59,11 +59,9 @@ interface MutationResponse {
 }
 
 // Props
-interface Props {
+const props = withDefaults(defineProps<{
   entity?: FeedVersionEntity
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   entity: () => ({} as FeedVersionEntity)
 })
 

@@ -69,29 +69,29 @@ import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
 import { makeRouteLink } from '../lib/filters'
 
-// TypeScript interfaces
-interface Agency {
-  id: number
-  agency_id: string
-  agency_name: string
+// Types
+interface RouteTableResponse {
+  entities: {
+    id: number
+    onestop_id?: string
+    feed_version_sha1?: string
+    feed_onestop_id?: string
+    route_id: string
+    route_short_name?: string
+    route_long_name?: string
+    route_type: number
+    route_url?: string
+    agency: {
+      id: number
+      agency_id: string
+      agency_name: string
+    }
+  }[]
 }
 
-interface Route {
-  id: number
-  onestop_id?: string
-  feed_version_sha1?: string
-  feed_onestop_id?: string
-  route_id: string
-  route_short_name?: string
-  route_long_name?: string
-  route_type: number
-  route_url?: string
-  agency: Agency
-}
-
-interface QueryData {
-  entities: Route[]
-}
+// Extract individual types from the response type
+type Route = RouteTableResponse['entities'][0]
+type Agency = Route['agency']
 
 interface QueryVariables {
   after?: number
@@ -107,8 +107,7 @@ interface HeadwayData {
   [key: string]: any
 }
 
-// Props
-interface Props {
+const props = withDefaults(defineProps<{
   feedVersionSha1?: string | null
   fvids?: number[] | null
   routeIds?: number[] | null
@@ -117,9 +116,7 @@ interface Props {
   showGeometry?: boolean
   linkVersion?: boolean
   limit?: number
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   feedVersionSha1: null,
   fvids: null,
   routeIds: null,
@@ -168,7 +165,7 @@ const queryVariables = computed<QueryVariables>(() => ({
 }))
 
 // Apollo Query
-const { result, loading, onError } = useQuery<QueryData>(
+const { result, loading, onError } = useQuery<RouteTableResponse>(
   ROUTES_QUERY,
   queryVariables,
   {

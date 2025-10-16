@@ -50,13 +50,11 @@ interface FeedInfo {
 }
 
 // Props
-interface Props {
+const props = withDefaults(defineProps<{
   feedInfo?: FeedInfo
   showDates?: boolean
   showLinks?: boolean
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   feedInfo: () => ({}),
   showDates: false,
   showLinks: false

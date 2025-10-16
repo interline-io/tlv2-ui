@@ -5,11 +5,9 @@
 </template>
 
 <script setup lang="ts">
-interface Props {
+withDefaults(defineProps<{
   limit?: number
-}
-
-withDefaults(defineProps<Props>(), {
+}>(), {
   limit: 0
 })
 
