@@ -202,141 +202,149 @@ const route = useRoute()
 const pathKey = computed(() => route.params.feedKey as string)
 
 // Types
-interface ValidationError {
-  filename: string
-  entity_id?: string
-  error_type: string
-  error_code: string
-  field?: string
-  value?: string
-  message: string
-  geometry?: any
-  entity_json?: any
-}
-
-interface ValidationErrorGroup {
-  filename: string
-  error_type: string
-  error_code: string
-  count: number
-  errors: ValidationError[]
-}
-
-interface RealtimeData {
-  url: string
-  json: any
-}
-
-interface FileInfo {
-  name: string
-  rows: number
-  size: number
-  sha1: string
-  header: string[]
-  csv_like: boolean
-}
-
-interface ServiceLevel {
-  start_date: string
-  end_date: string
-  monday: number
-  tuesday: number
-  wednesday: number
-  thursday: number
-  friday: number
-  saturday: number
-  sunday: number
-}
-
-interface Agency {
-  agency_email?: string
-  agency_fare_url?: string
-  agency_id: string
-  agency_lang?: string
-  agency_name: string
-  agency_phone?: string
-  agency_timezone: string
-  agency_url?: string
-}
-
-interface Stop {
-  location_type: number
-  stop_code?: string
-  stop_desc?: string
-  stop_id: string
-  stop_name: string
-  stop_timezone?: string
-  stop_url?: string
-  wheelchair_boarding?: number
-  zone_id?: string
-  geometry: any
-}
-
-interface Route {
-  route_id: string
-  route_short_name?: string
-  route_long_name?: string
-  route_type: number
-  route_color?: string
-  route_text_color?: string
-  route_sort_order?: number
-  route_url?: string
-  route_desc?: string
-  geometry: any
-}
-
-interface FeedInfo {
-  feed_publisher_name: string
-  feed_publisher_url?: string
-  feed_lang: string
-  feed_version?: string
-  feed_start_date?: string
-  feed_end_date?: string
-}
-
-interface ValidationDetails {
-  realtime?: RealtimeData[]
-  sha1: string
-  earliest_calendar_date?: string
-  latest_calendar_date?: string
-  files: FileInfo[]
-  service_levels: ServiceLevel[]
-  agencies: Agency[]
-  stops: Stop[]
-  routes: Route[]
-  feed_infos: FeedInfo[]
-}
-
-interface ValidationEntity {
-  success: boolean
-  failure_reason?: string
-  errors: ValidationErrorGroup[]
-  warnings: ValidationErrorGroup[]
-  details?: ValidationDetails
-}
-
-interface FeedVersionData {
-  id: number
-  sha1: string
-  fetched_at: string
-  name?: string
-  description?: string
-  agencies: Array<{
-    id: number
-    agency_name: string
-  }>
-  feed: {
-    id: number
-    onestop_id: string
+interface ValidateGtfsResponse {
+  validate_gtfs: {
+    success: boolean
+    failure_reason?: string
+    errors: {
+      filename: string
+      error_type: string
+      error_code: string
+      count: number
+      errors: {
+        filename: string
+        entity_id?: string
+        error_type: string
+        error_code: string
+        field?: string
+        value?: string
+        message: string
+        geometry?: any
+        entity_json?: any
+      }[]
+    }[]
+    warnings: {
+      filename: string
+      error_type: string
+      error_code: string
+      count: number
+      errors: {
+        filename: string
+        entity_id?: string
+        error_type: string
+        error_code: string
+        field?: string
+        value?: string
+        message: string
+        geometry?: any
+        entity_json?: any
+      }[]
+    }[]
+    details?: {
+      realtime?: {
+        url: string
+        json: any
+      }[]
+      sha1: string
+      earliest_calendar_date?: string
+      latest_calendar_date?: string
+      files: {
+        name: string
+        rows: number
+        size: number
+        sha1: string
+        header: string[]
+        csv_like: boolean
+      }[]
+      service_levels: {
+        start_date: string
+        end_date: string
+        monday: number
+        tuesday: number
+        wednesday: number
+        thursday: number
+        friday: number
+        saturday: number
+        sunday: number
+      }[]
+      agencies: {
+        agency_email?: string
+        agency_fare_url?: string
+        agency_id: string
+        agency_lang?: string
+        agency_name: string
+        agency_phone?: string
+        agency_timezone: string
+        agency_url?: string
+      }[]
+      stops: {
+        location_type: number
+        stop_code?: string
+        stop_desc?: string
+        stop_id: string
+        stop_name: string
+        stop_timezone?: string
+        stop_url?: string
+        wheelchair_boarding?: number
+        zone_id?: string
+        geometry: any
+      }[]
+      routes: {
+        route_id: string
+        route_short_name?: string
+        route_long_name?: string
+        route_type: number
+        route_color?: string
+        route_text_color?: string
+        route_sort_order?: number
+        route_url?: string
+        route_desc?: string
+        geometry: any
+      }[]
+      feed_infos: {
+        feed_publisher_name: string
+        feed_publisher_url?: string
+        feed_lang: string
+        feed_version?: string
+        feed_start_date?: string
+        feed_end_date?: string
+      }[]
+    }
   }
 }
 
-interface FetchResult {
-  feed_version: FeedVersionData
-  found_sha1: boolean
-  found_dir_sha1: boolean
-  fetch_error?: string
+interface FeedVersionFetchResponse {
+  feed_version_fetch: {
+    feed_version: {
+      id: number
+      sha1: string
+      fetched_at: string
+      name?: string
+      description?: string
+      agencies: {
+        id: number
+        agency_name: string
+      }[]
+      feed: {
+        id: number
+        onestop_id: string
+      }
+    }
+    found_sha1: boolean
+    found_dir_sha1: boolean
+    fetch_error?: string
+  }
 }
+
+interface FeedVersionImportResponse {
+  feed_version_import: {
+    success: boolean
+  }
+}
+
+// Extract individual types from response types
+type ValidationEntity = ValidateGtfsResponse['validate_gtfs']
+type FetchResult = FeedVersionFetchResponse['feed_version_fetch']
 
 // GraphQL mutations
 const VALIDATE_GTFS_MUTATION = gql`
@@ -488,15 +496,15 @@ const IMPORT_FEED_VERSION_MUTATION = gql`
 // Extract pathKey from route params for feed upload
 
 // Apollo mutations setup
-const { mutate: validateGtfs } = useMutation(VALIDATE_GTFS_MUTATION, {
+const { mutate: validateGtfs } = useMutation<ValidateGtfsResponse>(VALIDATE_GTFS_MUTATION, {
   clientId: 'transitland'
 })
 
-const { mutate: fetchFeedVersionMutate } = useMutation(FETCH_FEED_VERSION_MUTATION, {
+const { mutate: fetchFeedVersionMutate } = useMutation<FeedVersionFetchResponse>(FETCH_FEED_VERSION_MUTATION, {
   clientId: 'transitland'
 })
 
-const { mutate: importFeedVersionMutate } = useMutation(IMPORT_FEED_VERSION_MUTATION, {
+const { mutate: importFeedVersionMutate } = useMutation<FeedVersionImportResponse>(IMPORT_FEED_VERSION_MUTATION, {
   clientId: 'transitland'
 })
 

@@ -87,10 +87,7 @@ interface RouteResponse {
 }
 
 // Extract individual types from the response type
-type Route = RouteResponse
 type Geography = RouteResponse['census_geographies'][0]
-type TableValue = Geography['values'][0]
-type Table = TableValue['table']
 
 interface QueryVariables {
   route_ids?: number[]

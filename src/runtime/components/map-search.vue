@@ -101,24 +101,20 @@ interface QueryResult {
   routes?: Route[]
 }
 
-interface Props {
+// Props and emits
+const props = withDefaults(defineProps<{
   bbox?: [BboxCoordinate, BboxCoordinate] | null
   includeStops?: boolean
   includeRoutes?: boolean
-}
-
-interface Emits {
-  setLocation: [coords: number[]]
-}
-
-// Props and emits
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   bbox: null,
   includeStops: false,
   includeRoutes: false
 })
 
-const emit = defineEmits<Emits>()
+const emit = defineEmits<{
+  setLocation: [coords: number[]]
+}>()
 
 // GraphQL query
 const searchQuery = gql`

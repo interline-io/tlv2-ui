@@ -20,13 +20,11 @@ import { useToastNotification } from '../composables/useToastNotification'
 import { sanitizeUrl } from '../lib/sanitize'
 
 // Props
-interface Props {
+const props = withDefaults(defineProps<{
   url?: string | null
   text?: string | null
   maxWidth?: string
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   url: null,
   text: null,
   maxWidth: '400px'

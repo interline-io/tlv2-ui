@@ -111,72 +111,73 @@ import type { Geometry, Feature, Point } from 'geojson'
 import { fromNowDate, makeRouteLink, reformatHMS } from '../lib/filters'
 
 // Types
-interface StopResponse {
-  id: number
-  onestop_id: string
-  stop_id: string
-  stop_name: string
-  stop_code?: string
-  location_type: number
-  geometry: Point
-  route_stops: {
-    route: {
-      id: number
-      route_id: string
-      onestop_id?: string
-      route_short_name?: string
-      route_long_name?: string
-      route_type: number
-      route_color?: string
-      route_text_color?: string
-      route_url?: string
-      feed_onestop_id: string
-      feed_version_sha1?: string
-      geometry?: Geometry
-    }
-  }[]
-  departures: {
-    departure_time: string
-    departure: {
-      delay?: number
-      estimated?: string
-      estimated_utc?: string
-      scheduled: string
-      stop_timezone?: string
-      uncertainty?: number
-    }
-    trip: {
-      id: number
-      trip_id: string
-      trip_headsign?: string
-      direction_id: number
+interface StopDeparturesResponse {
+  stops: {
+    id: number
+    onestop_id: string
+    stop_id: string
+    stop_name: string
+    stop_code?: string
+    location_type: number
+    geometry: Point
+    route_stops: {
       route: {
         id: number
         route_id: string
         onestop_id?: string
         route_short_name?: string
         route_long_name?: string
+        route_type: number
         route_color?: string
         route_text_color?: string
-        route_type: number
         route_url?: string
         feed_onestop_id: string
-        agency: {
+        feed_version_sha1?: string
+        geometry?: Geometry
+      }
+    }[]
+    departures: {
+      departure_time: string
+      departure: {
+        delay?: number
+        estimated?: string
+        estimated_utc?: string
+        scheduled: string
+        stop_timezone?: string
+        uncertainty?: number
+      }
+      trip: {
+        id: number
+        trip_id: string
+        trip_headsign?: string
+        direction_id: number
+        route: {
           id: number
-          agency_id: string
-          agency_name: string
+          route_id: string
+          onestop_id?: string
+          route_short_name?: string
+          route_long_name?: string
+          route_color?: string
+          route_text_color?: string
+          route_type: number
+          route_url?: string
+          feed_onestop_id: string
+          agency: {
+            id: number
+            agency_id: string
+            agency_name: string
+          }
         }
       }
-    }
+    }[]
   }[]
 }
 
 // Extract individual types from the response type
-type Stop = StopResponse
-type RouteStop = StopResponse['route_stops'][0]
+type Stop = StopDeparturesResponse['stops'][0]
+type RouteStop = Stop['route_stops'][0]
 type Route = RouteStop['route']
-type DepartureTime = StopResponse['departures'][0]
-type Departure = DepartureTime['departure']
+type DepartureTime = Stop['departures'][0]
 type Trip = DepartureTime['trip']
 type Agency = Trip['route']['agency']
 
@@ -217,23 +218,19 @@ interface AgencyGroupRecord {
   routes: Record<string, RouteGroup>
 }
 
-interface StopTimeFilter {
-  use_service_window?: boolean
-  next?: number
-}
-
-interface StopFilter {
-  near?: {
-    lon: number
-    lat: number
-    radius: number
-  }
-}
-
 interface QueryVariables {
   stopIds?: number[]
-  where?: StopFilter
-  stwhere: StopTimeFilter
+  where?: {
+    near?: {
+      lon: number
+      lat: number
+      radius: number
+    }
+  }
+  stwhere: {
+    use_service_window?: boolean
+    next?: number
+  }
 }
 
 const props = withDefaults(defineProps<{
@@ -364,7 +361,7 @@ const queryVariables = computed<QueryVariables>(() => {
 })
 
 // Apollo query
-const { result, loading, refetch, onResult, onError } = useQuery<{ stops: StopResponse[] }>(
+const { result, loading, refetch, onResult, onError } = useQuery<StopDeparturesResponse>(
   query,
   queryVariables,
   {

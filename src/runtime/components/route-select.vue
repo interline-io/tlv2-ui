@@ -55,15 +55,13 @@ interface AgencyFeatures {
 }
 
 // Props
-interface Props {
+const props = withDefaults(defineProps<{
   link?: boolean
   maxAgencyRows?: number
   collapse?: boolean
   linkVersion?: boolean
   agencyFeatures?: AgencyFeatures
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   link: false,
   maxAgencyRows: 5,
   collapse: false,

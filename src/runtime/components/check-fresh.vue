@@ -7,13 +7,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, withDefaults } from 'vue'
 
-interface Props {
+const props = withDefaults(defineProps<{
   fetched?: string | null
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   fetched: null
 })
 

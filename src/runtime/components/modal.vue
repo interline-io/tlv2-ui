@@ -32,14 +32,12 @@
 
 <script setup lang="ts">
 // Props
-interface Props {
+withDefaults(defineProps<{
   text?: string
   title?: string
   modelValue?: boolean
   closable?: boolean
-}
-
-withDefaults(defineProps<Props>(), {
+}>(), {
   text: '+',
   title: '',
   modelValue: false,

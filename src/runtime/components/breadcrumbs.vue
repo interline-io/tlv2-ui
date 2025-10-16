@@ -15,15 +15,16 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute, useRouter, ref, computed } from '#imports'
-import { type RouteParams } from '#vue-router'
+import { ref, computed, withDefaults } from 'vue'
+import { useRoute, useRouter } from 'nuxt/app'
+
 interface nameOpts { [index: string]: string }
 
 interface nameVal { [index: string]: number }
 
 interface linkElem {
   routeName: string
-  routeParams: RouteParams
+  routeParams: Record<string, any>
   tag: string
   text: string
   id: string
@@ -49,10 +50,14 @@ const routeTags: nameOpts = {
   'stops-stopKey': 'Stop'
 }
 
-const props = defineProps({
-  boxed: { type: Boolean, default: false },
-  extraRouteNames: { type: Object as () => nameOpts, default () { return {} } },
-  extraRouteTags: { type: Object as () => nameOpts, default () { return {} } }
+const props = withDefaults(defineProps<{
+  boxed?: boolean
+  extraRouteNames?: nameOpts
+  extraRouteTags?: nameOpts
+}>(), {
+  boxed: false,
+  extraRouteNames: () => ({}),
+  extraRouteTags: () => ({})
 })
 
 const classes = computed(() => {

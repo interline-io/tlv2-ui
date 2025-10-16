@@ -102,14 +102,12 @@ interface ChartDataItem {
   fallback_week?: string
 }
 
-interface Props {
+const props = withDefaults(defineProps<{
   feed: Feed
   feedVersions: FeedVersion[]
   height?: string
   showTooltip?: boolean
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   height: '300px',
   showTooltip: true
 })
