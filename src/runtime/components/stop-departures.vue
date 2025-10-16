@@ -110,7 +110,75 @@ import { useQuery } from '@vue/apollo-composable'
 import type { Geometry, Feature, Point } from 'geojson'
 import { fromNowDate, makeRouteLink, reformatHMS } from '../lib/filters'
 
-// Type definitions
+// Types
+interface StopResponse {
+  id: number
+  onestop_id: string
+  stop_id: string
+  stop_name: string
+  stop_code?: string
+  location_type: number
+  geometry: Point
+  route_stops: {
+    route: {
+      id: number
+      route_id: string
+      onestop_id?: string
+      route_short_name?: string
+      route_long_name?: string
+      route_type: number
+      route_color?: string
+      route_text_color?: string
+      route_url?: string
+      feed_onestop_id: string
+      feed_version_sha1?: string
+      geometry?: Geometry
+    }
+  }[]
+  departures: {
+    departure_time: string
+    departure: {
+      delay?: number
+      estimated?: string
+      estimated_utc?: string
+      scheduled: string
+      stop_timezone?: string
+      uncertainty?: number
+    }
+    trip: {
+      id: number
+      trip_id: string
+      trip_headsign?: string
+      direction_id: number
+      route: {
+        id: number
+        route_id: string
+        onestop_id?: string
+        route_short_name?: string
+        route_long_name?: string
+        route_color?: string
+        route_text_color?: string
+        route_type: number
+        route_url?: string
+        feed_onestop_id: string
+        agency: {
+          id: number
+          agency_id: string
+          agency_name: string
+        }
+      }
+    }
+  }[]
+}
+
+// Extract individual types from the response type
+type Stop = StopResponse
+type RouteStop = StopResponse['route_stops'][0]
+type Route = RouteStop['route']
+type DepartureTime = StopResponse['departures'][0]
+type Departure = DepartureTime['departure']
+type Trip = DepartureTime['trip']
+type Agency = Trip['route']['agency']
 
 // Feature property interfaces
 interface StopProperties {
@@ -130,67 +198,6 @@ interface RouteProperties {
 // Typed GeoJSON Features
 type StopFeature = Feature<Point, StopProperties> & { id: number }
 type RouteFeature = Feature<Geometry, RouteProperties> & { id: number }
-
-interface Departure {
-  delay?: number
-  estimated?: string
-  estimated_utc?: string
-  scheduled: string
-  stop_timezone?: string
-  uncertainty?: number
-}
-
-interface Agency {
-  id: number
-  agency_id: string
-  agency_name: string
-}
-
-interface Route {
-  id: number
-  route_id: string
-  onestop_id?: string
-  route_short_name?: string
-  route_long_name?: string
-  route_color?: string
-  route_text_color?: string
-  route_type: number
-  route_url?: string
-  feed_onestop_id: string
-  feed_version_sha1?: string
-  geometry?: Geometry
-  agency: Agency
-}
-
-interface Trip {
-  id: number
-  trip_id: string
-  trip_headsign?: string
-  direction_id: number
-  route: Route
-}
-
-interface DepartureTime {
-  departure_time: string
-  departure: Departure
-  trip: Trip
-}
-
-interface RouteStop {
-  route: Route
-}
-
-interface Stop {
-  id: number
-  onestop_id: string
-  stop_id: string
-  stop_name: string
-  stop_code?: string
-  location_type: number
-  geometry: Point
-  route_stops: RouteStop[]
-  departures: DepartureTime[]
-}
 
 interface RouteGroup {
   route: Route
@@ -229,7 +236,7 @@ interface QueryVariables {
   stwhere: StopTimeFilter
 }
 
-interface Props {
+const props = withDefaults(defineProps<{
   searchCoords?: number[] | null
   searchRadius?: number
   nextSeconds?: number
@@ -241,9 +248,7 @@ interface Props {
   showLastFetched?: boolean
   autoRefreshInterval?: number
   stopIds?: number[]
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   searchCoords: null,
   searchRadius: 200,
   nextSeconds: 7200,
@@ -359,7 +364,7 @@ const queryVariables = computed<QueryVariables>(() => {
 })
 
 // Apollo query
-const { result, loading, refetch, onResult, onError } = useQuery<{ stops: Stop[] }>(
+const { result, loading, refetch, onResult, onError } = useQuery<{ stops: StopResponse[] }>(
   query,
   queryVariables,
   {

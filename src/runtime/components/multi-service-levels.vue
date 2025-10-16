@@ -103,33 +103,35 @@ import { ref, computed, withDefaults } from 'vue'
 import { useQuery } from '@vue/apollo-composable'
 import { shortenName, formatDate } from '../lib/filters'
 
-// Type definitions
-
-interface Feed {
-  id: number
-  onestop_id: string
+// Types
+interface MultiServiceLevelsResponse {
+  feed_versions: {
+    id: number
+    sha1: string
+    fetched_at: string
+    url: string
+    feed: {
+      id: number
+      onestop_id: string
+    }
+    service_levels: {
+      start_date: string
+      end_date: string
+      monday: number
+      tuesday: number
+      wednesday: number
+      thursday: number
+      friday: number
+      saturday: number
+      sunday: number
+    }[]
+  }[]
 }
 
-interface ServiceLevel {
-  start_date: string
-  end_date: string
-  monday: number
-  tuesday: number
-  wednesday: number
-  thursday: number
-  friday: number
-  saturday: number
-  sunday: number
-}
-
-interface FeedVersion {
-  id: number
-  sha1: string
-  fetched_at: string
-  url: string
-  feed: Feed
-  service_levels: ServiceLevel[]
-}
+// Extract individual types from the response type
+type FeedVersion = MultiServiceLevelsResponse['feed_versions'][0]
+type Feed = FeedVersion['feed']
+type ServiceLevel = FeedVersion['service_levels'][0]
 
 interface ExtendedServiceLevel extends ServiceLevel {
   feed_onestop_id: string
@@ -168,7 +170,7 @@ interface RowMax {
   maxday: number
 }
 
-interface Props {
+const props = withDefaults(defineProps<{
   showFilters?: boolean
   showServiceRelative?: boolean
   showGroupInfo?: boolean
@@ -177,9 +179,7 @@ interface Props {
   maxWeeks?: number | null
   weekAgg?: boolean
   useFeedVersions?: FeedVersion[]
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   showFilters: true,
   showServiceRelative: true,
   showGroupInfo: true,
@@ -248,7 +248,7 @@ const queryVariables = computed(() => ({
   end_date: endDate.value ? format(endDate.value, 'yyyy-MM-dd') : null
 }))
 
-const { result, onError } = useQuery<{ feed_versions: FeedVersion[] }>(
+const { result, onError } = useQuery<MultiServiceLevelsResponse>(
   query,
   queryVariables,
   {

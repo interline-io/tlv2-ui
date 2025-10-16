@@ -154,39 +154,49 @@ import { useQuery } from '@vue/apollo-composable'
 import { computed, withDefaults } from 'vue'
 import { fromNow } from '../lib/filters'
 
-// Type definitions
-interface FeedFetch {
-  fetch_error?: string
-  fetched_at: string
-}
-
-interface FeedVersionGtfsImport {
-  id: number
-  created_at: string
-}
-
-interface FeedVersion {
-  id: number
-  fetched_at: string
-  sha1?: string
-  feed_version_gtfs_import?: FeedVersionGtfsImport
-}
-
-interface FeedState {
-  id: number
-  feed_version?: FeedVersion
-}
-
-interface Feed {
+// Types
+interface FeedResponse {
   id: number
   onestop_id: string
   spec: string
   tags: Record<string, string>
-  last_fetch: FeedFetch[]
-  last_successful_fetch: FeedFetch[]
-  last_successful_import: FeedVersion[]
-  feed_state?: FeedState
+  last_fetch: {
+    fetch_error?: string
+    fetched_at: string
+  }[]
+  last_successful_fetch: {
+    fetch_error?: string
+    fetched_at: string
+  }[]
+  last_successful_import: {
+    id: number
+    fetched_at: string
+    sha1?: string
+    feed_version_gtfs_import?: {
+      id: number
+      created_at: string
+    }
+  }[]
+  feed_state?: {
+    id: number
+    feed_version?: {
+      id: number
+      fetched_at: string
+      sha1?: string
+      feed_version_gtfs_import?: {
+        id: number
+        created_at: string
+      }
+    }
+  }
 }
+
+// Extract individual types from the response type
+type Feed = FeedResponse
+type FeedFetch = FeedResponse['last_fetch'][0]
+type FeedVersion = FeedResponse['last_successful_import'][0]
+type FeedVersionGtfsImport = NonNullable<FeedVersion['feed_version_gtfs_import']>
+type FeedState = NonNullable<FeedResponse['feed_state']>
 
 interface QueryVariables {
   specs?: string[] | null
@@ -196,10 +206,6 @@ interface QueryVariables {
   fetch_error?: boolean | null
   import_status?: string | null
   tags?: Record<string, string> | null
-}
-
-interface QueryResult {
-  entities: Feed[]
 }
 
 type FeedSpec = 'GTFS' | 'GTFS_RT' | 'GBFS'
@@ -267,18 +273,17 @@ const importStatus = defineModel<string>('importStatus')
 const tagUnstableUrl = defineModel<boolean>('tagUnstableUrl')
 const feedSpecs = defineModel<FeedSpec[]>('feedSpecs')
 
-interface Props {
+// Props
+const props = withDefaults(defineProps<{
   limit?: number
   showColumns?: ShowColumn[]
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   limit: 100,
   showColumns: () => ['onestop_id', 'spec', 'last_fetched']
   // by default excludes fetch_errors, last_imported and tags
 })
 
-const { result, loading, error, fetchMore } = useQuery<QueryResult, QueryVariables>(
+const { result, loading, error, fetchMore } = useQuery<{ entities: FeedResponse[] }, QueryVariables>(
   query,
   () => ({
     search: nullString(search.value),
@@ -298,7 +303,7 @@ function fetchMoreFn (): void {
       after: lastId,
       limit: 100
     },
-    updateQuery: (previousResult: QueryResult, { fetchMoreResult }: { fetchMoreResult?: QueryResult }) => {
+    updateQuery: (previousResult: { entities: FeedResponse[] }, { fetchMoreResult }: { fetchMoreResult?: { entities: FeedResponse[] } }) => {
       if (!fetchMoreResult) { return previousResult }
       return {
         ...previousResult,
