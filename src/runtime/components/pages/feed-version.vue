@@ -320,7 +320,7 @@
  */
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
-import { computed, ref, withDefaults } from 'vue'
+import { computed, ref } from 'vue'
 import { formatDate, fromNow } from '../../lib/filters'
 
 // Type definitions

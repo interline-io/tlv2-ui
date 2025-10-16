@@ -1,3 +1,3 @@
-export function debugLog (msg: string, ...args: any) {
-  console.log('debug:', msg, ...args)
+export function logAuthDebug (msg: string, ...args: any) {
+  // console.log('debug:', msg, ...args)
 }

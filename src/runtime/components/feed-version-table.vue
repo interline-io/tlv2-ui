@@ -121,7 +121,7 @@
  */
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
-import { computed, withDefaults } from 'vue'
+import { computed } from 'vue'
 import { useApiEndpoint } from '../composables/useApiEndpoint'
 import { formatDate, fromNow } from '../lib/filters'
 

@@ -105,7 +105,7 @@
 <script setup lang="ts">
 import haversine from 'haversine'
 import { gql } from 'graphql-tag'
-import { ref, computed, watch, onMounted, withDefaults } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useQuery } from '@vue/apollo-composable'
 import type { Geometry, Feature, Point } from 'geojson'
 import { fromNowDate, makeRouteLink, reformatHMS } from '../lib/filters'

@@ -99,7 +99,7 @@
 <script setup lang="ts">
 import { parseISO, format, add, isBefore } from 'date-fns'
 import { gql } from 'graphql-tag'
-import { ref, computed, withDefaults } from 'vue'
+import { ref, computed } from 'vue'
 import { useQuery } from '@vue/apollo-composable'
 import { shortenName, formatDate } from '../lib/filters'
 

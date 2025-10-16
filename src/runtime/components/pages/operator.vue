@@ -212,7 +212,7 @@
  */
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
-import { computed, ref, watch, withDefaults } from 'vue'
+import { computed, ref } from 'vue'
 import { useEntityPath } from '../../composables/useEntityPath'
 
 // Type definitions

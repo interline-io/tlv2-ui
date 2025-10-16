@@ -35,7 +35,7 @@
 <script setup lang="ts">
 import { gql } from 'graphql-tag'
 import { useLazyQuery } from '@vue/apollo-composable'
-import { ref, computed, watch, withDefaults } from 'vue'
+import { ref, computed, watch } from 'vue'
 import type { Geometry, Polygon, Point } from 'geojson'
 
 // Type definitions

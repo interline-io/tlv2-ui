@@ -113,7 +113,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, withDefaults } from 'vue'
+import { ref, computed } from 'vue'
 import VueJsonPretty from 'vue-json-pretty'
 import 'vue-json-pretty/lib/styles.css'
 import { useApiEndpoint } from '../composables/useApiEndpoint'

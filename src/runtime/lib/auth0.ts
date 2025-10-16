@@ -1,5 +1,5 @@
 import { Auth0Client } from '@auth0/auth0-spa-js'
-import { debugLog } from '../lib/log'
+import { logAuthDebug } from '../lib/log'
 
 /// ////////////////////
 // Auth0 client initialization
@@ -36,7 +36,7 @@ export function configureAuth0Client (options: Auth0Options): Auth0Client | null
     logoutUri = String(options.auth0LogoutUri || window?.location?.origin || '/')
 
     const scope = String(options.auth0Scope)
-    debugLog('auth0 init:', { scope })
+    logAuthDebug('auth0 init:', { scope })
 
     // Create and return global auth0 client
     authClient = new Auth0Client({
@@ -60,7 +60,7 @@ export function configureAuth0Client (options: Auth0Options): Auth0Client | null
 // Client MUST be configured
 export function getAuth0Client (): Auth0Client | null {
   if (!authInit) {
-    debugLog('getAuth0Client called before client configured')
+    logAuthDebug('getAuth0Client called before client configured')
     return null
   }
   return authClient
@@ -74,7 +74,7 @@ export async function checkToken () {
   let mustReauthorize = false
   const client = getAuth0Client()
   if (!client) {
-    debugLog('checkToken: no client')
+    logAuthDebug('checkToken: no client')
     return { token, loggedIn, mustReauthorize }
   }
 
@@ -82,7 +82,7 @@ export async function checkToken () {
     // First check if we're authenticated
     loggedIn = await client.isAuthenticated()
     if (!loggedIn) {
-      debugLog('checkToken: not logged in')
+      logAuthDebug('checkToken: not logged in')
       return { token, loggedIn, mustReauthorize }
     }
 
@@ -91,7 +91,7 @@ export async function checkToken () {
     token = tokenResponse.access_token
     loggedIn = true
   } catch (error: any) {
-    debugLog('checkToken: error:', error)
+    logAuthDebug('checkToken: error:', error)
     if (error.error === 'login_required') {
       mustReauthorize = true
     }

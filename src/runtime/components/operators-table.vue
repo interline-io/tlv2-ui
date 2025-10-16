@@ -92,7 +92,7 @@
 <script setup lang="ts">
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
-import { ref, watch, computed, withDefaults } from 'vue'
+import { ref, watch, computed } from 'vue'
 
 // Types
 interface OperatorsTableResponse {

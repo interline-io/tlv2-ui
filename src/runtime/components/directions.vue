@@ -189,7 +189,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, withDefaults } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useLazyQuery } from '@vue/apollo-composable'
 import { gql } from 'graphql-tag'
 import { parseISO, format } from 'date-fns'

@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, withDefaults } from 'vue'
+import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'nuxt/app'
 
 interface nameOpts { [index: string]: string }
