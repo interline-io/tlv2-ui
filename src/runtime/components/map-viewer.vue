@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import * as maplibre from 'maplibre-gl'
 import { noLabels, labels } from 'protomaps-themes-base'
-import { nextTick, ref, watch, onMounted, onBeforeUnmount, defineProps, defineEmits } from 'vue'
+import { nextTick, ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useApiEndpoint } from '../composables/useApiEndpoint'
 import { useAuthHeaders } from '../composables/useAuthHeaders'
 import { useNuxtApp } from 'nuxt/app'
