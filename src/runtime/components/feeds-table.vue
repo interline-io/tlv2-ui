@@ -193,10 +193,7 @@ interface FeedResponse {
 
 // Extract individual types from the response type
 type Feed = FeedResponse
-type FeedFetch = FeedResponse['last_fetch'][0]
 type FeedVersion = FeedResponse['last_successful_import'][0]
-type FeedVersionGtfsImport = NonNullable<FeedVersion['feed_version_gtfs_import']>
-type FeedState = NonNullable<FeedResponse['feed_state']>
 
 interface QueryVariables {
   specs?: string[] | null

@@ -40,22 +40,18 @@ import type { Geometry, Polygon, Point } from 'geojson'
 
 // Type definitions
 
-interface Agency {
-  id: number
-  agency_name: string
-}
-
 interface Route {
   id: number
   route_short_name?: string
   route_long_name?: string
-  agency: Agency
-  route_stops: RouteStop[]
-}
-
-interface RouteStop {
-  route: Route
-  stop?: Stop
+  agency: {
+    id: number
+    agency_name: string
+  }
+  route_stops: {
+    route: Route
+    stop?: Stop
+  }[]
 }
 
 interface Stop {
@@ -63,12 +59,22 @@ interface Stop {
   geometry: Point
   onestop_id: string
   stop_name: string
-  route_stops: RouteStop[]
+  route_stops: {
+    route: {
+      id: number
+      route_short_name?: string
+      route_long_name?: string
+      agency: {
+        id: number
+        agency_name: string
+      }
+    }
+  }[]
 }
 
 interface SearchItem {
   name: string
-  routeStops?: RouteStop[]
+  routeStops?: Stop['route_stops']
   agencyName: string
   geometry: Geometry | null
 }

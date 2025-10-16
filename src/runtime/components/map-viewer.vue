@@ -132,7 +132,7 @@ const updateFilters = () => {
       f.push(['==', 'route_id', ''])
     }
     if (f.length > 1) {
-      map.value.setFilter(v.name, f)
+      map.value.setFilter(v.name, f as any)
     } else {
       map.value.setFilter(v.name, null)
     }
@@ -158,7 +158,7 @@ const updateFilters = () => {
       f.push(['==', 'generated', false])
     }
     if (f.length > 1) {
-      map.value.setFilter(v.name, f)
+      map.value.setFilter(v.name, f as any)
     } else {
       map.value.setFilter(v.name, null)
     }
