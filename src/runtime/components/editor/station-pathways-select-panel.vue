@@ -8,7 +8,7 @@
         <div v-if="selectedStopsCount > 0 || selectedPathwaysCount > 0" class="mb-4">
           <p class="label is-small mb-2">
             Selected Items
-            <o-button class="is-pulled-right" variant="primary is-small" outlined @click="$emit('unselect-all')">
+            <o-button class="is-pulled-right" variant="primary is-small" outlined title="Or press ESC key to unselect all" @click="$emit('unselect-all')">
               Unselect All
             </o-button>
           </p>

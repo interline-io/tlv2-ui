@@ -8,6 +8,7 @@
           <button
             v-if="showUnselect"
             class="button is-small"
+            title="Or press ESC key to unselect"
             @click="$emit('unselect')"
           >
             Unselect

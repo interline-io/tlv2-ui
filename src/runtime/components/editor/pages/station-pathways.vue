@@ -371,6 +371,21 @@ export default {
       }
     }
   },
+  mounted () {
+    // Add ESC key listener to unselect all
+    this.handleEscKey = (event) => {
+      if (event.key === 'Escape') {
+        this.unselectAll()
+      }
+    }
+    window.addEventListener('keydown', this.handleEscKey)
+  },
+  unmounted () {
+    // Clean up ESC key listener
+    if (this.handleEscKey) {
+      window.removeEventListener('keydown', this.handleEscKey)
+    }
+  },
   methods: {
     mapLevelKeyFn,
     // stops
