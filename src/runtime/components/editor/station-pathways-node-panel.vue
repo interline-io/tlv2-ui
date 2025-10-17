@@ -273,5 +273,14 @@ export default {
   align-items: center;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+  color: #3273dc;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.menu-list a:hover {
+  background-color: #f5f5f5;
+  color: #363636;
 }
 </style>

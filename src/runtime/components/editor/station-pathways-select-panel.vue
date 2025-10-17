@@ -197,10 +197,19 @@ export default {
 }
 
 .menu-list a {
+  display: flex;
+  align-items: center;
   padding: 0.5em 0.75em;
-  font-size: 0.875rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  cursor: pointer;
+  color: #3273dc;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.menu-list a:hover {
+  background-color: #f5f5f5;
+  color: #363636;
 }
 </style>
