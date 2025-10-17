@@ -7,6 +7,7 @@ export interface ModuleOptions extends Auth0Options {
   bulma: string
   useProxy: boolean
   safelinkUtmSource?: string
+  apiBase?: string // BACKWARD COMPATIBILITY ONLY
   transitlandApiBase?: string
   stationEditorApiBase?: string
   feedManagementApiBase?: string
@@ -41,9 +42,10 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.runtimeConfig.public.tlv2 = defu(nuxt.options.runtimeConfig.public.tlv2, {
       useProxy: useProxy,
       safelinkUtmSource: options.safelinkUtmSource,
-      transitlandApiBase: options.transitlandApiBase,
-      stationEditorApiBase: options.stationEditorApiBase,
-      feedManagementApiBase: options.feedManagementApiBase,
+      apiBase: options.apiBase, // BACKWARD COMPATIBILITY ONLY
+      transitlandApiBase: options.transitlandApiBase || options.apiBase,
+      stationEditorApiBase: options.stationEditorApiBase || options.transitlandApiBase || options.apiBase,
+      feedManagementApiBase: options.feedManagementApiBase || options.transitlandApiBase || options.apiBase,
       protomapsApikey: options.protomapsApikey,
       nearmapsApikey: options.nearmapsApikey,
       loginGate: options.loginGate,

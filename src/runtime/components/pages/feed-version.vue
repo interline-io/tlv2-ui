@@ -201,6 +201,7 @@
           <tl-modal v-model="showPermissionsModal" title="Feed Version Permissions">
             <tl-admin-feed-version
               :id="entity.id"
+              client="feedManagement"
               @update="showPermissionsModal = false; refetchEntities()"
             />
           </tl-modal>
@@ -421,7 +422,7 @@ const props = withDefaults(defineProps<{
   showImportStatus?: boolean
 }>(), {
   showEdit: false,
-  showPermissions: false,
+  showPermissions: true,
   showUserInformation: false,
   showDownload: true,
   showImportStatus: true

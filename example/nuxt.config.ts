@@ -18,10 +18,10 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    proxyBase: '',
+    transitlandProxyBase: '',
     graphqlApikey: '',
     public: {
-      apiBase: '',
+      transitlandApiBase: '',
       protomapsApikey: '',
       nearmapsApikey: '',
       auth0Domain: '',
