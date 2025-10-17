@@ -30,7 +30,7 @@
         >
           Upload a GTFS archive from your local computer or enter a URL to download a GTFS archive from another server. Provide a single ZIP archive that contains all relevant GTFS files without any subdirectories.
         </o-notification>
-        <div class="dropbox" @click="$refs.fileInput.click()">
+        <div class="dropbox" @click="fileInput?.click()">
           <input
             ref="fileInput"
             type="file"
@@ -165,7 +165,7 @@
             variant="danger"
           >
             <slot name="existing-feed-version" :fetch-result="fetchResult">
-              This feed version already exists in the database, with SHA1 checksum value {{ fetchResult.feed_version.sha1 }}, uploaded on {{ $filters.formatDate(fetchResult.feed_version.fetched_at) }}. Existing feeds cannot be uploaded again.
+              This feed version already exists in the database, with SHA1 checksum value {{ fetchResult.feed_version.sha1 }}, uploaded on {{ formatDate(fetchResult.feed_version.fetched_at) }}. Existing feeds cannot be uploaded again.
             </slot>
           </o-notification>
 
@@ -189,16 +189,168 @@
   </div>
 </template>
 
-<script>
-import { navigateTo } from '#imports'
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+import { useRoute, navigateTo } from 'nuxt/app'
 import { gql } from 'graphql-tag'
+import { useMutation } from '@vue/apollo-composable'
 import { useMixpanel } from '../../composables/useMixpanel'
-import EntityPageMixin from './entity-page-mixin'
+import { formatDate } from '../../lib/filters'
 
-const q = gql`
+// Entity page mixin functionality inline
+const route = useRoute()
+const pathKey = computed(() => route.params.feedKey as string)
+
+// Types
+interface ValidateGtfsResponse {
+  validate_gtfs: {
+    success: boolean
+    failure_reason?: string
+    errors: {
+      filename: string
+      error_type: string
+      error_code: string
+      count: number
+      errors: {
+        filename: string
+        entity_id?: string
+        error_type: string
+        error_code: string
+        field?: string
+        value?: string
+        message: string
+        geometry?: any
+        entity_json?: any
+      }[]
+    }[]
+    warnings: {
+      filename: string
+      error_type: string
+      error_code: string
+      count: number
+      errors: {
+        filename: string
+        entity_id?: string
+        error_type: string
+        error_code: string
+        field?: string
+        value?: string
+        message: string
+        geometry?: any
+        entity_json?: any
+      }[]
+    }[]
+    details?: {
+      realtime?: {
+        url: string
+        json: any
+      }[]
+      sha1: string
+      earliest_calendar_date?: string
+      latest_calendar_date?: string
+      files: {
+        name: string
+        rows: number
+        size: number
+        sha1: string
+        header: string[]
+        csv_like: boolean
+      }[]
+      service_levels: {
+        start_date: string
+        end_date: string
+        monday: number
+        tuesday: number
+        wednesday: number
+        thursday: number
+        friday: number
+        saturday: number
+        sunday: number
+      }[]
+      agencies: {
+        agency_email?: string
+        agency_fare_url?: string
+        agency_id: string
+        agency_lang?: string
+        agency_name: string
+        agency_phone?: string
+        agency_timezone: string
+        agency_url?: string
+      }[]
+      stops: {
+        location_type: number
+        stop_code?: string
+        stop_desc?: string
+        stop_id: string
+        stop_name: string
+        stop_timezone?: string
+        stop_url?: string
+        wheelchair_boarding?: number
+        zone_id?: string
+        geometry: any
+      }[]
+      routes: {
+        route_id: string
+        route_short_name?: string
+        route_long_name?: string
+        route_type: number
+        route_color?: string
+        route_text_color?: string
+        route_sort_order?: number
+        route_url?: string
+        route_desc?: string
+        geometry: any
+      }[]
+      feed_infos: {
+        feed_publisher_name: string
+        feed_publisher_url?: string
+        feed_lang: string
+        feed_version?: string
+        feed_start_date?: string
+        feed_end_date?: string
+      }[]
+    }
+  }
+}
+
+interface FeedVersionFetchResponse {
+  feed_version_fetch: {
+    feed_version: {
+      id: number
+      sha1: string
+      fetched_at: string
+      name?: string
+      description?: string
+      agencies: {
+        id: number
+        agency_name: string
+      }[]
+      feed: {
+        id: number
+        onestop_id: string
+      }
+    }
+    found_sha1: boolean
+    found_dir_sha1: boolean
+    fetch_error?: string
+  }
+}
+
+interface FeedVersionImportResponse {
+  feed_version_import: {
+    success: boolean
+  }
+}
+
+// Extract individual types from response types
+type ValidationEntity = ValidateGtfsResponse['validate_gtfs']
+type FetchResult = FeedVersionFetchResponse['feed_version_fetch']
+
+// GraphQL mutations
+const VALIDATE_GTFS_MUTATION = gql`
   mutation ($file: Upload, $url: String, $realtime_urls: [String!]) {
-      validate_gtfs(file: $file, url: $url, realtime_urls: $realtime_urls) {
-        success
+    validate_gtfs(file: $file, url: $url, realtime_urls: $realtime_urls) {
+      success
       failure_reason
       errors {
         filename
@@ -306,157 +458,167 @@ const q = gql`
       }
     }
   }
-  
-  `
-const fetchQuery = gql`
-  mutation ($file: Upload, $url: String, $feedOnestopId: String!) {
-      feed_version_fetch(file: $file, url: $url, feed_onestop_id: $feedOnestopId) {
-        feed_version {
-          id
-          sha1
-          fetched_at
-          name
-          description
-          agencies {
-            id
-            agency_name
-          }
-          feed {
-            id
-            onestop_id
-          }
-        }
-        found_sha1
-        found_dir_sha1
-        fetch_error
-      }
-  }
-  `
+`
 
-const importQuery = gql`
+const FETCH_FEED_VERSION_MUTATION = gql`
+  mutation ($file: Upload, $url: String, $feedOnestopId: String!) {
+    feed_version_fetch(file: $file, url: $url, feed_onestop_id: $feedOnestopId) {
+      feed_version {
+        id
+        sha1
+        fetched_at
+        name
+        description
+        agencies {
+          id
+          agency_name
+        }
+        feed {
+          id
+          onestop_id
+        }
+      }
+      found_sha1
+      found_dir_sha1
+      fetch_error
+    }
+  }
+`
+
+const IMPORT_FEED_VERSION_MUTATION = gql`
   mutation ($id: Int!) {
     feed_version_import(id: $id) {
       success
     }
   }
-  `
+`
 
-export default {
-  mixins: [EntityPageMixin],
-  props: {
+// Extract pathKey from route params for feed upload
 
-  },
-  data () {
-    return {
-      activeStep: '1',
-      fetchResult: null,
-      selectedFiles: [],
-      entities: [],
-      feedUrl: '',
-      realtimeUrl: '',
-      mutationLoading: false,
-      fetchLoading: false,
-      importLoading: true,
-      networkError: false
-    }
-  },
-  computed: {
-    entity () {
-      return this.entities.length > 0 ? this.entities[0] : null
-    },
-    feedUrlIsValid () {
-      return this.feedUrl && this.feedUrl.length > 0 && (this.feedUrl.startsWith('http://') || this.feedUrl.startsWith('https://'))
-    }
-  },
-  methods: {
-    validateFeed (file) {
-      this.entities = []
-      this.mutationLoading = true
-      this.$apollo
-        .mutate({
-          client: 'feedManagement',
-          mutation: q,
-          variables: {
-            file,
-            url: this.feedUrl,
-            realtime_urls: this.realtimeUrl ? [this.realtimeUrl] : null
-          },
-          update: (_, { data }) => {
-            this.activeStep = '2'
-            this.entities = [data.validate_gtfs]
-            this.mutationLoading = false
-          }
-        }).catch((error) => {
-          this.mutationLoading = false
-          this.networkError = error
-        })
-    },
-    fetchFeedVersion () {
-      useMixpanel().track('Upload feed version: Fetch feed version')
-      this.fetchResult = null
-      this.fetchLoading = true
-      this.$apollo
-        .mutate({
-          client: 'feedManagement',
-          mutation: fetchQuery,
-          variables: {
-            file: this.selectedFiles[0],
-            url: this.feedUrl,
-            feedOnestopId: this.pathKey
-          },
-          update: (_, { data }) => {
-            this.activeStep = '3'
-            this.fetchResult = data.feed_version_fetch
-            this.fetchLoading = false
-            this.importFeedVersion(this.fetchResult.feed_version.id)
-          }
-        }).catch((error) => {
-          this.fetchLoading = false
-          this.networkError = error
-        })
-    },
-    importFeedVersion (fvid) {
-      useMixpanel().track('Upload feed version: Import feed version')
-      this.importLoading = true
-      this.importResult = null
-      this.$apollo
-        .mutate({
-          client: 'feedManagement',
-          mutation: importQuery,
-          variables: {
-            id: fvid
-          },
-          update: () => {
-            this.importLoading = false
-            this.activeStep = '4'
-          }
-        }).catch((error) => {
-          console.log('import feed version error:', error)
-          this.networkError = error
-        })
-    },
-    submitUrl () {
-      useMixpanel().track('Upload feed version: Submit URL', {
-        'feed-url': this.feedUrl
-      })
-      this.validateFeed()
-    },
-    upload ({ target: { files = [] } }) {
-      useMixpanel().track('Upload feed version: Upload')
-      this.selectedFiles = files
-      if (!files.length) {
-        return
-      }
-      this.validateFeed(files[0])
-    },
-    finished () {
-      useMixpanel().track('Upload feed version: Finished')
-      navigateTo({
-        name: 'feeds-feedKey',
-        params: { feedKey: this.pathKey }
-      })
-    }
+// Apollo mutations setup
+const { mutate: validateGtfs } = useMutation<ValidateGtfsResponse>(VALIDATE_GTFS_MUTATION, {
+  clientId: 'transitland'
+})
+
+const { mutate: fetchFeedVersionMutate } = useMutation<FeedVersionFetchResponse>(FETCH_FEED_VERSION_MUTATION, {
+  clientId: 'transitland'
+})
+
+const { mutate: importFeedVersionMutate } = useMutation<FeedVersionImportResponse>(IMPORT_FEED_VERSION_MUTATION, {
+  clientId: 'transitland'
+})
+
+// Template refs
+const fileInput = ref<HTMLInputElement>()
+
+// Reactive state
+const activeStep = ref<string>('1')
+const fetchResult = ref<FetchResult | null>(null)
+const selectedFiles = ref<File[]>([])
+const entities = ref<ValidationEntity[]>([])
+const feedUrl = ref<string>('')
+const realtimeUrl = ref<string>('')
+const mutationLoading = ref<boolean>(false)
+const fetchLoading = ref<boolean>(false)
+const importLoading = ref<boolean>(true)
+const networkError = ref<Error | false>(false)
+
+// Computed properties
+const entity = computed<ValidationEntity | null>(() => {
+  return entities.value.length > 0 ? entities.value[0] : null
+})
+
+const feedUrlIsValid = computed<boolean>(() => {
+  return !!(feedUrl.value
+    && feedUrl.value.length > 0
+    && (feedUrl.value.startsWith('http://') || feedUrl.value.startsWith('https://')))
+})
+
+// Methods
+async function validateFeed (file?: File): Promise<void> {
+  entities.value = []
+  mutationLoading.value = true
+
+  try {
+    const { data } = await validateGtfs({
+      file,
+      url: feedUrl.value || null,
+      realtime_urls: realtimeUrl.value ? [realtimeUrl.value] : null
+    })
+
+    activeStep.value = '2'
+    entities.value = [data.validate_gtfs]
+    mutationLoading.value = false
+  } catch (error) {
+    mutationLoading.value = false
+    networkError.value = error as Error
   }
+}
+
+async function fetchFeedVersion (): Promise<void> {
+  useMixpanel().track('Upload feed version: Fetch feed version', {})
+  fetchResult.value = null
+  fetchLoading.value = true
+
+  try {
+    const { data } = await fetchFeedVersionMutate({
+      file: selectedFiles.value[0] || null,
+      url: feedUrl.value || null,
+      feedOnestopId: pathKey.value
+    })
+
+    activeStep.value = '3'
+    fetchResult.value = data.feed_version_fetch
+    fetchLoading.value = false
+    importFeedVersion(fetchResult.value.feed_version.id)
+  } catch (error) {
+    fetchLoading.value = false
+    networkError.value = error as Error
+  }
+}
+
+async function importFeedVersion (fvid: number): Promise<void> {
+  useMixpanel().track('Upload feed version: Import feed version', {})
+  importLoading.value = true
+
+  try {
+    await importFeedVersionMutate({
+      id: fvid
+    })
+
+    importLoading.value = false
+    activeStep.value = '4'
+  } catch (error) {
+    console.log('import feed version error:', error)
+    networkError.value = error as Error
+  }
+}
+
+function submitUrl (): void {
+  useMixpanel().track('Upload feed version: Submit URL', {
+    'feed-url': feedUrl.value
+  })
+  validateFeed()
+}
+
+function upload (event: Event): void {
+  const target = event.target as HTMLInputElement
+  const files = target.files ? Array.from(target.files) : []
+
+  useMixpanel().track('Upload feed version: Upload', {})
+  selectedFiles.value = files
+  if (!files.length) {
+    return
+  }
+  validateFeed(files[0])
+}
+
+function finished (): void {
+  useMixpanel().track('Upload feed version: Finished', {})
+  navigateTo({
+    name: 'feeds-feedKey',
+    params: { feedKey: pathKey.value }
+  })
 }
 </script>
 

@@ -337,13 +337,13 @@ export default {
     }
   },
   watch: {
-    'station.stops' () {
-      if (this.station.stops.length > 0 && this.$route.query.selectedStop) {
+    // Wait for all stops to be loaded before selecting from query params
+    // This ensures the selectedStop exists when coming from external links (e.g., stop associations page)
+    ready () {
+      if (this.ready && this.$route.query.selectedStop) {
         this.selectStop(Number(this.$route.query.selectedStop))
       }
-    },
-    'station.pathways' () {
-      if (this.station.pathways.length > 0 && this.$route.query.selectedPathway) {
+      if (this.ready && this.$route.query.selectedPathway) {
         this.selectPathway(this.$route.query.selectedPathway)
       }
     },

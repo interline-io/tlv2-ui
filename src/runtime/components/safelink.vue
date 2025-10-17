@@ -14,35 +14,53 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, getCurrentInstance } from 'vue'
 import { useToastNotification } from '../composables/useToastNotification'
+import { sanitizeUrl } from '../lib/sanitize'
 
-export default {
-  props: {
-    url: { type: String, default: null },
-    text: { type: String, default: null },
-    maxWidth: { type: String, default: '400px' }
-  },
-  computed: {
-    sanitizedUrl () {
-      // Clean URL for display and copying (no UTM parameters)
-      return this.$filters.sanitizeUrl(this.url)
-    },
-    linkUrl () {
-      // URL with UTM parameters for external links
-      const url = this.sanitizedUrl
-      if (url && this.$config.public.tlv2.safelinkUtmSource) {
-        const separator = url.includes('?') ? '&' : '?'
-        return `${url}${separator}utm_source=${encodeURIComponent(this.$config.public.tlv2.safelinkUtmSource)}`
-      }
-      return url
-    }
-  },
-  methods: {
-    clipboard () {
-      // Always copy the clean URL without UTM parameters
-      navigator.clipboard.writeText(this.text || this.sanitizedUrl)
+// Props
+const props = withDefaults(defineProps<{
+  url?: string | null
+  text?: string | null
+  maxWidth?: string
+}>(), {
+  url: null,
+  text: null,
+  maxWidth: '400px'
+})
+
+// Get current Vue instance for accessing app context
+const instance = getCurrentInstance()
+const $config = instance?.appContext.config.globalProperties.$config
+
+// Computed properties
+const sanitizedUrl = computed((): string | null => {
+  // Clean URL for display and copying (no UTM parameters)
+  return props.url ? sanitizeUrl(props.url) : null
+})
+
+const linkUrl = computed((): string | null => {
+  // URL with UTM parameters for external links
+  const url = sanitizedUrl.value
+  if (url && $config?.public?.tlv2?.safelinkUtmSource) {
+    const separator = url.includes('?') ? '&' : '?'
+    return `${url}${separator}utm_source=${encodeURIComponent($config.public.tlv2.safelinkUtmSource)}`
+  }
+  return url
+})
+
+// Methods
+const clipboard = async (): Promise<void> => {
+  // Always copy the clean URL without UTM parameters
+  const textToCopy = props.text || sanitizedUrl.value
+  if (textToCopy) {
+    try {
+      await navigator.clipboard.writeText(textToCopy)
       useToastNotification().showToast('Copied to clipboard')
+    } catch (error) {
+      console.error('Failed to copy to clipboard:', error)
+      useToastNotification().showToast('Failed to copy to clipboard')
     }
   }
 }

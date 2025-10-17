@@ -82,11 +82,52 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed } from 'vue'
 import { parseHMS, median, formatDuration } from '../lib/filters'
 
-function departureFilter (values, vmin, vmax) {
-  const ret = []
+// TypeScript interfaces
+interface HeadwayInput {
+  direction_id: number
+  dow_category: number
+  departures?: string[]
+}
+
+interface TimeOfDayHeadways {
+  morning: number[]
+  midday: number[]
+  afternoon: number[]
+  night: number[]
+}
+
+interface ProcessedHeadways {
+  weekday: TimeOfDayHeadways
+  saturday: TimeOfDayHeadways
+  sunday: TimeOfDayHeadways
+  found: boolean
+}
+
+type TimeOfDay = 'morning' | 'midday' | 'afternoon' | 'night'
+type DayOfWeek = 'weekday' | 'saturday' | 'sunday'
+
+// Props
+const props = withDefaults(defineProps<{
+  headways?: HeadwayInput[]
+  showMorning?: boolean
+  showMidday?: boolean
+  showAfternoon?: boolean
+  showNight?: boolean
+}>(), {
+  headways: () => [],
+  showMorning: true,
+  showMidday: true,
+  showAfternoon: true,
+  showNight: true
+})
+
+// Utility functions
+const departureFilter = (values: number[], vmin: number, vmax: number): number[] => {
+  const ret: number[] = []
   for (let i = 0; i < values.length - 1; i++) {
     const a = values[i]
     const b = values[i + 1]
@@ -101,7 +142,7 @@ function departureFilter (values, vmin, vmax) {
   return ret
 }
 
-export function formatHeadway (hw, tod) {
+const formatHeadway = (hw: TimeOfDayHeadways | undefined, tod: TimeOfDay): string => {
   if (!hw) {
     return ''
   }
@@ -128,52 +169,56 @@ export function formatHeadway (hw, tod) {
   return ''
 }
 
-export default {
-  props: {
-    headways: { type: Array, default () { return [] } },
-    showMorning: { type: Boolean, default: true },
-    showMidday: { type: Boolean, default: true },
-    showAfternoon: { type: Boolean, default: true },
-    showNight: { type: Boolean, default: true }
-  },
-  computed: {
-    hws () {
-      const hwlookup = {
-        1: 'weekday',
-        6: 'saturday',
-        7: 'sunday'
-      }
-      const ret = { weekday: {}, saturday: {}, sunday: {}, found: false }
-      // sort by direction_id desc, so direction_id = 0 will be preferred
-      const headwaysSorted = (this.headways || []).slice(0).sort((a, b) => { return b.direction_id - a.direction_id })
-      for (const headway of headwaysSorted) {
-        const deps = (headway.departures || []).map((s) => { return parseHMS(s) })
-        if (deps.length > 1) {
-          ret.found = true
-        }
-        const hwMorning = departureFilter(deps, 7 * 3600, 9 * 3600)
-        hwMorning.sort()
-        const hwMidday = departureFilter(deps, 9 * 3600, 16 * 3600)
-        hwMidday.sort()
-        const hwAfternoon = departureFilter(deps, 16 * 3600, 18 * 3600)
-        hwAfternoon.sort()
-        let hwNight = departureFilter(deps, 0, 7 * 3600)
-        hwNight = hwNight.concat(departureFilter(deps, 18 * 3600, 100 * 3600))
-        hwNight.sort()
-        const hw = {
-          morning: hwMorning,
-          midday: hwMidday,
-          afternoon: hwAfternoon,
-          night: hwNight
-        }
-        ret[hwlookup[headway.dow_category]] = hw
-      }
-      return ret
-    }
-  },
-  methods: {
-    formatHeadway,
-    parseHMS
+// Computed properties
+const hws = computed<ProcessedHeadways>(() => {
+  const hwlookup: Record<number, DayOfWeek> = {
+    1: 'weekday',
+    6: 'saturday',
+    7: 'sunday'
   }
-}
+
+  const ret: ProcessedHeadways = {
+    weekday: { morning: [], midday: [], afternoon: [], night: [] },
+    saturday: { morning: [], midday: [], afternoon: [], night: [] },
+    sunday: { morning: [], midday: [], afternoon: [], night: [] },
+    found: false
+  }
+
+  // Sort by direction_id desc, so direction_id = 0 will be preferred
+  const headwaysSorted = (props.headways || []).slice(0).sort((a, b) => b.direction_id - a.direction_id)
+
+  for (const headway of headwaysSorted) {
+    const deps = (headway.departures || []).map(s => parseHMS(s))
+    if (deps.length > 1) {
+      ret.found = true
+    }
+
+    const hwMorning = departureFilter(deps, 7 * 3600, 9 * 3600)
+    hwMorning.sort((a, b) => a - b)
+
+    const hwMidday = departureFilter(deps, 9 * 3600, 16 * 3600)
+    hwMidday.sort((a, b) => a - b)
+
+    const hwAfternoon = departureFilter(deps, 16 * 3600, 18 * 3600)
+    hwAfternoon.sort((a, b) => a - b)
+
+    let hwNight = departureFilter(deps, 0, 7 * 3600)
+    hwNight = hwNight.concat(departureFilter(deps, 18 * 3600, 100 * 3600))
+    hwNight.sort((a, b) => a - b)
+
+    const hw: TimeOfDayHeadways = {
+      morning: hwMorning,
+      midday: hwMidday,
+      afternoon: hwAfternoon,
+      night: hwNight
+    }
+
+    const dayOfWeek = hwlookup[headway.dow_category]
+    if (dayOfWeek) {
+      ret[dayOfWeek] = hw
+    }
+  }
+
+  return ret
+})
 </script>

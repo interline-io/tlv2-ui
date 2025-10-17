@@ -29,17 +29,21 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    feedVersionGtfsImport: {
-      type: Object,
-      default: null
-    },
-    showNotImportedStatus: {
-      type: Boolean,
-      default: false
-    }
-  }
+<script setup lang="ts">
+// TypeScript interfaces
+interface FeedVersionGtfsImport {
+  success: boolean | null
+  in_progress: boolean
+  schedule_removed: boolean
+  exception_log: string[]
 }
+
+// Props
+withDefaults(defineProps<{
+  feedVersionGtfsImport?: FeedVersionGtfsImport | null
+  showNotImportedStatus?: boolean
+}>(), {
+  feedVersionGtfsImport: null,
+  showNotImportedStatus: false
+})
 </script>

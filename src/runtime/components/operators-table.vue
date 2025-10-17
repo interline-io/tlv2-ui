@@ -89,10 +89,50 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
 import { ref, watch, computed } from 'vue'
+
+// Types
+interface OperatorsTableResponse {
+  entities: {
+    id: number
+    onestop_id: string
+    name: string
+    short_name?: string
+    agencies?: {
+      places?: {
+        city_name?: string
+        adm0_name?: string
+        adm1_name?: string
+        rank: number
+      }[]
+    }[]
+  }[]
+}
+
+// Extract individual types from the response type
+type Operator = OperatorsTableResponse['entities'][0]
+type Agency = NonNullable<Operator['agencies']>[0]
+type Place = NonNullable<Agency['places']>[0]
+
+interface ProcessedOperator extends Operator {
+  adm0_name?: string
+  adm1_name?: string
+  city_name?: string
+  other_places: Place[]
+}
+
+interface QueryVariables {
+  limit?: number
+  after?: number
+  search?: string | null
+  merged?: boolean | null
+  adm0_name?: string | null
+  adm1_name?: string | null
+  city_name?: string | null
+}
 
 const query = gql`
 query ($limit: Int=100, $after: Int, $search: String, $merged: Boolean, $adm0_name: String, $adm1_name: String, $city_name: String) {
@@ -113,29 +153,36 @@ query ($limit: Int=100, $after: Int, $search: String, $merged: Boolean, $adm0_na
 }
 `
 
-const nullString = function (v) {
+function nullString (v: string | undefined): string | null {
   if (!v || v.length === 0) {
     return null
   }
   return v
 }
 
-const nullBool = function (v) {
-  if (v === 'true') {
+function nullBool (v: boolean | undefined): boolean | null {
+  if (v === true) {
     return true
-  } else if (v === 'false') {
+  } else if (v === false) {
     return false
   }
   return null
 }
 
-const props = defineProps({
-  search: { type: String, default: null },
-  limit: { type: Number, default: 100 },
-  adm0Name: { type: String, default: null },
-  adm1Name: { type: String, default: null },
-  cityName: { type: String, default: null },
-  merged: { type: Boolean, default: true }
+const props = withDefaults(defineProps<{
+  search?: string | null
+  limit?: number
+  adm0Name?: string | null
+  adm1Name?: string | null
+  cityName?: string | null
+  merged?: boolean
+}>(), {
+  search: null,
+  limit: 100,
+  adm0Name: null,
+  adm1Name: null,
+  cityName: null,
+  merged: true
 })
 
 // shadow props
@@ -144,16 +191,18 @@ const limit = ref(props.limit)
 const adm0Name = ref(props.adm0Name)
 const adm1Name = ref(props.adm1Name)
 const cityName = ref(props.cityName)
-const merged = ref(props.mereged)
+const merged = ref(props.merged)
 
-const emit = defineEmits([
-  'update:search',
-  'update:adm0Name',
-  'update:adm1Name',
-  'update:cityName',
-  'update:merged',
-  'clear'
-])
+interface Emits {
+  'update:search': [value: string | null]
+  'update:adm0Name': [value: string | null]
+  'update:adm1Name': [value: string | null]
+  'update:cityName': [value: string | null]
+  'update:merged': [value: boolean]
+  'clear': []
+}
+
+const emit = defineEmits<Emits>()
 
 watch(search, (v) => { emit('update:search', v) })
 watch(adm0Name, (v) => { emit('update:adm0Name', v) })
@@ -161,7 +210,7 @@ watch(adm1Name, (v) => { emit('update:adm1Name', v) })
 watch(cityName, (v) => { emit('update:cityName', v) })
 watch(merged, (v) => { emit('update:merged', v) })
 
-const { result, loading, error, fetchMore } = useQuery(
+const { result, loading, error, fetchMore } = useQuery<OperatorsTableResponse, QueryVariables>(
   query,
   () => ({
     search: nullString(search.value),
@@ -172,31 +221,33 @@ const { result, loading, error, fetchMore } = useQuery(
     merged: nullBool(merged.value)
   }))
 
-const filteringByOperatorLocation = computed(() => {
-  return adm0Name.value || adm1Name.value || cityName.value
+const filteringByOperatorLocation = computed<boolean>(() => {
+  return !!(adm0Name.value || adm1Name.value || cityName.value)
 })
 
-const clearQuery = function () {
+function clearQuery (): void {
   emit('clear')
 }
 
-const entities = computed(() => result.value?.entities ?? [])
+const entities = computed<Operator[]>(() => result.value?.entities ?? [])
 
-const operatorEntities = computed(() => {
-  return (result.value?.entities ?? []).map((s) => {
-    const entity = {
+const operatorEntities = computed<ProcessedOperator[]>(() => {
+  return (result.value?.entities ?? []).map((s): ProcessedOperator => {
+    const entity: ProcessedOperator = {
+      id: s.id,
       name: s.name,
       short_name: s.short_name,
       agencies: s.agencies,
-      onestop_id: s.onestop_id
+      onestop_id: s.onestop_id,
+      other_places: []
     }
-    let places = []
+    let places: Place[] = []
     for (const a of s.agencies || []) {
       for (const p of a.places || []) {
         places.push(p)
       }
     }
-    places = places.sort(function (a, b) { return a.rank - b.rank })
+    places = places.sort((a, b) => a.rank - b.rank)
     if (places.length > 0) {
       entity.adm0_name = places[0].adm0_name
       entity.adm1_name = places[0].adm1_name
@@ -207,14 +258,14 @@ const operatorEntities = computed(() => {
   })
 })
 
-function fetchMoreFn () {
+function fetchMoreFn (): void {
   const lastId = entities.value.length > 0 ? entities.value[entities.value.length - 1].id : 0
   fetchMore({
     variables: {
       after: lastId,
       limit: 100
     },
-    updateQuery: (previousResult, { fetchMoreResult }) => {
+    updateQuery: (previousResult: OperatorsTableResponse, { fetchMoreResult }: { fetchMoreResult?: OperatorsTableResponse }) => {
       if (!fetchMoreResult) { return previousResult }
       return {
         ...previousResult,

@@ -15,16 +15,16 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute, useRouter, ref, computed } from '#imports'
-import { type RouteParams } from '#vue-router'
-import { useEventBus } from '../composables/useEventBus'
+import { ref, computed } from 'vue'
+import { useRoute, useRouter } from 'nuxt/app'
+
 interface nameOpts { [index: string]: string }
 
 interface nameVal { [index: string]: number }
 
 interface linkElem {
   routeName: string
-  routeParams: RouteParams
+  routeParams: Record<string, any>
   tag: string
   text: string
   id: string
@@ -50,10 +50,14 @@ const routeTags: nameOpts = {
   'stops-stopKey': 'Stop'
 }
 
-const props = defineProps({
-  boxed: { type: Boolean, default: false },
-  extraRouteNames: { type: Object as () => nameOpts, default () { return {} } },
-  extraRouteTags: { type: Object as () => nameOpts, default () { return {} } }
+const props = withDefaults(defineProps<{
+  boxed?: boolean
+  extraRouteNames?: nameOpts
+  extraRouteTags?: nameOpts
+}>(), {
+  boxed: false,
+  extraRouteNames: () => ({}),
+  extraRouteTags: () => ({})
 })
 
 const classes = computed(() => {
@@ -63,11 +67,6 @@ const classes = computed(() => {
 // Override names
 const mergedParams = new Map<string, string>()
 const forceUpdate = ref(0)
-useEventBus().$on('setParamKey', (k: string, v: string) => {
-  console.log('updating breadcrumbs:', k, v)
-  mergedParams.set(k, v)
-  forceUpdate.value += 1
-})
 
 // Watch on changes to route and forceUpdate
 const curRoute = useRoute()

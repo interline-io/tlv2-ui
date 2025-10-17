@@ -2,7 +2,7 @@ import { navigateTo, useRuntimeConfig, useCsrf, useRoute } from '#imports'
 import { createMixpanel } from '../lib/mixpanel'
 import { getAuthorizeUrl, getLogoutUrl, checkToken } from '../lib/auth0'
 import { useUser, clearUser } from './user'
-import { debugLog } from '../lib/log'
+import { logAuthDebug } from '../lib/log'
 
 const logoutUri = '/'
 
@@ -14,7 +14,7 @@ const logoutUri = '/'
 const useJwt = async () => {
   const { token, mustReauthorize } = await checkToken()
   if (mustReauthorize) {
-    debugLog('useJwt: mustReauthorize')
+    logAuthDebug('useJwt: mustReauthorize')
     clearUser()
     return ''
   }
@@ -43,7 +43,6 @@ export const useAuthHeaders = async () => {
   if (import.meta.server && config.tlv2?.graphqlApikey) {
     headers['apikey'] = config.tlv2?.graphqlApikey
   }
-  // debugLog('useAuthHeaders:', headers)
   return headers
 }
 
@@ -57,7 +56,7 @@ export const useApiEndpoint = (path?: string) => {
 
 // Login
 export const useLogin = async (targetUrl: null | string) => {
-  debugLog('useLogin')
+  logAuthDebug('useLogin')
   // Get current route's full path if no targetUrl provided
   const route = useRoute()
   targetUrl = targetUrl || route.fullPath
@@ -66,7 +65,7 @@ export const useLogin = async (targetUrl: null | string) => {
 
 // Logout
 export const useLogout = async () => {
-  debugLog('useLogout')
+  logAuthDebug('useLogout')
   // Reset Mixpanel before redirecting
   const config = useRuntimeConfig()
   const mixpanel = createMixpanel(config.public.tlv2?.mixpanelApikey, useUser())

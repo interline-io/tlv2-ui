@@ -1,11 +1,11 @@
+import { useRuntimeConfig } from '#app'
 import { ApolloClient, ApolloLink, concat, InMemoryCache } from '@apollo/client/core/index.js'
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
 import { destr } from 'destr'
 import { ApolloClients, provideApolloClients } from '@vue/apollo-composable'
 import { createApolloProvider } from '@vue/apollo-option'
-import { useRuntimeConfig } from 'nuxt/app'
-import { useAuthHeaders } from './auth'
-import { debugLog } from '../lib/log'
+import { useApiEndpoint, useAuthHeaders } from './auth'
+import { logAuthDebug } from '../lib/log'
 
 function getApiEndpoint (clientType: 'default' | 'stationEditor' | 'feedManagement', path?: string) {
   const config = useRuntimeConfig()
@@ -51,7 +51,7 @@ export async function getApolloClient () {
   const endpoint = getApiEndpoint('default', '/query')
   const headers = await useAuthHeaders()
   const apolloClient = initApolloClient(endpoint, headers)
-  debugLog('getApolloClient', endpoint)
+  logAuthDebug('getApolloClient', endpoint)
   return apolloClient
 }
 
@@ -59,7 +59,7 @@ export async function getStationEditorApolloClient () {
   const endpoint = getApiEndpoint('stationEditor', '/query')
   const headers = await useAuthHeaders()
   const apolloClient = initApolloClient(endpoint, headers)
-  debugLog('getStationEditorApolloClient', endpoint)
+  logAuthDebug('getStationEditorApolloClient', endpoint)
   return apolloClient
 }
 
@@ -67,12 +67,12 @@ export async function getFeedManagementApolloClient () {
   const endpoint = getApiEndpoint('feedManagement', '/query')
   const headers = await useAuthHeaders()
   const apolloClient = initApolloClient(endpoint, headers)
-  debugLog('getFeedManagementApolloClient', endpoint)
+  logAuthDebug('getFeedManagementApolloClient', endpoint)
   return apolloClient
 }
 
 export const defineApolloPlugin = async (nuxtApp) => {
-  debugLog('apollo plugin: start')
+  logAuthDebug('apollo plugin: start')
   const apolloClient = await getApolloClient()
   const stationEditorClient = await getStationEditorApolloClient()
   const feedManagementClient = await getFeedManagementApolloClient()
