@@ -21,8 +21,8 @@ export function initApolloClient (endpoint: string, headers: Record<string, stri
   return apolloClient
 }
 
-export async function getApolloClient () {
-  const endpoint = useApiEndpoint('/query')
+export async function getApolloClient (clientName?: string) {
+  const endpoint = useApiEndpoint('/query', clientName)
   const headers = await useAuthHeaders()
   const apolloClient = initApolloClient(endpoint, headers)
   logAuthDebug('getApolloClient', endpoint)

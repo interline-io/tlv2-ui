@@ -73,7 +73,7 @@ export default {
   emits: ['changed'],
   apollo: {
     fvs: {
-      client: () => (this.graphqlClient),
+      client: 'default',
       query: feedVersionQuery,
       variables () {
         return { ids: [this.id] }
