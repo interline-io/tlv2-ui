@@ -4,7 +4,7 @@ export function getBasemapLayers () {
   const config = useRuntimeConfig()
   return {
     carto: {
-      label: 'Carto street map',
+      label: 'OpenStreetMap rendered by CARTO',
       source: {
         type: 'raster',
         tiles: [
@@ -20,7 +20,7 @@ export function getBasemapLayers () {
       }
     },
     near: {
-      label: 'Nearmap aerial imagery',
+      label: 'Aerial imagery from Nearmap',
       source: {
         type: 'raster',
         tiles: [

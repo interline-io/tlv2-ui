@@ -1,15 +1,30 @@
 <template>
   <div>
-    <div class="buttons">
-      <a class="button is-outlined" :class="errorCount.stops > 0 ? 'is-danger' : ''" @click="openStops = true">
+    <div class="field is-grouped">
+      <a
+        class="button is-fullwidth is-outlined"
+        :class="errorCount.stops > 0 ? 'is-danger' : ''"
+        :title="errorCount.stops > 0 ? `${errorCount.stops} stop error${errorCount.stops !== 1 ? 's' : ''} found` : 'No stop errors'"
+        @click="openStops = true"
+      >
         <i v-if="errorCount.stops > 0" class="mdi mdi-alert has-text-danger" /> Stops
       </a>
 
-      <a class="button is-outlined" :class="errorCount.pathways > 0 ? 'is-danger' : ''" @click="openPathways = true">
+      <a
+        class="button is-fullwidth is-outlined"
+        :class="errorCount.pathways > 0 ? 'is-danger' : ''"
+        :title="errorCount.pathways > 0 ? `${errorCount.pathways} pathway error${errorCount.pathways !== 1 ? 's' : ''} found` : 'No pathway errors'"
+        @click="openPathways = true"
+      >
         <i v-if="errorCount.pathways > 0" class="mdi mdi-alert has-text-danger" /> Pathways
       </a>
 
-      <a class="button is-outlined" :class="stopPathErrorCount > 0 ? 'is-danger' : ''" @click="openPaths = true">
+      <a
+        class="button is-fullwidth is-outlined"
+        :class="stopPathErrorCount > 0 ? 'is-danger' : ''"
+        :title="stopPathErrorCount > 0 ? `${stopPathErrorCount} connectivity error${stopPathErrorCount !== 1 ? 's' : ''} found` : 'No connectivity errors'"
+        @click="openPaths = true"
+      >
         <i v-if="stopPathErrorCount > 0" class="mdi mdi-alert has-text-danger" /> Connectivity
       </a>
     </div>

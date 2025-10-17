@@ -1,254 +1,238 @@
 <template>
-  <div v-if="station">
-    <slot name="title">
-      <tl-title title="Station Pathways">
-        Station Pathways: {{ stationName }}
-      </tl-title>
-    </slot>
-    <tl-editor-station-mode-tabs
-      :station="station"
-      :feed-key="feedKey"
-      :feed-version-key="feedVersionKey"
-      :station-key="stationKey"
-      :stop-associations-enabled="stopAssociationsEnabled"
-    />
-
-    <div v-if="ready" class="columns">
+  <div v-if="station" class="station-pathways-container">
+    <div v-if="ready" class="columns pathways-columns">
       <div class="column is-narrow">
         <div class="block tl-editor-info">
-          <o-field label="Station Validation Reports">
-            <tl-editor-station-validator
-              :station="station"
-              @select-path="selectPath"
-              @select-stop="selectStop"
-              @select-pathway="selectPathway"
-            />
-          </o-field>
+          <!-- Mode Selection -->
+          <nav class="panel station-editor-panel">
+            <p class="panel-heading">
+              Mode
+            </p>
+            <div class="panel-block">
+              <div class="buttons has-addons is-fullwidth">
+                <button
+                  class="button"
+                  :class="{'is-primary is-selected': selectMode === 'select'}"
+                  @click="selectMode = 'select'"
+                >
+                  Select
+                </button>
+                <button
+                  class="button"
+                  :class="{'is-primary is-selected': selectMode === 'add-pathway'}"
+                  :disabled="!(selectedStop && selectedSource)"
+                  @click="selectMode = 'add-pathway'"
+                >
+                  Add Pathway
+                </button>
+                <button
+                  class="button"
+                  :class="{'is-primary is-selected': selectMode === 'find-route'}"
+                  @click="selectMode = 'find-route'"
+                >
+                  Find Route
+                </button>
+                <button
+                  class="button"
+                  :class="{'is-primary is-selected': selectMode === 'add-node'}"
+                  @click="selectMode = 'add-node'"
+                >
+                  Add Node
+                </button>
+                <button
+                  class="button"
+                  :class="{'is-primary is-selected': selectMode === 'export'}"
+                  @click="selectMode = 'export'"
+                >
+                  Export
+                </button>
+              </div>
+            </div>
+          </nav>
+
+          <!-- Map Controls -->
+          <nav class="panel station-editor-panel">
+            <p class="panel-heading">
+              Map Display
+            </p>
+            <div class="panel-block is-block">
+              <o-collapse v-model:open="levelsOpen" animation="slide">
+                <template #trigger="props">
+                  <div class="field collapse-trigger-field">
+                    <label class="label is-small collapse-trigger-label">
+                      <o-icon :icon="props.open ? 'menu-down' : 'menu-right'" />
+                      <span>Levels</span>
+                    </label>
+                  </div>
+                </template>
+                <div v-for="level of sortedStationLevels" :key="level.id" class="ml-4">
+                  <o-checkbox
+                    v-model="selectedLevels"
+                    :native-value="mapLevelKeyFn(level)"
+                  >
+                    <span v-if="level.level_index != null" class="has-text-weight-semibold">{{ level.level_index }}:</span>
+                    {{ level.level_name }}
+                    <span class="has-text-grey is-size-7">({{ level.stops.length }} nodes)</span>
+                  </o-checkbox>
+                </div>
+              </o-collapse>
+
+              <o-collapse v-model:open="basemapOpen" animation="slide">
+                <template #trigger="props">
+                  <div class="field collapse-trigger-field">
+                    <label class="label is-small collapse-trigger-label">
+                      <o-icon :icon="props.open ? 'menu-down' : 'menu-right'" />
+                      <span>Basemap</span>
+                    </label>
+                  </div>
+                </template>
+                <div v-for="(bm, key) in basemapLayers" :key="key" class="field ml-4">
+                  <o-radio
+                    v-model="basemap"
+                    :native-value="key"
+                  >
+                    {{ bm.label }}
+                  </o-radio>
+                </div>
+              </o-collapse>
+
+              <o-collapse v-model:open="legendOpen" animation="slide">
+                <template #trigger="props">
+                  <div class="field collapse-trigger-field">
+                    <label class="label is-small collapse-trigger-label">
+                      <o-icon :icon="props.open ? 'menu-down' : 'menu-right'" />
+                      <span>Legend</span>
+                    </label>
+                  </div>
+                </template>
+                <div class="ml-4">
+                  <ul>
+                    <li class="legend-item circle-indicator">
+                      circles are nodes (stops) with number for assigned level
+                    </li>
+                    <li class="legend-item blue-rectangle">
+                      blue pathways are on the same level
+                    </li>
+                    <li class="legend-item red-rectangle">
+                      red pathways connect two separate levels
+                    </li>
+                    <li class="legend-item purple-rectangle">
+                      purple lines show distance to associated stop
+                    </li>
+                  </ul>
+                </div>
+              </o-collapse>
+            </div>
+          </nav>
           <!-- SELECT -->
-          <tl-msg-card v-if="selectMode === 'select'">
-            <template #trigger>
-              Select
-            </template>
-            <div>
-              <div class="mb-2">
-                <p class="label">
-                  {{ selectedStops.length }} stops selected
-                  <o-button v-if="selectedStops.length > 0" class="is-pulled-right m-2" variant="primary is-small" outlined @click="unselectAll">
-                    Unselect All
-                  </o-button>
-                </p>
-                <o-field label="Select Stops">
-                  <div class="buttons has-addons">
-                    <a v-for="pwm of LocationTypes" :key="pwm[0]" class="button is-small" @click="selectLocationTypes(pwm[0])">{{ pwm[1] }}</a>
-                  </div>
-                </o-field><o-field>
-                  <div class="buttons has-addons">
-                    <a class="button is-small" @click="selectStopsWithAssociations()">With associations</a>
-                    <a class="button is-small" @click="selectStopsPlatformsWithoutAssociations()">Platforms w/o assoc.</a>
-                    <a class="button is-small" @click="selectStopsEntrancesWithoutAssociations()">Entrances w/o assoc.</a>
-                  </div>
-                  <div class="buttons has-addons">
-                    <a class="button is-small" @click="selectStopsWithPairedPathways()">With paired pathways</a>
-                  </div>
-                </o-field>
-              </div>
-              <div class="mb-2">
-                <p class="label">
-                  {{ selectedPathways.length }} pathways selected
-                  <o-button v-if="selectedPathways.length > 0" class="is-pulled-right m-2" variant="primary is-small" outlined @click="unselectAll">
-                    Unselect All
-                  </o-button>
-                </p>
-                <o-field label="Select Pathways">
-                  <div class="buttons has-addons">
-                    <a v-for="pwm of PathwayModes" :key="pwm[0]" class="button is-small" @click="selectPathwayModes(pwm[0])">{{ pwm[1] }}</a>
-                  </div>
-                  <div class="buttons has-addons">
-                    <a class="button is-small" @click="selectPathwaysWithPairs()">With pairs</a>
-                    <a class="button is-small" @click="selectPathwaysOneway()">One-directional</a>
-                    <a class="button is-small" @click="selectPathwaysBidirectional()">Bi-directional</a>
-                  </div>
-                </o-field>
-                <ul>
-                  <li class="blue-rectangle">
-                    blue pathways are on the same level
-                  </li>
-                  <li class="red-rectangle">
-                    red pathways connect two separate levels
-                  </li>
-                  <li class="purple-rectangle">
-                    purple lines show distance to associated stop
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </tl-msg-card>
-          <tl-msg-card v-else-if="selectMode === 'add-pathway'">
-            <template #trigger>
-              Add Pathway
-            </template>
-            <div>
-              <tl-editor-pathway-editor
-                :station="station"
-                :value="newPathway()"
-                @select-stop="selectStop"
-                @create="createPathwayHandler"
-              />
-            </div>
-          </tl-msg-card>
+          <tl-editor-station-pathways-select-panel
+            v-if="selectMode === 'select'"
+            :selected-stops-count="selectedStops.length"
+            :selected-pathways-count="selectedPathways.length"
+            :location-types="LocationTypes"
+            :pathway-modes="PathwayModes"
+            @unselect-all="unselectAll"
+            @select-location-types="selectLocationTypes"
+            @select-stops-with-associations="selectStopsWithAssociations"
+            @select-stops-platforms-without-associations="selectStopsPlatformsWithoutAssociations"
+            @select-stops-entrances-without-associations="selectStopsEntrancesWithoutAssociations"
+            @select-stops-with-paired-pathways="selectStopsWithPairedPathways"
+            @select-pathway-modes="selectPathwayModes"
+            @select-pathways-with-pairs="selectPathwaysWithPairs"
+            @select-pathways-oneway="selectPathwaysOneway"
+            @select-pathways-bidirectional="selectPathwaysBidirectional"
+          />
+          <tl-editor-station-pathways-add-pathway-panel
+            v-else-if="selectMode === 'add-pathway'"
+            :station="station"
+            :pathway="newPathway()"
+            @select-stop="selectStop"
+            @create="createPathwayHandler"
+          />
           <template v-if="selectMode === 'edit-pathway'">
-            <tl-msg-card v-for="spw of selectedPathways" :key="spw.id">
-              <template #trigger>
-                Edit Pathway
-              </template>
-              <tl-editor-mode-switch
-                :params="{
-                  feedKey: feedKey,
-                  feedVersionKey: feedVersionKey,
-                  stationKey: stationKey
-                }"
-                :query="{
-                  selectedPathway: spw.id
-                }"
-              />
-              <tl-editor-pathway-editor
-                :station="station"
-                :value="spw"
-                @select-stop="selectStop"
-                @delete="deletePathwayHandler"
-                @update="updatePathwayHandler"
-              />
-            </tl-msg-card>
+            <tl-editor-station-pathways-pathway-panel
+              v-for="spw of selectedPathways"
+              :key="spw.id"
+              :station="station"
+              :pathway="spw"
+              :show-unselect="selectedStops.length > 0 || selectedPathways.length > 0"
+              :feed-key="feedKey"
+              :feed-version-key="feedVersionKey"
+              :station-key="stationKey"
+              @select-stop="selectStop"
+              @delete="deletePathwayHandler"
+              @update="updatePathwayHandler"
+              @unselect="unselectAll"
+            />
           </template>
           <template v-else-if="selectMode === 'edit-node'">
-            <tl-msg-card v-for="ss of selectedStops" :key="ss.id" class="card">
-              <template #trigger>
-                Edit Node
-                <o-button v-if="selectedStops.length > 0 || selectedPathways.length > 0" class="is-pulled-right m-2" variant="primary is-small" outlined @click="unselectAll">
-                  Unselect
-                </o-button>
-              </template>
-              <tl-editor-mode-switch
-                :params="{
-                  feedKey: feedKey,
-                  feedVersionKey: feedVersionKey,
-                  stationKey: stationKey
-                }"
-                :query="{
-                  selectedStop: ss.id
-                }"
-              />
-              <tl-editor-stop-editor
+            <tl-editor-station-pathways-node-panel
+              v-for="ss of selectedStops"
+              :key="ss.id"
+              :station="station"
+              :stop="ss"
+              :stop-associations-enabled="stopAssociationsEnabled"
+              :show-unselect="selectedStops.length > 0 || selectedPathways.length > 0"
+              :feed-key="feedKey"
+              :feed-version-key="feedVersionKey"
+              :station-key="stationKey"
+              @delete="deleteStopHandler"
+              @update="updateStopHandler"
+              @delete-association="deleteAssociationHandler"
+              @select-pathway="selectPathway"
+              @unselect="unselectAll"
+            />
+          </template>
+          <tl-editor-station-pathways-add-node-panel
+            v-else-if="selectMode === 'add-node'"
+            :selected-level="selectedLevel"
+            :levels="station.levels"
+            :level-index="levelIndex"
+            @update:selected-level="selectedLevel = $event"
+          />
+          <tl-editor-station-pathways-find-route-panel
+            v-else-if="selectMode === 'find-route' && selectedStops.length > 1"
+            :path="selectedPath"
+          />
+          <nav v-else-if="selectMode === 'export'" class="panel station-editor-panel">
+            <p class="panel-heading">
+              Export
+            </p>
+            <div class="panel-block is-block">
+              <p class="notification">
+                To export as a full GTFS feed, exit the pathways editor and
+                <nuxt-link
+                  :to="{
+                    path: `/saas/station-editor/${feedKey}/${feedVersionKey}/stations`
+                  }"
+                >
+                  return to the feed version
+                </nuxt-link>
+              </p>
+              <o-button icon-left="download" expanded @click="downloadGeojson">
+                Download this station as GeoJSON
+              </o-button>
+            </div>
+          </nav>
+
+          <!-- Validation Reports -->
+          <nav class="panel station-editor-panel">
+            <p class="panel-heading">
+              Station Validation Reports
+            </p>
+            <div class="panel-block is-block">
+              <tl-editor-station-validator
                 :station="station"
-                :value="ss"
-                :stop-associations-enabled="stopAssociationsEnabled"
-                @delete="deleteStopHandler"
-                @update="updateStopHandler"
-                @delete-association="deleteAssociationHandler"
+                @select-path="selectPath"
+                @select-stop="selectStop"
                 @select-pathway="selectPathway"
               />
-            </tl-msg-card>
-          </template>
-          <template v-else-if="selectMode === 'add-node'">
-            <tl-msg-card v-if="selectMode === 'add-node'">
-              <template #trigger>
-                Add Node
-              </template>
-              <o-field label="Level">
-                <o-dropdown
-                  v-model="selectedLevel"
-                  aria-role="list"
-                >
-                  <template #trigger>
-                    <button class="button" type="button">
-                      {{ levelIndex[selectedLevel] ? levelIndex[selectedLevel].level_name : 'None' }} &nbsp;
-                      <o-icon icon="menu-down" />
-                    </button>
-                  </template>
-                  <o-dropdown-item v-for="level of station.levels" :key="level.id" :value="level.id" aria-role="listitem">
-                    <h3>{{ level.level_name }}</h3>
-                    <small> {{ level.stops.length }} nodes</small>
-                  </o-dropdown-item>
-                </o-dropdown>
-              </o-field>
-            </tl-msg-card>
-          </template>
-          <template v-else-if="selectMode === 'find-route'">
-            <tl-msg-card v-if="selectedStops.length > 1">
-              <template #trigger>
-                Find Route
-              </template>
-              <tl-editor-path-viewer :path="selectedPath" />
-            </tl-msg-card>
-          </template>
-
-          <br>
+            </div>
+          </nav>
         </div>
       </div>
 
       <div class="column">
-        <o-field grouped>
-          <o-field>
-            <o-dropdown
-              v-model="selectedLevels"
-              :width="300"
-              aria-role="list"
-              multiple
-            >
-              <template #trigger>
-                <button class="button" type="button">
-                  Levels &nbsp;
-                  <o-icon icon="menu-down" />
-                </button>
-              </template>
-              <o-dropdown-item v-for="level of sortedStationLevels" :key="level.id" :value="mapLevelKeyFn(level)" aria-role="listitem">
-                <div class="media">
-                  <div class="media-left">
-                    {{ level.level_index == null ? '&nbsp;&nbsp;&nbsp;' : level.level_index }}
-                  </div>
-                  <div class="media-content">
-                    <h3>{{ level.level_name }}</h3>
-                    <small>{{ level.stops.length }} nodes </small>
-                  </div>
-                </div>
-              </o-dropdown-item>
-            </o-dropdown>
-            <tl-editor-basemap-control v-model="basemap" />
-          </o-field>
-          <o-field>
-            <o-button icon-left="download" @click="downloadGeojson">
-              GeoJSON
-            </o-button>
-          </o-field>
-          <o-field>
-            <o-radio
-              v-model="selectMode"
-              native-value="select"
-            >
-              <span>Select</span>
-            </o-radio>
-            <o-radio
-              v-model="selectMode"
-              :disabled="!(selectedStop && selectedSource)"
-              native-value="add-pathway"
-            >
-              <span>Add Pathway</span>
-            </o-radio>
-            <o-radio
-              v-model="selectMode"
-              native-value="find-route"
-            >
-              <span>Find Route</span>
-            </o-radio>
-            <o-radio
-              v-model="selectMode"
-              native-value="add-node"
-            >
-              Add Node
-            </o-radio>
-          </o-field>
-        </o-field>
-
         <tl-editor-pathway-map
           :center="station.geometry.coordinates"
           :station="station"
@@ -267,7 +251,7 @@
 </template>
 
 <script>
-import { PathwayModes, LocationTypes } from '../basemaps'
+import { PathwayModes, LocationTypes, getBasemapLayers } from '../basemaps'
 import { Stop, Pathway, mapLevelKeyFn } from '../station'
 import StationMixin from './station-mixin'
 import { nextTick } from 'vue'
@@ -285,6 +269,10 @@ export default {
       selectedPathways: [],
       openStationValidator: false,
       basemap: 'carto',
+      basemapLayers: getBasemapLayers(),
+      levelsOpen: true,
+      basemapOpen: false,
+      legendOpen: true,
       PathwayModes,
       LocationTypes
     }
@@ -666,20 +654,120 @@ export default {
 }
 </script>
 
-  <style scoped>
+  <style>
   .help li {
     margin-bottom:10px;
   }
-  .blue-rectangle::before {
-    content: "🟦 ";
-  }
-  .red-rectangle::before {
-    content: "🟥 "
-  }
-  .purple-rectangle::before {
-    content: "🟪 "
-  }
-  .tl-editor-info {
-    width: 540px;
-  }
+
+   .station-pathways-container {
+     height: calc(100vh - 80px);
+     display: flex;
+     flex-direction: column;
+   }
+
+   .pathways-columns {
+     flex: 1;
+     height: 100%;
+   }
+
+   .tl-editor-info {
+     width: 540px;
+     height: 100%;
+     overflow-y: auto;
+     padding-right: 0.5rem;
+   }
+   .station-editor-panel {
+     margin-bottom: 0.75rem;
+   }
+   .station-editor-panel .panel-heading {
+     padding: 0.5em 0.75em;
+     font-size: 0.875rem;
+   }
+   .station-editor-panel .panel-block {
+     padding: 0.75rem;
+   }
+   .station-editor-panel .buttons.has-addons {
+     display: flex;
+     width: 100%;
+   }
+   .station-editor-panel .buttons.has-addons .button {
+     flex: 1;
+   }
+   .station-editor-panel .columns.is-mobile {
+     margin-bottom: 0;
+   }
+   .station-editor-panel .columns.is-mobile .column {
+     padding-top: 0;
+     padding-bottom: 0;
+   }
+
+   /* Ensure layout fits in viewport */
+   .pathways-columns {
+     margin-top: 0;
+     margin-bottom: 0;
+     display: flex;
+     align-items: stretch;
+   }
+
+   .pathways-columns .column.is-narrow {
+     display: flex;
+     flex-direction: column;
+   }
+
+   .pathways-columns .column.is-narrow .block {
+     flex: 1;
+     display: flex;
+     flex-direction: column;
+   }
+
+   /* Make map container fill available height */
+   .pathways-columns .column:not(.is-narrow) {
+     display: flex;
+     flex-direction: column;
+     flex: 1;
+   }
+
+   .pathways-columns .column:not(.is-narrow) > * {
+     flex: 1;
+     height: 100%;
+   }
+
+   /* Collapse trigger styling */
+   .collapse-trigger-field {
+     margin-bottom: 0.5rem;
+   }
+
+   .collapse-trigger-label {
+     display: flex;
+     align-items: center;
+     gap: 0.25rem;
+     cursor: pointer;
+     margin-bottom: 0 !important;
+   }
+
+   .collapse-trigger-label:hover {
+     color: #3273dc;
+   }
+
+   /* Legend styling */
+   .legend-item {
+     margin-bottom: 0.25rem;
+   }
+
+   .circle-indicator::before {
+     content: "⓪ ";
+     font-size: 1.2em;
+   }
+
+   .blue-rectangle::before {
+     content: "🟦 ";
+   }
+
+   .red-rectangle::before {
+     content: "🟥 ";
+   }
+
+   .purple-rectangle::before {
+     content: "🟪 ";
+   }
   </style>

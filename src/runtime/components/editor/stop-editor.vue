@@ -110,7 +110,7 @@
     </div>
 
     <!-- Pathways viewer -->
-    <o-field v-if="pathwaysFromStop.length > 0" label="Pathways (From)">
+    <o-field v-if="!hidePathways && pathwaysFromStop.length > 0" label="Pathways (From)">
       <ul>
         <li v-for="pw of pathwaysFromStop" :key="pw.id">
           <span class="button" :title="pw.pathway_id" @click="$emit('select-pathway', pw.id)">
@@ -126,7 +126,7 @@
         </li>
       </ul>
     </o-field>
-    <o-field v-if="pathwaysToStop.length" label="Pathways (To)">
+    <o-field v-if="!hidePathways && pathwaysToStop.length" label="Pathways (To)">
       <ul>
         <li v-for="pw of pathwaysToStop" :key="pw.id">
           <span class="button" :title="pw.pathway_id" @click="$emit('select-pathway', pw.id)">
@@ -203,6 +203,11 @@ export default {
       type: String,
       reqiored: false,
       default: 'pathways'
+    },
+    hidePathways: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   emits: ['select-pathway', 'create-association', 'update', 'delete', 'create'],
