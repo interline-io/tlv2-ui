@@ -64,8 +64,8 @@
                 Week of
               </template>
               {{ formatDay(col.key, j) }}<br>
-              Feed: {{ $filters.shortenName(cell.feed_onestop_id,16) }} ({{ $filters.shortenName(cell.feed_version_sha1,6) }})<br>
-              Fetched: {{ $filters.formatDate(cell.fetched_at) }}<br>
+              Feed: {{ shortenName(cell.feed_onestop_id,16) }} ({{ shortenName(cell.feed_version_sha1,6) }})<br>
+              Fetched: {{ formatDate(cell.fetched_at) }}<br>
               {{ Math.ceil(dayval / 3600) }} service hours <br>
               <template v-if="maxAggMode === 'all'">
                 {{ Math.ceil((dayval / cell.max) * 100) }}% of max (all groups)
@@ -83,9 +83,9 @@
         <span class="cell month">&nbsp;</span>
         <div v-for="(cell,i) of colGroups.rowinfo" :key="i">
           <span v-for="(dow,j) of daysOfWeek" :key="j" class="cell rowlabel">
-            <template v-if="showGroupInfo">.
+            <template v-if="showGroupInfo">
               <nuxt-link :to="{name:'feeds-feedKey-versions-feedVersionKey', hash: '#service', params:{feedKey: cell.feed_onestop_id, feedVersionKey: cell.feed_version_sha1}}">
-                Fetched {{ $filters.formatDate(cell.fetched_at) }}
+                Fetched {{ formatDate(cell.fetched_at) }}
               </nuxt-link>
             </template>
           </span>
@@ -96,11 +96,101 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import { parseISO, format, add, isBefore } from 'date-fns'
 import { gql } from 'graphql-tag'
+import { ref, computed } from 'vue'
+import { useQuery } from '@vue/apollo-composable'
+import { shortenName, formatDate } from '../lib/filters'
 
-const q = gql`
+// Types
+interface MultiServiceLevelsResponse {
+  feed_versions: {
+    id: number
+    sha1: string
+    fetched_at: string
+    url: string
+    feed: {
+      id: number
+      onestop_id: string
+    }
+    service_levels: {
+      start_date: string
+      end_date: string
+      monday: number
+      tuesday: number
+      wednesday: number
+      thursday: number
+      friday: number
+      saturday: number
+      sunday: number
+    }[]
+  }[]
+}
+
+// Extract individual types from the response type
+type FeedVersion = MultiServiceLevelsResponse['feed_versions'][0]
+type Feed = FeedVersion['feed']
+type ServiceLevel = FeedVersion['service_levels'][0]
+
+interface ExtendedServiceLevel extends ServiceLevel {
+  feed_onestop_id: string
+  feed_version_sha1: string
+  fetched_at: string
+  feed_version_id?: number
+}
+
+interface CellData extends ExtendedServiceLevel {
+  sum: number
+  dayvals: number[]
+  vals: number[]
+  max: number
+}
+
+interface RowInfo {
+  key: string
+  feed_version_id?: number
+  feed_version_sha1: string
+  feed_onestop_id: string
+  fetched_at: string
+}
+
+interface ColGroup {
+  key: string
+  rows: CellData[]
+}
+
+interface ColGroups {
+  rowinfo: RowInfo[]
+  cols: ColGroup[]
+}
+
+interface RowMax {
+  maxsum: number
+  maxday: number
+}
+
+const props = withDefaults(defineProps<{
+  showFilters?: boolean
+  showServiceRelative?: boolean
+  showGroupInfo?: boolean
+  showDateSelector?: boolean
+  fvids?: number[]
+  maxWeeks?: number | null
+  weekAgg?: boolean
+  useFeedVersions?: FeedVersion[]
+}>(), {
+  showFilters: true,
+  showServiceRelative: true,
+  showGroupInfo: true,
+  showDateSelector: true,
+  fvids: () => [],
+  maxWeeks: null,
+  weekAgg: true,
+  useFeedVersions: () => []
+})
+
+const query = gql`
 query ($feed_version_ids: [Int!], $start_date: Date, $end_date: Date) {
   feed_versions(limit: 20, ids: $feed_version_ids) {
     id
@@ -126,220 +216,8 @@ query ($feed_version_ids: [Int!], $start_date: Date, $end_date: Date) {
 }
 `
 
-export default {
-  props: {
-    showFilters: { type: Boolean, default: true },
-    showServiceRelative: { type: Boolean, default: true },
-    showGroupInfo: { type: Boolean, default: true },
-    showDateSelector: { type: Boolean, default: true },
-    fvids: { type: Array, default () { return [] } },
-    maxWeeks: { type: Number, default () { return null } },
-    weekAgg: { type: Boolean, default () { return true } },
-    useFeedVersions: { type: Array, default () { return [] } }
-  },
-  data () {
-    return {
-      dowNames,
-      feed_versions: this.useFeedVersions,
-      fvAgg: false,
-      maxAggMode: 'all',
-      startDate: null,
-      endDate: null
-    }
-  },
-  apollo: {
-    feed_versions: {
-      client: 'transitland',
-      query: q,
-      skip () { return this.useFeedVersions.length > 0 },
-      variables () {
-        return {
-          feed_version_ids: this.fvids,
-          start_date: this.startDate,
-          end_date: this.endDate
-        }
-      },
-      error (e) { this.error = e }
-    }
-  },
-  computed: {
-    fvsls () {
-      const a = []
-      for (const fv of this.feed_versions) {
-        for (const fvsl of fv.service_levels) {
-          a.push(Object.assign({}, fvsl, { feed_onestop_id: fv.feed.onestop_id, feed_version_sha1: fv.sha1, fetched_at: fv.fetched_at }))
-        }
-      }
-      return a
-    },
-    displayStartDate: {
-      get () {
-        if (this.startDate) {
-          return this.startDate
-        }
-        const days = this.fvsls.map((s) => { return s.start_date }).sort()
-        if (days.length > 0) {
-          return parseISO(days[0].substr(0, 10))
-        }
-        return parseISO('2020-01-01')
-      },
-      set (v) {
-        this.startDate = v
-      }
-    },
-    displayEndDate: {
-      get () {
-        if (this.endDate) {
-          return this.endDate
-        }
-        const days = this.fvsls.map((s) => { return s.end_date }).sort()
-        if (days.length > 0) {
-          return parseISO(days[days.length - 1].substr(0, 10))
-        }
-        return parseISO('2020-01-01')
-      },
-      set (v) {
-        this.endDate = v
-      }
-    },
-    displayWeeks () {
-      const g = []
-      let startDate = this.displayStartDate
-      const endDate = this.displayEndDate
-      while (isBefore(startDate, endDate)) {
-        g.push(format(startDate, 'yyyy-MM-dd'))
-        startDate = add(startDate, { days: 7 })
-      }
-      if (this.maxWeeks) {
-        return g.reverse().slice(0, this.maxWeeks).reverse()
-      }
-      return g
-    },
-    colGroups () {
-      // Create a grid of results
-      const groups = new Map()
-      const rowmax = new Map()
-      const rowinfo = []
-      let maxday = 1.0
-      let maxsum = 1.0
-      // Order by feed_version_id
-      for (const fvsl of this.fvsls) {
-        // Expand
-        const key = `${fvsl.feed_version_sha1}-${fvsl.id}`
-        let group = groups.get(key)
-        if (!group) {
-          rowinfo.push({
-            key,
-            feed_version_id: fvsl.feed_version_id,
-            feed_version_sha1: fvsl.feed_version_sha1,
-            feed_onestop_id: fvsl.feed_onestop_id,
-            fetched_at: fvsl.fetched_at
-          })
-          group = new Map()
-        }
-        let startDate = parseISO(fvsl.start_date.substr(0, 10)) // always a monday
-        const endDate = parseISO(fvsl.end_date.substr(0, 10))
-        while (isBefore(startDate, endDate)) {
-          const day = format(startDate, 'yyyy-MM-dd')
-          const dayvals = [fvsl.monday, fvsl.tuesday, fvsl.wednesday, fvsl.thursday, fvsl.friday, fvsl.saturday, fvsl.sunday]
-          const sum = dayvals.reduce(function (a, b) { return a + b }, 0)
-          const cell = Object.assign(
-            {},
-            fvsl,
-            { start_date: day, sum, dayvals }
-          )
-          group.set(day, cell)
-          startDate = add(startDate, { days: 7 })
-          // global max
-          maxsum = Math.max(maxsum, sum)
-          maxday = Math.max(maxday, ...dayvals)
-          // row max
-          const rm = rowmax.get(key) || { maxsum: 1.0, maxday: 1.0 }
-          rm.maxsum = Math.max(rm.maxsum, sum)
-          rm.maxday = Math.max(rm.maxday, ...dayvals)
-          rowmax.set(key, rm)
-        }
-        groups.set(key, group)
-      }
-      // Regroup into columns
-      const cols = []
-      for (const colkey of this.displayWeeks) {
-        const rows = []
-        for (const row of rowinfo) {
-          const group = groups.get(row.key)
-          const rm = rowmax.get(row.key)
-          const cell = group.get(colkey) || { sum: null, dayvals: [null, null, null, null, null, null, null] }
-          if (this.weekAgg) {
-            cell.vals = [cell.sum]
-          } else {
-            cell.vals = cell.dayvals
-          }
-          cell.max = 1.0
-          if (this.weekAgg && this.maxAggMode === 'all') {
-            cell.max = maxsum
-          } else if (this.weekAgg && this.maxAggMode === 'group') {
-            cell.max = rm.maxsum
-          } else if (this.maxAggMode === 'all') {
-            cell.max = maxday
-          } else if (this.maxAggMode === 'group') {
-            cell.max = rm.maxday
-          }
-          rows.push(cell)
-        }
-        cols.push({
-          key: colkey,
-          rows
-        })
-      }
-      return {
-        rowinfo,
-        cols
-      }
-    },
-    daysOfWeek () {
-      if (this.weekAgg) {
-        return ['']
-      }
-      return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-    }
-  },
-  methods: {
-    formatDay (start, offset) {
-      const d = parseISO(start.substr(0, 10))
-      return format(add(d, { days: offset }), 'PPPP')
-    },
-    formatMonth (v) {
-      const s = v.split('-')
-      const t = parseInt(s[1])
-      const d = parseInt(s[2])
-      if (d > 7) {
-        return ''
-      }
-      if (t === 1) {
-        return s[0] + ' ' + months[t]
-      }
-      return months[t]
-    },
-    cmap (v) {
-      const c = Math.floor((1 - (v)) * 50) + 50
-      return {
-        'background-color': 'hsl(215,100%,' + c + '%)'
-      }
-    }
-  }
-}
-
-const dowNames = {
-  0: 'Mon',
-  1: 'Tue',
-  2: 'Wed',
-  3: 'Thu',
-  4: 'Fri',
-  5: 'Sat',
-  6: 'Sun'
-}
-
-const months = {
+// Constants
+const months: Record<number, string> = {
   1: 'Jan',
   2: 'Feb',
   3: 'Mar',
@@ -354,6 +232,244 @@ const months = {
   12: 'Dec'
 }
 
+// Reactive data
+const fvAgg = ref<boolean>(false)
+const maxAggMode = ref<'all' | 'group'>('all')
+const startDate = ref<Date | null>(null)
+const endDate = ref<Date | null>(null)
+const error = ref<string | null>(null)
+
+// Apollo query - only fetch if not using provided feed versions
+const shouldSkipQuery = computed(() => props.useFeedVersions.length > 0)
+
+const queryVariables = computed(() => ({
+  feed_version_ids: props.fvids,
+  start_date: startDate.value ? format(startDate.value, 'yyyy-MM-dd') : null,
+  end_date: endDate.value ? format(endDate.value, 'yyyy-MM-dd') : null
+}))
+
+const { result, onError } = useQuery<MultiServiceLevelsResponse>(
+  query,
+  queryVariables,
+  {
+    enabled: computed(() => !shouldSkipQuery.value)
+  }
+)
+
+// Handle Apollo errors
+onError((e) => {
+  error.value = e.message
+})
+
+// Get feed versions from either Apollo query or props
+const feed_versions = computed<FeedVersion[]>(() => {
+  if (props.useFeedVersions.length > 0) {
+    return props.useFeedVersions
+  }
+  return result.value?.feed_versions || []
+})
+// Computed properties
+const fvsls = computed<ExtendedServiceLevel[]>(() => {
+  const a: ExtendedServiceLevel[] = []
+  for (const fv of feed_versions.value) {
+    for (const fvsl of fv.service_levels) {
+      a.push({
+        ...fvsl,
+        feed_onestop_id: fv.feed.onestop_id,
+        feed_version_sha1: fv.sha1,
+        fetched_at: fv.fetched_at
+      })
+    }
+  }
+  return a
+})
+
+const displayStartDate = computed<Date>({
+  get () {
+    if (startDate.value) {
+      return startDate.value
+    }
+    const days = fvsls.value.map(s => s.start_date).sort()
+    if (days.length > 0) {
+      return parseISO(days[0].substr(0, 10))
+    }
+    return parseISO('2020-01-01')
+  },
+  set (v: Date) {
+    startDate.value = v
+  }
+})
+
+const displayEndDate = computed<Date>({
+  get () {
+    if (endDate.value) {
+      return endDate.value
+    }
+    const days = fvsls.value.map(s => s.end_date).sort()
+    if (days.length > 0) {
+      return parseISO(days[days.length - 1].substr(0, 10))
+    }
+    return parseISO('2020-01-01')
+  },
+  set (v: Date) {
+    endDate.value = v
+  }
+})
+const displayWeeks = computed<string[]>(() => {
+  const g: string[] = []
+  let currentStartDate = displayStartDate.value
+  const currentEndDate = displayEndDate.value
+  while (isBefore(currentStartDate, currentEndDate)) {
+    g.push(format(currentStartDate, 'yyyy-MM-dd'))
+    currentStartDate = add(currentStartDate, { days: 7 })
+  }
+  if (props.maxWeeks) {
+    return g.reverse().slice(0, props.maxWeeks).reverse()
+  }
+  return g
+})
+const colGroups = computed<ColGroups>(() => {
+  // Create a grid of results
+  const groups = new Map<string, Map<string, any>>()
+  const rowmax = new Map<string, RowMax>()
+  const rowinfo: RowInfo[] = []
+  let maxday = 1.0
+  let maxsum = 1.0
+
+  // Order by feed_version_id
+  for (const fvsl of fvsls.value) {
+    // Expand
+    const key = `${fvsl.feed_version_sha1}-${fvsl.feed_onestop_id}`
+    let group = groups.get(key)
+    if (!group) {
+      rowinfo.push({
+        key,
+        feed_version_id: fvsl.feed_version_id,
+        feed_version_sha1: fvsl.feed_version_sha1,
+        feed_onestop_id: fvsl.feed_onestop_id,
+        fetched_at: fvsl.fetched_at
+      })
+      group = new Map()
+      groups.set(key, group)
+    }
+
+    let currentStartDate = parseISO(fvsl.start_date.substr(0, 10)) // always a monday
+    const currentEndDate = parseISO(fvsl.end_date.substr(0, 10))
+
+    while (isBefore(currentStartDate, currentEndDate)) {
+      const day = format(currentStartDate, 'yyyy-MM-dd')
+      const dayvals = [fvsl.monday, fvsl.tuesday, fvsl.wednesday, fvsl.thursday, fvsl.friday, fvsl.saturday, fvsl.sunday]
+      const sum = dayvals.reduce((a, b) => a + b, 0)
+
+      const cell = {
+        ...fvsl,
+        start_date: day,
+        sum,
+        dayvals
+      }
+
+      group.set(day, cell)
+      currentStartDate = add(currentStartDate, { days: 7 })
+
+      // global max
+      maxsum = Math.max(maxsum, sum)
+      maxday = Math.max(maxday, ...dayvals)
+
+      // row max
+      const rm = rowmax.get(key) || { maxsum: 1.0, maxday: 1.0 }
+      rm.maxsum = Math.max(rm.maxsum, sum)
+      rm.maxday = Math.max(rm.maxday, ...dayvals)
+      rowmax.set(key, rm)
+    }
+  }
+
+  // Regroup into columns
+  const cols: ColGroup[] = []
+  for (const colkey of displayWeeks.value) {
+    const rows: CellData[] = []
+    for (const row of rowinfo) {
+      const group = groups.get(row.key)
+      const rm = rowmax.get(row.key)
+      const cell = group?.get(colkey) || {
+        sum: 0,
+        dayvals: [0, 0, 0, 0, 0, 0, 0],
+        // Add required properties for CellData interface
+        start_date: '',
+        end_date: '',
+        monday: 0,
+        tuesday: 0,
+        wednesday: 0,
+        thursday: 0,
+        friday: 0,
+        saturday: 0,
+        sunday: 0,
+        feed_onestop_id: row.feed_onestop_id,
+        feed_version_sha1: row.feed_version_sha1,
+        fetched_at: row.fetched_at
+      } as CellData
+
+      if (props.weekAgg) {
+        cell.vals = [cell.sum || 0]
+      } else {
+        cell.vals = cell.dayvals || [0, 0, 0, 0, 0, 0, 0]
+      }
+
+      cell.max = 1.0
+      if (props.weekAgg && maxAggMode.value === 'all') {
+        cell.max = maxsum
+      } else if (props.weekAgg && maxAggMode.value === 'group') {
+        cell.max = rm?.maxsum || 1.0
+      } else if (maxAggMode.value === 'all') {
+        cell.max = maxday
+      } else if (maxAggMode.value === 'group') {
+        cell.max = rm?.maxday || 1.0
+      }
+
+      rows.push(cell)
+    }
+    cols.push({
+      key: colkey,
+      rows
+    })
+  }
+
+  return {
+    rowinfo,
+    cols
+  }
+})
+const daysOfWeek = computed<string[]>(() => {
+  if (props.weekAgg) {
+    return ['']
+  }
+  return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+})
+
+// Methods
+const formatDay = (start: string, offset: number): string => {
+  const d = parseISO(start.substr(0, 10))
+  return format(add(d, { days: offset }), 'PPPP')
+}
+
+const formatMonth = (v: string): string => {
+  const s = v.split('-')
+  const t = parseInt(s[1])
+  const d = parseInt(s[2])
+  if (d > 7) {
+    return ''
+  }
+  if (t === 1) {
+    return s[0] + ' ' + months[t]
+  }
+  return months[t] || ''
+}
+
+const cmap = (v: number): { 'background-color': string } => {
+  const c = Math.floor((1 - v) * 50) + 50
+  return {
+    'background-color': `hsl(215,100%,${c}%)`
+  }
+}
 </script>
 
 <style scoped>

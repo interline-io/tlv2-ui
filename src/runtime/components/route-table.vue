@@ -8,7 +8,7 @@
         <tl-search-bar v-model="search" placeholder="Filter routes by name..." />
         <tl-route-type-select v-model="selectedRouteType" />
       </o-field>
-      <o-loading v-model:active="$apollo.loading" :full-page="false" />
+      <o-loading v-model:active="loading" :full-page="false" />
       <div class="table-container">
         <table class="table is-striped is-fullwidth">
           <thead>
@@ -49,7 +49,7 @@
               <td class="has-text-right">
                 <nuxt-link
                   class="button is-small is-primary"
-                  :to="$filters.makeRouteLink(route.onestop_id, route.feed_onestop_id, route.feed_version_sha1, route.route_id, route.id, linkVersion)"
+                  :to="makeRouteLink(route.onestop_id || '', route.feed_onestop_id || '', route.feed_version_sha1 || '', route.route_id, route.id, linkVersion)"
                 >
                   Route
                 </nuxt-link>
@@ -63,77 +63,142 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, ref } from 'vue'
 import { gql } from 'graphql-tag'
-import TableViewerMixin from './table-viewer-mixin'
+import { useQuery } from '@vue/apollo-composable'
+import { makeRouteLink } from '../lib/filters'
 
-const q = gql`
-query($after: Int, $limit: Int=100, $feed_version_sha1: String, $agency_ids: [Int!], $search: String, $route_type: Int) {
-  entities: routes(after: $after, limit: $limit, where: { serviced: true, search: $search, feed_version_sha1: $feed_version_sha1, agency_ids: $agency_ids, route_type:$route_type }) {
-    id
-    onestop_id
-    feed_version_sha1
-    feed_onestop_id
-    route_id
-    route_short_name
-    route_long_name
-    route_type
-    route_url
-    agency {
+// Types
+interface RouteTableResponse {
+  entities: {
+    id: number
+    onestop_id?: string
+    feed_version_sha1?: string
+    feed_onestop_id?: string
+    route_id: string
+    route_short_name?: string
+    route_long_name?: string
+    route_type: number
+    route_url?: string
+    agency: {
+      id: number
+      agency_id: string
+      agency_name: string
+    }
+  }[]
+}
+
+// Extract individual types from the response type
+type Route = RouteTableResponse['entities'][0]
+type Agency = Route['agency']
+
+interface QueryVariables {
+  after?: number
+  limit?: number
+  feed_version_sha1?: string | null
+  agency_ids?: number[] | null
+  search?: string
+  route_type?: number | null
+}
+
+interface HeadwayData {
+  dow_category: number
+  [key: string]: any
+}
+
+const props = withDefaults(defineProps<{
+  feedVersionSha1?: string | null
+  fvids?: number[] | null
+  routeIds?: number[] | null
+  agencyIds?: number[] | null
+  showAgency?: boolean
+  showGeometry?: boolean
+  linkVersion?: boolean
+  limit?: number
+}>(), {
+  feedVersionSha1: null,
+  fvids: null,
+  routeIds: null,
+  agencyIds: null,
+  showAgency: true,
+  showGeometry: true,
+  linkVersion: false,
+  limit: 100
+})
+
+// GraphQL Query
+const ROUTES_QUERY = gql`
+  query($after: Int, $limit: Int=100, $feed_version_sha1: String, $agency_ids: [Int!], $search: String, $route_type: Int) {
+    entities: routes(after: $after, limit: $limit, where: { serviced: true, search: $search, feed_version_sha1: $feed_version_sha1, agency_ids: $agency_ids, route_type:$route_type }) {
       id
-      agency_id
-      agency_name
+      onestop_id
+      feed_version_sha1
+      feed_onestop_id
+      route_id
+      route_short_name
+      route_long_name
+      route_type
+      route_url
+      agency {
+        id
+        agency_id
+        agency_name
+      }
     }
   }
-}
 `
 
-export default {
-  mixins: [TableViewerMixin],
-  props: {
-    feedVersionSha1: { type: String, default: null },
-    fvids: { type: Array, default: null },
-    routeIds: { type: Array, default: null },
-    agencyIds: { type: Array, default: null },
-    showAgency: { type: Boolean, default: true },
-    showGeometry: { type: Boolean, default: true },
-    linkVersion: { type: Boolean, default: false }
-  },
-  data () {
-    return {
-      selectedRouteType: null
-    }
-  },
-  apollo: {
-    entities: {
-      client: 'transitland',
-      query: q,
-      variables () {
-        return {
-          limit: this.limit,
-          search: this.search,
-          feed_version_sha1: this.feedVersionSha1,
-          agency_ids: this.agencyIds,
-          route_type: this.selectedRouteType
-        }
-      },
-      error (e) { this.error = e }
-    }
-  },
-  methods: {
-    headwayTooltip (hws) {
-      // Buefy 0.9 will have a tooltip slot and we can use HeadwaysViewer
-      const hwlookup = {
-        1: 'weekday',
-        6: 'saturday',
-        7: 'sunday'
-      }
-      const ret = { weekday: {}, saturday: {}, sunday: {} }
-      for (const hw of (hws || [])) {
-        ret[hwlookup[hw.dow_category]] = hw
-      }
-      return 'ok'
-    }
+// Reactive data
+const search = ref<string>('')
+const selectedRouteType = ref<number | null>(null)
+const error = ref<Error | null>(null)
+const hasMore = ref<boolean>(false)
+
+// Computed query variables
+const queryVariables = computed<QueryVariables>(() => ({
+  limit: props.limit,
+  search: search.value,
+  feed_version_sha1: props.feedVersionSha1,
+  agency_ids: props.agencyIds,
+  route_type: selectedRouteType.value
+}))
+
+// Apollo Query
+const { result, loading, onError } = useQuery<RouteTableResponse>(
+  ROUTES_QUERY,
+  queryVariables,
+  {
+    clientId: 'transitland'
   }
+)
+
+// Handle errors
+onError((err) => {
+  error.value = err
+})
+
+// Computed properties
+const entities = computed<Route[]>(() => result.value?.entities || [])
+
+// Utility functions
+
+const headwayTooltip = (hws: HeadwayData[]): string => {
+  // Buefy 0.9 will have a tooltip slot and we can use HeadwaysViewer
+  const hwlookup: Record<number, string> = {
+    1: 'weekday',
+    6: 'saturday',
+    7: 'sunday'
+  }
+  const ret = { weekday: {}, saturday: {}, sunday: {} }
+  for (const hw of (hws || [])) {
+    ret[hwlookup[hw.dow_category] as keyof typeof ret] = hw
+  }
+  return 'ok'
+}
+
+const showAll = () => {
+  // TODO: Implement pagination logic when needed
+  // This was part of the TableViewerMixin functionality
 }
 </script>

@@ -3,7 +3,7 @@ import { gql } from 'graphql-tag'
 import { useStorage } from '@vueuse/core'
 import { configureAuth0Client, getAuth0Client, getAuthorizeUrl, checkToken } from '../lib/auth0'
 import { getApolloClient } from './apollo'
-import { debugLog } from '../lib/log'
+import { logAuthDebug } from '../lib/log'
 
 const RECHECK_INTERVAL = 600_000
 const buildGraphqlUser = true
@@ -49,15 +49,15 @@ export async function buildUser () {
   }
 
   // Get auth0 user data
-  debugLog('buildUser')
+  logAuthDebug('buildUser')
   const auth0user = await client.getUser()
   if (!auth0user) {
-    debugLog('buildUser: missing auth0 data, clearing user')
+    logAuthDebug('buildUser: missing auth0 data, clearing user')
     clearUser()
     return
   }
 
-  debugLog('buildUser: auth0 user:', auth0user)
+  logAuthDebug('buildUser: auth0 user:', auth0user)
 
   // Get additional user metadata from GraphQL
   let meData: any = null
@@ -68,22 +68,22 @@ export async function buildUser () {
         query: gql`query{me{id name email external_data roles}}`
       })
       meData = response.data?.me || null
-      debugLog('buildUser: me graphql response:', meData)
+      logAuthDebug('buildUser: me graphql response:', meData)
 
       if (!meData) {
-        debugLog('buildUser: missing graphql data')
+        logAuthDebug('buildUser: missing graphql data')
         clearUser()
         return
       }
     } catch (e) {
-      debugLog('buildUser: graphql failed:', e)
+      logAuthDebug('buildUser: graphql failed:', e)
       clearUser()
       return
     }
   }
 
   // Set user state
-  debugLog('buildUser: set user state')
+  logAuthDebug('buildUser: set user state')
   const checkUser = useStorage('user', {})
   const builtUser = new User({
     loggedIn: true,
@@ -98,7 +98,7 @@ export async function buildUser () {
 }
 
 export const defineAuthPlugin = () => {
-  debugLog('auth plugin: start')
+  logAuthDebug('auth plugin: start')
   // Check if client is configured
   const config = useRuntimeConfig()
   const client = configureAuth0Client(config.public.tlv2 || {})
@@ -111,16 +111,16 @@ export const defineAuthPlugin = () => {
     const query = to?.query
     if (query && query.code && query.state) {
       try {
-        debugLog('auth mw: handle login')
+        logAuthDebug('auth mw: handle login')
         const { appState } = await client.handleRedirectCallback()
-        debugLog('auth mw: got appState:', appState)
+        logAuthDebug('auth mw: got appState:', appState)
         await buildUser()
 
         const targetPath = appState?.targetUrl || '/'
-        debugLog('auth mw: navigating to:', targetPath)
+        logAuthDebug('auth mw: navigating to:', targetPath)
         return navigateTo(targetPath, { replace: true })
       } catch (e) {
-        debugLog('auth mw: handleRedirectCallback failed:', e)
+        logAuthDebug('auth mw: handleRedirectCallback failed:', e)
         clearUser()
         return navigateTo(await getAuthorizeUrl(to.fullPath), { external: true })
       }
@@ -130,7 +130,7 @@ export const defineAuthPlugin = () => {
     const { loggedIn, mustReauthorize } = await checkToken()
     const requireLogin = !!config.public.tlv2?.requireLogin
     if (mustReauthorize || (requireLogin && !loggedIn)) {
-      debugLog('auth mw: need auth')
+      logAuthDebug('auth mw: need auth')
       clearUser()
       return navigateTo(await getAuthorizeUrl(to.fullPath), { external: true })
     }
@@ -140,7 +140,7 @@ export const defineAuthPlugin = () => {
     if (loggedIn) {
       const lastChecked = Date.now() - (user?.checked || 0)
       if (lastChecked > RECHECK_INTERVAL || !user?.id) {
-        debugLog('auth mw: recheck user')
+        logAuthDebug('auth mw: recheck user')
         await buildUser()
       }
     } else {

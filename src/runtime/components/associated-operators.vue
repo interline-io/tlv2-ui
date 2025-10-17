@@ -49,24 +49,32 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    associatedOperators: { type: Array, default () { return [] } }
-  },
-  data () {
-    return {
-      showAllRows: false
-    }
-  },
-  computed: {
-    associatedOperatorsToDisplay () {
-      if (this.showAllRows) {
-        return this.associatedOperators
-      } else {
-        return this.associatedOperators.slice(0, 5)
-      }
-    }
-  }
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+
+// TypeScript interfaces
+interface Operator {
+  id: number
+  name: string
+  short_name?: string | null
+  onestop_id: string
 }
+
+const props = withDefaults(defineProps<{
+  associatedOperators?: Operator[]
+}>(), {
+  associatedOperators: () => []
+})
+
+// Reactive state
+const showAllRows = ref(false)
+
+// Computed properties
+const associatedOperatorsToDisplay = computed((): Operator[] => {
+  if (showAllRows.value) {
+    return props.associatedOperators
+  } else {
+    return props.associatedOperators.slice(0, 5)
+  }
+})
 </script>

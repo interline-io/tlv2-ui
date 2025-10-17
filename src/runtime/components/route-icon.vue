@@ -13,62 +13,51 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed } from 'vue'
 import { getBasicRouteType } from '../lib/routetypes'
 
-export default {
-  props: {
-    nameIcon: {
-      type: String,
-      default: null
-    },
-    routeType: {
-      type: Number,
-      default: null
-    },
-    routeShortName: {
-      type: String,
-      default: null
-    },
-    routeLongName: {
-      type: String,
-      default: null
-    },
-    routeLink: {
-      type: String,
-      default: null
-    }
-  },
-  computed: {
-    routeTypeIcon () {
-      const rt = getBasicRouteType(this.routeType)
-      const code = rt.parentType ? rt.parentType.code : rt.routeType.code
-      switch (code) {
-        case 0:
-          return 'tram'
-        case 1:
-          return 'subway'
-        case 2:
-          return 'train'
-        case 3:
-          return 'bus'
-        case 4:
-          return 'ferry'
-        case 5:
-          return 'tram'
-        case 6:
-          return 'gondola'
-        case 7:
-          return 'tram'
-        case 11:
-          return 'tram'
-        case 12:
-          return 'train'
-      }
-      return ''
-    }
-  }
+type RouteIconType = 'tram' | 'subway' | 'train' | 'bus' | 'ferry' | 'gondola' | ''
+
+const props = withDefaults(defineProps<{
+  nameIcon?: string | null
+  routeType?: number | null
+  routeShortName?: string | null
+  routeLongName?: string | null
+  routeLink?: string | null
+}>(), {
+  nameIcon: null,
+  routeType: null,
+  routeShortName: null,
+  routeLongName: null,
+  routeLink: null
+})
+
+// Route type to icon mapping
+const ROUTE_TYPE_ICONS: Record<number, RouteIconType> = {
+  0: 'tram', // Light rail, streetcar, tram
+  1: 'subway', // Subway, metro
+  2: 'train', // Rail
+  3: 'bus', // Bus
+  4: 'ferry', // Ferry
+  5: 'tram', // Cable tram
+  6: 'gondola', // Aerial lift, suspended cable car
+  7: 'tram', // Funicular
+  11: 'tram', // Trolleybus
+  12: 'train' // Monorail
 }
+
+// Computed properties
+const routeTypeIcon = computed<RouteIconType>(() => {
+  if (props.routeType === null || props.routeType === undefined) {
+    return ''
+  }
+
+  const rt = getBasicRouteType(props.routeType)
+  const code = rt.parentType ? rt.parentType.code : rt.routeType.code
+
+  return ROUTE_TYPE_ICONS[code] || ''
+})
 </script>
 
 <style scoped>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <tl-loading v-if="$apollo.loading" />
+    <tl-loading v-if="loading" />
     <tl-msg-error v-else-if="error">
       {{ error }}
     </tl-msg-error>
@@ -69,8 +69,8 @@
               </td>
               <td>
                 <template v-if="lastSuccessfulFetch && lastSuccessfulFetch.fetched_at">
-                  {{ $filters.formatDate(lastSuccessfulFetch.fetched_at) }} ({{
-                    $filters.fromNow(lastSuccessfulFetch.fetched_at) }})
+                  {{ formatDate(lastSuccessfulFetch.fetched_at) }} ({{
+                    fromNow(lastSuccessfulFetch.fetched_at) }})
                 </template>
                 <template v-else>
                   Unknown
@@ -119,26 +119,26 @@
                     License Identifier: {{ entity.license.spdx_identifier }}
                   </li>
                   <li v-if="entity.license.use_without_attribution">
-                    Use allowed without attribution: {{ $filters.capitalize(entity.license.use_without_attribution) }}
+                    Use allowed without attribution: {{ capitalize(entity.license.use_without_attribution || '') }}
                   </li>
                   <li v-if="entity.license.share_alike_optional">
-                    Share-alike optional: {{ $filters.capitalize(entity.license.share_alike_optional) }}
+                    Share-alike optional: {{ capitalize(entity.license.share_alike_optional || '') }}
                   </li>
                   <li v-if="entity.license.commercial_use_allowed">
-                    Commercial use allowed: {{ $filters.capitalize(entity.license.commercial_use_allowed) }}
+                    Commercial use allowed: {{ capitalize(entity.license.commercial_use_allowed || '') }}
                   </li>
                   <li v-if="entity.license.create_derived_product">
-                    Creating derived products allowed: {{ $filters.capitalize(entity.license.create_derived_product) }}
+                    Creating derived products allowed: {{ capitalize(entity.license.create_derived_product || '') }}
                   </li>
                   <li v-if="entity.license.redistribution_allowed">
-                    Redistribution allowed: {{ $filters.capitalize(entity.license.redistribution_allowed) }}
+                    Redistribution allowed: {{ capitalize(entity.license.redistribution_allowed || '') }}
                   </li>
                   <li v-if="entity.license.attribution_text">
                     Required attribution text: {{ entity.license.attribution_text }}
                   </li>
                   <li v-if="entity.license.attribution_instructions" class="content">
                     Attribution instructions:
-                    <blockquote>{{ $filters.capitalize(entity.license.attribution_instructions) }}</blockquote>
+                    <blockquote>{{ capitalize(entity.license.attribution_instructions || '') }}</blockquote>
                   </li>
                 </ul>
               </td>
@@ -194,7 +194,7 @@
 
       <div class="is-clearfix mb-4">
         <slot v-if="showUpload" name="upload" :entity="entity">
-          <nuxt-link :to="{name:'feeds-feedKey-upload', params:{feedKey:pathKey}}" class="button is-primary is-pulled-right">
+          <nuxt-link :to="{name:'feeds-feedKey-upload', params:{feedKey:props.pathKey}}" class="button is-primary is-pulled-right">
             Upload
           </nuxt-link>
         </slot>
@@ -262,7 +262,7 @@
                     <tl-feed-rt-download
                       :feed-onestop-id="entity.onestop_id"
                       rt-type="vehicle_positions"
-                      :last-fetched-at="lastSuccessfulFetch?.fetched_at ? `${$filters.formatDate(lastSuccessfulFetch.fetched_at)} (${$filters.fromNow(lastSuccessfulFetch.fetched_at)})` : null"
+                      :last-fetched-at="lastSuccessfulFetch?.fetched_at ? `${formatDate(lastSuccessfulFetch.fetched_at)} (${fromNow(lastSuccessfulFetch.fetched_at)})` : null"
                     />
                     <tl-feed-rt-api-query
                       :feed-onestop-id="entity.onestop_id"
@@ -278,7 +278,7 @@
                     <tl-feed-rt-download
                       :feed-onestop-id="entity.onestop_id"
                       rt-type="trip_updates"
-                      :last-fetched-at="lastSuccessfulFetch?.fetched_at ? `${$filters.formatDate(lastSuccessfulFetch.fetched_at)} (${$filters.fromNow(lastSuccessfulFetch.fetched_at)})` : null"
+                      :last-fetched-at="lastSuccessfulFetch?.fetched_at ? `${formatDate(lastSuccessfulFetch.fetched_at)} (${fromNow(lastSuccessfulFetch.fetched_at)})` : null"
                     />
                     <tl-feed-rt-api-query
                       :feed-onestop-id="entity.onestop_id"
@@ -294,7 +294,7 @@
                     <tl-feed-rt-download
                       :feed-onestop-id="entity.onestop_id"
                       rt-type="alerts"
-                      :last-fetched-at="lastSuccessfulFetch?.fetched_at ? `${$filters.formatDate(lastSuccessfulFetch.fetched_at)} (${$filters.fromNow(lastSuccessfulFetch.fetched_at)})` : null"
+                      :last-fetched-at="lastSuccessfulFetch?.fetched_at ? `${formatDate(lastSuccessfulFetch.fetched_at)} (${fromNow(lastSuccessfulFetch.fetched_at)})` : null"
                     />
                     <tl-feed-rt-api-query
                       :feed-onestop-id="entity.onestop_id"
@@ -326,13 +326,131 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed, watch } from 'vue'
 import { gql } from 'graphql-tag'
-import EntityPageMixin from './entity-page-mixin'
+import { useQuery } from '@vue/apollo-composable'
+import { useEntityPath } from '../../composables/useEntityPath'
+import { formatDate, fromNow, capitalize } from '../../lib/filters'
+
+// Types
+interface FeedResponse {
+  id: number
+  onestop_id: string
+  name?: string
+  tags?: Record<string, any>
+  languages?: string[]
+  spec: string
+  file?: string
+  authorization?: {
+    type: string
+    info_url?: string
+    param_name?: string
+  }
+  license?: {
+    spdx_identifier?: string
+    url?: string
+    use_without_attribution?: string
+    create_derived_product?: string
+    redistribution_allowed?: string
+    commercial_use_allowed?: string
+    share_alike_optional?: string
+    attribution_text?: string
+    attribution_instructions?: string
+  }
+  urls: {
+    static_current?: string
+    static_historic?: string[]
+    static_planned?: string
+    realtime_alerts?: string
+    realtime_trip_updates?: string
+    realtime_vehicle_positions?: string
+  }
+  associated_operators: {
+    onestop_id: string
+    name: string
+    short_name?: string
+    agencies: {
+      agency_id: string
+      agency_name: string
+    }[]
+  }[]
+  last_fetch: {
+    fetch_error?: string
+    fetched_at: string
+  }[]
+  last_successful_fetch: {
+    fetch_error?: string
+    fetched_at: string
+  }[]
+  most_recent_feed_version: {
+    id: number
+    sha1?: string
+    earliest_calendar_date?: string
+    latest_calendar_date?: string
+    fetched_at: string
+    url?: string
+    feed_infos?: {
+      feed_publisher_name: string
+      feed_publisher_url?: string
+      feed_lang: string
+      default_lang?: string
+      feed_version?: string
+      feed_start_date?: string
+      feed_end_date?: string
+      feed_contact_email?: string
+      feed_contact_url?: string
+    }[]
+  }[]
+  feed_versions: Array<{ id: number }>
+  feed_state?: {
+    id: number
+    feed_version: {
+      sha1: string
+      id: number
+    }
+  }
+}
+
+// Extract individual types from the response type
+type Feed = FeedResponse
+type FeedFetch = FeedResponse['last_fetch'][0]
+type FeedVersion = FeedResponse['most_recent_feed_version'][0]
+type FeedInfo = NonNullable<FeedVersion['feed_infos']>[0]
+
+// Props
+const props = withDefaults(defineProps<{
+  pathKey: string
+  showPermissions?: boolean
+  showUpload?: boolean
+  showDownloadColumn?: boolean
+  showDescriptionColumn?: boolean
+  showActiveColumn?: boolean
+  showDateColumns?: boolean
+  issueDownloadRequest?: boolean
+  showOperators?: boolean
+}>(), {
+  showPermissions: false,
+  showUpload: false,
+  showDownloadColumn: true,
+  showDescriptionColumn: true,
+  showActiveColumn: true,
+  showDateColumns: true,
+  issueDownloadRequest: true,
+  showOperators: true
+})
+
+// Emits
+const emit = defineEmits<{
+  downloadTriggered: [sha1: string, isLatest: boolean]
+  entitiesLoaded: [entities: Feed[]]
+  staticDescriptionUpdated: [description: string]
+  operatorNamesUpdated: [names: string]
+}>()
 
 const q = gql`
-query($pathKey: String) {
-  entities: feeds(where: {onestop_id: $pathKey}, limit: 1) {
+query($onestopId: String, $ids: [Int!]) {
+  entities: feeds(ids: $ids, where: {onestop_id: $onestopId}, limit: 1) {
     id
     onestop_id
     name
@@ -414,122 +532,153 @@ query($pathKey: String) {
 }
 `
 
-function isEmpty (obj) {
+// Helper functions
+function isEmpty (obj: any): boolean {
   if (!obj) { return false }
   for (const [k, v] of Object.entries(obj)) {
-    if (k && k[0] !== '_' && v && v.length > 0) {
+    if (k && k[0] !== '_' && v && (v as any).length > 0) {
       return true
     }
   }
   return false
 }
 
-function first (v) {
+function first<T> (v: T[]): T | null {
   if (v && v.length > 0) {
     return v[0]
   }
   return null
 }
 
-export default {
-  mixins: [EntityPageMixin],
-  apollo: {
-    entities: {
-      client: 'transitland',
-      query: q,
-      variables () {
-        return { pathKey: this.pathKey }
-      }
+// Entity path setup
+const { searchKey, entityVariables } = useEntityPath({
+  pathKey: props.pathKey
+})
+
+// Reactive state
+const showPermissionsModal = ref(false)
+
+// GraphQL query
+const { result, loading, error } = useQuery<{ entities: FeedResponse[] }>(q, entityVariables, {
+  clientId: 'transitland'
+})
+
+// Computed entity
+const entity = computed((): Feed | null => {
+  return result.value?.entities?.[0] ?? null
+})
+
+// Computed properties
+const feedSpec = computed((): string | undefined => {
+  return entity.value?.spec?.toUpperCase()?.replace('_', '-')
+})
+
+const mostRecentFeedInfo = computed((): FeedInfo | null => {
+  return entity.value?.most_recent_feed_version?.length > 0 ? entity.value.most_recent_feed_version[0]?.feed_infos?.[0] ?? null : null
+})
+
+const lastFetch = computed((): FeedFetch | null => {
+  return first(entity.value?.last_fetch ?? [])
+})
+
+const lastSuccessfulFetch = computed((): FeedFetch | null => {
+  return (entity.value?.last_successful_fetch && entity.value.last_successful_fetch.length > 0) ? entity.value.last_successful_fetch[0] : null
+})
+
+const operatorNames = computed((): string => {
+  if (!entity.value) return ''
+
+  let operatorNames: string | null = null
+  const names = (entity.value.associated_operators || []).map((o) => {
+    if (o.short_name) {
+      return `${o.name} (${o.short_name})`
+    } else {
+      return o.name
     }
-  },
-  props: {
-    showPermissions: { type: Boolean, default: false },
-    showUpload: { type: Boolean, default: false },
-    showDownloadColumn: { type: Boolean, default: true },
-    showDescriptionColumn: { type: Boolean, default: true },
-    showActiveColumn: { type: Boolean, default: true },
-    showDateColumns: { type: Boolean, default: true },
-    issueDownloadRequest: { type: Boolean, default: true },
-    showOperators: { type: Boolean, default: true }
-  },
-  emits: ['downloadTriggered'],
-  data () {
-    return {
-      page: 1,
-      showPermissionsModal: false,
-      tabNames: this.makeTabNames(['versions', 'service'])
-    }
-  },
-  computed: {
-    feedSpec () {
-      return this.entity?.spec?.toUpperCase()?.replace('_', '-')
-    },
-    mostRecentFeedInfo () {
-      return this.entity?.most_recent_feed_version?.length > 0 ? this.entity.most_recent_feed_version[0]?.feed_infos[0] : null
-    },
-    lastFetch () {
-      return first(this.entity.last_fetch)
-    },
-    lastSuccessfulFetch () {
-      return (this.entity.last_successful_fetch && this.entity.last_successful_fetch.length > 0) ? this.entity.last_successful_fetch[0] : null
-    },
-    operatorNames () {
-      let operatorNames = null
-      const names = (this.entity.associated_operators || []).map((o) => {
-        if (o.short_name) {
-          return `${o.name} (${o.short_name})`
-        } else {
-          return o.name
-        }
-      })
-      if (names.length > 3) {
-        operatorNames = `${names.slice(0, 3).join(', ')} and ${names.length - 3} additional operators`
-      } else if (names.length > 0 && names.length <= 3) {
-        operatorNames = names.slice(0, 3).join(', ')
-      }
-      return operatorNames || this.entity.onestop_id
-    },
-    displayLicense () {
-      if (this.entity) {
-        return isEmpty(this.entity.license)
-      }
-      return false
-    },
-    displayAuthorization () {
-      if (this.entity) {
-        return isEmpty(this.entity.authentication)
-      }
-      return false
-    },
-    displayUrls () {
-      if (this.entity) { return isEmpty(this.entity.urls) }
-      return false
-    },
-    displayTags () {
-      if (this.entity) { return isEmpty(this.entity.tags) }
-      return false
-    },
-    staticTitle () {
-      let title = `feed details: ${this.entity.onestop_id}`
-      title = this.feedSpec + ' ' + title
-      if (this.entity.associated_operators) {
-        title = `${this.operatorNames} • ` + title
-      }
-      return title
-    },
-    staticDescription () {
-      const operatorDescription = (this.entity && this.entity.associated_operators) ? ` with data for ${this.entity.name || this.operatorNames}` : ''
-      const fvCount = this.entity.feed_versions.length
-      let description = `This is a ${this.feedSpec} feed ${operatorDescription} with the Onestop ID of "${this.entity.onestop_id}".`
-      if (fvCount >= 100) {
-        description += ' There are over 100 versions of this feed.'
-      } else if (fvCount > 1) {
-        description += ` There are ${fvCount} versions of this feed.`
-      }
-      return description
-    },
+  })
+
+  if (names.length > 3) {
+    operatorNames = `${names.slice(0, 3).join(', ')} and ${names.length - 3} additional operators`
+  } else if (names.length > 0 && names.length <= 3) {
+    operatorNames = names.slice(0, 3).join(', ')
   }
-}
+
+  return operatorNames || entity.value.onestop_id
+})
+
+const displayLicense = computed((): boolean => {
+  if (entity.value) {
+    return isEmpty(entity.value.license)
+  }
+  return false
+})
+
+const displayAuthorization = computed((): boolean => {
+  if (entity.value) {
+    return isEmpty(entity.value.authorization)
+  }
+  return false
+})
+
+const displayUrls = computed((): boolean => {
+  if (entity.value) {
+    return isEmpty(entity.value.urls)
+  }
+  return false
+})
+
+const displayTags = computed((): boolean => {
+  if (entity.value) {
+    return isEmpty(entity.value.tags)
+  }
+  return false
+})
+
+const staticTitle = computed((): string => {
+  if (!entity.value) return ''
+
+  let title = `feed details: ${entity.value.onestop_id}`
+  title = feedSpec.value + ' ' + title
+  if (entity.value.associated_operators) {
+    title = `${operatorNames.value} • ` + title
+  }
+  return title
+})
+
+const staticDescription = computed((): string => {
+  if (!entity.value) return ''
+
+  const operatorDescription = (entity.value && entity.value.associated_operators) ? ` with data for ${entity.value.name || operatorNames.value}` : ''
+  const fvCount = entity.value.feed_versions.length
+  let description = `This is a ${feedSpec.value} feed ${operatorDescription} with the Onestop ID of "${entity.value.onestop_id}".`
+
+  if (fvCount >= 100) {
+    description += ' There are over 100 versions of this feed.'
+  } else if (fvCount > 1) {
+    description += ` There are ${fvCount} versions of this feed.`
+  }
+
+  return description
+})
+
+// Watch for changes and emit events
+watch(result, (newResult) => {
+  if (newResult?.entities) {
+    emit('entitiesLoaded', newResult.entities)
+  }
+}, { immediate: true })
+
+watch(staticDescription, (newDescription) => {
+  if (newDescription) {
+    emit('staticDescriptionUpdated', newDescription)
+  }
+}, { immediate: true })
+
+watch(operatorNames, (newNames) => {
+  if (newNames) {
+    emit('operatorNamesUpdated', newNames)
+  }
+}, { immediate: true })
 </script>
 
 <style scoped>

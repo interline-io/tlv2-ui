@@ -10,6 +10,7 @@
       :station="station"
       :center="station.geometry.coordinates"
       @create="createLevelHandler"
+      @cancel="cancelHandler"
     />
   </div>
 </template>
@@ -27,7 +28,7 @@ export default {
     createLevelHandler (level) {
       this.station.createLevel(this.$apollo, level).then(() => {
         navigateTo({
-          name: 'editor-feedKey-feedVersionKey-stations-stationKey',
+          name: this.editorRoutes.stationIndex,
           params: {
             feedKey: this.feedKey,
             feedVersionKey: this.feedVersionKey,
@@ -35,6 +36,16 @@ export default {
           }
         })
       }).catch(this.setError)
+    },
+    cancelHandler () {
+      navigateTo({
+        name: this.editorRoutes.stationIndex,
+        params: {
+          feedKey: this.feedKey,
+          feedVersionKey: this.feedVersionKey,
+          stationKey: this.stationKey
+        }
+      })
     }
   }
 }

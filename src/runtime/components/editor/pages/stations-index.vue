@@ -6,13 +6,13 @@
 
     <div class="buttons is-right">
       <nuxt-link
-        :to="{name:'editor-feedKey-feedVersionKey-stations-new', params: {feedKey,feedVersionKey}}"
+        :to="{name:editorRoutes.stationsNew, params: {feedKey,feedVersionKey}}"
         class="button is-primary"
       >
         New Station
       </nuxt-link>
       <nuxt-link
-        :to="{name: 'editor-feedKey-feedVersionKey-stations-stop-associations', params: {feedKey,feedVersionKey}}"
+        :to="{name: editorRoutes.stationsStopAssociations, params: {feedKey,feedVersionKey}}"
         class="button is-primary"
       >
         Review stop ID associations
@@ -29,7 +29,7 @@
     >
       <template #stopName="slotProps">
         <nuxt-link
-          :to="{name:'editor-feedKey-feedVersionKey-stations-stationKey', params: {feedKey,feedVersionKey,stationKey:slotProps.stop.stop_id}}"
+          :to="{name:editorRoutes.stationIndex, params: {feedKey,feedVersionKey,stationKey:slotProps.stop.stop_id}}"
         >
           {{ slotProps.stop.stop_name }}
         </nuxt-link>
