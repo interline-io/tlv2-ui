@@ -2,25 +2,25 @@
   <div>
     <nav class="panel station-editor-panel">
       <p class="panel-heading">
-        Select
+        <span>Select</span>
+        <span v-if="selectedStopsCount > 0 || selectedPathwaysCount > 0" class="panel-heading-buttons">
+          <button
+            class="button is-small"
+            title="Or press ESC key to unselect all"
+            @click="$emit('unselect-all')"
+          >
+            Unselect All
+          </button>
+        </span>
       </p>
       <div class="panel-block is-block">
         <div v-if="selectedStopsCount > 0 || selectedPathwaysCount > 0" class="mb-4">
-          <p class="label is-small mb-2">
-            Selected Items
-            <o-button class="is-pulled-right" variant="primary is-small" outlined title="Or press ESC key to unselect all" @click="$emit('unselect-all')">
-              Unselect All
-            </o-button>
-          </p>
           <div v-if="lastFilterApplied" class="notification is-info is-light py-2 px-3 mb-3">
             <p class="is-size-7">
               <strong>Filter:</strong> {{ lastFilterApplied }}
             </p>
           </div>
           <div v-if="selectedStopsCount > 0" class="mb-2">
-            <p class="heading">
-              Stops ({{ selectedStopsCount }})
-            </p>
             <div class="menu">
               <ul class="menu-list">
                 <li v-for="stop of selectedStops" :key="stop.id">
@@ -45,9 +45,6 @@
             </div>
           </div>
           <div v-if="selectedPathwaysCount > 0">
-            <p class="heading">
-              Pathways ({{ selectedPathwaysCount }})
-            </p>
             <div class="menu">
               <ul class="menu-list">
                 <li v-for="pathway of selectedPathways" :key="pathway.id">
@@ -183,6 +180,17 @@ export default {
 </script>
 
 <style scoped>
+.panel-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.panel-heading-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
 .menu-list {
   max-height: 200px;
   overflow-y: auto;
