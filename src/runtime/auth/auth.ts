@@ -46,11 +46,23 @@ export const useAuthHeaders = async () => {
   return headers
 }
 
-export const useApiEndpoint = (path?: string) => {
-  const config = useRuntimeConfig()
+export const useApiEndpoint = (path?: string, client?: string) => {
+  const apibase = (() => {
+    const config = useRuntimeConfig()
+    switch (client) {
+      case 'stationEditor':
+        return { server: '', client: config.public.tlv2?.stationEditorApiBase }
+      case 'feedManagement':
+        return { server: '', client: config.public.tlv2?.feedManagementApiBase }
+      case 'transitland':
+        return { server: config.tlv2?.transitlandProxyBase, client: config.public.tlv2?.transitlandApiBase }
+      default:
+        return { server: config.tlv2?.transitlandProxyBase, client: config.public.tlv2?.transitlandApiBase }
+    }
+  })()
   const apiBase = import.meta.server
-    ? (config.tlv2?.proxyBase)
-    : (config.public.tlv2?.apiBase || window?.location?.origin + '/api/v2')
+    ? apibase.server
+    : (apibase.client || window?.location?.origin + '/api/v2')
   return apiBase + (path || '')
 }
 

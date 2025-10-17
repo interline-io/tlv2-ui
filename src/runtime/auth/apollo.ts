@@ -1,4 +1,3 @@
-import { useRuntimeConfig } from '#app'
 import { ApolloClient, ApolloLink, concat, InMemoryCache } from '@apollo/client/core/index.js'
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
 import { destr } from 'destr'
@@ -6,31 +5,6 @@ import { ApolloClients, provideApolloClients } from '@vue/apollo-composable'
 import { createApolloProvider } from '@vue/apollo-option'
 import { useApiEndpoint, useAuthHeaders } from './auth'
 import { logAuthDebug } from '../lib/log'
-
-function getApiEndpoint (clientType: 'default' | 'stationEditor' | 'feedManagement', path?: string) {
-  const config = useRuntimeConfig()
-  const tlv2Config = config.public.tlv2 as any
-  const defaultEndpoint = typeof window !== 'undefined' ? window.location.origin + '/api/v2' : ''
-
-  let apiBase: string
-  if (clientType === 'feedManagement') {
-    // Fallback chain: feedManagementApiBase → stationEditorApiBase → apiBase → window origin
-    apiBase = tlv2Config?.feedManagementApiBase
-      || tlv2Config?.stationEditorApiBase
-      || tlv2Config?.apiBase
-      || defaultEndpoint
-  } else if (clientType === 'stationEditor') {
-    // Fallback chain: stationEditorApiBase → apiBase → window origin
-    apiBase = tlv2Config?.stationEditorApiBase
-      || tlv2Config?.apiBase
-      || defaultEndpoint
-  } else {
-    // Fallback chain: apiBase → window origin
-    apiBase = tlv2Config?.apiBase || defaultEndpoint
-  }
-
-  return apiBase + (path || '')
-}
 
 export function initApolloClient (endpoint: string, headers: Record<string, string>) {
   const httpLink = createUploadLink({ uri: endpoint })
@@ -48,60 +22,34 @@ export function initApolloClient (endpoint: string, headers: Record<string, stri
 }
 
 export async function getApolloClient () {
-  const endpoint = getApiEndpoint('default', '/query')
+  const endpoint = useApiEndpoint('/query')
   const headers = await useAuthHeaders()
   const apolloClient = initApolloClient(endpoint, headers)
   logAuthDebug('getApolloClient', endpoint)
   return apolloClient
 }
 
-export async function getStationEditorApolloClient () {
-  const endpoint = getApiEndpoint('stationEditor', '/query')
-  const headers = await useAuthHeaders()
-  const apolloClient = initApolloClient(endpoint, headers)
-  logAuthDebug('getStationEditorApolloClient', endpoint)
-  return apolloClient
-}
-
-export async function getFeedManagementApolloClient () {
-  const endpoint = getApiEndpoint('feedManagement', '/query')
-  const headers = await useAuthHeaders()
-  const apolloClient = initApolloClient(endpoint, headers)
-  logAuthDebug('getFeedManagementApolloClient', endpoint)
-  return apolloClient
-}
-
 export const defineApolloPlugin = async (nuxtApp) => {
   logAuthDebug('apollo plugin: start')
   const apolloClient = await getApolloClient()
-  const stationEditorClient = await getStationEditorApolloClient()
-  const feedManagementClient = await getFeedManagementApolloClient()
+
+  const clients: Record<string, ApolloClient<any>> = {
+    default: apolloClient,
+    transitland: apolloClient,
+    stationEditor: apolloClient,
+    feedManagement: apolloClient
+  }
 
   // options api
   const apolloProvider = createApolloProvider({
     defaultClient: apolloClient,
-    clients: {
-      default: apolloClient,
-      transitland: apolloClient,
-      stationEditor: stationEditorClient,
-      feedManagement: feedManagementClient
-    }
+    clients
   })
   nuxtApp.vueApp.use(apolloProvider)
 
   // composition api
-  nuxtApp.vueApp.provide(ApolloClients, {
-    default: apolloClient,
-    transitland: apolloClient,
-    stationEditor: stationEditorClient,
-    feedManagement: feedManagementClient
-  })
-  provideApolloClients({
-    default: apolloClient,
-    transitland: apolloClient,
-    stationEditor: stationEditorClient,
-    feedManagement: feedManagementClient
-  })
+  nuxtApp.vueApp.provide(ApolloClients, clients)
+  provideApolloClients(clients)
 
   // handle cache
   const cacheKey = '_apollo:transitland'

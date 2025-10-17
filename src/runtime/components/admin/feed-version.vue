@@ -67,12 +67,13 @@ query($ids:[Int!]!) {
 export default {
   mixins: [AuthzMixin, Loadable],
   props: {
-    id: { type: [String, Number], required: true }
+    id: { type: [String, Number], required: true },
+    graphqlClient: { type: String, default: 'default' }
   },
   emits: ['changed'],
   apollo: {
     fvs: {
-      client: 'transitland',
+      client: this.graphqlClient,
       query: feedVersionQuery,
       variables () {
         return { ids: [this.id] }

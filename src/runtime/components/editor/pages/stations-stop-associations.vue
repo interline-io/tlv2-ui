@@ -143,6 +143,9 @@ const q = gql`
 
 export default {
   mixins: [FeedMixin],
+  props: {
+    graphqlClient: { type: String, default: 'default' }
+  },
   data () {
     return {
       stops: []
@@ -150,7 +153,7 @@ export default {
   },
   apollo: {
     stops: {
-      client: 'stationEditor',
+      client: this.graphqlClient,
       query: q,
       variables () {
         return {
