@@ -93,17 +93,57 @@
           </p>
           <ul class="menu-list">
             <li>
-              <a @click="$emit('select-stop', pathway.from_stop.id)">
+              <a
+                @click="$emit('select-stop', pathway.from_stop.id)"
+                @mouseenter="$emit('hover-stop', pathway.from_stop.id)"
+                @mouseleave="$emit('hover-stop', null)"
+              >
                 <span v-if="pathway.is_bidirectional === 1">↔</span>
                 <span v-else>←</span>
                 {{ pathway.from_stop.stop_name || `Node ${pathway.from_stop.stop_id}` }}
+                <span class="has-text-grey is-size-7">
+                  <template v-if="fromStopLevel">
+                    <template v-if="fromStopLevel.level_index != null">
+                      (Level: {{ fromStopLevel.level_index }})
+                    </template>
+                    <template v-else-if="fromStopLevel.level_name">
+                      (Level: {{ fromStopLevel.level_name }})
+                    </template>
+                    <template v-else>
+                      (Level ID: {{ pathway.from_stop.level.id }})
+                    </template>
+                  </template>
+                  <template v-else>
+                    (Unassigned)
+                  </template>
+                </span>
               </a>
             </li>
             <li>
-              <a @click="$emit('select-stop', pathway.to_stop.id)">
+              <a
+                @click="$emit('select-stop', pathway.to_stop.id)"
+                @mouseenter="$emit('hover-stop', pathway.to_stop.id)"
+                @mouseleave="$emit('hover-stop', null)"
+              >
                 <span v-if="pathway.is_bidirectional === 1">↔</span>
                 <span v-else>→</span>
                 {{ pathway.to_stop.stop_name || `Node ${pathway.to_stop.stop_id}` }}
+                <span class="has-text-grey is-size-7">
+                  <template v-if="toStopLevel">
+                    <template v-if="toStopLevel.level_index != null">
+                      (Level: {{ toStopLevel.level_index }})
+                    </template>
+                    <template v-else-if="toStopLevel.level_name">
+                      (Level: {{ toStopLevel.level_name }})
+                    </template>
+                    <template v-else>
+                      (Level ID: {{ pathway.to_stop.level.id }})
+                    </template>
+                  </template>
+                  <template v-else>
+                    (Unassigned)
+                  </template>
+                </span>
               </a>
             </li>
           </ul>
@@ -154,7 +194,7 @@ export default {
       required: true
     }
   },
-  emits: ['select-stop', 'delete', 'update', 'unselect'],
+  emits: ['select-stop', 'hover-stop', 'delete', 'update', 'unselect'],
   data () {
     return {
       editMode: false
@@ -180,6 +220,18 @@ export default {
         }
       }
       return 'Unknown'
+    },
+    fromStopLevel () {
+      if (!this.pathway.from_stop.level?.id) {
+        return null
+      }
+      return this.station.levels.find(l => l.id === this.pathway.from_stop.level.id)
+    },
+    toStopLevel () {
+      if (!this.pathway.to_stop.level?.id) {
+        return null
+      }
+      return this.station.levels.find(l => l.id === this.pathway.to_stop.level.id)
     }
   }
 }

@@ -129,9 +129,16 @@
             v-if="selectMode === 'select'"
             :selected-stops-count="selectedStops.length"
             :selected-pathways-count="selectedPathways.length"
+            :selected-stops="selectedStops"
+            :selected-pathways="selectedPathways"
+            :last-filter-applied="lastFilterApplied"
             :location-types="LocationTypes"
             :pathway-modes="PathwayModes"
             @unselect-all="unselectAll"
+            @select-stop="selectStop"
+            @select-pathway="selectPathway"
+            @hover-stop="hoverStopId = $event"
+            @hover-pathway="hoverPathwayId = $event"
             @select-location-types="selectLocationTypes"
             @select-stops-with-associations="selectStopsWithAssociations"
             @select-stops-platforms-without-associations="selectStopsPlatformsWithoutAssociations"
@@ -160,6 +167,7 @@
               :feed-version-key="feedVersionKey"
               :station-key="stationKey"
               @select-stop="selectStop"
+              @hover-stop="hoverStopId = $event"
               @delete="deletePathwayHandler"
               @update="updatePathwayHandler"
               @unselect="unselectAll"
@@ -180,6 +188,7 @@
               @update="updateStopHandler"
               @delete-association="deleteAssociationHandler"
               @select-pathway="selectPathway"
+              @hover-pathway="hoverPathwayId = $event"
               @unselect="unselectAll"
             />
           </template>
@@ -240,6 +249,8 @@
           :selected-stops="selectedStops"
           :selected-pathways="selectMode === 'find-route' && selectedPath ? selectedPath.map((s)=>{return s.pathway}) : selectedPathways"
           :selected-levels="selectedLevels"
+          :hover-stop-id="hoverStopId"
+          :hover-pathway-id="hoverPathwayId"
           @select-stop="selectStop"
           @select-pathway="selectPathway"
           @select-point="selectPoint"
@@ -255,11 +266,16 @@ import { PathwayModes, LocationTypes, getBasemapLayers } from '../basemaps'
 import { Stop, Pathway, mapLevelKeyFn } from '../station'
 import StationMixin from './station-mixin'
 import { nextTick } from 'vue'
+import { useToastNotification } from '../../../composables/useToastNotification'
 
 export default {
   mixins: [StationMixin],
   layout: 'wide',
   query: ['selectedStop', 'selectedPathway'],
+  setup () {
+    const { showToast } = useToastNotification()
+    return { showToast }
+  },
   data () {
     return {
       id: undefined,
@@ -273,6 +289,9 @@ export default {
       levelsOpen: true,
       basemapOpen: false,
       legendOpen: true,
+      lastFilterApplied: '',
+      hoverStopId: null,
+      hoverPathwayId: null,
       PathwayModes,
       LocationTypes
     }
@@ -504,73 +523,128 @@ export default {
         this.createStopHandler(stop)
       }
     },
-    selectStopsWithAssociations () {
-      this.selectedStops = this.station.stops.filter((s) => { return s.external_reference?.target_stop_id })
+    // Helper method to filter and notify
+    applyFilter (filterFn, filterLabel, notFoundMessage, target = 'stops') {
+      const results = target === 'stops'
+        ? this.station.stops.filter(filterFn)
+        : this.station.pathways.filter(filterFn)
+
+      if (target === 'stops') {
+        this.selectedStops = results
+      } else {
+        this.selectedPathways = results
+      }
+
+      this.lastFilterApplied = filterLabel
       this.selectMode = 'select'
+
+      if (results.length === 0) {
+        this.showToast(notFoundMessage)
+      }
+    },
+    selectStopsWithAssociations () {
+      this.applyFilter(
+        s => s.external_reference?.target_stop_id,
+        'Stops with associations',
+        'No stops with associations found'
+      )
     },
     selectStopsPlatformsWithoutAssociations () {
-      this.selectedStops = this.station.stops.filter((s) => { return s.location_type === 0 && !s.external_reference })
-      this.selectMode = 'select'
+      this.applyFilter(
+        s => s.location_type === 0 && !s.external_reference,
+        'Platforms without associations',
+        'No platforms without associations found'
+      )
     },
     selectStopsEntrancesWithoutAssociations () {
-      this.selectedStops = this.station.stops.filter((s) => { return s.location_type === 2 && !s.external_reference })
-      this.selectMode = 'select'
+      this.applyFilter(
+        s => s.location_type === 2 && !s.external_reference,
+        'Entrances without associations',
+        'No entrances without associations found'
+      )
     },
     selectStopsWithPairedPathways () {
       const pairedPathways = new Map()
-      this.selectedStops = this.station.stops.filter((s) => {
-        const pwKeys = []
-        for (const pw of s.pathways_from_stop) {
-          pwKeys.push(`${pw.from_stop.id}-${pw.to_stop.id}`)
-        }
-        for (const pw of s.pathways_to_stop) {
-          pwKeys.push(`${pw.to_stop.id}-${pw.from_stop.id}`)
-        }
-        let matched = false
-        for (const pwkey of pwKeys) {
-          if (pairedPathways.has(pwkey)) {
-            matched = true
+      this.applyFilter(
+        (s) => {
+          const pwKeys = []
+          for (const pw of s.pathways_from_stop) {
+            pwKeys.push(`${pw.from_stop.id}-${pw.to_stop.id}`)
           }
-          pairedPathways.set(pwkey, true)
-        }
-        return matched
-      })
-      this.selectMode = 'select'
+          for (const pw of s.pathways_to_stop) {
+            pwKeys.push(`${pw.to_stop.id}-${pw.from_stop.id}`)
+          }
+          let matched = false
+          for (const pwkey of pwKeys) {
+            if (pairedPathways.has(pwkey)) {
+              matched = true
+            }
+            pairedPathways.set(pwkey, true)
+          }
+          return matched
+        },
+        'Stops with paired pathways',
+        'No stops with paired pathways found'
+      )
     },
     selectLocationTypes (stype) {
-      this.selectedStops = this.station.stops.filter((s) => { return s.location_type === stype })
+      this.applyFilter(
+        s => s.location_type === stype,
+        `Stops: ${this.LocationTypes.get(stype)}`,
+        `No ${this.LocationTypes.get(stype)} stops found`
+      )
     },
     selectPathwayModes (stype) {
-      this.selectedPathways = this.station.pathways.filter((s) => { return s.pathway_mode === stype })
+      this.applyFilter(
+        s => s.pathway_mode === stype,
+        `Pathways: ${this.PathwayModes.get(stype)}`,
+        `No ${this.PathwayModes.get(stype)} pathways found`,
+        'pathways'
+      )
     },
     selectPathwaysWithPairs () {
       const pwPairs = new Map()
-      this.selectedPathways = this.station.pathways.filter((s) => {
-        const pwKeys = [
-          `${s.from_stop.id}-${s.to_stop.id}`,
-          `${s.to_stop.id}-${s.from_stop.id}`
-        ]
-        let matched = false
-        for (const pwkey of pwKeys) {
-          if (pwPairs.has(pwkey)) {
-            matched = true
+      this.applyFilter(
+        (s) => {
+          const pwKeys = [
+            `${s.from_stop.id}-${s.to_stop.id}`,
+            `${s.to_stop.id}-${s.from_stop.id}`
+          ]
+          let matched = false
+          for (const pwkey of pwKeys) {
+            if (pwPairs.has(pwkey)) {
+              matched = true
+            }
+            pwPairs.set(pwkey, true)
           }
-          pwPairs.set(pwkey, true)
-        }
-        return matched
-      })
-      this.selectMode = 'select'
+          return matched
+        },
+        'Pathways with pairs',
+        'No pathways with pairs found',
+        'pathways'
+      )
     },
     selectPathwaysOneway () {
-      this.selectedPathways = this.station.pathways.filter((s) => { return !s.is_bidirectional })
+      this.applyFilter(
+        s => !s.is_bidirectional,
+        'One-directional pathways',
+        'No one-directional pathways found',
+        'pathways'
+      )
     },
     selectPathwaysBidirectional () {
-      this.selectedPathways = this.station.pathways.filter((s) => { return s.is_bidirectional })
+      this.applyFilter(
+        s => s.is_bidirectional,
+        'Bi-directional pathways',
+        'No bi-directional pathways found',
+        'pathways'
+      )
     },
     unselectAll () {
       this.selectedStops = []
       this.selectedPathways = []
       this.selectedPoint = null
+      this.lastFilterApplied = ''
       this.selectMode = 'select'
     },
     downloadGeojson () {

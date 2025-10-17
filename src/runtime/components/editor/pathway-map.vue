@@ -78,6 +78,14 @@ export default {
     search: {
       type: Boolean,
       default () { return false }
+    },
+    hoverStopId: {
+      type: Number,
+      default () { return null }
+    },
+    hoverPathwayId: {
+      type: Number,
+      default () { return null }
     }
   },
   emits: ['select-point', 'select-stop', 'select-pathway', 'move-stop-save'],
@@ -117,6 +125,34 @@ export default {
       for (const i of (cur || [])) {
         this.map.setFeatureState(
           { source: 'pathways', id: i.id },
+          { hover: true }
+        )
+      }
+    },
+    hoverStopId (cur, prev) {
+      if (prev) {
+        this.map.setFeatureState(
+          { source: 'stops', id: prev },
+          { hover: false }
+        )
+      }
+      if (cur) {
+        this.map.setFeatureState(
+          { source: 'stops', id: cur },
+          { hover: true }
+        )
+      }
+    },
+    hoverPathwayId (cur, prev) {
+      if (prev) {
+        this.map.setFeatureState(
+          { source: 'pathways', id: prev },
+          { hover: false }
+        )
+      }
+      if (cur) {
+        this.map.setFeatureState(
+          { source: 'pathways', id: cur },
           { hover: true }
         )
       }

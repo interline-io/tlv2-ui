@@ -85,7 +85,11 @@
           </p>
           <ul class="menu-list">
             <li v-for="pw of pathwaysFromStop" :key="pw.id">
-              <a @click="$emit('select-pathway', pw.id)">
+              <a
+                @click="$emit('select-pathway', pw.id)"
+                @mouseenter="$emit('hover-pathway', pw.id)"
+                @mouseleave="$emit('hover-pathway', null)"
+              >
                 <span class="tl-path-icon"><img :src="pathwayIcon(pw.pathway_mode).url" :title="pathwayIcon(pw.pathway_mode).label"></span>
                 <span v-if="pw.is_bidirectional === 1">↔</span>
                 <span v-else>→</span>
@@ -93,7 +97,11 @@
               </a>
             </li>
             <li v-for="pw of pathwaysToStop" :key="pw.id">
-              <a @click="$emit('select-pathway', pw.id)">
+              <a
+                @click="$emit('select-pathway', pw.id)"
+                @mouseenter="$emit('hover-pathway', pw.id)"
+                @mouseleave="$emit('hover-pathway', null)"
+              >
                 <span class="tl-path-icon"><img :src="pathwayIcon(pw.pathway_mode).url" :title="pathwayIcon(pw.pathway_mode).label"></span>
                 <span v-if="pw.is_bidirectional === 1">↔</span>
                 <span v-else>←</span>
@@ -175,7 +183,7 @@ export default {
       required: true
     }
   },
-  emits: ['delete', 'update', 'delete-association', 'select-pathway', 'unselect'],
+  emits: ['delete', 'update', 'delete-association', 'select-pathway', 'hover-pathway', 'unselect'],
   data () {
     return {
       editMode: false
