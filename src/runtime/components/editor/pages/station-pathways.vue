@@ -19,6 +19,13 @@
                 </button>
                 <button
                   class="button"
+                  :class="{'is-primary is-selected': selectMode === 'add-node'}"
+                  @click="selectMode = 'add-node'"
+                >
+                  Add Node
+                </button>
+                <button
+                  class="button"
                   :class="{'is-primary is-selected': selectMode === 'add-pathway'}"
                   :disabled="!(selectedStop && selectedSource)"
                   @click="selectMode = 'add-pathway'"
@@ -32,13 +39,7 @@
                 >
                   Find Route
                 </button>
-                <button
-                  class="button"
-                  :class="{'is-primary is-selected': selectMode === 'add-node'}"
-                  @click="selectMode = 'add-node'"
-                >
-                  Add Node
-                </button>
+
                 <button
                   class="button"
                   :class="{'is-primary is-selected': selectMode === 'export'}"
@@ -288,7 +289,7 @@ export default {
       basemapLayers: getBasemapLayers(),
       levelsOpen: true,
       basemapOpen: false,
-      legendOpen: true,
+      legendOpen: false,
       lastFilterApplied: '',
       hoverStopId: null,
       hoverPathwayId: null,
@@ -381,8 +382,14 @@ export default {
           return this.refetch()
         })
         .then(() => {
-          // NextTick does not seem to be sufficient here, so we use setTimeout
-          setTimeout(() => { this.selectStop(newStopId) }, 100)
+          // Use nextTick to ensure Vue has updated after refetch
+          return nextTick()
+        })
+        .then(() => {
+          // Additional small delay to ensure map has updated
+          setTimeout(() => {
+            this.selectStop(newStopId)
+          }, 150)
         })
         .catch(this.setError)
     },

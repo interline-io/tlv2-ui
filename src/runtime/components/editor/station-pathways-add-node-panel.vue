@@ -5,6 +5,9 @@
         Add Node
       </p>
       <div class="panel-block is-block">
+        <p class="notification">
+          To create a node, select which level it will be located on and then click/tap on the map.
+        </p>
         <o-field label="Level">
           <o-dropdown
             :model-value="selectedLevel"
