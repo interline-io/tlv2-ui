@@ -144,6 +144,7 @@
           @update="$emit('update', $event)"
           @delete-association="$emit('delete-association', $event)"
           @select-pathway="$emit('select-pathway', $event)"
+          @cancel="editMode = false"
         />
       </div>
     </nav>

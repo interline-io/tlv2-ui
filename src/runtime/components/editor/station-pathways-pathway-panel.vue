@@ -159,6 +159,7 @@
           @select-stop="$emit('select-stop', $event)"
           @delete="$emit('delete', $event)"
           @update="$emit('update', $event)"
+          @cancel="editMode = false"
         />
       </div>
     </nav>

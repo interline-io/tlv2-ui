@@ -120,12 +120,26 @@
     </div>
 
     <template v-if="!readOnly">
-      <div v-if="pathway.id" class="buttons">
-        <span class="button is-primary" @click="$emit('update', pathway)">Save Pathway</span>
-        <span class="button is-danger" @click="$emit('delete', pathway)">Delete Pathway</span>
+      <div v-if="pathway.id" class="field is-grouped">
+        <div class="control">
+          <span class="button" @click="$emit('cancel')">Cancel</span>
+        </div>
+        <div class="control is-expanded" />
+        <div class="control">
+          <span class="button is-danger" @click="$emit('delete', pathway)">Delete Pathway</span>
+        </div>
+        <div class="control">
+          <span class="button is-primary" @click="$emit('update', pathway)">Save Pathway</span>
+        </div>
       </div>
-      <div v-else class="buttons">
-        <span class="button is-primary" @click="$emit('create', pathway)">Add Pathway</span>
+      <div v-else class="field is-grouped">
+        <div class="control">
+          <span class="button" @click="$emit('cancel')">Cancel</span>
+        </div>
+        <div class="control is-expanded" />
+        <div class="control">
+          <span class="button is-primary" @click="$emit('create', pathway)">Add Pathway</span>
+        </div>
       </div>
     </template>
   </div>
@@ -156,7 +170,7 @@ export default {
       default: false
     }
   },
-  emits: ['select-stop', 'update', 'delete', 'create'],
+  emits: ['select-stop', 'update', 'delete', 'create', 'cancel'],
   data () {
     return {
       pathway: new Pathway(this.value).setDefaults(),
