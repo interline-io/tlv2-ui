@@ -74,9 +74,26 @@ const colors: Colors = {
 
 const stopLayers: MapLayer[] = [
   {
+    name: 'stop-active',
+    type: 'circle',
+    source: 'stops',
+    minzoom: 14,
+    paint: {
+      'circle-color': colors.active,
+      'circle-radius': 10,
+      'circle-opacity': [
+        'case',
+        ['boolean', ['feature-state', 'hover'], false],
+        1.0,
+        0.0
+      ]
+    }
+  },
+  {
     name: 'stops',
     type: 'circle',
     source: 'stops',
+    minzoom: 14,
     paint: {
       'circle-color': '#000',
       'circle-radius': 4,
