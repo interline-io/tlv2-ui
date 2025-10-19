@@ -329,11 +329,11 @@ export default {
           message: 'Pathway is a loop - from_stop_id cannot equal to_stop_id'
         })
       }
-      // if ((pathway.pathway_mode === 6 || pathway.pathway_mode === 7) && pathway.is_bidirectional === 1) {
-      //   errs.push({
-      //     message: 'Fare-gate and exit-gate pathways must be one-way'
-      //   })
-      // }
+      if (pathway.pathway_mode === 7 && pathway.is_bidirectional === 1) {
+        errs.push({
+          message: 'Exit-gate pathways must be one-way'
+        })
+      }
       if (pathway.pathway_mode === 2 && pathway.stair_count == null) {
         if (pathway.from_stop.level?.id !== pathway.to_stop.level?.id) {
           // ok
