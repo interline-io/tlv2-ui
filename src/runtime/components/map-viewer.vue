@@ -139,7 +139,7 @@ const updateFilters = () => {
     const enabledLocationTypes = Object.entries(props.stopLocationTypeFilter)
       .filter(([_, enabled]) => enabled)
       .map(([type, _]) => parseInt(type))
-    
+
     if (enabledLocationTypes.length < 5) { // Only add filter if not all types are enabled
       if (enabledLocationTypes.length > 0) {
         f.push(['in', ['get', 'location_type'], ['literal', enabledLocationTypes]])
@@ -148,7 +148,7 @@ const updateFilters = () => {
         f.push(['==', 'stop_id', ''])
       }
     }
-    
+
     if (f.length > 1) {
       map.value.setFilter(v.name, f as any)
     } else {
@@ -378,7 +378,7 @@ const createSources = () => {
       type: 'vector',
       tiles: [props.stopTiles.url],
       minzoom: props.stopTiles.minzoom || 0,
-      maxzoom: props.stopTiles.maxzoom || 14
+      maxzoom: props.stopTiles.maxzoom || 14,
     })
   } else {
     map.value.addSource('stops', {
@@ -547,10 +547,15 @@ const mapMove = () => {
 }
 const mapMouseMove = (e: any) => {
   if (!map.value) return
-
+  const searchWidth = 0
+  const searchHeight = 0
+  const searchBbox = [
+    [e.point.x - searchWidth / 2, e.point.y - searchHeight / 2],
+    [e.point.x + searchWidth / 2, e.point.y + searchHeight / 2]
+  ]
   const currentMap = map.value
-  const features = currentMap.queryRenderedFeatures(e.point, { layers: ['route-active'] })
-  const stopFeatures = currentMap.queryRenderedFeatures(e.point, { layers: ['stop-active'] })
+  const features = currentMap.queryRenderedFeatures(searchBbox, { layers: ['route-active'] })
+  const stopFeatures = currentMap.queryRenderedFeatures(searchBbox, { layers: ['stop-active'] })
 
   // Set cursor based on whether we're hovering over routes or stops
   if (features.length > 0 || stopFeatures.length > 0) {

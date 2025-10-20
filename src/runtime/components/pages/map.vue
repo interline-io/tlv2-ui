@@ -29,9 +29,7 @@
           <o-tab-item :value="ROUTES_TAB" label="Routes & Stops">
             <div class="level">
               <div class="level-item">
-                <h6 class="title is-6">
-                  Global transit map powered by Transitland's v2 Vector Tiles API
-                </h6>
+                <slot name="header" />
               </div>
               <div class="level-item">
                 <o-button variant="primary" size="small" @click="showRouteOptionsModal = true">
@@ -143,8 +141,7 @@
 
             <div v-if="Object.keys(combinedAgencyFeatures).length === 0" class="content">
               <template v-if="currentZoom < 8">
-                <p>Zoom in to select routes.</p>
-                <p>Zoom in to see stops.</p>
+                <p>Zoom in to select routes and stops.</p>
               </template>
               <template v-else-if="currentZoom < 14">
                 <p>Use your cursor to highlight routes and see their names here.</p>
@@ -239,35 +236,35 @@
           <o-checkbox
             v-model="showStopLocationTypes[0]"
           >
-            📍 Stops & Station Platforms
+            Stops & Station Platforms
           </o-checkbox>
         </div>
         <div class="field">
           <o-checkbox
             v-model="showStopLocationTypes[1]"
           >
-            🏠 Stations
+            Stations
           </o-checkbox>
         </div>
         <div class="field">
           <o-checkbox
             v-model="showStopLocationTypes[2]"
           >
-            🚪 Station Entrances/Exits
+            Station Entrances/Exits
           </o-checkbox>
         </div>
         <div class="field">
           <o-checkbox
             v-model="showStopLocationTypes[3]"
           >
-            ⚪ Generic Nodes in Station Pathways
+            Generic Nodes in Station Pathways
           </o-checkbox>
         </div>
         <div class="field">
           <o-checkbox
             v-model="showStopLocationTypes[4]"
           >
-            📍 Boarding Areas in Station Pathways
+            Boarding Areas in Station Pathways
           </o-checkbox>
         </div>
       </tl-modal>
@@ -391,8 +388,8 @@ const currentBbox = ref(null)
 // Stop location type filters
 const showStopLocationTypes = ref({
   0: true, // Stop/platform
-  1: true, // Station
-  2: true, // Entrance/Exit
+  1: false, // Station
+  2: false, // Entrance/Exit
   3: false, // Generic Node
   4: false // Boarding Area
 })
