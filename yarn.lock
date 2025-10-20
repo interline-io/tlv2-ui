@@ -2323,25 +2323,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oruga-ui/oruga-next@npm:0.9.3":
-  version: 0.9.3
-  resolution: "@oruga-ui/oruga-next@npm:0.9.3"
+"@oruga-ui/oruga-next@npm:0.11.6":
+  version: 0.11.6
+  resolution: "@oruga-ui/oruga-next@npm:0.11.6"
   dependencies:
-    vue-component-type-helpers: "npm:^2.1.10"
+    vue-component-type-helpers: "npm:^3.0.5"
   peerDependencies:
     vue: ^3.0.0
-  checksum: 10/f53f12e281e12d2366d2d813c5c80e04c506069c08dd6191aa6d56a485a1b4ae9c1aa47668d3da0e8aa862fed53ac2e89da3cb697e28dd8292608d8422537b8d
+  checksum: 10/83ac4299065a0ffd95b3d7936e0ad4d689d81b5169d99042dc4ad4424d26438982689dca2db577570554ac8eb434920d834d2a8d0a7d884accd246f92fac04a0
   languageName: node
   linkType: hard
 
-"@oruga-ui/theme-bulma@npm:0.5.3":
-  version: 0.5.3
-  resolution: "@oruga-ui/theme-bulma@npm:0.5.3"
+"@oruga-ui/theme-bulma@npm:0.7.3":
+  version: 0.7.3
+  resolution: "@oruga-ui/theme-bulma@npm:0.7.3"
   dependencies:
-    bulma: "npm:1.0.3"
+    bulma: "npm:1.0.4"
   peerDependencies:
-    "@oruga-ui/oruga-next": ^0.9.0
-  checksum: 10/40b0fb46802fcecd6098434c39a28c048c1adffcbf128c6b04907417ee9e8acf721f6c0f0cd8b48172eb650bae5067547516fd513a6715d97d8a94320ffbddab
+    "@oruga-ui/oruga-next": ^0.11.0
+  checksum: 10/bc4fb8c7ba7232c3b6dd53c0c83932a47b1989c4be5b2ba33b14dd4438591dd439b1d071db5644eaf8784f36b4238f6b1490b99181b3dff41f20f9657e27b099
   languageName: node
   linkType: hard
 
@@ -5361,6 +5361,13 @@ __metadata:
   version: 1.0.3
   resolution: "bulma@npm:1.0.3"
   checksum: 10/099ea71a1718a614b3d33eb8b25953c815183a523d91453831c2b254870a5889a0549db981c95c0198106fd6d21eefb817c63a775116e99470aa28826ce2351b
+  languageName: node
+  linkType: hard
+
+"bulma@npm:1.0.4":
+  version: 1.0.4
+  resolution: "bulma@npm:1.0.4"
+  checksum: 10/5d6cbbf95a6b22ab151efcb02cb4d30faedcdcd2d7dafcf353dc06d281bbec044fe4de7cb397c42c549a1a338fb0441428eab73a936d794075ad4bf55efc69a5
   languageName: node
   linkType: hard
 
@@ -14098,8 +14105,8 @@ __metadata:
     "@nuxt/test-utils": "npm:3.19.2"
     "@nuxt/types": "npm:2.18.1"
     "@observablehq/plot": "npm:0.6.17"
-    "@oruga-ui/oruga-next": "npm:0.9.3"
-    "@oruga-ui/theme-bulma": "npm:0.5.3"
+    "@oruga-ui/oruga-next": "npm:0.11.6"
+    "@oruga-ui/theme-bulma": "npm:0.7.3"
     "@pollyjs/adapter-fetch": "npm:6.0.7"
     "@pollyjs/core": "npm:6.0.6"
     "@pollyjs/persister-fs": "npm:6.0.6"
@@ -15494,10 +15501,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vue-component-type-helpers@npm:^2.0.0, vue-component-type-helpers@npm:^2.1.10":
+"vue-component-type-helpers@npm:^2.0.0":
   version: 2.2.12
   resolution: "vue-component-type-helpers@npm:2.2.12"
   checksum: 10/985ca9564966919f5a009514a46fd0b90c7a167795d9f2f58072f5f4a4eaffb8f94bcf70376504f171441827c624b723224acac41ce6a2cd39d2fff13df08d7a
+  languageName: node
+  linkType: hard
+
+"vue-component-type-helpers@npm:^3.0.5":
+  version: 3.1.1
+  resolution: "vue-component-type-helpers@npm:3.1.1"
+  checksum: 10/a0f8a480b6386d53fc0c4eff6bbc4fe008f94ee49adde220bba02f38a98bece7c611d50ec3d69a1c8055710cc10792b7d9bc4036c4bf1db600468121a9b4305f
   languageName: node
   linkType: hard
 
