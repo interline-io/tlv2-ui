@@ -98,7 +98,7 @@
               <template v-if="currentZoom < 8">
                 <p>Zoom in to select routes and stops.</p>
               </template>
-              <template v-else-if="currentZoom < 14">
+              <template v-else-if="currentZoom < 12">
                 <p>Use your cursor to highlight routes and see their names here.</p>
                 <p>Click on a route for more details.</p>
                 <p>Zoom in further to see stops.</p>
@@ -681,8 +681,8 @@ const stopTiles = computed(() => {
   return {
     id: 'stops',
     url: `${useApiEndpoint()}/tiles/stops/tiles/{z}/{x}/{y}.pbf`,
-    minzoom: 14,
-    maxzoom: 14
+    minzoom: 12,
+    maxzoom: 12
   }
 })
 
@@ -695,16 +695,20 @@ const activeFeatures = computed(() => {
 
 // Initialize map coordinates from URL params and hash
 const initializeMapFromUrl = () => {
+  console.log('Initializing map from URL')
   const hasHash = window.location.hash && window.location.hash.length > 1
   if (hasHash) {
+    console.log('hash:', window.location.hash)
     // ok
   } else {
   // Fallback to lon/lat params if no valid hash
+    console.log('No hash, checking lon/lat params')
     if (props.lonParam && props.latParam) {
       const lon = parseFloat(props.lonParam)
       const lat = parseFloat(props.latParam)
 
       if (!isNaN(lon) && !isNaN(lat)) {
+        console.log('Setting map center to lon/lat params:', lon, lat)
         initialCenter.value = [lon, lat]
         initialZoom.value = 16
         rerenderKey.value += 1
@@ -731,6 +735,7 @@ onMounted(() => {
 
   // Listen for hash changes (popstate events)
   const handlePopState = () => {
+    console.log('Popstate event detected, re-initializing map from URL', window.location.hash)
     initializeMapFromUrl()
   }
 
@@ -801,6 +806,7 @@ const markers = computed(() => {
 </script>
 
 <style>
+/* These must be global styles, for... reasons */
 .tl-map {
   position: relative;
 }
