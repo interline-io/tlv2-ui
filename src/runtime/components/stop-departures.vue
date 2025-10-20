@@ -10,43 +10,20 @@
     </div>
 
     <div v-else>
-      <div class="search-options mb-2">
-        <o-field grouped>
-          <o-field v-if="showDateSelector">
-            <o-datetimepicker
-              v-model="displayStartDate"
-              horizontal-time-picker
-              placeholder="Now"
-              icon="calendar-today"
-              trap-focus
-              size="small"
-            />
-          </o-field>
-
-          <o-field v-if="showRadiusSelector">
-            <o-select v-model="radius" size="small">
-              <option v-for="r of allowedRadius" :key="r" :value="r">
-                {{ r }}m
-              </option>
-            </o-select>
-            <p class="control button-like-small">
-              Radius
-            </p>
-          </o-field>
-
-          <o-checkbox v-if="showAutoRefresh" v-model="autoRefresh" size="small">
-            Auto-refresh
-          </o-checkbox>
-
-          <o-checkbox v-if="showFallbackSelector" v-model="useServiceWindow" size="small">
-            Fallback service day
-          </o-checkbox>
-        </o-field>
-        <div v-if="lastFetched" :key="lastFetchedDisplayKey" class="tags has-addons">
-          <span class="tag is-small">Last checked</span>
-          <span class="tag is-success is-small">{{ fromNowDate(lastFetched) }}</span>
-        </div>
-      </div>
+      <tl-departure-settings
+        v-model:start-date="displayStartDate"
+        v-model:radius="radius"
+        v-model:auto-refresh="autoRefresh"
+        v-model:use-service-window="useServiceWindow"
+        :last-fetched="lastFetched"
+        :last-fetched-display-key="lastFetchedDisplayKey"
+        :show-date-selector="showDateSelector"
+        :show-radius-selector="showRadiusSelector"
+        :show-fallback-selector="showFallbackSelector"
+        :show-auto-refresh="showAutoRefresh"
+        :show-last-fetched="showLastFetched"
+        :allowed-radius="allowedRadius"
+      />
 
       <tl-loading v-if="loading" />
 
@@ -254,7 +231,7 @@ const props = withDefaults(defineProps<{
   showRadiusSelector: false,
   showFallbackSelector: false,
   showAutoRefresh: false,
-  showLastFetched: false,
+  showLastFetched: true,
   autoRefreshInterval: 60,
   stopIds: () => []
 })
@@ -594,10 +571,6 @@ onMounted(() => {
   margin-right:5px;
 }
 
-.search-options {
-  padding-top:10px
-}
-
 .tl-route-icon-departures {
   text-align:left;
   display:inline-block;
@@ -619,16 +592,4 @@ onMounted(() => {
 
 /* .tl-route-icon-fade-out {
 } */
-
-.button-like {
-    padding-bottom: 0.5em;
-    padding-top: 0.5em;
-}
-
-.button-like-small {
-    font-size: 0.75rem;
-    padding-left:10px;
-    padding-bottom: 0.5em;
-    padding-top: 0.5em;
-}
 </style>
