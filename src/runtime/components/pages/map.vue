@@ -26,18 +26,32 @@
 
       <div class="tl-map-panel tl-map-panel-tabs">
         <o-tabs v-model="activeTab" class="tl-tabs block" position="centered" type="boxed">
-          <o-tab-item :value="ROUTES_TAB" label="Routes & Stops">
-            <div class="level">
-              <div class="level-item">
-                <slot name="header" />
+          <o-tab-item :value="ROUTES_TAB" label="Routes & Stops" tab-class="tl-map-header-tab">
+            <!-- Unified header and search -->
+            <div class="level mb-2">
+              <div class="level-left">
+                <slot name="routesHeader">
+                  <h6 class="title is-6">
+                    Routes & Stops
+                  </h6>
+                </slot>
               </div>
-              <div class="level-item">
-                <o-button variant="primary" size="small" @click="showRouteOptionsModal = true">
-                  <o-icon icon="cog" size="small" />
-                  <span>Options</span>
-                </o-button>
+              <div class="level-right">
+                <div class="level-item">
+                  <o-button variant="primary" size="small" @click="showUnifiedOptionsModal = true">
+                    <o-icon icon="cog" size="small" />
+                    <span>Options</span>
+                  </o-button>
+                </div>
               </div>
             </div>
+
+            <tl-map-search
+              class="mb-2"
+              :bbox="currentBbox"
+              :include-stops="true"
+              @set-location="locationHandler"
+            />
 
             <!-- Combined agency view in sidebar -->
             <div v-if="activeTab === ROUTES_TAB && Object.keys(combinedAgencyFeatures).length > 0">
@@ -78,6 +92,21 @@
                   </div>
                 </div>
               </div>
+            </div>
+
+            <div v-if="Object.keys(combinedAgencyFeatures).length === 0" class="content">
+              <template v-if="currentZoom < 8">
+                <p>Zoom in to select routes and stops.</p>
+              </template>
+              <template v-else-if="currentZoom < 14">
+                <p>Use your cursor to highlight routes and see their names here.</p>
+                <p>Click on a route for more details.</p>
+                <p>Zoom in further to see stops.</p>
+              </template>
+              <template v-else>
+                <p>Use your cursor to highlight routes or stops.</p>
+                <p>Click on a route line or stop point to view its details.</p>
+              </template>
             </div>
 
             <!-- Combined modal for routes and stops -->
@@ -138,39 +167,43 @@
                 </div>
               </template>
             </o-modal>
-
-            <div v-if="Object.keys(combinedAgencyFeatures).length === 0" class="content">
-              <template v-if="currentZoom < 8">
-                <p>Zoom in to select routes and stops.</p>
-              </template>
-              <template v-else-if="currentZoom < 14">
-                <p>Use your cursor to highlight routes and see their names here.</p>
-                <p>Click on a route for more details.</p>
-                <p>Zoom in further to see stops.</p>
-              </template>
-              <template v-else>
-                <p>Use your cursor to highlight routes or stops.</p>
-                <p>Click on a route line or stop point to view its details.</p>
-              </template>
-            </div>
           </o-tab-item>
-          <o-tab-item :value="DEPARTURE_TAB" label="Departures">
+
+          <o-tab-item :value="DEPARTURE_TAB" label="Departures" tab-class="tl-map-header-tab">
+            <!-- Unified header and search -->
+            <div class="level mb-2">
+              <div class="level-left">
+                <slot name="departuresHeader">
+                  <h6 class="title is-6">
+                    Departures
+                  </h6>
+                </slot>
+              </div>
+              <div class="level-right">
+                <div class="level-item">
+                  <o-button variant="primary" size="small" @click="showUnifiedOptionsModal = true">
+                    <o-icon icon="cog" size="small" />
+                    <span>Options</span>
+                  </o-button>
+                </div>
+              </div>
+            </div>
+            <tl-map-search
+              class="mb-2"
+              :bbox="currentBbox"
+              :include-stops="true"
+              @set-location="locationHandler"
+            />
+
             <tl-login-gate>
-              <tl-map-search
-                :bbox="currentBbox"
-                :include-stops="true"
-                @set-location="departuresSetLocation"
-              />
               <tl-stop-departures
                 v-if="activeTab === DEPARTURE_TAB"
-                :show-auto-refresh="true"
-                :show-fallback-selector="true"
-                :show-radius-selector="true"
-                :search-coords="departureCoords"
+                :search-radius="departureSearchRadius"
+                :search-coords="departureSearchCoords"
+                :auto-refresh="departureAutoRefresh"
+                :auto-refresh-interval="60"
+                :use-service-window="departureUseServiceWindow"
               />
-              <p class="content block is-small pt-2">
-                <a href="https://www.transit.land/documentation/rest-api/departures" target="_blank">Learn more about Transitland v2 REST API stop departures endpoint</a>
-              </p>
               <template #loginText>
                 <p>
                   You must be logged in to use this feature.
@@ -178,8 +211,9 @@
               </template>
             </tl-login-gate>
           </o-tab-item>
+
           <tl-login-gate role="tl_user_enterprise">
-            <o-tab-item :value="DIRECTIONS_TAB" label="Directions">
+            <o-tab-item :value="DIRECTIONS_TAB" label="Directions" tab-class="tl-map-header-tab">
               <tl-msg-info>
                 This feature is in a limited beta. <br>
                 Please see the <a href="https://www.transit.land/documentation/routing-api/" target="_blank">Routing API docs</a><br>
@@ -206,67 +240,63 @@
           </tl-login-gate>
         </o-tabs>
       </div>
-      <!-- Modal Options -->
-      <tl-modal v-model="showRouteOptionsModal" title="Route & Stop Options">
-        <h6 class="title is-6">
-          Route lines
-        </h6>
-        <div class="field">
-          <o-checkbox
-            v-model="showGeneratedGeometries"
-          >
-            Show stop-to-stop geometries
-          </o-checkbox>
-        </div>
-        <div class="field">
-          <o-checkbox
-            v-model="showProblematicGeometries"
-          >
-            Show problematic geometries
-          </o-checkbox>
-        </div>
 
-        <h6 class="title is-6" style="margin-top: 20px;">
-          Stop points
-        </h6>
-        <p class="mb-2">
-          Show stops of location types:
-        </p>
-        <div class="field">
-          <o-checkbox
-            v-model="showStopLocationTypes[0]"
-          >
-            Stops & Station Platforms
-          </o-checkbox>
-        </div>
-        <div class="field">
-          <o-checkbox
-            v-model="showStopLocationTypes[1]"
-          >
-            Stations
-          </o-checkbox>
-        </div>
-        <div class="field">
-          <o-checkbox
-            v-model="showStopLocationTypes[2]"
-          >
-            Station Entrances/Exits
-          </o-checkbox>
-        </div>
-        <div class="field">
-          <o-checkbox
-            v-model="showStopLocationTypes[3]"
-          >
-            Generic Nodes in Station Pathways
-          </o-checkbox>
-        </div>
-        <div class="field">
-          <o-checkbox
-            v-model="showStopLocationTypes[4]"
-          >
-            Boarding Areas in Station Pathways
-          </o-checkbox>
-        </div>
+      <!-- Unified Options Modal -->
+      <tl-modal v-model="showUnifiedOptionsModal" title="Map Options" :full-screen="true">
+        <o-tabs v-model="activeOptionsTab" class="tl-options-tabs" position="centered" type="boxed">
+          <o-tab-item value="routes" label="Routes & Stops">
+            <o-field horizontal label="Route lines">
+              <o-checkbox v-model="showGeneratedGeometries">
+                Show stop-to-stop geometries
+              </o-checkbox>
+            </o-field>
+
+            <o-field horizontal>
+              <o-checkbox v-model="showProblematicGeometries">
+                Show problematic geometries
+              </o-checkbox>
+            </o-field>
+
+            <o-field horizontal label="Stop types">
+              Display the following types of stop points on the map
+            </o-field>
+            <o-field horizontal>
+              <o-checkbox v-model="showStopLocationTypes[0]">
+                Stops & Station Platforms
+              </o-checkbox>
+            </o-field>
+            <o-field horizontal>
+              <o-checkbox v-model="showStopLocationTypes[1]">
+                Stations
+              </o-checkbox>
+            </o-field>
+            <o-field horizontal>
+              <o-checkbox v-model="showStopLocationTypes[2]">
+                Station Entrances/Exits
+              </o-checkbox>
+            </o-field>
+            <o-field horizontal>
+              <o-checkbox v-model="showStopLocationTypes[3]">
+                Generic Nodes in Station Pathways
+              </o-checkbox>
+            </o-field>
+            <o-field horizontal>
+              <o-checkbox v-model="showStopLocationTypes[4]">
+                Boarding Areas in Station Pathways
+              </o-checkbox>
+            </o-field>
+          </o-tab-item>
+
+          <o-tab-item value="departures" label="Departures">
+            <tl-stop-departure-settings
+              v-model:search-radius="departureSearchRadius"
+              v-model:auto-refresh="departureAutoRefresh"
+              v-model:use-service-window="departureUseServiceWindow"
+              style="min-height:600px"
+              :allowed-radius="allowedRadius"
+            />
+          </o-tab-item>
+        </o-tabs>
       </tl-modal>
     </div>
   </client-only>
@@ -274,7 +304,7 @@
 
 <script setup lang="ts">
 import { useRoute, useRuntimeConfig, navigateTo } from '#imports'
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useApiEndpoint } from '../../composables/useApiEndpoint'
 import { makeStopLink, makeRouteLink } from '../../lib/filters'
 
@@ -329,6 +359,16 @@ const DEPARTURE_TAB = 'departures'
 const DIRECTIONS_TAB = 'directions'
 const linkVersion = false
 
+// Dynamic location handler
+const locationHandler = computed(() => {
+  switch (activeTab.value) {
+    case ROUTES_TAB: return routesSetLocation
+    case DEPARTURE_TAB: return departuresSetLocation
+    case DIRECTIONS_TAB: return directionsSetLocation
+    default: return routesSetLocation
+  }
+})
+
 // Helper functions
 function getStopIcon (locationType: number): string {
   // GTFS location_type values:
@@ -378,7 +418,8 @@ const initialZoom = ref(1.5)
 const initialCenter = ref([-119.49, 12.66])
 const currentZoom = ref(1.5)
 const showSelectionModal = ref(false)
-const showRouteOptionsModal = ref(false)
+const showUnifiedOptionsModal = ref(false)
+const activeOptionsTab = ref('routes')
 const agencyFeatures = ref({})
 const stopFeatures = ref<StopFeatures>({})
 const showGeneratedGeometries = ref(true)
@@ -393,6 +434,12 @@ const showStopLocationTypes = ref({
   3: false, // Generic Node
   4: false // Boarding Area
 })
+
+// Departure settings
+const departureSearchRadius = ref<number>(200)
+const departureAutoRefresh = ref<boolean>(true)
+const departureUseServiceWindow = ref<boolean>(true)
+const allowedRadius = ref<number[]>([0, 50, 100, 150, 200, 500, 1000])
 
 // Generic map event handlers
 
@@ -415,6 +462,7 @@ function mapClick (e: any) {
     if (Object.keys(combinedAgencyFeatures.value).length > 0) {
       showSelectionModal.value = true
     }
+    // Note: No location setting on click for routes tab - only through search
   }
 
   // Handle departures tab
@@ -510,8 +558,40 @@ async function departuresSetLocationFromClick (coords: number[]) {
   })
 }
 
-const departureCoords = computed((): number[] => {
+async function routesSetLocation (coords: number[]) {
+  // Update map center and zoom for geolocation/search in Routes & Stops tab
+  initialCenter.value = [coords[0], coords[1]]
+  initialZoom.value = 16
+  rerenderKey.value += 1
+
+  await navigateTo({
+    query: { lon: coords[0].toFixed(5), lat: coords[1].toFixed(5) },
+  })
+}
+
+async function directionsSetLocation (coords: number[]) {
+  // Update map center and zoom for geolocation/search in Directions tab
+  initialCenter.value = [coords[0], coords[1]]
+  initialZoom.value = 16
+  rerenderKey.value += 1
+
+  await navigateTo({
+    query: { lon: coords[0].toFixed(5), lat: coords[1].toFixed(5) },
+  })
+}
+
+const departureSearchCoords = computed((): number[] => {
   if (activeTab.value !== DEPARTURE_TAB) {
+    return []
+  }
+  if (props.lonParam && props.lonParam) {
+    return splitCoords(props.lonParam + ',' + props.latParam)
+  }
+  return []
+})
+
+const routesCoords = computed((): number[] => {
+  if (activeTab.value !== ROUTES_TAB) {
     return []
   }
   if (props.lonParam && props.lonParam) {
@@ -613,23 +693,64 @@ const activeFeatures = computed(() => {
   return []
 })
 
+// Initialize map coordinates from URL params and hash
+const initializeMapFromUrl = () => {
+  // Check if we have lon/lat params and no hash is set
+  const hasHash = window.location.hash && window.location.hash.length > 1
+
+  if (props.lonParam && props.latParam && !hasHash) {
+    const lon = parseFloat(props.lonParam)
+    const lat = parseFloat(props.latParam)
+
+    if (!isNaN(lon) && !isNaN(lat)) {
+      initialCenter.value = [lon, lat]
+      initialZoom.value = 16
+      rerenderKey.value += 1
+    }
+  }
+}
+
 // Watchers
 
 watch(activeTab, () => {
-  // Hacky; always set modal back to empty when switching tabs
+  // Always set modal back to empty when switching tabs
   showSelectionModal.value = false
-  showRouteOptionsModal.value = false
+  showUnifiedOptionsModal.value = false
+
+  // Sync options tab with main tab
+  activeOptionsTab.value = activeTab.value
   // rerenderKey.value += 1
+})
+
+// Watch for route changes (including back/forward navigation)
+watch(() => [props.lonParam, props.latParam], () => {
+  initializeMapFromUrl()
+})
+
+// Initialize on mount
+onMounted(() => {
+  initializeMapFromUrl()
 })
 
 // TODO: Does not reset map when goes empty
 const markers = computed(() => {
   const ret = []
-  if (activeTab.value === DEPARTURE_TAB) {
-    if (departureCoords.value.length === 2) {
+  if (activeTab.value === ROUTES_TAB) {
+    if (routesCoords.value.length === 2) {
       ret.push({
-        lng: departureCoords.value[0],
-        lat: departureCoords.value[1],
+        lng: routesCoords.value[0],
+        lat: routesCoords.value[1],
+        color: '#ff9500',
+        label: 'Search',
+        draggable: false
+      })
+    }
+  }
+  if (activeTab.value === DEPARTURE_TAB) {
+    if (departureSearchCoords.value.length === 2) {
+      ret.push({
+        lng: departureSearchCoords.value[0],
+        lat: departureSearchCoords.value[1],
         color: '#75a1ff',
         label: 'Search',
         draggable: false
@@ -672,6 +793,12 @@ const markers = computed(() => {
 <style>
 .tl-map {
   position: relative;
+}
+
+.tl-map-header-tab {
+  background:#eee;
+  margin-left:5px;
+  margin-right:5px;
 }
 
 .tl-map-panel {
