@@ -3,28 +3,7 @@
     <tl-msg-error v-if="error">
       {{ error }}
     </tl-msg-error>
-    <div v-else-if="!searchCoords && stopIds.length === 0">
-      <h6 class="title is-6">
-        Click on the map to select a location
-      </h6>
-    </div>
-
     <div v-else>
-      <tl-departure-settings
-        v-model:start-date="displayStartDate"
-        v-model:radius="radius"
-        v-model:auto-refresh="autoRefresh"
-        v-model:use-service-window="useServiceWindow"
-        :last-fetched="lastFetched"
-        :last-fetched-display-key="lastFetchedDisplayKey"
-        :show-date-selector="showDateSelector"
-        :show-radius-selector="showRadiusSelector"
-        :show-fallback-selector="showFallbackSelector"
-        :show-auto-refresh="showAutoRefresh"
-        :show-last-fetched="showLastFetched"
-        :allowed-radius="allowedRadius"
-      />
-
       <tl-loading v-if="loading" />
 
       <div v-else-if="!coordsOrStops">
@@ -41,10 +20,10 @@
         <p>Try increasing the search radius or selecting the "fallback service day" option.</p>
       </div>
 
-      <div v-for="(ss, sskey) of filteredStopsGroupRoutes" :key="sskey">
-        <h6 class="title is-6">
+      <div v-for="(ss, sskey) of filteredStopsGroupRoutes" :key="sskey" class="mb-3">
+        <div class="agency-header title is-6">
           {{ ss.agency.agency_name }}
-        </h6>
+        </div>
         <div v-for="(sr,srkey) of ss.routes.slice(0,routesPerAgencyShadow)" :key="srkey" class="tl-departure-container">
           <div
             class="tl-departure-route"
@@ -72,7 +51,7 @@
           </div>
         </div>
         <div v-if="ss.routes.length > routesPerAgencyShadow" class="is-clearfix">
-          <span class="button small ml-5" @click="expandRoutesPerAgency">Click to show {{ ss.routes.length - routesPerAgencyShadow }} additional rows</span>
+          <span class="button is-small ml-5" @click="expandRoutesPerAgency">Click to show {{ ss.routes.length - routesPerAgencyShadow }} additional rows</span>
         </div>
       </div>
     </div>
@@ -82,7 +61,7 @@
 <script setup lang="ts">
 import haversine from 'haversine'
 import { gql } from 'graphql-tag'
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, toRef } from 'vue'
 import { useQuery } from '@vue/apollo-composable'
 import type { Geometry, Feature, Point } from 'geojson'
 import { fromNowDate, makeRouteLink, reformatHMS } from '../lib/filters'
@@ -215,24 +194,19 @@ const props = withDefaults(defineProps<{
   searchRadius?: number
   nextSeconds?: number
   routesPerAgency?: number
-  showDateSelector?: boolean
-  showRadiusSelector?: boolean
-  showFallbackSelector?: boolean
-  showAutoRefresh?: boolean
   showLastFetched?: boolean
   autoRefreshInterval?: number
+  autoRefresh?: boolean
+  useServiceWindow?: boolean
   stopIds?: number[]
 }>(), {
   searchCoords: null,
   searchRadius: 200,
   nextSeconds: 7200,
   routesPerAgency: 10,
-  showDateSelector: false,
-  showRadiusSelector: false,
-  showFallbackSelector: false,
-  showAutoRefresh: false,
-  showLastFetched: true,
+  useServiceWindow: true,
   autoRefreshInterval: 60,
+  autoRefresh: true,
   stopIds: () => []
 })
 
@@ -302,14 +276,11 @@ const timer = ref<NodeJS.Timeout | null>(null)
 const error = ref<string | null>(null)
 const lastFetched = ref<Date | null>(null)
 const lastFetchedDisplayKey = ref<number>(0) // force redraw
-const autoRefresh = ref<boolean>(true)
-const useServiceWindow = ref<boolean>(false)
-const displayStartDate = ref<Date | null>(null)
-const allowedRadius = ref<number[]>([0, 50, 100, 150, 200, 500, 1000])
+const autoRefresh = toRef(props, 'autoRefresh')
+const useServiceWindow = toRef(props, 'useServiceWindow')
 const routesPerAgencyShadow = ref<number>(props.routesPerAgency)
 const stops = ref<Stop[]>([])
-const debug = ref<boolean>(false)
-const radius = ref<number>(props.searchRadius)
+const radius = toRef(props, 'searchRadius')
 
 // Computed properties for Apollo query
 const coordsOrStops = computed<boolean>(() => {
@@ -592,4 +563,10 @@ onMounted(() => {
 
 /* .tl-route-icon-fade-out {
 } */
+
+.agency-header {
+  font-weight: 600;
+  color: var(--bulma-text-strong, #363636);
+  margin-bottom: 0.5rem;
+}
 </style>
