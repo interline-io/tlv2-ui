@@ -304,7 +304,7 @@
 
 <script setup lang="ts">
 import { useRoute, useRuntimeConfig, navigateTo } from '#imports'
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useApiEndpoint } from '../../composables/useApiEndpoint'
 import { makeStopLink, makeRouteLink } from '../../lib/filters'
 
@@ -429,7 +429,7 @@ const currentBbox = ref(null)
 // Stop location type filters
 const showStopLocationTypes = ref({
   0: true, // Stop/platform
-  1: false, // Station
+  1: true, // Station
   2: false, // Entrance/Exit
   3: false, // Generic Node
   4: false // Boarding Area
@@ -545,7 +545,6 @@ async function departuresSetLocation (coords: number[]) {
   initialCenter.value = [coords[0], coords[1]]
   initialZoom.value = 16
   rerenderKey.value += 1
-
   await navigateTo({
     query: { lon: coords[0].toFixed(5), lat: coords[1].toFixed(5) },
   })
@@ -695,17 +694,20 @@ const activeFeatures = computed(() => {
 
 // Initialize map coordinates from URL params and hash
 const initializeMapFromUrl = () => {
-  // Check if we have lon/lat params and no hash is set
   const hasHash = window.location.hash && window.location.hash.length > 1
+  if (hasHash) {
+    // ok
+  } else {
+  // Fallback to lon/lat params if no valid hash
+    if (props.lonParam && props.latParam) {
+      const lon = parseFloat(props.lonParam)
+      const lat = parseFloat(props.latParam)
 
-  if (props.lonParam && props.latParam && !hasHash) {
-    const lon = parseFloat(props.lonParam)
-    const lat = parseFloat(props.latParam)
-
-    if (!isNaN(lon) && !isNaN(lat)) {
-      initialCenter.value = [lon, lat]
-      initialZoom.value = 16
-      rerenderKey.value += 1
+      if (!isNaN(lon) && !isNaN(lat)) {
+        initialCenter.value = [lon, lat]
+        initialZoom.value = 16
+        rerenderKey.value += 1
+      }
     }
   }
 }
@@ -722,14 +724,21 @@ watch(activeTab, () => {
   // rerenderKey.value += 1
 })
 
-// Watch for route changes (including back/forward navigation)
-watch(() => [props.lonParam, props.latParam], () => {
-  initializeMapFromUrl()
-})
-
-// Initialize on mount
+// Initialize on mount and handle hash changes
 onMounted(() => {
   initializeMapFromUrl()
+
+  // Listen for hash changes (popstate events)
+  const handlePopState = () => {
+    initializeMapFromUrl()
+  }
+
+  window.addEventListener('popstate', handlePopState)
+
+  // Cleanup listener on unmount
+  onUnmounted(() => {
+    window.removeEventListener('popstate', handlePopState)
+  })
 })
 
 // TODO: Does not reset map when goes empty
