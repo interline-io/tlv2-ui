@@ -8,6 +8,7 @@
         :enable-scroll-zoom="true"
         :route-tiles="routeTiles"
         :stop-tiles="stopTiles"
+        :stop-location-type-filter="showStopLocationTypes"
         :zoom="initialZoom"
         :center="initialCenter"
         :hash="useHash"
@@ -18,46 +19,139 @@
         map-class="tall"
         @set-zoom="mapSetZoom"
         @set-agency-features="routesSetAgencyFeatures"
+        @set-stop-features="routesSetStopFeatures"
         @map-click="mapClick"
         @map-move="mapMove"
       />
 
       <div class="tl-map-panel tl-map-panel-tabs">
         <o-tabs v-model="activeTab" class="tl-tabs block" position="centered" type="boxed">
-          <o-tab-item :value="ROUTES_TAB" label="Routes">
-            <o-field addons>
-              <o-field expanded class="is-fullwidth">
-                <h6 class="title is-6 short-margin">
-                  <template v-if="currentZoom < 8">
-                    Zoom in to select routes and to see stop points.
-                  </template>
-                  <template v-else>
-                    Select routes
-                  </template>
-                </h6>
-              </o-field>
-              <o-field>
-                <o-button variant="primary" @click="showRouteOptionsModal = true">
-                  Options
+          <o-tab-item :value="ROUTES_TAB" label="Routes & Stops">
+            <div class="level">
+              <div class="level-item">
+                <slot name="header" />
+              </div>
+              <div class="level-item">
+                <o-button variant="primary" size="small" @click="showRouteOptionsModal = true">
+                  <o-icon icon="cog" size="small" />
+                  <span>Options</span>
                 </o-button>
-              </o-field>
-            </o-field>
+              </div>
+            </div>
 
-            <tl-map-route-list
+            <!-- Combined agency view in sidebar -->
+            <div v-if="activeTab === ROUTES_TAB && Object.keys(combinedAgencyFeatures).length > 0">
+              <div v-for="(agencyData, agencyName) in combinedAgencyFeatures" :key="agencyName">
+                <h6 class="title is-6">
+                  {{ agencyName }}
+                </h6>
+
+                <!-- Routes -->
+                <div v-if="Object.keys(agencyData.routes).length > 0">
+                  <div v-for="routeItem in agencyData.routes" :key="routeItem.id">
+                    <nuxt-link
+                      :to="makeRouteLink(routeItem.onestop_id, routeItem.feed_onestop_id, routeItem.feed_version_sha1, routeItem.route_id, routeItem.id, linkVersion)"
+                    >
+                      <tl-route-icon
+                        :route-type="routeItem.route_type"
+                        :route-short-name="routeItem.route_short_name"
+                        :route-long-name="routeItem.route_long_name"
+                      />
+                    </nuxt-link>
+                  </div>
+                </div>
+
+                <!-- Stops -->
+                <div v-if="agencyData.stops.length > 0">
+                  <div v-for="stop in agencyData.stops" :key="stop.id" class="stop-item">
+                    <nuxt-link
+                      :to="makeStopLink(stop.onestop_id, stop.feed_onestop_id, stop.feed_version_sha1, stop.stop_id, stop.id, linkVersion)"
+                      class="stop-link"
+                    >
+                      <span class="stop-icon">
+                        <o-icon :icon="getStopIcon(stop.location_type)" />
+                      </span>
+                      <span class="stop-name">
+                        {{ stop.stop_name }}
+                      </span>
+                    </nuxt-link>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Combined modal for routes and stops -->
+            <o-modal
               v-if="activeTab === ROUTES_TAB"
-              :agency-features="agencyFeatures"
-              :is-component-modal-active="showRouteModal"
-              @close="showRouteModal = false"
-            />
+              :active="showSelectionModal"
+              has-modal-card
+              @close="showSelectionModal = false"
+            >
+              <template #default>
+                <div v-if="showSelectionModal" class="modal-card">
+                  <header class="modal-card-head">
+                    <p class="modal-card-title">
+                      Select Route or Stop
+                    </p>
+                    <button type="button" class="delete" @click="showSelectionModal = false" />
+                  </header>
+                  <section class="modal-card-body">
+                    <div v-for="(agencyData, agencyName) in combinedAgencyFeatures" :key="agencyName">
+                      <h6 class="title is-6 agency-section-header">
+                        {{ agencyName }}
+                      </h6>
 
-            <div v-if="Object.keys(agencyFeatures).length == 0">
-              <p v-if="currentZoom >= 8">
-                Use your cursor to highlight routes and see their names here.<br>
-                Click on a route for more details.
-              </p>
-              <p class="content block is-small pt-2">
-                <a href="https://www.transit.land/documentation/vector-tiles" target="_blank">Learn more about Transitland v2 Vector Tiles</a>
-              </p>
+                      <!-- Routes for this agency -->
+                      <div v-if="Object.keys(agencyData.routes).length > 0">
+                        <div v-for="routeItem in agencyData.routes" :key="routeItem.id">
+                          <nuxt-link
+                            :to="makeRouteLink(routeItem.onestop_id, routeItem.feed_onestop_id, routeItem.feed_version_sha1, routeItem.route_id, routeItem.id, linkVersion)"
+                          >
+                            <tl-route-icon
+                              :key="routeItem.id"
+                              :route-type="routeItem.route_type"
+                              :route-short-name="routeItem.route_short_name"
+                              :route-long-name="routeItem.route_long_name"
+                            />
+                          </nuxt-link>
+                        </div>
+                      </div>
+
+                      <!-- Stops for this agency -->
+                      <div v-if="agencyData.stops.length > 0" class="stops-section">
+                        <div v-for="stop in agencyData.stops" :key="stop.id" class="stop-item-modal">
+                          <nuxt-link
+                            :to="makeStopLink(stop.onestop_id, stop.feed_onestop_id, stop.feed_version_sha1, stop.stop_id, stop.id, linkVersion)"
+                            class="stop-link-modal"
+                          >
+                            <div class="stop-name-large">
+                              <span class="stop-icon-modal">
+                                <o-icon :icon="getStopIcon(stop.location_type)" />
+                              </span>
+                              {{ stop.stop_name }}
+                            </div>
+                          </nuxt-link>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                </div>
+              </template>
+            </o-modal>
+
+            <div v-if="Object.keys(combinedAgencyFeatures).length === 0" class="content">
+              <template v-if="currentZoom < 8">
+                <p>Zoom in to select routes and stops.</p>
+              </template>
+              <template v-else-if="currentZoom < 14">
+                <p>Use your cursor to highlight routes and see their names here.</p>
+                <p>Click on a route for more details.</p>
+                <p>Zoom in further to see stops.</p>
+              </template>
+              <template v-else>
+                <p>Use your cursor to highlight routes or stops.</p>
+                <p>Click on a route line or stop point to view its details.</p>
+              </template>
             </div>
           </o-tab-item>
           <o-tab-item :value="DEPARTURE_TAB" label="Departures">
@@ -113,7 +207,10 @@
         </o-tabs>
       </div>
       <!-- Modal Options -->
-      <tl-modal v-model="showRouteOptionsModal" title="Route Options">
+      <tl-modal v-model="showRouteOptionsModal" title="Route & Stop Options">
+        <h6 class="title is-6">
+          Route lines
+        </h6>
         <div class="field">
           <o-checkbox
             v-model="showGeneratedGeometries"
@@ -128,6 +225,48 @@
             Show problematic geometries
           </o-checkbox>
         </div>
+
+        <h6 class="title is-6" style="margin-top: 20px;">
+          Stop points
+        </h6>
+        <p class="mb-2">
+          Show stops of location types:
+        </p>
+        <div class="field">
+          <o-checkbox
+            v-model="showStopLocationTypes[0]"
+          >
+            Stops & Station Platforms
+          </o-checkbox>
+        </div>
+        <div class="field">
+          <o-checkbox
+            v-model="showStopLocationTypes[1]"
+          >
+            Stations
+          </o-checkbox>
+        </div>
+        <div class="field">
+          <o-checkbox
+            v-model="showStopLocationTypes[2]"
+          >
+            Station Entrances/Exits
+          </o-checkbox>
+        </div>
+        <div class="field">
+          <o-checkbox
+            v-model="showStopLocationTypes[3]"
+          >
+            Generic Nodes in Station Pathways
+          </o-checkbox>
+        </div>
+        <div class="field">
+          <o-checkbox
+            v-model="showStopLocationTypes[4]"
+          >
+            Boarding Areas in Station Pathways
+          </o-checkbox>
+        </div>
       </tl-modal>
     </div>
   </client-only>
@@ -137,6 +276,24 @@
 import { useRoute, useRuntimeConfig, navigateTo } from '#imports'
 import { ref, computed, watch } from 'vue'
 import { useApiEndpoint } from '../../composables/useApiEndpoint'
+import { makeStopLink, makeRouteLink } from '../../lib/filters'
+
+// Types
+interface Stop {
+  id: number
+  onestop_id: string
+  feed_onestop_id: string
+  feed_version_sha1: string
+  stop_id: string
+  stop_name: string
+  location_type: number
+  agencies?: string
+  parent_station?: string
+}
+
+interface StopFeatures {
+  [key: string]: Stop[]
+}
 
 const route = useRoute()
 
@@ -170,18 +327,72 @@ const rerenderKey = ref(0)
 const ROUTES_TAB = 'routes'
 const DEPARTURE_TAB = 'departures'
 const DIRECTIONS_TAB = 'directions'
+const linkVersion = false
+
+// Helper functions
+function getStopIcon (locationType: number): string {
+  // GTFS location_type values:
+  // 0 = Stop/platform, 1 = Station, 2 = Entrance/Exit, 3 = Generic Node, 4 = Boarding Area
+  const icons: Record<number, string> = {
+    0: 'map-marker', // Stop/platform
+    1: 'home-map-marker', // Station
+    2: 'location-enter', // Entrance/Exit
+    3: 'circle', // Generic node
+    4: 'map-marker-circle' // Boarding area
+  }
+  return icons[locationType] || 'map-marker'
+}
+
+function getStopAgencyName (stop: Stop): string {
+  // Try to get agency from agencies field
+  if (stop.agencies) {
+    try {
+      const agencies = JSON.parse(stop.agencies)
+      if (agencies && agencies.length > 0 && agencies[0].agency_name) {
+        return agencies[0].agency_name
+      }
+    } catch (e) {
+      // If parsing fails, fall through to next option
+    }
+  }
+
+  // Fall back to parent station name if available
+  if (stop.parent_station) {
+    try {
+      const parentStation = JSON.parse(stop.parent_station)
+      if (parentStation && parentStation.stop_name) {
+        return parentStation.stop_name
+      }
+    } catch (e) {
+      // If parsing fails, fall through to next option
+    }
+  }
+
+  // Fall back to feed_onestop_id
+  return stop.feed_onestop_id || 'Unknown'
+}
 
 const activeTab = ref(ROUTES_TAB)
 const useHash = true
 const initialZoom = ref(1.5)
 const initialCenter = ref([-119.49, 12.66])
 const currentZoom = ref(1.5)
-const showRouteModal = ref(false)
+const showSelectionModal = ref(false)
 const showRouteOptionsModal = ref(false)
 const agencyFeatures = ref({})
+const stopFeatures = ref<StopFeatures>({})
 const showGeneratedGeometries = ref(true)
 const showProblematicGeometries = ref(false)
 const currentBbox = ref(null)
+
+// Stop location type filters
+const showStopLocationTypes = ref({
+  0: true, // Stop/platform
+  1: false, // Station
+  2: false, // Entrance/Exit
+  3: false, // Generic Node
+  4: false // Boarding Area
+})
 
 // Generic map event handlers
 
@@ -200,8 +411,9 @@ function mapClick (e: any) {
 
   // Handle routes tab
   if (activeTab.value === ROUTES_TAB) {
-    if (Object.keys(agencyFeatures.value).length > 0) {
-      showRouteModal.value = true
+    // Show modal if any routes or stops are selected
+    if (Object.keys(combinedAgencyFeatures.value).length > 0) {
+      showSelectionModal.value = true
     }
   }
 
@@ -227,6 +439,54 @@ function mapClick (e: any) {
 function routesSetAgencyFeatures (e: any) {
   agencyFeatures.value = e
 }
+
+/// ////////////////////
+// Stops
+/// ////////////////////
+
+function routesSetStopFeatures (e: any) {
+  stopFeatures.value = e
+}
+
+// Filter stops by location type
+const filteredStopFeatures = computed(() => {
+  const filtered: StopFeatures = {}
+  for (const [key, stops] of Object.entries(stopFeatures.value)) {
+    const filteredStops = stops.filter(stop => showStopLocationTypes.value[stop.location_type] === true)
+    if (filteredStops.length > 0) {
+      filtered[key] = filteredStops
+    }
+  }
+  return filtered
+})
+
+// Combined agency features (routes + stops grouped by agency)
+const combinedAgencyFeatures = computed(() => {
+  const combined: any = {}
+
+  // Add routes grouped by agency
+  for (const [agencyName, routes] of Object.entries(agencyFeatures.value)) {
+    if (!combined[agencyName]) {
+      combined[agencyName] = { routes: {}, stops: [] }
+    }
+    combined[agencyName].routes = routes
+  }
+
+  // Add stops grouped by agency
+  for (const stops of Object.values(filteredStopFeatures.value)) {
+    for (const stop of stops) {
+      const agencyName = getStopAgencyName(stop)
+      if (agencyName) {
+        if (!combined[agencyName]) {
+          combined[agencyName] = { routes: {}, stops: [] }
+        }
+        combined[agencyName].stops.push(stop)
+      }
+    }
+  }
+
+  return combined
+})
 
 /// ////////////////////
 // Departures
@@ -329,7 +589,7 @@ const routeTiles = computed(() => {
 const stopTiles = computed(() => {
   return {
     id: 'stops',
-    url: `${useApiEndpoint}/tiles/stops/tiles/{z}/{x}/{y}.pbf`,
+    url: `${useApiEndpoint()}/tiles/stops/tiles/{z}/{x}/{y}.pbf`,
     minzoom: 14,
     maxzoom: 14
   }
@@ -346,7 +606,7 @@ const activeFeatures = computed(() => {
 
 watch(activeTab, () => {
   // Hacky; always set modal back to empty when switching tabs
-  showRouteModal.value = false
+  showSelectionModal.value = false
   showRouteOptionsModal.value = false
   // rerenderKey.value += 1
 })
@@ -406,12 +666,32 @@ const markers = computed(() => {
 .tl-map-panel {
     user-select: none;
     position: absolute !important;
-    margin: 0px;
-    padding: 10px;
     top: 10px;
     left: 10px;
-    max-width:90vw;
+    max-width: 90vw;
+    min-width: 320px;
+}
+
+/* Tablet: 769px and up */
+@media screen and (min-width: 769px) {
+  .tl-map-panel {
+    max-width: 600px;
     min-width: 565px;
+  }
+}
+
+/* Desktop: 1024px and up */
+@media screen and (min-width: 1024px) {
+  .tl-map-panel {
+    max-width: 650px;
+  }
+}
+
+/* Widescreen: 1216px and up */
+@media screen and (min-width: 1216px) {
+  .tl-map-panel {
+    max-width: 700px;
+  }
 }
 
 .tl-map-panel-tabs div[role=tab] button {
@@ -429,9 +709,32 @@ const markers = computed(() => {
     background-color: var(--bulma-scheme-main) !important;
     padding:10px !important;
     max-height:80vh;
-    min-width:330px;
-    max-width:80vw;
+    min-width:280px;
+    max-width:85vw;
     overflow-y:auto;
+    overflow-x:hidden;
+}
+
+/* Tablet: 769px and up */
+@media screen and (min-width: 769px) {
+  .tl-map-panel-tabs .tabs-content {
+    min-width: 330px;
+    max-width: 580px;
+  }
+}
+
+/* Desktop: 1024px and up */
+@media screen and (min-width: 1024px) {
+  .tl-map-panel-tabs .tabs-content {
+    max-width: 630px;
+  }
+}
+
+/* Widescreen: 1216px and up */
+@media screen and (min-width: 1216px) {
+  .tl-map-panel-tabs .tabs-content {
+    max-width: 680px;
+  }
 }
 .tl-map-search-autocomplete{
   width:450px;
@@ -445,5 +748,107 @@ const markers = computed(() => {
 }
 .is-fullwidth {
   width:100%
+}
+
+/* Modal stop styling */
+.stop-section-header {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--bulma-border);
+}
+
+.stop-item-modal {
+  margin-bottom: 10px;
+}
+
+.stop-link-modal {
+  display: block;
+  padding: 4px 0;
+  text-decoration: none;
+  color: var(--bulma-link);
+  transition: color 0.2s;
+}
+
+.stop-link-modal:hover {
+  color: var(--bulma-link-hover);
+  text-decoration: underline;
+}
+
+.stop-icon-modal {
+  display: inline-block;
+  width: 26px;
+  text-align: center;
+  position: relative;
+  top: 3px;
+  margin-right: 4px;
+}
+
+.stop-name-large {
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.stop-details {
+  font-size: 12px;
+  color: var(--bulma-text);
+  margin-left: 30px;
+  margin-bottom: 4px;
+}
+
+.stop-agency {
+  font-size: 12px;
+  color: var(--bulma-text-weak);
+  margin-left: 30px;
+  font-style: italic;
+}
+
+.agency-section-header {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--bulma-border);
+}
+
+.agency-section-header:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+.stops-section {
+  margin-top: 10px;
+}
+
+.stop-item {
+  overflow: hidden;
+  padding: 0px;
+  margin: 0px;
+  margin-bottom: 10px;
+}
+
+.stop-link {
+  display: block;
+  text-decoration: none;
+  color: var(--bulma-link);
+}
+
+.stop-link:hover {
+  color: var(--bulma-link-hover);
+  text-decoration: underline;
+}
+
+.stop-icon {
+  display: inline-block;
+  width: 26px;
+  text-align: center;
+  position: relative;
+  top: 3px;
+}
+
+.stop-name {
+  display: inline;
+  font-size: 14px;
 }
 </style>
