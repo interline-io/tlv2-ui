@@ -419,7 +419,7 @@ function mapClick (e: any) {
 
   // Handle departures tab
   if (activeTab.value === DEPARTURE_TAB) {
-    departuresSetLocation(coords)
+    departuresSetLocationFromClick(coords)
   }
 
   // Handle directions tab
@@ -493,9 +493,20 @@ const combinedAgencyFeatures = computed(() => {
 /// ////////////////////
 
 async function departuresSetLocation (coords: number[]) {
+  // Update map center and zoom for geolocation/search
+  initialCenter.value = [coords[0], coords[1]]
+  initialZoom.value = 16
+  rerenderKey.value += 1
+
   await navigateTo({
     query: { lon: coords[0].toFixed(5), lat: coords[1].toFixed(5) },
-    hash: window.location.hash
+  })
+}
+
+async function departuresSetLocationFromClick (coords: number[]) {
+  // Only update coordinates, not zoom/center for map clicks
+  await navigateTo({
+    query: { lon: coords[0].toFixed(5), lat: coords[1].toFixed(5) },
   })
 }
 
