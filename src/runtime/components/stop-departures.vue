@@ -20,6 +20,11 @@
         <p>Try increasing the search radius or selecting the "fallback service day" option.</p>
       </div>
 
+      <div v-if="showLastFetched && lastFetched" :key="lastFetchedDisplayKey" class="tags has-addons">
+        <span class="tag is-small">Last checked</span>
+        <span class="tag is-success is-small">{{ fromNowDate(lastFetched) }}</span>
+      </div>
+
       <div v-for="(ss, sskey) of filteredStopsGroupRoutes" :key="sskey" class="mb-3">
         <div class="agency-header title is-6">
           {{ ss.agency.agency_name }}
@@ -201,6 +206,7 @@ const props = withDefaults(defineProps<{
   stopIds?: number[]
 }>(), {
   searchCoords: null,
+  showLastFetched: true,
   searchRadius: 200,
   nextSeconds: 7200,
   routesPerAgency: 10,
@@ -276,11 +282,8 @@ const timer = ref<NodeJS.Timeout | null>(null)
 const error = ref<string | null>(null)
 const lastFetched = ref<Date | null>(null)
 const lastFetchedDisplayKey = ref<number>(0) // force redraw
-const autoRefresh = toRef(props, 'autoRefresh')
-const useServiceWindow = toRef(props, 'useServiceWindow')
 const routesPerAgencyShadow = ref<number>(props.routesPerAgency)
 const stops = ref<Stop[]>([])
-const radius = toRef(props, 'searchRadius')
 
 // Computed properties for Apollo query
 const coordsOrStops = computed<boolean>(() => {
@@ -290,18 +293,18 @@ const coordsOrStops = computed<boolean>(() => {
 const queryVariables = computed<QueryVariables>(() => {
   const q: QueryVariables = {
     stwhere: {
-      use_service_window: useServiceWindow.value,
+      use_service_window: props.useServiceWindow,
       next: props.nextSeconds
     }
   }
   if (props.stopIds.length > 0) {
     q.stopIds = props.stopIds
-  } else if (props.searchCoords && radius.value > 0) {
+  } else if (props.searchCoords && props.searchRadius && props.searchRadius > 0) {
     q.where = {
       near: {
         lon: props.searchCoords[0],
         lat: props.searchCoords[1],
-        radius: radius.value
+        radius: props.searchRadius
       }
     }
   }
@@ -476,7 +479,7 @@ const haversineDistance = (fromPoint: Point, toPoint: Point): number => {
 
 const startTimer = (): void => {
   timer.value = setInterval(() => {
-    if (autoRefresh.value) {
+    if (props.autoRefresh) {
       refetchDepartures()
     }
   }, props.autoRefreshInterval * 1000)
@@ -498,7 +501,7 @@ const expandRoutesPerAgency = (): void => {
 }
 
 // Watchers
-watch(autoRefresh, (v) => {
+watch(() => props.autoRefresh, (v) => {
   // Helper to restart interval
   if (v) {
     refetchDepartures()

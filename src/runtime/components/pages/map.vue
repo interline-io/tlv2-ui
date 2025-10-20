@@ -203,6 +203,7 @@
                 :auto-refresh="departureAutoRefresh"
                 :auto-refresh-interval="60"
                 :use-service-window="departureUseServiceWindow"
+                class="mb-3 mt-3"
               />
               <template #loginText>
                 <p>
