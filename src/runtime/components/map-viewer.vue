@@ -10,6 +10,7 @@ import { useApiEndpoint } from '../composables/useApiEndpoint'
 import { useAuthHeaders } from '../composables/useAuthHeaders'
 import { useNuxtApp } from 'nuxt/app'
 import mapLayers from './map-layers'
+import { LonLat, Bbox, Feature } from '../lib/geom'
 
 // Define types for better TypeScript support
 interface MarkerCoord {
@@ -21,15 +22,6 @@ interface MarkerObject {
   lng: number
   lat: number
   onDragEnd?: (event: any) => void
-}
-
-interface Feature {
-  type: 'Feature'
-  geometry: {
-    type: string
-    coordinates: any
-  }
-  properties?: any
 }
 
 interface TileSource {
@@ -54,7 +46,7 @@ interface MapViewerProps {
   routeFeatures?: Feature[]
   interactive?: boolean
   autoFit?: boolean
-  center?: number[] | null
+  center?: LonLat | null
   circleRadius?: number
   circleColor?: string
   zoom?: number
@@ -109,7 +101,7 @@ const once = <T extends (...args: any[]) => any>(fn: T): T => {
 const emit = defineEmits<{
   mapClick: [event: any]
   setZoom: [zoom: number]
-  mapMove: [data: { zoom: number, bbox: number[][] }]
+  mapMove: [data: { zoom: number, bbox: Bbox }]
   setAgencyFeatures: [features: any]
   setStopFeatures: [features: any]
 }>()
@@ -217,13 +209,13 @@ watch(() => props.center, (newVal, oldVal) => {
     return
   }
   if (map.value && props.center) {
-    map.value.jumpTo({ center: props.center as [number, number], zoom: props.zoom })
+    map.value.jumpTo({ center: [props.center.lon, props.center.lat], zoom: props.zoom })
   }
 })
 
 watch(() => props.zoom, () => {
   if (map.value && props.center) {
-    map.value.jumpTo({ center: props.center as [number, number], zoom: props.zoom })
+    map.value.jumpTo({ center: [props.center.lon, props.center.lat], zoom: props.zoom })
   }
 })
 
@@ -288,8 +280,8 @@ const initMap = async () => {
       }
     }
   }
-  if (props.center && props.center.length > 0) {
-    opts.center = props.center
+  if (props.center) {
+    opts.center = [props.center.lon, props.center.lat]
   }
   if (props.zoom) {
     opts.zoom = props.zoom
@@ -542,7 +534,11 @@ const mapZoom = () => {
 
 const mapMove = () => {
   if (map.value) {
-    emit('mapMove', { zoom: map.value.getZoom(), bbox: map.value.getBounds().toArray() })
+    const bbox = {
+      sw: { lon: map.value.getBounds().getSouthWest().lng, lat: map.value.getBounds().getSouthWest().lat },
+      ne: { lon: map.value.getBounds().getNorthEast().lng, lat: map.value.getBounds().getNorthEast().lat }
+    }
+    emit('mapMove', { zoom: map.value.getZoom(), bbox })
   }
 }
 const mapMouseMove = (e: any) => {

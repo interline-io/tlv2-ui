@@ -304,10 +304,11 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute, useRuntimeConfig, navigateTo } from '#imports'
+import { useRoute, navigateTo } from '#imports'
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useApiEndpoint } from '../../composables/useApiEndpoint'
 import { makeStopLink, makeRouteLink } from '../../lib/filters'
+import { Bbox, LonLat, lonLatStr } from '../../lib/geom'
 
 // Types
 interface Stop {
@@ -416,7 +417,7 @@ function getStopAgencyName (stop: Stop): string {
 const activeTab = ref(ROUTES_TAB)
 const useHash = true
 const initialZoom = ref(1.5)
-const initialCenter = ref([-119.49, 12.66])
+const initialCenter = ref<LonLat>({ lon: -119.49, lat: 12.66 })
 const currentZoom = ref(1.5)
 const showSelectionModal = ref(false)
 const showUnifiedOptionsModal = ref(false)
@@ -425,7 +426,7 @@ const agencyFeatures = ref({})
 const stopFeatures = ref<StopFeatures>({})
 const showGeneratedGeometries = ref(true)
 const showProblematicGeometries = ref(false)
-const currentBbox = ref(null)
+const currentBbox = ref<Bbox | null>(null)
 
 // Stop location type filters
 const showStopLocationTypes = ref({
@@ -455,7 +456,7 @@ function mapSetZoom (v: number) {
 
 function mapClick (e: any) {
   // Convert to coordinates
-  const coords = [e.lngLat.lng, e.lngLat.lat]
+  const coords = { lon: e.lngLat.lng, lat: e.lngLat.lat }
 
   // Handle routes tab
   if (activeTab.value === ROUTES_TAB) {
@@ -473,8 +474,8 @@ function mapClick (e: any) {
 
   // Handle directions tab
   if (activeTab.value === DIRECTIONS_TAB) {
-    if (fromPlaceCoords.value.length === 0 || toPlaceCoords.value.length === 2) {
-      directionsSetPlaces(coords, [])
+    if (!fromPlaceCoords.value || toPlaceCoords.value) {
+      directionsSetPlaces(coords, null)
     } else {
       directionsSetPlaces(fromPlaceCoords.value, coords)
     }
@@ -541,42 +542,40 @@ const combinedAgencyFeatures = computed(() => {
 // Departures
 /// ////////////////////
 
-async function departuresSetLocation (coords: number[]) {
+async function departuresSetLocation (coords: LonLat) {
   // Update map center and zoom for geolocation/search
-  initialCenter.value = [coords[0], coords[1]]
+  initialCenter.value = coords
   initialZoom.value = 16
   rerenderKey.value += 1
   await navigateTo({
-    query: { lon: coords[0].toFixed(5), lat: coords[1].toFixed(5) },
+    query: { lon: coords.lon.toFixed(5), lat: coords.lat.toFixed(5) },
   })
 }
 
-async function departuresSetLocationFromClick (coords: number[]) {
+async function departuresSetLocationFromClick (coords: LonLat) {
   // Only update coordinates, not zoom/center for map clicks
   await navigateTo({
-    query: { lon: coords[0].toFixed(5), lat: coords[1].toFixed(5) },
+    query: { lon: coords.lon.toFixed(5), lat: coords.lat.toFixed(5) },
   })
 }
 
-async function routesSetLocation (coords: number[]) {
+async function routesSetLocation (coords: LonLat) {
   // Update map center and zoom for geolocation/search in Routes & Stops tab
-  initialCenter.value = [coords[0], coords[1]]
+  initialCenter.value = coords
   initialZoom.value = 16
   rerenderKey.value += 1
-
   await navigateTo({
-    query: { lon: coords[0].toFixed(5), lat: coords[1].toFixed(5) },
+    query: { lon: coords.lon.toFixed(5), lat: coords.lat.toFixed(5) },
   })
 }
 
-async function directionsSetLocation (coords: number[]) {
+async function directionsSetLocation (coords: LonLat) {
   // Update map center and zoom for geolocation/search in Directions tab
-  initialCenter.value = [coords[0], coords[1]]
+  initialCenter.value = coords
   initialZoom.value = 16
   rerenderKey.value += 1
-
   await navigateTo({
-    query: { lon: coords[0].toFixed(5), lat: coords[1].toFixed(5) },
+    query: { lon: coords.lon.toFixed(5), lat: coords.lat.toFixed(5) },
   })
 }
 
@@ -611,14 +610,14 @@ const departAt = computed((): string => {
   return props.departAtParam?.toString() || loadTime
 })
 
-const fromPlaceCoords = computed((): number[] => {
+const fromPlaceCoords = computed((): LonLat | null => {
   const coords = splitCoords(props.fromPlaceParam)
-  return coords.length === 2 ? coords : []
+  return coords.length === 2 ? { lon: coords[0], lat: coords[1] } : null
 })
 
-const toPlaceCoords = computed((): number[] => {
+const toPlaceCoords = computed((): LonLat | null => {
   const coords = splitCoords(props.toPlaceParam)
-  return coords.length === 2 ? coords : []
+  return coords.length === 2 ? { lon: coords[0], lat: coords[1] } : null
 })
 
 async function directionsSetDepartAt (v: string) {
@@ -643,10 +642,10 @@ async function directionsReset () {
   })
 }
 
-async function directionsSetPlaces (fromPlace: number[] | null, toPlace: number[] | null) {
+async function directionsSetPlaces (fromPlace: LonLat | null, toPlace: LonLat | null) {
   const pathNoHash = route.path.split('#')[0]
-  const fromPlaceStr = (fromPlace || []).map(v => v.toFixed(6)).join(',')
-  const toPlaceStr = (toPlace || []).map(v => v.toFixed(6)).join(',')
+  const fromPlaceStr = lonLatStr(fromPlace)
+  const toPlaceStr = lonLatStr(toPlace)
   await navigateTo({
     path: pathNoHash,
     query: { ...route.query, lon: '', lat: '', fromPlace: fromPlaceStr, toPlace: toPlaceStr },
@@ -704,12 +703,10 @@ const initializeMapFromUrl = () => {
   // Fallback to lon/lat params if no valid hash
     console.log('No hash, checking lon/lat params')
     if (props.lonParam && props.latParam) {
-      const lon = parseFloat(props.lonParam)
-      const lat = parseFloat(props.latParam)
-
-      if (!isNaN(lon) && !isNaN(lat)) {
-        console.log('Setting map center to lon/lat params:', lon, lat)
-        initialCenter.value = [lon, lat]
+      const pt = { lon: parseFloat(props.lonParam), lat: parseFloat(props.latParam) }
+      if (!isNaN(pt.lon) && !isNaN(pt.lat)) {
+        console.log('Setting map center to lon/lat params:', pt.lon, pt.lat)
+        initialCenter.value = pt
         initialZoom.value = 16
         rerenderKey.value += 1
       }
@@ -774,7 +771,7 @@ const markers = computed(() => {
   }
 
   if (activeTab.value === DIRECTIONS_TAB) {
-    if (fromPlaceCoords.value.length === 2) {
+    if (fromPlaceCoords.value) {
       ret.push({
         lng: fromPlaceCoords.value[0],
         lat: fromPlaceCoords.value[1],
@@ -782,11 +779,11 @@ const markers = computed(() => {
         label: 'A',
         draggable: true,
         onDragEnd: (c: any) => {
-          directionsSetPlaces([c.target.getLngLat().lng, c.target.getLngLat().lat], toPlaceCoords.value)
+          directionsSetPlaces({ lon: c.target.getLngLat().lng, lat: c.target.getLngLat().lat }, toPlaceCoords.value)
         }
       })
     }
-    if (toPlaceCoords.value.length === 2) {
+    if (toPlaceCoords.value) {
       ret.push({
         lng: toPlaceCoords.value[0],
         lat: toPlaceCoords.value[1],
@@ -794,7 +791,7 @@ const markers = computed(() => {
         label: 'B',
         draggable: true,
         onDragEnd: (c: any) => {
-          directionsSetPlaces(fromPlaceCoords.value, [c.target.getLngLat().lng, c.target.getLngLat().lat])
+          directionsSetPlaces(fromPlaceCoords.value, { lon: c.target.getLngLat().lng, lat: c.target.getLngLat().lat })
         }
       })
     }
