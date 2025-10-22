@@ -64,12 +64,12 @@
 </template>
 
 <script setup lang="ts">
-import haversine from 'haversine'
 import { gql } from 'graphql-tag'
 import { ref, computed, watch, onMounted, toRef } from 'vue'
 import { useQuery } from '@vue/apollo-composable'
 import type { Geometry, Feature, Point } from 'geojson'
 import { fromNowDate, makeRouteLink, reformatHMS } from '../lib/filters'
+import { haversineLonLat, LonLat } from '../lib/geom'
 
 // Types
 interface StopDeparturesResponse {
@@ -195,7 +195,7 @@ interface QueryVariables {
 }
 
 const props = withDefaults(defineProps<{
-  searchCoords?: number[] | null
+  searchCoords?: LonLat
   searchRadius?: number
   nextSeconds?: number
   routesPerAgency?: number
@@ -287,7 +287,7 @@ const stops = ref<Stop[]>([])
 
 // Computed properties for Apollo query
 const coordsOrStops = computed<boolean>(() => {
-  return (props.searchCoords?.length === 2 || props.stopIds.length > 0)
+  return (!!props.searchCoords || props.stopIds.length > 0)
 })
 
 const queryVariables = computed<QueryVariables>(() => {
@@ -302,8 +302,8 @@ const queryVariables = computed<QueryVariables>(() => {
   } else if (props.searchCoords && props.searchRadius && props.searchRadius > 0) {
     q.where = {
       near: {
-        lon: props.searchCoords[0],
-        lat: props.searchCoords[1],
+        lon: props.searchCoords.lon,
+        lat: props.searchCoords.lat,
         radius: props.searchRadius
       }
     }
@@ -376,19 +376,12 @@ const stopFeatures = computed<StopFeature[]>(() => {
   return features
 })
 
-const currentPoint = computed<Point>(() => {
-  return {
-    type: 'Point',
-    coordinates: props.searchCoords || []
-  }
-})
-
 const filteredStops = computed<Stop[]>(() => {
   return stops.value.filter((s) => {
     return s.departures.length > 0 && s.location_type === 0 && s.geometry.coordinates
   }).sort((a, b) => {
-    const ad = haversineDistance(currentPoint.value, a.geometry)
-    const bd = haversineDistance(currentPoint.value, b.geometry)
+    const ad = haversineLonLat(props.searchCoords, { lon: a.geometry.coordinates[0], lat: a.geometry.coordinates[1] })
+    const bd = haversineLonLat(props.searchCoords, { lon: b.geometry.coordinates[0], lat: b.geometry.coordinates[1] })
     return ad - bd
   })
 })
@@ -464,18 +457,6 @@ const filteredStopsGroupRoutes = computed<AgencyGroup[]>(() => {
   })
   return ret
 })
-
-// Methods
-const haversineDistance = (fromPoint: Point, toPoint: Point): number => {
-  const d = haversine({
-    latitude: fromPoint.coordinates[1],
-    longitude: fromPoint.coordinates[0]
-  }, {
-    latitude: toPoint.coordinates[1],
-    longitude: toPoint.coordinates[0]
-  }, { unit: 'meter' })
-  return d
-}
 
 const startTimer = (): void => {
   timer.value = setInterval(() => {

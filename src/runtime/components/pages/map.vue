@@ -579,24 +579,24 @@ async function directionsSetLocation (coords: LonLat) {
   })
 }
 
-const departureSearchCoords = computed((): number[] => {
+const departureSearchCoords = computed((): LonLat | null => {
   if (activeTab.value !== DEPARTURE_TAB) {
-    return []
+    return null
   }
-  if (props.lonParam && props.lonParam) {
-    return splitCoords(props.lonParam + ',' + props.latParam)
+  if (props.lonParam && props.latParam) {
+    return { lon: parseFloat(props.lonParam), lat: parseFloat(props.latParam) }
   }
-  return []
+  return null
 })
 
-const routesCoords = computed((): number[] => {
+const routesCoords = computed((): LonLat | null => {
   if (activeTab.value !== ROUTES_TAB) {
-    return []
+    return null
   }
-  if (props.lonParam && props.lonParam) {
-    return splitCoords(props.lonParam + ',' + props.latParam)
+  if (props.lonParam && props.latParam) {
+    return { lon: parseFloat(props.lonParam), lat: parseFloat(props.latParam) }
   }
-  return []
+  return null
 })
 
 /// ////////////////////
@@ -611,13 +611,11 @@ const departAt = computed((): string => {
 })
 
 const fromPlaceCoords = computed((): LonLat | null => {
-  const coords = splitCoords(props.fromPlaceParam)
-  return coords.length === 2 ? { lon: coords[0], lat: coords[1] } : null
+  return splitCoords(props.fromPlaceParam)
 })
 
 const toPlaceCoords = computed((): LonLat | null => {
-  const coords = splitCoords(props.toPlaceParam)
-  return coords.length === 2 ? { lon: coords[0], lat: coords[1] } : null
+  return splitCoords(props.toPlaceParam)
 })
 
 async function directionsSetDepartAt (v: string) {
@@ -653,12 +651,12 @@ async function directionsSetPlaces (fromPlace: LonLat | null, toPlace: LonLat | 
   })
 }
 
-function splitCoords (v: any): number[] {
+function splitCoords (v: any): LonLat | null {
   const vs = (v || '').split(',').map(parseFloat).filter((v: number) => !isNaN(v))
   if (vs.length === 2) {
-    return vs
+    return { lon: vs[0], lat: vs[1] }
   }
-  return []
+  return null
 }
 
 /// ////////////////////////
@@ -748,10 +746,10 @@ onMounted(() => {
 const markers = computed(() => {
   const ret = []
   if (activeTab.value === ROUTES_TAB) {
-    if (routesCoords.value.length === 2) {
+    if (routesCoords.value) {
       ret.push({
-        lng: routesCoords.value[0],
-        lat: routesCoords.value[1],
+        lng: routesCoords.value.lon,
+        lat: routesCoords.value.lat,
         color: '#ff9500',
         label: 'Search',
         draggable: false
@@ -759,10 +757,10 @@ const markers = computed(() => {
     }
   }
   if (activeTab.value === DEPARTURE_TAB) {
-    if (departureSearchCoords.value.length === 2) {
+    if (departureSearchCoords.value) {
       ret.push({
-        lng: departureSearchCoords.value[0],
-        lat: departureSearchCoords.value[1],
+        lng: departureSearchCoords.value.lon,
+        lat: departureSearchCoords.value.lat,
         color: '#75a1ff',
         label: 'Search',
         draggable: false
@@ -773,8 +771,8 @@ const markers = computed(() => {
   if (activeTab.value === DIRECTIONS_TAB) {
     if (fromPlaceCoords.value) {
       ret.push({
-        lng: fromPlaceCoords.value[0],
-        lat: fromPlaceCoords.value[1],
+        lng: fromPlaceCoords.value.lon,
+        lat: fromPlaceCoords.value.lat,
         color: 'green',
         label: 'A',
         draggable: true,
@@ -785,8 +783,8 @@ const markers = computed(() => {
     }
     if (toPlaceCoords.value) {
       ret.push({
-        lng: toPlaceCoords.value[0],
-        lat: toPlaceCoords.value[1],
+        lng: toPlaceCoords.value.lon,
+        lat: toPlaceCoords.value.lat,
         color: 'red',
         label: 'B',
         draggable: true,
