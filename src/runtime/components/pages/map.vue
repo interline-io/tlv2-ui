@@ -26,32 +26,27 @@
 
       <div class="tl-map-panel tl-map-panel-tabs">
         <o-tabs v-model="activeTab" class="tl-tabs block" position="centered" type="boxed">
-          <o-tab-item :value="ROUTES_TAB" label="Routes & Stops" tab-class="tl-map-header-tab">
-            <!-- Unified header and search -->
-            <div class="level mb-2">
-              <div class="level-left">
-                <slot name="routesHeader">
-                  <h6 class="title is-6">
-                    Routes & Stops
-                  </h6>
-                </slot>
-              </div>
-              <div class="level-right">
-                <div class="level-item">
-                  <o-button variant="primary" size="small" @click="showUnifiedOptionsModal = true">
-                    <o-icon icon="cog" size="small" />
-                    <span>Options</span>
-                  </o-button>
-                </div>
-              </div>
-            </div>
+          <div class="tl-tab-nav">
+            <o-field grouped>
+              <tl-map-search
+                class="mb-2"
+                :bbox="currentBbox"
+                :include-stops="true"
+                @set-location="locationHandler"
+              />
+              <o-field>
+                <tl-geolocation @set-location="locationHandler" />
+              </o-field>
+              <o-field><o-button variant="primary" icon-right="cog" @click="showUnifiedOptionsModal = true" /></o-field>
+            </o-field>
+          </div>
 
-            <tl-map-search
-              class="mb-2"
-              :bbox="currentBbox"
-              :include-stops="true"
-              @set-location="locationHandler"
-            />
+          <o-tab-item :value="ROUTES_TAB" label="Routes & Stops" tab-class="tl-map-header-tab" tab-panel-class="tl-tab-overflow">
+            <slot name="routesHeader">
+              <h6 class="title is-6">
+                Routes & Stops
+              </h6>
+            </slot>
 
             <!-- Combined agency view in sidebar -->
             <div v-if="activeTab === ROUTES_TAB && Object.keys(combinedAgencyFeatures).length > 0">
@@ -169,31 +164,12 @@
             </o-modal>
           </o-tab-item>
 
-          <o-tab-item :value="DEPARTURE_TAB" label="Departures" tab-class="tl-map-header-tab">
-            <!-- Unified header and search -->
-            <div class="level mb-2">
-              <div class="level-left">
-                <slot name="departuresHeader">
-                  <h6 class="title is-6">
-                    Departures
-                  </h6>
-                </slot>
-              </div>
-              <div class="level-right">
-                <div class="level-item">
-                  <o-button variant="primary" size="small" @click="showUnifiedOptionsModal = true">
-                    <o-icon icon="cog" size="small" />
-                    <span>Options</span>
-                  </o-button>
-                </div>
-              </div>
-            </div>
-            <tl-map-search
-              class="mb-2"
-              :bbox="currentBbox"
-              :include-stops="true"
-              @set-location="locationHandler"
-            />
+          <o-tab-item :value="DEPARTURE_TAB" label="Departures" tab-class="tl-map-header-tab" tab-panel-class="tl-tab-overflow">
+            <slot name="departuresHeader">
+              <h6 class="title is-6">
+                Departures
+              </h6>
+            </slot>
 
             <tl-login-gate>
               <tl-stop-departures
@@ -805,13 +781,6 @@ const markers = computed(() => {
 .tl-map {
   position: relative;
 }
-
-.tl-map-header-tab {
-  background:#eee;
-  margin-left:5px;
-  margin-right:5px;
-}
-
 .tl-map-panel {
     user-select: none;
     position: absolute !important;
@@ -819,6 +788,15 @@ const markers = computed(() => {
     left: 10px;
     max-width: 90vw;
     min-width: 320px;
+}
+.tl-map-header-tab {
+  background:#eee;
+  margin-left:5px;
+  margin-right:5px;
+}
+
+.tl-map-panel-tabs .tabs-content {
+    background-color: var(--bulma-scheme-main) !important;
 }
 
 /* Tablet: 769px and up */
@@ -843,27 +821,6 @@ const markers = computed(() => {
   }
 }
 
-.tl-map-panel-tabs div[role=tab] button {
-    margin-right: 5px;
-}
-
-.tl-map-panel-tabs div[role=tab][aria-selected=false] button {
-    background-color: var(--bulma-background);
-}
-.tl-map-panel-tabs div[role=tab][aria-selected=true] button {
-    background-color: var(--bulma-scheme-main)
-}
-
-.tl-map-panel-tabs .tabs-content {
-    background-color: var(--bulma-scheme-main) !important;
-    padding:10px !important;
-    max-height:80vh;
-    min-width:280px;
-    max-width:85vw;
-    overflow-y:auto;
-    overflow-x:hidden;
-}
-
 /* Tablet: 769px and up */
 @media screen and (min-width: 769px) {
   .tl-map-panel-tabs .tabs-content {
@@ -885,12 +842,22 @@ const markers = computed(() => {
     max-width: 680px;
   }
 }
-.tl-map-search-autocomplete{
-  width:450px;
-}
+
 </style>
 
 <style scoped>
+.tl-tab-overflow {
+  padding-left:10px;
+  padding-right:0px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.tl-tab-nav {
+  padding-left:10px;
+  padding-right:10px;
+}
+
 .short-bottom {
   margin-bottom:0px;
   padding-bottom:0px;
@@ -937,20 +904,6 @@ const markers = computed(() => {
   font-weight: 600;
   font-size: 16px;
   margin-bottom: 8px;
-}
-
-.stop-details {
-  font-size: 12px;
-  color: var(--bulma-text);
-  margin-left: 30px;
-  margin-bottom: 4px;
-}
-
-.stop-agency {
-  font-size: 12px;
-  color: var(--bulma-text-weak);
-  margin-left: 30px;
-  font-style: italic;
 }
 
 .agency-section-header {

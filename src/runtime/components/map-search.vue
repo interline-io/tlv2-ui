@@ -1,35 +1,23 @@
 <template>
-  <div>
-    <o-field grouped expanded>
-      <o-field expanded>
-        <div style="position: relative;">
-          <o-autocomplete
-            v-model:input="searchInput"
-            class="tl-map-search-autocomplete"
-            expanded
-            placeholder="Search stops. Example: Penn Station"
-            :options="searchFilteredOptions"
-            :clearable="true"
-            icon="magnify"
-            @input="handleInput"
-            @select="handleSelect"
-          >
-            <template #default="{ option }">
-              {{ option.label }}
-              <span v-if="option.agencyName" class="tag">{{ option.agencyName }}</span>
-              <div v-for="rs of option.routeStops || []" :key="rs.route.id" class="clearfix tag">
-                {{ rs.route.agency.agency_name }} :{{ rs.route.route_short_name }}
-              </div>
-            </template>
-          </o-autocomplete>
-          <div v-if="isLoading" class="loading-indicator" style="position: absolute; top: 12px; right: 40px;" />
-        </div>
-      </o-field>
-      <o-field>
-        <tl-geolocation @set-location="setLocation" />
-      </o-field>
-    </o-field>
-  </div>
+  <o-autocomplete
+    v-model:input="searchInput"
+    class="tl-map-search-autocomplete"
+    expanded
+    placeholder="Search stops. Example: Penn Station"
+    :options="searchFilteredOptions"
+    :clearable="true"
+    icon="magnify"
+    @input="handleInput"
+    @select="handleSelect"
+  >
+    <template #default="{ option }">
+      {{ option.label }}
+      <span v-if="option.agencyName" class="tag">{{ option.agencyName }}</span>
+      <div v-for="rs of option.routeStops || []" :key="rs.route.id" class="clearfix tag">
+        {{ rs.route.agency.agency_name }} :{{ rs.route.route_short_name }}
+      </div>
+    </template>
+  </o-autocomplete>
 </template>
 
 <script setup lang="ts">
@@ -162,14 +150,9 @@ const bboxCenter = computed<LonLat | null>(() => {
   return { lon: centerLng, lat: centerLat }
 })
 
-// Computed property to check if any query is loading
-const isLoading = computed<boolean>(() => {
-  return loading.value
-})
-
 // Unbounded query (no bbox)
 const {
-  load: loadUnboundedQuery,
+  load: loadQuery,
   result: result,
   loading: loading,
   error: error
@@ -263,7 +246,7 @@ function executeSearchQueries (): void {
   }
 
   // Execute unbounded query (always runs when search is long enough)
-  loadUnboundedQuery(undefined, {
+  loadQuery(undefined, {
     includeStops: props.includeStops,
     includeRoutes: props.includeRoutes,
     routeFilter: {
@@ -311,21 +294,3 @@ function handleSelect (option: any): void {
   }
 }
 </script>
-
-<style scoped>
-/* Simple loading indicator */
-.loading-indicator {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border: 2px solid #f3f3f3;
-  border-top: 2px solid #3498db;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-</style>

@@ -158,9 +158,6 @@ interface RouteProperties {
 }
 
 // Typed GeoJSON Features
-type StopFeature = Feature<Point, StopProperties> & { id: number }
-type RouteFeature = Feature<Geometry, RouteProperties> & { id: number }
-
 interface RouteGroup {
   route: Route
   trip_headsign?: string
@@ -209,7 +206,7 @@ const props = withDefaults(defineProps<{
   showLastFetched: true,
   searchRadius: 200,
   nextSeconds: 7200,
-  routesPerAgency: 10,
+  routesPerAgency: 5,
   useServiceWindow: true,
   autoRefreshInterval: 60,
   autoRefresh: true,
@@ -331,49 +328,6 @@ onResult((queryResult) => {
 
 onError((e) => {
   error.value = e.message
-})
-// Computed properties
-const routeFeatures = computed<RouteFeature[]>(() => {
-  const features = new Map<number, RouteFeature>()
-  for (const stop of stops.value || []) {
-    for (const rs of stop.route_stops) {
-      const route = rs.route
-      if (features.has(route.id)) {
-        continue
-      }
-      let routeColor = route.route_color
-      if (routeColor && routeColor.substr(0, 1) !== '#') {
-        routeColor = '#' + routeColor
-      }
-      features.set(route.id, {
-        type: 'Feature',
-        geometry: route.geometry,
-        properties: {
-          id: route.id,
-          route_short_name: route.route_short_name,
-          route_long_name: route.route_long_name,
-          route_type: route.route_type,
-          route_color: routeColor,
-          headway_secs: -1
-        },
-        id: route.id
-      })
-    }
-  }
-  return Array.from(features.values())
-})
-
-const stopFeatures = computed<StopFeature[]>(() => {
-  const features: StopFeature[] = []
-  for (const g of stops.value || []) {
-    features.push({
-      type: 'Feature',
-      geometry: g.geometry,
-      properties: { stop_id: g.stop_id, stop_name: g.stop_name },
-      id: g.id
-    })
-  }
-  return features
 })
 
 const filteredStops = computed<Stop[]>(() => {
