@@ -21,7 +21,7 @@ export interface PollyConfig {
   shouldRecord?: (req: any) => boolean
 }
 
-export function setupPolly (recordingName: string, config: PollyConfig) {
+export function setupPolly (recordingName: string, config: PollyConfig): Polly {
   const isCI = process.env.CI === 'true'
   const polly = new Polly(recordingName, {
     adapters: ['fetch'],
