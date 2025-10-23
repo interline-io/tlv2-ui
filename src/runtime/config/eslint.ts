@@ -4,6 +4,10 @@ import { ResolvableFlatConfig, FlatConfigComposer } from 'eslint-flat-config-uti
 import pluginVue from 'eslint-plugin-vue'
 import typescriptEslint from 'typescript-eslint'
 
+export const ignoreFiles = {
+  ignores: ['.nuxt/**', '**/.nuxt', '.output/**', 'dist/**', 'node_modules/**', '.yarn/**']
+}
+
 export const eslintRules = {
   'no-console': 'off',
   '@typescript-eslint/no-explicit-any': 'off',
@@ -34,9 +38,7 @@ export const stylisticConfig: StylisticCustomizeOptions = {
 }
 
 export const eslintConfig: ResolvableFlatConfig = [
-  {
-    ignores: ['.nuxt/**', '**/.nuxt', '.output/**', 'dist/**', 'node_modules/**', '.yarn/**']
-  },
+  ignoreFiles,
   ...pluginVue.configs['flat/recommended'],
   stylistic.configs.customize(stylisticConfig),
   {
