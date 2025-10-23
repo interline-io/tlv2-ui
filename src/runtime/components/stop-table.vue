@@ -204,7 +204,7 @@ const hasMore = ref<boolean>(false)
 // Computed query variables
 const queryVariables = computed<QueryVariables>(() => ({
   search: search.value,
-  limit: 1000,
+  limit: props.limit,
   location_type: props.locationType,
   feed_version_sha1: props.feedVersionSha1,
   feed_version_ids: props.feedVersionIds?.length ? props.feedVersionIds : [],

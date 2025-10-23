@@ -26,18 +26,27 @@
 
       <div class="tl-map-panel tl-map-panel-tabs">
         <o-tabs v-model="activeTab" class="tl-tabs block" position="centered" type="boxed">
-          <o-tab-item :value="ROUTES_TAB" label="Routes & Stops">
-            <div class="level">
-              <div class="level-item">
-                <slot name="header" />
-              </div>
-              <div class="level-item">
-                <o-button variant="primary" size="small" @click="showRouteOptionsModal = true">
-                  <o-icon icon="cog" size="small" />
-                  <span>Options</span>
-                </o-button>
-              </div>
-            </div>
+          <div class="tl-tab-nav">
+            <o-field grouped>
+              <tl-map-search
+                class="mb-2"
+                :bbox="currentBbox"
+                :include-stops="true"
+                @set-location="locationHandler"
+              />
+              <o-field>
+                <tl-geolocation @set-location="locationHandler" />
+              </o-field>
+              <o-field><o-button variant="primary" icon-right="cog" @click="showUnifiedOptionsModal = true" /></o-field>
+            </o-field>
+          </div>
+
+          <o-tab-item :value="ROUTES_TAB" label="Routes & Stops" tab-class="tl-map-header-tab" tab-panel-class="tl-tab-overflow">
+            <slot name="routesHeader">
+              <h6 class="title is-6">
+                Routes & Stops
+              </h6>
+            </slot>
 
             <!-- Combined agency view in sidebar -->
             <div v-if="activeTab === ROUTES_TAB && Object.keys(combinedAgencyFeatures).length > 0">
@@ -78,6 +87,21 @@
                   </div>
                 </div>
               </div>
+            </div>
+
+            <div v-if="Object.keys(combinedAgencyFeatures).length === 0" class="content">
+              <template v-if="currentZoom < 8">
+                <p>Zoom in to select routes and stops.</p>
+              </template>
+              <template v-else-if="currentZoom < 12">
+                <p>Use your cursor to highlight routes and see their names here.</p>
+                <p>Click on a route for more details.</p>
+                <p>Zoom in further to see stops.</p>
+              </template>
+              <template v-else>
+                <p>Use your cursor to highlight routes or stops.</p>
+                <p>Click on a route line or stop point to view its details.</p>
+              </template>
             </div>
 
             <!-- Combined modal for routes and stops -->
@@ -138,39 +162,25 @@
                 </div>
               </template>
             </o-modal>
-
-            <div v-if="Object.keys(combinedAgencyFeatures).length === 0" class="content">
-              <template v-if="currentZoom < 8">
-                <p>Zoom in to select routes and stops.</p>
-              </template>
-              <template v-else-if="currentZoom < 14">
-                <p>Use your cursor to highlight routes and see their names here.</p>
-                <p>Click on a route for more details.</p>
-                <p>Zoom in further to see stops.</p>
-              </template>
-              <template v-else>
-                <p>Use your cursor to highlight routes or stops.</p>
-                <p>Click on a route line or stop point to view its details.</p>
-              </template>
-            </div>
           </o-tab-item>
-          <o-tab-item :value="DEPARTURE_TAB" label="Departures">
+
+          <o-tab-item :value="DEPARTURE_TAB" label="Departures" tab-class="tl-map-header-tab" tab-panel-class="tl-tab-overflow">
+            <slot name="departuresHeader">
+              <h6 class="title is-6">
+                Departures
+              </h6>
+            </slot>
+
             <tl-login-gate>
-              <tl-map-search
-                :bbox="currentBbox"
-                :include-stops="true"
-                @set-location="departuresSetLocation"
-              />
               <tl-stop-departures
                 v-if="activeTab === DEPARTURE_TAB"
-                :show-auto-refresh="true"
-                :show-fallback-selector="true"
-                :show-radius-selector="true"
-                :search-coords="departureCoords"
+                :search-radius="departureSearchRadius"
+                :search-coords="departureSearchCoords"
+                :auto-refresh="departureAutoRefresh"
+                :auto-refresh-interval="60"
+                :use-service-window="departureUseServiceWindow"
+                class="mb-3 mt-3"
               />
-              <p class="content block is-small pt-2">
-                <a href="https://www.transit.land/documentation/rest-api/departures" target="_blank">Learn more about Transitland v2 REST API stop departures endpoint</a>
-              </p>
               <template #loginText>
                 <p>
                   You must be logged in to use this feature.
@@ -178,8 +188,9 @@
               </template>
             </tl-login-gate>
           </o-tab-item>
+
           <tl-login-gate role="tl_user_enterprise">
-            <o-tab-item :value="DIRECTIONS_TAB" label="Directions">
+            <o-tab-item :value="DIRECTIONS_TAB" label="Directions" tab-class="tl-map-header-tab">
               <tl-msg-info>
                 This feature is in a limited beta. <br>
                 Please see the <a href="https://www.transit.land/documentation/routing-api/" target="_blank">Routing API docs</a><br>
@@ -206,77 +217,74 @@
           </tl-login-gate>
         </o-tabs>
       </div>
-      <!-- Modal Options -->
-      <tl-modal v-model="showRouteOptionsModal" title="Route & Stop Options">
-        <h6 class="title is-6">
-          Route lines
-        </h6>
-        <div class="field">
-          <o-checkbox
-            v-model="showGeneratedGeometries"
-          >
-            Show stop-to-stop geometries
-          </o-checkbox>
-        </div>
-        <div class="field">
-          <o-checkbox
-            v-model="showProblematicGeometries"
-          >
-            Show problematic geometries
-          </o-checkbox>
-        </div>
 
-        <h6 class="title is-6" style="margin-top: 20px;">
-          Stop points
-        </h6>
-        <p class="mb-2">
-          Show stops of location types:
-        </p>
-        <div class="field">
-          <o-checkbox
-            v-model="showStopLocationTypes[0]"
-          >
-            Stops & Station Platforms
-          </o-checkbox>
-        </div>
-        <div class="field">
-          <o-checkbox
-            v-model="showStopLocationTypes[1]"
-          >
-            Stations
-          </o-checkbox>
-        </div>
-        <div class="field">
-          <o-checkbox
-            v-model="showStopLocationTypes[2]"
-          >
-            Station Entrances/Exits
-          </o-checkbox>
-        </div>
-        <div class="field">
-          <o-checkbox
-            v-model="showStopLocationTypes[3]"
-          >
-            Generic Nodes in Station Pathways
-          </o-checkbox>
-        </div>
-        <div class="field">
-          <o-checkbox
-            v-model="showStopLocationTypes[4]"
-          >
-            Boarding Areas in Station Pathways
-          </o-checkbox>
-        </div>
+      <!-- Unified Options Modal -->
+      <tl-modal v-model="showUnifiedOptionsModal" title="Map Options" :full-screen="true">
+        <o-tabs v-model="activeOptionsTab" class="tl-options-tabs" position="centered" type="boxed">
+          <o-tab-item value="routes" label="Routes & Stops">
+            <o-field horizontal label="Route lines">
+              <o-checkbox v-model="showGeneratedGeometries">
+                Show stop-to-stop geometries
+              </o-checkbox>
+            </o-field>
+
+            <o-field horizontal>
+              <o-checkbox v-model="showProblematicGeometries">
+                Show problematic geometries
+              </o-checkbox>
+            </o-field>
+
+            <o-field horizontal label="Stop types">
+              Display the following types of stop points on the map
+            </o-field>
+            <o-field horizontal>
+              <o-checkbox v-model="showStopLocationTypes[0]">
+                Stops & Station Platforms
+              </o-checkbox>
+            </o-field>
+            <o-field horizontal>
+              <o-checkbox v-model="showStopLocationTypes[1]">
+                Stations
+              </o-checkbox>
+            </o-field>
+            <o-field horizontal>
+              <o-checkbox v-model="showStopLocationTypes[2]">
+                Station Entrances/Exits
+              </o-checkbox>
+            </o-field>
+            <o-field horizontal>
+              <o-checkbox v-model="showStopLocationTypes[3]">
+                Generic Nodes in Station Pathways
+              </o-checkbox>
+            </o-field>
+            <o-field horizontal>
+              <o-checkbox v-model="showStopLocationTypes[4]">
+                Boarding Areas in Station Pathways
+              </o-checkbox>
+            </o-field>
+          </o-tab-item>
+
+          <o-tab-item value="departures" label="Departures">
+            <tl-stop-departure-settings
+              v-model:search-radius="departureSearchRadius"
+              v-model:auto-refresh="departureAutoRefresh"
+              v-model:use-service-window="departureUseServiceWindow"
+              style="min-height:600px"
+              :allowed-radius="allowedRadius"
+            />
+          </o-tab-item>
+        </o-tabs>
       </tl-modal>
     </div>
   </client-only>
 </template>
 
 <script setup lang="ts">
-import { useRoute, useRuntimeConfig, navigateTo } from '#imports'
-import { ref, computed, watch } from 'vue'
+import { useRoute, navigateTo } from '#imports'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useApiEndpoint } from '../../composables/useApiEndpoint'
 import { makeStopLink, makeRouteLink } from '../../lib/filters'
+import { Bbox, LonLat, lonLatStr } from '../../lib/geom'
 
 // Types
 interface Stop {
@@ -329,6 +337,16 @@ const DEPARTURE_TAB = 'departures'
 const DIRECTIONS_TAB = 'directions'
 const linkVersion = false
 
+// Dynamic location handler
+const locationHandler = computed(() => {
+  switch (activeTab.value) {
+    case ROUTES_TAB: return routesSetLocation
+    case DEPARTURE_TAB: return departuresSetLocation
+    case DIRECTIONS_TAB: return directionsSetLocation
+    default: return routesSetLocation
+  }
+})
+
 // Helper functions
 function getStopIcon (locationType: number): string {
   // GTFS location_type values:
@@ -375,24 +393,31 @@ function getStopAgencyName (stop: Stop): string {
 const activeTab = ref(ROUTES_TAB)
 const useHash = true
 const initialZoom = ref(1.5)
-const initialCenter = ref([-119.49, 12.66])
+const initialCenter = ref<LonLat>({ lon: -119.49, lat: 12.66 })
 const currentZoom = ref(1.5)
 const showSelectionModal = ref(false)
-const showRouteOptionsModal = ref(false)
+const showUnifiedOptionsModal = ref(false)
+const activeOptionsTab = ref('routes')
 const agencyFeatures = ref({})
 const stopFeatures = ref<StopFeatures>({})
 const showGeneratedGeometries = ref(true)
 const showProblematicGeometries = ref(false)
-const currentBbox = ref(null)
+const currentBbox = ref<Bbox | null>(null)
 
 // Stop location type filters
 const showStopLocationTypes = ref({
   0: true, // Stop/platform
-  1: false, // Station
+  1: true, // Station
   2: false, // Entrance/Exit
   3: false, // Generic Node
   4: false // Boarding Area
 })
+
+// Departure settings
+const departureSearchRadius = ref<number>(200)
+const departureAutoRefresh = ref<boolean>(true)
+const departureUseServiceWindow = ref<boolean>(true)
+const allowedRadius = ref<number[]>([0, 50, 100, 150, 200, 500, 1000])
 
 // Generic map event handlers
 
@@ -407,7 +432,7 @@ function mapSetZoom (v: number) {
 
 function mapClick (e: any) {
   // Convert to coordinates
-  const coords = [e.lngLat.lng, e.lngLat.lat]
+  const coords = { lon: e.lngLat.lng, lat: e.lngLat.lat }
 
   // Handle routes tab
   if (activeTab.value === ROUTES_TAB) {
@@ -415,17 +440,18 @@ function mapClick (e: any) {
     if (Object.keys(combinedAgencyFeatures.value).length > 0) {
       showSelectionModal.value = true
     }
+    // Note: No location setting on click for routes tab - only through search
   }
 
   // Handle departures tab
   if (activeTab.value === DEPARTURE_TAB) {
-    departuresSetLocation(coords)
+    departuresSetLocationFromClick(coords)
   }
 
   // Handle directions tab
   if (activeTab.value === DIRECTIONS_TAB) {
-    if (fromPlaceCoords.value.length === 0 || toPlaceCoords.value.length === 2) {
-      directionsSetPlaces(coords, [])
+    if (!fromPlaceCoords.value || toPlaceCoords.value) {
+      directionsSetPlaces(coords, null)
     } else {
       directionsSetPlaces(fromPlaceCoords.value, coords)
     }
@@ -492,21 +518,61 @@ const combinedAgencyFeatures = computed(() => {
 // Departures
 /// ////////////////////
 
-async function departuresSetLocation (coords: number[]) {
+async function departuresSetLocation (coords: LonLat) {
+  // Update map center and zoom for geolocation/search
+  initialCenter.value = coords
+  initialZoom.value = 16
+  rerenderKey.value += 1
   await navigateTo({
-    query: { lon: coords[0].toFixed(5), lat: coords[1].toFixed(5) },
-    hash: window.location.hash
+    query: { lon: coords.lon.toFixed(5), lat: coords.lat.toFixed(5) },
   })
 }
 
-const departureCoords = computed((): number[] => {
+async function departuresSetLocationFromClick (coords: LonLat) {
+  // Only update coordinates, not zoom/center for map clicks
+  await navigateTo({
+    query: { lon: coords.lon.toFixed(5), lat: coords.lat.toFixed(5) },
+  })
+}
+
+async function routesSetLocation (coords: LonLat) {
+  // Update map center and zoom for geolocation/search in Routes & Stops tab
+  initialCenter.value = coords
+  initialZoom.value = 16
+  rerenderKey.value += 1
+  await navigateTo({
+    query: { lon: coords.lon.toFixed(5), lat: coords.lat.toFixed(5) },
+  })
+}
+
+async function directionsSetLocation (coords: LonLat) {
+  // Update map center and zoom for geolocation/search in Directions tab
+  initialCenter.value = coords
+  initialZoom.value = 16
+  rerenderKey.value += 1
+  await navigateTo({
+    query: { lon: coords.lon.toFixed(5), lat: coords.lat.toFixed(5) },
+  })
+}
+
+const departureSearchCoords = computed((): LonLat | null => {
   if (activeTab.value !== DEPARTURE_TAB) {
-    return []
+    return null
   }
-  if (props.lonParam && props.lonParam) {
-    return splitCoords(props.lonParam + ',' + props.latParam)
+  if (props.lonParam && props.latParam) {
+    return { lon: parseFloat(props.lonParam), lat: parseFloat(props.latParam) }
   }
-  return []
+  return null
+})
+
+const routesCoords = computed((): LonLat | null => {
+  if (activeTab.value !== ROUTES_TAB) {
+    return null
+  }
+  if (props.lonParam && props.latParam) {
+    return { lon: parseFloat(props.lonParam), lat: parseFloat(props.latParam) }
+  }
+  return null
 })
 
 /// ////////////////////
@@ -520,14 +586,12 @@ const departAt = computed((): string => {
   return props.departAtParam?.toString() || loadTime
 })
 
-const fromPlaceCoords = computed((): number[] => {
-  const coords = splitCoords(props.fromPlaceParam)
-  return coords.length === 2 ? coords : []
+const fromPlaceCoords = computed((): LonLat | null => {
+  return splitCoords(props.fromPlaceParam)
 })
 
-const toPlaceCoords = computed((): number[] => {
-  const coords = splitCoords(props.toPlaceParam)
-  return coords.length === 2 ? coords : []
+const toPlaceCoords = computed((): LonLat | null => {
+  return splitCoords(props.toPlaceParam)
 })
 
 async function directionsSetDepartAt (v: string) {
@@ -552,10 +616,10 @@ async function directionsReset () {
   })
 }
 
-async function directionsSetPlaces (fromPlace: number[] | null, toPlace: number[] | null) {
+async function directionsSetPlaces (fromPlace: LonLat | null, toPlace: LonLat | null) {
   const pathNoHash = route.path.split('#')[0]
-  const fromPlaceStr = (fromPlace || []).map(v => v.toFixed(6)).join(',')
-  const toPlaceStr = (toPlace || []).map(v => v.toFixed(6)).join(',')
+  const fromPlaceStr = lonLatStr(fromPlace)
+  const toPlaceStr = lonLatStr(toPlace)
   await navigateTo({
     path: pathNoHash,
     query: { ...route.query, lon: '', lat: '', fromPlace: fromPlaceStr, toPlace: toPlaceStr },
@@ -563,12 +627,12 @@ async function directionsSetPlaces (fromPlace: number[] | null, toPlace: number[
   })
 }
 
-function splitCoords (v: any): number[] {
+function splitCoords (v: any): LonLat | null {
   const vs = (v || '').split(',').map(parseFloat).filter((v: number) => !isNaN(v))
   if (vs.length === 2) {
-    return vs
+    return { lon: vs[0], lat: vs[1] }
   }
-  return []
+  return null
 }
 
 /// ////////////////////////
@@ -590,8 +654,8 @@ const stopTiles = computed(() => {
   return {
     id: 'stops',
     url: `${useApiEndpoint()}/tiles/stops/tiles/{z}/{x}/{y}.pbf`,
-    minzoom: 14,
-    maxzoom: 14
+    minzoom: 12,
+    maxzoom: 12
   }
 })
 
@@ -602,23 +666,77 @@ const activeFeatures = computed(() => {
   return []
 })
 
+// Initialize map coordinates from URL params and hash
+const initializeMapFromUrl = () => {
+  console.log('Initializing map from URL')
+  const hasHash = window.location.hash && window.location.hash.length > 1
+  if (hasHash) {
+    console.log('hash:', window.location.hash)
+    // ok
+  } else {
+  // Fallback to lon/lat params if no valid hash
+    console.log('No hash, checking lon/lat params')
+    if (props.lonParam && props.latParam) {
+      const pt = { lon: parseFloat(props.lonParam), lat: parseFloat(props.latParam) }
+      if (!isNaN(pt.lon) && !isNaN(pt.lat)) {
+        console.log('Setting map center to lon/lat params:', pt.lon, pt.lat)
+        initialCenter.value = pt
+        initialZoom.value = 16
+        rerenderKey.value += 1
+      }
+    }
+  }
+}
+
 // Watchers
 
 watch(activeTab, () => {
-  // Hacky; always set modal back to empty when switching tabs
+  // Always set modal back to empty when switching tabs
   showSelectionModal.value = false
-  showRouteOptionsModal.value = false
+  showUnifiedOptionsModal.value = false
+
+  // Sync options tab with main tab
+  activeOptionsTab.value = activeTab.value
   // rerenderKey.value += 1
+})
+
+// Initialize on mount and handle hash changes
+onMounted(() => {
+  initializeMapFromUrl()
+
+  // Listen for hash changes (popstate events)
+  const handlePopState = () => {
+    console.log('Popstate event detected, re-initializing map from URL', window.location.hash)
+    initializeMapFromUrl()
+  }
+
+  window.addEventListener('popstate', handlePopState)
+
+  // Cleanup listener on unmount
+  onUnmounted(() => {
+    window.removeEventListener('popstate', handlePopState)
+  })
 })
 
 // TODO: Does not reset map when goes empty
 const markers = computed(() => {
   const ret = []
-  if (activeTab.value === DEPARTURE_TAB) {
-    if (departureCoords.value.length === 2) {
+  if (activeTab.value === ROUTES_TAB) {
+    if (routesCoords.value) {
       ret.push({
-        lng: departureCoords.value[0],
-        lat: departureCoords.value[1],
+        lng: routesCoords.value.lon,
+        lat: routesCoords.value.lat,
+        color: '#ff9500',
+        label: 'Search',
+        draggable: false
+      })
+    }
+  }
+  if (activeTab.value === DEPARTURE_TAB) {
+    if (departureSearchCoords.value) {
+      ret.push({
+        lng: departureSearchCoords.value.lon,
+        lat: departureSearchCoords.value.lat,
         color: '#75a1ff',
         label: 'Search',
         draggable: false
@@ -627,27 +745,27 @@ const markers = computed(() => {
   }
 
   if (activeTab.value === DIRECTIONS_TAB) {
-    if (fromPlaceCoords.value.length === 2) {
+    if (fromPlaceCoords.value) {
       ret.push({
-        lng: fromPlaceCoords.value[0],
-        lat: fromPlaceCoords.value[1],
+        lng: fromPlaceCoords.value.lon,
+        lat: fromPlaceCoords.value.lat,
         color: 'green',
         label: 'A',
         draggable: true,
         onDragEnd: (c: any) => {
-          directionsSetPlaces([c.target.getLngLat().lng, c.target.getLngLat().lat], toPlaceCoords.value)
+          directionsSetPlaces({ lon: c.target.getLngLat().lng, lat: c.target.getLngLat().lat }, toPlaceCoords.value)
         }
       })
     }
-    if (toPlaceCoords.value.length === 2) {
+    if (toPlaceCoords.value) {
       ret.push({
-        lng: toPlaceCoords.value[0],
-        lat: toPlaceCoords.value[1],
+        lng: toPlaceCoords.value.lon,
+        lat: toPlaceCoords.value.lat,
         color: 'red',
         label: 'B',
         draggable: true,
         onDragEnd: (c: any) => {
-          directionsSetPlaces(fromPlaceCoords.value, [c.target.getLngLat().lng, c.target.getLngLat().lat])
+          directionsSetPlaces(fromPlaceCoords.value, { lon: c.target.getLngLat().lng, lat: c.target.getLngLat().lat })
         }
       })
     }
@@ -659,10 +777,10 @@ const markers = computed(() => {
 </script>
 
 <style>
+/* These must be global styles, for... reasons */
 .tl-map {
   position: relative;
 }
-
 .tl-map-panel {
     user-select: none;
     position: absolute !important;
@@ -670,6 +788,15 @@ const markers = computed(() => {
     left: 10px;
     max-width: 90vw;
     min-width: 320px;
+}
+.tl-map-header-tab {
+  background:#eee;
+  margin-left:5px;
+  margin-right:5px;
+}
+
+.tl-map-panel-tabs .tabs-content {
+    background-color: var(--bulma-scheme-main) !important;
 }
 
 /* Tablet: 769px and up */
@@ -694,27 +821,6 @@ const markers = computed(() => {
   }
 }
 
-.tl-map-panel-tabs div[role=tab] button {
-    margin-right: 5px;
-}
-
-.tl-map-panel-tabs div[role=tab][aria-selected=false] button {
-    background-color: var(--bulma-background);
-}
-.tl-map-panel-tabs div[role=tab][aria-selected=true] button {
-    background-color: var(--bulma-scheme-main)
-}
-
-.tl-map-panel-tabs .tabs-content {
-    background-color: var(--bulma-scheme-main) !important;
-    padding:10px !important;
-    max-height:80vh;
-    min-width:280px;
-    max-width:85vw;
-    overflow-y:auto;
-    overflow-x:hidden;
-}
-
 /* Tablet: 769px and up */
 @media screen and (min-width: 769px) {
   .tl-map-panel-tabs .tabs-content {
@@ -736,12 +842,22 @@ const markers = computed(() => {
     max-width: 680px;
   }
 }
-.tl-map-search-autocomplete{
-  width:450px;
-}
+
 </style>
 
 <style scoped>
+.tl-tab-overflow {
+  padding-left:10px;
+  padding-right:0px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.tl-tab-nav {
+  padding-left:10px;
+  padding-right:10px;
+}
+
 .short-bottom {
   margin-bottom:0px;
   padding-bottom:0px;
@@ -788,20 +904,6 @@ const markers = computed(() => {
   font-weight: 600;
   font-size: 16px;
   margin-bottom: 8px;
-}
-
-.stop-details {
-  font-size: 12px;
-  color: var(--bulma-text);
-  margin-left: 30px;
-  margin-bottom: 4px;
-}
-
-.stop-agency {
-  font-size: 12px;
-  color: var(--bulma-text-weak);
-  margin-left: 30px;
-  font-style: italic;
 }
 
 .agency-section-header {
