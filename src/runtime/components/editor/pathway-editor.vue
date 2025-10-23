@@ -179,7 +179,7 @@ export default {
   },
   watch: {
     'pathway.pathway_mode' (value) {
-      if (value === 6 || value === 7) {
+      if (value === 7) {
         this.pathway.is_bidirectional = 0
       } else {
         this.pathway.is_bidirectional = 1

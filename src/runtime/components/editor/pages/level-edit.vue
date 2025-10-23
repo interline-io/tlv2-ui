@@ -12,6 +12,7 @@
       :center="station.geometry.coordinates"
       @update="updateLevelHandler"
       @delete="deleteLevelHandler"
+      @cancel="cancelHandler"
     />
   </div>
 </template>
@@ -41,7 +42,7 @@ export default {
       this.station.updateLevel(this.$apollo, level)
         .then(() => {
           navigateTo({
-            name: 'editor-feedKey-feedVersionKey-stations-stationKey',
+            name: this.editorRoutes.stationIndex,
             params: {
               feedKey: this.feedKey,
               feedVersionKey: this.feedVersionKey,
@@ -55,7 +56,7 @@ export default {
       this.station.deleteLevel(this.$apollo, levelId)
         .then(() => {
           navigateTo({
-            name: 'editor-feedKey-feedVersionKey-stations-stationKey',
+            name: this.editorRoutes.stationIndex,
             params: {
               feedKey: this.feedKey,
               feedVersionKey: this.feedVersionKey,
@@ -64,6 +65,16 @@ export default {
           })
         })
         .catch(this.setError)
+    },
+    cancelHandler () {
+      navigateTo({
+        name: this.editorRoutes.stationIndex,
+        params: {
+          feedKey: this.feedKey,
+          feedVersionKey: this.feedVersionKey,
+          stationKey: this.stationKey
+        }
+      })
     }
   }
 }

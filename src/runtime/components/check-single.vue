@@ -8,7 +8,7 @@
           params: { feedKey: feedOnestopId },
         }"
       >
-        {{ $filters.shortenName(feedOnestopId) }}
+        {{ shortenName(feedOnestopId || '', 24) }}
       </nuxt-link>
       version
       <nuxt-link
@@ -20,17 +20,18 @@
           },
         }"
       >
-        {{ $filters.shortenName(feedVersionSha1, 8) }}
+        {{ shortenName(feedVersionSha1 || '', 8) }}
       </nuxt-link>.<br>
     </tl-msg-info>
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    feedOnestopId: { type: String },
-    feedVersionSha1: { type: String }
-  }
-}
+<script setup lang="ts">
+import { shortenName } from '../lib/filters'
+
+// Props
+defineProps<{
+  feedOnestopId?: string
+  feedVersionSha1?: string
+}>()
 </script>

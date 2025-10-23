@@ -24,97 +24,139 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed, watch } from 'vue'
+import { useQuery, useMutation } from '@vue/apollo-composable'
 import { gql } from 'graphql-tag'
 
+// Types
+interface FeedVersionResponse {
+  id: number
+  name: string
+  description: string
+  sha1?: string
+}
+
+// Extract individual types from the response type
+type FeedVersion = FeedVersionResponse
+
+interface FeedVersionSetInput {
+  id: number | string
+  name: string
+  description: string
+}
+
+// Props
+const props = defineProps<{
+  id: string | number
+}>()
+
+// Emits
+const emit = defineEmits<{
+  update: [payload: { feed_version: FeedVersion }]
+}>()
+
+// GraphQL queries and mutations
+const feedVersionQuery = gql`
+  query($ids: [Int!]!) {
+    feed_versions(ids: $ids) {
+      id
+      name
+      description
+      sha1
+    }
+  }
+`
+
 const saveFeedVersionMutation = gql`
-  mutation($set:FeedVersionSetInput!) {
-    feed_version_update(set:$set) {
+  mutation($set: FeedVersionSetInput!) {
+    feed_version_update(set: $set) {
       id
       name
       description
     }
   }
-  `
-
-const feedVersionQuery = gql`
-query($ids:[Int!]!) {
-  feed_versions(ids:$ids) {
-    id
-    name
-    description
-    sha1
-  }
-}
 `
 
-export default {
-  props: {
-    id: { type: [String, Number], required: true }
-  },
-  apollo: {
-    fvs: {
-      client: 'transitland',
-      query: feedVersionQuery,
-      variables () {
-        return { ids: [this.id] }
-      },
-      update (data) {
-        if (data.feed_versions.length > 0) {
-          this.entity = data.feed_versions[0]
-        }
-      },
-      error (e) {
-        this.error = e
-      },
-      fetchPolicy: 'no-cache'
-    }
-  },
-  emits: ['update'],
-  data () {
-    return {
-      entity: { id: 0, name: '', description: '' },
-      error: null,
-      mutationLoading: false
-    }
-  },
-  computed: {
-    validationMessage () {
-      if (!this.entity.name || this.entity.name.length === 0) {
-        return 'Name required'
+// Reactive state
+const entity = ref<FeedVersion>({ id: 0, name: '', description: '' })
+const error = ref<string | null>(null)
+const mutationLoading = ref(false)
+
+// Apollo query
+const { result, loading, error: queryError } = useQuery<{ feed_versions: FeedVersionResponse[] }>(
+  feedVersionQuery,
+  () => ({
+    ids: [Number(props.id)]
+  }),
+  {
+    clientId: 'transitland',
+    fetchPolicy: 'no-cache'
+  }
+)
+
+// Apollo mutation
+const { mutate: updateFeedVersion } = useMutation<{ feed_version_update: FeedVersionResponse }>(
+  saveFeedVersionMutation,
+  {
+    clientId: 'transitland'
+  }
+)
+
+// Watch for query results
+watch(result, (newResult) => {
+  if (newResult?.feed_versions && newResult.feed_versions.length > 0) {
+    entity.value = { ...newResult.feed_versions[0] }
+  }
+})
+
+// Watch for query errors
+watch(queryError, (newError) => {
+  if (newError) {
+    error.value = newError.message
+  }
+})
+
+// Computed properties
+const validationMessage = computed((): string | null => {
+  if (!entity.value.name || entity.value.name.length === 0) {
+    return 'Name required'
+  }
+  if (!entity.value.description || entity.value.description.length === 0) {
+    return 'Description required'
+  }
+  return null
+})
+
+const valid = computed((): boolean => {
+  return entity.value.name
+    && entity.value.name.length > 0
+    && entity.value.description
+    && entity.value.description.length > 0
+})
+
+// Methods
+const save = async () => {
+  mutationLoading.value = true
+  error.value = null
+
+  try {
+    const result = await updateFeedVersion({
+      set: {
+        id: props.id,
+        name: entity.value.name,
+        description: entity.value.description
       }
-      if (!this.entity.description || this.entity.description.length === 0) {
-        return 'Description required'
-      }
-      return null
-    },
-    valid () {
-      return this.entity.name && this.entity.name.length > 0 && this.entity.description && this.entity.description.length > 0
+    })
+
+    mutationLoading.value = false
+
+    if (result?.data?.feed_version_update) {
+      emit('update', { feed_version: result.data.feed_version_update })
     }
-  },
-  methods: {
-    save () {
-      this.mutationLoading = true
-      this.$apollo
-        .mutate({
-          client: 'transitland',
-          mutation: saveFeedVersionMutation,
-          variables: {
-            set: {
-              id: this.id,
-              name: this.entity.name,
-              description: this.entity.description
-            }
-          },
-          update: (_, { data }) => {
-            this.mutationLoading = false
-            this.$emit('update', { feed_version: data.feed_version })
-          }
-        }).catch((error) => {
-          this.mutationLoading = false
-          this.error = error
-        })
-    }
+  } catch (err) {
+    mutationLoading.value = false
+    error.value = err instanceof Error ? err.message : 'An error occurred'
   }
 }
 </script>

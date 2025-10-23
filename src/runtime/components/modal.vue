@@ -30,24 +30,29 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    text: { type: String, default: '+' },
-    title: { type: String, default: '' },
-    modelValue: { type: Boolean },
-    closable: { type: Boolean, default: true }
-  },
-  emits: ['input', 'update:modelValue'],
-  data () {
-    return {
-    }
-  },
-  methods: {
-    close () {
-      this.$emit('update:modelValue', false)
-    }
-  }
+<script setup lang="ts">
+// Props
+withDefaults(defineProps<{
+  text?: string
+  title?: string
+  modelValue?: boolean
+  closable?: boolean
+}>(), {
+  text: '+',
+  title: '',
+  modelValue: false,
+  closable: true
+})
+
+// Emits
+const emit = defineEmits<{
+  'input': [value: boolean]
+  'update:modelValue': [value: boolean]
+}>()
+
+// Methods
+const close = (): void => {
+  emit('update:modelValue', false)
 }
 </script>
 

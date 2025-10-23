@@ -12,6 +12,7 @@ export interface ModuleOptions extends Auth0Options {
   nearmapsApikey?: string
   loginGate?: boolean
   requireLogin?: boolean
+  editorRoutePrefix?: string
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -43,6 +44,7 @@ export default defineNuxtModule<ModuleOptions>({
       nearmapsApikey: options.nearmapsApikey,
       loginGate: options.loginGate,
       requireLogin: options.requireLogin,
+      editorRoutePrefix: options.editorRoutePrefix || 'editor',
       auth0Domain: options.auth0Domain,
       auth0ClientId: options.auth0ClientId,
       auth0RedirectUri: options.auth0RedirectUri,

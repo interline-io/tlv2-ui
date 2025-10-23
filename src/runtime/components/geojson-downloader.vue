@@ -4,31 +4,38 @@
   </button>
 </template>
 
-<script>
+<script setup lang="ts">
+import type { Feature, FeatureCollection } from 'geojson'
+import { sanitizeFilename } from '../lib/sanitize'
 
-export default {
-  props: {
-    features: { type: Array, default () { return [] } },
-    filename: { type: String, default: 'export.geojson' },
-    label: { type: String, default: 'Download' }
-  },
-  methods: {
-    saveFile () {
-      const data = JSON.stringify(
-        {
-          type: 'FeatureCollection',
-          features: this.features
-        }
-      )
-      const blob = new Blob([data], { type: 'text/json' })
-      const e = document.createEvent('MouseEvents')
-      const a = document.createElement('a')
-      a.download = this.$filters.sanitizeFilename(this.filename + '.geojson')
-      a.href = window.URL.createObjectURL(blob)
-      a.dataset.downloadurl = ['text/json', a.download, a.href].join(':')
-      e.initEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null)
-      a.dispatchEvent(e)
-    }
-  }
+// Props
+const props = withDefaults(defineProps<{
+  features?: Feature[]
+  filename?: string
+  label?: string
+}>(), {
+  features: () => [],
+  filename: 'export.geojson',
+  label: 'Download'
+})
+
+// Methods
+const saveFile = () => {
+  const data = JSON.stringify({
+    type: 'FeatureCollection',
+    features: props.features
+  } as FeatureCollection)
+
+  const blob = new Blob([data], { type: 'application/json' })
+  const a = document.createElement('a')
+
+  a.download = sanitizeFilename(props.filename + '.geojson')
+  a.href = window.URL.createObjectURL(blob)
+  a.style.display = 'none'
+
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  window.URL.revokeObjectURL(a.href)
 }
 </script>

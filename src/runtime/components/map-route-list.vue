@@ -12,7 +12,7 @@
       <o-modal
         :active="isComponentModalActive"
         has-modal-card
-        :on-cancel="close"
+        @close="close"
       >
         <template #default>
           <div v-if="isComponentModalActive" class="modal-card">
@@ -32,17 +32,41 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    linkVersion: { type: Boolean, default: false },
-    isComponentModalActive: { type: Boolean, default: false },
-    agencyFeatures: { type: Object, default () { return {} } }
-  },
-  methods: {
-    close () {
-      this.$emit('close')
-    }
-  }
+<script setup lang="ts">
+// Types for route and agency features
+interface Route {
+  id: number
+  onestop_id: string
+  feed_onestop_id: string
+  feed_version_sha1: string
+  route_id: string
+  route_type: number
+  route_short_name?: string | null
+  route_long_name?: string | null
+}
+
+interface AgencyFeatures {
+  [agencyName: string]: Route[]
+}
+
+// Props
+withDefaults(defineProps<{
+  linkVersion?: boolean
+  isComponentModalActive?: boolean
+  agencyFeatures?: AgencyFeatures
+}>(), {
+  linkVersion: false,
+  isComponentModalActive: false,
+  agencyFeatures: () => ({})
+})
+
+// Emits
+const emit = defineEmits<{
+  close: []
+}>()
+
+// Methods
+const close = (): void => {
+  emit('close')
 }
 </script>
