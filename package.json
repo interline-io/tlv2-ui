@@ -10,7 +10,9 @@
     "lint": "eslint src",
     "dev": "nuxi dev example",
     "dev:build": "nuxi build example",
-    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare example"
+    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare example",
+    "dev:link": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build --watch",
+    "dev:watch": "nuxt-module-build build --stub --watch"
   },
   "exports": {
     ".": {
@@ -18,12 +20,12 @@
       "import": "./dist/module.mjs"
     },
     "./config": {
-      "types": "./dist/runtime/config/index.d.ts",
-      "import": "./dist/runtime/config/index.js"
+      "types": "./dist/runtime/config/index.ts",
+      "import": "./dist/runtime/config/index.ts"
     },
     "./lib": {
-      "types": "./dist/runtime/lib/index.d.ts",
-      "import": "./dist/runtime/lib/index.js"
+      "types": "./dist/runtime/lib/index.ts",
+      "import": "./dist/runtime/lib/index.ts"
     }
   },
   "main": "./dist/module.mjs",
@@ -44,8 +46,8 @@
     "@nuxt/test-utils": "3.19.2",
     "@nuxt/types": "2.18.1",
     "@observablehq/plot": "0.6.17",
-    "@oruga-ui/oruga-next": "0.9.3",
-    "@oruga-ui/theme-bulma": "0.5.3",
+    "@oruga-ui/oruga-next": "0.11.6",
+    "@oruga-ui/theme-bulma": "0.7.3",
     "@pollyjs/adapter-fetch": "6.0.7",
     "@pollyjs/core": "6.0.6",
     "@pollyjs/persister-fs": "6.0.6",
