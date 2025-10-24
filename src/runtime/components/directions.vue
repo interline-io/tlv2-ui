@@ -195,7 +195,7 @@ import { gql } from 'graphql-tag'
 import { parseISO, format } from 'date-fns'
 import type { Geometry } from 'geojson'
 import { formatDuration } from '../lib/filters'
-import { LonLat, lonLatStr } from '../lib/geom'
+import type { LonLat, lonLatStr } from '../lib/geom'
 
 // Types
 interface DirectionsQueryResponse {

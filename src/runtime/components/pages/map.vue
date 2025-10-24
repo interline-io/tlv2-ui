@@ -284,7 +284,7 @@ import { useRoute, navigateTo } from '#imports'
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useApiEndpoint } from '../../composables/useApiEndpoint'
 import { makeStopLink, makeRouteLink } from '../../lib/filters'
-import { Bbox, LonLat, lonLatStr } from '../../lib/geom'
+import type { Bbox, LonLat, lonLatStr } from '../../lib/geom'
 
 // Types
 interface Stop {

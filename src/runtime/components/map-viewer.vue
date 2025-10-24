@@ -10,7 +10,7 @@ import { useApiEndpoint } from '../composables/useApiEndpoint'
 import { useAuthHeaders } from '../composables/useAuthHeaders'
 import { useNuxtApp } from 'nuxt/app'
 import mapLayers from './map-layers'
-import { LonLat, Bbox, Feature } from '../lib/geom'
+import type { LonLat, Feature, Bbox } from '../lib/geom'
 
 // Define types for better TypeScript support
 interface MarkerCoord {

@@ -5,11 +5,10 @@
   "license": "SEE LICENSE IN LICENSE.md",
   "scripts": {
     "prepack": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build",
-    "build": "nuxt build",
+    "dev:link": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build --watch",
+    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare example",
     "test": "vitest --run",
-    "lint": "eslint src",
-    "dev": "nuxi dev example",
-    "dev:link": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build --watch"
+    "lint": "eslint src"
   },
   "exports": {
     ".": {
