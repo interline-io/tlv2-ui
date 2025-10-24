@@ -9,10 +9,7 @@
     "test": "vitest --run",
     "lint": "eslint src",
     "dev": "nuxi dev example",
-    "dev:build": "nuxi build example",
-    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare example",
-    "dev:link": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build --watch",
-    "dev:watch": "nuxt-module-build build --stub --watch"
+    "dev:link": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build --watch"
   },
   "exports": {
     ".": {
@@ -20,12 +17,12 @@
       "import": "./dist/module.mjs"
     },
     "./config": {
-      "types": "./dist/runtime/config/index.ts",
-      "import": "./dist/runtime/config/index.ts"
+      "types": "./dist/runtime/config/index.d.ts",
+      "import": "./dist/runtime/config/index.js"
     },
     "./lib": {
-      "types": "./dist/runtime/lib/index.ts",
-      "import": "./dist/runtime/lib/index.ts"
+      "types": "./dist/runtime/lib/index.d.ts",
+      "import": "./dist/runtime/lib/index.js"
     }
   },
   "main": "./dist/module.mjs",
@@ -66,7 +63,7 @@
     "@vue/test-utils": "2.4.6",
     "@vueuse/core": "10.11.1",
     "apollo-upload-client": "18.0.1",
-    "bulma": "1.0.3",
+    "bulma": "1.0.4",
     "commander": "14.0.0",
     "cytoscape": "3.31.1",
     "cytoscape-fcose": "2.2.0",
