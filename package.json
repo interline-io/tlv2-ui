@@ -10,8 +10,8 @@
     "lint": "eslint src",
     "dev": "nuxi dev example",
     "dev:build": "nuxi build example",
-    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare",
-    "dev:link": "nuxt-module-build build --stub && yarn link",
+    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare example",
+    "dev:link": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build --watch",
     "dev:watch": "nuxt-module-build build --stub --watch"
   },
   "exports": {
