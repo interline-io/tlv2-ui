@@ -284,7 +284,8 @@ import { useRoute, navigateTo } from '#imports'
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useApiEndpoint } from '../../composables/useApiEndpoint'
 import { makeStopLink, makeRouteLink } from '../../lib/filters'
-import type { Bbox, LonLat, lonLatStr } from '../../lib/geom'
+import type { BoundingBox, LonLat, } from '../../geom'
+import { lonLatStr } from '../../geom'
 
 // Types
 interface Stop {
@@ -402,7 +403,7 @@ const agencyFeatures = ref({})
 const stopFeatures = ref<StopFeatures>({})
 const showGeneratedGeometries = ref(true)
 const showProblematicGeometries = ref(false)
-const currentBbox = ref<Bbox | null>(null)
+const currentBbox = ref<BoundingBox | null>(null)
 
 // Stop location type filters
 const showStopLocationTypes = ref({

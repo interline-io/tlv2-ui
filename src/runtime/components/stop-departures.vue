@@ -69,7 +69,7 @@ import { ref, computed, watch, onMounted, toRef } from 'vue'
 import { useQuery } from '@vue/apollo-composable'
 import type { Geometry, Feature, Point } from 'geojson'
 import { fromNowDate, makeRouteLink, reformatHMS } from '../lib/filters'
-import { haversineLonLat, type LonLat } from '../lib/geom'
+import { haversineLonLat, type LonLat } from '../geom'
 
 // Types
 interface StopDeparturesResponse {

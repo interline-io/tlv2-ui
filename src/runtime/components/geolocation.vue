@@ -11,7 +11,7 @@
 import { ref, watch } from 'vue'
 import { useGeolocation } from '@vueuse/core'
 import type { UseGeolocationReturn } from '@vueuse/core'
-import type { LonLat } from '../lib/geom'
+import type { LonLat } from '../geom'
 
 // Emits
 const emit = defineEmits<{

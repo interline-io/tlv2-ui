@@ -1,35 +1,6 @@
-export type {
-  GeoJSON,
-  GeoJsonObject,
-  Geometry,
-  GeometryObject,
-  Point,
-  LineString,
-  Polygon,
-  MultiPoint,
-  MultiLineString,
-  MultiPolygon,
-  GeometryCollection,
-  Feature,
-  FeatureCollection,
-  Position,
-  BBox,
-  GeoJsonProperties
-} from 'geojson'
-
-import type { Point } from 'geojson'
-
 import haversine from 'haversine'
 
-export interface LonLat {
-  lon: number
-  lat: number
-}
-
-export interface Bbox {
-  sw: LonLat
-  ne: LonLat
-}
+import type { LonLat, Point } from './geom'
 
 export function lonLatStr (v: LonLat | null): string {
   if (!v) return ''

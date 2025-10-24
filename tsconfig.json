@@ -12,6 +12,12 @@
       "@types/node"
     ]
   },
+  "exclude": [
+    "node_modules",
+    "dist",
+    ".output",
+    ".nuxt"
+  ],
   "include": [
     "src/**/*"
   ]
