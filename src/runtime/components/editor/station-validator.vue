@@ -42,7 +42,7 @@
             <o-table-column v-slot="props" field="location_type" label="Location Type" sortable numeric>
               {{ LocationTypes.get(props.row.location_type) || props.row.location_type }}
             </o-table-column>
-            <o-table-column v-slot="props" field="level.level_index" label="Level" sortable>
+            <o-table-column v-slot="props" field="level.level_name" label="Level" sortable>
               <span v-if="props.row.level">{{ props.row.level.level_name }}</span><span v-else>None</span>
             </o-table-column>
             <o-table-column v-slot="props" field="pathways" label="Pathways (From/To)">
