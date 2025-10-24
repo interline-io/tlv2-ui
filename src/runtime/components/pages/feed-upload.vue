@@ -191,7 +191,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useRoute, navigateTo } from 'nuxt/app'
+import { useRoute, navigateTo } from '#imports'
 import { gql } from 'graphql-tag'
 import { useMutation } from '@vue/apollo-composable'
 import { useMixpanel } from '../../composables/useMixpanel'
