@@ -41,7 +41,7 @@ import { nextTick, ref, computed, watch } from 'vue'
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
 import type { Geometry, Point } from 'geojson'
-import { LonLat } from '../lib/geom'
+import type { LonLat } from '../geom'
 
 // Types
 interface RouteResponse {

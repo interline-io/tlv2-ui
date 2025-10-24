@@ -24,7 +24,7 @@
 import { gql } from 'graphql-tag'
 import { useLazyQuery } from '@vue/apollo-composable'
 import { ref, computed, watch } from 'vue'
-import type { Geometry, Point, LonLat, Bbox } from '../lib/geom'
+import type { Geometry, Point, LonLat, BoundingBox } from '../geom'
 
 // Type definitions
 
@@ -82,7 +82,7 @@ interface QueryVariables extends Record<string, unknown> {
 
 // Props and emits
 const props = withDefaults(defineProps<{
-  bbox?: Bbox | null
+  bbox?: BoundingBox | null
   includeStops?: boolean
   includeRoutes?: boolean
 }>(), {

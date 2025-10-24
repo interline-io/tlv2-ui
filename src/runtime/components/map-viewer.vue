@@ -10,7 +10,7 @@ import { useApiEndpoint } from '../composables/useApiEndpoint'
 import { useAuthHeaders } from '../composables/useAuthHeaders'
 import { useNuxtApp } from 'nuxt/app'
 import mapLayers from './map-layers'
-import { LonLat, Bbox, Feature } from '../lib/geom'
+import type { LonLat, Feature, BoundingBox } from '../geom'
 
 // Define types for better TypeScript support
 interface MarkerCoord {
@@ -101,7 +101,7 @@ const once = <T extends (...args: any[]) => any>(fn: T): T => {
 const emit = defineEmits<{
   mapClick: [event: any]
   setZoom: [zoom: number]
-  mapMove: [data: { zoom: number, bbox: Bbox }]
+  mapMove: [data: { zoom: number, bbox: BoundingBox }]
   setAgencyFeatures: [features: any]
   setStopFeatures: [features: any]
 }>()
@@ -541,11 +541,12 @@ const mapMove = () => {
     emit('mapMove', { zoom: map.value.getZoom(), bbox })
   }
 }
+
 const mapMouseMove = (e: any) => {
   if (!map.value) return
   const searchWidth = 0
   const searchHeight = 0
-  const searchBbox = [
+  const searchBbox: [[number, number], [number, number]] = [
     [e.point.x - searchWidth / 2, e.point.y - searchHeight / 2],
     [e.point.x + searchWidth / 2, e.point.y + searchHeight / 2]
   ]
