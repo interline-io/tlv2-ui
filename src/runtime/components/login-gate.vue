@@ -25,6 +25,7 @@ import { useLoginGate } from '../composables/useLoginGate'
 // Props
 const props = withDefaults(defineProps<{
   role?: string | null
+  hasAnyRole?: string[]
 }>(), {
   role: null
 })
