@@ -77,38 +77,44 @@ export const useLogout = async () => {
 // User
 /// ////////////////////
 
-export const useLoginGate = (role?: string, anyRole?: string[], excludeRoles?: string[]): boolean => {
+export const useLoginGate = (options: { hasRole?: string, hasAnyRole?: string[], excludeAnyRole?: string[] }): boolean => {
+  // Returns TRUE if GATE REQUIRED
   // Get config
   const config = useRuntimeConfig()
   if (!config.public.tlv2?.loginGate) {
     // Login gate disabled: always authorized
-    return true
+    console.log('useLoginGate: login gate disabled')
+    return false
   }
   // Get user
   const user = useUser()
   if (!user.loggedIn) {
     // Not logged in: not authorized
-    return false
+    console.log('useLoginGate: not logged in')
+    return true
   }
 
   // Combine options
-  anyRole = anyRole || []
-  if (role) {
-    anyRole.push(role)
+  let { hasRole, hasAnyRole, excludeAnyRole } = options
+  hasAnyRole = hasAnyRole || []
+  if (hasRole) {
+    hasAnyRole.push(hasRole)
   }
+  console.log('useLoginGate: hasAnyRole:', hasAnyRole)
+  console.log('useLoginGate: excludeAnyRole:', excludeAnyRole)
 
   // Check exclusions and roles
-  for (const excludeRole of excludeRoles || []) {
+  for (const excludeRole of excludeAnyRole || []) {
     if (user.hasRole(excludeRole)) {
       // Has an excluded role: not authorized
-      return false
-    }
-  }
-  for (const r of anyRole || []) {
-    if (user.hasRole(r)) {
-      // Has one of the anyRoles: authorized
       return true
     }
   }
-  return false
+  for (const r of hasAnyRole || []) {
+    if (user.hasRole(r)) {
+      // Has one of the hasAnyRole: authorized
+      return false
+    }
+  }
+  return true
 }

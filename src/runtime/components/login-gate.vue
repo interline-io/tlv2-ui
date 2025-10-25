@@ -26,11 +26,18 @@ import { useLoginGate } from '../composables/useLoginGate'
 const props = withDefaults(defineProps<{
   role?: string | null
   hasAnyRole?: string[]
+  excludeAnyRole?: string[]
 }>(), {
-  role: null
+  role: null,
+  hasAnyRole: () => [],
+  excludeAnyRole: () => []
 })
 
 // Composables
 const { loggedIn } = useUser()
-const notOk = useLoginGate(props.role)
+const notOk = useLoginGate({
+  hasRole: props.role,
+  hasAnyRole: props.hasAnyRole,
+  excludeAnyRole: props.excludeAnyRole
+})
 </script>
