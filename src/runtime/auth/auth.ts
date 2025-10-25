@@ -96,11 +96,11 @@ export const useLoginGate = (options: { hasRole?: string, hasAnyRole?: string[],
 
   // Combine options
   let { hasRole, hasAnyRole, excludeAnyRole } = options
-  hasAnyRole = hasAnyRole || []
+  const hasRoleCopy = [...hasAnyRole || []]
   if (hasRole) {
-    hasAnyRole.push(hasRole)
+    hasRoleCopy.push(hasRole)
   }
-  console.log('useLoginGate: hasAnyRole:', hasAnyRole)
+  console.log('useLoginGate: hasAnyRole:', hasRoleCopy)
   console.log('useLoginGate: excludeAnyRole:', excludeAnyRole)
 
   // Check exclusions and roles
@@ -110,7 +110,13 @@ export const useLoginGate = (options: { hasRole?: string, hasAnyRole?: string[],
       return true
     }
   }
-  for (const r of hasAnyRole || []) {
+
+  if (hasRoleCopy.length === 0) {
+    // No roles required: authorized
+    return false
+  }
+
+  for (const r of hasRoleCopy || []) {
     if (user.hasRole(r)) {
       // Has one of the hasAnyRole: authorized
       return false
