@@ -110,7 +110,7 @@
     </div>
 
     <!-- Pathways viewer -->
-    <o-field v-if="pathwaysFromStop.length > 0" label="Pathways (From)">
+    <o-field v-if="!hidePathways && pathwaysFromStop.length > 0" label="Pathways (From)">
       <ul>
         <li v-for="pw of pathwaysFromStop" :key="pw.id">
           <span class="button" :title="pw.pathway_id" @click="$emit('select-pathway', pw.id)">
@@ -126,7 +126,7 @@
         </li>
       </ul>
     </o-field>
-    <o-field v-if="pathwaysToStop.length" label="Pathways (To)">
+    <o-field v-if="!hidePathways && pathwaysToStop.length" label="Pathways (To)">
       <ul>
         <li v-for="pw of pathwaysToStop" :key="pw.id">
           <span class="button" :title="pw.pathway_id" @click="$emit('select-pathway', pw.id)">
@@ -162,12 +162,26 @@
     </o-field>
 
     <template v-if="!readOnly">
-      <div v-if="entity.id" class="buttons">
-        <span class="button is-primary" @click="updateStop">Save stop</span>
-        <span class="button is-danger" @click="deleteStop">Delete stop</span>
+      <div v-if="entity.id" class="field is-grouped">
+        <div class="control">
+          <span class="button" @click="$emit('cancel')">Cancel</span>
+        </div>
+        <div class="control is-expanded" />
+        <div class="control">
+          <span class="button is-danger" @click="deleteStop">Delete stop</span>
+        </div>
+        <div class="control">
+          <span class="button is-primary" @click="updateStop">Save stop</span>
+        </div>
       </div>
-      <div v-else class="buttons">
-        <span class="button is-primary" @click="createStop">Add stop</span>
+      <div v-else class="field is-grouped">
+        <div class="control">
+          <span class="button" @click="$emit('cancel')">Cancel</span>
+        </div>
+        <div class="control is-expanded" />
+        <div class="control">
+          <span class="button is-primary" @click="createStop">Add stop</span>
+        </div>
       </div>
     </template>
   </div>
@@ -203,9 +217,14 @@ export default {
       type: String,
       reqiored: false,
       default: 'pathways'
+    },
+    hidePathways: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
-  emits: ['select-pathway', 'create-association', 'update', 'delete', 'create'],
+  emits: ['select-pathway', 'create-association', 'update', 'delete', 'create', 'cancel'],
   data () {
     const stopCopy = new Stop(this.value).setDefaults()
     const entity = {
@@ -231,6 +250,7 @@ export default {
       pathwaysFromStop: stopCopy.pathways_from_stop || [],
       pathwaysToStop: stopCopy.pathways_to_stop || [],
       entity: entity,
+      originalEntity: JSON.parse(JSON.stringify(entity)),
       LocationTypes,
     }
   },
