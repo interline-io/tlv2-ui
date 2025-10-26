@@ -1,7 +1,5 @@
 <template>
   <div>
-    debug: notOk={{ notOk }} loggedIn={{ loggedIn }}
-    props.role={{ props.role }} hasAnyRole={{ JSON.stringify(props.hasAnyRole) }} excludeAnyRole={{ JSON.stringify(props.excludeAnyRole) }}
     <client-only placeholder="Login">
       <div v-if="notOk">
         <div v-if="loggedIn">
