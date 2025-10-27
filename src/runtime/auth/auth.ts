@@ -46,14 +46,6 @@ export const useAuthHeaders = async () => {
   return headers
 }
 
-export const useApiEndpoint = (path?: string) => {
-  const config = useRuntimeConfig()
-  const apiBase = import.meta.server
-    ? (config.tlv2?.proxyBase.default) || ''
-    : (config.public.tlv2?.apiBase.default || window?.location?.origin + '/api/v2') || ''
-  return apiBase + (path || '')
-}
-
 // Login
 export const useLogin = async (targetUrl: null | string) => {
   logAuthDebug('useLogin')

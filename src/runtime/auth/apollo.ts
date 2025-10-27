@@ -1,9 +1,6 @@
 import { ApolloClient, ApolloLink, concat, InMemoryCache } from '@apollo/client/core/index.js'
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
-import { destr } from 'destr'
-import { ApolloClients, provideApolloClients } from '@vue/apollo-composable'
-import { createApolloProvider } from '@vue/apollo-option'
-import { useApiEndpoint, useAuthHeaders } from './auth'
+import { useAuthHeaders } from './auth'
 import { logAuthDebug } from '../lib/log'
 
 export function initApolloClient (endpoint: string, headers: Record<string, string>) {
@@ -27,32 +24,4 @@ export async function getApolloClient () {
   const apolloClient = initApolloClient(endpoint, headers)
   logAuthDebug('getApolloClient', endpoint)
   return apolloClient
-}
-
-export const defineApolloPlugin = async (nuxtApp) => {
-  logAuthDebug('apollo plugin: start')
-  const apolloClient = await getApolloClient()
-
-  // options api
-  const apolloProvider = createApolloProvider({
-    defaultClient: apolloClient,
-    clients: {
-      default: apolloClient,
-      transitland: apolloClient
-    }
-  })
-  nuxtApp.vueApp.use(apolloProvider)
-
-  // composition api
-  nuxtApp.vueApp.provide(ApolloClients, { default: apolloClient, transitland: apolloClient })
-  provideApolloClients({ default: apolloClient, transitland: apolloClient })
-
-  // handle cache
-  const cacheKey = '_apollo:transitland'
-  nuxtApp.hook('app:rendered', () => {
-    nuxtApp.payload.data[cacheKey] = apolloClient.cache.extract()
-  })
-  if (process.client && nuxtApp.payload.data[cacheKey]) {
-    apolloClient.cache.restore(destr(JSON.stringify(nuxtApp.payload.data[cacheKey])))
-  }
 }
