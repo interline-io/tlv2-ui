@@ -51,7 +51,7 @@ export default {
   },
   apollo: {
     feeds: {
-      client: () => (this.client),
+      client: 'feedManagement',
       query: feedQuery,
       variables () {
         return { ids: this.feedIds }

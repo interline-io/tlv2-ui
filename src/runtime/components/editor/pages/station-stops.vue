@@ -282,7 +282,7 @@ export default {
   },
   apollo: {
     nearbyStopsQuery: {
-      client: () => (this.client),
+      client: 'stationEditor',
       query: nearbyStopsQuery,
       skip () { return !this.station }, // run after stations
       error (e) {

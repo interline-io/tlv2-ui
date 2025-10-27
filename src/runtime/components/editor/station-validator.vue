@@ -264,9 +264,9 @@ export default {
       const targetStop = stop.external_reference?.target_active_stop || null
       const errs = []
       if (stop.location_type === 0 && !targetStop) {
-        errs.push({
-          message: 'Platform (location_type = 0) must have a stop association'
-        })
+        // errs.push({
+        //   message: 'Platform (location_type = 0) must have a stop association'
+        // })
       }
       if (targetStop && targetStop.location_type !== stop.location_type) {
         errs.push({

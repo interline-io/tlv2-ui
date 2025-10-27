@@ -140,6 +140,7 @@ const props = withDefaults(defineProps<{
   showOnestopId?: boolean
   showLinks?: boolean
   limit?: number
+  client?: string
 }>(), {
   showRoutes: true,
   showAgencies: false,
@@ -151,7 +152,8 @@ const props = withDefaults(defineProps<{
   servicedOnly: false,
   showOnestopId: false,
   showLinks: true,
-  limit: 100
+  limit: 100,
+  client: 'default',
 })
 
 // GraphQL Query
@@ -218,7 +220,7 @@ const { result, loading, onError } = useQuery<{ feed_versions: FeedVersionRespon
   STOPS_QUERY,
   queryVariables,
   {
-    clientId: 'transitland'
+    clientId: props.client
   }
 )
 
