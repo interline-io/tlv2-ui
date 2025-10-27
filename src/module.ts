@@ -138,14 +138,15 @@ export default defineNuxtModule<ModuleOptions>({
       viteConfig.optimizeDeps = {
         ...viteConfig.optimizeDeps,
         include: [
-          'zen-observable',
-          'fast-json-stable-stringify',
-          'maplibre-gl',
-          'haversine',
           '@mapbox/mapbox-gl-draw',
-          'cytoscape',
-          'mixpanel-browser',
           '@observablehq/plot',
+          'cytoscape-fcose',
+          'cytoscape',
+          'fast-json-stable-stringify',
+          'haversine',
+          'maplibre-gl',
+          'mixpanel-browser',
+          'zen-observable',
           'interval-tree-1d' // distributed as CJS, rather than ESM
         ]
       }

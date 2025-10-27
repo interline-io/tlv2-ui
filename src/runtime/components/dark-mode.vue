@@ -1,6 +1,6 @@
 <template>
-  <div class="is-flex is-align-items-center">
-    <o-icon :icon="isDark ? 'weather-night' : 'weather-sunny'" title="Toggle light/dark mode for website styling" role="button" @click="toggleDarkMode()" />
+  <div class="is-flex is-align-items-center" @click="toggleDarkMode()">
+    <o-icon :icon="isDark ? 'weather-night' : 'weather-sunny'" title="Toggle light/dark mode for website styling" role="button" />
   </div>
 </template>
 
