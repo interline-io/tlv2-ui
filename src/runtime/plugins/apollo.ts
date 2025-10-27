@@ -3,7 +3,7 @@ import { defineNuxtPlugin } from 'nuxt/app'
 import { destr } from 'destr'
 import { ApolloClients, provideApolloClients } from '@vue/apollo-composable'
 import { createApolloProvider } from '@vue/apollo-option'
-import { initApolloClient } from '../auth/apollo'
+import { initApolloClient } from '../auth'
 
 // We have to inline the useApiEndpoint here... nuxt blows up and I can't figure out why.
 const useApiEndpoint = (path: string, clientName: string) => {

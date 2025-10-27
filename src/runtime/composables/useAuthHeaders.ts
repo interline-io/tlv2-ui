@@ -1,6 +1,6 @@
 import { useRuntimeConfig, useCsrf } from '#imports'
 import { checkToken } from '../lib/auth0'
-import { clearUser } from '../auth/user'
+import { clearUser } from '../auth'
 import { logAuthDebug } from '../lib/log'
 
 // JWT

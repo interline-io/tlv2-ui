@@ -3,12 +3,12 @@ import { defineNuxtPlugin, addRouteMiddleware } from 'nuxt/app'
 import { useStorage } from '@vueuse/core'
 import { gql } from 'graphql-tag'
 import { configureAuth0Client, getAuth0Client, getAuthorizeUrl, checkToken } from '../lib/auth0'
-import { useUser, clearUser, User } from '../auth/user'
+import { useUser, clearUser, User, initApolloClient } from '../auth'
+
 import { logAuthDebug } from '../lib/log'
 
 import { useAuthHeaders } from '../composables/useAuthHeaders'
 import { useApiEndpoint } from '../composables/useApiEndpoint'
-import { initApolloClient } from '../auth/apollo'
 
 const RECHECK_INTERVAL = 600_000
 const buildGraphqlUser = true
