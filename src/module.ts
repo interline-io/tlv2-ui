@@ -7,6 +7,7 @@ export interface ModuleOptions extends Auth0Options {
   bulma: string
   useProxy: boolean
   safelinkUtmSource?: string
+  proxyBase?: string
   apiBase?: string
   protomapsApikey?: string
   nearmapsApikey?: string
@@ -31,15 +32,23 @@ export default defineNuxtModule<ModuleOptions>({
 
     // Private runtime options
     nuxt.options.runtimeConfig.tlv2 = defu(nuxt.options.runtimeConfig.tlv2, {
-      proxyBase: '',
       graphqlApikey: '',
+      proxyBase: {
+        default: options.proxyBase,
+        stationEditor: '',
+        feedManagement: ''
+      },
     })
 
     // Public runtime options (available on both server and client)
     nuxt.options.runtimeConfig.public.tlv2 = defu(nuxt.options.runtimeConfig.public.tlv2, {
       useProxy: useProxy,
       safelinkUtmSource: options.safelinkUtmSource,
-      apiBase: options.apiBase,
+      apiBase: {
+        default: options.apiBase,
+        stationEditor: '',
+        feedManagement: '',
+      },
       protomapsApikey: options.protomapsApikey,
       nearmapsApikey: options.nearmapsApikey,
       loginGate: options.loginGate,

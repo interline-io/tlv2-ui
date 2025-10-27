@@ -67,12 +67,13 @@ query($ids:[Int!]!) {
 export default {
   mixins: [AuthzMixin, Loadable],
   props: {
-    id: { type: [String, Number], required: true }
+    id: { type: [String, Number], required: true },
+    client: { type: String, default: 'default' }
   },
   emits: ['changed'],
   apollo: {
     fvs: {
-      client: 'transitland',
+      client: () => (this.client),
       query: feedVersionQuery,
       variables () {
         return { ids: [this.id] }

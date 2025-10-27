@@ -277,9 +277,12 @@ const nearbyStopsQuery = gql`
 
 export default {
   mixins: [StationMixin],
+  props: {
+    client: { type: String, default: 'default' }
+  },
   apollo: {
     nearbyStopsQuery: {
-      client: 'transitland',
+      client: () => (this.client),
       query: nearbyStopsQuery,
       skip () { return !this.station }, // run after stations
       error (e) {

@@ -38,7 +38,10 @@ const feedQuery = gql`
   `
 
 export default {
-  props: { feedIds: { type: Array, default () { return [] } } },
+  props: {
+    feedIds: { type: Array, default () { return [] } },
+    client: { type: String, default: 'default' }
+  },
   data () {
     return {
       feeds: [],
@@ -48,7 +51,7 @@ export default {
   },
   apollo: {
     feeds: {
-      client: 'transitland',
+      client: () => (this.client),
       query: feedQuery,
       variables () {
         return { ids: this.feedIds }
