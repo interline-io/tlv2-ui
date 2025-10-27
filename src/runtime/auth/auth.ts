@@ -49,15 +49,29 @@ export const useAuthHeaders = async () => {
 export const useApiEndpoint = (path?: string, clientName?: string) => {
   const apiBaseConfig = (() => {
     const config = useRuntimeConfig()
+    const proxyBaseConfig = config.tlv2?.proxyBase || {}
+    const apiBasePublicConfig = config.public.tlv2?.apiBase || {}
     switch (clientName) {
       case 'stationEditor':
-        return { server: '', client: config.public.tlv2?.stationEditorApiBase }
+        return {
+          server: '',
+          client: proxyBaseConfig?.stationEditor || apiBasePublicConfig?.default || ''
+        }
       case 'feedManagement':
-        return { server: '', client: config.public.tlv2?.feedManagementApiBase }
+        return {
+          server: '',
+          client: proxyBaseConfig?.feedManagement || apiBasePublicConfig?.default || ''
+        }
       case 'transitland':
-        return { server: config.tlv2?.transitlandProxyBase, client: config.public.tlv2?.transitlandApiBase }
+        return {
+          server: config.tlv2?.proxyBase?.default,
+          client: apiBasePublicConfig?.transitland || apiBasePublicConfig?.default
+        }
       default:
-        return { server: config.tlv2?.transitlandProxyBase, client: config.public.tlv2?.transitlandApiBase }
+        return {
+          server: config.tlv2?.proxyBase?.default,
+          client: apiBasePublicConfig?.default
+        }
     }
   })()
   const apiBase = import.meta.server

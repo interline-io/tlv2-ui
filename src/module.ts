@@ -7,10 +7,8 @@ export interface ModuleOptions extends Auth0Options {
   bulma: string
   useProxy: boolean
   safelinkUtmSource?: string
-  apiBase?: string // BACKWARD COMPATIBILITY ONLY
-  transitlandApiBase?: string
-  stationEditorApiBase?: string
-  feedManagementApiBase?: string
+  proxyBase?: string
+  apiBase?: string
   protomapsApikey?: string
   nearmapsApikey?: string
   loginGate?: boolean
@@ -34,7 +32,11 @@ export default defineNuxtModule<ModuleOptions>({
 
     // Private runtime options
     nuxt.options.runtimeConfig.tlv2 = defu(nuxt.options.runtimeConfig.tlv2, {
-      transitlandProxyBase: '',
+      proxyBase: {
+        default: options.proxyBase,
+        stationEditor: '',
+        feedManagement: ''
+      },
       graphqlApikey: '',
     })
 
@@ -42,10 +44,11 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.runtimeConfig.public.tlv2 = defu(nuxt.options.runtimeConfig.public.tlv2, {
       useProxy: useProxy,
       safelinkUtmSource: options.safelinkUtmSource,
-      apiBase: options.apiBase, // BACKWARD COMPATIBILITY ONLY
-      transitlandApiBase: options.transitlandApiBase || options.apiBase,
-      stationEditorApiBase: options.stationEditorApiBase || options.transitlandApiBase || options.apiBase,
-      feedManagementApiBase: options.feedManagementApiBase || options.transitlandApiBase || options.apiBase,
+      apiBase: {
+        default: options.apiBase,
+        stationEditorApiBase: options.apiBase,
+        feedManagementApiBase: options.apiBase,
+      },
       protomapsApikey: options.protomapsApikey,
       nearmapsApikey: options.nearmapsApikey,
       loginGate: options.loginGate,
