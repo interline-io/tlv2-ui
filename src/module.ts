@@ -46,8 +46,8 @@ export default defineNuxtModule<ModuleOptions>({
       safelinkUtmSource: options.safelinkUtmSource,
       apiBase: {
         default: options.apiBase,
-        stationEditorApiBase: options.apiBase,
-        feedManagementApiBase: options.apiBase,
+        stationEditorApiBase: '',
+        feedManagementApiBase: '',
       },
       protomapsApikey: options.protomapsApikey,
       nearmapsApikey: options.nearmapsApikey,

@@ -28,7 +28,7 @@ query currentFeeds ($feed_onestop_id: String, $feed_version_ids: [Int!]) {
 export default {
   apollo: {
     feeds: {
-      client: this.graphqlClient,
+      client: () => (this.client),
       query: currentFeeds,
       fetchPolicy: 'cache-and-network',
       error (e) {
@@ -45,7 +45,7 @@ export default {
   props: {
     feedKey: { type: String, default: null },
     feedVersionKey: { type: String, default: null },
-    graphqlClient: { type: String, default: 'default' }
+    client: { type: String, default: 'default' }
   },
   data () {
     return {

@@ -55,22 +55,22 @@ export const useApiEndpoint = (path?: string, clientName?: string) => {
       case 'stationEditor':
         return {
           server: '',
-          client: proxyBaseConfig?.stationEditor || apiBasePublicConfig?.default || ''
+          client: proxyBaseConfig?.stationEditor || ''
         }
       case 'feedManagement':
         return {
           server: '',
-          client: proxyBaseConfig?.feedManagement || apiBasePublicConfig?.default || ''
+          client: proxyBaseConfig?.feedManagement || ''
         }
       case 'transitland':
         return {
           server: config.tlv2?.proxyBase?.default,
-          client: apiBasePublicConfig?.transitland || apiBasePublicConfig?.default
+          client: apiBasePublicConfig?.transitland || apiBasePublicConfig?.default || ''
         }
       default:
         return {
-          server: config.tlv2?.proxyBase?.default,
-          client: apiBasePublicConfig?.default
+          server: config.tlv2?.proxyBase?.default || '',
+          client: apiBasePublicConfig?.default || ''
         }
     }
   })()
