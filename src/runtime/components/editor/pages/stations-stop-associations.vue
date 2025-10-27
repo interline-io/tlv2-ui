@@ -153,7 +153,7 @@ export default {
   },
   apollo: {
     stops: {
-      client: () => (this.client),
+      client: 'stationEditor',
       query: q,
       variables () {
         return {

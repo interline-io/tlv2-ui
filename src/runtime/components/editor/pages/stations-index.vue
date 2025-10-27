@@ -26,6 +26,7 @@
       :feed-version-ids="[feedVersion.id]"
       :location-type="1"
       :show-links="false"
+      :client="client"
     >
       <template #stopName="slotProps">
         <nuxt-link
