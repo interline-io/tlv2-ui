@@ -46,34 +46,12 @@ export const useAuthHeaders = async () => {
   return headers
 }
 
-const useClientConfig = (clientName: string) => {
+export const useApiEndpoint = (path?: string) => {
   const config = useRuntimeConfig()
-  switch (clientName) {
-    case 'stationEditor':
-      return {
-        server: '',
-        client: config.public.tlv2?.apiBase?.stationEditor || ''
-      }
-    case 'feedManagement':
-      return {
-        server: '',
-        client: config.public.tlv2?.apiBase?.feedManagement || ''
-      }
-  }
-  return {
-    server: config.tlv2?.proxyBase?.default || '',
-    client: config.public.tlv2?.apiBase?.default || ''
-  }
-}
-
-export const useApiEndpoint = (path?: string, clientName?: string) => {
-  const apiConfig = useClientConfig(clientName || '')
   const apiBase = import.meta.server
-    ? apiConfig.server
-    : (apiConfig.client || window?.location?.origin + '/api/v2')
-  const ret = apiBase + (path || '')
-  console.log('useApiEndpoint:', { path, clientName, apibase: apiConfig }, '=>', ret)
-  return ret
+    ? (config.tlv2?.proxyBase.default) || ''
+    : (config.public.tlv2?.apiBase.default || window?.location?.origin + '/api/v2') || ''
+  return apiBase + (path || '')
 }
 
 // Login

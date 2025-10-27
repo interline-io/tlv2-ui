@@ -21,8 +21,8 @@ export function initApolloClient (endpoint: string, headers: Record<string, stri
   return apolloClient
 }
 
-export async function getApolloClient (clientName?: string) {
-  const endpoint = useApiEndpoint('/query', clientName)
+export async function getApolloClient () {
+  const endpoint = useApiEndpoint('/query')
   const headers = await useAuthHeaders()
   const apolloClient = initApolloClient(endpoint, headers)
   logAuthDebug('getApolloClient', endpoint)
@@ -33,23 +33,19 @@ export const defineApolloPlugin = async (nuxtApp) => {
   logAuthDebug('apollo plugin: start')
   const apolloClient = await getApolloClient()
 
-  const clients: Record<string, ApolloClient<any>> = {
-    default: apolloClient,
-    transitland: await getApolloClient('transitland'),
-    stationEditor: await getApolloClient('stationEditor'),
-    feedManagement: await getApolloClient('feedManagement')
-  }
-
   // options api
   const apolloProvider = createApolloProvider({
     defaultClient: apolloClient,
-    clients
+    clients: {
+      default: apolloClient,
+      transitland: apolloClient
+    }
   })
   nuxtApp.vueApp.use(apolloProvider)
 
   // composition api
-  nuxtApp.vueApp.provide(ApolloClients, clients)
-  provideApolloClients(clients)
+  nuxtApp.vueApp.provide(ApolloClients, { default: apolloClient, transitland: apolloClient })
+  provideApolloClients({ default: apolloClient, transitland: apolloClient })
 
   // handle cache
   const cacheKey = '_apollo:transitland'
