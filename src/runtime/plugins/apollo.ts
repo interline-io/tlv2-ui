@@ -10,7 +10,6 @@ const useApiEndpoint = (path: string, clientName: string) => {
   const config = useRuntimeConfig()
   const proxyBases: Record<string, string> = config.tlv2?.proxyBase || {}
   const clientApiBases: Record<string, string> = config.public.tlv2?.apiBase || {}
-  console.log('proxyBases:', proxyBases, 'clientApiBases:', clientApiBases)
   const apiBase = import.meta.server
     ? (proxyBases[clientName] || '')
     : (clientApiBases[clientName] || window?.location?.origin + '/api/v2') || ''
@@ -19,10 +18,7 @@ const useApiEndpoint = (path: string, clientName: string) => {
 
 export default defineNuxtPlugin(
   async (nuxtApp) => {
-    console.log('apollo plugin: start')
     const headers = await useAuthHeaders()
-    console.log('apollo plugin: headers', headers)
-
     const apolloClients = {
       default: initApolloClient(useApiEndpoint('/query', 'default'), headers),
       transitland: initApolloClient(useApiEndpoint('/query', 'default'), headers),
