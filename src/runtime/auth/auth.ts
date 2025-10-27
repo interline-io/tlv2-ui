@@ -46,39 +46,33 @@ export const useAuthHeaders = async () => {
   return headers
 }
 
+const useClientConfig = (clientName: string) => {
+  const config = useRuntimeConfig()
+  switch (clientName) {
+    case 'stationEditor':
+      return {
+        server: '',
+        client: config.public.tlv2?.apiBase?.stationEditor || ''
+      }
+    case 'feedManagement':
+      return {
+        server: '',
+        client: config.public.tlv2?.apiBase?.feedManagement || ''
+      }
+  }
+  return {
+    server: config.tlv2?.proxyBase?.default || '',
+    client: config.public.tlv2?.apiBase?.default || ''
+  }
+}
+
 export const useApiEndpoint = (path?: string, clientName?: string) => {
-  const apiBaseConfig = (() => {
-    const config = useRuntimeConfig()
-    const proxyBaseConfig = config.tlv2?.proxyBase || {}
-    const apiBasePublicConfig = config.public.tlv2?.apiBase || {}
-    switch (clientName) {
-      case 'stationEditor':
-        return {
-          server: '',
-          client: proxyBaseConfig?.stationEditor || ''
-        }
-      case 'feedManagement':
-        return {
-          server: '',
-          client: proxyBaseConfig?.feedManagement || ''
-        }
-      case 'transitland':
-        return {
-          server: config.tlv2?.proxyBase?.default,
-          client: apiBasePublicConfig?.transitland || apiBasePublicConfig?.default || ''
-        }
-      default:
-        return {
-          server: config.tlv2?.proxyBase?.default || '',
-          client: apiBasePublicConfig?.default || ''
-        }
-    }
-  })()
+  const apiConfig = useClientConfig(clientName || '')
   const apiBase = import.meta.server
-    ? apiBaseConfig.server
-    : (apiBaseConfig.client || window?.location?.origin + '/api/v2')
+    ? apiConfig.server
+    : (apiConfig.client || window?.location?.origin + '/api/v2')
   const ret = apiBase + (path || '')
-  console.log('useApiEndpoint:', { path, clientName, apibase: apiBaseConfig }, '=>', ret)
+  console.log('useApiEndpoint:', { path, clientName, apibase: apiConfig }, '=>', ret)
   return ret
 }
 

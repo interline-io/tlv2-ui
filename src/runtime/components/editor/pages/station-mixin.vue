@@ -115,7 +115,7 @@ export default {
     feedVersionKey: { type: String, default: '', required: true },
     stationKey: { type: String, default: '' },
     levelKey: { type: String, default: '' },
-    client: { type: String, default: 'default' }
+    client: { type: String, default: 'stationEditor' }
   },
   data () {
     return {

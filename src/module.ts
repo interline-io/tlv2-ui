@@ -32,12 +32,12 @@ export default defineNuxtModule<ModuleOptions>({
 
     // Private runtime options
     nuxt.options.runtimeConfig.tlv2 = defu(nuxt.options.runtimeConfig.tlv2, {
+      graphqlApikey: '',
       proxyBase: {
         default: options.proxyBase,
         stationEditor: '',
         feedManagement: ''
       },
-      graphqlApikey: '',
     })
 
     // Public runtime options (available on both server and client)
@@ -46,8 +46,8 @@ export default defineNuxtModule<ModuleOptions>({
       safelinkUtmSource: options.safelinkUtmSource,
       apiBase: {
         default: options.apiBase,
-        stationEditorApiBase: '',
-        feedManagementApiBase: '',
+        stationEditor: '',
+        feedManagement: '',
       },
       protomapsApikey: options.protomapsApikey,
       nearmapsApikey: options.nearmapsApikey,

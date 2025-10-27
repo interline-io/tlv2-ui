@@ -35,9 +35,9 @@ export const defineApolloPlugin = async (nuxtApp) => {
 
   const clients: Record<string, ApolloClient<any>> = {
     default: apolloClient,
-    transitland: apolloClient,
-    stationEditor: apolloClient,
-    feedManagement: apolloClient
+    transitland: await getApolloClient('transitland'),
+    stationEditor: await getApolloClient('stationEditor'),
+    feedManagement: await getApolloClient('feedManagement')
   }
 
   // options api
