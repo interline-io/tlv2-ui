@@ -33,6 +33,7 @@
       :location-type="1"
       :show-links="false"
       :client="client"
+      :limit="1000"
     >
       <template #stopName="slotProps">
         <nuxt-link
