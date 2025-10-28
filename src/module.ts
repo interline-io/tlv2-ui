@@ -57,6 +57,7 @@ export default defineNuxtModule<ModuleOptions>({
       auth0Domain: options.auth0Domain,
       auth0ClientId: options.auth0ClientId,
       auth0RedirectUri: options.auth0RedirectUri,
+      auth0LogoutUri: options.auth0LogoutUri,
       auth0Audience: options.auth0Audience,
       auth0Scope: options.auth0Scope,
     })
