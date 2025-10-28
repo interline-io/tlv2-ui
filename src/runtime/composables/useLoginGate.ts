@@ -14,6 +14,7 @@ export const useLoginGate = (options: { hasRole?: string, hasAnyRole?: string[],
     console.log('useLoginGate: (not gated) login gate disabled')
     return false
   }
+
   // Get user
   const user = useUser()
   if (!user.loggedIn) {
