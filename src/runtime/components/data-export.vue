@@ -84,17 +84,14 @@ interface LayerInfo {
 
 type MapLayerType = 'buffer' | 'hull' | 'census'
 
-// Props
-interface Props {
+const props = withDefaults(defineProps<{
   routeName?: string
   stopIds?: number[] | null
   routeIds?: number[] | null
   agencyIds?: number[] | null
   routeFeatures?: Feature[]
   stopFeatures?: Feature[]
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   routeName: 'export',
   stopIds: null,
   routeIds: null,

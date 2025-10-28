@@ -417,6 +417,7 @@ export class Level {
 
 export class Station {
   constructor (stop) {
+    this.client = 'stationEditor',
     this.graph = null
     this.stop = new Stop(stop)
     this.pathways = []
@@ -581,7 +582,8 @@ export class Station {
     const q = gql`mutation ($set: LevelSetInput!) {level_create(set:$set) {id}}`
     return $apollo.mutate({
       mutation: q,
-      variables: vars
+      variables: vars,
+      client: this.client,
     })
   }
 
@@ -593,7 +595,8 @@ export class Station {
     const q = gql`mutation ($set: LevelSetInput!) {level_update(set:$set) {id}}`
     return $apollo.mutate({
       mutation: q,
-      variables: vars
+      variables: vars,
+      client: this.client,
     })
   }
 
@@ -602,7 +605,8 @@ export class Station {
     const q = gql`mutation ($id: Int!) {level_delete(id:$id) {id}}`
     return $apollo.mutate({
       mutation: q,
-      variables: { id: ent.id }
+      variables: { id: ent.id },
+      client: this.client
     })
   }
 
@@ -615,7 +619,8 @@ export class Station {
     const q = gql`mutation ($set: PathwaySetInput!) {pathway_create(set:$set) {id}}`
     return $apollo.mutate({
       mutation: q,
-      variables: vars
+      variables: vars,
+      client: this.client
     })
   }
 
@@ -625,7 +630,8 @@ export class Station {
     const q = gql`mutation ($set: PathwaySetInput!) {pathway_update(set:$set) {id}}`
     return $apollo.mutate({
       mutation: q,
-      variables: vars
+      variables: vars,
+      client: this.client
     })
   }
 
@@ -634,7 +640,8 @@ export class Station {
     const q = gql`mutation ($id: Int!) {pathway_delete(id:$id) {id}}`
     return $apollo.mutate({
       mutation: q,
-      variables: { id: pw.id }
+      variables: { id: pw.id },
+      client: this.client
     })
   }
 
@@ -651,7 +658,8 @@ export class Station {
     const q = gql`mutation ($set: StopSetInput!) {stop_create(set:$set) {id}}`
     return $apollo.mutate({
       mutation: q,
-      variables: vars
+      variables: vars,
+      client: this.client,
     })
   }
 
@@ -664,7 +672,8 @@ export class Station {
     const q = gql`mutation ($set: StopSetInput!) {stop_update(set:$set) {id}}`
     return $apollo.mutate({
       mutation: q,
-      variables: vars
+      variables: vars,
+      client: this.client,
     })
   }
 
@@ -673,7 +682,8 @@ export class Station {
     const q = gql`mutation ($id: Int!) {stop_delete(id:$id) {id}}`
     return $apollo.mutate({
       mutation: q,
-      variables: { id: ent.id }
+      variables: { id: ent.id },
+      client: this.client
     })
   }
 

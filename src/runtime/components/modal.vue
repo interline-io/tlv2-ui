@@ -3,10 +3,16 @@
     <o-modal
       :active="modelValue"
       has-modal-card
+      close-class="tl-modal-hideclose"
       :cancelable="closable"
+      :full-screen="fullScreen"
+      full-screen-class="tl-modal-fullscreen"
       @update:model-value="$emit('update:modelValue', $event)"
       @close="close"
     >
+      <template #close>
+        ...
+      </template>
       <div class="modal-card">
         <header class="modal-card-head">
           <p class="modal-card-title">
@@ -32,18 +38,18 @@
 
 <script setup lang="ts">
 // Props
-interface Props {
+withDefaults(defineProps<{
   text?: string
   title?: string
   modelValue?: boolean
   closable?: boolean
-}
-
-withDefaults(defineProps<Props>(), {
+  fullScreen?: boolean
+}>(), {
   text: '+',
   title: '',
   modelValue: false,
-  closable: true
+  closable: true,
+  fullScreen: false
 })
 
 // Emits
@@ -61,5 +67,12 @@ const close = (): void => {
 <style>
 .tl-modal .modal-card {
   min-width: 800px;
+}
+.tl-modal-fullscreen {
+  padding-top:30px;
+  padding-bottom:30px;
+}
+.tl-modal-hideclose {
+  display:none;
 }
 </style>

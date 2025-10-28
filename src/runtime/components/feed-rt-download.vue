@@ -113,7 +113,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, withDefaults } from 'vue'
+import { ref, computed } from 'vue'
 import VueJsonPretty from 'vue-json-pretty'
 import 'vue-json-pretty/lib/styles.css'
 import { useApiEndpoint } from '../composables/useApiEndpoint'
@@ -123,12 +123,6 @@ import { useToastNotification } from '../composables/useToastNotification'
 // Type definitions
 type RTType = 'alerts' | 'trip_updates' | 'vehicle_positions'
 
-interface Props {
-  feedOnestopId: string
-  rtType: RTType
-  lastFetchedAt?: string | null
-}
-
 interface RTTypeDisplayMap {
   vehicle_positions: string
   trip_updates: string
@@ -137,7 +131,11 @@ interface RTTypeDisplayMap {
 }
 
 // Props validation
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<{
+  feedOnestopId: string
+  rtType: RTType
+  lastFetchedAt?: string | null
+}>(), {
   lastFetchedAt: null
 })
 

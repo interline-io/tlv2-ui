@@ -2,7 +2,7 @@
   <div class="control">
     <div class="tags has-addons">
       <a
-        target="_blank"
+        :target="newTab ? '_blank' : '_self'"
         class="tag is-medium desc"
       >
         <o-icon
@@ -24,7 +24,8 @@
 export default {
   props: {
     user: { type: Object, default () { return {} }, required: true },
-    action: { type: String, default: null }
+    action: { type: String, default: null },
+    newTab: { type: Boolean, default: false }
   },
   emits: [
     'select'

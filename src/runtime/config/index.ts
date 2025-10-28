@@ -1,2 +1,2 @@
-export { setupPolly } from './pollySetup'
-export { eslintRules, stylisticConfig, eslintConfig } from './eslint'
+export * from './pollySetup'
+export * from './eslint'

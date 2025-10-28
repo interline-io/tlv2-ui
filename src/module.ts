@@ -7,6 +7,7 @@ export interface ModuleOptions extends Auth0Options {
   bulma: string
   useProxy: boolean
   safelinkUtmSource?: string
+  proxyBase?: string
   apiBase?: string
   protomapsApikey?: string
   nearmapsApikey?: string
@@ -31,15 +32,23 @@ export default defineNuxtModule<ModuleOptions>({
 
     // Private runtime options
     nuxt.options.runtimeConfig.tlv2 = defu(nuxt.options.runtimeConfig.tlv2, {
-      proxyBase: '',
       graphqlApikey: '',
+      proxyBase: {
+        default: options.proxyBase,
+        stationEditor: '',
+        feedManagement: ''
+      },
     })
 
     // Public runtime options (available on both server and client)
     nuxt.options.runtimeConfig.public.tlv2 = defu(nuxt.options.runtimeConfig.public.tlv2, {
       useProxy: useProxy,
       safelinkUtmSource: options.safelinkUtmSource,
-      apiBase: options.apiBase,
+      apiBase: {
+        default: options.apiBase,
+        stationEditor: '',
+        feedManagement: '',
+      },
       protomapsApikey: options.protomapsApikey,
       nearmapsApikey: options.nearmapsApikey,
       loginGate: options.loginGate,
@@ -48,6 +57,7 @@ export default defineNuxtModule<ModuleOptions>({
       auth0Domain: options.auth0Domain,
       auth0ClientId: options.auth0ClientId,
       auth0RedirectUri: options.auth0RedirectUri,
+      auth0LogoutUri: options.auth0LogoutUri,
       auth0Audience: options.auth0Audience,
       auth0Scope: options.auth0Scope,
     })
@@ -129,14 +139,15 @@ export default defineNuxtModule<ModuleOptions>({
       viteConfig.optimizeDeps = {
         ...viteConfig.optimizeDeps,
         include: [
-          'zen-observable',
-          'fast-json-stable-stringify',
-          'maplibre-gl',
-          'haversine',
           '@mapbox/mapbox-gl-draw',
-          'cytoscape',
-          'mixpanel-browser',
           '@observablehq/plot',
+          'cytoscape-fcose',
+          'cytoscape',
+          'fast-json-stable-stringify',
+          'haversine',
+          'maplibre-gl',
+          'mixpanel-browser',
+          'zen-observable',
           'interval-tree-1d' // distributed as CJS, rather than ESM
         ]
       }

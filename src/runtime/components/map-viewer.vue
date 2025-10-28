@@ -5,11 +5,12 @@
 <script setup lang="ts">
 import * as maplibre from 'maplibre-gl'
 import { noLabels, labels } from 'protomaps-themes-base'
-import { nextTick, ref, watch, onMounted, onBeforeUnmount, defineProps, defineEmits, withDefaults } from 'vue'
+import { nextTick, ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useApiEndpoint } from '../composables/useApiEndpoint'
 import { useAuthHeaders } from '../composables/useAuthHeaders'
 import { useNuxtApp } from 'nuxt/app'
 import mapLayers from './map-layers'
+import type { LonLat, Feature, BoundingBox } from '../geom'
 
 // Define types for better TypeScript support
 interface MarkerCoord {
@@ -21,15 +22,6 @@ interface MarkerObject {
   lng: number
   lat: number
   onDragEnd?: (event: any) => void
-}
-
-interface Feature {
-  type: 'Feature'
-  geometry: {
-    type: string
-    coordinates: any
-  }
-  properties?: any
 }
 
 interface TileSource {
@@ -49,11 +41,12 @@ interface MapViewerProps {
   mapClass?: string
   routeTiles?: TileSource | null
   stopTiles?: TileSource | null
+  stopLocationTypeFilter?: Record<number, boolean>
   stopFeatures?: Feature[]
   routeFeatures?: Feature[]
   interactive?: boolean
   autoFit?: boolean
-  center?: number[] | null
+  center?: LonLat | null
   circleRadius?: number
   circleColor?: string
   zoom?: number
@@ -71,6 +64,7 @@ const props = withDefaults(defineProps<MapViewerProps>(), {
   mapClass: 'short',
   routeTiles: null,
   stopTiles: null,
+  stopLocationTypeFilter: () => ({ 0: true, 1: true, 2: true, 3: true, 4: true }),
   stopFeatures: () => [],
   routeFeatures: () => [],
   interactive: true,
@@ -86,6 +80,7 @@ const props = withDefaults(defineProps<MapViewerProps>(), {
 const map = ref<maplibre.Map | null>(null)
 const marker = ref<maplibre.Marker | null>(null)
 const hovering = ref<any[]>([])
+const hoveringStops = ref<any[]>([])
 const markerLayer = ref<maplibre.Marker[]>([])
 
 // Template ref
@@ -106,8 +101,9 @@ const once = <T extends (...args: any[]) => any>(fn: T): T => {
 const emit = defineEmits<{
   mapClick: [event: any]
   setZoom: [zoom: number]
-  mapMove: [data: { zoom: number, bbox: number[][] }]
+  mapMove: [data: { zoom: number, bbox: BoundingBox }]
   setAgencyFeatures: [features: any]
+  setStopFeatures: [features: any]
 }>()
 
 // Helper functions
@@ -127,12 +123,26 @@ const updateFilters = () => {
     if (f.length === 0) {
       f.push('all')
     }
-    // Hide all routes?
+    // Hide all stops if tiles are hidden
     if (props.hideTiles) {
-      f.push(['==', 'route_id', ''])
+      f.push(['==', 'stop_id', ''])
     }
+    // Filter by location_type
+    const enabledLocationTypes = Object.entries(props.stopLocationTypeFilter)
+      .filter(([_, enabled]) => enabled)
+      .map(([type, _]) => parseInt(type))
+
+    if (enabledLocationTypes.length < 5) { // Only add filter if not all types are enabled
+      if (enabledLocationTypes.length > 0) {
+        f.push(['in', ['get', 'location_type'], ['literal', enabledLocationTypes]])
+      } else {
+        // If no location types are enabled, hide all stops
+        f.push(['==', 'stop_id', ''])
+      }
+    }
+
     if (f.length > 1) {
-      map.value.setFilter(v.name, f)
+      map.value.setFilter(v.name, f as any)
     } else {
       map.value.setFilter(v.name, null)
     }
@@ -158,7 +168,7 @@ const updateFilters = () => {
       f.push(['==', 'generated', false])
     }
     if (f.length > 1) {
-      map.value.setFilter(v.name, f)
+      map.value.setFilter(v.name, f as any)
     } else {
       map.value.setFilter(v.name, null)
     }
@@ -178,6 +188,10 @@ watch(() => props.showGeneratedGeometries, () => {
   updateFilters()
 })
 
+watch(() => props.stopLocationTypeFilter, () => {
+  updateFilters()
+}, { deep: true })
+
 watch(() => props.features, (v) => {
   nextTickUpdateFeatures(v)
 })
@@ -195,13 +209,13 @@ watch(() => props.center, (newVal, oldVal) => {
     return
   }
   if (map.value && props.center) {
-    map.value.jumpTo({ center: props.center as [number, number], zoom: props.zoom })
+    map.value.jumpTo({ center: [props.center.lon, props.center.lat], zoom: props.zoom })
   }
 })
 
 watch(() => props.zoom, () => {
   if (map.value && props.center) {
-    map.value.jumpTo({ center: props.center as [number, number], zoom: props.zoom })
+    map.value.jumpTo({ center: [props.center.lon, props.center.lat], zoom: props.zoom })
   }
 })
 
@@ -266,8 +280,8 @@ const initMap = async () => {
       }
     }
   }
-  if (props.center && props.center.length > 0) {
-    opts.center = props.center
+  if (props.center) {
+    opts.center = [props.center.lon, props.center.lat]
   }
   if (props.zoom) {
     opts.zoom = props.zoom
@@ -356,7 +370,7 @@ const createSources = () => {
       type: 'vector',
       tiles: [props.stopTiles.url],
       minzoom: props.stopTiles.minzoom || 0,
-      maxzoom: props.stopTiles.maxzoom || 14
+      maxzoom: props.stopTiles.maxzoom || 14,
     })
   } else {
     map.value.addSource('stops', {
@@ -520,16 +534,34 @@ const mapZoom = () => {
 
 const mapMove = () => {
   if (map.value) {
-    emit('mapMove', { zoom: map.value.getZoom(), bbox: map.value.getBounds().toArray() })
+    const bbox = {
+      sw: { lon: map.value.getBounds().getSouthWest().lng, lat: map.value.getBounds().getSouthWest().lat },
+      ne: { lon: map.value.getBounds().getNorthEast().lng, lat: map.value.getBounds().getNorthEast().lat }
+    }
+    emit('mapMove', { zoom: map.value.getZoom(), bbox })
   }
 }
+
 const mapMouseMove = (e: any) => {
   if (!map.value) return
-
+  const searchWidth = 0
+  const searchHeight = 0
+  const searchBbox: [[number, number], [number, number]] = [
+    [e.point.x - searchWidth / 2, e.point.y - searchHeight / 2],
+    [e.point.x + searchWidth / 2, e.point.y + searchHeight / 2]
+  ]
   const currentMap = map.value
-  const features = currentMap.queryRenderedFeatures(e.point, { layers: ['route-active'] })
-  currentMap.getCanvas().style.cursor = 'pointer'
+  const features = currentMap.queryRenderedFeatures(searchBbox, { layers: ['route-active'] })
+  const stopFeatures = currentMap.queryRenderedFeatures(searchBbox, { layers: ['stop-active'] })
 
+  // Set cursor based on whether we're hovering over routes or stops
+  if (features.length > 0 || stopFeatures.length > 0) {
+    currentMap.getCanvas().style.cursor = 'pointer'
+  } else {
+    currentMap.getCanvas().style.cursor = ''
+  }
+
+  // Handle route hovers
   for (const k of hovering.value) {
     currentMap.setFeatureState(
       { source: 'routes', id: k, sourceLayer: props.routeTiles ? props.routeTiles.id : null },
@@ -553,6 +585,35 @@ const mapMouseMove = (e: any) => {
     agencyFeatures[agencyId][routeId] = v.properties
   }
   emit('setAgencyFeatures', agencyFeatures)
+
+  // Handle stop hovers
+  for (const k of hoveringStops.value) {
+    currentMap.setFeatureState(
+      { source: 'stops', id: k, sourceLayer: props.stopTiles ? props.stopTiles.id : null },
+      { hover: false }
+    )
+  }
+  hoveringStops.value = []
+
+  // Set hover state for stops
+  for (const v of stopFeatures) {
+    hoveringStops.value.push(v.id)
+    currentMap.setFeatureState(
+      { source: 'stops', id: v.id, sourceLayer: props.stopTiles ? props.stopTiles.id : null },
+      { hover: true }
+    )
+  }
+
+  // Emit stop features grouped by feed
+  const groupedStopFeatures: any = {}
+  for (const v of stopFeatures) {
+    const feedId = v.properties.feed_onestop_id || 'unknown'
+    if (groupedStopFeatures[feedId] == null) {
+      groupedStopFeatures[feedId] = []
+    }
+    groupedStopFeatures[feedId].push(v.properties)
+  }
+  emit('setStopFeatures', groupedStopFeatures)
 }
 
 // Expose the saveImage method so it can be called from parent components

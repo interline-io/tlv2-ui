@@ -29,13 +29,16 @@ import { ref, computed, watch } from 'vue'
 import { useQuery, useMutation } from '@vue/apollo-composable'
 import { gql } from 'graphql-tag'
 
-// TypeScript interfaces
-interface FeedVersion {
+// Types
+interface FeedVersionResponse {
   id: number
   name: string
   description: string
   sha1?: string
 }
+
+// Extract individual types from the response type
+type FeedVersion = FeedVersionResponse
 
 interface FeedVersionSetInput {
   id: number | string
@@ -43,20 +46,10 @@ interface FeedVersionSetInput {
   description: string
 }
 
-interface FeedVersionUpdateResponse {
-  feed_version_update: FeedVersion
-}
-
-interface FeedVersionsQueryResponse {
-  feed_versions: FeedVersion[]
-}
-
 // Props
-interface Props {
+const props = defineProps<{
   id: string | number
-}
-
-const props = defineProps<Props>()
+}>()
 
 // Emits
 const emit = defineEmits<{
@@ -91,7 +84,7 @@ const error = ref<string | null>(null)
 const mutationLoading = ref(false)
 
 // Apollo query
-const { result, loading, error: queryError } = useQuery<FeedVersionsQueryResponse>(
+const { result, loading, error: queryError } = useQuery<{ feed_versions: FeedVersionResponse[] }>(
   feedVersionQuery,
   () => ({
     ids: [Number(props.id)]
@@ -103,7 +96,7 @@ const { result, loading, error: queryError } = useQuery<FeedVersionsQueryRespons
 )
 
 // Apollo mutation
-const { mutate: updateFeedVersion } = useMutation<FeedVersionUpdateResponse>(
+const { mutate: updateFeedVersion } = useMutation<{ feed_version_update: FeedVersionResponse }>(
   saveFeedVersionMutation,
   {
     clientId: 'transitland'

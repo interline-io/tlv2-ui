@@ -1,6 +1,17 @@
+<!--
+Usage example:
+<tl-pages-route
+  :path-key="$route.params.routeKey"
+  :include-stops="true"
+  @entities-loaded="entitiesLoaded"
+  @static-description-updated="staticDescriptionUpdated"
+  @route-name-updated="routeNameUpdated"
+/>
+-->
+
 <template>
   <div>
-    <tl-loading v-if="$apollo.loading" />
+    <tl-loading v-if="loading" />
     <tl-msg-error v-else-if="error">
       {{ error }}
     </tl-msg-error>
@@ -78,7 +89,7 @@
                   <o-tooltip
                     :label="`Route with route_type = ${entity.route_type}`"
                   >
-                    {{ $filters.routeTypeToWords(entity.route_type) }}
+                    {{ routeTypeToWords(entity.route_type) }}
                   </o-tooltip>
                 </td>
               </tr>
@@ -162,7 +173,7 @@
                         <tl-safelink :text="row.feed_version_sha1" max-width="100px" />
                       </td>
                       <td>
-                        <tl-safelink :text="$filters.shortenName(row.route_id)" />
+                        <tl-safelink :text="shortenName(row.route_id, 20)" />
                       </td>
                       <td>
                         <nuxt-link
@@ -185,7 +196,7 @@
                         >
                           Feed version
                         </nuxt-link> <nuxt-link
-                          :to="$filters.makeRouteLink(row.onestop_id,row.feed_onestop_id,row.feed_version_sha1,row.route_id,row.id,true)"
+                          :to="makeRouteLink(row.onestop_id,row.feed_onestop_id,row.feed_version_sha1,row.route_id,row.id,true)"
                           class="button is-primary is-small"
                         >
                           Route
@@ -251,10 +262,111 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed, watch } from 'vue'
 import { gql } from 'graphql-tag'
-import EntityPageMixin from './entity-page-mixin'
-import { useEventBus } from '../../composables/useEventBus'
+import { useQuery } from '@vue/apollo-composable'
+import { useEntityPath } from '../../composables/useEntityPath'
+import { shortenName, makeRouteLink, routeTypeToWords } from '../../lib/filters'
+
+// Types
+interface RouteResponse {
+  id: number
+  onestop_id: string
+  feed_onestop_id: string
+  feed_version_sha1: string
+  route_id: string
+  route_color?: string
+  route_desc?: string
+  entity_desc?: string
+  route_long_name?: string
+  route_short_name?: string
+  route_type: number
+  route_url?: string
+  geometry: {
+    type: string
+    coordinates: any
+  }
+  alerts?: {
+    cause: string
+    effect: string
+    severity_level: string
+    description_text: {
+      language: string
+      text: string
+    }[]
+    header_text: {
+      language: string
+      text: string
+    }[]
+    url: {
+      language: string
+      text: string
+    }[]
+  }[]
+  route_stops?: {
+    stop: {
+      id: number
+      stop_id: string
+      stop_name: string
+      geometry: {
+        type: string
+        coordinates: any
+      }
+    }
+  }[]
+  agency: {
+    id: number
+    agency_id: string
+    agency_name: string
+    onestop_id?: string
+  }
+  headways?: {
+    dow_category: number
+    service_date: string
+    direction_id: number
+    headway_secs: number
+    departures: number
+  }[]
+  feed_version: {
+    id: number
+    fetched_at: string
+  }
+}
+
+// Extract individual types from the response type
+type Route = RouteResponse
+type Alert = NonNullable<RouteResponse['alerts']>[0]
+type Translation = Alert['description_text'][0]
+type RouteStop = NonNullable<RouteResponse['route_stops']>[0]
+
+interface TabNames {
+  summary: string
+  headways: string
+  sources: string
+  export: string
+}
+
+// Props
+const props = withDefaults(defineProps<{
+  pathKey: string
+  includeStops?: boolean
+  feedVersionSha1?: string
+  feedOnestopId?: string
+  entityId?: string
+}>(), {
+  includeStops: true,
+  feedVersionSha1: undefined,
+  feedOnestopId: undefined,
+  entityId: undefined
+})
+
+// Emits
+const emit = defineEmits<{
+  entitiesLoaded: [entities: Route[]]
+  staticDescriptionUpdated: [description: string]
+  routeNameUpdated: [name: string]
+}>()
 
 const q = gql`
 query ($onestopId: String, $ids: [Int!], $entityId: String, $feedOnestopId: String, $feedVersionSha1: String, $include_stops: Boolean! = true, $limit: Int=10, $allowPreviousOnestopIds: Boolean = false) {
@@ -317,136 +429,150 @@ query ($onestopId: String, $ids: [Int!], $entityId: String, $feedOnestopId: Stri
 }
 `
 
-export default {
-  mixins: [EntityPageMixin],
-  apollo: {
-    entities: {
-      client: 'transitland',
-      query: q,
-      skip () {
-        return this.checkSearchSkip(this.entityId)
-      },
-      variables () {
-        return this.entityVariables
-      }
-    }
-  },
-  data () {
-    return {
-      features: [],
-      bufferGeom: null,
-      routeGeom: null,
-      censusGeoms: null,
-      selectDate: null,
-      tabNames: this.makeTabNames([
-        'summary',
-        'headways',
-        'sources',
-        'export'
-      ]),
-      activeTab: 'summary',
-    }
-  },
-  computed: {
-    // routeFeatures and stopFeatures are calculated from the main
-    // graphql response so we don't need to copy in and rely on the response from the map
-    routeFeatures () {
-      const ret = []
-      for (const f of this.entities || []) {
-        const fcopy = Object.assign({}, f)
-        delete fcopy.geometry
-        delete fcopy.__typename
-        ret.push({
-          type: 'Feature',
-          geometry: f.geometry,
-          properties: fcopy,
-          id: f.id
-        })
-      }
-      return ret
-    },
-    stopFeatures () {
-      const ret = []
-      for (const f of this.entities || []) {
-        for (const g of f.route_stops || []) {
-          const fcopy = Object.assign({}, g.stop)
-          delete fcopy.geometry
-          delete fcopy.__typename
-          ret.push({
-            type: 'Feature',
-            geometry: g.stop.geometry,
-            properties: fcopy,
-            id: g.stop.id
-          })
-        }
-      }
-      return ret
-    },
-    routeName () {
-      if (this.entity) {
-        const shortName = this.entity.route_short_name || ''
-        const longName = this.entity.route_long_name || ''
-        const nameParts = [shortName, longName].filter(Boolean).join(' ')
-        return `${this.entity.agency.agency_name} - ${nameParts}`
-      }
-      return 'route'
-    },
-    routeNames () {
-      const rs = new Map()
-      for (const ent of this.entities) {
-        const shortName = ent.route_short_name || ''
-        const longName = ent.route_long_name || ''
-        const key = `${ent.agency.agency_name}-${shortName}-${longName}-${ent.route_type}`
-        rs.set(key, ent)
-      }
-      return Array.from(rs.values()).slice(0, 4)
-    },
-    routeType () {
-      return this.$filters.routeTypeToWords(this.entity.route_type)
-    },
-    operators () {
-      const rs = new Map()
-      for (const ent of this.entities) {
-        if (ent.operator) {
-          rs.set(ent.operator.onestop_id, ent.operator)
-        }
-      }
-      return Array.from(rs.values())
-    },
-    serviceDate: {
-      get () {
-        return this.$route.query.service_date
-          ? this.$route.query.service_date
-          : 'TODO'
-      },
-      set (value) {
-        this.$router.push({
-          name: this.$router.name,
-          query: {
-            service_date: value
-          }
-        })
-      }
-    },
-    staticImage () {
-      return `${this.$config.public.tlv2?.apiBase}/rest/routes/${this.pathKey}.png`
-    },
-    staticTitle () {
-      return `${this.routeName} • ${this.routeType} route`
-    },
-    staticDescription () {
-      return `${this.routeName} is a ${this.routeType} route available for browsing and analysis.`
-    }
-  },
-  watch: {
-    routeName (v) {
-      useEventBus().$emit('setParamKey', 'routeKey', v)
-    }
-  },
-  methods: {
-    filterRTTranslations (v) {
-      return v.filter((s) => { return !(s?.language || '').includes('html') })
+// Helper functions
+function makeTabNames (vals: string[]): TabNames {
+  const a = {} as TabNames
+  for (const k of vals) {
+    (a as any)[k] = k
+  }
+  return a
+}
+
+function filterRTTranslations (v: Translation[]): Translation[] {
+  return v.filter(s => !(s?.language || '').includes('html'))
+}
+
+// Entity path setup
+const { searchKey, entityVariables, linkVersion } = useEntityPath({
+  pathKey: props.pathKey,
+  feedVersionSha1: props.feedVersionSha1,
+  feedOnestopId: props.feedOnestopId,
+  entityId: props.entityId
+})
+
+// Reactive state
+const features = ref<any[]>([])
+const activeTab = ref('summary')
+const tabNames = makeTabNames(['summary', 'headways', 'sources', 'export'])
+
+// GraphQL query with dynamic variables
+const queryVariables = computed(() => ({
+  ...entityVariables.value,
+  include_stops: props.includeStops,
+  limit: 10
+}))
+
+const { result, loading, error } = useQuery<{ entities: RouteResponse[] }>(q, queryVariables, {
+  clientId: 'transitland'
+})
+// Computed entities
+const entities = computed((): Route[] => {
+  return result.value?.entities ?? []
+})
+
+const entity = computed((): Route | null => {
+  return entities.value.length > 0 ? entities.value[0] : null
+})
+
+const entityIds = computed((): number[] => {
+  return entities.value.map(s => s.id)
+})
+
+// routeFeatures and stopFeatures are calculated from the main
+// graphql response so we don't need to copy in and rely on the response from the map
+const routeFeatures = computed(() => {
+  const ret: any[] = []
+  for (const f of entities.value || []) {
+    const fcopy = Object.assign({}, f) as any
+    delete fcopy.geometry
+    delete fcopy.__typename
+    ret.push({
+      type: 'Feature',
+      geometry: f.geometry,
+      properties: fcopy,
+      id: f.id
+    })
+  }
+  return ret
+})
+
+const stopFeatures = computed(() => {
+  const ret: any[] = []
+  for (const f of entities.value || []) {
+    for (const g of f.route_stops || []) {
+      const fcopy = Object.assign({}, g.stop) as any
+      delete fcopy.geometry
+      delete fcopy.__typename
+      ret.push({
+        type: 'Feature',
+        geometry: g.stop.geometry,
+        properties: fcopy,
+        id: g.stop.id
+      })
     }
   }
+  return ret
+})
+
+const routeName = computed((): string => {
+  if (entity.value) {
+    const shortName = entity.value.route_short_name || ''
+    const longName = entity.value.route_long_name || ''
+    const nameParts = [shortName, longName].filter(Boolean).join(' ')
+    return `${entity.value.agency.agency_name} - ${nameParts}`
+  }
+  return 'route'
+})
+
+const routeNames = computed((): Route[] => {
+  const rs = new Map<string, Route>()
+  for (const ent of entities.value) {
+    const shortName = ent.route_short_name || ''
+    const longName = ent.route_long_name || ''
+    const key = `${ent.agency.agency_name}-${shortName}-${longName}-${ent.route_type}`
+    rs.set(key, ent)
+  }
+  return Array.from(rs.values()).slice(0, 4)
+})
+
+const routeType = computed((): string => {
+  return entity.value ? routeTypeToWords(entity.value.route_type) : ''
+})
+
+const staticImage = computed((): string => {
+  // Note: We'll need to get the config from somewhere - for now using a placeholder
+  const apiBase = 'https://transit.land/api/v2'
+  return `${apiBase}/rest/routes/${props.pathKey}.png`
+})
+
+const staticTitle = computed((): string => {
+  return `${routeName.value} • ${routeType.value} route`
+})
+
+const staticDescription = computed((): string => {
+  return `${routeName.value} is a ${routeType.value} route available for browsing and analysis.`
+})
+// Methods
+function setTab (value: string) {
+  activeTab.value = value
 }
+
+// Watch for changes and emit events
+watch(entities, (newEntities) => {
+  if (newEntities) {
+    emit('entitiesLoaded', newEntities)
+  }
+}, { immediate: true })
+
+watch(staticDescription, (newDescription) => {
+  if (newDescription) {
+    emit('staticDescriptionUpdated', newDescription)
+  }
+}, { immediate: true })
+
+watch(routeName, (newName) => {
+  if (newName) {
+    emit('routeNameUpdated', newName)
+  }
+}, { immediate: true })
 </script>

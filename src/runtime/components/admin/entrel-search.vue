@@ -31,9 +31,10 @@
       </div>
       <div class="field is-grouped is-grouped-multiline">
         <tl-admin-user-item
-          v-for="v of $filters.nameSort(users || [])"
+          v-for="v of nameSort(users || [])"
           :key="v.id"
           :user="v"
+          :new-tab="true"
           action="add"
           @select="$emit('select', { type: 'user', id: $event })"
         />
@@ -50,6 +51,7 @@
           <tl-admin-tenant-item
             key="*"
             :value="userStar"
+            :new-tab="true"
             action="add"
             @select="$emit('select', { type: 'user', id: $event })"
           />
@@ -68,16 +70,18 @@
       <div v-else>
         <div class="field is-grouped is-grouped-multiline">
           <tl-admin-tenant-item
-            v-for="v of $filters.nameSort(tenants || [])"
+            v-for="v of nameSort(tenants || [])"
             :key="v.id"
+            :new-tab="true"
             :value="v"
             action="add"
             @select="$emit('select', { type: 'tenant', id: $event, refrel: 'member' })"
           />
           <tl-admin-group-item
-            v-for="v of $filters.nameSort(groups || [])"
+            v-for="v of nameSort(groups || [])"
             :key="v.id"
             :value="v"
+            :new-tab="true"
             action="add"
             @select="$emit('select', { type: 'org', id: $event, refrel: 'viewer' })"
           />
@@ -89,6 +93,7 @@
 
 <script>
 import Loadable from '../loadable'
+import { nameSort } from '../../lib/filters'
 
 export default {
   mixins: [Loadable],
@@ -124,6 +129,7 @@ export default {
   },
   mounted () { this.getData('') },
   methods: {
+    nameSort,
     async getData (search) {
       this.loadingAll = true
       // users

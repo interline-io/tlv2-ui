@@ -111,15 +111,13 @@ type TimeOfDay = 'morning' | 'midday' | 'afternoon' | 'night'
 type DayOfWeek = 'weekday' | 'saturday' | 'sunday'
 
 // Props
-interface Props {
+const props = withDefaults(defineProps<{
   headways?: HeadwayInput[]
   showMorning?: boolean
   showMidday?: boolean
   showAfternoon?: boolean
   showNight?: boolean
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   headways: () => [],
   showMorning: true,
   showMidday: true,

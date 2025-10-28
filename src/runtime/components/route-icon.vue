@@ -17,18 +17,15 @@
 import { computed } from 'vue'
 import { getBasicRouteType } from '../lib/routetypes'
 
-// TypeScript interfaces and types
 type RouteIconType = 'tram' | 'subway' | 'train' | 'bus' | 'ferry' | 'gondola' | ''
 
-interface Props {
+const props = withDefaults(defineProps<{
   nameIcon?: string | null
   routeType?: number | null
   routeShortName?: string | null
   routeLongName?: string | null
   routeLink?: string | null
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   nameIcon: null,
   routeType: null,
   routeShortName: null,

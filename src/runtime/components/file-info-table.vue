@@ -50,11 +50,9 @@ interface FileInfo {
 }
 
 // Props
-interface Props {
+withDefaults(defineProps<{
   files?: FileInfo[]
-}
-
-withDefaults(defineProps<Props>(), {
+}>(), {
   files: () => []
 })
 </script>

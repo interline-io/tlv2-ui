@@ -40,7 +40,7 @@ import { computed, ref, watch } from 'vue'
 // TypeScript types and interfaces
 type MessageVariant = 'info' | 'success' | 'warning' | 'danger' | 'primary' | 'link' | 'dark'
 
-interface Props {
+const props = withDefaults(defineProps<{
   variant?: MessageVariant
   title?: string | null
   icon?: string | null
@@ -48,9 +48,7 @@ interface Props {
   collapsible?: boolean
   collapsed?: boolean
   defaultTitle?: string
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   variant: 'info',
   title: null,
   icon: null,

@@ -86,12 +86,10 @@ interface RTTypeDisplayMap {
 }
 
 // Props
-interface Props {
+const props = defineProps<{
   feedOnestopId: string
   rtType: RTType
-}
-
-const props = defineProps<Props>()
+}>()
 
 // Reactive data
 const selectedFormat = ref<OutputFormat>('json')
