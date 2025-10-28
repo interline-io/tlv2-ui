@@ -53,6 +53,7 @@
           <o-dropdown
             v-model="entity.parent.id"
             aria-role="list"
+            selectable
             :scrollable="true"
             :max-height="200"
           >

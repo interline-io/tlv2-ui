@@ -90,6 +90,7 @@
             v-model="selectedLevels"
             :width="300"
             aria-role="list"
+            selectable
             multiple
           >
             <template #trigger>
