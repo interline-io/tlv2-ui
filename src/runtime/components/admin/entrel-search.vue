@@ -34,6 +34,7 @@
           v-for="v of nameSort(users || [])"
           :key="v.id"
           :user="v"
+          :new-tab="true"
           action="add"
           @select="$emit('select', { type: 'user', id: $event })"
         />
@@ -50,6 +51,7 @@
           <tl-admin-tenant-item
             key="*"
             :value="userStar"
+            :new-tab="true"
             action="add"
             @select="$emit('select', { type: 'user', id: $event })"
           />
@@ -70,6 +72,7 @@
           <tl-admin-tenant-item
             v-for="v of nameSort(tenants || [])"
             :key="v.id"
+            :new-tab="true"
             :value="v"
             action="add"
             @select="$emit('select', { type: 'tenant', id: $event, refrel: 'member' })"
@@ -78,6 +81,7 @@
             v-for="v of nameSort(groups || [])"
             :key="v.id"
             :value="v"
+            :new-tab="true"
             action="add"
             @select="$emit('select', { type: 'org', id: $event, refrel: 'viewer' })"
           />
