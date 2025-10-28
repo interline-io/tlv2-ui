@@ -1,16 +1,16 @@
 <template>
   <div class="control">
     <div class="tags has-addons">
-      <a
+      <nuxt-link
         :target="newTab ? '_blank' : '_self'"
-        class="tag is-medium desc"
+        :to="{ name: 'admin-tenants-tenantKey', params: { tenantKey: value.id } }"
       >
         <o-icon
           icon="star-box"
           class="mr-2"
         />
         {{ value.name }}
-      </a>
+      </nuxt-link>
       <a
         v-if="action"
         :class="actionClass"

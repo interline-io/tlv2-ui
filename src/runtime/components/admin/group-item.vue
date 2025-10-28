@@ -3,7 +3,6 @@
     <div class="tags has-addons">
       <nuxt-link
         :target="newTab ? '_blank' : '_self'"
-        class="tag is-medium desc"
         :to="{name:'admin-groups-groupKey', params:{groupKey:value.id}}"
       >
         <o-icon
