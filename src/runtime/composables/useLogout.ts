@@ -4,8 +4,6 @@ import { logAuthDebug } from '../lib/log'
 import { createMixpanel } from '../lib/mixpanel'
 import { useUser } from './useUser'
 
-const logoutUri = '/'
-
 // Logout
 export const useLogout = async () => {
   logAuthDebug('useLogout')
@@ -13,5 +11,5 @@ export const useLogout = async () => {
   const config = useRuntimeConfig()
   const mixpanel = createMixpanel(config.public.tlv2?.mixpanelApikey, useUser())
   mixpanel.reset()
-  return navigateTo(await getLogoutUrl(logoutUri), { external: true })
+  return navigateTo(await getLogoutUrl(), { external: true })
 }

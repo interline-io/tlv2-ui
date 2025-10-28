@@ -1,5 +1,6 @@
 import { Auth0Client } from '@auth0/auth0-spa-js'
 import { logAuthDebug } from '../lib/log'
+import { log } from 'console'
 
 /// ////////////////////
 // Auth0 client initialization
@@ -117,16 +118,15 @@ export async function getAuthorizeUrl (targetUrl: null | string): Promise<string
 }
 
 // Get an auth0 logout url
-export async function getLogoutUrl (targetUrl: null | string): Promise<string> {
-  targetUrl = targetUrl || '/'
+export async function getLogoutUrl (): Promise<string> {
   const client = getAuth0Client()
   if (!client) {
-    return targetUrl
+    return logoutUri
   }
   let authorizationUrl = ''
   await client.logout({
     logoutParams: {
-      returnTo: targetUrl
+      returnTo: logoutUri
     },
     openUrl (url) {
       authorizationUrl = url
