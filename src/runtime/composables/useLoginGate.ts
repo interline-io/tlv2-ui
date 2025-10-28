@@ -22,6 +22,7 @@ export const useLoginGate = (options: { hasRole?: string, hasAnyRole?: string[],
     return true
   }
 
+  console.log('useLoginGate: checking login gate with options', options, 'user roles:', user.roles)
   // Combine options
   let { hasRole, hasAnyRole, excludeAnyRole } = options
   const hasRoleCopy = [...hasAnyRole || []]
