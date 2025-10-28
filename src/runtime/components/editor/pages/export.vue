@@ -31,6 +31,7 @@
         :feed-version-id="feedVersion?.id || feedVersionKey"
         :feed-key="feedKey"
         :feed-version-key="feedVersionKey"
+        :client="client"
       />
     </div>
   </div>

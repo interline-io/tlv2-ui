@@ -74,7 +74,7 @@
             </o-field>
             <div class="field">
               <o-checkbox v-model="exportOptions.useBasicRouteTypes">
-                Use basic route types (convert extended to primitive)
+                Use basic route types (convert extended to core types)
               </o-checkbox>
               <o-tooltip>
                 <template #content>
@@ -152,14 +152,13 @@ interface ExportRequest {
 }
 
 // Props
-interface Props {
+const props = withDefaults(defineProps<{
   feedVersionSha1?: string | null
   feedVersionId?: string | number | null
   feedKey: string
   feedVersionKey: string | number
-}
-
-const props = withDefaults(defineProps<Props>(), {
+  client?: string
+}>(), {
   feedVersionSha1: null,
   feedVersionId: null
 })
@@ -229,7 +228,7 @@ const downloadGtfs = async () => {
 
   try {
     // Construct the export URL
-    const url = `${apiEndpoint()}/rest/feed_versions/export`
+    const url = useApiEndpoint('/rest/feed_versions/export', props.client)
 
     // Build feed version keys array (primary + additional)
     const feedVersionKeys = [feedVersionIdentifier.value as string]
