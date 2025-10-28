@@ -215,6 +215,8 @@
                 </div>
               </o-dropdown-item>
             </o-dropdown>
+          </o-field>
+          <o-field>
             <tl-editor-basemap-control v-model="basemap" />
           </o-field>
           <o-field>
