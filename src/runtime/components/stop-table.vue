@@ -6,7 +6,7 @@
     <div v-else>
       <o-field expanded grouped>
         <tl-search-bar v-model="search" expanded placeholder="Filter stops by name..." />
-        <tl-route-type-select v-model="selectedRouteType" />
+        <tl-route-type-select v-if="showSelectedRouteType" v-model="selectedRouteType" />
       </o-field>
       <o-loading v-model:active="loading" :full-page="false" />
       <div class="table-container">
@@ -131,6 +131,7 @@ interface QueryVariables {
 const props = withDefaults(defineProps<{
   showRoutes?: boolean
   showAgencies?: boolean
+  showSelectedRouteType?: boolean
   feedVersionSha1?: string | null
   feedVersionIds?: number[]
   agencyIds?: number[]
@@ -144,6 +145,7 @@ const props = withDefaults(defineProps<{
 }>(), {
   showRoutes: true,
   showAgencies: false,
+  showSelectedRouteType: true,
   feedVersionSha1: null,
   feedVersionIds: () => [],
   agencyIds: () => [],

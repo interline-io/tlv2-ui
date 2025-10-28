@@ -34,6 +34,7 @@
       :show-links="false"
       :client="client"
       :limit="1000"
+      :show-selected-route-type="false"
     >
       <template #stopName="slotProps">
         <nuxt-link
