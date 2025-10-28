@@ -9,7 +9,7 @@
         <thead>
           <tr>
             <th>Feed</th>
-            <th>Version</th>
+            <th>Name</th>
             <th />
           </tr>
         </thead>
@@ -19,7 +19,7 @@
               {{ feed.name || feed.onestop_id }}
             </td>
             <td>
-              {{ feed_version.sha1 }}
+              {{ feed_version.name || feed_version.file || feed_version.sha1 }}
             </td>
             <td>
               <nuxt-link
