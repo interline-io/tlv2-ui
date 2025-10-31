@@ -1,16 +1,16 @@
 <template>
   <div class="control">
     <div class="tags has-addons">
-      <a
-        target="_blank"
-        class="tag is-medium desc"
+      <nuxt-link
+        :target="newTab ? '_blank' : '_self'"
+        :to="{ name: 'admin-tenants-tenantKey', params: { tenantKey: value.id } }"
       >
         <o-icon
           icon="star-box"
           class="mr-2"
         />
         {{ value.name }}
-      </a>
+      </nuxt-link>
       <a
         v-if="action"
         :class="actionClass"
@@ -24,7 +24,8 @@
 export default {
   props: {
     value: { type: Object, default () { return {} }, required: true },
-    action: { type: String, default: null }
+    action: { type: String, default: null },
+    newTab: { type: Boolean, default: false }
   },
   emits: [
     'select'

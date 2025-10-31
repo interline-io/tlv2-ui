@@ -2,8 +2,7 @@
   <div class="control">
     <div class="tags has-addons">
       <nuxt-link
-        target="_blank"
-        class="tag is-medium desc"
+        :target="newTab ? '_blank' : '_self'"
         :to="{name:'admin-groups-groupKey', params:{groupKey:value.id}}"
       >
         <o-icon
@@ -25,7 +24,8 @@
 export default {
   props: {
     value: { type: Object, default () { return {} }, required: true },
-    action: { type: String, default: null }
+    action: { type: String, default: null },
+    newTab: { type: Boolean, default: false }
   },
   emits: [
     'select'

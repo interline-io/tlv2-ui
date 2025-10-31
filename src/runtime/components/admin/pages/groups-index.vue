@@ -17,11 +17,14 @@
       Error: {{ error }}
     </o-notification>
 
-    <div v-for="v of groups" :key="v.id">
-      <tl-msg-info no-icon :title="v.name" variant="dark">
-        <tl-admin-group :id="v.id" />
-      </tl-msg-info>
-    </div>
+    <ul>
+      <li v-for="v of groups" :key="v.id">
+        <tl-admin-group-item
+          :key="v.id"
+          :value="v"
+        />
+      </li>
+    </ul>
   </div>
 </template>
 

@@ -279,9 +279,9 @@ export default {
       const targetStop = stop.external_reference?.target_active_stop || null
       const errs = []
       if (stop.location_type === 0 && !targetStop) {
-        errs.push({
-          message: 'Platform (location_type = 0) must have a stop association'
-        })
+        // errs.push({
+        //   message: 'Platform (location_type = 0) must have a stop association'
+        // })
       }
       if (targetStop && targetStop.location_type !== stop.location_type) {
         errs.push({
@@ -344,11 +344,11 @@ export default {
           message: 'Pathway is a loop - from_stop_id cannot equal to_stop_id'
         })
       }
-      // if ((pathway.pathway_mode === 6 || pathway.pathway_mode === 7) && pathway.is_bidirectional === 1) {
-      //   errs.push({
-      //     message: 'Fare-gate and exit-gate pathways must be one-way'
-      //   })
-      // }
+      if (pathway.pathway_mode === 7 && pathway.is_bidirectional === 1) {
+        errs.push({
+          message: 'Exit-gate pathways must be one-way'
+        })
+      }
       if (pathway.pathway_mode === 2 && pathway.stair_count == null) {
         if (pathway.from_stop.level?.id !== pathway.to_stop.level?.id) {
           // ok

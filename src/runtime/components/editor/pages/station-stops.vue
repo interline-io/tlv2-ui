@@ -90,6 +90,7 @@
             v-model="selectedLevels"
             :width="300"
             aria-role="list"
+            selectable
             multiple
           >
             <template #trigger>
@@ -277,9 +278,12 @@ const nearbyStopsQuery = gql`
 
 export default {
   mixins: [StationMixin],
+  props: {
+    client: { type: String, default: 'default' }
+  },
   apollo: {
     nearbyStopsQuery: {
-      client: 'transitland',
+      client: 'stationEditor',
       query: nearbyStopsQuery,
       skip () { return !this.station }, // run after stations
       error (e) {

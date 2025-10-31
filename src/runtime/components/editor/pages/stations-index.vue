@@ -17,6 +17,12 @@
       >
         Review stop ID associations
       </nuxt-link>
+      <nuxt-link
+        :to="{name: editorRoutes.export, params: {feedKey,feedVersionKey}}"
+        class="button is-primary"
+      >
+        Export GTFS
+      </nuxt-link>
     </div>
     <p class="content">
       Or select an existing station in this feed version:
@@ -26,6 +32,9 @@
       :feed-version-ids="[feedVersion.id]"
       :location-type="1"
       :show-links="false"
+      :client="client"
+      :limit="1000"
+      :show-selected-route-type="false"
     >
       <template #stopName="slotProps">
         <nuxt-link

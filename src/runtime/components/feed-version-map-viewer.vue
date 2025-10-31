@@ -41,6 +41,7 @@ import { nextTick, ref, computed, watch } from 'vue'
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
 import type { Geometry, Point } from 'geojson'
+import type { LonLat } from '../geom'
 
 // Types
 interface RouteResponse {
@@ -107,7 +108,7 @@ const props = withDefaults(defineProps<{
   agencyIds?: number[] | null
   linkVersion?: boolean
   features?: any[]
-  center?: number[]
+  center?: LonLat
   zoom?: number | null
   enableScrollZoom?: boolean
   circleRadius?: number
@@ -124,7 +125,7 @@ const props = withDefaults(defineProps<{
   agencyIds: null,
   linkVersion: false,
   features: () => [],
-  center: () => [],
+  center: null,
   zoom: null,
   enableScrollZoom: false,
   circleRadius: 1,

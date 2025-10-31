@@ -6,7 +6,7 @@
     <div v-else>
       <o-field expanded grouped>
         <tl-search-bar v-model="search" expanded placeholder="Filter stops by name..." />
-        <tl-route-type-select v-model="selectedRouteType" />
+        <tl-route-type-select v-if="showSelectedRouteType" v-model="selectedRouteType" />
       </o-field>
       <o-loading v-model:active="loading" :full-page="false" />
       <div class="table-container">
@@ -131,6 +131,7 @@ interface QueryVariables {
 const props = withDefaults(defineProps<{
   showRoutes?: boolean
   showAgencies?: boolean
+  showSelectedRouteType?: boolean
   feedVersionSha1?: string | null
   feedVersionIds?: number[]
   agencyIds?: number[]
@@ -140,9 +141,11 @@ const props = withDefaults(defineProps<{
   showOnestopId?: boolean
   showLinks?: boolean
   limit?: number
+  client?: string
 }>(), {
   showRoutes: true,
   showAgencies: false,
+  showSelectedRouteType: true,
   feedVersionSha1: null,
   feedVersionIds: () => [],
   agencyIds: () => [],
@@ -151,7 +154,8 @@ const props = withDefaults(defineProps<{
   servicedOnly: false,
   showOnestopId: false,
   showLinks: true,
-  limit: 100
+  limit: 100,
+  client: 'default',
 })
 
 // GraphQL Query
@@ -204,7 +208,7 @@ const hasMore = ref<boolean>(false)
 // Computed query variables
 const queryVariables = computed<QueryVariables>(() => ({
   search: search.value,
-  limit: 1000,
+  limit: props.limit,
   location_type: props.locationType,
   feed_version_sha1: props.feedVersionSha1,
   feed_version_ids: props.feedVersionIds?.length ? props.feedVersionIds : [],
@@ -218,7 +222,7 @@ const { result, loading, onError } = useQuery<{ feed_versions: FeedVersionRespon
   STOPS_QUERY,
   queryVariables,
   {
-    clientId: 'transitland'
+    clientId: props.client
   }
 )
 
