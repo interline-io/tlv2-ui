@@ -10,6 +10,7 @@
           :value="pathway"
           @select-stop="$emit('select-stop', $event)"
           @create="$emit('create', $event)"
+          @cancel="$emit('cancel')"
         />
       </div>
     </nav>
@@ -28,6 +29,6 @@ export default {
       required: true
     }
   },
-  emits: ['select-stop', 'create']
+  emits: ['select-stop', 'create', 'cancel']
 }
 </script>
