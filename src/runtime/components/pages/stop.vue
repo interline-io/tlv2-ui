@@ -198,7 +198,7 @@
                     v-if="entity.id && activeTab === tabNames.departures"
                     :show-fallback-selector="true"
                     :stop-ids="entityIds"
-                    :search-coords="entity.geometry.coordinates"
+                    :search-coords="mapCenter"
                   />
                   <template #loginText>
                     <o-notification icon="lock">
@@ -225,7 +225,7 @@
                 :route-ids="routeIds"
                 :features="features"
                 :auto-fit="false"
-                :center="entity.geometry.coordinates"
+                :center="mapCenter"
                 :include-stops="true"
                 :circle-radius="20"
                 :zoom="15"
@@ -255,6 +255,7 @@ import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
 import { useEntityPath } from '../../composables/useEntityPath'
 import { shortenName, makeRouteLink, makeStopLink } from '../../lib/filters'
+import type { LonLat } from '../../geom'
 
 // Types
 interface StopResponse {
@@ -654,6 +655,13 @@ const staticTitle = computed((): string => {
 const staticDescription = computed((): string => {
   return entity.value ? `${entity.value.stop_name} stop available for browsing and analyzing on the Transitland platform` : ''
 })
+
+const mapCenter = computed((): LonLat | null => {
+  const coords = entity.value?.geometry?.coordinates
+  if (!coords) return null
+  return { lon: coords[0], lat: coords[1] }
+})
+
 // Methods
 function setTab (value: string) {
   activeTab.value = value
