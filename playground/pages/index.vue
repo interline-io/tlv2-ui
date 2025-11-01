@@ -1,3 +1,4 @@
+@ -1,23 +0,0 @@
 <template>
   <div>
     <p>This is an <a href="/">Example Page</a></p>

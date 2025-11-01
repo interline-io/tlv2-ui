@@ -1862,7 +1862,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nuxt/devtools@npm:^2.6.5":
+"@nuxt/devtools@npm:^2.6.5, @nuxt/devtools@npm:^2.7.0":
   version: 2.7.0
   resolution: "@nuxt/devtools@npm:2.7.0"
   dependencies:
@@ -1906,7 +1906,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nuxt/eslint-config@npm:1.10.0":
+"@nuxt/eslint-config@npm:1.10.0, @nuxt/eslint-config@npm:^1.9.0":
   version: 1.10.0
   resolution: "@nuxt/eslint-config@npm:1.10.0"
   dependencies:
@@ -2132,7 +2132,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nuxt/schema@npm:4.2.0":
+"@nuxt/schema@npm:4.2.0, @nuxt/schema@npm:^4.2.0":
   version: 4.2.0
   resolution: "@nuxt/schema@npm:4.2.0"
   dependencies:
@@ -3994,15 +3994,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:22.13.10":
-  version: 22.13.10
-  resolution: "@types/node@npm:22.13.10"
-  dependencies:
-    undici-types: "npm:~6.20.0"
-  checksum: 10/57dc6a5e0110ca9edea8d7047082e649fa7fa813f79e4a901653b9174141c622f4336435648baced5b38d9f39843f404fa2d8d7a10981610da26066bc8caab48
-  languageName: node
-  linkType: hard
-
 "@types/node@npm:^16":
   version: 16.18.126
   resolution: "@types/node@npm:16.18.126"
@@ -4016,6 +4007,15 @@ __metadata:
   dependencies:
     undici-types: "npm:~6.21.0"
   checksum: 10/4324ad83555b2db0393311b0267fa06e4be0029a2bc51778e179dbdad8fdaad582d0f24e803db872dce8e879fff4c88739f67183e45095b5da6d06ca25a29980
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:latest":
+  version: 24.9.2
+  resolution: "@types/node@npm:24.9.2"
+  dependencies:
+    undici-types: "npm:~7.16.0"
+  checksum: 10/3e76ad89cca317c0886deedab0245b6b2a04ef6c47362bd3918020296f3e9630334795af9cee8c6633eae774c85d848ff2e6bed5a7c3133fc94968364fc3ee36
   languageName: node
   linkType: hard
 
@@ -5850,6 +5850,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"changelogen@npm:^0.6.2":
+  version: 0.6.2
+  resolution: "changelogen@npm:0.6.2"
+  dependencies:
+    c12: "npm:^3.0.4"
+    confbox: "npm:^0.2.2"
+    consola: "npm:^3.4.2"
+    convert-gitmoji: "npm:^0.1.5"
+    mri: "npm:^1.2.0"
+    node-fetch-native: "npm:^1.6.6"
+    ofetch: "npm:^1.4.1"
+    open: "npm:^10.1.2"
+    pathe: "npm:^2.0.3"
+    pkg-types: "npm:^2.2.0"
+    scule: "npm:^1.3.0"
+    semver: "npm:^7.7.2"
+    std-env: "npm:^3.9.0"
+  bin:
+    changelogen: dist/cli.mjs
+  checksum: 10/fb18a18f8a1c07a1e0e5adba46f721c75fa714b3759e48ebb813e57f3b26ac0ecdc8ab5c0e5b58fe46781eb723cd6d48f96905c05f2e87c84f939f45af6c924a
+  languageName: node
+  linkType: hard
+
 "cheap-ruler@npm:^4.0.0":
   version: 4.0.0
   resolution: "cheap-ruler@npm:4.0.0"
@@ -6082,6 +6105,13 @@ __metadata:
   version: 1.0.5
   resolution: "content-type@npm:1.0.5"
   checksum: 10/585847d98dc7fb8035c02ae2cb76c7a9bd7b25f84c447e5ed55c45c2175e83617c8813871b4ee22f368126af6b2b167df655829007b21aa10302873ea9c62662
+  languageName: node
+  linkType: hard
+
+"convert-gitmoji@npm:^0.1.5":
+  version: 0.1.5
+  resolution: "convert-gitmoji@npm:0.1.5"
+  checksum: 10/d24873ae8d9c363f5e23fbf8565a41df3c7d2024ca4408d6fe4ef2e31ee99a8abea4409e2ebe3215ec4ac1ab632350b20619ed9ea52cbabe6e9488e6ebb070ce
   languageName: node
   linkType: hard
 
@@ -10645,6 +10675,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mri@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "mri@npm:1.2.0"
+  checksum: 10/6775a1d2228bb9d191ead4efc220bd6be64f943ad3afd4dcb3b3ac8fc7b87034443f666e38805df38e8d047b29f910c3cc7810da0109af83e42c82c73bd3f6bc
+  languageName: node
+  linkType: hard
+
 "mrmime@npm:^2.0.0, mrmime@npm:^2.0.1":
   version: 2.0.1
   resolution: "mrmime@npm:2.0.1"
@@ -11243,7 +11280,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"open@npm:^10.2.0":
+"open@npm:^10.1.2, open@npm:^10.2.0":
   version: 10.2.0
   resolution: "open@npm:10.2.0"
   dependencies:
@@ -14194,9 +14231,12 @@ __metadata:
     "@mapbox/mapbox-gl-draw": "npm:1.4.3"
     "@maplibre/maplibre-gl-geocoder": "npm:1.9.0"
     "@mdi/font": "npm:7.4.47"
+    "@nuxt/devtools": "npm:^2.7.0"
     "@nuxt/eslint": "npm:1.10.0"
+    "@nuxt/eslint-config": "npm:^1.9.0"
     "@nuxt/kit": "npm:4.2.0"
     "@nuxt/module-builder": "npm:1.0.2"
+    "@nuxt/schema": "npm:^4.2.0"
     "@nuxt/test-utils": "npm:3.20.1"
     "@nuxt/types": "npm:2.18.1"
     "@observablehq/plot": "npm:0.6.17"
@@ -14212,7 +14252,7 @@ __metadata:
     "@types/geojson": "npm:7946.0.16"
     "@types/jsdom": "npm:21.1.7"
     "@types/mapbox__mapbox-gl-draw": "npm:1.4.8"
-    "@types/node": "npm:22.13.10"
+    "@types/node": "npm:latest"
     "@types/pg": "npm:8.15.4"
     "@vitejs/plugin-vue": "npm:6.0.1"
     "@vue/apollo-composable": "npm:4.2.2"
@@ -14221,6 +14261,7 @@ __metadata:
     "@vueuse/core": "npm:14.0.0"
     apollo-upload-client: "npm:18.0.1"
     bulma: "npm:1.0.4"
+    changelogen: "npm:^0.6.2"
     commander: "npm:14.0.0"
     cytoscape: "npm:3.31.1"
     cytoscape-fcose: "npm:2.2.0"
@@ -14633,13 +14674,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici-types@npm:~6.20.0":
-  version: 6.20.0
-  resolution: "undici-types@npm:6.20.0"
-  checksum: 10/583ac7bbf4ff69931d3985f4762cde2690bb607844c16a5e2fbb92ed312fe4fa1b365e953032d469fa28ba8b224e88a595f0b10a449332f83fa77c695e567dbe
-  languageName: node
-  linkType: hard
-
 "undici-types@npm:~6.21.0":
   version: 6.21.0
   resolution: "undici-types@npm:6.21.0"
@@ -14651,6 +14685,13 @@ __metadata:
   version: 7.10.0
   resolution: "undici-types@npm:7.10.0"
   checksum: 10/1f3fe777937690ab8a7a7bccabc8fdf4b3171f4899b5a384fb5f3d6b56c4b5fec2a51fbf345c9dd002ff6716fd440a37fa8fdb0e13af8eca8889f25445875ba3
+  languageName: node
+  linkType: hard
+
+"undici-types@npm:~7.16.0":
+  version: 7.16.0
+  resolution: "undici-types@npm:7.16.0"
+  checksum: 10/db43439f69c2d94cc29f75cbfe9de86df87061d6b0c577ebe9bb3255f49b22c50162a7d7eb413b0458b6510b8ca299ac7cff38c3a29fbd31af9f504bcf7fbc0d
   languageName: node
   linkType: hard
 

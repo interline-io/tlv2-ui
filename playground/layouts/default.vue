@@ -1,3 +1,4 @@
+@ -1,86 +0,0 @@
 <template>
   <div class="outer">
     <nav class="navbar" role="navigation" aria-label="main navigation">
@@ -15,9 +16,9 @@
             :to="item.to"
             class="navbar-item is-hoverable"
             :class="
-              $route &&
-                $route.name &&
-                $route.name.startsWith(item.to.name)
+              $route
+                && $route.name
+                && $route.name.startsWith(item.to.name)
                 ? 'is-active is-tab'
                 : ''
             "
