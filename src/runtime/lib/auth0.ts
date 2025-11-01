@@ -1,12 +1,9 @@
 import { Auth0Client } from '@auth0/auth0-spa-js'
 import { logAuthDebug } from '../lib/log'
-import { log } from 'console'
 
 /// ////////////////////
 // Auth0 client initialization
 /// ////////////////////
-
-const RECHECK_INTERVAL = 600_000
 
 // Auth0 client init
 let authInit = false
@@ -27,8 +24,8 @@ export function configureAuth0Client (options: Auth0Options): Auth0Client | null
     return authClient
   }
   authInit = true
-  if (process.server) {
-    return
+  if (import.meta.server) {
+    return null
   }
 
   // Check if we are configured correctly
