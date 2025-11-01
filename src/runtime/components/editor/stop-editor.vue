@@ -225,7 +225,7 @@ export default {
       default: false
     }
   },
-  emits: ['select-pathway', 'create-association', 'update', 'delete', 'create', 'cancel'],
+  emits: ['select-pathway', 'create-association', 'update', 'delete', 'create', 'cancel', 'delete-association'],
   data () {
     const stopCopy = new Stop(this.value).setDefaults()
     const entity = {
@@ -294,6 +294,7 @@ export default {
     deleteAssociation () {
       this.showStopAssociations = false
       this.entity.external_reference = { target_feed_onestop_id: null, target_stop_id: null }
+      this.$emit('delete-association', new Stop(this.entity))
     },
     pathwayIcon (mode) {
       const m = PathwayModeIcons[mode]
