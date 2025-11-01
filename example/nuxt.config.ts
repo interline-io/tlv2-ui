@@ -1,6 +1,8 @@
 const isDev = process.env.NODE_ENV === 'development'
 
 export default defineNuxtConfig({
+  compatibilityVersion: 4,
+  
   ssr: false,
 
   modules: [
@@ -34,10 +36,9 @@ export default defineNuxtConfig({
     }
   },
 
-  // bugs
+  // Note: Nuxt 4 has better automatic transpilation, but keeping these for compatibility
   build: {
     transpile: [
-      'tslib', // https://github.com/nuxt/nuxt/issues/19265#issuecomment-1702014262
       '@vue/apollo-composable',
       '@apollo/client',
       'protomaps-themes-base'

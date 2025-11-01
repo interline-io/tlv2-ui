@@ -21,7 +21,7 @@ export default defineNuxtModule<ModuleOptions>({
     name: 'tlv2-ui',
     configKey: 'tlv2',
     compatibility: {
-      nuxt: '^3.4.0'
+      nuxt: '^4.0.0'
     }
   },
   async setup (options, nuxt) {
