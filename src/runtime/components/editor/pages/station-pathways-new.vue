@@ -28,6 +28,7 @@
                   class="button"
                   :class="{'is-primary is-selected': selectMode === 'add-pathway'}"
                   :disabled="!(selectedStop && selectedSource)"
+                  :title="!(selectedStop && selectedSource) ? 'Select two nodes to add a pathway' : ''"
                   @click="selectMode = 'add-pathway'"
                 >
                   Add Pathway
@@ -35,6 +36,8 @@
                 <button
                   class="button"
                   :class="{'is-primary is-selected': selectMode === 'find-route'}"
+                  :disabled="selectedStops.length !== 1"
+                  :title="selectedStops.length !== 1 ? 'Select a starting node before entering Find Route mode' : ''"
                   @click="selectMode = 'find-route'"
                 >
                   Find Route
@@ -201,8 +204,9 @@
             @update:selected-level="selectedLevel = $event"
           />
           <tl-editor-station-pathways-find-route-panel
-            v-else-if="selectMode === 'find-route' && selectedStops.length > 1"
+            v-else-if="selectMode === 'find-route'"
             :path="selectedPath"
+            :selected-stops="selectedStops"
           />
           <nav v-else-if="selectMode === 'export'" class="panel station-editor-panel">
             <p class="panel-heading">
