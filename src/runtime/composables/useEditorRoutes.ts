@@ -14,7 +14,8 @@ export function useEditorRoutes () {
     stationIndex: `${prefix}-feedKey-feedVersionKey-stations-stationKey`,
     stationEdit: `${prefix}-feedKey-feedVersionKey-stations-stationKey-edit`,
     stationStops: `${prefix}-feedKey-feedVersionKey-stations-stationKey-stops`,
-    stationPathways: `${prefix}-feedKey-feedVersionKey-stations-stationKey-pathways`,
+    stationPathways: `${prefix}-feedKey-feedVersionKey-stations-stationKey-pathways`, // TODO: Remove legacy pathways route when fully deprecated
+    stationPathwaysNew: `${prefix}-feedKey-feedVersionKey-stations-stationKey-pathways-new`,
     stationDiagram: `${prefix}-feedKey-feedVersionKey-stations-stationKey-diagram`,
     levelNew: `${prefix}-feedKey-feedVersionKey-stations-stationKey-levels-new`,
     levelEdit: `${prefix}-feedKey-feedVersionKey-stations-stationKey-levels-levelKey-edit`

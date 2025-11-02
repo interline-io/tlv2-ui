@@ -16,6 +16,7 @@
             <i class="mdi mdi-map-marker mdi-16px" /> &nbsp; Associate Stops
           </nuxt-link></span>
       </li>
+      <!-- TODO: Remove this legacy pathways tab once the new version is fully tested and adopted -->
       <li :class="(activeTab === 'pathways') ? 'is-active' : ''">
         <nuxt-link
           :to="{name:routeKeys['pathways'], params: {feedKey:feedKey,feedVersionKey:feedVersionKey,stationKey:stationKey}}"
@@ -23,6 +24,15 @@
           :class="pathwaysModeEnabled ? '' : 'disabled'"
         >
           <i class="mdi mdi-chart-timeline-variant-shimmer mdi-16px" /> &nbsp; Draw Pathways
+        </nuxt-link>
+      </li>
+      <li :class="(activeTab === 'pathways-new') ? 'is-active' : ''">
+        <nuxt-link
+          :to="{name:routeKeys['pathways-new'], params: {feedKey:feedKey,feedVersionKey:feedVersionKey,stationKey:stationKey}}"
+          :event="pathwaysModeEnabled ? 'click' : ''"
+          :class="pathwaysModeEnabled ? '' : 'disabled'"
+        >
+          <i class="mdi mdi-chart-timeline-variant-shimmer mdi-16px" /> &nbsp; Draw Pathways (New)
         </nuxt-link>
       </li>
       <li :class="(activeTab === 'diagram') ? 'is-active' : ''">
@@ -64,13 +74,15 @@ export default {
   },
   data () {
     const routes = useEditorRoutes()
+    const routeKeys = {
+      levels: routes.stationIndex,
+      stops: routes.stationStops,
+      pathways: routes.stationPathways, // TODO: Remove this legacy route key when deprecating old pathways page
+      diagram: routes.stationDiagram
+    }
+    routeKeys['pathways-new'] = routes.stationPathwaysNew
     return {
-      routeKeys: {
-        levels: routes.stationIndex,
-        stops: routes.stationStops,
-        pathways: routes.stationPathways,
-        diagram: routes.stationDiagram
-      }
+      routeKeys
     }
   },
   computed: {
