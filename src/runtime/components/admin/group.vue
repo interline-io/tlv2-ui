@@ -89,6 +89,7 @@
             :entrels="group.users.editors"
             :can-add="editable && group.actions.can_edit_members"
             :can-remove="editable && group.actions.can_edit_members"
+            :show-tenants="true"
             @add-permissions="addPermissions('editor', $event)"
             @remove-permissions="removePermissions('editor', $event)"
           />

@@ -10,6 +10,7 @@ export function useEditorRoutes () {
     stations: `${prefix}-feedKey-feedVersionKey-stations`,
     stationsNew: `${prefix}-feedKey-feedVersionKey-stations-new`,
     stationsStopAssociations: `${prefix}-feedKey-feedVersionKey-stations-stop-associations`,
+    export: `${prefix}-feedKey-feedVersionKey-export`,
     stationIndex: `${prefix}-feedKey-feedVersionKey-stations-stationKey`,
     stationEdit: `${prefix}-feedKey-feedVersionKey-stations-stationKey-edit`,
     stationStops: `${prefix}-feedKey-feedVersionKey-stations-stationKey-stops`,

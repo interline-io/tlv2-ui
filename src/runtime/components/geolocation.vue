@@ -11,13 +11,11 @@
 import { ref, watch } from 'vue'
 import { useGeolocation } from '@vueuse/core'
 import type { UseGeolocationReturn } from '@vueuse/core'
-
-// Types
-type Coordinates = [number, number] // [longitude, latitude]
+import type { LonLat } from '../geom'
 
 // Emits
 const emit = defineEmits<{
-  setLocation: [coords: Coordinates]
+  setLocation: [coords: LonLat]
 }>()
 
 // Reactive state
@@ -45,7 +43,7 @@ watch(
 
     locationUse.value = false
     locationLoading.value = false
-    setLocation([longitude, latitude])
+    setLocation({ lon: longitude, lat: latitude })
 
     if (geoInstance.pause) {
       console.log('geo: pause')
@@ -56,7 +54,7 @@ watch(
 )
 
 // Methods
-const setLocation = (coords: Coordinates): void => {
+const setLocation = (coords: LonLat): void => {
   emit('setLocation', coords)
 }
 

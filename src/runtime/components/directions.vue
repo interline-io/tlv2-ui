@@ -96,7 +96,7 @@
         </o-field>
 
         <o-field horizontal label="From">
-          <o-input :model-value="fromPlaceStr" />
+          <o-input :model-value="lonLatStr(fromPlace)" />
         </o-field>
         <o-field horizontal label="To">
           <o-input :model-value="toPlaceStr" />
@@ -195,6 +195,8 @@ import { gql } from 'graphql-tag'
 import { parseISO, format } from 'date-fns'
 import type { Geometry } from 'geojson'
 import { formatDuration } from '../lib/filters'
+import type { LonLat } from '../geom'
+import { lonLatStr } from '../geom'
 
 // Types
 interface DirectionsQueryResponse {
@@ -280,13 +282,13 @@ interface LegIcon {
 }
 
 const props = withDefaults(defineProps<{
-  fromPlace?: number[]
-  toPlace?: number[]
+  fromPlace?: LonLat
+  toPlace?: LonLat
   mode?: string
   departAt?: string
 }>(), {
-  fromPlace: () => [],
-  toPlace: () => [],
+  fromPlace: null,
+  toPlace: null,
   mode: 'WALK',
   departAt: () => new Date().toISOString()
 })
@@ -385,8 +387,8 @@ query ($where:DirectionRequest!) {
 // Setup query variables
 const vars = computed(() => ({
   where: {
-    from: { lon: props.fromPlace[0], lat: props.fromPlace[1] },
-    to: { lon: props.toPlace[0], lat: props.toPlace[1] },
+    from: props.fromPlace,
+    to: props.toPlace,
     mode: props.mode,
     depart_at: props.departAt
   }
@@ -397,7 +399,7 @@ const { result, loading, error, load, refetch } = useLazyQuery<DirectionsQueryRe
 
 // Watch for changes
 const loadReady = computed(() => {
-  return (props.fromPlace || []).length && (props.toPlace || []).length && props.mode
+  return props.fromPlace && props.toPlace && props.mode
 })
 
 function loadReload (): void {
@@ -423,11 +425,11 @@ const departAtOut = computed(() => {
 })
 
 const fromPlaceStr = computed(() =>
-  (props.fromPlace || []).slice(0).reverse().join(',')
+  lonLatStr(props.fromPlace)
 )
 
 const toPlaceStr = computed(() =>
-  (props.toPlace || []).slice(0).reverse().join(',')
+  lonLatStr(props.toPlace)
 )
 
 const selectedItin = computed<Itinerary | null>(() => {

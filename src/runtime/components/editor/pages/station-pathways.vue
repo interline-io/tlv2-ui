@@ -157,6 +157,7 @@
               <o-field label="Level">
                 <o-dropdown
                   v-model="selectedLevel"
+                  selectable
                   aria-role="list"
                 >
                   <template #trigger>
@@ -194,6 +195,7 @@
               :width="300"
               aria-role="list"
               multiple
+              selectable
             >
               <template #trigger>
                 <button class="button" type="button">
@@ -213,6 +215,8 @@
                 </div>
               </o-dropdown-item>
             </o-dropdown>
+          </o-field>
+          <o-field>
             <tl-editor-basemap-control v-model="basemap" />
           </o-field>
           <o-field>

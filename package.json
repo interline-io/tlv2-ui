@@ -5,12 +5,10 @@
   "license": "SEE LICENSE IN LICENSE.md",
   "scripts": {
     "prepack": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build",
-    "build": "nuxt build",
+    "dev:link": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build --watch",
+    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare example",
     "test": "vitest --run",
-    "lint": "eslint src",
-    "dev": "nuxi dev example",
-    "dev:build": "nuxi build example",
-    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare example"
+    "lint": "eslint src"
   },
   "exports": {
     ".": {
@@ -24,6 +22,10 @@
     "./lib": {
       "types": "./dist/runtime/lib/index.d.ts",
       "import": "./dist/runtime/lib/index.js"
+    },
+    "./geom": {
+      "types": "./dist/runtime/geom/index.d.ts",
+      "import": "./dist/runtime/geom/index.js"
     }
   },
   "main": "./dist/module.mjs",
@@ -44,8 +46,8 @@
     "@nuxt/test-utils": "3.19.2",
     "@nuxt/types": "2.18.1",
     "@observablehq/plot": "0.6.17",
-    "@oruga-ui/oruga-next": "0.9.3",
-    "@oruga-ui/theme-bulma": "0.5.3",
+    "@oruga-ui/oruga-next": "0.11.6",
+    "@oruga-ui/theme-bulma": "0.7.3",
     "@pollyjs/adapter-fetch": "6.0.7",
     "@pollyjs/core": "6.0.6",
     "@pollyjs/persister-fs": "6.0.6",
@@ -64,7 +66,7 @@
     "@vue/test-utils": "2.4.6",
     "@vueuse/core": "10.11.1",
     "apollo-upload-client": "18.0.1",
-    "bulma": "1.0.3",
+    "bulma": "1.0.4",
     "commander": "14.0.0",
     "cytoscape": "3.31.1",
     "cytoscape-fcose": "2.2.0",

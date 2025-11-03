@@ -3,51 +3,7 @@
     <tl-msg-error v-if="error">
       {{ error }}
     </tl-msg-error>
-    <div v-else-if="!searchCoords && stopIds.length === 0">
-      <h6 class="title is-6">
-        Click on the map to select a location
-      </h6>
-    </div>
-
     <div v-else>
-      <div class="search-options mb-2">
-        <o-field grouped>
-          <o-field v-if="showDateSelector">
-            <o-datetimepicker
-              v-model="displayStartDate"
-              horizontal-time-picker
-              placeholder="Now"
-              icon="calendar-today"
-              trap-focus
-              size="small"
-            />
-          </o-field>
-
-          <o-field v-if="showRadiusSelector">
-            <o-select v-model="radius" size="small">
-              <option v-for="r of allowedRadius" :key="r" :value="r">
-                {{ r }}m
-              </option>
-            </o-select>
-            <p class="control button-like-small">
-              Radius
-            </p>
-          </o-field>
-
-          <o-checkbox v-if="showAutoRefresh" v-model="autoRefresh" size="small">
-            Auto-refresh
-          </o-checkbox>
-
-          <o-checkbox v-if="showFallbackSelector" v-model="useServiceWindow" size="small">
-            Fallback service day
-          </o-checkbox>
-        </o-field>
-        <div v-if="lastFetched" :key="lastFetchedDisplayKey" class="tags has-addons">
-          <span class="tag is-small">Last checked</span>
-          <span class="tag is-success is-small">{{ fromNowDate(lastFetched) }}</span>
-        </div>
-      </div>
-
       <tl-loading v-if="loading" />
 
       <div v-else-if="!coordsOrStops">
@@ -64,10 +20,15 @@
         <p>Try increasing the search radius or selecting the "fallback service day" option.</p>
       </div>
 
-      <div v-for="(ss, sskey) of filteredStopsGroupRoutes" :key="sskey">
-        <h6 class="title is-6">
+      <div v-if="showLastFetched && lastFetched" :key="lastFetchedDisplayKey" class="tags has-addons">
+        <span class="tag is-small">Last checked</span>
+        <span class="tag is-success is-small">{{ fromNowDate(lastFetched) }}</span>
+      </div>
+
+      <div v-for="(ss, sskey) of filteredStopsGroupRoutes" :key="sskey" class="mb-3">
+        <div class="agency-header title is-6">
           {{ ss.agency.agency_name }}
-        </h6>
+        </div>
         <div v-for="(sr,srkey) of ss.routes.slice(0,routesPerAgencyShadow)" :key="srkey" class="tl-departure-container">
           <div
             class="tl-departure-route"
@@ -95,7 +56,7 @@
           </div>
         </div>
         <div v-if="ss.routes.length > routesPerAgencyShadow" class="is-clearfix">
-          <span class="button small ml-5" @click="expandRoutesPerAgency">Click to show {{ ss.routes.length - routesPerAgencyShadow }} additional rows</span>
+          <span class="button is-small ml-5" @click="expandRoutesPerAgency">Click to show {{ ss.routes.length - routesPerAgencyShadow }} additional rows</span>
         </div>
       </div>
     </div>
@@ -103,12 +64,12 @@
 </template>
 
 <script setup lang="ts">
-import haversine from 'haversine'
 import { gql } from 'graphql-tag'
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, toRef } from 'vue'
 import { useQuery } from '@vue/apollo-composable'
 import type { Geometry, Feature, Point } from 'geojson'
 import { fromNowDate, makeRouteLink, reformatHMS } from '../lib/filters'
+import { haversineLonLat, type LonLat } from '../geom'
 
 // Types
 interface StopDeparturesResponse {
@@ -197,9 +158,6 @@ interface RouteProperties {
 }
 
 // Typed GeoJSON Features
-type StopFeature = Feature<Point, StopProperties> & { id: number }
-type RouteFeature = Feature<Geometry, RouteProperties> & { id: number }
-
 interface RouteGroup {
   route: Route
   trip_headsign?: string
@@ -234,28 +192,24 @@ interface QueryVariables {
 }
 
 const props = withDefaults(defineProps<{
-  searchCoords?: number[] | null
+  searchCoords?: LonLat
   searchRadius?: number
   nextSeconds?: number
   routesPerAgency?: number
-  showDateSelector?: boolean
-  showRadiusSelector?: boolean
-  showFallbackSelector?: boolean
-  showAutoRefresh?: boolean
   showLastFetched?: boolean
   autoRefreshInterval?: number
+  autoRefresh?: boolean
+  useServiceWindow?: boolean
   stopIds?: number[]
 }>(), {
   searchCoords: null,
+  showLastFetched: true,
   searchRadius: 200,
   nextSeconds: 7200,
-  routesPerAgency: 10,
-  showDateSelector: false,
-  showRadiusSelector: false,
-  showFallbackSelector: false,
-  showAutoRefresh: false,
-  showLastFetched: false,
+  routesPerAgency: 5,
+  useServiceWindow: true,
   autoRefreshInterval: 60,
+  autoRefresh: true,
   stopIds: () => []
 })
 
@@ -325,35 +279,29 @@ const timer = ref<NodeJS.Timeout | null>(null)
 const error = ref<string | null>(null)
 const lastFetched = ref<Date | null>(null)
 const lastFetchedDisplayKey = ref<number>(0) // force redraw
-const autoRefresh = ref<boolean>(true)
-const useServiceWindow = ref<boolean>(false)
-const displayStartDate = ref<Date | null>(null)
-const allowedRadius = ref<number[]>([0, 50, 100, 150, 200, 500, 1000])
 const routesPerAgencyShadow = ref<number>(props.routesPerAgency)
 const stops = ref<Stop[]>([])
-const debug = ref<boolean>(false)
-const radius = ref<number>(props.searchRadius)
 
 // Computed properties for Apollo query
 const coordsOrStops = computed<boolean>(() => {
-  return (props.searchCoords?.length === 2 || props.stopIds.length > 0)
+  return (!!props.searchCoords || props.stopIds.length > 0)
 })
 
 const queryVariables = computed<QueryVariables>(() => {
   const q: QueryVariables = {
     stwhere: {
-      use_service_window: useServiceWindow.value,
+      use_service_window: props.useServiceWindow,
       next: props.nextSeconds
     }
   }
   if (props.stopIds.length > 0) {
     q.stopIds = props.stopIds
-  } else if (props.searchCoords && radius.value > 0) {
+  } else if (props.searchCoords && props.searchRadius && props.searchRadius > 0) {
     q.where = {
       near: {
-        lon: props.searchCoords[0],
-        lat: props.searchCoords[1],
-        radius: radius.value
+        lon: props.searchCoords.lon,
+        lat: props.searchCoords.lat,
+        radius: props.searchRadius
       }
     }
   }
@@ -381,63 +329,13 @@ onResult((queryResult) => {
 onError((e) => {
   error.value = e.message
 })
-// Computed properties
-const routeFeatures = computed<RouteFeature[]>(() => {
-  const features = new Map<number, RouteFeature>()
-  for (const stop of stops.value || []) {
-    for (const rs of stop.route_stops) {
-      const route = rs.route
-      if (features.has(route.id)) {
-        continue
-      }
-      let routeColor = route.route_color
-      if (routeColor && routeColor.substr(0, 1) !== '#') {
-        routeColor = '#' + routeColor
-      }
-      features.set(route.id, {
-        type: 'Feature',
-        geometry: route.geometry,
-        properties: {
-          id: route.id,
-          route_short_name: route.route_short_name,
-          route_long_name: route.route_long_name,
-          route_type: route.route_type,
-          route_color: routeColor,
-          headway_secs: -1
-        },
-        id: route.id
-      })
-    }
-  }
-  return Array.from(features.values())
-})
-
-const stopFeatures = computed<StopFeature[]>(() => {
-  const features: StopFeature[] = []
-  for (const g of stops.value || []) {
-    features.push({
-      type: 'Feature',
-      geometry: g.geometry,
-      properties: { stop_id: g.stop_id, stop_name: g.stop_name },
-      id: g.id
-    })
-  }
-  return features
-})
-
-const currentPoint = computed<Point>(() => {
-  return {
-    type: 'Point',
-    coordinates: props.searchCoords || []
-  }
-})
 
 const filteredStops = computed<Stop[]>(() => {
   return stops.value.filter((s) => {
     return s.departures.length > 0 && s.location_type === 0 && s.geometry.coordinates
   }).sort((a, b) => {
-    const ad = haversineDistance(currentPoint.value, a.geometry)
-    const bd = haversineDistance(currentPoint.value, b.geometry)
+    const ad = haversineLonLat(props.searchCoords, { lon: a.geometry.coordinates[0], lat: a.geometry.coordinates[1] })
+    const bd = haversineLonLat(props.searchCoords, { lon: b.geometry.coordinates[0], lat: b.geometry.coordinates[1] })
     return ad - bd
   })
 })
@@ -514,21 +412,9 @@ const filteredStopsGroupRoutes = computed<AgencyGroup[]>(() => {
   return ret
 })
 
-// Methods
-const haversineDistance = (fromPoint: Point, toPoint: Point): number => {
-  const d = haversine({
-    latitude: fromPoint.coordinates[1],
-    longitude: fromPoint.coordinates[0]
-  }, {
-    latitude: toPoint.coordinates[1],
-    longitude: toPoint.coordinates[0]
-  }, { unit: 'meter' })
-  return d
-}
-
 const startTimer = (): void => {
   timer.value = setInterval(() => {
-    if (autoRefresh.value) {
+    if (props.autoRefresh) {
       refetchDepartures()
     }
   }, props.autoRefreshInterval * 1000)
@@ -550,7 +436,7 @@ const expandRoutesPerAgency = (): void => {
 }
 
 // Watchers
-watch(autoRefresh, (v) => {
+watch(() => props.autoRefresh, (v) => {
   // Helper to restart interval
   if (v) {
     refetchDepartures()
@@ -594,10 +480,6 @@ onMounted(() => {
   margin-right:5px;
 }
 
-.search-options {
-  padding-top:10px
-}
-
 .tl-route-icon-departures {
   text-align:left;
   display:inline-block;
@@ -620,15 +502,9 @@ onMounted(() => {
 /* .tl-route-icon-fade-out {
 } */
 
-.button-like {
-    padding-bottom: 0.5em;
-    padding-top: 0.5em;
-}
-
-.button-like-small {
-    font-size: 0.75rem;
-    padding-left:10px;
-    padding-bottom: 0.5em;
-    padding-top: 0.5em;
+.agency-header {
+  font-weight: 600;
+  color: var(--bulma-text-strong, #363636);
+  margin-bottom: 0.5rem;
 }
 </style>

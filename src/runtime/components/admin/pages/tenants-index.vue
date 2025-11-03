@@ -24,9 +24,9 @@
         v-for="tenant of nameSort(tenants)"
         :key="tenant.id"
       >
-        <nuxt-link :to="{ name: 'admin-tenants-tenantKey', params: { tenantKey: tenant.id } }">
-          <span v-if="tenant.name">{{ tenant.name }}</span>
-        </nuxt-link>
+        <tl-admin-tenant-item
+          :value="tenant"
+        />
       </li>
     </ul>
   </div>

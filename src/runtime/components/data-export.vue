@@ -30,6 +30,7 @@
       <o-field label="Show on Map" expanded>
         <o-dropdown
           v-model="showOnMap"
+          selectable
           multiple
           aria-role="list"
         >
