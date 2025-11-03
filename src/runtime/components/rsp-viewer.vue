@@ -39,7 +39,7 @@
       </o-field>
     </o-field>
 
-    <tl-loading v-if="$apollo.loading" />
+    <tl-loading v-if="loading" />
     <tl-msg-error v-else-if="error">
       {{ error }}
     </tl-msg-error>
@@ -50,7 +50,7 @@
       <li v-for="(st) of activePattern.stop_times" :key="st.stop_sequence">
         <p class="route-stop-name">
           <nuxt-link
-            :to="$filters.makeStopLink(st.stop.onestop_id, st.stop.feed_onestop_id, st.stop.feed_version_sha1, st.stop.stop_id, st.stop.id, linkVersion)"
+            :to="makeStopLink(st.stop.onestop_id, st.stop.feed_onestop_id, st.stop.feed_version_sha1, st.stop.stop_id, parseInt(st.stop.id), linkVersion)"
           >
             {{ st.stop.stop_name }}
           </nuxt-link>
@@ -66,7 +66,7 @@
             </div>
             <div v-for="rs of rss" :key="rs.id">
               <nuxt-link
-                :to="$filters.makeRouteLink(rs.onestop_id, rs.feed_onestop_id, rs.feed_version_sha1, rs.route_id, rs.id, linkVersion)"
+                :to="makeRouteLink(rs.onestop_id, rs.feed_onestop_id, rs.feed_version_sha1, rs.route_id, parseInt(rs.id), linkVersion)"
               >
                 <tl-route-icon
                   :agency-name="rs.agency_name"
@@ -83,10 +83,130 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import haversine from 'haversine'
 import { gql } from 'graphql-tag'
+import { ref, computed } from 'vue'
+import { useQuery } from '@vue/apollo-composable'
+import { makeStopLink, makeRouteLink } from '../lib/filters'
 
+// Types
+interface RouteResponse {
+  id: string
+  route_id: string
+  route_short_name: string
+  route_long_name: string
+  onestop_id: string
+  feed_onestop_id: string
+  feed_version_sha1: string
+  patterns: {
+    direction_id: number
+    stop_pattern_id: string
+    count: number
+    trips: {
+      id: string
+      trip_id: string
+      trip_headsign: string
+      direction_id: number
+      stop_times: {
+        stop_sequence: number
+        stop: {
+          id: string
+          onestop_id: string
+          stop_id: string
+          stop_name: string
+          location_type: number
+          geometry: {
+            coordinates: [number, number]
+          }
+          feed_onestop_id: string
+          feed_version_sha1: string
+          nearby_stops?: {
+            id: string
+            onestop_id: string
+            stop_id: string
+            stop_name: string
+            location_type: number
+            geometry: {
+              coordinates: [number, number]
+            }
+            feed_onestop_id: string
+            feed_version_sha1: string
+            route_stops: {
+              route: {
+                id: string
+                route_id: string
+                route_short_name: string
+                route_long_name: string
+                route_type: number
+                onestop_id: string
+                feed_onestop_id: string
+                feed_version_sha1: string
+                agency: {
+                  id: string
+                  agency_id: string
+                  agency_name: string
+                }
+              }
+            }[]
+          }[]
+        }
+      }[]
+    }[]
+  }[]
+}
+
+// Extract individual types from the response type
+type Route = RouteResponse
+type Pattern = RouteResponse['patterns'][0]
+type Trip = Pattern['trips'][0]
+type StopTime = Trip['stop_times'][0]
+type Stop = StopTime['stop']
+type Geometry = Stop['geometry']
+type NearbyStop = NonNullable<Stop['nearby_stops']>[0]
+type RouteStop = NearbyStop['route_stops'][0]
+type Agency = RouteStop['route']['agency']
+
+// Processing types
+interface ProcessedStopTime {
+  stop_sequence: number
+  stop: {
+    id: string
+    stop_id: string
+    stop_name: string
+    onestop_id: string
+    feed_version_sha1: string
+    feed_onestop_id: string
+    routes: Record<string, ProcessedRoute[]>
+  }
+}
+
+interface ProcessedRoute {
+  distance: number
+  id: string
+  route_id: string
+  onestop_id: string
+  feed_onestop_id: string
+  feed_version_sha1: string
+  route_short_name: string
+  route_long_name: string
+  route_type: number
+  agency_id: string
+  agency_name: string
+}
+
+interface ProcessedPattern {
+  stop_pattern_id: string
+  count: number
+  desc: string
+  direction_id: number
+  trip: {
+    trip_headsign: string
+  }
+  stop_times: ProcessedStopTime[]
+}
+
+// GraphQL query
 const q = gql`
 query ($route_ids: [Int!]!, $radius:Float!, $include_nearby_stops:Boolean!) {
   routes(ids: $route_ids) {
@@ -152,194 +272,196 @@ query ($route_ids: [Int!]!, $radius:Float!, $include_nearby_stops:Boolean!) {
 }
 `
 
-export default {
-  props: {
-    routeIds: {
-      type: Array,
-      required: true
-    },
-    transferRadius: {
-      type: Number,
-      default: 0
-    },
-    linkVersion: { type: Boolean, default: false }
-  },
-  data () {
-    return {
-      routes: [],
-      selectedPatternId: null,
-      radius: this.transferRadius,
-      error: null
-    }
-  },
-  apollo: {
-    routes: {
-      client: 'transitland',
-      query: q,
-      error (e) { this.error = e },
-      variables () {
-        return {
-          route_ids: this.routeIds,
-          radius: this.radius,
-          include_nearby_stops: this.includeNearbyStops
-        }
+// Props
+const props = withDefaults(defineProps<{
+  routeIds: number[]
+  transferRadius?: number
+  linkVersion?: boolean
+}>(), {
+  transferRadius: 0,
+  linkVersion: false
+})
+
+// Reactive state
+const selectedPatternId = ref<string | null>(null)
+const radius = ref<number>(props.transferRadius)
+const error = ref<string | null>(null)
+
+// Computed properties
+const includeNearbyStops = computed(() => radius.value > 0)
+
+// Apollo query
+const { result: routesResult, loading, onError } = useQuery<{ routes: RouteResponse[] }>(q, () => ({
+  route_ids: props.routeIds,
+  radius: radius.value,
+  include_nearby_stops: includeNearbyStops.value
+}), {
+  clientId: 'transitland',
+  errorPolicy: 'all'
+})
+
+// Handle Apollo errors
+onError((err) => {
+  error.value = err.message
+})
+
+const routes = computed(() => routesResult.value?.routes || [])
+const patterns = computed<Pattern[]>(() => {
+  const pats: Pattern[] = []
+  for (const route of routes.value) {
+    for (const pat of route.patterns) {
+      if (pat.trips && pat.trips.length > 0) {
+        pats.push(pat)
       }
-    }
-  },
-  computed: {
-    includeNearbyStops () {
-      return this.radius > 0
-    },
-    patterns () {
-      const pats = []
-      for (const route of this.routes) {
-        for (const pat of route.patterns) {
-          if (pat.trips && pat.trips.length > 0) {
-            pats.push(pat)
-          }
-        }
-      }
-      return pats
-    },
-    activePattern() {
-      for (const pat of this.processedPatterns) {
-        if (pat.stop_pattern_id === this.selectedPatternId) {
-          return pat
-        }
-      }
-      if (this.processedPatterns.length > 0) {
-        return this.processedPatterns[0]
-      }
-      return null
-    },
-    activePatternId: {
-      get() {
-        if (this.selectedPatternId) {
-          return this.selectedPatternId
-        }
-        if (this.processedPatterns.length > 0) {
-          return this.processedPatterns[0].stop_pattern_id
-        }
-        return null
-      },
-      set(v) {
-        this.selectedPatternId = v
-      }
-    },
-    multiAgency () {
-      const a = new Set()
-      for (const pat of this.patterns) {
-        for (const st of pat.trips[0].stop_times) {
-          for (const ns of st.stop.nearby_stops) {
-            for (const rs of ns.route_stops) {
-              a.add(rs.route.agency.agency_name)
-            }
-          }
-        }
-      }
-      return a.size > 1
-    },
-    processedPatterns () {
-      let totalTrips = 0
-      for (const pat of this.patterns) {
-        totalTrips += pat.count
-      }
-      const ret = []
-      for (const pat of this.patterns) {
-        // Exclude patterns with less than 10% of trips
-        if (pat.count / totalTrips <= 0.1) {
-          continue
-        }
-        if (!pat.trips || pat.trips.length === 0 || !pat.trips[0].stop_times) {
-          continue
-        }
-        const pt = pat.trips[0]
-        const p = {
-          stop_pattern_id: pat.stop_pattern_id,
-          count: pat.count,
-          desc: pt.trip_headsign,
-          direction_id: pt.direction_id,
-          trip: {
-            trip_headsign: pt.trip_headsign
-          },
-          stop_times: []
-        }
-        for (const st of pt.stop_times) {
-          const nearbyRoutes = this.nearbyRouteStops(st.stop)
-          const routesByAgency = {}
-          for (const rs of nearbyRoutes) {
-            const a = routesByAgency[rs.agency_name] || []
-            a.push(rs)
-            routesByAgency[rs.agency_name] = a
-          }
-          p.stop_times.push({
-            stop: {
-              id: st.stop.id,
-              stop_id: st.stop.stop_id,
-              stop_name: st.stop.stop_name,
-              onestop_id: st.stop.onestop_id,
-              feed_version_sha1: st.stop.feed_version_sha1,
-              feed_onestop_id: st.stop.feed_onestop_id,
-              routes: routesByAgency
-            }
-          })
-        }
-        ret.push(p)
-      }
-      ret.sort((a, b) => { return b.count - a.count })
-      return ret
-    },
-    inboundPatterns() {
-      return this.processedPatterns.filter((s) => { return s.direction_id === 0 })
-    },
-    outboundPatterns() {
-      return this.processedPatterns.filter((s) => { return s.direction_id !== 0 })
-    }
-  },
-  methods: {
-    firstOrLast (idx, v) {
-      if (idx === 0 || idx === v.length - 1) {
-        return true
-      }
-      return false
-    },
-    nearbyRouteStops (stop) {
-      const rids = new Set()
-      for (const route of this.routes) {
-        rids.add(route.onestop_id)
-      }
-      const ret = []
-      for (const ns of (stop.nearby_stops || [])) {
-        const stopDist = hsin(stop.geometry, ns.geometry)
-        if (ns.location_type !== 0) {
-          continue
-        }
-        for (const rs of ns.route_stops || []) {
-          const routeKey = rs.route.onestop_id
-          if (routeKey && rids.has(routeKey)) {
-            continue
-          }
-          rids.add(routeKey)
-          ret.push({
-            distance: stopDist,
-            id: rs.route.id,
-            onestop_id: rs.route.onestop_id,
-            feed_onestop_id: rs.route.feed_onestop_id,
-            feed_version_sha1: rs.route.feed_version_sha1,
-            route_short_name: rs.route.route_short_name,
-            route_long_name: rs.route.route_long_name,
-            route_type: rs.route.route_type,
-            agency_id: rs.route.agency.agency_id,
-            agency_name: rs.route.agency.agency_name
-          })
-        }
-      }
-      return ret.sort((a, b) => { return a.distance - b.distance })
     }
   }
+  return pats
+})
+
+const processedPatterns = computed<ProcessedPattern[]>(() => {
+  let totalTrips = 0
+  for (const pat of patterns.value) {
+    totalTrips += pat.count
+  }
+  const ret: ProcessedPattern[] = []
+  for (const pat of patterns.value) {
+    // Exclude patterns with less than 10% of trips
+    if (pat.count / totalTrips <= 0.1) {
+      continue
+    }
+    if (!pat.trips || pat.trips.length === 0 || !pat.trips[0].stop_times) {
+      continue
+    }
+    const pt = pat.trips[0]
+    const p: ProcessedPattern = {
+      stop_pattern_id: pat.stop_pattern_id,
+      count: pat.count,
+      desc: pt.trip_headsign,
+      direction_id: pt.direction_id,
+      trip: {
+        trip_headsign: pt.trip_headsign
+      },
+      stop_times: []
+    }
+    for (const st of pt.stop_times) {
+      const nearbyRoutes = nearbyRouteStops(st.stop)
+      const routesByAgency: Record<string, ProcessedRoute[]> = {}
+      for (const rs of nearbyRoutes) {
+        const a = routesByAgency[rs.agency_name] || []
+        a.push(rs)
+        routesByAgency[rs.agency_name] = a
+      }
+      p.stop_times.push({
+        stop_sequence: st.stop_sequence,
+        stop: {
+          id: st.stop.id,
+          stop_id: st.stop.stop_id,
+          stop_name: st.stop.stop_name,
+          onestop_id: st.stop.onestop_id,
+          feed_version_sha1: st.stop.feed_version_sha1,
+          feed_onestop_id: st.stop.feed_onestop_id,
+          routes: routesByAgency
+        }
+      })
+    }
+    ret.push(p)
+  }
+  ret.sort((a, b) => b.count - a.count)
+  return ret
+})
+
+const activePattern = computed<ProcessedPattern | null>(() => {
+  for (const pat of processedPatterns.value) {
+    if (pat.stop_pattern_id === selectedPatternId.value) {
+      return pat
+    }
+  }
+  if (processedPatterns.value.length > 0) {
+    return processedPatterns.value[0]
+  }
+  return null
+})
+
+const activePatternId = computed({
+  get (): string | null {
+    if (selectedPatternId.value) {
+      return selectedPatternId.value
+    }
+    if (processedPatterns.value.length > 0) {
+      return processedPatterns.value[0].stop_pattern_id
+    }
+    return null
+  },
+  set (v: string | null) {
+    selectedPatternId.value = v
+  }
+})
+
+const multiAgency = computed<boolean>(() => {
+  const a = new Set<string>()
+  for (const pat of patterns.value) {
+    for (const st of pat.trips[0].stop_times) {
+      for (const ns of st.stop.nearby_stops || []) {
+        for (const rs of ns.route_stops || []) {
+          a.add(rs.route.agency.agency_name)
+        }
+      }
+    }
+  }
+  return a.size > 1
+})
+
+const inboundPatterns = computed<ProcessedPattern[]>(() => {
+  return processedPatterns.value.filter(s => s.direction_id === 0)
+})
+
+const outboundPatterns = computed<ProcessedPattern[]>(() => {
+  return processedPatterns.value.filter(s => s.direction_id !== 0)
+})
+// Functions
+function firstOrLast (idx: number, v: any[]): boolean {
+  if (idx === 0 || idx === v.length - 1) {
+    return true
+  }
+  return false
 }
 
-function hsin (fromPoint, toPoint) {
+function nearbyRouteStops (stop: Stop): ProcessedRoute[] {
+  const rids = new Set<string>()
+  for (const route of routes.value) {
+    rids.add(route.onestop_id)
+  }
+  const ret: ProcessedRoute[] = []
+  for (const ns of (stop.nearby_stops || [])) {
+    const stopDist = hsin(stop.geometry, ns.geometry)
+    if (ns.location_type !== 0) {
+      continue
+    }
+    for (const rs of ns.route_stops || []) {
+      const routeKey = rs.route.onestop_id
+      if (routeKey && rids.has(routeKey)) {
+        continue
+      }
+      rids.add(routeKey)
+      ret.push({
+        distance: stopDist,
+        id: rs.route.id,
+        route_id: rs.route.route_id,
+        onestop_id: rs.route.onestop_id,
+        feed_onestop_id: rs.route.feed_onestop_id,
+        feed_version_sha1: rs.route.feed_version_sha1,
+        route_short_name: rs.route.route_short_name,
+        route_long_name: rs.route.route_long_name,
+        route_type: rs.route.route_type,
+        agency_id: rs.route.agency.agency_id,
+        agency_name: rs.route.agency.agency_name
+      })
+    }
+  }
+  return ret.sort((a, b) => a.distance - b.distance)
+}
+
+function hsin (fromPoint: Geometry, toPoint: Geometry): number {
   const d = haversine({
     latitude: fromPoint.coordinates[1],
     longitude: fromPoint.coordinates[0]

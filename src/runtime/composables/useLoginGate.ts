@@ -1,23 +1,59 @@
-import { useUser } from '../plugins/auth'
 import { useRuntimeConfig } from '#imports'
+import { useUser } from './useUser'
 
-export const useLoginGate = (role?: string):boolean => {
-  // console.log('useLoginGate')
+/// ////////////////////
+// User
+/// ////////////////////
+
+export const useLoginGate = (options: { hasRole?: string, hasAnyRole?: string[], excludeAnyRole?: string[] }): boolean => {
+  // Returns TRUE if GATE REQUIRED
+  // Get config
   const config = useRuntimeConfig()
-  // console.log(config.public.loginGate)
-  if (config.public.loginGate) {
-    // console.log('useLoginGate: config is true')
-    const user = useUser()
-    if (user?.loggedIn) {
-      // console.log('user??', user, 'role:', role, 'has role:', user.hasRole(role))
-      // console.log('useLoginGate: user is logged in')
-      if (role) {
-        return !user.hasRole(role)
-      }
-      return false
-    }
-    // console.log('useLoginGate: user not logged in, login required')
+  if (!config.public.tlv2?.loginGate) {
+    // Login gate disabled: always authorized
+    console.log('useLoginGate: (not gated) login gate disabled')
+    return false
+  }
+
+  // Get user
+  const user = useUser()
+  if (!user.loggedIn) {
+    // Not logged in: not authorized
+    console.log('useLoginGate: (gated) not logged in')
     return true
   }
-  return false
+
+  console.log('useLoginGate: checking login gate with options', options, 'user roles:', user.roles)
+  // Combine options
+  let { hasRole, hasAnyRole, excludeAnyRole } = options
+  const hasRoleCopy = [...hasAnyRole || []]
+  if (hasRole) {
+    hasRoleCopy.push(hasRole)
+  }
+
+  // Check exclusions and roles
+  for (const excludeRole of excludeAnyRole || []) {
+    if (user.hasRole(excludeRole)) {
+      // Has an excluded role: not authorized
+      console.log('useLoginGate: (gated) has excluded role', excludeRole)
+      return true
+    }
+  }
+
+  if (hasRoleCopy.length === 0) {
+    // No roles required: authorized
+    console.log('useLoginGate: (not gated) no roles required')
+    return false
+  }
+
+  for (const r of hasRoleCopy || []) {
+    if (user.hasRole(r)) {
+      // Has one of the hasAnyRole: authorized
+      console.log('useLoginGate: (not gated) user has required role', r)
+      return false
+    }
+  }
+  // Does not have any of the required roles: not authorized
+  console.log('useLoginGate: (gated) user does not have any of the required roles', hasRoleCopy)
+  return true
 }

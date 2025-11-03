@@ -35,7 +35,7 @@
         <div class="field">
           <div class="field is-grouped is-grouped-multiline">
             <tl-admin-group-item
-              v-for="group of $filters.nameSort(tenant.groups || [])"
+              v-for="group of nameSort(tenant.groups || [])"
               :key="group.id"
               :value="group"
             />
@@ -76,7 +76,8 @@
 </template>
 
 <script>
-import { useUser } from '../../plugins/auth'
+import { useUser } from '../../composables/useUser'
+import { nameSort } from '../../lib/filters'
 import Loadable from '../loadable'
 import AuthzMixin from './authz-mixin'
 
@@ -95,6 +96,7 @@ export default {
   },
   mounted () { this.getData() },
   methods: {
+    nameSort,
     permLevels (lvl) {
       return {
         can_edit: ['admin'].includes(lvl),

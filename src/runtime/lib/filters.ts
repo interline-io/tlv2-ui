@@ -1,7 +1,7 @@
 import { formatDistanceToNow, parseISO, format } from 'date-fns'
 import { getBasicRouteType } from './routetypes'
 
-export function parseHMS(value: string): number {
+export function parseHMS (value: string): number {
   const a = (value || '').split(':').map((s) => {
     return parseInt(s)
   })
@@ -11,7 +11,7 @@ export function parseHMS(value: string): number {
   return a[0] * 3600 + a[1] * 60 + a[2]
 }
 
-export function formatHMS(value: number): string {
+export function formatHMS (value: number): string {
   if (value < 0) { return '' }
   value = value % (24 * 3600)
   let h = Math.floor(value / 3600)
@@ -29,7 +29,7 @@ export function formatHMS(value: number): string {
   return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')} ${ampm}`
 }
 
-export function formatHM(value: number): string {
+export function formatHM (value: number): string {
   if (value < 0) { return '' }
   value = value % (24 * 3600)
   let h = Math.floor(value / 3600)
@@ -46,7 +46,7 @@ export function formatHM(value: number): string {
   return `${h}:${String(m).padStart(2, '0')} ${ampm}`
 }
 
-export function median(values: Array<number>): number {
+export function median (values: Array<number>): number {
   const half = Math.floor(values.length / 2)
   if (values.length % 2) {
     return values[half]
@@ -54,7 +54,7 @@ export function median(values: Array<number>): number {
   return (values[half - 1] + values[half]) / 2.0
 }
 
-export function formatDuration(seconds: number): string {
+export function formatDuration (seconds: number): string {
   if (seconds > 3600) {
     return `${Math.floor(seconds / 3600)}h ${Math.ceil(
       (seconds % 3600) / 60
@@ -66,19 +66,19 @@ export function formatDuration(seconds: number): string {
   return '-'
 }
 
-export function fromNowDate(comparisonDate: Date): string {
+export function fromNowDate (comparisonDate: Date): string {
   return formatDistanceToNow(comparisonDate, {
     addSuffix: true
   }).replace('about ', '')
 }
 
-export function fromNow(comparisonDate: string): string {
+export function fromNow (comparisonDate: string): string {
   return formatDistanceToNow(parseISO(comparisonDate + 'Z'), {
     addSuffix: true
   }).replace('about ', '')
 }
 
-export function shortenName(value: string, len: number): string {
+export function shortenName (value: string, len: number): string {
   if (!value) {
     value = ''
   }
@@ -91,19 +91,19 @@ export function shortenName(value: string, len: number): string {
   return value
 }
 
-export function formatDate(value: string): string {
+export function formatDate (value: string): string {
   return format(parseISO(value), 'yyyy-MM-dd')
 }
 
-export function formatDateTime(value: string): string {
+export function formatDateTime (value: string): string {
   return format(parseISO(value), 'hh:mm:ss bbb')
 }
 
-export function joinUnique(values: Array<string>): string {
+export function joinUnique (values: Array<string>): string {
   return Array.from(new Set(values)).sort().join(', ')
 }
 
-export function thousands(value: string | number): string {
+export function thousands (value: string | number): string {
   const f = typeof (value) === 'string' ? parseFloat(value) : value
   if (isNaN(f)) {
     return '-'
@@ -111,7 +111,7 @@ export function thousands(value: string | number): string {
   return Math.ceil(f).toLocaleString()
 }
 
-export function pct(value: string | number): string {
+export function pct (value: string | number): string {
   const f = typeof (value) === 'string' ? parseFloat(value) : value
   if (isNaN(f)) {
     return ''
@@ -119,19 +119,19 @@ export function pct(value: string | number): string {
   return `${(f * 100).toFixed(2)} %`
 }
 
-export function capitalize(value: string): string {
+export function capitalize (value: string): string {
   return value
     .split(' ')
     .map((w) => {
       return (
-        w.substr(0, 1).toUpperCase() +
-          w.substr(1, w.length - 1).toLowerCase()
+        w.substr(0, 1).toUpperCase()
+        + w.substr(1, w.length - 1).toLowerCase()
       )
     })
     .join(' ')
 }
 
-export function prettyBytes(num: number): string {
+export function prettyBytes (num: number): string {
   const neg = num < 0
   const units = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
   if (neg) {
@@ -150,7 +150,7 @@ export function prettyBytes(num: number): string {
   return (neg ? '-' : '') + numStrip + ' ' + unit
 }
 
-export function routeTypeToWords(code: number) {
+export function routeTypeToWords (code: number) {
   const rt = getBasicRouteType(code)
   if (rt.parentType) {
     return `${rt.routeType.name} (${rt.parentType.name})`
@@ -158,11 +158,11 @@ export function routeTypeToWords(code: number) {
   return rt.routeType.name
 }
 
-export function reformatHMS(value: string): string {
+export function reformatHMS (value: string): string {
   return formatHMS(parseHMS(value))
 }
 
-export function round(value: number): string {
+export function round (value: number): string {
   return value.toFixed(2)
 }
 
@@ -170,11 +170,11 @@ interface HasName {
   name: string
 }
 
-export function nameSort(v: Array<HasName>) {
+export function nameSort (v: Array<HasName>) {
   return (v || []).slice(0).sort((a, b) => { return (a.name || '').localeCompare(b.name || '') })
 }
 
-export function makePathKey(onestopId:string, feedId:string, sha1:string, entityId:string, id:number, linkVer:boolean) {
+export function makePathKey (onestopId: string, feedId: string, sha1: string, entityId: string, id: number, linkVer: boolean) {
   // todo: omit feedId if possible
   if (linkVer && onestopId) {
     return `${onestopId}:${feedId}@${sha1}`
@@ -190,4 +190,39 @@ export function makePathKey(onestopId:string, feedId:string, sha1:string, entity
   }
   // Return id as last resort
   return `${id}`
+}
+
+export function makeRouteLink (onestopId: string, feedId: string, sha1: string, entityId: string, id: number, linkVer: boolean) {
+  if (linkVer && onestopId) {
+    return {
+      name: 'routes-routeKey',
+      params: { routeKey: onestopId },
+      query: {
+        feedOnestopId: feedId,
+        feedVersionSha1: sha1,
+        entityId
+      }
+    }
+  }
+  return {
+    name: 'routes-routeKey',
+    params: { routeKey: makePathKey(onestopId, feedId, sha1, entityId, id, linkVer) }
+  }
+}
+
+export function makeStopLink (onestopId: string, feedId: string, sha1: string, entityId: string, id: number, linkVer: boolean) {
+  if (linkVer && onestopId) {
+    return {
+      name: 'stops-stopKey',
+      params: { stopKey: onestopId },
+      query: {
+        feedOnestopId: feedId,
+        feedVersionSha1: sha1
+      }
+    }
+  }
+  return {
+    name: 'stops-stopKey',
+    params: { stopKey: makePathKey(onestopId, feedId, sha1, entityId, id, linkVer) }
+  }
 }

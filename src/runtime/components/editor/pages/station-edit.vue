@@ -11,13 +11,14 @@
       :value="station"
       @update="updateStationHandler"
       @delete="deleteStationHandler"
+      @cancel="cancelHandler"
     />
   </div>
 </template>
 
 <script>
-import StationMixin from './station-mixin'
 import { navigateTo } from '#imports'
+import StationMixin from './station-mixin'
 
 export default {
   mixins: [StationMixin],
@@ -26,7 +27,7 @@ export default {
       this.station.updateStation(this.$apollo, station.stop)
         .then(() => {
           navigateTo({
-            name: 'editor-feedKey-feedVersionKey-stations-stationKey',
+            name: this.editorRoutes.stationIndex,
             params: {
               feedKey: this.feedKey,
               feedVersionKey: this.feedVersionKey,
@@ -50,7 +51,7 @@ export default {
       this.station.deleteStation(this.$apollo, station)
         .then(() => {
           navigateTo({
-            name: 'editor-feedKey-feedVersionKey-stations',
+            name: this.editorRoutes.stations,
             params: {
               feedKey: this.feedKey,
               feedVersionKey: this.feedVersionKey
@@ -58,6 +59,16 @@ export default {
           })
         })
         .catch(this.setError)
+    },
+    cancelHandler () {
+      navigateTo({
+        name: this.editorRoutes.stationIndex,
+        params: {
+          feedKey: this.feedKey,
+          feedVersionKey: this.feedVersionKey,
+          stationKey: this.stationKey
+        }
+      })
     }
   }
 }

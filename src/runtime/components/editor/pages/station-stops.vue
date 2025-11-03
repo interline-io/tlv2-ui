@@ -90,6 +90,7 @@
             v-model="selectedLevels"
             :width="300"
             aria-role="list"
+            selectable
             multiple
           >
             <template #trigger>
@@ -188,10 +189,10 @@
 </template>
 
 <script>
+import { navigateTo } from '#imports'
 import { gql } from 'graphql-tag'
 import { Stop, mapLevelKeyFn } from '../station'
 import StationMixin from './station-mixin'
-import { navigateTo } from '#imports'
 import { LocationTypes } from '../basemaps'
 
 function intersection (setA, setB) {
@@ -277,9 +278,12 @@ const nearbyStopsQuery = gql`
 
 export default {
   mixins: [StationMixin],
+  props: {
+    client: { type: String, default: 'default' }
+  },
   apollo: {
     nearbyStopsQuery: {
-      client: 'transitland',
+      client: 'stationEditor',
       query: nearbyStopsQuery,
       skip () { return !this.station }, // run after stations
       error (e) {

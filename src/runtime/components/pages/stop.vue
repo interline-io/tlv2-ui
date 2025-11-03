@@ -1,6 +1,6 @@
 <template>
   <div>
-    <tl-loading v-if="$apollo.loading" />
+    <tl-loading v-if="loading" />
     <tl-msg-error v-else-if="error">
       {{ error }}
     </tl-msg-error>
@@ -115,7 +115,7 @@
                   </div>
                   <div v-for="rs of rss" :key="rs.route.id">
                     <nuxt-link
-                      :to="$filters.makeRouteLink(rs.route.onestop_id,rs.route.feed_onestop_id,rs.route.feed_version_sha1,rs.route.route_id,rs.route.id,linkVersion)"
+                      :to="makeRouteLink(rs.route.onestop_id,rs.route.feed_onestop_id,rs.route.feed_version_sha1,rs.route.route_id,rs.route.id,linkVersion)"
                     >
                       <tl-route-icon :route-type="rs.route.route_type" :route-short-name="rs.route.route_short_name" :route-long-name="rs.route.route_long_name" :route-link="rs.route.route_url" />
                     </nuxt-link>
@@ -133,7 +133,7 @@
                   </div>
                   <div v-for="rs of rss" :key="rs.route.id">
                     <nuxt-link
-                      :to="$filters.makeRouteLink(rs.route.onestop_id,rs.route.feed_onestop_id,rs.route.feed_version_sha1,rs.route.route_id,rs.route.id,linkVersion)"
+                      :to="makeRouteLink(rs.route.onestop_id,rs.route.feed_onestop_id,rs.route.feed_version_sha1,rs.route.route_id,rs.route.id,linkVersion)"
                     >
                       <tl-route-icon :route-type="rs.route.route_type" :route-short-name="rs.route.route_short_name" :route-long-name="rs.route.route_long_name" :route-link="rs.route.route_url" />
                     </nuxt-link>
@@ -162,7 +162,7 @@
                             params: { feedKey: row.feed_onestop_id },
                           }"
                         >
-                          {{ $filters.shortenName(row.feed_onestop_id) }}
+                          {{ shortenName(row.feed_onestop_id, 20) }}
                         </nuxt-link>
                       </td>
                       <td>
@@ -175,14 +175,14 @@
                             },
                           }"
                         >
-                          {{ $filters.shortenName(row.feed_version_sha1, 8) }}
+                          {{ shortenName(row.feed_version_sha1, 8) }}
                         </nuxt-link>
                       </td>
                       <td>
                         <nuxt-link
-                          :to="$filters.makeStopLink(row.onestop_id, row.feed_onestop_id, row.feed_version_sha1, row.stop_id, row.id, true)"
+                          :to="makeStopLink(row.onestop_id, row.feed_onestop_id, row.feed_version_sha1, row.stop_id, row.id, true)"
                         >
-                          {{ $filters.shortenName(row.stop_id) }}
+                          {{ shortenName(row.stop_id, 20) }}
                         </nuxt-link>
                       </td>
                     </tr>
@@ -198,7 +198,7 @@
                     v-if="entity.id && activeTab === tabNames.departures"
                     :show-fallback-selector="true"
                     :stop-ids="entityIds"
-                    :search-coords="entity.geometry.coordinates"
+                    :search-coords="mapCenter"
                   />
                   <template #loginText>
                     <o-notification icon="lock">
@@ -225,7 +225,7 @@
                 :route-ids="routeIds"
                 :features="features"
                 :auto-fit="false"
-                :center="entity.geometry.coordinates"
+                :center="mapCenter"
                 :include-stops="true"
                 :circle-radius="20"
                 :zoom="15"
@@ -249,10 +249,110 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed, watch } from 'vue'
 import { gql } from 'graphql-tag'
-import EntityPageMixin from './entity-page-mixin'
-import { useEventBus } from '#imports'
+import { useQuery } from '@vue/apollo-composable'
+import { useEntityPath } from '../../composables/useEntityPath'
+import { shortenName, makeRouteLink, makeStopLink } from '../../lib/filters'
+import type { LonLat } from '../../geom'
+
+// Types
+interface StopResponse {
+  id: number
+  feed_version_sha1: string
+  feed_onestop_id: string
+  onestop_id: string
+  stop_id: string
+  stop_name: string
+  stop_timezone?: string
+  stop_url?: string
+  stop_desc?: string
+  location_type: number
+  wheelchair_boarding?: number
+  zone_id?: string
+  geometry: {
+    type: string
+    coordinates: [number, number]
+  }
+  feed_version: {
+    fetched_at: string
+  }
+  alerts?: {
+    cause: string
+    effect: string
+    severity_level: string
+    description_text: {
+      language: string
+      text: string
+    }[]
+    header_text: {
+      language: string
+      text: string
+    }[]
+    url: {
+      language: string
+      text: string
+    }[]
+  }[]
+  parent?: StopResponse
+  children?: StopResponse[]
+  route_stops?: {
+    route: {
+      id: number
+      onestop_id: string
+      route_long_name?: string
+      route_short_name?: string
+      route_type: number
+      route_id: string
+      route_color?: string
+      route_url?: string
+      feed_onestop_id: string
+      feed_version_sha1: string
+      agency: {
+        id: number
+        agency_name: string
+        operator?: {
+          onestop_id: string
+        }
+      }
+    }
+  }[]
+  nearby_stops?: StopResponse[]
+}
+
+// Extract individual types from the response type
+type Stop = StopResponse
+type Alert = NonNullable<StopResponse['alerts']>[0]
+type Translation = Alert['description_text'][0]
+type RouteStop = NonNullable<StopResponse['route_stops']>[0]
+
+interface TabNames {
+  summary: string
+  sources: string
+  departures: string
+}
+
+// Props
+const props = withDefaults(defineProps<{
+  pathKey: string
+  showDepartures?: boolean
+  feedVersionSha1?: string
+  feedOnestopId?: string
+  entityId?: string
+}>(), {
+  showDepartures: true,
+  feedVersionSha1: undefined,
+  feedOnestopId: undefined,
+  entityId: undefined
+})
+
+// Emits
+const emit = defineEmits<{
+  entitiesLoaded: [entities: Stop[]]
+  staticDescriptionUpdated: [description: string]
+  operatorNamesUpdated: [names: string]
+}>()
 
 const q = gql`
 fragment rs on RouteStop {
@@ -264,6 +364,7 @@ fragment rs on RouteStop {
     route_type
     route_id
     route_color
+    route_url
     feed_onestop_id
     feed_version_sha1
     agency {
@@ -303,6 +404,7 @@ fragment ss on Stop {
   stop_name
   stop_timezone
   stop_url
+  stop_desc
   location_type
   wheelchair_boarding
   zone_id
@@ -349,203 +451,240 @@ query ($onestopId: String, $ids: [Int!], $entityId: String, $feedOnestopId: Stri
 }
 `
 
-export default {
-  mixins: [EntityPageMixin],
-  apollo: {
-    entities: {
-      query: q,
-      skip () { return this.checkSearchSkip(this.$route.query.stop_id) },
-      variables () {
-        return this.entityVariables
-      }
-    }
-  },
-  data () {
-    return {
-      radius: 1000,
-      tabNames: this.makeTabNames(['summary', 'sources', 'departures']),
-      activeTab: 'summary'
-    }
-  },
+// Helper functions
+function makeTabNames (vals: string[]): TabNames {
+  const a = {} as TabNames
+  for (const k of vals) {
+    (a as any)[k] = k
+  }
+  return a
+}
 
-  computed: {
-    allAlerts  () {
-      const ret = []
-      for (const stop of this.allStops) {
-        for (const alert of stop.alerts || []) {
-          ret.push(alert)
-        }
-      }
-      return ret
-    },
-    routeIds () {
-      const ret = new Map()
-      for (const rss of Object.values(this.servedRoutes || {})) {
-        for (const rs of rss) {
-          ret.set(rs.route.id, true)
-        }
-      }
-      return Array.from(ret.keys())
-    },
-    allStops () {
-      const ret = {}
-      for (const ent of this.roots) {
-        ret[ent.id] = ent
-        if (ent.parent) {
-          ret[ent.parent.id] = ent.parent
-        }
-        for (const child of ent.children || []) {
-          ret[child.id] = child
-        }
-      }
-      return Object.values(ret)
-    },
-    servedRoutes () {
-      const ret = {}
-      for (const stop of this.allStops) {
-        for (const rs of stop.route_stops || []) {
-          ret[rs.route.id] = rs
-        }
-      }
-      const byAgency = {}
-      for (const r of Object.values(ret)) {
-        const key = r.route.agency.agency_name
-        const a = byAgency[key] || []
-        a.push(r)
-        byAgency[key] = a
-      }
-      if (Object.keys(byAgency).length === 0) {
-        return null
-      }
-      return byAgency
-    },
-    nearbyStops () {
-      const ret = []
-      const excl = {}
-      for (const stop of this.allStops) {
-        excl[stop.id] = true
-      }
-      for (const ent of this.entities) {
-        for (const ns of ent.nearby_stops || []) {
-          if (excl[ns.id]) {
-            continue
-          }
-          ret.push(ns)
-          excl[ns.id] = true
-        }
-      }
-      return ret
-    },
-    nearbyRoutes () {
-      const ret = {}
-      const excl = {}
-      for (const rss of Object.values(this.servedRoutes || {})) {
-        for (const rs of rss) {
-          excl[rs.route.id] = true
-        }
-      }
-      for (const ent of this.nearbyStops) {
-        for (const rs of ent.route_stops || []) {
-          if (excl[rs.route.id]) {
-            continue
-          }
-          ret[rs.route.id] = rs
-        }
-      }
-      const byAgency = {}
-      for (const r of Object.values(ret)) {
-        const key = r.route.agency.agency_name
-        const a = byAgency[key] || []
-        a.push(r)
-        byAgency[key] = a
-      }
-      if (Object.keys(byAgency).length === 0) {
-        return null
-      }
-      return byAgency
-    },
-    stopUrls () {
-      return this.allStops.filter((s) => { return s.stop_url })
-    },
-    stopDescs () {
-      return this.allStops.filter((s) => { return s.stop_desc })
-    },
-    features () {
-      const ret = []
-      const sg = this.entity.geometry
-      let featid = 1
+function filterRTTranslations (v: Translation[]): Translation[] {
+  return v.filter(s => !s.language.includes('html'))
+}
 
-      for (const i of this.allStops) {
-        if (!i.geometry) {
-          continue
-        }
-        if (!(i.location_type !== 0 || i.location_type !== 2)) {
-          continue
-        }
-        ret.push({
-          type: 'Feature',
-          id: i.id,
-          geometry: i.geometry,
-          properties: {
-            class: 'stop',
-            id: i.id
+// Entity path setup
+const { searchKey, entityVariables, linkVersion } = useEntityPath({
+  pathKey: props.pathKey,
+  feedVersionSha1: props.feedVersionSha1,
+  feedOnestopId: props.feedOnestopId,
+  entityId: props.entityId
+})
 
-          }
-        })
-      }
+// Reactive state
+const activeTab = ref('summary')
+const tabNames = makeTabNames(['summary', 'sources', 'departures'])
 
-      for (const i of this.entity.children || []) {
-        ret.push({
-          type: 'Feature',
-          id: featid,
-          properties: { },
-          geometry: {
-            type: 'LineString',
-            coordinates: [
-              sg.coordinates,
-              i.geometry.coordinates
-            ]
-          }
-        })
-        featid++
-      }
-      return ret
-    },
-    entityIds () {
-      return this.allStops.map((s) => { return s.id })
-    },
-    roots () {
-      const ret = {}
-      for (const ent of this.entities) {
-        if (ent.parent) {
-          ret[ent.parent.id] = ent.parent
-        } else {
-          ret[ent.id] = ent
-        }
-      }
-      return Object.values(ret)
-    },
-    entity () {
-      return this.roots.length > 0 ? this.roots[0] : null
-    },
-    staticTitle () {
-      return `${this.entity.stop_name} • Stop`
-    },
-    staticDescription () {
-      return `${this.entity.stop_name} stop available for browsing and analyzing on the Transitland platform`
-    }
-  },
-  watch: {
-    'entity.stop_name' (v) {
-      useEventBus().$emit('setParamKey', 'stopKey', v)
-    }
-  },
-  methods: {
-    filterRTTranslations (v) {
-      return v.filter((s) => { return !s.language.includes('html') })
+// GraphQL query
+const { result, loading, error } = useQuery<{ entities: StopResponse[] }>(q, entityVariables, {
+  clientId: 'transitland'
+})
+
+// Computed entities
+const entities = computed((): Stop[] => {
+  return result.value?.entities ?? []
+})
+
+const roots = computed((): Stop[] => {
+  const ret: Record<number, Stop> = {}
+  for (const ent of entities.value) {
+    if (ent.parent) {
+      ret[ent.parent.id] = ent.parent
+    } else {
+      ret[ent.id] = ent
     }
   }
+  return Object.values(ret)
+})
+
+const entity = computed((): Stop | null => {
+  return roots.value.length > 0 ? roots.value[0] : null
+})
+
+const allStops = computed((): Stop[] => {
+  const ret: Record<number, Stop> = {}
+  for (const ent of roots.value) {
+    ret[ent.id] = ent
+    if (ent.parent) {
+      ret[ent.parent.id] = ent.parent
+    }
+    for (const child of ent.children || []) {
+      ret[child.id] = child
+    }
+  }
+  return Object.values(ret)
+})
+
+const servedRoutes = computed((): Record<string, RouteStop[]> | null => {
+  const ret: Record<number, RouteStop> = {}
+  for (const stop of allStops.value) {
+    for (const rs of stop.route_stops || []) {
+      ret[rs.route.id] = rs
+    }
+  }
+  const byAgency: Record<string, RouteStop[]> = {}
+  for (const r of Object.values(ret)) {
+    const key = r.route.agency.agency_name
+    const a = byAgency[key] || []
+    a.push(r)
+    byAgency[key] = a
+  }
+  if (Object.keys(byAgency).length === 0) {
+    return null
+  }
+  return byAgency
+})
+
+const nearbyStops = computed((): Stop[] => {
+  const ret: Stop[] = []
+  const excl: Record<number, boolean> = {}
+  for (const stop of allStops.value) {
+    excl[stop.id] = true
+  }
+  for (const ent of entities.value) {
+    for (const ns of ent.nearby_stops || []) {
+      if (excl[ns.id]) {
+        continue
+      }
+      ret.push(ns)
+      excl[ns.id] = true
+    }
+  }
+  return ret
+})
+
+const nearbyRoutes = computed((): Record<string, RouteStop[]> | null => {
+  const ret: Record<number, RouteStop> = {}
+  const excl: Record<number, boolean> = {}
+  for (const rss of Object.values(servedRoutes.value || {})) {
+    for (const rs of rss) {
+      excl[rs.route.id] = true
+    }
+  }
+  for (const ent of nearbyStops.value) {
+    for (const rs of ent.route_stops || []) {
+      if (excl[rs.route.id]) {
+        continue
+      }
+      ret[rs.route.id] = rs
+    }
+  }
+  const byAgency: Record<string, RouteStop[]> = {}
+  for (const r of Object.values(ret)) {
+    const key = r.route.agency.agency_name
+    const a = byAgency[key] || []
+    a.push(r)
+    byAgency[key] = a
+  }
+  if (Object.keys(byAgency).length === 0) {
+    return null
+  }
+  return byAgency
+})
+
+const routeIds = computed((): number[] => {
+  const ret = new Map<number, boolean>()
+  for (const rss of Object.values(servedRoutes.value || {})) {
+    for (const rs of rss) {
+      ret.set(rs.route.id, true)
+    }
+  }
+  return Array.from(ret.keys())
+})
+
+const stopUrls = computed((): Stop[] => {
+  return allStops.value.filter(s => s.stop_url)
+})
+
+const stopDescs = computed((): Stop[] => {
+  return allStops.value.filter(s => s.stop_desc)
+})
+
+const features = computed(() => {
+  if (!entity.value) return []
+
+  const ret: any[] = []
+  const sg = entity.value.geometry
+  let featid = 1
+
+  for (const i of allStops.value) {
+    if (!i.geometry) {
+      continue
+    }
+    if (i.location_type !== 0 && i.location_type !== 2) {
+      continue
+    }
+    ret.push({
+      type: 'Feature',
+      id: i.id,
+      geometry: i.geometry,
+      properties: {
+        class: 'stop',
+        id: i.id
+      }
+    })
+  }
+
+  for (const i of entity.value.children || []) {
+    ret.push({
+      type: 'Feature',
+      id: featid,
+      properties: {},
+      geometry: {
+        type: 'LineString',
+        coordinates: [
+          sg.coordinates,
+          i.geometry.coordinates
+        ]
+      }
+    })
+    featid++
+  }
+  return ret
+})
+
+const entityIds = computed((): number[] => {
+  return allStops.value.map(s => s.id)
+})
+
+const staticTitle = computed((): string => {
+  return entity.value ? `${entity.value.stop_name} • Stop` : ''
+})
+
+const staticDescription = computed((): string => {
+  return entity.value ? `${entity.value.stop_name} stop available for browsing and analyzing on the Transitland platform` : ''
+})
+
+const mapCenter = computed((): LonLat | null => {
+  const coords = entity.value?.geometry?.coordinates
+  if (!coords) return null
+  return { lon: coords[0], lat: coords[1] }
+})
+
+// Methods
+function setTab (value: string) {
+  activeTab.value = value
 }
+
+// Watch for changes and emit events
+watch(entities, (newEntities) => {
+  if (newEntities) {
+    emit('entitiesLoaded', newEntities)
+  }
+}, { immediate: true })
+
+watch(staticDescription, (newDescription) => {
+  if (newDescription) {
+    emit('staticDescriptionUpdated', newDescription)
+  }
+}, { immediate: true })
+
+watch(() => entity.value?.stop_name, (newName) => {
+  if (newName) {
+    emit('operatorNamesUpdated', newName)
+  }
+}, { immediate: true })
 </script>
 
 <style scoped>

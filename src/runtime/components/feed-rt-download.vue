@@ -112,160 +112,176 @@
   </div>
 </template>
 
-<script>
-import Loadable from './loadable'
-import { useToastNotification } from '../composables/useToastNotification'
+<script setup lang="ts">
+import { ref, computed } from 'vue'
 import VueJsonPretty from 'vue-json-pretty'
 import 'vue-json-pretty/lib/styles.css'
-export default {
-  components: {
-    VueJsonPretty
-  },
-  mixins: [Loadable],
-  props: {
-    feedOnestopId: { type: String, required: true },
-    rtType: {
-      type: String,
-      required: true,
-      validator: value => ['alerts', 'trip_updates', 'vehicle_positions'].includes(value)
-    },
-    lastFetchedAt: { type: String, default: null }
-  },
-  data () {
-    return {
-      showJsonModal: false,
-      jsonData: null,
-      jsonLoading: false,
-      jsonError: null,
-      jsonViewerRef: null
+import { useApiEndpoint } from '../composables/useApiEndpoint'
+import { useAuthHeaders } from '../composables/useAuthHeaders'
+import { useToastNotification } from '../composables/useToastNotification'
+
+// Type definitions
+type RTType = 'alerts' | 'trip_updates' | 'vehicle_positions'
+
+interface RTTypeDisplayMap {
+  vehicle_positions: string
+  trip_updates: string
+  alerts: string
+  [key: string]: string
+}
+
+// Props validation
+const props = withDefaults(defineProps<{
+  feedOnestopId: string
+  rtType: RTType
+  lastFetchedAt?: string | null
+}>(), {
+  lastFetchedAt: null
+})
+
+// Reactive data
+const error = ref<string | null>(null)
+const loading = ref(false)
+const showJsonModal = ref(false)
+const jsonData = ref<any>(null)
+const jsonLoading = ref(false)
+const jsonError = ref<string | null>(null)
+const jsonViewerRef = ref<any>(null)
+
+// Composables
+const apiEndpoint = useApiEndpoint()
+const { showToast } = useToastNotification()
+
+// Computed properties
+const rtTypeDisplay = computed<string>(() => {
+  const types: RTTypeDisplayMap = {
+    vehicle_positions: 'Vehicle Positions',
+    trip_updates: 'Trip Updates',
+    alerts: 'Service Alerts'
+  }
+  return types[props.rtType] || props.rtType
+})
+
+const formattedJson = computed<string>(() => {
+  if (!jsonData.value) return ''
+  try {
+    return JSON.stringify(jsonData.value, null, 2)
+  } catch (e) {
+    return JSON.stringify(jsonData.value)
+  }
+})
+
+const jsonSizeKb = computed<number>(() => {
+  if (!formattedJson.value) return 0
+  return Math.round(new Blob([formattedJson.value]).size / 1024)
+})
+
+const isJsonTooLargeToInteractivelyRender = computed<boolean>(() => {
+  // Use plain text for JSON files larger than 2Mb
+  return jsonSizeKb.value > 2000
+})
+
+const isJsonTooLargeToDisplay = computed<boolean>(() => {
+  // Don't display JSON files larger than 20MB at all
+  return jsonSizeKb.value > 20000
+})
+
+const jsonSizeMbString = computed<string>(() => {
+  if (!formattedJson.value) return '0 Mb'
+  const sizeKb = Math.round(new Blob([formattedJson.value]).size / 1024)
+  const sizeMb = sizeKb / 1024
+  return `${sizeMb.toLocaleString()} Mb`
+})
+
+const displayedJson = computed<string>(() => {
+  return formattedJson.value
+})
+
+// Methods
+async function download (format: string): Promise<void> {
+  loading.value = true
+  error.value = null
+
+  const url = `${apiEndpoint}/rest/feeds/${props.feedOnestopId}/download_latest_rt/${props.rtType}.${format}`
+  const filename = `${props.feedOnestopId}-${props.rtType}-latest.${format}`
+
+  try {
+    const response = await fetch(url, { headers: await useAuthHeaders() })
+    if (!response.ok) {
+      throw new Error(`${response.status} ${response.statusText}`)
     }
-  },
-  computed: {
-    rtTypeDisplay () {
-      const types = {
-        vehicle_positions: 'Vehicle Positions',
-        trip_updates: 'Trip Updates',
-        alerts: 'Service Alerts'
-      }
-      return types[this.rtType] || this.rtType
-    },
-    formattedJson () {
-      if (!this.jsonData) return ''
-      try {
-        return JSON.stringify(this.jsonData, null, 2)
-      } catch (e) {
-        return JSON.stringify(this.jsonData)
-      }
-    },
-    jsonSizeKb () {
-      if (!this.formattedJson) return 0
-      return Math.round(new Blob([this.formattedJson]).size / 1024)
-    },
-    isJsonTooLargeToInteractivelyRender () {
-      // Use plain text for JSON files larger than 2Mb
-      return this.jsonSizeKb > 2000
-    },
-    isJsonTooLargeToDisplay () {
-      // Don't display JSON files larger than 20MB at all
-      return this.jsonSizeKb > 20000
-    },
-    jsonSizeMbString () {
-      if (!this.formattedJson) return '0 Mb'
-      const sizeKb = Math.round(new Blob([this.formattedJson]).size / 1024)
-      const sizeMb = sizeKb / 1024
-      return `${sizeMb.toLocaleString()} Mb`
-    },
-    displayedJson () {
-      return this.formattedJson
+
+    const blob = await response.blob()
+    const downloadUrl = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = downloadUrl
+    a.download = filename
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    window.URL.revokeObjectURL(downloadUrl)
+  } catch (err: any) {
+    console.error('Download failed:', err)
+    error.value = err.message
+  } finally {
+    loading.value = false
+  }
+}
+
+async function viewJson (): Promise<void> {
+  showJsonModal.value = true
+  jsonLoading.value = true
+  jsonError.value = null
+  jsonData.value = null
+
+  const url = `${apiEndpoint}/rest/feeds/${props.feedOnestopId}/download_latest_rt/${props.rtType}.json`
+
+  try {
+    const response = await fetch(url, { headers: await useAuthHeaders() })
+    if (!response.ok) {
+      throw new Error(`${response.status} ${response.statusText}`)
     }
-  },
-  methods: {
-    async download (format) {
-      this.loading = true
-      this.error = null
 
-      const url = `${this.apiEndpoint()}/rest/feeds/${this.feedOnestopId}/download_latest_rt/${this.rtType}.${format}`
-      const filename = `${this.feedOnestopId}-${this.rtType}-latest.${format}`
+    jsonData.value = await response.json()
+  } catch (err: any) {
+    console.error('JSON fetch failed:', err)
+    jsonError.value = err.message
+  } finally {
+    jsonLoading.value = false
+  }
+}
 
-      try {
-        const response = await fetch(url, { headers: await this.authHeaders() })
-        if (!response.ok) {
-          throw new Error(`${response.status} ${response.statusText}`)
-        }
+async function downloadFromViewer (): Promise<void> {
+  if (!jsonData.value) return
 
-        const blob = await response.blob()
-        const downloadUrl = window.URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = downloadUrl
-        a.download = filename
-        document.body.appendChild(a)
-        a.click()
-        a.remove()
-        window.URL.revokeObjectURL(downloadUrl)
-      } catch (err) {
-        console.error('Download failed:', err)
-        this.error = err.message
-      } finally {
-        this.loading = false
-      }
-    },
+  const filename = `${props.feedOnestopId}-${props.rtType}-latest.json`
+  const blob = new Blob([JSON.stringify(jsonData.value, null, 2)], { type: 'application/json' })
+  const downloadUrl = window.URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = downloadUrl
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  window.URL.revokeObjectURL(downloadUrl)
+}
 
-    async viewJson () {
-      this.showJsonModal = true
-      this.jsonLoading = true
-      this.jsonError = null
-      this.jsonData = null
+async function copyToClipboard (): Promise<void> {
+  if (!formattedJson.value) return
 
-      const url = `${this.apiEndpoint()}/rest/feeds/${this.feedOnestopId}/download_latest_rt/${this.rtType}.json`
-
-      try {
-        const response = await fetch(url, { headers: await this.authHeaders() })
-        if (!response.ok) {
-          throw new Error(`${response.status} ${response.statusText}`)
-        }
-
-        this.jsonData = await response.json()
-      } catch (err) {
-        console.error('JSON fetch failed:', err)
-        this.jsonError = err.message
-      } finally {
-        this.jsonLoading = false
-      }
-    },
-
-    async downloadFromViewer () {
-      if (!this.jsonData) return
-
-      const filename = `${this.feedOnestopId}-${this.rtType}-latest.json`
-      const blob = new Blob([JSON.stringify(this.jsonData, null, 2)], { type: 'application/json' })
-      const downloadUrl = window.URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = downloadUrl
-      a.download = filename
-      document.body.appendChild(a)
-      a.click()
-      a.remove()
-      window.URL.revokeObjectURL(downloadUrl)
-    },
-
-    async copyToClipboard () {
-      if (!this.formattedJson) return
-
-      try {
-        await navigator.clipboard.writeText(this.formattedJson)
-        useToastNotification().showToast('Copied to clipboard')
-      } catch (err) {
-        console.error('Copy to clipboard failed:', err)
-        // Fallback for older browsers
-        const textArea = document.createElement('textarea')
-        textArea.value = this.formattedJson
-        document.body.appendChild(textArea)
-        textArea.select()
-        document.execCommand('copy')
-        document.body.removeChild(textArea)
-        useToastNotification().showToast('Copied to clipboard')
-      }
-    },
+  try {
+    await navigator.clipboard.writeText(formattedJson.value)
+    showToast('Copied to clipboard')
+  } catch (err) {
+    console.error('Copy to clipboard failed:', err)
+    // Fallback for older browsers
+    const textArea = document.createElement('textarea')
+    textArea.value = formattedJson.value
+    document.body.appendChild(textArea)
+    textArea.select()
+    document.execCommand('copy')
+    document.body.removeChild(textArea)
+    showToast('Copied to clipboard')
   }
 }
 </script>

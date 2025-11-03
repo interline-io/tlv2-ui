@@ -329,7 +329,7 @@ export default {
             layout: {
               'text-allow-overlap': true,
               'text-field': ['get', 'level_index'],
-              'text-font': ['DIN Offc Pro Regular Sans Regular', 'Arial Unicode MS Regular'],
+              'text-font': ['default'],
               'text-size': 10
             },
             filter: ['==', mapLevelKey, ['get', 'mapLevelKey']]
@@ -345,7 +345,7 @@ export default {
               'text-allow-overlap': true,
               'text-anchor': 'left',
               'text-field': ['get', 'stop_name'],
-              'text-font': ['DIN Offc Pro Regular Sans Regular', 'Arial Unicode MS Regular'],
+              'text-font': ['default'],
               'text-size': 12,
               'text-offset': [1.0, 0]
             },

@@ -21,12 +21,12 @@
 
     <ul>
       <li
-        v-for="tenant of $filters.nameSort(tenants)"
+        v-for="tenant of nameSort(tenants)"
         :key="tenant.id"
       >
-        <nuxt-link :to="{ name: 'admin-tenants-tenantKey', params: { tenantKey: tenant.id } }">
-          <span v-if="tenant.name">{{ tenant.name }}</span>
-        </nuxt-link>
+        <tl-admin-tenant-item
+          :value="tenant"
+        />
       </li>
     </ul>
   </div>
@@ -34,6 +34,7 @@
 
 <script>
 import Loadable from '../../loadable'
+import { nameSort } from '../../../lib/filters'
 
 export default {
   mixins: [Loadable],
@@ -44,6 +45,7 @@ export default {
   },
   mounted () { this.getData() },
   methods: {
+    nameSort,
     async getData () {
       return await this.fetchAdmin('/tenants').then((data) => {
         this.tenants = data.tenants

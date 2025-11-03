@@ -199,11 +199,14 @@ function def (v, d) {
   return v
 }
 
-export const routeKeys = {
-  levels: 'editor-feedKey-feedVersionKey-stations-stationKey',
-  stops: 'editor-feedKey-feedVersionKey-stations-stationKey-stops',
-  pathways: 'editor-feedKey-feedVersionKey-stations-stationKey-pathways',
-  diagram: 'editor-feedKey-feedVersionKey-stations-stationKey-diagram'
+// Helper function to build route keys with prefix
+export function getRouteKeys (prefix = 'editor') {
+  return {
+    levels: `${prefix}-feedKey-feedVersionKey-stations-stationKey`,
+    stops: `${prefix}-feedKey-feedVersionKey-stations-stationKey-stops`,
+    pathways: `${prefix}-feedKey-feedVersionKey-stations-stationKey-pathways`,
+    diagram: `${prefix}-feedKey-feedVersionKey-stations-stationKey-diagram`
+  }
 }
 
 export class FeedVersion {
@@ -414,6 +417,7 @@ export class Level {
 
 export class Station {
   constructor (stop) {
+    this.client = 'stationEditor',
     this.graph = null
     this.stop = new Stop(stop)
     this.pathways = []
@@ -422,7 +426,11 @@ export class Station {
     for (const level of (this.stop.levels || [])) {
       this.levels.push(new Level(level))
     }
-    this.levels.push(new Level({ level_name: 'Unassigned' }))
+    // Only add an Unassigned level if one doesn't already exist
+    const hasUnassigned = this.levels.some(level => level.level_name === 'Unassigned' && level.level_index == null)
+    if (!hasUnassigned) {
+      this.levels.push(new Level({ level_name: 'Unassigned' }))
+    }
   }
 
   get id () {
@@ -521,17 +529,21 @@ export class Station {
     // update levels
     const lvls = new Map()
     for (const lvl of this.levels || []) {
-      lvls.set(lvl.id, lvl)
+      // Normalize null/undefined to a consistent key for unassigned levels
+      const levelKey = lvl.id ?? 'unassigned'
+      lvls.set(levelKey, lvl)
     }
     for (const stop of newStops) {
       let lvl = stop.level
-      if (lvl && lvls.has(lvl.id)) {
-        lvl = lvls.get(lvl.id)
+      // Normalize null/undefined to a consistent key for unassigned levels
+      const levelKey = lvl?.id ?? 'unassigned'
+      if (lvl && lvls.has(levelKey)) {
+        lvl = lvls.get(levelKey)
       } else {
         lvl = new Level(lvl)
       }
       lvl.stops.push(stop)
-      lvls.set(lvl.id, lvl)
+      lvls.set(levelKey, lvl)
     }
     // Update
     this.stops = newStops
@@ -570,7 +582,8 @@ export class Station {
     const q = gql`mutation ($set: LevelSetInput!) {level_create(set:$set) {id}}`
     return $apollo.mutate({
       mutation: q,
-      variables: vars
+      variables: vars,
+      client: this.client,
     })
   }
 
@@ -582,7 +595,8 @@ export class Station {
     const q = gql`mutation ($set: LevelSetInput!) {level_update(set:$set) {id}}`
     return $apollo.mutate({
       mutation: q,
-      variables: vars
+      variables: vars,
+      client: this.client,
     })
   }
 
@@ -591,7 +605,8 @@ export class Station {
     const q = gql`mutation ($id: Int!) {level_delete(id:$id) {id}}`
     return $apollo.mutate({
       mutation: q,
-      variables: { id: ent.id }
+      variables: { id: ent.id },
+      client: this.client
     })
   }
 
@@ -604,7 +619,8 @@ export class Station {
     const q = gql`mutation ($set: PathwaySetInput!) {pathway_create(set:$set) {id}}`
     return $apollo.mutate({
       mutation: q,
-      variables: vars
+      variables: vars,
+      client: this.client
     })
   }
 
@@ -614,7 +630,8 @@ export class Station {
     const q = gql`mutation ($set: PathwaySetInput!) {pathway_update(set:$set) {id}}`
     return $apollo.mutate({
       mutation: q,
-      variables: vars
+      variables: vars,
+      client: this.client
     })
   }
 
@@ -623,7 +640,8 @@ export class Station {
     const q = gql`mutation ($id: Int!) {pathway_delete(id:$id) {id}}`
     return $apollo.mutate({
       mutation: q,
-      variables: { id: pw.id }
+      variables: { id: pw.id },
+      client: this.client
     })
   }
 
@@ -640,7 +658,8 @@ export class Station {
     const q = gql`mutation ($set: StopSetInput!) {stop_create(set:$set) {id}}`
     return $apollo.mutate({
       mutation: q,
-      variables: vars
+      variables: vars,
+      client: this.client,
     })
   }
 
@@ -653,7 +672,8 @@ export class Station {
     const q = gql`mutation ($set: StopSetInput!) {stop_update(set:$set) {id}}`
     return $apollo.mutate({
       mutation: q,
-      variables: vars
+      variables: vars,
+      client: this.client,
     })
   }
 
@@ -662,7 +682,8 @@ export class Station {
     const q = gql`mutation ($id: Int!) {stop_delete(id:$id) {id}}`
     return $apollo.mutate({
       mutation: q,
-      variables: { id: ent.id }
+      variables: { id: ent.id },
+      client: this.client
     })
   }
 

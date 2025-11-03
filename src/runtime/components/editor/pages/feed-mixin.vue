@@ -1,5 +1,6 @@
 <script>
 import { gql } from 'graphql-tag'
+import { useEditorRoutes } from '../../../composables/useEditorRoutes'
 
 const currentFeeds = gql`
 query currentFeeds ($feed_onestop_id: String, $feed_version_ids: [Int!]) {
@@ -9,6 +10,7 @@ query currentFeeds ($feed_onestop_id: String, $feed_version_ids: [Int!]) {
     onestop_id
     feed_versions(limit: 2, where: {ids: $feed_version_ids}) {
       file
+      name
       sha1
       id
       stations: stops(limit:1000, where:{location_type:1}) {
@@ -27,7 +29,7 @@ query currentFeeds ($feed_onestop_id: String, $feed_version_ids: [Int!]) {
 export default {
   apollo: {
     feeds: {
-      client: 'transitland',
+      client: 'stationEditor',
       query: currentFeeds,
       fetchPolicy: 'cache-and-network',
       error (e) {
@@ -43,10 +45,13 @@ export default {
   },
   props: {
     feedKey: { type: String, default: null },
-    feedVersionKey: { type: String, default: null }
+    feedVersionKey: { type: String, default: null },
+    client: { type: String, default: 'stationEditor' }
   },
   data () {
     return {
+      // TODO: Remove after upgrading components to Vue Composition API
+      editorRoutes: useEditorRoutes(),
       feeds: []
     }
   },

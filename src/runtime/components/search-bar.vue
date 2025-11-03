@@ -9,23 +9,29 @@
     :icon-right="modelValue ? 'close-circle' : null"
     icon-right-clickable
     class="entity-search"
-    @update:model-value="$emit('update:modelValue', $event)"
+    @update:model-value="emit('update:modelValue', $event)"
     @icon-right-click="clearSearch"
     @keydown.esc="clearSearch"
   />
 </template>
-<script>
-export default {
-  props: {
-    modelValue: { type: String, default: '' },
-    placeholder: { type: String, default: 'Search' }
-  },
-  emits: ['update:modelValue'],
-  methods: {
-    clearSearch() {
-      this.$emit('update:modelValue', '')
-    }
-  }
+<script setup lang="ts">
+// Props
+withDefaults(defineProps<{
+  modelValue?: string
+  placeholder?: string
+}>(), {
+  modelValue: '',
+  placeholder: 'Search'
+})
+
+// Emits
+const emit = defineEmits<{
+  'update:modelValue': [value: string]
+}>()
+
+// Methods
+const clearSearch = (): void => {
+  emit('update:modelValue', '')
 }
 </script>
 

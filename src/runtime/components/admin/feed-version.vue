@@ -50,8 +50,8 @@
 <script>
 import { gql } from 'graphql-tag'
 import Loadable from '../loadable'
-import { useUser } from '../../plugins/auth'
 import AuthzMixin from './authz-mixin'
+import { useUser } from '../../composables/useUser'
 
 const feedVersionQuery = gql`
 query($ids:[Int!]!) {
@@ -67,12 +67,13 @@ query($ids:[Int!]!) {
 export default {
   mixins: [AuthzMixin, Loadable],
   props: {
-    id: { type: [String, Number], required: true }
+    id: { type: [String, Number], required: true },
+    client: { type: String, default: 'default' }
   },
   emits: ['changed'],
   apollo: {
     fvs: {
-      client: 'transitland',
+      client: 'feedManagement',
       query: feedVersionQuery,
       variables () {
         return { ids: [this.id] }

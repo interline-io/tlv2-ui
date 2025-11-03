@@ -19,7 +19,7 @@
       >
         <template v-if="props.row.parent">
           <nuxt-link
-            :to="{name:'editor-feedKey-feedVersionKey-stations-stationKey', params: {feedKey, feedVersionKey, stationKey:props.row.parent.stop_id}}"
+            :to="{name:editorRoutes.stationIndex, params: {feedKey, feedVersionKey, stationKey:props.row.parent.stop_id}}"
           >
             {{ props.row.parent.stop_name }}
           </nuxt-link>
@@ -86,7 +86,7 @@
       >
         <template v-if="props.row.parent">
           <nuxt-link
-            :to="{name:'editor-feedKey-feedVersionKey-stations-stationKey-pathways', params: {feedKey, feedVersionKey, stationKey:props.row.parent.stop_id}, query:{ selectedStop:props.row.id}}"
+            :to="{name:editorRoutes.stationPathways, params: {feedKey, feedVersionKey, stationKey:props.row.parent.stop_id}, query:{ selectedStop:props.row.id}}"
           >
             Re-assign stop
           </nuxt-link>
@@ -143,6 +143,9 @@ const q = gql`
 
 export default {
   mixins: [FeedMixin],
+  props: {
+    client: { type: String, default: 'default' }
+  },
   data () {
     return {
       stops: []
@@ -150,7 +153,7 @@ export default {
   },
   apollo: {
     stops: {
-      client: 'transitland',
+      client: 'stationEditor',
       query: q,
       variables () {
         return {

@@ -5,21 +5,30 @@
   "license": "SEE LICENSE IN LICENSE.md",
   "scripts": {
     "prepack": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build",
-    "build": "nuxt build",
+    "dev:link": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build --watch",
+    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare example",
     "test": "vitest --run",
-    "lint": "eslint src",
-    "dev": "nuxi dev example",
-    "dev:build": "nuxi build example",
-    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare example"
+    "lint": "eslint src"
   },
   "exports": {
     ".": {
-      "import": "./dist/module.mjs",
-      "require": "./dist/module.cjs"
+      "types": "./dist/types.d.mts",
+      "import": "./dist/module.mjs"
+    },
+    "./config": {
+      "types": "./dist/runtime/config/index.d.ts",
+      "import": "./dist/runtime/config/index.js"
+    },
+    "./lib": {
+      "types": "./dist/runtime/lib/index.d.ts",
+      "import": "./dist/runtime/lib/index.js"
+    },
+    "./geom": {
+      "types": "./dist/runtime/geom/index.d.ts",
+      "import": "./dist/runtime/geom/index.js"
     }
   },
-  "main": "./dist/module.cjs",
-  "types": "./dist/types.d.ts",
+  "main": "./dist/module.mjs",
   "type": "module",
   "files": [
     "dist"
@@ -30,15 +39,15 @@
     "@mapbox/mapbox-gl-draw": "1.4.3",
     "@maplibre/maplibre-gl-geocoder": "1.9.0",
     "@mdi/font": "7.4.47",
+    "@nuxt/cli": "3.28.0",
     "@nuxt/eslint": "1.2.0",
-    "@nuxt/eslint-config": "1.2.0",
     "@nuxt/kit": "3.16.0",
-    "@nuxt/module-builder": "0.8.4",
+    "@nuxt/module-builder": "1.0.2",
     "@nuxt/test-utils": "3.19.2",
     "@nuxt/types": "2.18.1",
-    "@nuxtjs/eslint-config-typescript": "12.1.0",
-    "@oruga-ui/oruga-next": "0.9.3",
-    "@oruga-ui/theme-bulma": "0.5.3",
+    "@observablehq/plot": "0.6.17",
+    "@oruga-ui/oruga-next": "0.11.6",
+    "@oruga-ui/theme-bulma": "0.7.3",
     "@pollyjs/adapter-fetch": "6.0.7",
     "@pollyjs/core": "6.0.6",
     "@pollyjs/persister-fs": "6.0.6",
@@ -46,19 +55,18 @@
     "@types/cytoscape": "3.21.9",
     "@types/cytoscape-fcose": "2.2.4",
     "@types/d3-scale-chromatic": "3.1.0",
+    "@types/geojson": "7946.0.16",
     "@types/jsdom": "21.1.7",
     "@types/mapbox__mapbox-gl-draw": "1.4.8",
     "@types/node": "22.13.10",
     "@types/pg": "8.15.4",
-    "@typescript-eslint/eslint-plugin": "8.37.0",
-    "@vitejs/plugin-vue": "5.2.4",
+    "@vitejs/plugin-vue": "6.0.1",
     "@vue/apollo-composable": "4.2.2",
     "@vue/apollo-option": "4.2.2",
-    "@vue/eslint-config-typescript": "14.5.0",
     "@vue/test-utils": "2.4.6",
     "@vueuse/core": "10.11.1",
     "apollo-upload-client": "18.0.1",
-    "bulma": "1.0.3",
+    "bulma": "1.0.4",
     "commander": "14.0.0",
     "cytoscape": "3.31.1",
     "cytoscape-fcose": "2.2.0",
@@ -68,7 +76,7 @@
     "destr": "2.0.3",
     "dotenv": "16.5.0",
     "eslint": "9.31.0",
-    "eslint-plugin-vue": "10.3.0",
+    "eslint-plugin-vue": "10.4.0",
     "eslint-typegen": "2.3.0",
     "graphql": "16.10.0",
     "graphql-tag": "2.12.6",
@@ -85,9 +93,10 @@
     "sass": "1.86.0",
     "tiny-emitter": "2.1.0",
     "tsx": "4.20.3",
-    "typescript": "5.8.2",
-    "typescript-eslint": "8.37.0",
+    "typescript": "5.9.2",
+    "typescript-eslint": "8.42.0",
     "unstorage": "1.15.0",
+    "vite": "7.1.4",
     "vitest": "3.2.4",
     "vue": "3.5.13",
     "vue-eslint-parser": "10.2.0",
@@ -95,6 +104,7 @@
   },
   "packageManager": "yarn@4.3.0",
   "devDependencies": {
-    "nuxi": "3.23.0"
+    "nuxi": "3.23.0",
+    "vue-tsc": "3.0.6"
   }
 }

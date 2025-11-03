@@ -1,13 +1,13 @@
 // Sanitize filename
 // Based on https://github.com/parshap/node-sanitize-filename/blob/master/index.js
-// eslint-disable-next-line no-control-regex
+
 const controlRe = /[\x00-\x1F\x80-\x9F]/g
 const illegalRe = /[/?<>\\:*|"]/g
 const reservedRe = /^\.+$/
 const windowsReservedRe = /^(con|prn|aux|nul|com[0-9]|lpt[0-9])(\..*)?$/i
 const windowsTrailingRe = /[. ]+$/
 
-export function sanitizeFilename(v: string): string {
+export function sanitizeFilename (v: string): string {
   const replacement = ''
   if (typeof v !== 'string') {
     throw new TypeError('Input must be string')
@@ -21,7 +21,7 @@ export function sanitizeFilename(v: string): string {
 
 // Sanitize URL
 // Based on https://github.com/braintree/sanitize-url
-// eslint-disable-next-line no-control-regex
+
 const ctrlCharactersRegex = /[\u0000-\u001F\u007F-\u009F\u2000-\u200D\uFEFF]/gim
 const invalidProtocolRegex = /^([^\w]*)(javascript|data|vbscript)/im
 const htmlEntitiesRegex = /&#(\w+)(^\w|;)?/g
@@ -31,19 +31,19 @@ const relativeFirstCharacters = ['.', '/']
 const BLANK_URL = 'about:blank'
 const whitespaceEscapeCharsRegex = /(\\|%5[cC])((%(6[eE]|72|74))|[nrt])/g
 
-function isRelativeUrlWithoutProtocol(url: string): boolean {
+function isRelativeUrlWithoutProtocol (url: string): boolean {
   return relativeFirstCharacters.includes(url[0])
 }
 
 // adapted from https://stackoverflow.com/a/29824550/2601552
-function decodeHtmlCharacters(str: string) {
+function decodeHtmlCharacters (str: string) {
   const removedNullByte = str.replace(ctrlCharactersRegex, '')
   return removedNullByte.replace(htmlEntitiesRegex, (_, dec) => {
     return String.fromCharCode(dec)
   })
 }
 
-function decodeURI(uri: string): string {
+function decodeURI (uri: string): string {
   try {
     return decodeURIComponent(uri)
   } catch (e: unknown) {
@@ -53,7 +53,7 @@ function decodeURI(uri: string): string {
     return uri
   }
 }
-export function sanitizeUrl(url: string): string {
+export function sanitizeUrl (url: string): string {
   // https://github.com/braintree/sanitize-url/blob/main/src/index.ts
   if (!url) {
     return BLANK_URL
@@ -70,11 +70,11 @@ export function sanitizeUrl(url: string): string {
 
     decodedUrl = decodeURI(decodedUrl)
 
-    charsToDecode =
-      decodedUrl.match(ctrlCharactersRegex) ||
-      decodedUrl.match(htmlEntitiesRegex) ||
-      decodedUrl.match(htmlCtrlEntityRegex) ||
-      decodedUrl.match(whitespaceEscapeCharsRegex)
+    charsToDecode
+      = decodedUrl.match(ctrlCharactersRegex)
+        || decodedUrl.match(htmlEntitiesRegex)
+        || decodedUrl.match(htmlCtrlEntityRegex)
+        || decodedUrl.match(whitespaceEscapeCharsRegex)
   } while (charsToDecode && charsToDecode.length > 0)
   const sanitizedUrl = decodedUrl
   if (!sanitizedUrl) {

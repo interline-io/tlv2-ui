@@ -8,10 +8,10 @@
 
     <tl-feeds-table
       v-model:search="search"
-      v-model:importStatus="importStatus"
-      v-model:feedSpecs="feedSpecs"
-      v-model:fetchError="fetchError"
-      v-model:tagUnstableUrl="tagUnstableUrl"
+      v-model:import-status="importStatus"
+      v-model:feed-specs="feedSpecs"
+      v-model:fetch-error="fetchError"
+      v-model:tag-unstable-url="tagUnstableUrl"
       :limit="limit"
     />
 
@@ -19,62 +19,76 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    limit: { type: Number, default: 100 }
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useRoute, useRouter } from '#app'
+
+const props = withDefaults(defineProps<{
+  limit?: number
+}>(), {
+  limit: 100
+})
+
+const route = useRoute()
+const router = useRouter()
+
+const staticTitle = computed(() => 'Feeds index')
+const staticDescription = computed(() => 'An index of data sources')
+
+const search = computed({
+  get (): string | undefined {
+    return route.query.search as string | undefined
   },
-  computed: {
-    staticTitle() {
-      return 'Feeds index'
-    },
-    staticDescription() {
-      return 'An index of data souurces'
-    },
-    search: {
-      get() { return this.$route.query.search },
-      set(v) {
-        this.$router.replace({ query: { ...this.$route.query, search: v } })
-      }
-    },
-    fetchError: {
-      get() { return this.$route.query.fetchError },
-      set(v) {
-        this.$router.replace({ query: { ...this.$route.query, fetchError: v } })
-      }
-    },
-    importStatus: {
-      get() { return this.$route.query.importStatus },
-      set(v) {
-        this.$router.replace({ query: { ...this.$route.query, importStatus: v } })
-      }
-    },
-    feedSpecs: {
-      get() { 
-        const specs = this.$route.query.feedSpecs
-        // Handle both string and array values
-        return specs ? (Array.isArray(specs) ? specs : [specs]) : ['GTFS', 'GTFS_RT', 'GBFS']
-      },
-      set(v) {
-        // If v is empty array or contains all default values, remove query param
-        const defaultSpecs = ['GTFS', 'GTFS_RT', 'GBFS']
-        const shouldRemoveParam = !v?.length || 
-          (v.length === defaultSpecs.length && v.every(spec => defaultSpecs.includes(spec)))
-        
-        this.$router.replace({ 
-          query: { 
-            ...this.$route.query, 
-            feedSpecs: shouldRemoveParam ? undefined : v 
-          } 
-        })
-      }
-    },
-    tagUnstableUrl: {
-      get() { return this.$route.query.tagUnstableUrl },
-      set(v) {
-        this.$router.replace({ query: { ...this.$route.query, tagUnstableUrl: v } })
-      }
-    }
+  set (v: string | undefined) {
+    router.replace({ query: { ...route.query, search: v } })
   }
-}
+})
+
+const fetchError = computed({
+  get (): string | undefined {
+    return route.query.fetchError as string | undefined
+  },
+  set (v: string | undefined) {
+    router.replace({ query: { ...route.query, fetchError: v } })
+  }
+})
+
+const importStatus = computed({
+  get (): string | undefined {
+    return route.query.importStatus as string | undefined
+  },
+  set (v: string | undefined) {
+    router.replace({ query: { ...route.query, importStatus: v } })
+  }
+})
+
+const feedSpecs = computed({
+  get (): string[] {
+    const specs = route.query.feedSpecs
+    // Handle both string and array values
+    return specs ? (Array.isArray(specs) ? specs : [specs]) : ['GTFS', 'GTFS_RT', 'GBFS']
+  },
+  set (v: string[] | undefined) {
+    // If v is empty array or contains all default values, remove query param
+    const defaultSpecs = ['GTFS', 'GTFS_RT', 'GBFS']
+    const shouldRemoveParam = !v?.length
+      || (v.length === defaultSpecs.length && v.every(spec => defaultSpecs.includes(spec)))
+
+    router.replace({
+      query: {
+        ...route.query,
+        feedSpecs: shouldRemoveParam ? undefined : v
+      }
+    })
+  }
+})
+
+const tagUnstableUrl = computed({
+  get (): string | undefined {
+    return route.query.tagUnstableUrl as string | undefined
+  },
+  set (v: string | undefined) {
+    router.replace({ query: { ...route.query, tagUnstableUrl: v } })
+  }
+})
 </script>

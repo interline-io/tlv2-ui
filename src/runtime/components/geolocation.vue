@@ -7,49 +7,61 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, watch } from 'vue'
 import { useGeolocation } from '@vueuse/core'
+import type { UseGeolocationReturn } from '@vueuse/core'
+import type { LonLat } from '../geom'
 
-export default {
-  emits: ['setLocation'],
-  data () {
-    return {
-      geo: null,
-      locationError: null,
-      locationUse: false,
-      locationLoading: false,
-      coords: null
+// Emits
+const emit = defineEmits<{
+  setLocation: [coords: LonLat]
+}>()
+
+// Reactive state
+const geo = ref<UseGeolocationReturn | null>(null)
+const locationError = ref<string | null>(null)
+const locationUse = ref(false)
+const locationLoading = ref(false)
+
+// Watch for geolocation coordinates changes
+watch(
+  () => geo.value?.coords,
+  (coords) => {
+    const geoInstance = geo.value
+    if (!geoInstance || !coords) {
+      return
+    }
+
+    const { longitude, latitude } = coords
+
+    // Validate coordinates
+    if (longitude < -180 || longitude > 180 || latitude < -90 || latitude > 90) {
+      console.log('geo: bad coords:', coords)
+      return
+    }
+
+    locationUse.value = false
+    locationLoading.value = false
+    setLocation({ lon: longitude, lat: latitude })
+
+    if (geoInstance.pause) {
+      console.log('geo: pause')
+      geoInstance.pause()
     }
   },
-  watch: {
-    'geo.coords' () {
-      const geo = this.geo
-      if (!geo || !geo.coords) {
-        return
-      }
-      if (geo.coords.longitude < -180 || geo.coords.longitude > 180 || geo.coords.latitude < -90 || geo.coords.latitude > 90) {
-        console.log('geo: bad coords:', geo.coords)
-        return
-      }
-      this.locationUse = false
-      this.locationLoading = false
-      this.setLocation([geo.coords.longitude, geo.coords.latitude])
-      if (geo.pause) {
-        console.log('geo: pause')
-        geo.pause()
-      }
-    }
-  },
-  methods: {
-    setLocation (coords) {
-      this.$emit('setLocation', coords)
-    },
-    watchLocation () {
-      console.log('watchLocation: start')
-      this.locationUse = true
-      this.locationLoading = true
-      this.geo = useGeolocation()
-    }
-  }
+  { deep: true }
+)
+
+// Methods
+const setLocation = (coords: LonLat): void => {
+  emit('setLocation', coords)
+}
+
+const watchLocation = (): void => {
+  console.log('watchLocation: start')
+  locationUse.value = true
+  locationLoading.value = true
+  geo.value = useGeolocation()
 }
 </script>

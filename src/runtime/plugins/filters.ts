@@ -1,3 +1,4 @@
+import { defineNuxtPlugin } from 'nuxt/app'
 import {
   capitalize,
   formatDate,
@@ -8,6 +9,8 @@ import {
   fromNowDate,
   joinUnique,
   makePathKey,
+  makeRouteLink,
+  makeStopLink,
   nameSort,
   parseHMS,
   pct,
@@ -17,12 +20,11 @@ import {
   routeTypeToWords,
   shortenName,
   thousands
-} from './filters-fn'
+} from '../lib/filters'
 import {
   sanitizeUrl,
   sanitizeFilename
-} from './sanitize'
-import { defineNuxtPlugin } from '#imports'
+} from '../lib/sanitize'
 
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.config.globalProperties.$filters = {
@@ -45,38 +47,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     sanitizeUrl,
     shortenName,
     thousands,
-    makeRouteLink(onestopId:string, feedId:string, sha1:string, entityId:string, id:number, linkVer: boolean) {
-      if (linkVer && onestopId) {
-        return {
-          name: 'routes-routeKey',
-          params: { routeKey: onestopId },
-          query: {
-            feedOnestopId: feedId,
-            feedVersionSha1: sha1,
-            entityId
-          }
-        }
-      }
-      return {
-        name: 'routes-routeKey',
-        params: { routeKey: makePathKey(onestopId, feedId, sha1, entityId, id, linkVer) }
-      }
-    },
-    makeStopLink(onestopId:string, feedId:string, sha1:string, entityId:string, id:number, linkVer: boolean) {
-      if (linkVer && onestopId) {
-        return {
-          name: 'stops-stopKey',
-          params: { stopKey: onestopId },
-          query: {
-            feedOnestopId: feedId,
-            feedVersionSha1: sha1
-          }
-        }
-      }
-      return {
-        name: 'stops-stopKey',
-        params: { stopKey: makePathKey(onestopId, feedId, sha1, entityId, id, linkVer) }
-      }
-    }
+    makeRouteLink,
+    makeStopLink
   }
 })

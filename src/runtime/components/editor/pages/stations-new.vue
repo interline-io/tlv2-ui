@@ -7,15 +7,16 @@
     <tl-editor-station-editor
       :value="newStation()"
       @create="createStationHandler"
+      @cancel="cancelHandler"
     />
   </div>
 </template>
 
 <script>
 // Note: this uses FeedMixin, not station mixin.
+import { navigateTo } from '#imports'
 import { Station, Stop } from '../station'
 import FeedMixin from './feed-mixin'
-import { navigateTo } from '#imports'
 
 export default {
   mixins: [FeedMixin],
@@ -32,7 +33,7 @@ export default {
       station.createStation(this.$apollo, station.stop)
         .then(() => {
           navigateTo({
-            name: 'editor-feedKey-feedVersionKey-stations-stationKey',
+            name: this.editorRoutes.stationIndex,
             params: {
               feedKey: this.feedKey,
               feedVersionKey: this.feedVersionKey,
@@ -41,6 +42,15 @@ export default {
           })
         })
         .catch(this.setError)
+    },
+    cancelHandler () {
+      navigateTo({
+        name: this.editorRoutes.stations,
+        params: {
+          feedKey: this.feedKey,
+          feedVersionKey: this.feedVersionKey
+        }
+      })
     }
   }
 }

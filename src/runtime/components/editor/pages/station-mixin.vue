@@ -1,6 +1,7 @@
 <script>
 import { gql } from 'graphql-tag'
 import { Stop, Station, stationQuery, stationStopQuery, mapLevelKeyFn } from '../station'
+import { useEditorRoutes } from '../../../composables/useEditorRoutes'
 
 const currentFeeds = gql`
 query currentFeeds ($feed_onestop_id: String, $feed_version_ids: [Int!]) {
@@ -44,7 +45,7 @@ function symmetricDifference (setA, setB) {
 export default {
   apollo: {
     feeds: {
-      client: 'transitland',
+      client: 'stationEditor',
       query: currentFeeds,
       fetchPolicy: 'network-only',
       error (e) {
@@ -58,7 +59,7 @@ export default {
       }
     },
     stationQuery: {
-      client: 'transitland',
+      client: 'stationEditor',
       query: stationQuery,
       fetchPolicy: 'network-only',
       variables () {
@@ -84,7 +85,7 @@ export default {
       }
     },
     stationStopsQuery: {
-      client: 'transitland',
+      client: 'stationEditor',
       query: stationStopQuery,
       fetchPolicy: 'network-only',
       skip () { return this.stopList.length === 0 },
@@ -113,10 +114,13 @@ export default {
     feedKey: { type: String, default: '', required: true },
     feedVersionKey: { type: String, default: '', required: true },
     stationKey: { type: String, default: '' },
-    levelKey: { type: String, default: '' }
+    levelKey: { type: String, default: '' },
+    client: { type: String, default: 'stationEditor' }
   },
   data () {
     return {
+      // TODO: Remove after upgrading components to Vue Composition API
+      editorRoutes: useEditorRoutes(),
       ready: false,
       station: null,
       stations: [],

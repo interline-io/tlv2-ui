@@ -23,7 +23,7 @@
             </o-select>
           </o-field>
 
-          <o-field label="Import status">
+          <o-field label="API Import status">
             <o-select v-model="importStatus">
               <option value="">
                 All
@@ -71,12 +71,24 @@
     <table class="table is-striped is-fullwidth">
       <thead>
         <tr>
-          <th v-if="showColumns.includes('onestop_id')">Onestop ID</th>
-          <th v-if="showColumns.includes('spec')">Format</th>
-          <th v-if="showColumns.includes('last_fetched')" class="has-text-right">Last Fetched</th>
-          <th v-if="importStatus || showColumns.includes('last_imported')" class="has-text-right">Last Imported</th>
-          <th v-if="fetchError === 'true' || showColumns.includes('fetch_errors')" class="has-text-right">Fetch Errors</th>
-          <th v-if="tagUnstableUrl || showColumns.includes('tags')" class="has-text-right">Tags</th>
+          <th v-if="showColumns.includes('onestop_id')">
+            Onestop ID
+          </th>
+          <th v-if="showColumns.includes('spec')">
+            Format
+          </th>
+          <th v-if="showColumns.includes('last_fetched')" class="has-text-right">
+            Last Fetched
+          </th>
+          <th v-if="importStatus || showColumns.includes('last_imported')" class="has-text-right">
+            Last Imported
+          </th>
+          <th v-if="fetchError === 'true' || showColumns.includes('fetch_errors')" class="has-text-right">
+            Fetch Errors
+          </th>
+          <th v-if="tagUnstableUrl || showColumns.includes('tags')" class="has-text-right">
+            Tags
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -91,7 +103,7 @@
           </td>
           <td v-if="showColumns.includes('last_fetched')" class="has-text-right">
             <template v-if="row.last_successful_fetch && row.last_successful_fetch.length > 0">
-              {{ $filters.fromNow(row.last_successful_fetch[0].fetched_at) }}
+              {{ fromNow(row.last_successful_fetch[0].fetched_at) }}
             </template>
             <template v-else>
               Unknown
@@ -100,7 +112,7 @@
           <td v-if="importStatus || showColumns.includes('last_imported')" class="has-text-right">
             <span v-if="row.spec === 'GTFS'">
               <template v-if="row.last_successful_import && row.last_successful_import.length > 0">
-                {{ $filters.fromNow(row.last_successful_import[0].fetched_at) }}
+                {{ fromNow(row.last_successful_import[0].fetched_at) }}
               </template>
               <template v-else>
                 -
@@ -118,10 +130,10 @@
           </td>
           <td v-if="tagUnstableUrl || showColumns.includes('tags')" class="has-text-right">
             <div class="tags is-right">
-                <span v-for="(value, key) in row.tags" :key="key" class="tag is-info is-light">
-                    <strong class="mr-1">{{ key.replace(/_/g, ' ') }}:</strong>
-                    {{ value }}
-                </span>
+              <span v-for="(value, key) in row.tags" :key="key" class="tag is-info is-light">
+                <strong class="mr-1">{{ key.replace(/_/g, ' ') }}:</strong>
+                {{ value }}
+              </span>
             </div>
           </td>
         </tr>
@@ -136,10 +148,66 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
 import { computed } from 'vue'
+import { fromNow } from '../lib/filters'
+
+// Types
+interface FeedResponse {
+  id: number
+  onestop_id: string
+  spec: string
+  tags: Record<string, string>
+  last_fetch: {
+    fetch_error?: string
+    fetched_at: string
+  }[]
+  last_successful_fetch: {
+    fetch_error?: string
+    fetched_at: string
+  }[]
+  last_successful_import: {
+    id: number
+    fetched_at: string
+    sha1?: string
+    feed_version_gtfs_import?: {
+      id: number
+      created_at: string
+    }
+  }[]
+  feed_state?: {
+    id: number
+    feed_version?: {
+      id: number
+      fetched_at: string
+      sha1?: string
+      feed_version_gtfs_import?: {
+        id: number
+        created_at: string
+      }
+    }
+  }
+}
+
+// Extract individual types from the response type
+type Feed = FeedResponse
+type FeedVersion = FeedResponse['last_successful_import'][0]
+
+interface QueryVariables {
+  specs?: string[] | null
+  after?: number
+  limit?: number
+  search?: string | null
+  fetch_error?: boolean | null
+  import_status?: string | null
+  tags?: Record<string, string> | null
+}
+
+type FeedSpec = 'GTFS' | 'GTFS_RT' | 'GBFS'
+
+type ShowColumn = 'onestop_id' | 'spec' | 'last_fetched' | 'last_imported' | 'fetch_errors' | 'tags'
 
 const query = gql`
 query($specs: [FeedSpecTypes!], $after: Int, $limit:Int=100, $search: String, $fetch_error: Boolean, $import_status: ImportStatus, $tags: Tags) {
@@ -180,7 +248,7 @@ query($specs: [FeedSpecTypes!], $after: Int, $limit:Int=100, $search: String, $f
 }
 `
 
-const nullBool = function (v) {
+function nullBool (v: string | undefined): boolean | null {
   if (v === 'true') {
     return true
   } else if (v === 'false') {
@@ -189,49 +257,50 @@ const nullBool = function (v) {
   return null
 }
 
-const nullString = function (v) {
+function nullString (v: string | undefined): string | null {
   if (!v || v.length === 0) {
     return null
   }
   return v
 }
 
-const search = defineModel('search')
-const fetchError = defineModel('fetchError')
-const importStatus = defineModel('importStatus')
-const tagUnstableUrl = defineModel('tagUnstableUrl')
-const feedSpecs = defineModel('feedSpecs')
+const search = defineModel<string>('search')
+const fetchError = defineModel<string>('fetchError')
+const importStatus = defineModel<string>('importStatus')
+const tagUnstableUrl = defineModel<boolean>('tagUnstableUrl')
+const feedSpecs = defineModel<FeedSpec[]>('feedSpecs')
 
-const props = defineProps({
-  limit: { type: Number, default: 100 },
-  showColumns: { 
-    type: Array, 
-    default: () => ['onestop_id', 'spec', 'last_fetched']
-    // by default excludes fetch_errors, last_imported and tags
-  }
+// Props
+const props = withDefaults(defineProps<{
+  limit?: number
+  showColumns?: ShowColumn[]
+}>(), {
+  limit: 100,
+  showColumns: () => ['onestop_id', 'spec', 'last_fetched']
+  // by default excludes fetch_errors, last_imported and tags
 })
 
-const { result, loading, error, fetchMore } = useQuery(
+const { result, loading, error, fetchMore } = useQuery<{ entities: FeedResponse[] }, QueryVariables>(
   query,
   () => ({
     search: nullString(search.value),
     limit: props.limit,
-    specs: feedSpecs.value.length === 4 ? null : feedSpecs.value,
+    specs: feedSpecs.value && feedSpecs.value.length === 4 ? null : feedSpecs.value,
     fetch_error: nullBool(fetchError.value),
     import_status: nullString(importStatus.value),
     tags: tagUnstableUrl.value ? { unstable_url: 'true' } : null
   }))
 
-const entities = computed(() => result.value?.entities ?? [])
+const entities = computed<Feed[]>(() => result.value?.entities ?? [])
 
-function fetchMoreFn () {
+function fetchMoreFn (): void {
   const lastId = entities.value.length > 0 ? entities.value[entities.value.length - 1].id : 0
   fetchMore({
     variables: {
       after: lastId,
       limit: 100
     },
-    updateQuery: (previousResult, { fetchMoreResult }) => {
+    updateQuery: (previousResult: { entities: FeedResponse[] }, { fetchMoreResult }: { fetchMoreResult?: { entities: FeedResponse[] } }) => {
       if (!fetchMoreResult) { return previousResult }
       return {
         ...previousResult,
@@ -244,15 +313,16 @@ function fetchMoreFn () {
   })
 }
 
-function displaySpec (spec) {
-  spec = spec.toUpperCase()
-  if (spec === 'GTFS') {
+function displaySpec (spec: string): string {
+  const upperSpec = spec.toUpperCase()
+  if (upperSpec === 'GTFS') {
     return 'GTFS'
-  } else if (spec === 'GTFS_RT') {
+  } else if (upperSpec === 'GTFS_RT') {
     return 'GTFS Realtime'
-  } else if (spec === 'GBFS') {
+  } else if (upperSpec === 'GBFS') {
     return 'GBFS'
   }
+  return upperSpec
 }
 
 </script>

@@ -6,16 +6,22 @@
 
     <div class="buttons is-right">
       <nuxt-link
-        :to="{name:'editor-feedKey-feedVersionKey-stations-new', params: {feedKey,feedVersionKey}}"
+        :to="{name:editorRoutes.stationsNew, params: {feedKey,feedVersionKey}}"
         class="button is-primary"
       >
         New Station
       </nuxt-link>
       <nuxt-link
-        :to="{name: 'editor-feedKey-feedVersionKey-stations-stop-associations', params: {feedKey,feedVersionKey}}"
+        :to="{name: editorRoutes.stationsStopAssociations, params: {feedKey,feedVersionKey}}"
         class="button is-primary"
       >
         Review stop ID associations
+      </nuxt-link>
+      <nuxt-link
+        :to="{name: editorRoutes.export, params: {feedKey,feedVersionKey}}"
+        class="button is-primary"
+      >
+        Export GTFS
       </nuxt-link>
     </div>
     <p class="content">
@@ -26,10 +32,13 @@
       :feed-version-ids="[feedVersion.id]"
       :location-type="1"
       :show-links="false"
+      :client="client"
+      :limit="1000"
+      :show-selected-route-type="false"
     >
       <template #stopName="slotProps">
         <nuxt-link
-          :to="{name:'editor-feedKey-feedVersionKey-stations-stationKey', params: {feedKey,feedVersionKey,stationKey:slotProps.stop.stop_id}}"
+          :to="{name:editorRoutes.stationIndex, params: {feedKey,feedVersionKey,stationKey:slotProps.stop.stop_id}}"
         >
           {{ slotProps.stop.stop_name }}
         </nuxt-link>

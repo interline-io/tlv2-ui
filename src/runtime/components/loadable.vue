@@ -1,14 +1,17 @@
 <script lang="ts">
-import { useAuthHeaders, useApiEndpoint } from '../plugins/auth'
+import { useApiEndpoint } from '../composables/useApiEndpoint'
+import { useAuthHeaders } from '../composables/useAuthHeaders'
+
 export default {
   data () {
     return {
       error: null,
-      loading: false
+      loading: false,
+      client: 'default'
     }
   },
   methods: {
-    apiEndpoint: () => (useApiEndpoint()),
+    apiEndpoint: () => (useApiEndpoint('', 'feedManagement')),
     authHeaders: () => (useAuthHeaders()),
     async fetchRest (path: String, data: Object, method: String) {
       method = method || 'GET'
