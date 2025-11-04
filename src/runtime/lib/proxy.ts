@@ -1,4 +1,5 @@
-import { proxyRequest, getQuery, H3Event } from 'h3'
+import type { H3Event } from 'h3'
+import { proxyRequest, getQuery } from 'h3'
 
 // Use sessions and/or nuxt-csurf to protect this in nuxt.config.ts
 export function proxyHandler (
@@ -27,13 +28,13 @@ export function proxyHandler (
     newPath,
     proxyBaseUrl.toString()
   )
-  // console.log('proxy:', {
-  //   eventPath: event.path,
-  //   eventHeaders: Object.fromEntries(event.headers.entries()),
-  //   proxyBaseUrl: proxyBaseUrl.toString(),
-  //   target: target.toString(),
-  //   headers: headers
-  // })
+  console.log('proxy:', {
+    eventPath: event.path,
+    eventHeaders: Object.fromEntries(event.headers.entries()),
+    proxyBaseUrl: proxyBaseUrl.toString(),
+    target: target.toString(),
+    headers: headers
+  })
 
   return proxyRequest(event, target.toString(), {
     fetchOptions: {

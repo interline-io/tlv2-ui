@@ -7,6 +7,11 @@ declare module 'nuxt/schema' {
         stationEditor: string
         feedManagement: string
       }
+      apiBase: {
+        default?: string
+        stationEditor: string
+        feedManagement: string
+      }
     }
   }
 
