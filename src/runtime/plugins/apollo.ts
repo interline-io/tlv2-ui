@@ -1,9 +1,9 @@
-import { useRuntimeConfig, useAuthHeaders } from '#imports'
 import { defineNuxtPlugin } from 'nuxt/app'
 import { destr } from 'destr'
 import { ApolloClients, provideApolloClients } from '@vue/apollo-composable'
 import { createApolloProvider } from '@vue/apollo-option'
 import { initApolloClient } from '../auth'
+import { useRuntimeConfig, useAuthHeaders } from '#imports'
 
 // We have to inline the useApiEndpoint here... nuxt blows up and I can't figure out why.
 const useApiEndpoint = (path: string, clientName: string) => {
@@ -19,6 +19,7 @@ const useApiEndpoint = (path: string, clientName: string) => {
 export default defineNuxtPlugin(
   async (nuxtApp) => {
     const headers = await useAuthHeaders()
+    console.log('apollo headers:', headers)
     const apolloClients = {
       default: initApolloClient(useApiEndpoint('/query', 'default'), headers),
       transitland: initApolloClient(useApiEndpoint('/query', 'default'), headers),
@@ -45,7 +46,7 @@ export default defineNuxtPlugin(
     nuxtApp.hook('app:rendered', () => {
       nuxtApp.payload.data[cacheKey] = defaultApolloClient.cache.extract()
     })
-    if (process.client && nuxtApp.payload.data[cacheKey]) {
+    if (import.meta.client && nuxtApp.payload.data[cacheKey]) {
       defaultApolloClient.cache.restore(destr(JSON.stringify(nuxtApp.payload.data[cacheKey])))
     }
   }

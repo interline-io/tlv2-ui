@@ -27,6 +27,7 @@ export default createConfigForNuxt({
       rules: {
         'no-console': 'off',
         '@typescript-eslint/no-explicit-any': 'off',
+        '@typescript-eslint/unified-signatures': 'off',
         'vue/multi-word-component-names': 'off',
         'vue/max-attributes-per-line': ['error', {
           singleline: {
