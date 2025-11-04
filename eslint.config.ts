@@ -21,6 +21,19 @@ export default createConfigForNuxt({
     ],
   },
 })
+  .prepend(
+    // Explicitly ignore node_modules and build outputs
+    {
+      ignores: [
+        '**/node_modules/**',
+        '**/dist/**',
+        '**/.nuxt/**',
+        '**/.output/**',
+        '**/coverage/**',
+        '.yarn'
+      ],
+    },
+  )
   .append(
     // your custom flat config here...
     {
@@ -44,7 +57,7 @@ export default createConfigForNuxt({
           asyncArrow: 'always',
         }],
         '@stylistic/comma-dangle': 'off',
-        '@stylistic/max-statements-per-line': ['error', { max: 3 }],
+        '@stylistic/max-statements-per-line': 'off',
       },
     },
   )

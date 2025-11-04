@@ -32,12 +32,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useQuery } from '@vue/apollo-composable'
 import { gql } from 'graphql-tag'
-
-// Watch for query errors
-import { watch } from 'vue'
 
 // Props
 const props = withDefaults(defineProps<{
