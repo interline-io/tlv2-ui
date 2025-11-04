@@ -561,7 +561,7 @@ const departureSearchCoords = computed((): LonLat | null => {
     return null
   }
   if (props.lonParam && props.latParam) {
-    return { lon: parseFloat(props.lonParam), lat: parseFloat(props.latParam) }
+    return { lon: Number.parseFloat(props.lonParam), lat: Number.parseFloat(props.latParam) }
   }
   return null
 })
@@ -571,7 +571,7 @@ const routesCoords = computed((): LonLat | null => {
     return null
   }
   if (props.lonParam && props.latParam) {
-    return { lon: parseFloat(props.lonParam), lat: parseFloat(props.latParam) }
+    return { lon: Number.parseFloat(props.lonParam), lat: Number.parseFloat(props.latParam) }
   }
   return null
 })
@@ -629,7 +629,7 @@ async function directionsSetPlaces (fromPlace: LonLat | null, toPlace: LonLat | 
 }
 
 function splitCoords (v: any): LonLat | null {
-  const vs = (v || '').split(',').map(parseFloat).filter((v: number) => !isNaN(v))
+  const vs = (v || '').split(',').map(Number.parseFloat).filter((v: number) => !isNaN(v))
   if (vs.length === 2) {
     return { lon: vs[0], lat: vs[1] }
   }
@@ -678,7 +678,7 @@ const initializeMapFromUrl = () => {
   // Fallback to lon/lat params if no valid hash
     console.log('No hash, checking lon/lat params')
     if (props.lonParam && props.latParam) {
-      const pt = { lon: parseFloat(props.lonParam), lat: parseFloat(props.latParam) }
+      const pt = { lon: Number.parseFloat(props.lonParam), lat: Number.parseFloat(props.latParam) }
       if (!isNaN(pt.lon) && !isNaN(pt.lat)) {
         console.log('Setting map center to lon/lat params:', pt.lon, pt.lat)
         initialCenter.value = pt
@@ -774,7 +774,6 @@ const markers = computed(() => {
 
   return ret
 })
-
 </script>
 
 <style>
@@ -843,7 +842,6 @@ const markers = computed(() => {
     max-width: 680px;
   }
 }
-
 </style>
 
 <style scoped>

@@ -11,7 +11,7 @@
           ticks
           lazy
         >
-          <template v-for="val in [100,200,400,800,1000]" :key="val">
+          <template v-for="val in [100, 200, 400, 800, 1000]" :key="val">
             <o-slider-tick :value="val">
               {{ val }}
             </o-slider-tick>
@@ -21,7 +21,7 @@
 
       <o-field label="Summary Level" expanded>
         <o-select v-model="layer">
-          <option v-for="(v,k) of layerInfo" :key="k" :value="k">
+          <option v-for="(v, k) of layerInfo" :key="k" :value="k">
             {{ v.name }}
           </option>
         </o-select>
@@ -37,7 +37,7 @@
           <template #trigger>
             <button class="button" type="button" icon="menu-down">
               <span>
-                {{ showOnMap.map((s)=>{return titleize(s)}).join(", ") }}
+                {{ showOnMap.map((s) => { return titleize(s) }).join(", ") }}
               </span>
             </button>
           </template>

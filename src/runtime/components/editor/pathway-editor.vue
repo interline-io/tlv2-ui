@@ -28,7 +28,7 @@
 
         <o-field label="Mode">
           <o-select v-model="pathway.pathway_mode" :disabled="readOnly">
-            <option v-for="[mode,label] in PathwayModes" :key="mode" :value="mode">
+            <option v-for="[mode, label] in PathwayModes" :key="mode" :value="mode">
               {{ label }}
             </option>
           </o-select>

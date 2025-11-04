@@ -24,10 +24,11 @@
             <td>
               <nuxt-link
                 v-if="feed_version.id"
-                :to="{name:editorRoutes.stations, params: {
-                  feedKey:feed.onestop_id || 'unknown',
-                  feedVersionKey:feed_version.id || 'unknown'
-                }}"
+                :to="{ name: editorRoutes.stations,
+                       params: {
+                         feedKey: feed.onestop_id || 'unknown',
+                         feedVersionKey: feed_version.id || 'unknown',
+                       } }"
               >
                 Edit {{ feed_version.stations ? feed_version.stations.length : '' }} Stations
               </nuxt-link>

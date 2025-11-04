@@ -270,7 +270,7 @@ const tableSums = computed<Record<string, Record<string, number>>>(() => {
         if (fieldValue >= 0) {
           tableSum[fieldKey] = tableSum[fieldKey] ? tableSum[fieldKey] + fieldValue : fieldValue
         } else {
-          tableSum[fieldKey] = NaN
+          tableSum[fieldKey] = Number.NaN
           break
         }
       }
@@ -298,7 +298,7 @@ const bufferAdjustedSums = computed<Record<string, Record<string, number>>>(() =
         if (adjustedValue >= 0) {
           tableSum[fieldKey] = tableSum[fieldKey] ? tableSum[fieldKey] + adjustedValue : adjustedValue
         } else {
-          tableSum[fieldKey] = NaN
+          tableSum[fieldKey] = Number.NaN
           break
         }
       }

@@ -103,7 +103,7 @@
               {{ props.row.is_bidirectional }}
             </o-table-column>
             <o-table-column v-slot="props" field="errors" label="Errors">
-              {{ (errors.pathways[props.row.id] || []).map((s)=>{return s.message}).join(', ') }}
+              {{ (errors.pathways[props.row.id] || []).map((s) => { return s.message }).join(', ') }}
             </o-table-column>
             <o-table-column v-slot="props" field="edit" label="Edit">
               <span class="button is-small" @click="$emit('select-pathway', null); $emit('select-pathway', props.row.id); openPathways = false">Select</span>
@@ -143,7 +143,7 @@
               {{ props.row.stop.stop_name }}
             </o-table-column>
             <o-table-column v-slot="props" field="stopPaths" label="Destinations">
-              <span> {{ props.row.paths.filter((s)=>{return !s.error}).length }} OK / {{ props.row.paths.filter((s)=>{return s.error}).length }} Errors </span>
+              <span> {{ props.row.paths.filter((s) => { return !s.error }).length }} OK / {{ props.row.paths.filter((s) => { return s.error }).length }} Errors </span>
 
               <ul>
                 <li v-for="err of props.row.paths" :key="props.row.stop.id + '-' + err.target.id">

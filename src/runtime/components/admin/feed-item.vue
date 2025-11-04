@@ -3,7 +3,7 @@
     <div class="tags has-addons">
       <nuxt-link
         class="tag is-medium desc"
-        :to="{name:'feeds-feedKey', params:{feedKey:value.onestop_id}}"
+        :to="{ name: 'feeds-feedKey', params: { feedKey: value.onestop_id } }"
       >
         <!-- <o-icon icon="account-group" class="mr-2" /> -->
         <template v-if="!value.name">

@@ -3,7 +3,7 @@
     <div class="tags has-addons">
       <nuxt-link
         :target="newTab ? '_blank' : '_self'"
-        :to="{name:'admin-groups-groupKey', params:{groupKey:value.id}}"
+        :to="{ name: 'admin-groups-groupKey', params: { groupKey: value.id } }"
       >
         <o-icon
           icon="account-group"

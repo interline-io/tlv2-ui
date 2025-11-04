@@ -10,7 +10,7 @@
       <h4 class="title is-4 is-clearfix">
         Station Info
         <nuxt-link
-          :to="{name:editorRoutes.stationEdit, params: {feedKey,feedVersionKey,stationKey}}"
+          :to="{ name: editorRoutes.stationEdit, params: { feedKey, feedVersionKey, stationKey } }"
           class="button is-primary is-outlined is-pulled-right right-pad"
         >
           Edit Station Info
@@ -52,7 +52,7 @@
         <tl-editor-station-levels-viewer-sorter :levels="station.levels" :station="station">
           <template #bottom-button-bar>
             <nuxt-link
-              :to="{name:editorRoutes.levelNew, params: {feedKey,feedVersionKey,stationKey}}"
+              :to="{ name: editorRoutes.levelNew, params: { feedKey, feedVersionKey, stationKey } }"
               class="button is-primary is-outlined is-pulled-right right-pad"
             >
               New Level
@@ -66,6 +66,7 @@
 
 <script>
 import StationMixin from './station-mixin'
+
 export default {
   mixins: [StationMixin]
 }

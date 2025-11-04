@@ -41,7 +41,7 @@
             <nuxt-link
               v-if="feed?.group"
               class="button is-small mr-2"
-              :to="{ name: 'admin-groups-groupKey', params: { groupKey: feed.group.id }}"
+              :to="{ name: 'admin-groups-groupKey', params: { groupKey: feed.group.id } }"
             >
               Show group
             </nuxt-link>

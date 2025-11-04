@@ -36,6 +36,9 @@ import { ref, computed } from 'vue'
 import { useQuery } from '@vue/apollo-composable'
 import { gql } from 'graphql-tag'
 
+// Watch for query errors
+import { watch } from 'vue'
+
 // Props
 const props = withDefaults(defineProps<{
   fvid?: string
@@ -87,9 +90,6 @@ const { result, loading, error: queryError, fetchMore } = useQuery<{ entities: A
     clientId: 'transitland'
   }
 )
-
-// Watch for query errors
-import { watch } from 'vue'
 watch(queryError, (newError) => {
   if (newError) {
     error.value = newError.message

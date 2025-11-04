@@ -122,7 +122,7 @@ Usage example:
 
           <div v-for="ent of entities" :key="ent.id">
             <tl-msg-warning
-              v-for="(alert,idx) of ent.alerts"
+              v-for="(alert, idx) of ent.alerts"
               :key="idx"
             >
               <p>Agency Alert:</p>
@@ -196,7 +196,7 @@ Usage example:
                         >
                           Feed version
                         </nuxt-link> <nuxt-link
-                          :to="makeRouteLink(row.onestop_id,row.feed_onestop_id,row.feed_version_sha1,row.route_id,row.id,true)"
+                          :to="makeRouteLink(row.onestop_id, row.feed_onestop_id, row.feed_version_sha1, row.route_id, row.id, true)"
                           class="button is-primary is-small"
                         >
                           Route

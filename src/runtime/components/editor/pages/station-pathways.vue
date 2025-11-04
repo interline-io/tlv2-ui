@@ -105,10 +105,10 @@
                 :params="{
                   feedKey: feedKey,
                   feedVersionKey: feedVersionKey,
-                  stationKey: stationKey
+                  stationKey: stationKey,
                 }"
                 :query="{
-                  selectedPathway: spw.id
+                  selectedPathway: spw.id,
                 }"
               />
               <tl-editor-pathway-editor
@@ -132,10 +132,10 @@
                 :params="{
                   feedKey: feedKey,
                   feedVersionKey: feedVersionKey,
-                  stationKey: stationKey
+                  stationKey: stationKey,
                 }"
                 :query="{
-                  selectedStop: ss.id
+                  selectedStop: ss.id,
                 }"
               />
               <tl-editor-stop-editor
@@ -258,7 +258,7 @@
           :station="station"
           :basemap="basemap"
           :selected-stops="selectedStops"
-          :selected-pathways="selectMode === 'find-route' && selectedPath ? selectedPath.map((s)=>{return s.pathway}) : selectedPathways"
+          :selected-pathways="selectMode === 'find-route' && selectedPath ? selectedPath.map((s) => { return s.pathway }) : selectedPathways"
           :selected-levels="selectedLevels"
           @select-stop="selectStop"
           @select-pathway="selectPathway"

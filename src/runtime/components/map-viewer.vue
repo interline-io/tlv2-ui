@@ -130,7 +130,7 @@ const updateFilters = () => {
     // Filter by location_type
     const enabledLocationTypes = Object.entries(props.stopLocationTypeFilter)
       .filter(([_, enabled]) => enabled)
-      .map(([type, _]) => parseInt(type))
+      .map(([type, _]) => Number.parseInt(type))
 
     if (enabledLocationTypes.length < 5) { // Only add filter if not all types are enabled
       if (enabledLocationTypes.length > 0) {

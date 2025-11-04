@@ -13,7 +13,7 @@ export default {
   methods: {
     apiEndpoint: () => (useApiEndpoint('', 'feedManagement')),
     authHeaders: () => (useAuthHeaders()),
-    async fetchRest (path: String, data: Object, method: String) {
+    async fetchRest (path: string, data: object, method: string) {
       method = method || 'GET'
       const body = {
         'Content-Type': 'application/json',
@@ -39,7 +39,7 @@ export default {
           return data
         })
     },
-    fetchAdmin (path: String, params: Object, method: String) {
+    fetchAdmin (path: string, params: object, method: string) {
       return this.fetchRest('/admin' + path, params, method)
     },
     handleError (response) {

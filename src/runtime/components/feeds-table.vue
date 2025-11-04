@@ -324,7 +324,6 @@ function displaySpec (spec: string): string {
   }
   return upperSpec
 }
-
 </script>
 
 <style scoped>

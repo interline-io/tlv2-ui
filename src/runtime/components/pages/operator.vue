@@ -48,18 +48,18 @@
                 <td>
                   <ul>
                     <li v-for="(location, index) of locations" :key="index">
-                      <nuxt-link :to="{name:'places-adm0', params:{adm0: location.adm0_name}}">
+                      <nuxt-link :to="{ name: 'places-adm0', params: { adm0: location.adm0_name } }">
                         {{ location.adm0_name }}
                       </nuxt-link>
                       <template v-if="location.adm1_name">
                         /
-                        <nuxt-link :to="{name:'places-adm0-adm1', params:{adm1: location.adm1_name, adm0: location.adm0_name}}">
+                        <nuxt-link :to="{ name: 'places-adm0-adm1', params: { adm1: location.adm1_name, adm0: location.adm0_name } }">
                           {{ location.adm1_name }}
                         </nuxt-link>
                       </template>
                       <template v-if="location.city_name">
                         /
-                        <nuxt-link :to="{name:'places-adm0-adm1-city', params:{city: location.city_name, adm1: location.adm1_name, adm0: location.adm0_name}}">
+                        <nuxt-link :to="{ name: 'places-adm0-adm1-city', params: { city: location.city_name, adm1: location.adm1_name, adm0: location.adm0_name } }">
                           {{ location.city_name }}
                         </nuxt-link>
                       </template>
@@ -156,9 +156,9 @@
                 </template>
               </td>
               <td class="has-text-right">
-                <nuxt-link class="button is-small is-primary" :to="{name:'feeds-feedKey', params:{feedKey:row.target_feed}}">
+                <nuxt-link class="button is-small is-primary" :to="{ name: 'feeds-feedKey', params: { feedKey: row.target_feed } }">
                   Feed
-                </nuxt-link> <nuxt-link v-if="row.target_feed_spec == 'GTFS'" class="button is-small is-primary" :to="{name:'feeds-feedKey', params:{feedKey: row.target_feed}, hash: '#versions'}">
+                </nuxt-link> <nuxt-link v-if="row.target_feed_spec == 'GTFS'" class="button is-small is-primary" :to="{ name: 'feeds-feedKey', params: { feedKey: row.target_feed }, hash: '#versions' }">
                   Archived feed versions
                 </nuxt-link>
               </td>

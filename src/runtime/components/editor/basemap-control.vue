@@ -13,7 +13,7 @@
         </button>
       </template>
       <o-dropdown-item
-        v-for="(bm,key) in basemapLayers"
+        v-for="(bm, key) in basemapLayers"
         :key="key"
         :value="key"
         aria-role="listitem"

@@ -16,7 +16,7 @@
             <div class="field is-grouped is-grouped-multiline">
               <div class="control">
                 <div class="tags has-addons">
-                  <span class="tag" :class="level.stops.filter((s)=>{return s.location_type === 2}).length > 0 ? 'is-warning' : ''">{{ level.stops.filter((s)=>{return s.location_type === 2}).length }}</span>
+                  <span class="tag" :class="level.stops.filter((s) => { return s.location_type === 2 }).length > 0 ? 'is-warning' : ''">{{ level.stops.filter((s) => { return s.location_type === 2 }).length }}</span>
                   <div class="tag">
                     entrances
                   </div>
@@ -24,7 +24,7 @@
               </div>
               <div class="control">
                 <div class="tags has-addons">
-                  <span class="tag" :class="level.stops.filter((s)=>{return s.location_type === 0}).length > 0 ? 'is-warning' : ''">{{ level.stops.filter((s)=>{return s.location_type === 0}).length }}</span>
+                  <span class="tag" :class="level.stops.filter((s) => { return s.location_type === 0 }).length > 0 ? 'is-warning' : ''">{{ level.stops.filter((s) => { return s.location_type === 0 }).length }}</span>
                   <div class="tag">
                     platforms
                   </div>
@@ -32,7 +32,7 @@
               </div>
               <div class="control">
                 <div class="tags has-addons">
-                  <span class="tag" :class="level.stops.filter((s)=>{return s.location_type === 3}).length > 0 ? 'is-warning' : ''">{{ level.stops.filter((s)=>{return s.location_type === 3}).length }}</span>
+                  <span class="tag" :class="level.stops.filter((s) => { return s.location_type === 3 }).length > 0 ? 'is-warning' : ''">{{ level.stops.filter((s) => { return s.location_type === 3 }).length }}</span>
                   <div class="tag">
                     nodes
                   </div>
@@ -43,7 +43,7 @@
           <div class="column is-3 has-text-right">
             <nuxt-link
               v-if="level.id"
-              :to="{name:editorRoutes.levelEdit, params: {feedKey:station.stop.feed_version.feed.onestop_id,feedVersionKey:station.stop.feed_version.id,stationKey:station.stop.stop_id,levelKey:level.level_id}}"
+              :to="{ name: editorRoutes.levelEdit, params: { feedKey: station.stop.feed_version.feed.onestop_id, feedVersionKey: station.stop.feed_version.id, stationKey: station.stop.stop_id, levelKey: level.level_id } }"
               class="button is-primary is-outlined"
             >
               Edit Level

@@ -293,7 +293,7 @@
                 <th>Warnings</th>
               </tr>
             </thead><tbody>
-              <tr v-for="(v,fn) of mergedCount(entity.feed_version_gtfs_import)" :key="fn">
+              <tr v-for="(v, fn) of mergedCount(entity.feed_version_gtfs_import)" :key="fn">
                 <td><code>{{ fn }}</code></td>
                 <td>{{ rowCount[fn] }}</td>
                 <td>{{ v.count }}</td>
@@ -560,7 +560,7 @@ const operatorOrAgencyNames = computed<string>(() => {
   if (!entity.value) return ''
 
   if (entity.value.agencies && entity.value.agencies.length > 0) {
-    let names = entity.value.agencies.slice(0, 3).map(a => a.agency_name)
+    const names = entity.value.agencies.slice(0, 3).map(a => a.agency_name)
     if (entity.value.agencies.length > 3) {
       return `${names.join(', ')} and ${entity.value.agencies.length - 3} additional operators`
     } else if (names.length > 0 && names.length <= 3) {

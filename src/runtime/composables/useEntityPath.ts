@@ -39,7 +39,7 @@ export function useEntityPath (props: EntityPathProps) {
     // Note: OnestopIDs cannot normally contain ':' or '@' or ',' or be completely numeric
 
     // Check if the pathKey is comma joined integers
-    const kInts = pk.split(',').map(s => parseInt(s)).filter(s => !isNaN(s))
+    const kInts = pk.split(',').map(s => Number.parseInt(s)).filter(s => !isNaN(s))
     if (kInts.length > 0) {
       return { ids: kInts }
     }
@@ -75,7 +75,7 @@ export function useEntityPath (props: EntityPathProps) {
     }
 
     // Check if pathKey is comma-separated database IDs
-    const kInts = pathKeyStr.split(',').map(s => parseInt(s)).filter(s => !isNaN(s))
+    const kInts = pathKeyStr.split(',').map(s => Number.parseInt(s)).filter(s => !isNaN(s))
     if (kInts.length > 0) {
       return { ids: kInts }
     }

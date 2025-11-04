@@ -4,7 +4,7 @@
       <ul>
         <li v-for="p of makeNav()" :key="p.id" :class="p.class">
           <span v-if="p.tag" class="tag is-small">{{ p.tag }}</span>
-          <nuxt-link v-if="p.routeName" :to="{name:p.routeName, params: p.routeParams}">
+          <nuxt-link v-if="p.routeName" :to="{ name: p.routeName, params: p.routeParams }">
             {{ p.text }}
           </nuxt-link>
           <a v-else href="#">{{ p.text }}</a>
@@ -202,7 +202,6 @@ function makeNav () {
   }
   return ret
 }
-
 </script>
 
 <style scoped>

@@ -277,5 +277,4 @@ function fetchMoreFn (): void {
     }
   })
 }
-
 </script>

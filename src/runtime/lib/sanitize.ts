@@ -4,7 +4,7 @@
 const controlRe = /[\x00-\x1F\x80-\x9F]/g
 const illegalRe = /[/?<>\\:*|"]/g
 const reservedRe = /^\.+$/
-const windowsReservedRe = /^(con|prn|aux|nul|com[0-9]|lpt[0-9])(\..*)?$/i
+const windowsReservedRe = /^(con|prn|aux|nul|com\d|lpt\d)(\..*)?$/i
 const windowsTrailingRe = /[. ]+$/
 
 export function sanitizeFilename (v: string): string {
@@ -22,8 +22,8 @@ export function sanitizeFilename (v: string): string {
 // Sanitize URL
 // Based on https://github.com/braintree/sanitize-url
 
-const ctrlCharactersRegex = /[\u0000-\u001F\u007F-\u009F\u2000-\u200D\uFEFF]/gim
-const invalidProtocolRegex = /^([^\w]*)(javascript|data|vbscript)/im
+const ctrlCharactersRegex = /[\u0000-\u001F\u007F-\u009F\u2000-\u200D\uFEFF]/g
+const invalidProtocolRegex = /^(\W*)(javascript|data|vbscript)/im
 const htmlEntitiesRegex = /&#(\w+)(^\w|;)?/g
 const htmlCtrlEntityRegex = /&(newline|tab);/gi
 const urlSchemeRegex = /^.+(:|&colon;)/gim

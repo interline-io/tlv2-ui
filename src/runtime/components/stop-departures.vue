@@ -29,7 +29,7 @@
         <div class="agency-header title is-6">
           {{ ss.agency.agency_name }}
         </div>
-        <div v-for="(sr,srkey) of ss.routes.slice(0,routesPerAgencyShadow)" :key="srkey" class="tl-departure-container">
+        <div v-for="(sr, srkey) of ss.routes.slice(0, routesPerAgencyShadow)" :key="srkey" class="tl-departure-container">
           <div
             class="tl-departure-route"
           >
@@ -46,7 +46,7 @@
             </nuxt-link>
           </div>
           <div class="tl-departure-times">
-            <span v-for="st of sr.departures.slice(0,3)" :key="st.trip.id" class="tl-departure-time tag">
+            <span v-for="st of sr.departures.slice(0, 3)" :key="st.trip.id" class="tl-departure-time tag">
               <template v-if="st.departure.estimated">
                 {{ reformatHMS(st.departure.estimated) }} &nbsp;<o-icon variant="success" size="small" icon="wifi" />
               </template><template v-else>

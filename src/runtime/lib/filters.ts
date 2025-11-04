@@ -3,7 +3,7 @@ import { getBasicRouteType } from './routetypes'
 
 export function parseHMS (value: string): number {
   const a = (value || '').split(':').map((s) => {
-    return parseInt(s)
+    return Number.parseInt(s)
   })
   if (a.length !== 3) {
     return -1
@@ -104,7 +104,7 @@ export function joinUnique (values: Array<string>): string {
 }
 
 export function thousands (value: string | number): string {
-  const f = typeof (value) === 'string' ? parseFloat(value) : value
+  const f = typeof (value) === 'string' ? Number.parseFloat(value) : value
   if (isNaN(f)) {
     return '-'
   }
@@ -112,7 +112,7 @@ export function thousands (value: string | number): string {
 }
 
 export function pct (value: string | number): string {
-  const f = typeof (value) === 'string' ? parseFloat(value) : value
+  const f = typeof (value) === 'string' ? Number.parseFloat(value) : value
   if (isNaN(f)) {
     return ''
   }

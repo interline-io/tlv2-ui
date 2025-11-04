@@ -30,7 +30,7 @@
           ticks
           lazy
         >
-          <template v-for="val in [0,100,250,500]" :key="val">
+          <template v-for="val in [0, 100, 250, 500]" :key="val">
             <o-slider-tick :value="val">
               {{ val }}
             </o-slider-tick>
@@ -57,7 +57,7 @@
         </p>
         <div v-if="includeNearbyStops">
           <div
-            v-for="(rss,agency) of st.stop.routes"
+            v-for="(rss, agency) of st.stop.routes"
             :key="agency"
             class="route-link"
           >
@@ -471,7 +471,6 @@ function hsin (fromPoint: Geometry, toPoint: Geometry): number {
   }, { unit: 'meter' })
   return d
 }
-
 </script>
 
 <style scoped>
@@ -521,5 +520,4 @@ function hsin (fromPoint: Geometry, toPoint: Geometry): number {
   min-width:400px;
   width:400px;
 }
-
 </style>

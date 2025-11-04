@@ -90,7 +90,7 @@
 
           <div v-for="ent of entities" :key="ent.id">
             <tl-msg-warning
-              v-for="(alert,idx) of ent.alerts"
+              v-for="(alert, idx) of ent.alerts"
               :key="idx"
             >
               Agency Alert:
@@ -109,13 +109,13 @@
                 <h6 class="title is-6">
                   Routes at this stop
                 </h6>
-                <div v-for="(rss,agency) of servedRoutes" :key="agency">
+                <div v-for="(rss, agency) of servedRoutes" :key="agency">
                   <div class="agency-name">
                     {{ agency }}
                   </div>
                   <div v-for="rs of rss" :key="rs.route.id">
                     <nuxt-link
-                      :to="makeRouteLink(rs.route.onestop_id,rs.route.feed_onestop_id,rs.route.feed_version_sha1,rs.route.route_id,rs.route.id,linkVersion)"
+                      :to="makeRouteLink(rs.route.onestop_id, rs.route.feed_onestop_id, rs.route.feed_version_sha1, rs.route.route_id, rs.route.id, linkVersion)"
                     >
                       <tl-route-icon :route-type="rs.route.route_type" :route-short-name="rs.route.route_short_name" :route-long-name="rs.route.route_long_name" :route-link="rs.route.route_url" />
                     </nuxt-link>
@@ -127,13 +127,13 @@
                 <h6 class="title is-6">
                   Routes at nearby stops
                 </h6>
-                <div v-for="(rss,agency) of nearbyRoutes" :key="agency">
+                <div v-for="(rss, agency) of nearbyRoutes" :key="agency">
                   <div class="agency-name">
                     {{ agency }}
                   </div>
                   <div v-for="rs of rss" :key="rs.route.id">
                     <nuxt-link
-                      :to="makeRouteLink(rs.route.onestop_id,rs.route.feed_onestop_id,rs.route.feed_version_sha1,rs.route.route_id,rs.route.id,linkVersion)"
+                      :to="makeRouteLink(rs.route.onestop_id, rs.route.feed_onestop_id, rs.route.feed_version_sha1, rs.route.route_id, rs.route.id, linkVersion)"
                     >
                       <tl-route-icon :route-type="rs.route.route_type" :route-short-name="rs.route.route_short_name" :route-long-name="rs.route.route_long_name" :route-link="rs.route.route_url" />
                     </nuxt-link>

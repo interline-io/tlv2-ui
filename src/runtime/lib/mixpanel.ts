@@ -17,7 +17,7 @@ let init = false
 let hasUser = false
 
 export const createMixpanel = (apikey: string, user: MixpanelUser): MixpanelInstance => {
-  if (process.server) {
+  if (import.meta.server) {
     return {
       track: (msg: string, args: any) => { },
       identify: () => {},

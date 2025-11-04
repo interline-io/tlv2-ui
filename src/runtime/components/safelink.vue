@@ -67,7 +67,6 @@ const clipboard = async (): Promise<void> => {
 </script>
 
 <style scoped>
-
 .safelink-outer {
   display:inline-block
 }
@@ -109,5 +108,4 @@ const clipboard = async (): Promise<void> => {
     max-width:160px;
   }
 }
-
 </style>

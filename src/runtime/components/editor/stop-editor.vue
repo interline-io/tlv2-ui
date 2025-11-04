@@ -27,7 +27,7 @@
 
         <o-field label="Location Type">
           <o-select v-model="entity.location_type" :disabled="readOnly">
-            <option v-for="[type,label] of LocationTypes.entries()" :key="type" :value="type">
+            <option v-for="[type, label] of LocationTypes.entries()" :key="type" :value="type">
               {{ label }}
             </option>
           </o-select>

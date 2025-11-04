@@ -89,7 +89,6 @@ const items = [
     to: { name: 'admin' }
   }
 ]
-
 </script>
 
 <style scoped lang="scss">
@@ -105,5 +104,4 @@ html[data-theme=dark] .navbar img {
 html[data-theme=light] .navbar img {
   filter: invert(0);
 }
-
 </style>

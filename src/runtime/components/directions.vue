@@ -7,13 +7,13 @@
       </o-button>
 
       <div
-        v-for="(leg,legIdx) of selectedItin.legs"
+        v-for="(leg, legIdx) of selectedItin.legs"
         :key="legIdx"
         class="itin-summary"
       >
         <div class="itin-summary-icons">
           <div class="itin-summary-icons-time">
-            {{ formatDateTime(leg.start_time ) }}
+            {{ formatDateTime(leg.start_time) }}
           </div>
           <o-icon
             :icon="legModeIcon(leg).icon"
@@ -85,7 +85,7 @@
       <div class="is-clearfix">
         <o-field addons expanded>
           <o-button
-            v-for="(v,k) of modeIcons"
+            v-for="(v, k) of modeIcons"
             :key="k"
             expanded
             class="mode-icon"
@@ -139,7 +139,7 @@
 
       <!-- ITIN SUMMARIES -->
       <div v-else-if="directions && directions.success">
-        <div v-for="(itin,itinIdx) of (directions.itineraries || []).slice(0,5)" :key="itinIdx">
+        <div v-for="(itin, itinIdx) of (directions.itineraries || []).slice(0, 5)" :key="itinIdx">
           <div
             :class="{ 'itin-summary': true, 'itin-summary-active': activeItinIdx === itinIdx }"
             @click="selectedItinIdx = itinIdx; activeItinIdx = itinIdx"
@@ -147,7 +147,7 @@
           >
             <div class="itin-summary-icons">
               <o-icon
-                v-for="(icon,iconIdx) of itinModeIcons(itin)"
+                v-for="(icon, iconIdx) of itinModeIcons(itin)"
                 :key="iconIdx"
                 :icon="icon"
                 size="medium"
@@ -156,14 +156,14 @@
             <div class="itin-summary-text">
               <div class="itin-summary-text-time">
                 <strong>
-                  {{ formatDateTime(itin.start_time ) }}
+                  {{ formatDateTime(itin.start_time) }}
                   <o-icon icon="chevron-right" size="small" class="itin-chevron" />
-                  {{ formatDateTime(itin.end_time ) }}
+                  {{ formatDateTime(itin.end_time) }}
                 </strong>
               </div>
               <div class="itin-summary-text-legs">
                 <span
-                  v-for="(rid,ridIdx) of itinLegIcons(itin)"
+                  v-for="(rid, ridIdx) of itinLegIcons(itin)"
                   :key="ridIdx"
                 >
                   <span
