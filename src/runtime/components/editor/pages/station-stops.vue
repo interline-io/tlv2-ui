@@ -191,7 +191,7 @@
 <script>
 import { navigateTo } from '#imports'
 import { gql } from 'graphql-tag'
-import { Stop, mapLevelKeyFn } from '../station'
+import { Stop } from '../station'
 import StationMixin from './station-mixin'
 import { LocationTypes } from '../basemaps'
 

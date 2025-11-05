@@ -274,7 +274,6 @@
 import { PathwayModes, LocationTypes } from '../basemaps'
 import { Stop, Pathway, mapLevelKeyFn } from '../station'
 import StationMixin from './station-mixin'
-import { nextTick } from 'vue'
 
 export default {
   mixins: [StationMixin],

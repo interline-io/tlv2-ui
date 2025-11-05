@@ -140,15 +140,13 @@ export default {
   props: {
     station: {
       type: Object,
-      default () { return {} },
-      required: true
+      default () { return {} }
     },
     value: {
       type: Object,
       default () {
         return {}
-      },
-      required: true
+      }
     },
     readOnly: {
       type: Boolean,

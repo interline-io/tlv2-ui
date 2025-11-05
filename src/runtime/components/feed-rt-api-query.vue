@@ -73,7 +73,6 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import ApiExample from './api-example.vue'
 
 // TypeScript interfaces and types
 type RTType = 'alerts' | 'trip_updates' | 'vehicle_positions'

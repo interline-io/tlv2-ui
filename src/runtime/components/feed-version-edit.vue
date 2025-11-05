@@ -40,7 +40,7 @@ interface FeedVersionResponse {
 // Extract individual types from the response type
 type FeedVersion = FeedVersionResponse
 
-interface FeedVersionSetInput {
+interface _FeedVersionSetInput {
   id: number | string
   name: string
   description: string
@@ -84,7 +84,7 @@ const error = ref<string | null>(null)
 const mutationLoading = ref(false)
 
 // Apollo query
-const { result, loading, error: queryError } = useQuery<{ feed_versions: FeedVersionResponse[] }>(
+const { result, error: queryError } = useQuery<{ feed_versions: FeedVersionResponse[] }>(
   feedVersionQuery,
   () => ({
     ids: [Number(props.id)]
@@ -105,8 +105,14 @@ const { mutate: updateFeedVersion } = useMutation<{ feed_version_update: FeedVer
 
 // Watch for query results
 watch(result, (newResult) => {
-  if (newResult?.feed_versions && newResult.feed_versions.length > 0) {
-    entity.value = { ...newResult.feed_versions[0] }
+  if (newResult?.feed_versions && newResult.feed_versions.length > 0 && newResult.feed_versions[0]) {
+    const fv = newResult.feed_versions[0]
+    entity.value = {
+      id: fv.id ?? 0,
+      name: fv.name ?? '',
+      description: fv.description ?? '',
+      sha1: fv.sha1
+    }
   }
 })
 
@@ -129,10 +135,10 @@ const validationMessage = computed((): string | null => {
 })
 
 const valid = computed((): boolean => {
-  return entity.value.name
+  return !!(entity.value.name
     && entity.value.name.length > 0
     && entity.value.description
-    && entity.value.description.length > 0
+    && entity.value.description.length > 0)
 })
 
 // Methods

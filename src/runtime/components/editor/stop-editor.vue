@@ -182,12 +182,10 @@ export default {
   props: {
     value: {
       type: Object,
-      required: true,
       default () { return {} }
     },
     station: {
       type: Object,
-      required: true,
       default () { return null }
     },
     readOnly: {
