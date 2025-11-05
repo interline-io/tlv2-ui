@@ -56,7 +56,7 @@
 <script setup lang="ts">
 import { gql } from 'graphql-tag'
 import { useDebounceFn } from '@vueuse/core'
-import { ref, computed, watch, reactive, nextTick } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useLazyQuery } from '@vue/apollo-composable'
 
 const minLength = 3
@@ -114,7 +114,7 @@ query ($search: String!, $limit: Int=10) {
 }
 `
 
-const { result, loading, error, load, refetch } = useLazyQuery(query, {}, { clientId: 'transitland' })
+const { result, loading, load, refetch } = useLazyQuery(query, {}, { clientId: 'transitland' })
 
 function loadReload () {
   if (search.value.length < minLength) {
@@ -125,7 +125,7 @@ function loadReload () {
     search: search.value
   }
   console.log('loading...', vars)
-  load(query, vars) || refetch(vars)
+  void (load(query, vars) || refetch(vars))
 }
 
 watch(search, useDebounceFn(loadReload, asyncDebounceTime))

@@ -133,7 +133,7 @@ const STATUS_TYPES = {
 } as const
 
 // Color mapping for status types - using Transitland brand colors
-const STATUS_COLORS = {
+const _STATUS_COLORS = {
   [STATUS_TYPES.IMPORTED_AND_ACTIVE]: '#f7ae56', // Orange - most prominent
   [STATUS_TYPES.IMPORTED]: '#60C6D5', // Blue - second level prominence
   [STATUS_TYPES.NOT_IMPORTED]: '#7a7a7a' // Bulma gray for archived/neutral
@@ -224,7 +224,7 @@ onMounted(() => {
       resizeObserver.value = new ResizeObserver(() => {
         updatePlot()
       })
-      resizeObserver.value.observe(chartContainer.value)
+      resizeObserver.value.observe(chartContainer.value as unknown as Element)
     }
   })
 })

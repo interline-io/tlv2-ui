@@ -234,7 +234,7 @@
           :show-active-column="showActiveColumn"
           :show-timeline-chart="true"
           :issue-download-request="issueDownloadRequest"
-          @download-triggered="(sha1, isLatest) => $emit('downloadTriggered', sha1, isLatest)"
+          @download-triggered="(sha1: string, isLatest: boolean) => $emit('downloadTriggered', sha1, isLatest)"
         />
         <slot name="add-feed-version" :entity="entity" />
       </div>
@@ -544,14 +544,14 @@ function isEmpty (obj: any): boolean {
 }
 
 function first<T> (v: T[]): T | null {
-  if (v && v.length > 0) {
+  if (v && v.length > 0 && v[0]) {
     return v[0]
   }
   return null
 }
 
 // Entity path setup
-const { searchKey, entityVariables } = useEntityPath({
+const { entityVariables } = useEntityPath({
   pathKey: props.pathKey
 })
 
@@ -574,7 +574,10 @@ const feedSpec = computed((): string | undefined => {
 })
 
 const mostRecentFeedInfo = computed((): FeedInfo | null => {
-  return entity.value?.most_recent_feed_version?.length > 0 ? entity.value.most_recent_feed_version[0]?.feed_infos?.[0] ?? null : null
+  if (entity.value?.most_recent_feed_version && entity.value.most_recent_feed_version.length > 0) {
+    return entity.value.most_recent_feed_version[0]?.feed_infos?.[0] ?? null
+  }
+  return null
 })
 
 const lastFetch = computed((): FeedFetch | null => {
@@ -582,7 +585,10 @@ const lastFetch = computed((): FeedFetch | null => {
 })
 
 const lastSuccessfulFetch = computed((): FeedFetch | null => {
-  return (entity.value?.last_successful_fetch && entity.value.last_successful_fetch.length > 0) ? entity.value.last_successful_fetch[0] : null
+  if (entity.value?.last_successful_fetch && entity.value.last_successful_fetch.length > 0 && entity.value.last_successful_fetch[0]) {
+    return entity.value.last_successful_fetch[0]
+  }
+  return null
 })
 
 const operatorNames = computed((): string => {
@@ -613,7 +619,7 @@ const displayLicense = computed((): boolean => {
   return false
 })
 
-const displayAuthorization = computed((): boolean => {
+const _displayAuthorization = computed((): boolean => {
   if (entity.value) {
     return isEmpty(entity.value.authorization)
   }

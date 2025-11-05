@@ -107,14 +107,6 @@ const railRamp: Expression = ['interpolate', ['exponential', 0.5], ['zoom'],
   12, 2.5
 ]
 
-const headwayColorRamp: Expression = ['step', ['get', 'headway_secs'],
-  '#000000', 1,
-  '#b0004c', 600,
-  '#1c96d6', 1200,
-  '#8acaeb', 1800,
-  '#8acaeb'
-]
-
 const headwayWidthRamp: Expression = ['step', ['get', 'headway_secs'],
   1.5, 1,
   2.5, 600,

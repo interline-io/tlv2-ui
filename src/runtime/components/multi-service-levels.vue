@@ -130,7 +130,6 @@ interface MultiServiceLevelsResponse {
 
 // Extract individual types from the response type
 type FeedVersion = MultiServiceLevelsResponse['feed_versions'][0]
-type Feed = FeedVersion['feed']
 type ServiceLevel = FeedVersion['service_levels'][0]
 
 interface ExtendedServiceLevel extends ServiceLevel {
@@ -233,7 +232,7 @@ const months: Record<number, string> = {
 }
 
 // Reactive data
-const fvAgg = ref<boolean>(false)
+const _fvAgg = ref<boolean>(false)
 const maxAggMode = ref<'all' | 'group'>('all')
 const startDate = ref<Date | null>(null)
 const endDate = ref<Date | null>(null)
@@ -290,7 +289,7 @@ const displayStartDate = computed<Date>({
       return startDate.value
     }
     const days = fvsls.value.map(s => s.start_date).sort()
-    if (days.length > 0) {
+    if (days.length > 0 && days[0]) {
       return parseISO(days[0].substr(0, 10))
     }
     return parseISO('2020-01-01')
@@ -307,7 +306,10 @@ const displayEndDate = computed<Date>({
     }
     const days = fvsls.value.map(s => s.end_date).sort()
     if (days.length > 0) {
-      return parseISO(days[days.length - 1].substr(0, 10))
+      const lastDay = days[days.length - 1]
+      if (lastDay) {
+        return parseISO(lastDay.substr(0, 10))
+      }
     }
     return parseISO('2020-01-01')
   },
@@ -453,8 +455,8 @@ const formatDay = (start: string, offset: number): string => {
 
 const formatMonth = (v: string): string => {
   const s = v.split('-')
-  const t = Number.parseInt(s[1])
-  const d = Number.parseInt(s[2])
+  const t = Number.parseInt(s[1] || '0')
+  const d = Number.parseInt(s[2] || '0')
   if (d > 7) {
     return ''
   }

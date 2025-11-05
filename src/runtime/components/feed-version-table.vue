@@ -248,7 +248,7 @@ query ($limit:Int=100, $onestop_id: String, $after:Int) {
 
 const maxLimit = 10000
 
-const { result, loading, error, fetchMore } = useQuery<{ entities: FeedVersionResponse[] }, QueryVariables>(
+const { result, fetchMore } = useQuery<{ entities: FeedVersionResponse[] }, QueryVariables>(
   fvQuery,
   () => ({
     after: 0,
@@ -268,7 +268,7 @@ const hasMore = computed<boolean>(() => {
 
 const latestFeedVersionSha1 = computed<string>(() => {
   const s = entities.value.slice(0).sort((a, b) => new Date(b.fetched_at).getTime() - new Date(a.fetched_at).getTime())
-  if (s.length > 0) {
+  if (s.length > 0 && s[0]) {
     return s[0].sha1
   }
   return ''
@@ -282,7 +282,8 @@ function fetchMoreFn (): void {
   if (entities.value.length > maxLimit) {
     return
   }
-  const lastId = entities.value.length > 0 ? entities.value[entities.value.length - 1].id : 0
+  const lastEntity = entities.value[entities.value.length - 1]
+  const lastId = lastEntity ? lastEntity.id : 0
   fetchMore({
     variables: {
       after: lastId,

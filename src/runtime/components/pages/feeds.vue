@@ -23,7 +23,7 @@
 import { computed } from 'vue'
 import { useRoute, useRouter } from '#app'
 
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
   limit?: number
 }>(), {
   limit: 100

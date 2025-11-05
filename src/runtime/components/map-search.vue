@@ -153,9 +153,7 @@ const bboxCenter = computed<LonLat | null>(() => {
 // Unbounded query (no bbox)
 const {
   load: loadQuery,
-  result: result,
-  loading: loading,
-  error: error
+  result: result
 } = useLazyQuery<{
   stops?: Stop[]
   routes?: Route[]
@@ -192,7 +190,7 @@ const searchFilteredOptions = computed(() => {
   const stops: SearchItem[] = []
   for (const stop of stopResult.value) {
     if (!boundedStopIds[stop.id]) {
-      const agencyName = (stop.route_stops.length > 0) ? stop.route_stops[0].route.agency.agency_name : ''
+      const agencyName = (stop.route_stops.length > 0 && stop.route_stops[0]) ? stop.route_stops[0].route.agency.agency_name : ''
       console.log('Processing unbounded stop:', stop.stop_name, 'geometry:', stop.geometry)
       stops.push({ name: stop.stop_name, routeStops: stop.route_stops, agencyName, geometry: stop.geometry })
     }
@@ -202,7 +200,7 @@ const searchFilteredOptions = computed(() => {
   const routes: SearchItem[] = []
   for (const route of routeResult.value) {
     if (!boundedRouteIds[route.id]) {
-      const geometry = (route.route_stops.length > 0) ? route.route_stops[0].stop?.geometry || null : null
+      const geometry = (route.route_stops.length > 0 && route.route_stops[0]) ? route.route_stops[0].stop?.geometry || null : null
       const routeName = route.route_short_name || route.route_long_name || 'Unnamed Route'
       routes.push({ name: routeName, agencyName: route.agency.agency_name, geometry })
     }
@@ -246,16 +244,17 @@ function executeSearchQueries (): void {
   }
 
   // Execute unbounded query (always runs when search is long enough)
+  const focus = bboxCenter.value || undefined
   loadQuery(undefined, {
     includeStops: props.includeStops,
     includeRoutes: props.includeRoutes,
     routeFilter: {
       search: search.value,
-      location: { focus: bboxCenter.value }
+      location: focus ? { focus } : undefined
     },
     stopFilter: {
       search: search.value,
-      location: { focus: bboxCenter.value }
+      location: focus ? { focus } : undefined
     }
   })
 }

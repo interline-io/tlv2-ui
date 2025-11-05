@@ -189,9 +189,6 @@ const hasValidFeedVersion = computed(() => {
 
 // Composables
 const router = useRouter()
-const apiEndpoint = useApiEndpoint
-const authHeaders = useAuthHeaders
-const toastNotification = useToastNotification
 const editorRoutes = useEditorRoutes()
 
 // Watchers
@@ -276,7 +273,7 @@ const downloadGtfs = async () => {
     const response = await fetch(url, {
       method: 'POST',
       headers: {
-        ...(await authHeaders()),
+        ...(await useAuthHeaders()),
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(requestBody)
@@ -302,14 +299,14 @@ const downloadGtfs = async () => {
     window.URL.revokeObjectURL(downloadUrl)
 
     // Show success notification
-    toastNotification().showToast('GTFS export downloaded successfully')
+    useToastNotification().showToast('GTFS export downloaded successfully')
 
     // Optionally navigate back after successful download
     // handleCancel()
   } catch (err) {
     console.error('GTFS export failed:', err)
     error.value = err instanceof Error ? err.message : 'Export failed'
-    toastNotification().showToast(
+    useToastNotification().showToast(
       `Export failed: ${err instanceof Error ? err.message : 'Unknown error'}`
     )
   } finally {

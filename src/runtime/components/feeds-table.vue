@@ -193,7 +193,6 @@ interface FeedResponse {
 
 // Extract individual types from the response type
 type Feed = FeedResponse
-type FeedVersion = FeedResponse['last_successful_import'][0]
 
 interface QueryVariables {
   specs?: string[] | null
@@ -294,7 +293,8 @@ const { result, loading, error, fetchMore } = useQuery<{ entities: FeedResponse[
 const entities = computed<Feed[]>(() => result.value?.entities ?? [])
 
 function fetchMoreFn (): void {
-  const lastId = entities.value.length > 0 ? entities.value[entities.value.length - 1].id : 0
+  const lastEntity = entities.value[entities.value.length - 1]
+  const lastId = lastEntity ? lastEntity.id : 0
   fetchMore({
     variables: {
       after: lastId,
