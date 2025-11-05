@@ -11,7 +11,7 @@
 <script>
 export default {
   props: {
-    groupKey: { type: String, default: '', required: true }
+    groupKey: { type: String, default: '' }
   }
 }
 </script>

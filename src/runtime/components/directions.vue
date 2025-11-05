@@ -287,8 +287,8 @@ const props = withDefaults(defineProps<{
   mode?: string
   departAt?: string
 }>(), {
-  fromPlace: null,
-  toPlace: null,
+  fromPlace: undefined,
+  toPlace: undefined,
   mode: 'WALK',
   departAt: () => new Date().toISOString()
 })
@@ -406,7 +406,7 @@ function loadReload (): void {
   selectedItinIdx.value = null
   activeItinIdx.value = null
   if (loadReady.value) {
-    load(query, vars.value) || refetch(vars.value)
+    void (load(query, vars.value) || refetch(vars.value))
   }
 }
 
@@ -414,7 +414,7 @@ watch(vars, loadReload)
 loadReload()
 
 // Get directions from result
-const directions = computed<DirectionsResponse | null>(() => loadReady.value ? result.value?.directions : null)
+const directions = computed<DirectionsResponse | null>(() => loadReady.value ? (result.value?.directions ?? null) : null)
 
 // Computed properties
 
@@ -424,12 +424,12 @@ const departAtOut = computed(() => {
   return parseISO(dateStr).toISOString()
 })
 
-const fromPlaceStr = computed(() =>
-  lonLatStr(props.fromPlace)
+const _fromPlaceStr = computed(() =>
+  lonLatStr(props.fromPlace ?? null)
 )
 
 const toPlaceStr = computed(() =>
-  lonLatStr(props.toPlace)
+  lonLatStr(props.toPlace ?? null)
 )
 
 const selectedItin = computed<Itinerary | null>(() => {
@@ -448,7 +448,7 @@ const activeOrFirstItin = computed<Itinerary | null>(() => {
     idx = selectedItinIdx.value
   }
   if (idx >= directions.value.itineraries.length) { return null }
-  return directions.value.itineraries[idx]
+  return directions.value.itineraries[idx] ?? null
 })
 
 const activeFeatures = computed(() => {

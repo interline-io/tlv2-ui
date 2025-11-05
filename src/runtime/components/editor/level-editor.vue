@@ -217,7 +217,7 @@ export default {
         let parsed = null
         try {
           parsed = JSON.parse(value)
-        } catch (e) {
+        } catch {
           this.geojsonError = 'Invalid JSON'
           return
         }

@@ -67,7 +67,7 @@ export default {
     text: { type: String, default: '' },
     actionText: { type: String, default: '' },
     actionInfo: { type: Object, default () { return {} } },
-    entrels: { type: Array, default () { return [] }, required: true },
+    entrels: { type: Array, default () { return [] } },
     canAdd: { type: Boolean, default: false },
     canRemove: { type: Boolean, default: false },
     showUsers: { type: Boolean, default: true },

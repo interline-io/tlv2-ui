@@ -37,7 +37,7 @@
           <template #trigger>
             <button class="button" type="button" icon="menu-down">
               <span>
-                {{ showOnMap.map((s) => { return titleize(s) }).join(", ") }}
+                {{ showOnMap.map((s: string) => { return titleize(s) }).join(", ") }}
               </span>
             </button>
           </template>
@@ -85,7 +85,7 @@ interface LayerInfo {
 
 type MapLayerType = 'buffer' | 'hull' | 'census'
 
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
   routeName?: string
   stopIds?: number[] | null
   routeIds?: number[] | null

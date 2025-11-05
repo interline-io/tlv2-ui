@@ -111,8 +111,8 @@ export default {
     }
   },
   props: {
-    feedKey: { type: String, default: '', required: true },
-    feedVersionKey: { type: String, default: '', required: true },
+    feedKey: { type: String, default: '' },
+    feedVersionKey: { type: String, default: '' },
     stationKey: { type: String, default: '' },
     levelKey: { type: String, default: '' },
     client: { type: String, default: 'stationEditor' }

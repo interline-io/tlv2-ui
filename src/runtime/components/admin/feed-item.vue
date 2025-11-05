@@ -25,7 +25,7 @@
 <script>
 export default {
   props: {
-    value: { type: Object, default () { return {} }, required: true },
+    value: { type: Object, default () { return {} } },
     action: { type: String, default: null }
   },
   emits: [

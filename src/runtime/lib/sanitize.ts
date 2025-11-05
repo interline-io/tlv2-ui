@@ -1,6 +1,7 @@
 // Sanitize filename
 // Based on https://github.com/parshap/node-sanitize-filename/blob/master/index.js
 
+// eslint-disable-next-line no-control-regex
 const controlRe = /[\x00-\x1F\x80-\x9F]/g
 const illegalRe = /[/?<>\\:*|"]/g
 const reservedRe = /^\.+$/
@@ -22,17 +23,18 @@ export function sanitizeFilename (v: string): string {
 // Sanitize URL
 // Based on https://github.com/braintree/sanitize-url
 
+// eslint-disable-next-line no-control-regex
 const ctrlCharactersRegex = /[\u0000-\u001F\u007F-\u009F\u2000-\u200D\uFEFF]/g
-const invalidProtocolRegex = /^(\W*)(javascript|data|vbscript)/im
-const htmlEntitiesRegex = /&#(\w+)(^\w|;)?/g
-const htmlCtrlEntityRegex = /&(newline|tab);/gi
+const invalidProtocolRegex = /^\W*(?:javascript|data|vbscript)/im
+const htmlEntitiesRegex = /&#(\w+)\W?/g
+const htmlCtrlEntityRegex = /&(?:newline|tab);/gi
 const urlSchemeRegex = /^.+(:|&colon;)/gim
 const relativeFirstCharacters = ['.', '/']
 const BLANK_URL = 'about:blank'
 const whitespaceEscapeCharsRegex = /(\\|%5[cC])((%(6[eE]|72|74))|[nrt])/g
 
 function isRelativeUrlWithoutProtocol (url: string): boolean {
-  return relativeFirstCharacters.includes(url[0])
+  return url.length > 0 && url[0] !== undefined && relativeFirstCharacters.includes(url[0])
 }
 
 // adapted from https://stackoverflow.com/a/29824550/2601552
@@ -46,7 +48,7 @@ function decodeHtmlCharacters (str: string) {
 function decodeURI (uri: string): string {
   try {
     return decodeURIComponent(uri)
-  } catch (e: unknown) {
+  } catch {
     // Ignoring error
     // It is possible that the URI contains a `%` not associated
     // with URI/URL-encoding.

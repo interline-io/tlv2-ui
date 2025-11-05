@@ -88,14 +88,14 @@ function capitalize (str: string) {
     return abbrs[str]
   }
   return str.length
-    ? str[0].toUpperCase()
+    ? str[0]?.toUpperCase()
     + str.slice(1).toLowerCase()
     : ''
 }
 
 function titleize (str: string) {
   const ret = []
-  for (const s of str.split(/[\s-_]/)) {
+  for (const s of str.split(/[\s\-_]/)) {
     ret.push(capitalize(s))
   }
   return ret.join(' ')
@@ -121,6 +121,7 @@ function makeNav () {
   }
   for (let i = 0; i < routeFragments.length; i++) {
     const element = routeFragments[i]
+    if (!element) continue
     const routeId = String(routeFragments.slice(0, i + 1).join('-'))
     const slug = routeParams.slug
     let routeName = routeId
@@ -137,7 +138,7 @@ function makeNav () {
       text = routeNames[routeId]
     } else if (props.extraRouteNames[routeId]) {
       text = props.extraRouteNames[routeId]
-    } else if (mergedParams.get(element)) {
+    } else if (element && mergedParams.get(element)) {
       text = mergedParams.get(element) || ''
     } else if (routeParams[element]) {
       text = String(routeParams[element])
@@ -145,7 +146,7 @@ function makeNav () {
       text = capitalize(element)
     }
     // Check text length
-    const shortenLength = shorteners[element] || 128
+    const shortenLength = element ? (shorteners[element] || 128) : 128
     if (shortenLength && text.length > shortenLength) {
       text = text.substr(0, shortenLength) + '…'
     }
@@ -158,7 +159,7 @@ function makeNav () {
     }
 
     // Check if route exists
-    if (slug?.length > 0 && router.hasRoute(routeId + '-slug')) {
+    if (slug && Array.isArray(slug) && slug.length > 0 && router.hasRoute(routeId + '-slug')) {
       routeName = routeId + '-slug'
     }
 
@@ -182,7 +183,7 @@ function makeNav () {
       text
     })
 
-    if (slug?.length > 0) {
+    if (slug && Array.isArray(slug) && slug.length > 0) {
       for (const [sli, sl] of Array.from(slug).entries()) {
         if (!sl) {
           continue
