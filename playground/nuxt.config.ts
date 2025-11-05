@@ -2,7 +2,7 @@ export default defineNuxtConfig({
 
   modules: ['../src/module'],
 
-  ssr: false,
+  // ssr: false,
 
   // Ensure auto-imports are enabled (default in Nuxt 4)
   imports: {
