@@ -2,7 +2,6 @@
 import type { StylisticCustomizeOptions } from '@stylistic/eslint-plugin'
 import stylistic from '@stylistic/eslint-plugin'
 import type { ResolvableFlatConfig } from 'eslint-flat-config-utils'
-import { FlatConfigComposer } from 'eslint-flat-config-utils'
 import pluginVue from 'eslint-plugin-vue'
 import typescriptEslint from 'typescript-eslint'
 

@@ -84,6 +84,7 @@
 </template>
 
 <script setup lang="ts">
+// @ts-expect-error - haversine doesn't have types
 import haversine from 'haversine'
 import { gql } from 'graphql-tag'
 import { ref, computed } from 'vue'
@@ -157,7 +158,7 @@ interface RouteResponse {
 }
 
 // Extract individual types from the response type
-type Route = RouteResponse
+type _Route = RouteResponse
 type Pattern = RouteResponse['patterns'][0]
 type Trip = Pattern['trips'][0]
 type StopTime = Trip['stop_times'][0]
@@ -165,7 +166,7 @@ type Stop = StopTime['stop']
 type Geometry = Stop['geometry']
 type NearbyStop = NonNullable<Stop['nearby_stops']>[0]
 type RouteStop = NearbyStop['route_stops'][0]
-type Agency = RouteStop['route']['agency']
+type _Agency = RouteStop['route']['agency']
 
 // Processing types
 interface ProcessedStopTime {
@@ -329,10 +330,13 @@ const processedPatterns = computed<ProcessedPattern[]>(() => {
     if (pat.count / totalTrips <= 0.1) {
       continue
     }
-    if (!pat.trips || pat.trips.length === 0 || !pat.trips[0].stop_times) {
+    if (!pat.trips || pat.trips.length === 0 || !pat.trips[0]?.stop_times) {
       continue
     }
     const pt = pat.trips[0]
+    if (!pt || !pt.stop_times) {
+      continue
+    }
     const p: ProcessedPattern = {
       stop_pattern_id: pat.stop_pattern_id,
       count: pat.count,
@@ -376,7 +380,7 @@ const activePattern = computed<ProcessedPattern | null>(() => {
       return pat
     }
   }
-  if (processedPatterns.value.length > 0) {
+  if (processedPatterns.value.length > 0 && processedPatterns.value[0]) {
     return processedPatterns.value[0]
   }
   return null
@@ -387,7 +391,7 @@ const activePatternId = computed({
     if (selectedPatternId.value) {
       return selectedPatternId.value
     }
-    if (processedPatterns.value.length > 0) {
+    if (processedPatterns.value.length > 0 && processedPatterns.value[0]) {
       return processedPatterns.value[0].stop_pattern_id
     }
     return null
@@ -400,6 +404,7 @@ const activePatternId = computed({
 const multiAgency = computed<boolean>(() => {
   const a = new Set<string>()
   for (const pat of patterns.value) {
+    if (!pat.trips[0]?.stop_times) continue
     for (const st of pat.trips[0].stop_times) {
       for (const ns of st.stop.nearby_stops || []) {
         for (const rs of ns.route_stops || []) {
@@ -419,13 +424,6 @@ const outboundPatterns = computed<ProcessedPattern[]>(() => {
   return processedPatterns.value.filter(s => s.direction_id !== 0)
 })
 // Functions
-function firstOrLast (idx: number, v: any[]): boolean {
-  if (idx === 0 || idx === v.length - 1) {
-    return true
-  }
-  return false
-}
-
 function nearbyRouteStops (stop: Stop): ProcessedRoute[] {
   const rids = new Set<string>()
   for (const route of routes.value) {

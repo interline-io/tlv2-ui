@@ -41,7 +41,7 @@
               </td>
               <td><tl-safelink :text="stop.stop_id" max-width="100px" /></td>
               <td v-if="showAgencies">
-                {{ joinUnique(stop.route_stops.map((s) => { return s.agency.agency_name })) }}
+                {{ stopAgencies(stop) }}
               </td>
               <td v-if="showRoutes">
                 {{ servedByRoutes(stop) }}
@@ -114,7 +114,7 @@ type FeedVersion = FeedVersionResponse
 type Stop = FeedVersionResponse['stops'][0]
 type RouteStop = Stop['route_stops'][0]
 type Route = RouteStop['route']
-type Agency = RouteStop['agency']
+type _Agency = RouteStop['agency']
 
 interface QueryVariables {
   feed_version_sha1?: string | null
@@ -241,6 +241,10 @@ const routeName = (route: Route): string => {
     return route.route_long_name
   }
   return ''
+}
+
+const stopAgencies = (stop: Stop): string => {
+  return joinUnique(stop.route_stops.map(s => s.agency.agency_name))
 }
 
 const servedByRoutes = (stop: Stop): string => {

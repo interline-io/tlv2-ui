@@ -1,6 +1,9 @@
 import { computed } from 'vue'
 
-const pathRegex = /(?<osid>[ors]-[^:@]*)?:?(?<feed>[^:@]*)?@?((?<sha>[a-z0-9]{40})?)?:?(?<eid>.*)$/u
+// Pattern: [osid]:[feed]@[sha]:[eid]
+// Examples: o-abc:feed@sha:entity, feed@sha:entity, feed:entity, o-abc
+// eslint-disable-next-line
+const pathRegex = /^(?<osid>[ors]-[^:@]+)?:?(?<feed>[^:@]+)?@?(?<sha>[a-z0-9]{40})?:?(?<eid>.*)$/u
 
 interface EntityPathProps {
   pathKey?: string | null
@@ -39,7 +42,7 @@ export function useEntityPath (props: EntityPathProps) {
     // Note: OnestopIDs cannot normally contain ':' or '@' or ',' or be completely numeric
 
     // Check if the pathKey is comma joined integers
-    const kInts = pk.split(',').map(s => Number.parseInt(s)).filter(s => !isNaN(s))
+    const kInts = pk.split(',').map(s => Number.parseInt(s)).filter(s => !Number.isNaN(s))
     if (kInts.length > 0) {
       return { ids: kInts }
     }
@@ -51,8 +54,8 @@ export function useEntityPath (props: EntityPathProps) {
     const fv = match.sha || props.feedVersionSha1
     return {
       onestopId: match.osid,
-      feedOnestopId: match.feed || props.feedOnestopId,
-      feedVersionSha1: fv,
+      feedOnestopId: match.feed || props.feedOnestopId || undefined,
+      feedVersionSha1: fv || undefined,
       entityId: match.eid,
       allowPreviousOnestopIds: !!fv
     }
@@ -75,13 +78,13 @@ export function useEntityPath (props: EntityPathProps) {
     }
 
     // Check if pathKey is comma-separated database IDs
-    const kInts = pathKeyStr.split(',').map(s => Number.parseInt(s)).filter(s => !isNaN(s))
+    const kInts = pathKeyStr.split(',').map(s => Number.parseInt(s)).filter(s => !Number.isNaN(s))
     if (kInts.length > 0) {
       return { ids: kInts }
     }
 
     // For simple cases (basic onestop IDs), use direct pathKey
-    return { onestopId: props.pathKey }
+    return { onestopId: props.pathKey || undefined }
   })
 
   const linkVersion = computed(() => {
