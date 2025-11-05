@@ -102,7 +102,7 @@
             {{ displaySpec(row.spec) }}
           </td>
           <td v-if="showColumns.includes('last_fetched')" class="has-text-right">
-            <template v-if="row.last_successful_fetch && row.last_successful_fetch.length > 0">
+            <template v-if="row.last_successful_fetch && row.last_successful_fetch.length > 0 && row.last_successful_fetch[0]">
               {{ fromNow(row.last_successful_fetch[0].fetched_at) }}
             </template>
             <template v-else>
@@ -111,7 +111,7 @@
           </td>
           <td v-if="importStatus || showColumns.includes('last_imported')" class="has-text-right">
             <span v-if="row.spec === 'GTFS'">
-              <template v-if="row.last_successful_import && row.last_successful_import.length > 0">
+              <template v-if="row.last_successful_import && row.last_successful_import.length > 0 && row.last_successful_import[0]">
                 {{ fromNow(row.last_successful_import[0].fetched_at) }}
               </template>
               <template v-else>
@@ -121,7 +121,7 @@
           </td>
           <td v-if="fetchError === 'true' || showColumns.includes('fetch_errors')" class="has-text-right">
             <span
-              v-if="row.last_fetch && row.last_fetch.length > 0 && row.last_fetch[0].fetch_error"
+              v-if="row.last_fetch && row.last_fetch.length > 0 && row.last_fetch[0] && row.last_fetch[0].fetch_error"
               class="tag is-danger is-light"
               :title="row.last_fetch[0].fetch_error"
             >

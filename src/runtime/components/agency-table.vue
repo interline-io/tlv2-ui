@@ -99,7 +99,8 @@ const entities = computed<Agency[]>(() => result.value?.entities || [])
 // Methods
 const showAll = async () => {
   const newLimit = 1000
-  const lastId = entities.value.length > 0 ? entities.value[entities.value.length - 1].id : 0
+  const lastEntity = entities.value.length > 0 ? entities.value[entities.value.length - 1] : undefined
+  const lastId = lastEntity?.id ?? 0
 
   try {
     await fetchMore({

@@ -3,7 +3,7 @@
     <!-- SELECTED ITIN -->
     <div v-if="selectedItin">
       <o-button icon-left="arrow-left" @click="selectedItinIdx = null; activeItinIdx = null">
-        Back ({{ directions.itineraries.length }} itineraries)
+        Back ({{ directions?.itineraries?.length ?? 0 }} itineraries)
       </o-button>
 
       <div

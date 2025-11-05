@@ -75,7 +75,7 @@
             </td>
             <td>
               <o-tooltip
-                :label="row.other_places.filter((s) => { return s.city_name }).map((s) => { return s.city_name }).join(', ')"
+                :label="row.other_places.filter((s: Place) => { return s.city_name }).map((s: Place) => { return s.city_name }).join(', ')"
               >
                 {{ row.adm0_name }}
               </o-tooltip>
@@ -153,7 +153,7 @@ query ($limit: Int=100, $after: Int, $search: String, $merged: Boolean, $adm0_na
 }
 `
 
-function nullString (v: string | undefined): string | null {
+function nullString (v: string | undefined | null): string | null {
   if (!v || v.length === 0) {
     return null
   }
@@ -249,9 +249,12 @@ const operatorEntities = computed<ProcessedOperator[]>(() => {
     }
     places = places.sort((a, b) => a.rank - b.rank)
     if (places.length > 0) {
-      entity.adm0_name = places[0].adm0_name
-      entity.adm1_name = places[0].adm1_name
-      entity.city_name = places[0].city_name
+      const firstPlace = places[0]
+      if (firstPlace) {
+        entity.adm0_name = firstPlace.adm0_name
+        entity.adm1_name = firstPlace.adm1_name
+        entity.city_name = firstPlace.city_name
+      }
     }
     entity.other_places = places
     return entity
@@ -259,7 +262,8 @@ const operatorEntities = computed<ProcessedOperator[]>(() => {
 })
 
 function fetchMoreFn (): void {
-  const lastId = entities.value.length > 0 ? entities.value[entities.value.length - 1].id : 0
+  const lastEntity = entities.value.length > 0 ? entities.value[entities.value.length - 1] : undefined
+  const lastId = lastEntity?.id ?? 0
   fetchMore({
     variables: {
       after: lastId,

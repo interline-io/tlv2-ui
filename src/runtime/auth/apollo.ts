@@ -1,4 +1,5 @@
 import { ApolloClient, ApolloLink, concat, InMemoryCache } from '@apollo/client/core/index.js'
+// @ts-expect-error - apollo-upload-client does not provide TypeScript definitions
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
 
 export function initApolloClient (endpoint: string, headers: Record<string, string>) {

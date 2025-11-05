@@ -60,7 +60,7 @@
               <template v-if="fv.service_window?.feed_start_date && fv.service_window?.feed_end_date">
                 {{ formatDate(fv.service_window?.feed_start_date) }}
               </template>
-              <template v-else>
+              <template v-else-if="fv.earliest_calendar_date">
                 {{ formatDate(fv.earliest_calendar_date) }}
               </template>
             </td>
@@ -68,7 +68,7 @@
               <template v-if="fv.service_window?.feed_start_date && fv.service_window?.feed_end_date">
                 {{ formatDate(fv.service_window?.feed_end_date) }}
               </template>
-              <template v-else>
+              <template v-else-if="fv.latest_calendar_date">
                 {{ formatDate(fv.latest_calendar_date) }}
               </template>
             </td>

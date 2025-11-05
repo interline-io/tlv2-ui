@@ -16,7 +16,7 @@
             <div class="field is-grouped is-grouped-multiline">
               <div class="control">
                 <div class="tags has-addons">
-                  <span class="tag" :class="level.stops.filter((s) => { return s.location_type === 2 }).length > 0 ? 'is-warning' : ''">{{ level.stops.filter((s) => { return s.location_type === 2 }).length }}</span>
+                  <span class="tag" :class="level.stops.filter((s: any) => { return s.location_type === 2 }).length > 0 ? 'is-warning' : ''">{{ level.stops.filter((s: any) => { return s.location_type === 2 }).length }}</span>
                   <div class="tag">
                     entrances
                   </div>
@@ -24,7 +24,7 @@
               </div>
               <div class="control">
                 <div class="tags has-addons">
-                  <span class="tag" :class="level.stops.filter((s) => { return s.location_type === 0 }).length > 0 ? 'is-warning' : ''">{{ level.stops.filter((s) => { return s.location_type === 0 }).length }}</span>
+                  <span class="tag" :class="level.stops.filter((s: any) => { return s.location_type === 0 }).length > 0 ? 'is-warning' : ''">{{ level.stops.filter((s: any) => { return s.location_type === 0 }).length }}</span>
                   <div class="tag">
                     platforms
                   </div>
@@ -32,7 +32,7 @@
               </div>
               <div class="control">
                 <div class="tags has-addons">
-                  <span class="tag" :class="level.stops.filter((s) => { return s.location_type === 3 }).length > 0 ? 'is-warning' : ''">{{ level.stops.filter((s) => { return s.location_type === 3 }).length }}</span>
+                  <span class="tag" :class="level.stops.filter((s: any) => { return s.location_type === 3 }).length > 0 ? 'is-warning' : ''">{{ level.stops.filter((s: any) => { return s.location_type === 3 }).length }}</span>
                   <div class="tag">
                     nodes
                   </div>
@@ -86,7 +86,7 @@ export default {
       }
       const keys = [...m.keys()].sort((a, b) => b - a)
       const ret = keys.map(s => (m.get(s) || []))
-      ret.push(this.station.levels.filter(s => (s.level_index == null)))
+      ret.push(this.station.levels.filter((s: any) => (s.level_index == null)))
       return ret
     }
   }
