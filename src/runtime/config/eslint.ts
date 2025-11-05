@@ -31,16 +31,18 @@ export const eslintRules = {
   '@stylistic/max-statements-per-line': ['error', { max: 3 }],
 }
 
-export const stylisticConfig: StylisticCustomizeOptions = {
+export const stylisticConfig = {
   flat: true, // required for flat config
   indent: 2,
   quotes: 'single',
   semi: false,
-}
+} as any as StylisticCustomizeOptions
 
 export const eslintConfig: ResolvableFlatConfig = [
   ignoreFiles,
+  // @ts-expect-error - Type compatibility issue with ESLint flat config
   ...pluginVue.configs['flat/recommended'],
+  // @ts-expect-error - Type compatibility issue with ESLint flat config
   stylistic.configs.customize(stylisticConfig),
   {
     files: ['**/*.ts', '**/*.tsx'],
@@ -54,6 +56,7 @@ export const eslintConfig: ResolvableFlatConfig = [
     plugins: {
       '@typescript-eslint': typescriptEslint.plugin,
     },
+    // @ts-expect-error - Type compatibility issue with ESLint flat config
     rules: eslintRules,
   },
   {
@@ -62,6 +65,7 @@ export const eslintConfig: ResolvableFlatConfig = [
         parser: typescriptEslint.parser,
       },
     },
+    // @ts-expect-error - Type compatibility issue with ESLint flat config
     rules: eslintRules,
   },
 ]

@@ -17,7 +17,7 @@ export interface MixpanelInstance {
 let init = false
 let hasUser = false
 
-export const createMixpanel = (apikey: string, user: MixpanelUser): MixpanelInstance => {
+export const createMixpanel = (apikey: string | undefined, user: MixpanelUser): MixpanelInstance => {
   if (import.meta.server) {
     return {
       track: (_msg: string, _args: any) => { },

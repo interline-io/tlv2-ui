@@ -26,6 +26,7 @@ declare module 'nuxt/schema' {
       }
       protomapsApikey?: string
       nearmapsApikey?: string
+      mixpanelApikey?: string
       loginGate?: boolean
       requireLogin?: boolean
       editorRoutePrefix: string
@@ -35,6 +36,32 @@ declare module 'nuxt/schema' {
       auth0LogoutUri?: string
       auth0Audience?: string
       auth0Scope?: string
+    }
+  }
+}
+
+// Add type declarations for nuxt-csurf composables
+declare module '#imports' {
+  export function useCsrf (): {
+    csrf: string
+    headerName: string
+  }
+  export function useAuthHeaders (): Promise<Record<string, string>>
+}
+
+// Add type declaration for Oruga UI
+declare module '@oruga-ui/oruga-next/dist/oruga.mjs' {
+  const Oruga: any
+  export default Oruga
+}
+
+// Add type declaration for Vue global properties
+declare module 'vue' {
+  interface ComponentCustomProperties {
+    $oruga: {
+      notification: {
+        open: (options: any) => void
+      }
     }
   }
 }
