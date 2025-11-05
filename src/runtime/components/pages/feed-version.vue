@@ -50,7 +50,7 @@
             <p v-if="entity.service_window?.feed_start_date && entity.service_window?.feed_end_date" class="title">
               {{ formatDate(entity.service_window?.feed_start_date) }}
             </p>
-            <p v-else class="title">
+            <p v-else-if="entity.earliest_calendar_date" class="title">
               {{ formatDate(entity.earliest_calendar_date) }}
             </p>
           </div>
@@ -63,7 +63,7 @@
             <p v-if="entity.service_window?.feed_start_date && entity.service_window?.feed_end_date" class="title">
               {{ formatDate(entity.service_window?.feed_end_date) }}
             </p>
-            <p v-else class="title">
+            <p v-else-if="entity.latest_calendar_date" class="title">
               {{ formatDate(entity.latest_calendar_date) }}
             </p>
           </div>
@@ -135,12 +135,14 @@
                 <o-tooltip>
                   <template #content>
                     <p>These service dates are sourced from the information in <code>feed_info.txt</code>.</p>
-                    <p>The full span of service contained in <code>calendar.txt</code> is {{ formatDate(entity.earliest_calendar_date) }} to {{ formatDate(entity.latest_calendar_date) }}</p>
+                    <p v-if="entity.earliest_calendar_date && entity.latest_calendar_date">
+                      The full span of service contained in <code>calendar.txt</code> is {{ formatDate(entity.earliest_calendar_date) }} to {{ formatDate(entity.latest_calendar_date) }}
+                    </p>
                   </template>
                   <i class="fas fa-info-circle" />
                 </o-tooltip>
               </template>
-              <template v-else>
+              <template v-else-if="entity.earliest_calendar_date && entity.latest_calendar_date">
                 {{ formatDate(entity.earliest_calendar_date) }} to {{ formatDate(entity.latest_calendar_date) }}
                 <o-tooltip>
                   <template #content>
@@ -293,7 +295,7 @@
                 <th>Warnings</th>
               </tr>
             </thead><tbody>
-              <tr v-for="(v, fn) of mergedCount(entity.feed_version_gtfs_import)" :key="fn">
+              <tr v-for="(v, fn) of mergedCount(entity.feed_version_gtfs_import ?? null)" :key="fn">
                 <td><code>{{ fn }}</code></td>
                 <td>{{ rowCount[fn] }}</td>
                 <td>{{ v.count }}</td>
@@ -536,7 +538,7 @@ const entities = computed<FeedVersion[]>(() => {
 })
 
 const entity = computed<FeedVersion | null>(() => {
-  return entities.value.length > 0 ? entities.value[0] : null
+  return entities.value.length > 0 ? (entities.value[0] ?? null) : null
 })
 
 const fvi = computed<FeedVersionGtfsImport | null>(() => {

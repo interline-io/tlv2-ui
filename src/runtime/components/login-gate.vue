@@ -41,7 +41,7 @@ const { loggedIn } = useUser()
 
 const notOk = computed(() => {
   return useLoginGate({
-    hasRole: props.role,
+    hasRole: props.role ?? undefined,
     hasAnyRole: props.hasAnyRole,
     excludeAnyRole: props.excludeAnyRole
   })

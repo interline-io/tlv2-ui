@@ -66,7 +66,11 @@ const feedSpecs = computed({
   get (): string[] {
     const specs = route.query.feedSpecs
     // Handle both string and array values
-    return specs ? (Array.isArray(specs) ? specs : [specs]) : ['GTFS', 'GTFS_RT', 'GBFS']
+    if (!specs) {
+      return ['GTFS', 'GTFS_RT', 'GBFS']
+    }
+    const specsArray = Array.isArray(specs) ? specs : [specs]
+    return specsArray.filter((s): s is string => s !== null)
   },
   set (v: string[] | undefined) {
     // If v is empty array or contains all default values, remove query param

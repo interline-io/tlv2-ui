@@ -498,7 +498,7 @@ const roots = computed((): Stop[] => {
 })
 
 const entity = computed((): Stop | null => {
-  return roots.value.length > 0 ? roots.value[0] : null
+  return roots.value.length > 0 ? (roots.value[0] ?? null) : null
 })
 
 const allStops = computed((): Stop[] => {

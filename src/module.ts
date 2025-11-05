@@ -19,6 +19,7 @@ export interface ModuleOptions {
   // Api keys
   protomapsApikey?: string
   nearmapsApikey?: string
+  mixpanelApikey?: string
   // Auth0
   auth0ClientId?: string
   auth0Domain?: string
@@ -95,6 +96,7 @@ export default defineNuxtModule<ModuleOptions>({
         },
         protomapsApikey: options.protomapsApikey,
         nearmapsApikey: options.nearmapsApikey,
+        mixpanelApikey: options.mixpanelApikey,
         loginGate: options.loginGate,
         requireLogin: options.requireLogin,
         editorRoutePrefix: options.editorRoutePrefix,

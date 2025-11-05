@@ -108,7 +108,7 @@
               </td>
             </tr>
 
-            <tr v-if="displayLicense">
+            <tr v-if="displayLicense && entity.license">
               <td>License</td>
               <td>
                 <ul>
@@ -244,7 +244,7 @@
           GTFS Realtime Feed Messages
         </h4>
 
-        <template v-if="entity.license.redistribution_allowed !== 'no'">
+        <template v-if="entity.license && entity.license.redistribution_allowed !== 'no'">
           <tl-msg-info>
             When a feed's license allows redistribution, you can view or download Transitland's recently cached copy of each GTFS Realtime endpoint. <a
               href="/documentation/concepts/source-feeds/#gtfs-realtime-feed-fetching-and-caching"

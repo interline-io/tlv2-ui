@@ -15,7 +15,7 @@ export default {
     authHeaders: () => (useAuthHeaders()),
     async fetchRest (path: string, data: object, method: string) {
       method = method || 'GET'
-      const body = {
+      const body: Record<string, any> = {
         'Content-Type': 'application/json',
         'headers': await this.authHeaders(),
         method
@@ -42,7 +42,7 @@ export default {
     fetchAdmin (path: string, params: object, method: string) {
       return this.fetchRest('/admin' + path, params, method)
     },
-    handleError (response) {
+    handleError (response: any) {
       if (!response.ok) {
         console.log('request failed', response.status, response.statusText)
         throw new Error(`${response.status}: ${response.statusText || 'request failed'}`)
@@ -50,7 +50,7 @@ export default {
         return response.json()
       }
     },
-    setError (e) {
+    setError (e: any) {
       this.error = e
       this.loading = false
     }

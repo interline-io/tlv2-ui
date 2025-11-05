@@ -525,7 +525,7 @@ const networkError = ref<Error | false>(false)
 
 // Computed properties
 const entity = computed<ValidationEntity | null>(() => {
-  return entities.value.length > 0 ? entities.value[0] : null
+  return entities.value.length > 0 ? (entities.value[0] ?? null) : null
 })
 
 const feedUrlIsValid = computed<boolean>(() => {
@@ -540,14 +540,16 @@ async function validateFeed (file?: File): Promise<void> {
   mutationLoading.value = true
 
   try {
-    const { data } = await validateGtfs({
+    const result = await validateGtfs({
       file,
       url: feedUrl.value || null,
       realtime_urls: realtimeUrl.value ? [realtimeUrl.value] : null
     })
 
-    activeStep.value = '2'
-    entities.value = [data.validate_gtfs]
+    if (result?.data) {
+      activeStep.value = '2'
+      entities.value = [result.data.validate_gtfs]
+    }
     mutationLoading.value = false
   } catch (error) {
     mutationLoading.value = false
@@ -561,16 +563,20 @@ async function fetchFeedVersion (): Promise<void> {
   fetchLoading.value = true
 
   try {
-    const { data } = await fetchFeedVersionMutate({
+    const result = await fetchFeedVersionMutate({
       file: selectedFiles.value[0] || null,
       url: feedUrl.value || null,
       feedOnestopId: pathKey.value
     })
 
-    activeStep.value = '3'
-    fetchResult.value = data.feed_version_fetch
-    fetchLoading.value = false
-    importFeedVersion(fetchResult.value.feed_version.id)
+    if (result?.data) {
+      activeStep.value = '3'
+      fetchResult.value = result.data.feed_version_fetch
+      fetchLoading.value = false
+      if (fetchResult.value) {
+        importFeedVersion(fetchResult.value.feed_version.id)
+      }
+    }
   } catch (error) {
     fetchLoading.value = false
     networkError.value = error as Error

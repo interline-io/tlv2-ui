@@ -7,7 +7,7 @@
       <a v-if="text || sanitizedUrl" class="linker" @click="clipboard">
         <i class="mdi mdi-content-paste" title="Copy to clipboard" role="button" />
       </a>
-      <a v-if="url && sanitizedUrl" target="_blank" :href="linkUrl" class="linker">
+      <a v-if="url && sanitizedUrl" target="_blank" :href="linkUrl ?? undefined" class="linker">
         <i class="mdi mdi-link" title="Open URL" role="button" />
       </a>
     </div>

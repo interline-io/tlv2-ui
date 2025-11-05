@@ -84,7 +84,6 @@
 </template>
 
 <script setup lang="ts">
-// @ts-expect-error - haversine doesn't have types
 import haversine from 'haversine'
 import { gql } from 'graphql-tag'
 import { ref, computed } from 'vue'

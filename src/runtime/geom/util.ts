@@ -10,11 +10,11 @@ export function lonLatStr (v: LonLat | null): string {
 // Methods
 export function haversinePoint (fromPoint: Point, toPoint: Point): number {
   const d = haversine({
-    latitude: fromPoint.coordinates[1],
-    longitude: fromPoint.coordinates[0]
+    latitude: fromPoint.coordinates[1] ?? 0,
+    longitude: fromPoint.coordinates[0] ?? 0
   }, {
-    latitude: toPoint.coordinates[1],
-    longitude: toPoint.coordinates[0]
+    latitude: toPoint.coordinates[1] ?? 0,
+    longitude: toPoint.coordinates[0] ?? 0
   }, { unit: 'meter' })
   return d
 }

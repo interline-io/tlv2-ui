@@ -34,7 +34,7 @@
             class="tl-departure-route"
           >
             <nuxt-link
-              :to="makeRouteLink(sr.route.onestop_id, sr.route.feed_onestop_id, sr.route.feed_version_sha1, sr.route.route_id, sr.route.id, false)"
+              :to="makeRouteLink(sr.route.onestop_id ?? '', sr.route.feed_onestop_id ?? '', sr.route.feed_version_sha1 ?? '', sr.route.route_id ?? '', sr.route.id, false)"
             >
               <tl-route-icon
                 :key="'icon'+sr.route.id"
