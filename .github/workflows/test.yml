@@ -26,5 +26,11 @@ jobs:
     - name: Install dependencies
       run: yarn install --immutable
       
+    - name: Run linting
+      run: yarn lint
+      
+    - name: Run type checking
+      run: yarn run nuxt typecheck
+      
     - name: Run tests
       run: yarn test
