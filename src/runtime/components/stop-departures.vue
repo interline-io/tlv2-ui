@@ -29,12 +29,12 @@
         <div class="agency-header title is-6">
           {{ ss.agency.agency_name }}
         </div>
-        <div v-for="(sr,srkey) of ss.routes.slice(0,routesPerAgencyShadow)" :key="srkey" class="tl-departure-container">
+        <div v-for="(sr, srkey) of ss.routes.slice(0, routesPerAgencyShadow)" :key="srkey" class="tl-departure-container">
           <div
             class="tl-departure-route"
           >
             <nuxt-link
-              :to="makeRouteLink(sr.route.onestop_id, sr.route.feed_onestop_id, sr.route.feed_version_sha1, sr.route.route_id, sr.route.id, false)"
+              :to="makeRouteLink(sr.route.onestop_id ?? '', sr.route.feed_onestop_id ?? '', sr.route.feed_version_sha1 ?? '', sr.route.route_id ?? '', sr.route.id, false)"
             >
               <tl-route-icon
                 :key="'icon'+sr.route.id"
@@ -46,7 +46,7 @@
             </nuxt-link>
           </div>
           <div class="tl-departure-times">
-            <span v-for="st of sr.departures.slice(0,3)" :key="st.trip.id" class="tl-departure-time tag">
+            <span v-for="st of sr.departures.slice(0, 3)" :key="st.trip.id" class="tl-departure-time tag">
               <template v-if="st.departure.estimated">
                 {{ reformatHMS(st.departure.estimated) }} &nbsp;<o-icon variant="success" size="small" icon="wifi" />
               </template><template v-else>
@@ -65,9 +65,9 @@
 
 <script setup lang="ts">
 import { gql } from 'graphql-tag'
-import { ref, computed, watch, onMounted, toRef } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useQuery } from '@vue/apollo-composable'
-import type { Geometry, Feature, Point } from 'geojson'
+import type { Geometry, Point } from 'geojson'
 import { fromNowDate, makeRouteLink, reformatHMS } from '../lib/filters'
 import { haversineLonLat, type LonLat } from '../geom'
 
@@ -142,21 +142,6 @@ type DepartureTime = Stop['departures'][0]
 type Trip = DepartureTime['trip']
 type Agency = Trip['route']['agency']
 
-// Feature property interfaces
-interface StopProperties {
-  stop_id: string
-  stop_name: string
-}
-
-interface RouteProperties {
-  id: number
-  route_short_name: string
-  route_long_name: string
-  route_type: number
-  route_color: string
-  headway_secs: number
-}
-
 // Typed GeoJSON Features
 interface RouteGroup {
   route: Route
@@ -202,7 +187,7 @@ const props = withDefaults(defineProps<{
   useServiceWindow?: boolean
   stopIds?: number[]
 }>(), {
-  searchCoords: null,
+  searchCoords: undefined,
   showLastFetched: true,
   searchRadius: 200,
   nextSeconds: 7200,
@@ -309,7 +294,7 @@ const queryVariables = computed<QueryVariables>(() => {
 })
 
 // Apollo query
-const { result, loading, refetch, onResult, onError } = useQuery<StopDeparturesResponse>(
+const { loading, refetch, onResult, onError } = useQuery<StopDeparturesResponse>(
   query,
   queryVariables,
   {
@@ -334,8 +319,14 @@ const filteredStops = computed<Stop[]>(() => {
   return stops.value.filter((s) => {
     return s.departures.length > 0 && s.location_type === 0 && s.geometry.coordinates
   }).sort((a, b) => {
-    const ad = haversineLonLat(props.searchCoords, { lon: a.geometry.coordinates[0], lat: a.geometry.coordinates[1] })
-    const bd = haversineLonLat(props.searchCoords, { lon: b.geometry.coordinates[0], lat: b.geometry.coordinates[1] })
+    if (!props.searchCoords) return 0
+    const aLon = a.geometry.coordinates[0]
+    const aLat = a.geometry.coordinates[1]
+    const bLon = b.geometry.coordinates[0]
+    const bLat = b.geometry.coordinates[1]
+    if (aLon === undefined || aLat === undefined || bLon === undefined || bLat === undefined) return 0
+    const ad = haversineLonLat(props.searchCoords, { lon: aLon, lat: aLat })
+    const bd = haversineLonLat(props.searchCoords, { lon: bLon, lat: bLat })
     return ad - bd
   })
 })
@@ -358,7 +349,7 @@ const filteredStopsGroupRoutes = computed<AgencyGroup[]>(() => {
         agency: d.trip.route.agency,
         routes: {}
       }
-      const r = a.routes[routeKey] || {
+      const r: RouteGroup = a.routes[routeKey] || {
         route: d.trip.route,
         trip_headsign: d.trip.trip_headsign,
         direction_id: d.trip.direction_id,
@@ -376,6 +367,7 @@ const filteredStopsGroupRoutes = computed<AgencyGroup[]>(() => {
   const ret: AgencyGroup[] = []
   for (const agencyGroup of Object.values(agencyGroups)) {
     const routes = Object.values(agencyGroup.routes).sort((a, b) => {
+      if (!a.departures[0] || !b.departures[0]) return 0
       const aa = a.departures[0].departure.estimated || a.departures[0].departure.scheduled
       const bb = b.departures[0].departure.estimated || b.departures[0].departure.scheduled
       if (aa > bb) {

@@ -9,7 +9,7 @@
         <thead>
           <tr>
             <th>Feed</th>
-            <th>Name</th>
+            <th>Version</th>
             <th />
           </tr>
         </thead>
@@ -19,15 +19,16 @@
               {{ feed.name || feed.onestop_id }}
             </td>
             <td>
-              {{ feed_version.name || feed_version.file || feed_version.sha1 }}
+              {{ feed_version.sha1 }}
             </td>
             <td>
               <nuxt-link
                 v-if="feed_version.id"
-                :to="{name:editorRoutes.stations, params: {
-                  feedKey:feed.onestop_id || 'unknown',
-                  feedVersionKey:feed_version.id || 'unknown'
-                }}"
+                :to="{ name: editorRoutes.stations,
+                       params: {
+                         feedKey: feed.onestop_id || 'unknown',
+                         feedVersionKey: feed_version.id || 'unknown',
+                       } }"
               >
                 Edit {{ feed_version.stations ? feed_version.stations.length : '' }} Stations
               </nuxt-link>

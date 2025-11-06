@@ -14,6 +14,7 @@
     @keydown.esc="clearSearch"
   />
 </template>
+
 <script setup lang="ts">
 // Props
 withDefaults(defineProps<{

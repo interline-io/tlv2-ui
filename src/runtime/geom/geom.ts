@@ -17,11 +17,6 @@ import type {
   BBox,
 } from 'geojson'
 
-interface Bbox {
-  sw: LonLat
-  ne: LonLat
-}
-
 interface LonLat {
   lon: number
   lat: number
@@ -30,19 +25,6 @@ interface LonLat {
 interface BoundingBox {
   sw: LonLat
   ne: LonLat
-}
-
-interface MarkerFeature {
-  onDragEnd: (newPosition: unknown) => void
-  point: Position
-  color: string
-  draggable: boolean
-  element?: HTMLElement // Optional HTML element for custom marker
-}
-
-interface PopupFeature {
-  point: Position
-  text: string
 }
 
 export type {

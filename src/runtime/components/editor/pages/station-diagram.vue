@@ -32,10 +32,10 @@
                 :params="{
                   feedKey: feedKey,
                   feedVersionKey: feedVersionKey,
-                  stationKey: stationKey
+                  stationKey: stationKey,
                 }"
                 :query="{
-                  selectedPathway: p.match('[0-9]+')[0]
+                  selectedPathway: p.match('[0-9]+')[0],
                 }"
               />
               <tl-editor-pathway-editor
@@ -50,10 +50,10 @@
                 :params="{
                   feedKey: feedKey,
                   feedVersionKey: feedVersionKey,
-                  stationKey: stationKey
+                  stationKey: stationKey,
                 }"
                 :query="{
-                  selectedStop: s.match('[0-9]+')[0]
+                  selectedStop: s.match('[0-9]+')[0],
                 }"
               />
               <tl-editor-stop-editor

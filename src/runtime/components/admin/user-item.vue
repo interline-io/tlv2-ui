@@ -23,7 +23,7 @@
 <script>
 export default {
   props: {
-    user: { type: Object, default () { return {} }, required: true },
+    user: { type: Object, default () { return {} } },
     action: { type: String, default: null },
     newTab: { type: Boolean, default: false }
   },

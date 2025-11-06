@@ -10,12 +10,12 @@
 
     <div class="field is-grouped is-grouped-multiline">
       <div
-        v-for="[k,v] of Object.entries(actions)"
+        v-for="[k, v] of Object.entries(actions)"
         :key="k"
         class="control"
       >
         <div class="tags has-addons">
-          <span class="tag is-list">{{ k.replace('can_','').replaceAll('_',' ') }}</span>
+          <span class="tag is-list">{{ k.replace('can_', '').replaceAll('_', ' ') }}</span>
           <span
             v-if="v"
             class="tag is-primary"

@@ -55,19 +55,19 @@ export function setupPolly (recordingName: string, config: PollyConfig): Polly {
 
   // Record filter
   polly.server.any().filter((req) => {
-    return config.shouldRecord?.(req) || matchesAnyPattern(req.url, config.recordPatterns)
+    return config.shouldRecord?.(req) || matchesAnyPattern(req.url, config.recordPatterns ?? [])
   })
 
   // Passthrough filter
   polly.server.any().filter((req) => {
-    return config.shouldPassthrough?.(req) || matchesAnyPattern(req.url, config.passthroughPatterns)
+    return config.shouldPassthrough?.(req) || matchesAnyPattern(req.url, config.passthroughPatterns ?? [])
   }).passthrough()
 
   // Fail on unmatched requests unless explicitly allowed
   if (!config.allowUnmatched) {
     polly.server.any().filter((req) => {
-      const passthrough = config.shouldPassthrough?.(req) || matchesAnyPattern(req.url, config.passthroughPatterns)
-      const recorded = config.shouldRecord?.(req) || matchesAnyPattern(req.url, config.recordPatterns)
+      const passthrough = config.shouldPassthrough?.(req) || matchesAnyPattern(req.url, config.passthroughPatterns ?? [])
+      const recorded = config.shouldRecord?.(req) || matchesAnyPattern(req.url, config.recordPatterns ?? [])
       return !passthrough && !recorded
     }).intercept((req, res) => {
       res.status(400).json({
@@ -85,7 +85,7 @@ function matchesAnyPattern (url: string, patterns: string[]): boolean {
   return (patterns || []).some((pattern) => {
     try {
       return new RegExp(pattern).test(url)
-    } catch (e) {
+    } catch {
       // If pattern is not valid regex, treat as literal string match
       return url.includes(pattern)
     }

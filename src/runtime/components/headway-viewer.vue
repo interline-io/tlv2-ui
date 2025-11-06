@@ -131,6 +131,9 @@ const departureFilter = (values: number[], vmin: number, vmax: number): number[]
   for (let i = 0; i < values.length - 1; i++) {
     const a = values[i]
     const b = values[i + 1]
+    if (a === undefined || b === undefined) {
+      continue
+    }
     const diff = (b - a)
     if (a >= vmin && diff > 30) {
       ret.push(diff)

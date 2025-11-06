@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-for="(routes,agency) in agencyFeatures" :key="agency">
+    <div v-for="(routes, agency) in agencyFeatures" :key="agency">
       <h6 class="title is-6">
         {{ agency }}
       </h6>

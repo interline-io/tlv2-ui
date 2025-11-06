@@ -57,8 +57,8 @@
         width="100%"
         height="500px"
         :editable-features="editFeatures"
-        :polygons="station.levels.filter((s)=>{return s.geometry && s.level_id !== level.level_id}).map((s)=>{return s.geometry})"
-        :points="station.stops.map((s)=>{return s.geometry})"
+        :polygons="station.levels.filter((s) => { return s.geometry && s.level_id !== level.level_id }).map((s) => { return s.geometry })"
+        :points="station.stops.map((s) => { return s.geometry })"
         :opacity="0.1"
         :search="true"
         @changed="setGeometry"
@@ -121,7 +121,7 @@
         type="textarea"
         expanded
         rows="20"
-        :style="{'max-height': '50vh'}"
+        :style="{ 'max-height': '50vh' }"
       />
       <o-button class="is-pulled-right" :disabled="!!geojsonError" :variant="geojsonError ? 'danger' : 'primary'" @click="showGeojsonEditor = false">
         {{ geojsonError ? geojsonError : 'OK' }}
@@ -142,7 +142,7 @@ const stripZandM = (coords) => {
 }
 
 const convertToMultiPolygon = (parsed) => {
-  let coords = []
+  const coords = []
   if (parsed.type === 'FeatureCollection') {
     for (const feat of parsed.features) {
       if (feat.geometry.type === 'Polygon') {
@@ -217,7 +217,7 @@ export default {
         let parsed = null
         try {
           parsed = JSON.parse(value)
-        } catch (e) {
+        } catch {
           this.geojsonError = 'Invalid JSON'
           return
         }

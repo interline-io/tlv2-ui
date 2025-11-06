@@ -370,7 +370,7 @@ function getStopAgencyName (stop: Stop): string {
       if (agencies && agencies.length > 0 && agencies[0].agency_name) {
         return agencies[0].agency_name
       }
-    } catch (e) {
+    } catch {
       // If parsing fails, fall through to next option
     }
   }
@@ -382,7 +382,7 @@ function getStopAgencyName (stop: Stop): string {
       if (parentStation && parentStation.stop_name) {
         return parentStation.stop_name
       }
-    } catch (e) {
+    } catch {
       // If parsing fails, fall through to next option
     }
   }
@@ -406,7 +406,7 @@ const showProblematicGeometries = ref(false)
 const currentBbox = ref<BoundingBox | null>(null)
 
 // Stop location type filters
-const showStopLocationTypes = ref({
+const showStopLocationTypes = ref<Record<number, boolean>>({
   0: true, // Stop/platform
   1: true, // Station
   2: false, // Entrance/Exit
@@ -561,7 +561,7 @@ const departureSearchCoords = computed((): LonLat | null => {
     return null
   }
   if (props.lonParam && props.latParam) {
-    return { lon: parseFloat(props.lonParam), lat: parseFloat(props.latParam) }
+    return { lon: Number.parseFloat(props.lonParam), lat: Number.parseFloat(props.latParam) }
   }
   return null
 })
@@ -571,7 +571,7 @@ const routesCoords = computed((): LonLat | null => {
     return null
   }
   if (props.lonParam && props.latParam) {
-    return { lon: parseFloat(props.lonParam), lat: parseFloat(props.latParam) }
+    return { lon: Number.parseFloat(props.lonParam), lat: Number.parseFloat(props.latParam) }
   }
   return null
 })
@@ -629,7 +629,7 @@ async function directionsSetPlaces (fromPlace: LonLat | null, toPlace: LonLat | 
 }
 
 function splitCoords (v: any): LonLat | null {
-  const vs = (v || '').split(',').map(parseFloat).filter((v: number) => !isNaN(v))
+  const vs = (v || '').split(',').map(Number.parseFloat).filter((v: number) => !Number.isNaN(v))
   if (vs.length === 2) {
     return { lon: vs[0], lat: vs[1] }
   }
@@ -678,8 +678,8 @@ const initializeMapFromUrl = () => {
   // Fallback to lon/lat params if no valid hash
     console.log('No hash, checking lon/lat params')
     if (props.lonParam && props.latParam) {
-      const pt = { lon: parseFloat(props.lonParam), lat: parseFloat(props.latParam) }
-      if (!isNaN(pt.lon) && !isNaN(pt.lat)) {
+      const pt = { lon: Number.parseFloat(props.lonParam), lat: Number.parseFloat(props.latParam) }
+      if (!Number.isNaN(pt.lon) && !Number.isNaN(pt.lat)) {
         console.log('Setting map center to lon/lat params:', pt.lon, pt.lat)
         initialCenter.value = pt
         initialZoom.value = 16
@@ -774,7 +774,6 @@ const markers = computed(() => {
 
   return ret
 })
-
 </script>
 
 <style>
@@ -843,7 +842,6 @@ const markers = computed(() => {
     max-width: 680px;
   }
 }
-
 </style>
 
 <style scoped>

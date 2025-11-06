@@ -40,7 +40,7 @@
 
                 <o-field label="Location Type">
                   <o-select v-model="selectedStop.location_type" :disabled="true">
-                    <option v-for="[type,label] of LocationTypes.entries()" :key="type" :value="type">
+                    <option v-for="[type, label] of LocationTypes.entries()" :key="type" :value="type">
                       {{ label }}
                     </option>
                   </o-select>
@@ -128,7 +128,7 @@
                 <o-icon icon="menu-down" />
               </button>
             </template>
-            <o-dropdown-item v-for="(sourceType,key) of SourceTypes" :key="sourceType" :value="key" aria-role="listitem">
+            <o-dropdown-item v-for="(sourceType, key) of SourceTypes" :key="sourceType" :value="key" aria-role="listitem">
               <div class="media">
                 {{ sourceType }}
               </div>
@@ -147,7 +147,7 @@
                 <o-icon icon="menu-down" />
               </button>
             </template>
-            <o-dropdown-item v-for="[key,locationType] of LocationTypes.entries()" :key="locationType" :value="key.toString()" aria-role="listitem">
+            <o-dropdown-item v-for="[key, locationType] of LocationTypes.entries()" :key="locationType" :value="key.toString()" aria-role="listitem">
               <div class="media">
                 {{ locationType }}
               </div>
@@ -166,7 +166,7 @@
                 <o-icon icon="menu-down" />
               </button>
             </template>
-            <o-dropdown-item v-for="(agency,key) of agencies" :key="key" :value="key" aria-role="listitem">
+            <o-dropdown-item v-for="(agency, key) of agencies" :key="key" :value="key" aria-role="listitem">
               <div class="media">
                 {{ key }} {{ agency }}
               </div>
@@ -191,7 +191,7 @@
 <script>
 import { navigateTo } from '#imports'
 import { gql } from 'graphql-tag'
-import { Stop, mapLevelKeyFn } from '../station'
+import { Stop } from '../station'
 import StationMixin from './station-mixin'
 import { LocationTypes } from '../basemaps'
 
@@ -450,7 +450,7 @@ export default {
       if (!s) {
         return null
       }
-      const si = parseInt(s)
+      const si = Number.parseInt(s)
       for (const stop of this.station.stops) {
         if (stop.id === si) {
           return stop

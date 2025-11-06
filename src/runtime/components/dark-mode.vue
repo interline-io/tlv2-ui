@@ -15,7 +15,6 @@ const isDark = useDark({
 })
 
 const toggleDarkMode = useToggle(isDark)
-
 </script>
 
 <style scoped>

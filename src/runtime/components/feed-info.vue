@@ -61,14 +61,6 @@ const props = withDefaults(defineProps<{
 })
 
 // Computed properties
-const feedStartDate = computed((): string | null | undefined => {
-  return props.feedInfo?.feed_start_date
-})
-
-const feedEndDate = computed((): string | null | undefined => {
-  return props.feedInfo?.feed_end_date
-})
-
 const feedPublisherName = computed((): string | null | undefined => {
   return props.feedInfo?.feed_publisher_name
 })
@@ -91,10 +83,6 @@ const feedLang = computed((): string | null | undefined => {
 
 const feedVersion = computed((): string | null | undefined => {
   return props.feedInfo?.feed_version
-})
-
-const defaultLang = computed((): string | null | undefined => {
-  return props.feedInfo?.default_lang
 })
 </script>
 

@@ -6,7 +6,7 @@ interface RouteType {
   name: string
 }
 
-const routeTypeMap = new Map<Number, RouteType>()
+const routeTypeMap = new Map<number, RouteType>()
 for (const rt of routeTypes) {
   routeTypeMap.set(rt.code ?? 0, rt)
 }

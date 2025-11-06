@@ -90,7 +90,7 @@
 
           <div v-for="ent of entities" :key="ent.id">
             <tl-msg-warning
-              v-for="(alert,idx) of ent.alerts"
+              v-for="(alert, idx) of ent.alerts"
               :key="idx"
             >
               Agency Alert:
@@ -109,13 +109,13 @@
                 <h6 class="title is-6">
                   Routes at this stop
                 </h6>
-                <div v-for="(rss,agency) of servedRoutes" :key="agency">
+                <div v-for="(rss, agency) of servedRoutes" :key="agency">
                   <div class="agency-name">
                     {{ agency }}
                   </div>
                   <div v-for="rs of rss" :key="rs.route.id">
                     <nuxt-link
-                      :to="makeRouteLink(rs.route.onestop_id,rs.route.feed_onestop_id,rs.route.feed_version_sha1,rs.route.route_id,rs.route.id,linkVersion)"
+                      :to="makeRouteLink(rs.route.onestop_id, rs.route.feed_onestop_id, rs.route.feed_version_sha1, rs.route.route_id, rs.route.id, linkVersion)"
                     >
                       <tl-route-icon :route-type="rs.route.route_type" :route-short-name="rs.route.route_short_name" :route-long-name="rs.route.route_long_name" :route-link="rs.route.route_url" />
                     </nuxt-link>
@@ -127,13 +127,13 @@
                 <h6 class="title is-6">
                   Routes at nearby stops
                 </h6>
-                <div v-for="(rss,agency) of nearbyRoutes" :key="agency">
+                <div v-for="(rss, agency) of nearbyRoutes" :key="agency">
                   <div class="agency-name">
                     {{ agency }}
                   </div>
                   <div v-for="rs of rss" :key="rs.route.id">
                     <nuxt-link
-                      :to="makeRouteLink(rs.route.onestop_id,rs.route.feed_onestop_id,rs.route.feed_version_sha1,rs.route.route_id,rs.route.id,linkVersion)"
+                      :to="makeRouteLink(rs.route.onestop_id, rs.route.feed_onestop_id, rs.route.feed_version_sha1, rs.route.route_id, rs.route.id, linkVersion)"
                     >
                       <tl-route-icon :route-type="rs.route.route_type" :route-short-name="rs.route.route_short_name" :route-long-name="rs.route.route_long_name" :route-link="rs.route.route_url" />
                     </nuxt-link>
@@ -198,7 +198,7 @@
                     v-if="entity.id && activeTab === tabNames.departures"
                     :show-fallback-selector="true"
                     :stop-ids="entityIds"
-                    :search-coords="mapCenter"
+                    :search-coords="entity.geometry.coordinates"
                   />
                   <template #loginText>
                     <o-notification icon="lock">
@@ -225,7 +225,7 @@
                 :route-ids="routeIds"
                 :features="features"
                 :auto-fit="false"
-                :center="mapCenter"
+                :center="entity.geometry.coordinates"
                 :include-stops="true"
                 :circle-radius="20"
                 :zoom="15"
@@ -255,7 +255,6 @@ import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
 import { useEntityPath } from '../../composables/useEntityPath'
 import { shortenName, makeRouteLink, makeStopLink } from '../../lib/filters'
-import type { LonLat } from '../../geom'
 
 // Types
 interface StopResponse {
@@ -499,7 +498,7 @@ const roots = computed((): Stop[] => {
 })
 
 const entity = computed((): Stop | null => {
-  return roots.value.length > 0 ? roots.value[0] : null
+  return roots.value.length > 0 ? (roots.value[0] ?? null) : null
 })
 
 const allStops = computed((): Stop[] => {
@@ -655,13 +654,6 @@ const staticTitle = computed((): string => {
 const staticDescription = computed((): string => {
   return entity.value ? `${entity.value.stop_name} stop available for browsing and analyzing on the Transitland platform` : ''
 })
-
-const mapCenter = computed((): LonLat | null => {
-  const coords = entity.value?.geometry?.coordinates
-  if (!coords) return null
-  return { lon: coords[0], lat: coords[1] }
-})
-
 // Methods
 function setTab (value: string) {
   activeTab.value = value
