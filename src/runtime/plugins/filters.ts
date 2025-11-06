@@ -8,7 +8,6 @@ import {
   fromNow,
   fromNowDate,
   joinUnique,
-  makePathKey,
   makeRouteLink,
   makeStopLink,
   nameSort,

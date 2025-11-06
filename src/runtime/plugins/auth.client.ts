@@ -91,7 +91,8 @@ async function buildUser () {
   let meData: any = null
   if (buildGraphqlUser) {
     try {
-      const apolloClient = initApolloClient(useApiEndpoint('/query', 'default'), useAuthHeaders)
+      const headers = await useAuthHeaders()
+      const apolloClient = initApolloClient(useApiEndpoint('/query', 'default'), headers)
       const response = await apolloClient.query({
         query: gql`query{me{id name email external_data roles}}`
       })
