@@ -166,7 +166,7 @@ const formattedJson = computed<string>(() => {
   if (!jsonData.value) return ''
   try {
     return JSON.stringify(jsonData.value, null, 2)
-  } catch (e) {
+  } catch {
     return JSON.stringify(jsonData.value)
   }
 })

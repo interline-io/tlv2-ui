@@ -104,7 +104,7 @@ describe('sanitizeUrl', () => {
   })
 
   it(`replaces null values with ${BLANK_URL}`, () => {
-    // @ts-ignore
+    // @ts-expect-error - Testing null input for sanitization
     expect(sanitizeUrl(null)).toBe(BLANK_URL)
   })
 
@@ -186,7 +186,7 @@ describe('sanitizeUrl', () => {
         )
       })
 
-      it(`disallows ${protocol} urls that start with non-\w characters as a suffix for the protocol`, () => {
+      it(`disallows ${protocol} urls that start with non-\\w characters as a suffix for the protocol`, () => {
         expect(sanitizeUrl(`&!*${protocol}:alert(document.domain)`)).toBe(
           BLANK_URL
         )

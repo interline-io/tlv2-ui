@@ -10,7 +10,7 @@
     </div>
     <div v-else>
       <h5 class="title is-5">
-        Census results for {{ layerInfo[layer].plural.toLowerCase() }} within {{ radius }}m of a stop.
+        Census results for {{ currentLayerInfo.plural.toLowerCase() }} within {{ radius }}m of a stop.
       </h5>
 
       <table class="table">
@@ -18,7 +18,7 @@
           <tr>
             <th>Population</th>
             <th>
-              <o-tooltip :label="`Population (B01001) of ${layerInfo[layer].plural.toLowerCase()} within ${radius}m of stops`">
+              <o-tooltip :label="`Population (B01001) of ${currentLayerInfo.plural.toLowerCase()} within ${radius}m of stops`">
                 Total
               </o-tooltip>
             </th>
@@ -32,7 +32,7 @@
         <thead>
           <tr>
             <td>
-              {{ thousands(Object.keys(tableGroups['b01001'] || {}).length) }} {{ layerInfo[layer].plural.toLowerCase() }}
+              {{ thousands(Object.keys(tableGroups['b01001'] || {}).length) }} {{ currentLayerInfo.plural.toLowerCase() }}
             </td>
             <td>
               {{ thousands(dig(tableSums, 'b01001', 'b01001_001')) }} total
@@ -187,6 +187,11 @@ const layerInfo: Record<string, LayerInfo> = {
   // cd: { name: 'Congressional District', plural: 'Congressional Districts' }
 }
 
+const currentLayerInfo = computed<LayerInfo>(() => {
+  const layer = props.layer || 'tract'
+  return layerInfo[layer] || { name: 'Tract', plural: 'Tracts' }
+})
+
 // Computed query variables
 const queryVariables = computed<QueryVariables>(() => {
   const variables: QueryVariables = {
@@ -270,7 +275,7 @@ const tableSums = computed<Record<string, Record<string, number>>>(() => {
         if (fieldValue >= 0) {
           tableSum[fieldKey] = tableSum[fieldKey] ? tableSum[fieldKey] + fieldValue : fieldValue
         } else {
-          tableSum[fieldKey] = NaN
+          tableSum[fieldKey] = Number.NaN
           break
         }
       }
@@ -298,7 +303,7 @@ const bufferAdjustedSums = computed<Record<string, Record<string, number>>>(() =
         if (adjustedValue >= 0) {
           tableSum[fieldKey] = tableSum[fieldKey] ? tableSum[fieldKey] + adjustedValue : adjustedValue
         } else {
-          tableSum[fieldKey] = NaN
+          tableSum[fieldKey] = Number.NaN
           break
         }
       }

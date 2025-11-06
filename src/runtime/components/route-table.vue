@@ -91,7 +91,7 @@ interface RouteTableResponse {
 
 // Extract individual types from the response type
 type Route = RouteTableResponse['entities'][0]
-type Agency = Route['agency']
+type _Agency = Route['agency']
 
 interface QueryVariables {
   after?: number
@@ -183,7 +183,7 @@ const entities = computed<Route[]>(() => result.value?.entities || [])
 
 // Utility functions
 
-const headwayTooltip = (hws: HeadwayData[]): string => {
+const _headwayTooltip = (hws: HeadwayData[]): string => {
   // Buefy 0.9 will have a tooltip slot and we can use HeadwaysViewer
   const hwlookup: Record<number, string> = {
     1: 'weekday',

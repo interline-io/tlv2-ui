@@ -48,18 +48,18 @@
                 <td>
                   <ul>
                     <li v-for="(location, index) of locations" :key="index">
-                      <nuxt-link :to="{name:'places-adm0', params:{adm0: location.adm0_name}}">
+                      <nuxt-link :to="{ name: 'places-adm0', params: { adm0: location.adm0_name } }">
                         {{ location.adm0_name }}
                       </nuxt-link>
                       <template v-if="location.adm1_name">
                         /
-                        <nuxt-link :to="{name:'places-adm0-adm1', params:{adm1: location.adm1_name, adm0: location.adm0_name}}">
+                        <nuxt-link :to="{ name: 'places-adm0-adm1', params: { adm1: location.adm1_name, adm0: location.adm0_name } }">
                           {{ location.adm1_name }}
                         </nuxt-link>
                       </template>
                       <template v-if="location.city_name">
                         /
-                        <nuxt-link :to="{name:'places-adm0-adm1-city', params:{city: location.city_name, adm1: location.adm1_name, adm0: location.adm0_name}}">
+                        <nuxt-link :to="{ name: 'places-adm0-adm1-city', params: { city: location.city_name, adm1: location.adm1_name, adm0: location.adm0_name } }">
                           {{ location.city_name }}
                         </nuxt-link>
                       </template>
@@ -156,9 +156,9 @@
                 </template>
               </td>
               <td class="has-text-right">
-                <nuxt-link class="button is-small is-primary" :to="{name:'feeds-feedKey', params:{feedKey:row.target_feed}}">
+                <nuxt-link class="button is-small is-primary" :to="{ name: 'feeds-feedKey', params: { feedKey: row.target_feed } }">
                   Feed
-                </nuxt-link> <nuxt-link v-if="row.target_feed_spec == 'GTFS'" class="button is-small is-primary" :to="{name:'feeds-feedKey', params:{feedKey: row.target_feed}, hash: '#versions'}">
+                </nuxt-link> <nuxt-link v-if="row.target_feed_spec == 'GTFS'" class="button is-small is-primary" :to="{ name: 'feeds-feedKey', params: { feedKey: row.target_feed }, hash: '#versions' }">
                   Archived feed versions
                 </nuxt-link>
               </td>
@@ -193,7 +193,7 @@
             <tl-stop-table
               v-if="activeTab === tabNames.stops"
               :show-onestop-id="true"
-              :feed-version-ids="agencies.map(a => a.feed_version.id)"
+              :feed-version-ids="agencies.map((a: Agency) => a.feed_version.id)"
               :agency-ids="agencyIds"
             />
           </o-tab-item>
@@ -299,7 +299,7 @@ const tabNames = computed(() => {
 })
 
 // Use entity path composable for route parsing and entity logic
-const { searchKey, entityVariables, linkVersion, search } = useEntityPath(props)
+const { searchKey, entityVariables, linkVersion } = useEntityPath(props)
 
 // GraphQL query
 const operatorQuery = gql`
@@ -345,7 +345,7 @@ query ($onestopId: String, $feedOnestopId: String, $limit: Int=10) {
 `
 
 // Apollo query
-const { result, loading, error } = useQuery<{ entities: OperatorResponse[] }, QueryVariables>(
+const { result, loading } = useQuery<{ entities: OperatorResponse[] }, QueryVariables>(
   operatorQuery,
   () => entityVariables.value,
   {
@@ -356,7 +356,7 @@ const { result, loading, error } = useQuery<{ entities: OperatorResponse[] }, Qu
 const entities = computed<Operator[]>(() => result.value?.entities ?? [])
 
 const entity = computed<Operator | null>(() => {
-  return entities.value.length > 0 ? entities.value[0] : null
+  return entities.value.length > 0 && entities.value[0] ? entities.value[0] : null
 })
 
 const agencies = computed<Agency[]>(() => {
@@ -365,7 +365,8 @@ const agencies = computed<Agency[]>(() => {
 
 const dataFreshness = computed<string | null>(() => {
   if (agencies.value.length > 0) {
-    return agencies.value.map(a => a.feed_version.fetched_at).sort((a, b) => new Date(a) < new Date(b) ? 1 : -1)[0]
+    const sorted = agencies.value.map(a => a.feed_version.fetched_at).sort((a, b) => new Date(a) < new Date(b) ? 1 : -1)
+    return sorted[0] ?? null
   }
   return null
 })
@@ -391,14 +392,14 @@ const agencyNames = computed<string[]>(() => {
 })
 
 const agencyURLs = computed<string[]>(() => {
-  const urls = agencies.value.map(s => s.agency_url).filter(Boolean)
+  const urls = agencies.value.map(s => s.agency_url).filter((url): url is string => Boolean(url))
   if (entity.value && entity.value.website) {
     urls.push(entity.value.website)
   }
   return [...new Set(urls)] // remove duplicates
 })
 
-const generatedOperator = computed<boolean>(() => {
+const _generatedOperator = computed<boolean>(() => {
   return entity.value ? entity.value.generated === true : false
 })
 
@@ -407,7 +408,7 @@ const operatorName = computed<string>(() => {
     return `${entity.value.name} (${entity.value.short_name})`
   } else if (entity.value && (entity.value.name || entity.value.short_name)) {
     return entity.value.name || entity.value.short_name || ''
-  } else if (agencies.value && agencies.value.length > 0) {
+  } else if (agencies.value && agencies.value.length > 0 && agencies.value[0]) {
     return agencies.value[0].agency_name
   } else {
     return ''
@@ -459,7 +460,7 @@ const uniqueFeedSourcesOnestopIds = computed<Record<string, string>>(() => {
   return onestopIdsToSpec
 })
 
-const feedCounts = computed<number>(() => {
+const _feedCounts = computed<number>(() => {
   return Object.keys(uniqueFeedSourcesOnestopIds.value).length
 })
 
@@ -494,7 +495,7 @@ function setTab (value: string): void {
 }
 
 // JSON-LD schema for SEO (for use in www-transit-land-v2)
-function jsonld (): Record<string, any> {
+function _jsonld (): Record<string, any> {
   if (!entity.value) {
     return {
       '@context': 'https://schema.org',

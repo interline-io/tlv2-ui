@@ -36,7 +36,7 @@ const route = useRoute()
 const router = useRouter()
 
 // Computed properties
-const filteringByOperatorLocation = computed<boolean>(() => {
+const _filteringByOperatorLocation = computed<boolean>(() => {
   return !!(route.query.adm0_name || route.query.adm1_name || route.query.city_name)
 })
 

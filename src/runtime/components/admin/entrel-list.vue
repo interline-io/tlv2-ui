@@ -22,7 +22,7 @@
           :key="v.id"
           :value="v"
           :action="canRemove ? 'remove' : null"
-          @select="$emit('removePermissions', {type:'tenant', id:$event, refrel:'member'})"
+          @select="$emit('removePermissions', { type: 'tenant', id: $event, refrel: 'member' })"
         />
 
         <tl-admin-group-item
@@ -30,7 +30,7 @@
           :key="v.id"
           :value="v"
           :action="canRemove ? 'remove' : null"
-          @select="$emit('removePermissions', {type:'org', id:$event, refrel: 'viewer'})"
+          @select="$emit('removePermissions', { type: 'org', id: $event, refrel: 'viewer' })"
         />
 
         <tl-admin-user-item
@@ -38,7 +38,7 @@
           :key="v.id"
           :user="v"
           :action="canRemove ? 'remove' : null"
-          @select="$emit('removePermissions', {type:'user', id:$event})"
+          @select="$emit('removePermissions', { type: 'user', id: $event })"
         />
       </o-field>
     </o-field>
@@ -67,7 +67,7 @@ export default {
     text: { type: String, default: '' },
     actionText: { type: String, default: '' },
     actionInfo: { type: Object, default () { return {} } },
-    entrels: { type: Array, default () { return [] }, required: true },
+    entrels: { type: Array, default () { return [] } },
     canAdd: { type: Boolean, default: false },
     canRemove: { type: Boolean, default: false },
     showUsers: { type: Boolean, default: true },

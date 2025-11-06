@@ -3,7 +3,7 @@
     <ul>
       <li :class="(activeTab === 'levels') ? 'is-active' : ''">
         <nuxt-link
-          :to="{name:routeKeys['levels'], params: {feedKey:feedKey,feedVersionKey:feedVersionKey,stationKey:stationKey}}"
+          :to="{ name: routeKeys['levels'], params: { feedKey: feedKey, feedVersionKey: feedVersionKey, stationKey: stationKey } }"
         >
           <i class="mdi mdi-layers mdi-16px" /> &nbsp; Draw Levels
         </nuxt-link>
@@ -11,14 +11,14 @@
       <li v-if="stopAssociationsEnabled" :class="(activeTab === 'stops') ? 'is-active' : ''">
         <span>
           <nuxt-link
-            :to="{name:routeKeys['stops'], params: {feedKey:feedKey,feedVersionKey:feedVersionKey,stationKey:stationKey}}"
+            :to="{ name: routeKeys['stops'], params: { feedKey: feedKey, feedVersionKey: feedVersionKey, stationKey: stationKey } }"
           >
             <i class="mdi mdi-map-marker mdi-16px" /> &nbsp; Associate Stops
           </nuxt-link></span>
       </li>
       <li :class="(activeTab === 'pathways') ? 'is-active' : ''">
         <nuxt-link
-          :to="{name:routeKeys['pathways'], params: {feedKey:feedKey,feedVersionKey:feedVersionKey,stationKey:stationKey}}"
+          :to="{ name: routeKeys['pathways'], params: { feedKey: feedKey, feedVersionKey: feedVersionKey, stationKey: stationKey } }"
           :event="pathwaysModeEnabled ? 'click' : ''"
           :class="pathwaysModeEnabled ? '' : 'disabled'"
         >
@@ -27,7 +27,7 @@
       </li>
       <li :class="(activeTab === 'diagram') ? 'is-active' : ''">
         <nuxt-link
-          :to="{name:routeKeys['diagram'], params: {feedKey:feedKey,feedVersionKey:feedVersionKey,stationKey:stationKey}}"
+          :to="{ name: routeKeys['diagram'], params: { feedKey: feedKey, feedVersionKey: feedVersionKey, stationKey: stationKey } }"
         >
           <i class="mdi mdi-chart-timeline mdi-16px" /> &nbsp; Station Diagram
         </nuxt-link>

@@ -78,7 +78,6 @@ const props = withDefaults(defineProps<MapViewerProps>(), {
 })
 // Reactive state
 const map = ref<maplibre.Map | null>(null)
-const marker = ref<maplibre.Marker | null>(null)
 const hovering = ref<any[]>([])
 const hoveringStops = ref<any[]>([])
 const markerLayer = ref<maplibre.Marker[]>([])
@@ -130,7 +129,7 @@ const updateFilters = () => {
     // Filter by location_type
     const enabledLocationTypes = Object.entries(props.stopLocationTypeFilter)
       .filter(([_, enabled]) => enabled)
-      .map(([type, _]) => parseInt(type))
+      .map(([type, _]) => Number.parseInt(type))
 
     if (enabledLocationTypes.length < 5) { // Only add filter if not all types are enabled
       if (enabledLocationTypes.length > 0) {
@@ -292,15 +291,16 @@ const initMap = async () => {
   once(() => {
     maplibre.setRTLTextPlugin('/js/mapbox-gl-rtl-text.js', null as any)
   })
-  map.value = new maplibre.Map(opts)
-  map.value.addControl(new maplibre.FullscreenControl())
-  map.value.addControl(new maplibre.NavigationControl())
+  const newMap = new maplibre.Map(opts)
+  map.value = newMap
+  newMap.addControl(new maplibre.FullscreenControl())
+  newMap.addControl(new maplibre.NavigationControl())
   markerLayer.value = []
   if (!props.enableScrollZoom) {
-    map.value.scrollZoom.disable()
+    newMap.scrollZoom.disable()
   }
   drawMarkers(props.markers)
-  map.value.on('load', () => {
+  newMap.on('load', () => {
     createSources()
     createLayers()
     updateFeatures()
@@ -564,7 +564,7 @@ const mapMouseMove = (e: any) => {
   // Handle route hovers
   for (const k of hovering.value) {
     currentMap.setFeatureState(
-      { source: 'routes', id: k, sourceLayer: props.routeTiles ? props.routeTiles.id : null },
+      { source: 'routes', id: k, sourceLayer: props.routeTiles?.id },
       { hover: false }
     )
   }
@@ -572,7 +572,7 @@ const mapMouseMove = (e: any) => {
 
   for (const v of features) {
     hovering.value.push(v.id)
-    currentMap.setFeatureState({ source: 'routes', id: v.id, sourceLayer: props.routeTiles ? props.routeTiles.id : null }, { hover: true })
+    currentMap.setFeatureState({ source: 'routes', id: v.id, sourceLayer: props.routeTiles?.id }, { hover: true })
   }
 
   const agencyFeatures: any = {}
@@ -589,7 +589,7 @@ const mapMouseMove = (e: any) => {
   // Handle stop hovers
   for (const k of hoveringStops.value) {
     currentMap.setFeatureState(
-      { source: 'stops', id: k, sourceLayer: props.stopTiles ? props.stopTiles.id : null },
+      { source: 'stops', id: k, sourceLayer: props.stopTiles?.id },
       { hover: false }
     )
   }
@@ -599,7 +599,7 @@ const mapMouseMove = (e: any) => {
   for (const v of stopFeatures) {
     hoveringStops.value.push(v.id)
     currentMap.setFeatureState(
-      { source: 'stops', id: v.id, sourceLayer: props.stopTiles ? props.stopTiles.id : null },
+      { source: 'stops', id: v.id, sourceLayer: props.stopTiles?.id },
       { hover: true }
     )
   }

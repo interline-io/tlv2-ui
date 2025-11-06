@@ -81,11 +81,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
-// @ts-ignore - #imports is a Nuxt virtual module
-import { createError } from '#imports'
 
 // Types
 interface PlaceResponse {
@@ -192,20 +190,6 @@ const { result, loading } = useQuery<{ places: PlaceResponse[] }>(
 )
 
 const places = computed<Place[]>(() => result.value?.places || [])
-
-// Watch for empty places and throw 404 error
-watch([places, loading], ([newPlaces, isLoading]) => {
-  // Only check after loading is complete and if we have query filters
-  if (!isLoading && (props.adm0 || props.adm1 || props.city)) {
-    if (newPlaces.length === 0) {
-      throw createError({
-        statusCode: 404,
-        statusMessage: 'Place not found',
-        fatal: true
-      })
-    }
-  }
-})
 
 const placeTitleName = computed<string>(() => {
   if (props.city && props.adm1 && props.adm0) {

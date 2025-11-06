@@ -87,7 +87,7 @@ const unimportFeedVersionQuery = gql`
   }
 `
 
-const deleteFeedVersionQuery = gql`
+const _deleteFeedVersionQuery = gql`
   mutation ($id: Int!) {
     feed_version_delete(id: $id) {
       success
@@ -100,7 +100,7 @@ const error = ref<string | null>(null)
 const mutationLoading = ref(false)
 
 // Computed properties
-const imported = computed(() => {
+const _imported = computed(() => {
   return fvi.value && fvi.value.success
 })
 

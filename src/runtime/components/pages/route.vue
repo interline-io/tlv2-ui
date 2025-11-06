@@ -122,7 +122,7 @@ Usage example:
 
           <div v-for="ent of entities" :key="ent.id">
             <tl-msg-warning
-              v-for="(alert,idx) of ent.alerts"
+              v-for="(alert, idx) of ent.alerts"
               :key="idx"
             >
               <p>Agency Alert:</p>
@@ -196,7 +196,7 @@ Usage example:
                         >
                           Feed version
                         </nuxt-link> <nuxt-link
-                          :to="makeRouteLink(row.onestop_id,row.feed_onestop_id,row.feed_version_sha1,row.route_id,row.id,true)"
+                          :to="makeRouteLink(row.onestop_id, row.feed_onestop_id, row.feed_version_sha1, row.route_id, row.id, true)"
                           class="button is-primary is-small"
                         >
                           Route
@@ -338,7 +338,7 @@ interface RouteResponse {
 type Route = RouteResponse
 type Alert = NonNullable<RouteResponse['alerts']>[0]
 type Translation = Alert['description_text'][0]
-type RouteStop = NonNullable<RouteResponse['route_stops']>[0]
+type _RouteStop = NonNullable<RouteResponse['route_stops']>[0]
 
 interface TabNames {
   summary: string
@@ -471,7 +471,7 @@ const entities = computed((): Route[] => {
 })
 
 const entity = computed((): Route | null => {
-  return entities.value.length > 0 ? entities.value[0] : null
+  return entities.value.length > 0 && entities.value[0] ? entities.value[0] : null
 })
 
 const entityIds = computed((): number[] => {

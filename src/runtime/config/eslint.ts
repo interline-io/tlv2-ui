@@ -1,17 +1,25 @@
 // eslint.config.js
 import type { StylisticCustomizeOptions } from '@stylistic/eslint-plugin'
-import stylistic from '@stylistic/eslint-plugin'
-import type { ResolvableFlatConfig } from 'eslint-flat-config-utils'
-import pluginVue from 'eslint-plugin-vue'
-import typescriptEslint from 'typescript-eslint'
+import type { Linter } from 'eslint'
 
 export const ignoreFiles = {
-  ignores: ['.nuxt/**', '**/.nuxt', '.output/**', 'dist/**', 'node_modules/**', '.yarn/**'],
+  ignores: [
+    '.nuxt/**',
+    '.output/**',
+    '.yarn/**',
+    '**/.nuxt',
+    'dist/**',
+    'node_modules/**',
+  ],
 }
 
-export const eslintRules = {
+export const eslintTypescriptRules: Linter.RulesRecord = {
   'no-console': 'off',
   '@typescript-eslint/no-explicit-any': 'off',
+  '@typescript-eslint/unified-signatures': 'off',
+}
+
+export const eslintStylisticRules: Linter.RulesRecord = {
   'vue/multi-word-component-names': 'off',
   'vue/max-attributes-per-line': ['error', {
     singleline: {
@@ -37,35 +45,3 @@ export const stylisticConfig = {
   quotes: 'single',
   semi: false,
 } as any as StylisticCustomizeOptions
-
-export const eslintConfig: ResolvableFlatConfig = [
-  ignoreFiles,
-  // @ts-expect-error - Type compatibility issue with ESLint flat config
-  ...pluginVue.configs['flat/recommended'],
-  // @ts-expect-error - Type compatibility issue with ESLint flat config
-  stylistic.configs.customize(stylisticConfig),
-  {
-    files: ['**/*.ts', '**/*.tsx'],
-    languageOptions: {
-      parser: typescriptEslint.parser,
-      parserOptions: {
-        project: './tsconfig.json',
-        sourceType: 'module',
-      },
-    },
-    plugins: {
-      '@typescript-eslint': typescriptEslint.plugin,
-    },
-    // @ts-expect-error - Type compatibility issue with ESLint flat config
-    rules: eslintRules,
-  },
-  {
-    languageOptions: {
-      parserOptions: {
-        parser: typescriptEslint.parser,
-      },
-    },
-    // @ts-expect-error - Type compatibility issue with ESLint flat config
-    rules: eslintRules,
-  },
-]

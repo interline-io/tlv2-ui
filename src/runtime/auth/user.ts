@@ -1,8 +1,5 @@
 import { useStorage } from '@vueuse/core'
 
-const RECHECK_INTERVAL = 600_000
-const buildGraphqlUser = true
-
 export class User {
   loggedIn = false
   id = ''

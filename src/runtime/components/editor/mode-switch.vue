@@ -5,7 +5,7 @@
       :to="{
         name: routeKeys['pathways'],
         params: params,
-        query: query
+        query: query,
       }"
       class="button is-primary is-expanded is-small"
       :class="selectedMode === 'pathways' ? 'is-active' : 'is-outlined'"
@@ -16,7 +16,7 @@
       :to="{
         name: routeKeys['diagram'],
         params: params,
-        query: query
+        query: query,
       }"
       class="button is-primary is-expanded is-small"
       :class="selectedMode === 'diagram' ? 'is-active' : 'is-outlined'"

@@ -125,7 +125,7 @@ const props = withDefaults(defineProps<{
   agencyIds: null,
   linkVersion: false,
   features: () => [],
-  center: null,
+  center: undefined,
   zoom: null,
   enableScrollZoom: false,
   circleRadius: 1,
@@ -227,6 +227,9 @@ const routeFeatures = computed<MapFeature[]>(() => {
       continue
     }
     const geom = feature.geometries[0]
+    if (!geom) {
+      continue
+    }
     let routeColor = feature.route_color
     if (routeColor && routeColor.length > 2 && routeColor.substr(0, 1) !== '#') {
       routeColor = '#' + routeColor
@@ -234,12 +237,13 @@ const routeFeatures = computed<MapFeature[]>(() => {
     const headwaySorted = (feature.headways || [])
       .filter(s => s.dow_category === 1)
       .sort((a, b) => a.direction_id < b.direction_id ? -1 : 1)
+    const firstHeadway = headwaySorted.length > 0 ? headwaySorted[0] : undefined
     const fcopy = Object.assign({}, feature, {
       geometry_length: geom.length || -1,
       generated: geom.generated,
       max_segment_length: geom.max_segment_length,
       route_color: routeColor,
-      headway_secs: (headwaySorted.length > 0 ? headwaySorted[0].headway_secs : null) || -1,
+      headway_secs: (firstHeadway?.headway_secs ?? null) || -1,
       agency_name: feature.agency ? feature.agency.agency_name : null
     }) as any
     delete fcopy.geometry
@@ -293,7 +297,8 @@ const fetchMore = () => {
   if (!loading.value) {
     return
   }
-  const lastId = routes.value.length > 0 ? routes.value[routes.value.length - 1].id : 0
+  const lastRoute = routes.value.length > 0 ? routes.value[routes.value.length - 1] : undefined
+  const lastId = lastRoute?.id ?? 0
   apolloFetchMore({
     variables: {
       after: lastId,

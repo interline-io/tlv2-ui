@@ -19,7 +19,7 @@
       >
         <template v-if="props.row.parent">
           <nuxt-link
-            :to="{name:editorRoutes.stationIndex, params: {feedKey, feedVersionKey, stationKey:props.row.parent.stop_id}}"
+            :to="{ name: editorRoutes.stationIndex, params: { feedKey, feedVersionKey, stationKey: props.row.parent.stop_id } }"
           >
             {{ props.row.parent.stop_name }}
           </nuxt-link>
@@ -86,7 +86,7 @@
       >
         <template v-if="props.row.parent">
           <nuxt-link
-            :to="{name:editorRoutes.stationPathways, params: {feedKey, feedVersionKey, stationKey:props.row.parent.stop_id}, query:{ selectedStop:props.row.id}}"
+            :to="{ name: editorRoutes.stationPathways, params: { feedKey, feedVersionKey, stationKey: props.row.parent.stop_id }, query: { selectedStop: props.row.id } }"
           >
             Re-assign stop
           </nuxt-link>

@@ -3,17 +3,17 @@
     <!-- SELECTED ITIN -->
     <div v-if="selectedItin">
       <o-button icon-left="arrow-left" @click="selectedItinIdx = null; activeItinIdx = null">
-        Back ({{ directions.itineraries.length }} itineraries)
+        Back ({{ directions?.itineraries?.length ?? 0 }} itineraries)
       </o-button>
 
       <div
-        v-for="(leg,legIdx) of selectedItin.legs"
+        v-for="(leg, legIdx) of selectedItin.legs"
         :key="legIdx"
         class="itin-summary"
       >
         <div class="itin-summary-icons">
           <div class="itin-summary-icons-time">
-            {{ formatDateTime(leg.start_time ) }}
+            {{ formatDateTime(leg.start_time) }}
           </div>
           <o-icon
             :icon="legModeIcon(leg).icon"
@@ -85,7 +85,7 @@
       <div class="is-clearfix">
         <o-field addons expanded>
           <o-button
-            v-for="(v,k) of modeIcons"
+            v-for="(v, k) of modeIcons"
             :key="k"
             expanded
             class="mode-icon"
@@ -139,7 +139,7 @@
 
       <!-- ITIN SUMMARIES -->
       <div v-else-if="directions && directions.success">
-        <div v-for="(itin,itinIdx) of (directions.itineraries || []).slice(0,5)" :key="itinIdx">
+        <div v-for="(itin, itinIdx) of (directions.itineraries || []).slice(0, 5)" :key="itinIdx">
           <div
             :class="{ 'itin-summary': true, 'itin-summary-active': activeItinIdx === itinIdx }"
             @click="selectedItinIdx = itinIdx; activeItinIdx = itinIdx"
@@ -147,7 +147,7 @@
           >
             <div class="itin-summary-icons">
               <o-icon
-                v-for="(icon,iconIdx) of itinModeIcons(itin)"
+                v-for="(icon, iconIdx) of itinModeIcons(itin)"
                 :key="iconIdx"
                 :icon="icon"
                 size="medium"
@@ -156,14 +156,14 @@
             <div class="itin-summary-text">
               <div class="itin-summary-text-time">
                 <strong>
-                  {{ formatDateTime(itin.start_time ) }}
+                  {{ formatDateTime(itin.start_time) }}
                   <o-icon icon="chevron-right" size="small" class="itin-chevron" />
-                  {{ formatDateTime(itin.end_time ) }}
+                  {{ formatDateTime(itin.end_time) }}
                 </strong>
               </div>
               <div class="itin-summary-text-legs">
                 <span
-                  v-for="(rid,ridIdx) of itinLegIcons(itin)"
+                  v-for="(rid, ridIdx) of itinLegIcons(itin)"
                   :key="ridIdx"
                 >
                   <span
@@ -287,8 +287,8 @@ const props = withDefaults(defineProps<{
   mode?: string
   departAt?: string
 }>(), {
-  fromPlace: null,
-  toPlace: null,
+  fromPlace: undefined,
+  toPlace: undefined,
   mode: 'WALK',
   departAt: () => new Date().toISOString()
 })
@@ -406,7 +406,7 @@ function loadReload (): void {
   selectedItinIdx.value = null
   activeItinIdx.value = null
   if (loadReady.value) {
-    load(query, vars.value) || refetch(vars.value)
+    void (load(query, vars.value) || refetch(vars.value))
   }
 }
 
@@ -414,7 +414,7 @@ watch(vars, loadReload)
 loadReload()
 
 // Get directions from result
-const directions = computed<DirectionsResponse | null>(() => loadReady.value ? result.value?.directions : null)
+const directions = computed<DirectionsResponse | null>(() => loadReady.value ? (result.value?.directions ?? null) : null)
 
 // Computed properties
 
@@ -424,12 +424,12 @@ const departAtOut = computed(() => {
   return parseISO(dateStr).toISOString()
 })
 
-const fromPlaceStr = computed(() =>
-  lonLatStr(props.fromPlace)
+const _fromPlaceStr = computed(() =>
+  lonLatStr(props.fromPlace ?? null)
 )
 
 const toPlaceStr = computed(() =>
-  lonLatStr(props.toPlace)
+  lonLatStr(props.toPlace ?? null)
 )
 
 const selectedItin = computed<Itinerary | null>(() => {
@@ -448,7 +448,7 @@ const activeOrFirstItin = computed<Itinerary | null>(() => {
     idx = selectedItinIdx.value
   }
   if (idx >= directions.value.itineraries.length) { return null }
-  return directions.value.itineraries[idx]
+  return directions.value.itineraries[idx] ?? null
 })
 
 const activeFeatures = computed(() => {

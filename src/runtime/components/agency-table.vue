@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useQuery } from '@vue/apollo-composable'
 import { gql } from 'graphql-tag'
 
@@ -87,9 +87,6 @@ const { result, loading, error: queryError, fetchMore } = useQuery<{ entities: A
     clientId: 'transitland'
   }
 )
-
-// Watch for query errors
-import { watch } from 'vue'
 watch(queryError, (newError) => {
   if (newError) {
     error.value = newError.message
@@ -102,7 +99,8 @@ const entities = computed<Agency[]>(() => result.value?.entities || [])
 // Methods
 const showAll = async () => {
   const newLimit = 1000
-  const lastId = entities.value.length > 0 ? entities.value[entities.value.length - 1].id : 0
+  const lastEntity = entities.value.length > 0 ? entities.value[entities.value.length - 1] : undefined
+  const lastId = lastEntity?.id ?? 0
 
   try {
     await fetchMore({

@@ -22,7 +22,7 @@ function getGraphQLVariables (pathKey: string, feedOnestopId?: string, feedVersi
   }
 
   // Check if pathKey is comma-separated database IDs
-  const kInts = pathKeyStr.split(',').map(s => parseInt(s)).filter(s => !isNaN(s))
+  const kInts = pathKeyStr.split(',').map(s => Number.parseInt(s)).filter(s => !Number.isNaN(s))
   if (kInts.length > 0) {
     return { ids: kInts }
   }

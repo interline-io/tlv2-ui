@@ -102,7 +102,7 @@
             {{ displaySpec(row.spec) }}
           </td>
           <td v-if="showColumns.includes('last_fetched')" class="has-text-right">
-            <template v-if="row.last_successful_fetch && row.last_successful_fetch.length > 0">
+            <template v-if="row.last_successful_fetch && row.last_successful_fetch.length > 0 && row.last_successful_fetch[0]">
               {{ fromNow(row.last_successful_fetch[0].fetched_at) }}
             </template>
             <template v-else>
@@ -111,7 +111,7 @@
           </td>
           <td v-if="importStatus || showColumns.includes('last_imported')" class="has-text-right">
             <span v-if="row.spec === 'GTFS'">
-              <template v-if="row.last_successful_import && row.last_successful_import.length > 0">
+              <template v-if="row.last_successful_import && row.last_successful_import.length > 0 && row.last_successful_import[0]">
                 {{ fromNow(row.last_successful_import[0].fetched_at) }}
               </template>
               <template v-else>
@@ -121,7 +121,7 @@
           </td>
           <td v-if="fetchError === 'true' || showColumns.includes('fetch_errors')" class="has-text-right">
             <span
-              v-if="row.last_fetch && row.last_fetch.length > 0 && row.last_fetch[0].fetch_error"
+              v-if="row.last_fetch && row.last_fetch.length > 0 && row.last_fetch[0] && row.last_fetch[0].fetch_error"
               class="tag is-danger is-light"
               :title="row.last_fetch[0].fetch_error"
             >
@@ -193,7 +193,6 @@ interface FeedResponse {
 
 // Extract individual types from the response type
 type Feed = FeedResponse
-type FeedVersion = FeedResponse['last_successful_import'][0]
 
 interface QueryVariables {
   specs?: string[] | null
@@ -294,7 +293,8 @@ const { result, loading, error, fetchMore } = useQuery<{ entities: FeedResponse[
 const entities = computed<Feed[]>(() => result.value?.entities ?? [])
 
 function fetchMoreFn (): void {
-  const lastId = entities.value.length > 0 ? entities.value[entities.value.length - 1].id : 0
+  const lastEntity = entities.value[entities.value.length - 1]
+  const lastId = lastEntity ? lastEntity.id : 0
   fetchMore({
     variables: {
       after: lastId,
@@ -324,7 +324,6 @@ function displaySpec (spec: string): string {
   }
   return upperSpec
 }
-
 </script>
 
 <style scoped>

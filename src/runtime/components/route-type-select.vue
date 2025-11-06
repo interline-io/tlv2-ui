@@ -7,7 +7,7 @@
     <option :value="null">
       All
     </option>
-    <option v-for="v,k of routeTypes" :key="k" :value="k">
+    <option v-for="v, k of routeTypes" :key="k" :value="k">
       {{ v }}
     </option>
   </o-select>

@@ -1,6 +1,6 @@
 // @ts-check
 import { createConfigForNuxt } from '@nuxt/eslint-config/flat'
-import { stylisticConfig } from './src/runtime/config'
+import { stylisticConfig, ignoreFiles, eslintStylisticRules, eslintTypescriptRules } from './src/runtime/config'
 // eslintRules
 
 // Run `npx @eslint/config-inspector` to inspect the resolved config interactively
@@ -23,41 +23,14 @@ export default createConfigForNuxt({
 })
   .prepend(
     // Explicitly ignore node_modules and build outputs
-    {
-      ignores: [
-        '**/node_modules/**',
-        '**/dist/**',
-        '**/.nuxt/**',
-        '**/.output/**',
-        '**/coverage/**',
-        '.yarn'
-      ],
-    },
+    ignoreFiles,
   )
   .append(
     // your custom flat config here...
     {
       rules: {
-        'no-console': 'off',
-        '@typescript-eslint/no-explicit-any': 'off',
-        '@typescript-eslint/unified-signatures': 'off',
-        'vue/multi-word-component-names': 'off',
-        'vue/max-attributes-per-line': ['error', {
-          singleline: {
-            max: 10,
-          },
-          multiline: {
-            max: 1,
-          },
-        }],
-        '@stylistic/brace-style': ['error', '1tbs', { allowSingleLine: true }],
-        '@stylistic/space-before-function-paren': ['error', {
-          anonymous: 'always',
-          named: 'always',
-          asyncArrow: 'always',
-        }],
-        '@stylistic/comma-dangle': 'off',
-        '@stylistic/max-statements-per-line': 'off',
+        ...eslintTypescriptRules,
+        ...eslintStylisticRules,
       },
     },
   )

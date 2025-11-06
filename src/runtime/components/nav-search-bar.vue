@@ -27,7 +27,7 @@
 
       <a v-for="item in feedLinks" :key="item.name" class="navbar-item">
         Feed:
-        <nuxt-link :to="{name:'feeds-feedKey', params:{feedKey:item.onestop_id}}">
+        <nuxt-link :to="{ name: 'feeds-feedKey', params: { feedKey: item.onestop_id } }">
           {{ item.name || item.onestop_id }}
         </nuxt-link>
       </a>
@@ -36,7 +36,7 @@
       <!-- Operators -->
       <a v-for="item in operatorLinks" :key="item.name" class="navbar-item">
         Operator:
-        <nuxt-link :to="{name:'operators-operatorKey', params:{operatorKey:item.onestop_id}}">
+        <nuxt-link :to="{ name: 'operators-operatorKey', params: { operatorKey: item.onestop_id } }">
           {{ item.name || item.onestop_id }}
         </nuxt-link>
       </a>
@@ -45,7 +45,7 @@
       <!-- Routes -->
       <a v-for="item in routeLinks" :key="item.name" class="navbar-item">
         Route:
-        <nuxt-link :to="{name:'routes-routeKey', params:{routeKey:item.onestop_id}}">
+        <nuxt-link :to="{ name: 'routes-routeKey', params: { routeKey: item.onestop_id } }">
           {{ [item.route_short_name, item.route_long_name].filter(Boolean).join(' ') }}
         </nuxt-link>
       </a>
@@ -56,7 +56,7 @@
 <script setup lang="ts">
 import { gql } from 'graphql-tag'
 import { useDebounceFn } from '@vueuse/core'
-import { ref, computed, watch, reactive, nextTick } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useLazyQuery } from '@vue/apollo-composable'
 
 const minLength = 3
@@ -114,7 +114,7 @@ query ($search: String!, $limit: Int=10) {
 }
 `
 
-const { result, loading, error, load, refetch } = useLazyQuery(query, {}, { clientId: 'transitland' })
+const { result, loading, load, refetch } = useLazyQuery(query, {}, { clientId: 'transitland' })
 
 function loadReload () {
   if (search.value.length < minLength) {
@@ -125,11 +125,10 @@ function loadReload () {
     search: search.value
   }
   console.log('loading...', vars)
-  load(query, vars) || refetch(vars)
+  void (load(query, vars) || refetch(vars))
 }
 
 watch(search, useDebounceFn(loadReload, asyncDebounceTime))
-
 </script>
 
 <style scoped lang="scss">

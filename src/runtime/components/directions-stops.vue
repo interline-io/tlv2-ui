@@ -9,13 +9,13 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(stop,stopIdx) of stops.slice(0,1)" :key="stopIdx">
+        <tr v-for="(stop, stopIdx) of stops.slice(0, 1)" :key="stopIdx">
           <td>{{ formatDateTime(stop.departure) }}</td>
           <td>{{ stop.stop_name }}</td>
           <td>{{ stop.stop_id }}</td>
         </tr>
         <template v-if="expandStops">
-          <tr v-for="(stop,stopIdx) of stops.slice(1,-1)" :key="stopIdx">
+          <tr v-for="(stop, stopIdx) of stops.slice(1, -1)" :key="stopIdx">
             <td>{{ formatDateTime(stop.departure) }}</td>
             <td>{{ stop.stop_name }}</td>
             <td>{{ stop.stop_id }}</td>
@@ -32,7 +32,7 @@
             <td />
           </tr>
         </template>
-        <tr v-for="(stop,stopIdx) of stops.slice(-1)" :key="stopIdx">
+        <tr v-for="(stop, stopIdx) of stops.slice(-1)" :key="stopIdx">
           <td>{{ formatDateTime(stop.departure) }}</td>
           <td>{{ stop.stop_name }}</td>
           <td>{{ stop.stop_id }}</td>
@@ -41,6 +41,7 @@
     </table>
   </div>
 </template>
+
 <script setup lang="ts">
 import { parseISO, format } from 'date-fns'
 import { ref } from 'vue'
