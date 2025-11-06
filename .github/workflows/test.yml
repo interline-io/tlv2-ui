@@ -29,7 +29,10 @@ jobs:
         
     - name: Install dependencies
       run: yarn install --immutable
-      
+
+    - name: Prepare Nuxt  
+      run: yarn dev:prepare  
+
     - name: Run linting
       run: yarn lint
       

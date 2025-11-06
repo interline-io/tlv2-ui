@@ -549,11 +549,13 @@ async function validateFeed (file?: File): Promise<void> {
     if (result?.data) {
       activeStep.value = '2'
       entities.value = [result.data.validate_gtfs]
+    } else {
+      networkError.value = new Error('Validation failed: No data returned')
     }
-    mutationLoading.value = false
   } catch (error) {
-    mutationLoading.value = false
     networkError.value = error as Error
+  } finally {
+    mutationLoading.value = false
   }
 }
 

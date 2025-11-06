@@ -96,8 +96,6 @@ const _deleteFeedVersionQuery = gql`
 `
 
 // Reactive state
-
-// Reactive state
 const error = ref<string | null>(null)
 const mutationLoading = ref(false)
 

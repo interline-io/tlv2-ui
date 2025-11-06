@@ -73,9 +73,6 @@ export default {
   },
   methods: {
     error (error) {
-      if (!error) {
-        return
-      }
       const msg = error.message ? error.message : JSON.stringify(error)
       this.$oruga.notification.open({
         message: `Error: ${msg}`,

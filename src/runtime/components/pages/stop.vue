@@ -198,7 +198,7 @@
                     v-if="entity.id && activeTab === tabNames.departures"
                     :show-fallback-selector="true"
                     :stop-ids="entityIds"
-                    :search-coords="entity.geometry.coordinates"
+                    :search-coords="entity?.geometry?.coordinates ?? undefined"
                   />
                   <template #loginText>
                     <o-notification icon="lock">
