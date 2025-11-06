@@ -15,7 +15,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, getCurrentInstance } from 'vue'
+import { computed } from 'vue'
+import { useRuntimeConfig } from '#imports'
 import { useToastNotification } from '../composables/useToastNotification'
 import { sanitizeUrl } from '../lib/sanitize'
 
@@ -30,9 +31,8 @@ const props = withDefaults(defineProps<{
   maxWidth: '400px'
 })
 
-// Get current Vue instance for accessing app context
-const instance = getCurrentInstance()
-const $config = instance?.appContext.config.globalProperties.$config
+// Get runtime config
+const config = useRuntimeConfig()
 
 // Computed properties
 const sanitizedUrl = computed((): string | null => {
@@ -43,15 +43,21 @@ const sanitizedUrl = computed((): string | null => {
 const linkUrl = computed((): string | null => {
   // URL with UTM parameters for external links
   const url = sanitizedUrl.value
-  if (url && $config?.public?.tlv2?.safelinkUtmSource) {
+  if (url && config?.public?.tlv2?.safelinkUtmSource) {
     const separator = url.includes('?') ? '&' : '?'
-    return `${url}${separator}utm_source=${encodeURIComponent($config.public.tlv2.safelinkUtmSource)}`
+    return `${url}${separator}utm_source=${encodeURIComponent(config.public.tlv2.safelinkUtmSource)}`
   }
   return url
 })
 
 // Methods
 const clipboard = async (): Promise<void> => {
+  // Guard against SSR - navigator is only available in browser
+  if (typeof navigator === 'undefined' || !navigator.clipboard) {
+    console.warn('Clipboard API not available')
+    return
+  }
+
   // Always copy the clean URL without UTM parameters
   const textToCopy = props.text || sanitizedUrl.value
   if (textToCopy) {
