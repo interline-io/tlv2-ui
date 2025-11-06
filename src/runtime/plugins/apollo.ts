@@ -17,7 +17,7 @@ const useApiEndpoint = (path: string, clientName: string) => {
 }
 
 export default defineNuxtPlugin(
-  async (nuxtApp) => {
+  (nuxtApp) => {
     const apolloClients = {
       default: initApolloClient(useApiEndpoint('/query', 'default'), useAuthHeaders),
       transitland: initApolloClient(useApiEndpoint('/query', 'default'), useAuthHeaders),
