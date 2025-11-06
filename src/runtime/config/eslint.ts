@@ -1,11 +1,12 @@
 // eslint.config.js
-import stylistic, { StylisticCustomizeOptions } from '@stylistic/eslint-plugin'
-import { ResolvableFlatConfig, FlatConfigComposer } from 'eslint-flat-config-utils'
+import type { StylisticCustomizeOptions } from '@stylistic/eslint-plugin'
+import stylistic from '@stylistic/eslint-plugin'
+import type { ResolvableFlatConfig } from 'eslint-flat-config-utils'
 import pluginVue from 'eslint-plugin-vue'
 import typescriptEslint from 'typescript-eslint'
 
 export const ignoreFiles = {
-  ignores: ['.nuxt/**', '**/.nuxt', '.output/**', 'dist/**', 'node_modules/**', '.yarn/**']
+  ignores: ['.nuxt/**', '**/.nuxt', '.output/**', 'dist/**', 'node_modules/**', '.yarn/**'],
 }
 
 export const eslintRules = {
@@ -14,32 +15,34 @@ export const eslintRules = {
   'vue/multi-word-component-names': 'off',
   'vue/max-attributes-per-line': ['error', {
     singleline: {
-      max: 10
+      max: 10,
     },
     multiline: {
-      max: 1
-    }
+      max: 1,
+    },
   }],
   '@stylistic/brace-style': ['error', '1tbs', { allowSingleLine: true }],
   '@stylistic/space-before-function-paren': ['error', {
     anonymous: 'always',
     named: 'always',
-    asyncArrow: 'always'
+    asyncArrow: 'always',
   }],
   '@stylistic/comma-dangle': 'off',
   '@stylistic/max-statements-per-line': ['error', { max: 3 }],
 }
 
-export const stylisticConfig: StylisticCustomizeOptions = {
+export const stylisticConfig = {
   flat: true, // required for flat config
   indent: 2,
   quotes: 'single',
   semi: false,
-}
+} as any as StylisticCustomizeOptions
 
 export const eslintConfig: ResolvableFlatConfig = [
   ignoreFiles,
+  // @ts-expect-error - Type compatibility issue with ESLint flat config
   ...pluginVue.configs['flat/recommended'],
+  // @ts-expect-error - Type compatibility issue with ESLint flat config
   stylistic.configs.customize(stylisticConfig),
   {
     files: ['**/*.ts', '**/*.tsx'],
@@ -53,6 +56,7 @@ export const eslintConfig: ResolvableFlatConfig = [
     plugins: {
       '@typescript-eslint': typescriptEslint.plugin,
     },
+    // @ts-expect-error - Type compatibility issue with ESLint flat config
     rules: eslintRules,
   },
   {
@@ -61,6 +65,7 @@ export const eslintConfig: ResolvableFlatConfig = [
         parser: typescriptEslint.parser,
       },
     },
+    // @ts-expect-error - Type compatibility issue with ESLint flat config
     rules: eslintRules,
   },
 ]

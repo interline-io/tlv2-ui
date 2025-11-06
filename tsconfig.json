@@ -1,24 +1,8 @@
 {
-  // https://v3.nuxtjs.org/concepts/typescript
-  // "extends": "./.nuxt/tsconfig.json",
-  "compilerOptions": {
-    "moduleResolution": "node",
-    "target": "esnext",
-    "module": "esnext",
-    "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true,
-    "types": [
-      "@nuxt/types",
-      "@types/node"
-    ]
-  },
+  "extends": "./.nuxt/tsconfig.json",
   "exclude": [
-    "node_modules",
     "dist",
-    ".output",
-    ".nuxt"
-  ],
-  "include": [
-    "src/**/*"
+    "node_modules",
+    "playground",
   ]
 }
