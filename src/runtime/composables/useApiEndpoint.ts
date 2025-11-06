@@ -9,7 +9,7 @@ export const useApiEndpoint = (path?: string, clientName?: string) => {
   }
   if (typeof window !== 'undefined') {
     const clientApiBases: Record<string, string> = config.public.tlv2?.apiBase || {}
-    const apiBase = (clientApiBases[clientName] || window.location.origin + '/api/v2') || ''
+    const apiBase = clientApiBases[clientName] || window.location.origin + '/api/v2'
     return apiBase + (path || '')
   }
   return path || ''
