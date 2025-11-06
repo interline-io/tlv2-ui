@@ -302,7 +302,7 @@ function fetchMoreFn (): void {
 function triggerDownload (sha1: string): void {
   const isLatest = isLatestFeedVersion(sha1)
   emit('downloadTriggered', sha1, isLatest)
-  if (props.issueDownloadRequest) {
+  if (props.issueDownloadRequest && typeof window !== 'undefined') {
     window.open(`${useApiEndpoint()}/rest/feed_versions/${sha1}/download`, '_blank')
   }
 }
