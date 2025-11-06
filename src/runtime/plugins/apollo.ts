@@ -18,12 +18,11 @@ const useApiEndpoint = (path: string, clientName: string) => {
 
 export default defineNuxtPlugin(
   async (nuxtApp) => {
-    const headers = await useAuthHeaders()
     const apolloClients = {
-      default: initApolloClient(useApiEndpoint('/query', 'default'), headers),
-      transitland: initApolloClient(useApiEndpoint('/query', 'default'), headers),
-      stationEditor: initApolloClient(useApiEndpoint('/query', 'stationEditor'), headers),
-      feedManagement: initApolloClient(useApiEndpoint('/query', 'feedManagement'), headers),
+      default: initApolloClient(useApiEndpoint('/query', 'default'), useAuthHeaders),
+      transitland: initApolloClient(useApiEndpoint('/query', 'default'), useAuthHeaders),
+      stationEditor: initApolloClient(useApiEndpoint('/query', 'stationEditor'), useAuthHeaders),
+      feedManagement: initApolloClient(useApiEndpoint('/query', 'feedManagement'), useAuthHeaders),
     }
     const defaultApolloClient = apolloClients['default']
 

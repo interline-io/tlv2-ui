@@ -21,7 +21,8 @@ export const useAuthHeaders = async () => {
 
   // CSRF
   // NOTE: For unknown reasons, useCsrf will panic if called after useJwt.
-  if (config.public.tlv2?.useProxy) {
+  // Only use CSRF on the client side, not during SSR
+  if (import.meta.client && config.public.tlv2?.useProxy) {
     const { headerName: csrfHeader, csrf: csrfToken } = useCsrf()
     headers[csrfHeader] = csrfToken
   }
