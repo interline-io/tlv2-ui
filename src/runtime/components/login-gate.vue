@@ -1,22 +1,20 @@
 <template>
   <div>
-    <client-only placeholder="Login">
-      <div v-if="notOk">
-        <div v-if="loggedIn">
-          <slot name="roleText">
-            Feature unavailable
-          </slot>
-        </div>
-        <div v-else>
-          <slot name="loginText">
-            Login required
-          </slot>
-        </div>
+    <div v-if="notOk">
+      <div v-if="loggedIn">
+        <slot name="roleText">
+          Feature unavailable
+        </slot>
       </div>
       <div v-else>
-        <slot name="default" />
+        <slot name="loginText">
+          Login required
+        </slot>
       </div>
-    </client-only>
+    </div>
+    <div v-else>
+      <slot name="default" />
+    </div>
   </div>
 </template>
 

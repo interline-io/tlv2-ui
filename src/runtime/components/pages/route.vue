@@ -143,9 +143,7 @@ Usage example:
             @update:model-value="setTab"
           >
             <o-tab-item :value="tabNames.summary" label="Connections">
-              <client-only placeholder="Service patterns">
-                <tl-rsp-viewer :route-ids="entityIds" :link-version="linkVersion" />
-              </client-only>
+              <tl-rsp-viewer :route-ids="entityIds" :link-version="linkVersion" />
             </o-tab-item>
 
             <o-tab-item :value="tabNames.headways" label="Headways">
@@ -209,53 +207,49 @@ Usage example:
             </o-tab-item>
 
             <o-tab-item :value="tabNames.export" label="Export">
-              <client-only placeholder="Export">
-                <tl-login-gate role="tl_user">
-                  <tl-data-export
-                    v-if="activeTab === tabNames.export"
-                    :route-name="routeName"
-                    :route-features="routeFeatures"
-                    :stop-features="stopFeatures"
-                    :route-ids="[entity.id]"
-                    @set-features="features = $event"
-                  />
-                  <template #loginText>
-                    <o-notification icon="lock">
-                      To export this route geometry and stop locations as GeoJSON, please sign into an Interline account with a Transitland subscription.
-                    </o-notification>
-                  </template>
-                  <template #roleText>
-                    <o-notification icon="lock">
-                      Your account does not have permission to export route geometries. Please <a href="https://app.interline.io/products/tlv2_api/orders/new">sign up for a Transitland subscription</a>.
-                    </o-notification>
-                  </template>
-                </tl-login-gate>
-              </client-only>
+              <tl-login-gate role="tl_user">
+                <tl-data-export
+                  v-if="activeTab === tabNames.export"
+                  :route-name="routeName"
+                  :route-features="routeFeatures"
+                  :stop-features="stopFeatures"
+                  :route-ids="[entity.id]"
+                  @set-features="features = $event"
+                />
+                <template #loginText>
+                  <o-notification icon="lock">
+                    To export this route geometry and stop locations as GeoJSON, please sign into an Interline account with a Transitland subscription.
+                  </o-notification>
+                </template>
+                <template #roleText>
+                  <o-notification icon="lock">
+                    Your account does not have permission to export route geometries. Please <a href="https://app.interline.io/products/tlv2_api/orders/new">sign up for a Transitland subscription</a>.
+                  </o-notification>
+                </template>
+              </tl-login-gate>
             </o-tab-item>
           </o-tabs>
         </div>
         <div class="column is-one-third">
-          <client-only placeholder="Map">
-            <tl-login-gate role="tl_user">
-              <tl-feed-version-map-viewer
-                :route-ids="entityIds"
-                :overlay="false"
-                :include-stops="true"
-                :link-version="linkVersion"
-                :features="activeTab === tabNames.export ? features : []"
-              />
-              <template #loginText>
-                <o-notification icon="lock">
-                  To view an interactive map of this route and its stop locations, sign into a Transitland account.
-                </o-notification>
-              </template>
-              <template #roleText>
-                <o-notification icon="lock">
-                  Your account does not have permission to view route map.
-                </o-notification>
-              </template>
-            </tl-login-gate>
-          </client-only>
+          <tl-login-gate role="tl_user">
+            <tl-feed-version-map-viewer
+              :route-ids="entityIds"
+              :overlay="false"
+              :include-stops="true"
+              :link-version="linkVersion"
+              :features="activeTab === tabNames.export ? features : []"
+            />
+            <template #loginText>
+              <o-notification icon="lock">
+                To view an interactive map of this route and its stop locations, sign into a Transitland account.
+              </o-notification>
+            </template>
+            <template #roleText>
+              <o-notification icon="lock">
+                Your account does not have permission to view route map.
+              </o-notification>
+            </template>
+          </tl-login-gate>
         </div>
       </div>
     </div>
