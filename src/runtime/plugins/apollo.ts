@@ -6,10 +6,9 @@ import type { NormalizedCacheObject } from '@apollo/client/core/index.js'
 import { initApolloClient } from '../auth'
 import { useRuntimeConfig, useAuthHeaders } from '#imports'
 
-const config = useRuntimeConfig()
-
 // We have to inline the useApiEndpoint here... nuxt blows up and I can't figure out why.
 const useApiEndpoint = (path: string, clientName: string) => {
+  const config = useRuntimeConfig()
   if (import.meta.server) {
     const proxyBases: Record<string, string> = config.tlv2?.proxyBase || {}
     return (proxyBases[clientName] || '') + (path || '')

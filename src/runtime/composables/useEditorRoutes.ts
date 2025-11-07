@@ -1,10 +1,10 @@
 import { useRuntimeConfig } from '#imports'
 
-const config = useRuntimeConfig()
-
 export function useEditorRoutes () {
-  // Build route names with the configured prefix
+  const config = useRuntimeConfig()
   const prefix = config.public.tlv2?.editorRoutePrefix || 'editor'
+
+  // Build route names with the configured prefix
   return {
     index: `${prefix}`,
     stations: `${prefix}-feedKey-feedVersionKey-stations`,

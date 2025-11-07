@@ -1,9 +1,8 @@
 import { useRuntimeConfig } from '#imports'
 
-const config = useRuntimeConfig()
-
 export const useApiEndpoint = (path?: string, clientName?: string) => {
   clientName = clientName || 'default'
+  const config = useRuntimeConfig()
   if (import.meta.server) {
     const proxyBases: Record<string, string> = config.tlv2?.proxyBase || {}
     return (proxyBases[clientName] || '') + (path || '')

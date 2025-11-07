@@ -1,11 +1,14 @@
 import { useRuntimeConfig } from '#imports'
 import { useUser } from './useUser'
 
-const config = useRuntimeConfig()
+/// ////////////////////
+// User
+/// ////////////////////
 
 export const useLoginGate = (options: { hasRole?: string, hasAnyRole?: string[], excludeAnyRole?: string[] }): boolean => {
   // Returns TRUE if GATE REQUIRED
-
+  // Get config
+  const config = useRuntimeConfig()
   if (!config.public.tlv2?.loginGate) {
     // Login gate disabled: always authorized
     console.log('useLoginGate: (not gated) login gate disabled')
