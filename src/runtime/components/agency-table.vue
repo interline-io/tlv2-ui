@@ -83,9 +83,7 @@ const { result, loading, error: queryError, fetchMore } = useQuery<{ entities: A
     feed_version_sha1: props.fvid,
     limit: props.limit
   }),
-  {
-    clientId: 'transitland'
-  }
+  {}
 )
 watch(queryError, (newError) => {
   if (newError) {

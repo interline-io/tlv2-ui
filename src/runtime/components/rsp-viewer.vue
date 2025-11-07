@@ -295,10 +295,7 @@ const { result: routesResult, loading, onError } = useQuery<{ routes: RouteRespo
   route_ids: props.routeIds,
   radius: radius.value,
   include_nearby_stops: includeNearbyStops.value
-}), {
-  clientId: 'transitland',
-  errorPolicy: 'all'
-})
+}))
 
 // Handle Apollo errors
 onError((err) => {

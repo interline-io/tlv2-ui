@@ -167,11 +167,7 @@ const queryVariables = computed<QueryVariables>(() => ({
 // Apollo Query
 const { result, loading, onError } = useQuery<RouteTableResponse>(
   ROUTES_QUERY,
-  queryVariables,
-  {
-    clientId: 'transitland'
-  }
-)
+  queryVariables)
 
 // Handle errors
 onError((err) => {

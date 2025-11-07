@@ -1,282 +1,280 @@
 <template>
-  <client-only>
-    <div class="tl-map">
-      <tl-map-viewer
-        :key="rerenderKey"
-        :show-generated-geometries="showGeneratedGeometries"
-        :show-problematic-geometries="showProblematicGeometries"
-        :enable-scroll-zoom="true"
-        :route-tiles="routeTiles"
-        :stop-tiles="stopTiles"
-        :stop-location-type-filter="showStopLocationTypes"
-        :zoom="initialZoom"
-        :center="initialCenter"
-        :hash="useHash"
-        :markers="markers"
-        :features="activeFeatures"
-        :auto-fit="false"
-        :hide-tiles="activeTab === DIRECTIONS_TAB"
-        map-class="tall"
-        @set-zoom="mapSetZoom"
-        @set-agency-features="routesSetAgencyFeatures"
-        @set-stop-features="routesSetStopFeatures"
-        @map-click="mapClick"
-        @map-move="mapMove"
-      />
+  <div class="tl-map">
+    <tl-map-viewer
+      :key="rerenderKey"
+      :show-generated-geometries="showGeneratedGeometries"
+      :show-problematic-geometries="showProblematicGeometries"
+      :enable-scroll-zoom="true"
+      :route-tiles="routeTiles"
+      :stop-tiles="stopTiles"
+      :stop-location-type-filter="showStopLocationTypes"
+      :zoom="initialZoom"
+      :center="initialCenter"
+      :hash="useHash"
+      :markers="markers"
+      :features="activeFeatures"
+      :auto-fit="false"
+      :hide-tiles="activeTab === DIRECTIONS_TAB"
+      map-class="tall"
+      @set-zoom="mapSetZoom"
+      @set-agency-features="routesSetAgencyFeatures"
+      @set-stop-features="routesSetStopFeatures"
+      @map-click="mapClick"
+      @map-move="mapMove"
+    />
 
-      <div class="tl-map-panel tl-map-panel-tabs">
-        <o-tabs v-model="activeTab" class="tl-tabs block" position="centered" type="boxed">
-          <div class="tl-tab-nav">
-            <o-field grouped>
-              <tl-map-search
-                class="mb-2"
-                :bbox="currentBbox"
-                :include-stops="true"
-                @set-location="locationHandler"
-              />
-              <o-field>
-                <tl-geolocation @set-location="locationHandler" />
-              </o-field>
-              <o-field><o-button variant="primary" icon-right="cog" @click="showUnifiedOptionsModal = true" /></o-field>
+    <div class="tl-map-panel tl-map-panel-tabs">
+      <o-tabs v-model="activeTab" class="tl-tabs block" position="centered" type="boxed">
+        <div class="tl-tab-nav">
+          <o-field grouped>
+            <tl-map-search
+              class="mb-2"
+              :bbox="currentBbox"
+              :include-stops="true"
+              @set-location="locationHandler"
+            />
+            <o-field>
+              <tl-geolocation @set-location="locationHandler" />
             </o-field>
-          </div>
+            <o-field><o-button variant="primary" icon-right="cog" @click="showUnifiedOptionsModal = true" /></o-field>
+          </o-field>
+        </div>
 
-          <o-tab-item :value="ROUTES_TAB" label="Routes & Stops" tab-class="tl-map-header-tab" tab-panel-class="tl-tab-overflow">
-            <slot name="routesHeader">
+        <o-tab-item :value="ROUTES_TAB" label="Routes & Stops" tab-class="tl-map-header-tab" tab-panel-class="tl-tab-overflow">
+          <slot name="routesHeader">
+            <h6 class="title is-6">
+              Routes & Stops
+            </h6>
+          </slot>
+
+          <!-- Combined agency view in sidebar -->
+          <div v-if="activeTab === ROUTES_TAB && Object.keys(combinedAgencyFeatures).length > 0">
+            <div v-for="(agencyData, agencyName) in combinedAgencyFeatures" :key="agencyName">
               <h6 class="title is-6">
-                Routes & Stops
+                {{ agencyName }}
               </h6>
-            </slot>
 
-            <!-- Combined agency view in sidebar -->
-            <div v-if="activeTab === ROUTES_TAB && Object.keys(combinedAgencyFeatures).length > 0">
-              <div v-for="(agencyData, agencyName) in combinedAgencyFeatures" :key="agencyName">
-                <h6 class="title is-6">
-                  {{ agencyName }}
-                </h6>
-
-                <!-- Routes -->
-                <div v-if="Object.keys(agencyData.routes).length > 0">
-                  <div v-for="routeItem in agencyData.routes" :key="routeItem.id">
-                    <nuxt-link
-                      :to="makeRouteLink(routeItem.onestop_id, routeItem.feed_onestop_id, routeItem.feed_version_sha1, routeItem.route_id, routeItem.id, linkVersion)"
-                    >
-                      <tl-route-icon
-                        :route-type="routeItem.route_type"
-                        :route-short-name="routeItem.route_short_name"
-                        :route-long-name="routeItem.route_long_name"
-                      />
-                    </nuxt-link>
-                  </div>
+              <!-- Routes -->
+              <div v-if="Object.keys(agencyData.routes).length > 0">
+                <div v-for="routeItem in agencyData.routes" :key="routeItem.id">
+                  <nuxt-link
+                    :to="makeRouteLink(routeItem.onestop_id, routeItem.feed_onestop_id, routeItem.feed_version_sha1, routeItem.route_id, routeItem.id, linkVersion)"
+                  >
+                    <tl-route-icon
+                      :route-type="routeItem.route_type"
+                      :route-short-name="routeItem.route_short_name"
+                      :route-long-name="routeItem.route_long_name"
+                    />
+                  </nuxt-link>
                 </div>
+              </div>
 
-                <!-- Stops -->
-                <div v-if="agencyData.stops.length > 0">
-                  <div v-for="stop in agencyData.stops" :key="stop.id" class="stop-item">
-                    <nuxt-link
-                      :to="makeStopLink(stop.onestop_id, stop.feed_onestop_id, stop.feed_version_sha1, stop.stop_id, stop.id, linkVersion)"
-                      class="stop-link"
-                    >
-                      <span class="stop-icon">
-                        <o-icon :icon="getStopIcon(stop.location_type)" />
-                      </span>
-                      <span class="stop-name">
-                        {{ stop.stop_name }}
-                      </span>
-                    </nuxt-link>
-                  </div>
+              <!-- Stops -->
+              <div v-if="agencyData.stops.length > 0">
+                <div v-for="stop in agencyData.stops" :key="stop.id" class="stop-item">
+                  <nuxt-link
+                    :to="makeStopLink(stop.onestop_id, stop.feed_onestop_id, stop.feed_version_sha1, stop.stop_id, stop.id, linkVersion)"
+                    class="stop-link"
+                  >
+                    <span class="stop-icon">
+                      <o-icon :icon="getStopIcon(stop.location_type)" />
+                    </span>
+                    <span class="stop-name">
+                      {{ stop.stop_name }}
+                    </span>
+                  </nuxt-link>
                 </div>
               </div>
             </div>
+          </div>
 
-            <div v-if="Object.keys(combinedAgencyFeatures).length === 0" class="content">
-              <template v-if="currentZoom < 8">
-                <p>Zoom in to select routes and stops.</p>
-              </template>
-              <template v-else-if="currentZoom < 12">
-                <p>Use your cursor to highlight routes and see their names here.</p>
-                <p>Click on a route for more details.</p>
-                <p>Zoom in further to see stops.</p>
-              </template>
-              <template v-else>
-                <p>Use your cursor to highlight routes or stops.</p>
-                <p>Click on a route line or stop point to view its details.</p>
-              </template>
-            </div>
+          <div v-if="Object.keys(combinedAgencyFeatures).length === 0" class="content">
+            <template v-if="currentZoom < 8">
+              <p>Zoom in to select routes and stops.</p>
+            </template>
+            <template v-else-if="currentZoom < 12">
+              <p>Use your cursor to highlight routes and see their names here.</p>
+              <p>Click on a route for more details.</p>
+              <p>Zoom in further to see stops.</p>
+            </template>
+            <template v-else>
+              <p>Use your cursor to highlight routes or stops.</p>
+              <p>Click on a route line or stop point to view its details.</p>
+            </template>
+          </div>
 
-            <!-- Combined modal for routes and stops -->
-            <o-modal
-              v-if="activeTab === ROUTES_TAB"
-              :active="showSelectionModal"
-              has-modal-card
-              @close="showSelectionModal = false"
-            >
-              <template #default>
-                <div v-if="showSelectionModal" class="modal-card">
-                  <header class="modal-card-head">
-                    <p class="modal-card-title">
-                      Select Route or Stop
-                    </p>
-                    <button type="button" class="delete" @click="showSelectionModal = false" />
-                  </header>
-                  <section class="modal-card-body">
-                    <div v-for="(agencyData, agencyName) in combinedAgencyFeatures" :key="agencyName">
-                      <h6 class="title is-6 agency-section-header">
-                        {{ agencyName }}
-                      </h6>
+          <!-- Combined modal for routes and stops -->
+          <o-modal
+            v-if="activeTab === ROUTES_TAB"
+            :active="showSelectionModal"
+            has-modal-card
+            @close="showSelectionModal = false"
+          >
+            <template #default>
+              <div v-if="showSelectionModal" class="modal-card">
+                <header class="modal-card-head">
+                  <p class="modal-card-title">
+                    Select Route or Stop
+                  </p>
+                  <button type="button" class="delete" @click="showSelectionModal = false" />
+                </header>
+                <section class="modal-card-body">
+                  <div v-for="(agencyData, agencyName) in combinedAgencyFeatures" :key="agencyName">
+                    <h6 class="title is-6 agency-section-header">
+                      {{ agencyName }}
+                    </h6>
 
-                      <!-- Routes for this agency -->
-                      <div v-if="Object.keys(agencyData.routes).length > 0">
-                        <div v-for="routeItem in agencyData.routes" :key="routeItem.id">
-                          <nuxt-link
-                            :to="makeRouteLink(routeItem.onestop_id, routeItem.feed_onestop_id, routeItem.feed_version_sha1, routeItem.route_id, routeItem.id, linkVersion)"
-                          >
-                            <tl-route-icon
-                              :key="routeItem.id"
-                              :route-type="routeItem.route_type"
-                              :route-short-name="routeItem.route_short_name"
-                              :route-long-name="routeItem.route_long_name"
-                            />
-                          </nuxt-link>
-                        </div>
-                      </div>
-
-                      <!-- Stops for this agency -->
-                      <div v-if="agencyData.stops.length > 0" class="stops-section">
-                        <div v-for="stop in agencyData.stops" :key="stop.id" class="stop-item-modal">
-                          <nuxt-link
-                            :to="makeStopLink(stop.onestop_id, stop.feed_onestop_id, stop.feed_version_sha1, stop.stop_id, stop.id, linkVersion)"
-                            class="stop-link-modal"
-                          >
-                            <div class="stop-name-large">
-                              <span class="stop-icon-modal">
-                                <o-icon :icon="getStopIcon(stop.location_type)" />
-                              </span>
-                              {{ stop.stop_name }}
-                            </div>
-                          </nuxt-link>
-                        </div>
+                    <!-- Routes for this agency -->
+                    <div v-if="Object.keys(agencyData.routes).length > 0">
+                      <div v-for="routeItem in agencyData.routes" :key="routeItem.id">
+                        <nuxt-link
+                          :to="makeRouteLink(routeItem.onestop_id, routeItem.feed_onestop_id, routeItem.feed_version_sha1, routeItem.route_id, routeItem.id, linkVersion)"
+                        >
+                          <tl-route-icon
+                            :key="routeItem.id"
+                            :route-type="routeItem.route_type"
+                            :route-short-name="routeItem.route_short_name"
+                            :route-long-name="routeItem.route_long_name"
+                          />
+                        </nuxt-link>
                       </div>
                     </div>
-                  </section>
-                </div>
-              </template>
-            </o-modal>
-          </o-tab-item>
 
-          <o-tab-item :value="DEPARTURE_TAB" label="Departures" tab-class="tl-map-header-tab" tab-panel-class="tl-tab-overflow">
-            <slot name="departuresHeader">
-              <h6 class="title is-6">
-                Departures
-              </h6>
-            </slot>
-
-            <tl-login-gate>
-              <tl-stop-departures
-                v-if="activeTab === DEPARTURE_TAB"
-                :search-radius="departureSearchRadius"
-                :search-coords="departureSearchCoords"
-                :auto-refresh="departureAutoRefresh"
-                :auto-refresh-interval="60"
-                :use-service-window="departureUseServiceWindow"
-                class="mb-3 mt-3"
-              />
-              <template #loginText>
-                <p>
-                  You must be logged in to use this feature.
-                </p>
-              </template>
-            </tl-login-gate>
-          </o-tab-item>
-
-          <tl-login-gate role="tl_user_enterprise">
-            <o-tab-item :value="DIRECTIONS_TAB" label="Directions" tab-class="tl-map-header-tab">
-              <tl-msg-info>
-                This feature is in a limited beta. <br>
-                Please see the <a href="https://www.transit.land/documentation/routing-api/" target="_blank">Routing API docs</a><br>
-                for current information and limitations.
-              </tl-msg-info>
-              <tl-directions
-                :from-place="fromPlaceCoords"
-                :to-place="toPlaceCoords"
-                :mode="props.modeParam || 'TRANSIT'"
-                :depart-at="departAt"
-                @set-places="directionsSetPlaces"
-                @set-mode="directionsSetMode"
-                @set-features="directionsFeatures = $event"
-                @reset="directionsReset"
-                @set-depart-at="directionsSetDepartAt"
-              />
-            </o-tab-item>
-            <template #loginText>
-              <div />
+                    <!-- Stops for this agency -->
+                    <div v-if="agencyData.stops.length > 0" class="stops-section">
+                      <div v-for="stop in agencyData.stops" :key="stop.id" class="stop-item-modal">
+                        <nuxt-link
+                          :to="makeStopLink(stop.onestop_id, stop.feed_onestop_id, stop.feed_version_sha1, stop.stop_id, stop.id, linkVersion)"
+                          class="stop-link-modal"
+                        >
+                          <div class="stop-name-large">
+                            <span class="stop-icon-modal">
+                              <o-icon :icon="getStopIcon(stop.location_type)" />
+                            </span>
+                            {{ stop.stop_name }}
+                          </div>
+                        </nuxt-link>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              </div>
             </template>
-            <template #roleText>
-              <div />
+          </o-modal>
+        </o-tab-item>
+
+        <o-tab-item :value="DEPARTURE_TAB" label="Departures" tab-class="tl-map-header-tab" tab-panel-class="tl-tab-overflow">
+          <slot name="departuresHeader">
+            <h6 class="title is-6">
+              Departures
+            </h6>
+          </slot>
+
+          <tl-login-gate>
+            <tl-stop-departures
+              v-if="activeTab === DEPARTURE_TAB"
+              :search-radius="departureSearchRadius"
+              :search-coords="departureSearchCoords"
+              :auto-refresh="departureAutoRefresh"
+              :auto-refresh-interval="60"
+              :use-service-window="departureUseServiceWindow"
+              class="mb-3 mt-3"
+            />
+            <template #loginText>
+              <p>
+                You must be logged in to use this feature.
+              </p>
             </template>
           </tl-login-gate>
-        </o-tabs>
-      </div>
+        </o-tab-item>
 
-      <!-- Unified Options Modal -->
-      <tl-modal v-model="showUnifiedOptionsModal" title="Map Options" :full-screen="true">
-        <o-tabs v-model="activeOptionsTab" class="tl-options-tabs" position="centered" type="boxed">
-          <o-tab-item value="routes" label="Routes & Stops">
-            <o-field horizontal label="Route lines">
-              <o-checkbox v-model="showGeneratedGeometries">
-                Show stop-to-stop geometries
-              </o-checkbox>
-            </o-field>
-
-            <o-field horizontal>
-              <o-checkbox v-model="showProblematicGeometries">
-                Show problematic geometries
-              </o-checkbox>
-            </o-field>
-
-            <o-field horizontal label="Stop types">
-              Display the following types of stop points on the map
-            </o-field>
-            <o-field horizontal>
-              <o-checkbox v-model="showStopLocationTypes[0]">
-                Stops & Station Platforms
-              </o-checkbox>
-            </o-field>
-            <o-field horizontal>
-              <o-checkbox v-model="showStopLocationTypes[1]">
-                Stations
-              </o-checkbox>
-            </o-field>
-            <o-field horizontal>
-              <o-checkbox v-model="showStopLocationTypes[2]">
-                Station Entrances/Exits
-              </o-checkbox>
-            </o-field>
-            <o-field horizontal>
-              <o-checkbox v-model="showStopLocationTypes[3]">
-                Generic Nodes in Station Pathways
-              </o-checkbox>
-            </o-field>
-            <o-field horizontal>
-              <o-checkbox v-model="showStopLocationTypes[4]">
-                Boarding Areas in Station Pathways
-              </o-checkbox>
-            </o-field>
-          </o-tab-item>
-
-          <o-tab-item value="departures" label="Departures">
-            <tl-stop-departure-settings
-              v-model:search-radius="departureSearchRadius"
-              v-model:auto-refresh="departureAutoRefresh"
-              v-model:use-service-window="departureUseServiceWindow"
-              style="min-height:600px"
-              :allowed-radius="allowedRadius"
+        <tl-login-gate role="tl_user_enterprise">
+          <o-tab-item :value="DIRECTIONS_TAB" label="Directions" tab-class="tl-map-header-tab">
+            <tl-msg-info>
+              This feature is in a limited beta. <br>
+              Please see the <a href="https://www.transit.land/documentation/routing-api/" target="_blank">Routing API docs</a><br>
+              for current information and limitations.
+            </tl-msg-info>
+            <tl-directions
+              :from-place="fromPlaceCoords"
+              :to-place="toPlaceCoords"
+              :mode="props.modeParam || 'TRANSIT'"
+              :depart-at="departAt"
+              @set-places="directionsSetPlaces"
+              @set-mode="directionsSetMode"
+              @set-features="directionsFeatures = $event"
+              @reset="directionsReset"
+              @set-depart-at="directionsSetDepartAt"
             />
           </o-tab-item>
-        </o-tabs>
-      </tl-modal>
+          <template #loginText>
+            <div />
+          </template>
+          <template #roleText>
+            <div />
+          </template>
+        </tl-login-gate>
+      </o-tabs>
     </div>
-  </client-only>
+
+    <!-- Unified Options Modal -->
+    <tl-modal v-model="showUnifiedOptionsModal" title="Map Options" :full-screen="true">
+      <o-tabs v-model="activeOptionsTab" class="tl-options-tabs" position="centered" type="boxed">
+        <o-tab-item value="routes" label="Routes & Stops">
+          <o-field horizontal label="Route lines">
+            <o-checkbox v-model="showGeneratedGeometries">
+              Show stop-to-stop geometries
+            </o-checkbox>
+          </o-field>
+
+          <o-field horizontal>
+            <o-checkbox v-model="showProblematicGeometries">
+              Show problematic geometries
+            </o-checkbox>
+          </o-field>
+
+          <o-field horizontal label="Stop types">
+            Display the following types of stop points on the map
+          </o-field>
+          <o-field horizontal>
+            <o-checkbox v-model="showStopLocationTypes[0]">
+              Stops & Station Platforms
+            </o-checkbox>
+          </o-field>
+          <o-field horizontal>
+            <o-checkbox v-model="showStopLocationTypes[1]">
+              Stations
+            </o-checkbox>
+          </o-field>
+          <o-field horizontal>
+            <o-checkbox v-model="showStopLocationTypes[2]">
+              Station Entrances/Exits
+            </o-checkbox>
+          </o-field>
+          <o-field horizontal>
+            <o-checkbox v-model="showStopLocationTypes[3]">
+              Generic Nodes in Station Pathways
+            </o-checkbox>
+          </o-field>
+          <o-field horizontal>
+            <o-checkbox v-model="showStopLocationTypes[4]">
+              Boarding Areas in Station Pathways
+            </o-checkbox>
+          </o-field>
+        </o-tab-item>
+
+        <o-tab-item value="departures" label="Departures">
+          <tl-stop-departure-settings
+            v-model:search-radius="departureSearchRadius"
+            v-model:auto-refresh="departureAutoRefresh"
+            v-model:use-service-window="departureUseServiceWindow"
+            style="min-height:600px"
+            :allowed-radius="allowedRadius"
+          />
+        </o-tab-item>
+      </o-tabs>
+    </tl-modal>
+  </div>
 </template>
 
 <script setup lang="ts">

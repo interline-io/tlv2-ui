@@ -175,14 +175,12 @@
         </h4>
         <o-tabs v-model="activeTab" class="tl-tabs" type="boxed" :animated="false" @update:model-value="setTab">
           <o-tab-item :value="tabNames.map" label="Map">
-            <client-only placeholder="Map">
-              <tl-feed-version-map-viewer
-                v-if="activeTab === tabNames.map"
-                :agency-ids="agencyIds"
-                :overlay="true"
-                :link-version="linkVersion"
-              />
-            </client-only>
+            <tl-feed-version-map-viewer
+              v-if="activeTab === tabNames.map"
+              :agency-ids="agencyIds"
+              :overlay="true"
+              :link-version="linkVersion"
+            />
           </o-tab-item>
 
           <o-tab-item :value="tabNames.routes" label="Routes">
@@ -347,11 +345,7 @@ query ($onestopId: String, $feedOnestopId: String, $limit: Int=10) {
 // Apollo query
 const { result, loading } = useQuery<{ entities: OperatorResponse[] }, QueryVariables>(
   operatorQuery,
-  () => entityVariables.value,
-  {
-    clientId: 'transitland'
-  }
-)
+  () => entityVariables.value)
 // Computed properties
 const entities = computed<Operator[]>(() => result.value?.entities ?? [])
 

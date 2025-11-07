@@ -253,9 +253,7 @@
         <o-tab-item :value="tabNames.map" label="Map">
           <template v-if="activeTab === 'map'">
             <div v-if="imported">
-              <client-only placeholder="Map">
-                <tl-feed-version-map-viewer :feed-version-sha1="entity.sha1" :overlay="true" :link-version="true" />
-              </client-only>
+              <tl-feed-version-map-viewer :feed-version-sha1="entity.sha1" :overlay="true" :link-version="true" />
             </div>
             <tl-msg-info v-else>
               Map is only available for successfully imported feed versions.
@@ -521,14 +519,13 @@ query ($feedVersionSha1: String!) {
 `
 
 // Apollo query
-const { result, loading, error, refetch } = useQuery<{ entities: FeedVersionResponse[] }, QueryVariables>(
+const { result, error, loading, refetch } = useQuery<{ entities: FeedVersionResponse[] }, QueryVariables>(
   feedVersionQuery,
   () => ({
     feedVersionSha1: props.feedVersionKey
   }),
   {
-    clientId: 'transitland',
-    errorPolicy: 'all'
+    errorPolicy: 'all',
   }
 )
 

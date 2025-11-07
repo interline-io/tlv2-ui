@@ -2,6 +2,7 @@ import { defineNuxtPlugin } from 'nuxt/app'
 import { destr } from 'destr'
 import { ApolloClients, provideApolloClients } from '@vue/apollo-composable'
 import { createApolloProvider } from '@vue/apollo-option'
+import type { NormalizedCacheObject } from '@apollo/client/core/index.js'
 import { initApolloClient } from '../auth'
 import { useRuntimeConfig, useAuthHeaders } from '#imports'
 
@@ -26,6 +27,13 @@ export default defineNuxtPlugin(
     }
     const defaultApolloClient = apolloClients['default']
 
+    // Restore cache BEFORE providing clients to prevent refetch
+    if (import.meta.client && nuxtApp.payload.data['_apollo:default']) {
+      const cache = destr(JSON.stringify(nuxtApp.payload.data['_apollo:default'])) as NormalizedCacheObject
+      // Restore cache for all clients since they all point to the same instance
+      defaultApolloClient.cache.restore(cache)
+    }
+
     // options api
     const apolloProvider = createApolloProvider({
       defaultClient: defaultApolloClient,
@@ -39,14 +47,9 @@ export default defineNuxtPlugin(
     nuxtApp.vueApp.provide(ApolloClients, { ...apolloClients })
     provideApolloClients({ ...apolloClients })
 
-    // handle cache
-    const cacheKey = '_apollo:transitland'
+    // Extract cache on server after rendering
     nuxtApp.hook('app:rendered', () => {
-      nuxtApp.payload.data[cacheKey] = defaultApolloClient.cache.extract()
+      nuxtApp.payload.data['_apollo:default'] = defaultApolloClient.cache.extract()
     })
-    if (import.meta.client && nuxtApp.payload.data[cacheKey]) {
-      defaultApolloClient.cache.restore(destr(JSON.stringify(nuxtApp.payload.data[cacheKey])))
-    }
   }
-
 )

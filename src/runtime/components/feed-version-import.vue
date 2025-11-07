@@ -111,13 +111,9 @@ const fvi = computed((): FeedVersionGtfsImport | null => {
 })
 
 // Apollo mutations
-const { mutate: importMutate } = useMutation<{ feed_version_import: MutationResponse }>(importFeedVersionQuery, {
-  clientId: 'transitland'
-})
+const { mutate: importMutate } = useMutation<{ feed_version_import: MutationResponse }>(importFeedVersionQuery)
 
-const { mutate: unimportMutate } = useMutation<{ feed_version_unimport: MutationResponse }>(unimportFeedVersionQuery, {
-  clientId: 'transitland'
-})
+const { mutate: unimportMutate } = useMutation<{ feed_version_unimport: MutationResponse }>(unimportFeedVersionQuery)
 
 // Methods
 const importFeedVersion = async () => {

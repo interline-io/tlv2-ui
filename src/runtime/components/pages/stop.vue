@@ -192,26 +192,24 @@
             </o-tab-item>
 
             <o-tab-item :value="tabNames.departures" label="Departures">
-              <client-only placeholder="Departures">
-                <tl-login-gate role="tl_user">
-                  <tl-stop-departures
-                    v-if="entity.id && activeTab === tabNames.departures"
-                    :show-fallback-selector="true"
-                    :stop-ids="entityIds"
-                    :search-coords="entity?.geometry?.coordinates ?? undefined"
-                  />
-                  <template #loginText>
-                    <o-notification icon="lock">
-                      To view upcoming departure times, please sign into an Interline account with a Transitland subscription.
-                    </o-notification>
-                  </template>
-                  <template #roleText>
-                    <o-notification icon="lock">
-                      Your account does not have permission to view upcoming departures. Please <a href="https://app.interline.io/products/tlv2_api/orders/new">sign up for a Transitland subscription</a>.
-                    </o-notification>
-                  </template>
-                </tl-login-gate>
-              </client-only>
+              <tl-login-gate role="tl_user">
+                <tl-stop-departures
+                  v-if="entity.id && activeTab === tabNames.departures"
+                  :show-fallback-selector="true"
+                  :stop-ids="entityIds"
+                  :search-coords="entity?.geometry?.coordinates ?? undefined"
+                />
+                <template #loginText>
+                  <o-notification icon="lock">
+                    To view upcoming departure times, please sign into an Interline account with a Transitland subscription.
+                  </o-notification>
+                </template>
+                <template #roleText>
+                  <o-notification icon="lock">
+                    Your account does not have permission to view upcoming departures. Please <a href="https://app.interline.io/products/tlv2_api/orders/new">sign up for a Transitland subscription</a>.
+                  </o-notification>
+                </template>
+              </tl-login-gate>
               <tl-msg-info>
                 <p><a href="https://www.transit.land/documentation/rest-api/departures" target="_blank">Learn more about Transitland v2 REST API stop departures endpoint</a></p>
               </tl-msg-info>
@@ -219,30 +217,28 @@
           </o-tabs>
         </div>
         <div class="column is-one-third">
-          <client-only placeholder="Map">
-            <tl-login-gate role="tl_user">
-              <tl-feed-version-map-viewer
-                :route-ids="routeIds"
-                :features="features"
-                :auto-fit="false"
-                :center="entity.geometry.coordinates"
-                :include-stops="true"
-                :circle-radius="20"
-                :zoom="15"
-                :overlay="true"
-              />
-              <template #loginText>
-                <o-notification icon="lock">
-                  To view an interactive map of this stop location and incoming/outgoing routes, sign into a Transitland account.
-                </o-notification>
-              </template>
-              <template #roleText>
-                <o-notification icon="lock">
-                  Your account does not have permission to view stop map.
-                </o-notification>
-              </template>
-            </tl-login-gate>
-          </client-only>
+          <tl-login-gate role="tl_user">
+            <tl-feed-version-map-viewer
+              :route-ids="routeIds"
+              :features="features"
+              :auto-fit="false"
+              :center="entity.geometry.coordinates"
+              :include-stops="true"
+              :circle-radius="20"
+              :zoom="15"
+              :overlay="true"
+            />
+            <template #loginText>
+              <o-notification icon="lock">
+                To view an interactive map of this stop location and incoming/outgoing routes, sign into a Transitland account.
+              </o-notification>
+            </template>
+            <template #roleText>
+              <o-notification icon="lock">
+                Your account does not have permission to view stop map.
+              </o-notification>
+            </template>
+          </tl-login-gate>
         </div>
       </div>
     </div>
@@ -476,9 +472,7 @@ const activeTab = ref('summary')
 const tabNames = makeTabNames(['summary', 'sources', 'departures'])
 
 // GraphQL query
-const { result, loading, error } = useQuery<{ entities: StopResponse[] }>(q, entityVariables, {
-  clientId: 'transitland'
-})
+const { result, loading, error } = useQuery<{ entities: StopResponse[] }>(q, entityVariables)
 
 // Computed entities
 const entities = computed((): Stop[] => {

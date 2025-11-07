@@ -395,7 +395,7 @@ const vars = computed(() => ({
 }))
 
 // Setup query
-const { result, loading, error, load, refetch } = useLazyQuery<DirectionsQueryResponse>(query, null, { clientId: 'transitland' })
+const { result, loading, error, load, refetch } = useLazyQuery<DirectionsQueryResponse>(query, null)
 
 // Watch for changes
 const loadReady = computed(() => {
