@@ -456,9 +456,7 @@ const queryVariables = computed(() => ({
   limit: 10
 }))
 
-const { result, loading, error } = useQuery<{ entities: RouteResponse[] }>(q, queryVariables, {
-  clientId: 'transitland'
-})
+const { result, loading, error } = useQuery<{ entities: RouteResponse[] }>(q, queryVariables)
 // Computed entities
 const entities = computed((): Route[] => {
   return result.value?.entities ?? []

@@ -114,7 +114,7 @@ query ($search: String!, $limit: Int=10) {
 }
 `
 
-const { result, loading, load, refetch } = useLazyQuery(query, {}, { clientId: 'transitland' })
+const { result, loading, load, refetch } = useLazyQuery(query, {})
 
 function loadReload () {
   if (search.value.length < minLength) {

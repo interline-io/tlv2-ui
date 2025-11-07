@@ -472,9 +472,7 @@ const activeTab = ref('summary')
 const tabNames = makeTabNames(['summary', 'sources', 'departures'])
 
 // GraphQL query
-const { result, loading, error } = useQuery<{ entities: StopResponse[] }>(q, entityVariables, {
-  clientId: 'transitland'
-})
+const { result, loading, error } = useQuery<{ entities: StopResponse[] }>(q, entityVariables)
 
 // Computed entities
 const entities = computed((): Stop[] => {

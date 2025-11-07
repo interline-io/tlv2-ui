@@ -345,11 +345,7 @@ query ($onestopId: String, $feedOnestopId: String, $limit: Int=10) {
 // Apollo query
 const { result, loading } = useQuery<{ entities: OperatorResponse[] }, QueryVariables>(
   operatorQuery,
-  () => entityVariables.value,
-  {
-    clientId: 'transitland'
-  }
-)
+  () => entityVariables.value)
 // Computed properties
 const entities = computed<Operator[]>(() => result.value?.entities ?? [])
 

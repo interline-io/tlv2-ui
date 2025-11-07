@@ -90,17 +90,13 @@ const { result, error: queryError } = useQuery<{ feed_versions: FeedVersionRespo
     ids: [Number(props.id)]
   }),
   {
-    clientId: 'transitland',
     fetchPolicy: 'no-cache'
   }
 )
 
 // Apollo mutation
 const { mutate: updateFeedVersion } = useMutation<{ feed_version_update: FeedVersionResponse }>(
-  saveFeedVersionMutation,
-  {
-    clientId: 'transitland'
-  }
+  saveFeedVersionMutation
 )
 
 // Watch for query results

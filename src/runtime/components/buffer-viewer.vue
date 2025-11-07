@@ -61,9 +61,7 @@ const { result, loading } = useQuery<{ routes: RouteResponse[] }>(
     radius: props.radius,
     route_ids: props.routeIds
   }),
-  {
-    clientId: 'transitland'
-  }
+  {}
 )
 
 // Computed properties

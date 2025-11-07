@@ -250,15 +250,11 @@ const maxLimit = 10000
 
 const { result, fetchMore } = useQuery<{ entities: FeedVersionResponse[] }, QueryVariables>(
   fvQuery,
-  () => ({
+  (): QueryVariables => ({
     after: 0,
     onestop_id: props.feed.onestop_id,
     limit: props.limit
-  }),
-  {
-    clientId: 'transitland'
-  }
-)
+  }))
 
 const entities = computed<FeedVersion[]>(() => result.value?.entities ?? [])
 

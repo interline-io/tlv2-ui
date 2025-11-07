@@ -496,17 +496,11 @@ const IMPORT_FEED_VERSION_MUTATION = gql`
 // Extract pathKey from route params for feed upload
 
 // Apollo mutations setup
-const { mutate: validateGtfs } = useMutation<ValidateGtfsResponse>(VALIDATE_GTFS_MUTATION, {
-  clientId: 'transitland'
-})
+const { mutate: validateGtfs } = useMutation<ValidateGtfsResponse>(VALIDATE_GTFS_MUTATION)
 
-const { mutate: fetchFeedVersionMutate } = useMutation<FeedVersionFetchResponse>(FETCH_FEED_VERSION_MUTATION, {
-  clientId: 'transitland'
-})
+const { mutate: fetchFeedVersionMutate } = useMutation<FeedVersionFetchResponse>(FETCH_FEED_VERSION_MUTATION)
 
-const { mutate: importFeedVersionMutate } = useMutation<FeedVersionImportResponse>(IMPORT_FEED_VERSION_MUTATION, {
-  clientId: 'transitland'
-})
+const { mutate: importFeedVersionMutate } = useMutation<FeedVersionImportResponse>(IMPORT_FEED_VERSION_MUTATION)
 
 // Template refs
 const fileInput = ref<HTMLInputElement>()

@@ -216,10 +216,7 @@ const queryVariables = computed<QueryVariables>(() => {
 // Apollo Query
 const { result, loading } = useQuery<{ routes: RouteResponse[] }>(
   CENSUS_QUERY,
-  queryVariables,
-  {
-    clientId: 'transitland'
-  }
+  queryVariables
 )
 
 // Watch for query results and update geographies
