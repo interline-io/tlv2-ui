@@ -1,15 +1,20 @@
 import { useNuxtApp } from '#app'
 
 export const useToastNotification = () => {
-  const showToast = (message: string) => {
-    // Guard against SSR - notifications only work on client side
-    if (import.meta.server) {
-      console.warn('[useToastNotification] Attempted to show toast during SSR:', message)
-      return
+  // Guard against SSR - get nuxtApp at composable initialization
+  if (import.meta.server) {
+    return {
+      showToast: (message: string) => {
+        console.warn('[useToastNotification] Attempted to show toast during SSR:', message)
+      }
     }
+  }
 
+  // Get nuxtApp once at the top level of the composable
+  const nuxtApp = useNuxtApp()
+
+  const showToast = (message: string) => {
     try {
-      const nuxtApp = useNuxtApp()
       const oruga = nuxtApp.vueApp?.config?.globalProperties?.$oruga
 
       if (!oruga?.notification?.open) {
