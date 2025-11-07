@@ -519,14 +519,13 @@ query ($feedVersionSha1: String!) {
 `
 
 // Apollo query
-const { result, loading, error, refetch } = useQuery<{ entities: FeedVersionResponse[] }, QueryVariables>(
+const { result, error, loading, refetch } = useQuery<{ entities: FeedVersionResponse[] }, QueryVariables>(
   feedVersionQuery,
   () => ({
     feedVersionSha1: props.feedVersionKey
   }),
   {
-    clientId: 'transitland',
-    errorPolicy: 'all'
+    errorPolicy: 'all',
   }
 )
 
