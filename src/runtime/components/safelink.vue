@@ -33,6 +33,7 @@ const props = withDefaults(defineProps<{
 
 // Get runtime config
 const config = useRuntimeConfig()
+const { showToast } = useToastNotification()
 
 // Computed properties
 const sanitizedUrl = computed((): string | null => {
@@ -63,10 +64,10 @@ const clipboard = async (): Promise<void> => {
   if (textToCopy) {
     try {
       await navigator.clipboard.writeText(textToCopy)
-      useToastNotification().showToast('Copied to clipboard')
+      showToast('Copied to clipboard')
     } catch (error) {
       console.error('Failed to copy to clipboard:', error)
-      useToastNotification().showToast('Failed to copy to clipboard')
+      showToast('Failed to copy to clipboard')
     }
   }
 }

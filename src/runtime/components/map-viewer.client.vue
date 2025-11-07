@@ -8,7 +8,7 @@ import { noLabels, labels } from 'protomaps-themes-base'
 import { nextTick, ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useApiEndpoint } from '../composables/useApiEndpoint'
 import { useAuthHeaders } from '../composables/useAuthHeaders'
-import { useNuxtApp } from 'nuxt/app'
+import { useRuntimeConfig } from '#imports'
 import mapLayers from './map-layers'
 import type { LonLat, Feature, BoundingBox } from '../geom'
 
@@ -84,6 +84,9 @@ const markerLayer = ref<maplibre.Marker[]>([])
 
 // Template ref
 const mapelem = ref<HTMLElement>()
+
+// Get config at top level
+const config = useRuntimeConfig()
 
 // Create a once function utility
 const once = <T extends (...args: any[]) => any>(fn: T): T => {
@@ -253,7 +256,6 @@ const initMap = async () => {
   }
   const apiBase = useApiEndpoint()
   const authHeaders = await useAuthHeaders()
-  const { $config } = useNuxtApp()
 
   const opts: any = {
     hash: props.hash,
@@ -266,7 +268,7 @@ const initMap = async () => {
       sources: {
         'protomaps-base': {
           type: 'vector',
-          tiles: [`https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf?key=${($config.public.tlv2 as any)?.protomapsApikey}`],
+          tiles: [`https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf?key=${(config.public.tlv2 as any)?.protomapsApikey}`],
           maxzoom: 14,
           attribution: '<a href="https://www.transit.land/terms">Transitland</a> | <a href="https://protomaps.com">Protomaps</a> | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }

@@ -247,6 +247,7 @@ query ($limit:Int=100, $onestop_id: String, $after:Int) {
 `
 
 const maxLimit = 10000
+const apiEndpoint = useApiEndpoint()
 
 const { result, fetchMore } = useQuery<{ entities: FeedVersionResponse[] }, QueryVariables>(
   fvQuery,
@@ -299,7 +300,7 @@ function triggerDownload (sha1: string): void {
   const isLatest = isLatestFeedVersion(sha1)
   emit('downloadTriggered', sha1, isLatest)
   if (props.issueDownloadRequest && typeof window !== 'undefined') {
-    window.open(`${useApiEndpoint()}/rest/feed_versions/${sha1}/download`, '_blank')
+    window.open(`${apiEndpoint}/rest/feed_versions/${sha1}/download`, '_blank')
   }
 }
 </script>

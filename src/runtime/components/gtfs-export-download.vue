@@ -188,6 +188,7 @@ const hasValidFeedVersion = computed(() => {
 // Composables
 const router = useRouter()
 const editorRoutes = useEditorRoutes()
+const { showToast } = useToastNotification()
 
 // Watchers
 watch(prefixFilesInput, (newVal: string) => {
@@ -297,14 +298,14 @@ const downloadGtfs = async () => {
     window.URL.revokeObjectURL(downloadUrl)
 
     // Show success notification
-    useToastNotification().showToast('GTFS export downloaded successfully')
+    showToast('GTFS export downloaded successfully')
 
     // Optionally navigate back after successful download
     // handleCancel()
   } catch (err) {
     console.error('GTFS export failed:', err)
     error.value = err instanceof Error ? err.message : 'Export failed'
-    useToastNotification().showToast(
+    showToast(
       `Export failed: ${err instanceof Error ? err.message : 'Unknown error'}`
     )
   } finally {

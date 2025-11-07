@@ -70,6 +70,7 @@ const forceUpdate = ref(0)
 
 // Watch on changes to route and forceUpdate
 const curRoute = useRoute()
+const router = useRouter()
 const updateKey = computed(() => {
   return `${String(curRoute.name)}:${forceUpdate.value}`
 })
@@ -102,9 +103,8 @@ function titleize (str: string) {
 }
 
 function makeNav () {
-  const router = useRouter()
-  const routePath = useRoute().name
-  const routeParams = useRoute().params
+  const routePath = curRoute.name
+  const routeParams = curRoute.params
   const routeFragments = String(routePath || '').split('-')
   const ret: linkElem[] = []
   const foundParams: Record<string, any> = {}
