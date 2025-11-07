@@ -30,6 +30,10 @@
     "./geom": {
       "types": "./dist/runtime/geom/index.d.ts",
       "import": "./dist/runtime/geom/index.js"
+    },
+    "./testutil": {
+      "types": "./dist/runtime/testutil/index.d.ts",
+      "import": "./dist/runtime/testutil/index.js"
     }
   },
   "main": "./dist/module.mjs",

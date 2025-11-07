@@ -158,7 +158,8 @@ export default defineNuxtModule<ModuleOptions>({
       'protomaps-themes-base', // ESM map themes - needed for server-side map rendering
       'markdown-it', // Markdown parser - ESM package used in SSR
       'markdown-it-anchor', // Markdown-it plugin - must match parent's transpilation
-      'interval-tree-1d' // CJS/ESM hybrid needed by @observablehq/plot in SSR context
+      'interval-tree-1d', // CJS/ESM hybrid needed by @observablehq/plot in SSR context
+      '@oruga-ui/oruga-next' // Oruga UI components - contains Vue code needing transpilation
     )
 
     // Add Vite configuration - Nuxt 4 pattern
