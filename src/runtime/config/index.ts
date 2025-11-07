@@ -1,4 +1,3 @@
-// eslint.config.js
 import type { StylisticCustomizeOptions } from '@stylistic/eslint-plugin'
 import type { Linter } from 'eslint'
 
