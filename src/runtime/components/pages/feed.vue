@@ -559,9 +559,7 @@ const { entityVariables } = useEntityPath({
 const showPermissionsModal = ref(false)
 
 // GraphQL query
-const { result, loading, error } = useQuery<{ entities: FeedResponse[] }>(q, entityVariables, {
-  clientId: 'transitland'
-})
+const { result, loading, error } = useQuery<{ entities: FeedResponse[] }>(q, entityVariables)
 
 // Computed entity
 const entity = computed((): Feed | null => {

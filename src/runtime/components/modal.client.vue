@@ -26,7 +26,7 @@
           />
         </header>
         <section class="modal-card-body">
-          <div class="container">
+          <div v-if="modelValue" class="container">
             <slot :close="close" />
             <br>
           </div>

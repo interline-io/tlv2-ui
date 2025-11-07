@@ -250,15 +250,11 @@ const maxLimit = 10000
 
 const { result, fetchMore } = useQuery<{ entities: FeedVersionResponse[] }, QueryVariables>(
   fvQuery,
-  () => ({
+  (): QueryVariables => ({
     after: 0,
     onestop_id: props.feed.onestop_id,
     limit: props.limit
-  }),
-  {
-    clientId: 'transitland'
-  }
-)
+  }))
 
 const entities = computed<FeedVersion[]>(() => result.value?.entities ?? [])
 
@@ -302,7 +298,7 @@ function fetchMoreFn (): void {
 function triggerDownload (sha1: string): void {
   const isLatest = isLatestFeedVersion(sha1)
   emit('downloadTriggered', sha1, isLatest)
-  if (props.issueDownloadRequest) {
+  if (props.issueDownloadRequest && typeof window !== 'undefined') {
     window.open(`${useApiEndpoint()}/rest/feed_versions/${sha1}/download`, '_blank')
   }
 }

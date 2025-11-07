@@ -1,123 +1,121 @@
 <template>
-  <ClientOnly>
-    <div>
-      <tl-msg-error v-if="error">
-        {{ error }}
-      </tl-msg-error>
-      <div v-else>
-        <!-- Collapsible Advanced Transformations -->
-        <tl-msg-box
-          title="Advanced Transformations"
-          :collapsible="true"
-          :collapsed="true"
-          no-icon
-        >
-          <div class="field">
-            <label class="label">Additional Feed Versions to Merge</label>
-            <o-taginput
-              v-model="additionalFeedVersions"
-              :allow-new="true"
-              placeholder="Add feed version SHA1 or ID"
-              icon="plus"
-              aria-close-label="Remove this feed version"
-              expanded
-            />
-            <p class="help">
-              Add additional feed version SHA1s or IDs to merge with this export
-            </p>
-          </div>
-
-          <div class="field">
-            <label class="label">ID Prefix</label>
-            <o-input
-              v-model="exportOptions.prefix"
-              placeholder="e.g., 'agency1_' to prefix all IDs"
-              expanded
-            />
-            <p class="help">
-              Add prefix to entity IDs for namespacing when merging feeds
-            </p>
-          </div>
-
-          <div class="field">
-            <label class="label">Prefix Files</label>
-            <o-input
-              v-model="prefixFilesInput"
-              placeholder="routes.txt, trips.txt (comma-separated)"
-              expanded
-            />
-            <p class="help">
-              Specific files to apply prefix to (leave empty for all files)
-            </p>
-          </div>
-
-          <div class="field">
-            <label class="label">Shape Simplification</label>
-            <o-input
-              v-model="exportOptions.simplifyShapes"
-              type="number"
-              placeholder="Tolerance in meters (e.g., 10.0)"
-              step="0.1"
-              expanded
-            />
-            <p class="help">
-              Simplify shape geometries to reduce file size
-            </p>
-          </div>
-
-          <div class="field">
-            <label class="label">Options</label>
-            <o-field>
-              <o-checkbox v-model="exportOptions.normalizeTimezones">
-                Normalize timezones (US/Pacific → America/Los_Angeles)
-              </o-checkbox>
-            </o-field>
-            <div class="field">
-              <o-checkbox v-model="exportOptions.useBasicRouteTypes">
-                Use basic route types (convert extended to core types)
-              </o-checkbox>
-              <o-tooltip>
-                <template #content>
-                  <p>Converts extended GTFS route types (e.g., 100-1700) to basic types (0-12).</p>
-                  <p>
-                    Learn more about
-                    <a
-                      href="https://www.transit.land/documentation/concepts/routes/#route-vehicle-types"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >route vehicle types</a>.
-                  </p>
-                </template>
-                <i class="fas fa-info-circle" style="margin-left: 0.5rem; cursor: help;" />
-              </o-tooltip>
-            </div>
-          </div>
-        </tl-msg-box>
-
-        <!-- Action Buttons -->
-        <div class="field is-grouped is-grouped-right mt-5">
-          <p class="control">
-            <button
-              class="button"
-              @click="handleCancel"
-            >
-              Cancel
-            </button>
-          </p>
-          <p class="control">
-            <button
-              class="button is-primary"
-              :class="{ 'is-loading': loading }"
-              :disabled="loading"
-              @click="downloadGtfs"
-            >
-              Export GTFS
-            </button>
+  <div>
+    <tl-msg-error v-if="error">
+      {{ error }}
+    </tl-msg-error>
+    <div v-else>
+      <!-- Collapsible Advanced Transformations -->
+      <tl-msg-box
+        title="Advanced Transformations"
+        :collapsible="true"
+        :collapsed="true"
+        no-icon
+      >
+        <div class="field">
+          <label class="label">Additional Feed Versions to Merge</label>
+          <o-taginput
+            v-model="additionalFeedVersions"
+            :allow-new="true"
+            placeholder="Add feed version SHA1 or ID"
+            icon="plus"
+            aria-close-label="Remove this feed version"
+            expanded
+          />
+          <p class="help">
+            Add additional feed version SHA1s or IDs to merge with this export
           </p>
         </div>
+
+        <div class="field">
+          <label class="label">ID Prefix</label>
+          <o-input
+            v-model="exportOptions.prefix"
+            placeholder="e.g., 'agency1_' to prefix all IDs"
+            expanded
+          />
+          <p class="help">
+            Add prefix to entity IDs for namespacing when merging feeds
+          </p>
+        </div>
+
+        <div class="field">
+          <label class="label">Prefix Files</label>
+          <o-input
+            v-model="prefixFilesInput"
+            placeholder="routes.txt, trips.txt (comma-separated)"
+            expanded
+          />
+          <p class="help">
+            Specific files to apply prefix to (leave empty for all files)
+          </p>
+        </div>
+
+        <div class="field">
+          <label class="label">Shape Simplification</label>
+          <o-input
+            v-model="exportOptions.simplifyShapes"
+            type="number"
+            placeholder="Tolerance in meters (e.g., 10.0)"
+            step="0.1"
+            expanded
+          />
+          <p class="help">
+            Simplify shape geometries to reduce file size
+          </p>
+        </div>
+
+        <div class="field">
+          <label class="label">Options</label>
+          <o-field>
+            <o-checkbox v-model="exportOptions.normalizeTimezones">
+              Normalize timezones (US/Pacific → America/Los_Angeles)
+            </o-checkbox>
+          </o-field>
+          <div class="field">
+            <o-checkbox v-model="exportOptions.useBasicRouteTypes">
+              Use basic route types (convert extended to core types)
+            </o-checkbox>
+            <o-tooltip>
+              <template #content>
+                <p>Converts extended GTFS route types (e.g., 100-1700) to basic types (0-12).</p>
+                <p>
+                  Learn more about
+                  <a
+                    href="https://www.transit.land/documentation/concepts/routes/#route-vehicle-types"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >route vehicle types</a>.
+                </p>
+              </template>
+              <i class="fas fa-info-circle" style="margin-left: 0.5rem; cursor: help;" />
+            </o-tooltip>
+          </div>
+        </div>
+      </tl-msg-box>
+
+      <!-- Action Buttons -->
+      <div class="field is-grouped is-grouped-right mt-5">
+        <p class="control">
+          <button
+            class="button"
+            @click="handleCancel"
+          >
+            Cancel
+          </button>
+        </p>
+        <p class="control">
+          <button
+            class="button is-primary"
+            :class="{ 'is-loading': loading }"
+            :disabled="loading"
+            @click="downloadGtfs"
+          >
+            Export GTFS
+          </button>
+        </p>
       </div>
     </div>
-  </ClientOnly>
+  </div>
 </template>
 
 <script setup lang="ts">

@@ -183,11 +183,7 @@ const queryVariables = computed<QueryVariables>(() => {
 // Apollo Query
 const { result, loading } = useQuery<{ places: PlaceResponse[] }>(
   PLACES_QUERY,
-  queryVariables,
-  {
-    clientId: 'transitland'
-  }
-)
+  queryVariables)
 
 const places = computed<Place[]>(() => result.value?.places || [])
 
