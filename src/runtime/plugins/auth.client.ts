@@ -34,7 +34,8 @@ export default defineNuxtPlugin(() => {
 
         const targetPath = appState?.targetUrl || '/'
         logAuthDebug('auth mw: navigating to:', targetPath)
-        return navigateTo(targetPath, { replace: true })
+        // Force full page reload to reinitialize Apollo client with new credentials
+        return navigateTo(targetPath, { external: true })
       } catch (e) {
         logAuthDebug('auth mw: handleRedirectCallback failed:', e)
         clearUser()
