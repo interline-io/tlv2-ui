@@ -12,11 +12,11 @@ import { useApiEndpoint } from '../composables/useApiEndpoint'
 
 const RECHECK_INTERVAL = 600_000
 const buildGraphqlUser = true
+const config = useRuntimeConfig()
 
 export default defineNuxtPlugin(() => {
   logAuthDebug('auth plugin: start')
   // Check if client is configured
-  const config = useRuntimeConfig()
   const client = configureAuth0Client(config.public.tlv2 || {})
   if (!client) {
     return

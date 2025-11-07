@@ -3,6 +3,8 @@ import { checkToken } from '../lib/auth0'
 import { clearUser } from '../auth'
 import { logAuthDebug } from '../lib/log'
 
+const config = useRuntimeConfig()
+
 // JWT
 const useJwt = async () => {
   const { token, mustReauthorize } = await checkToken()
@@ -16,7 +18,6 @@ const useJwt = async () => {
 
 // Headers, including CSRF
 export const useAuthHeaders = async () => {
-  const config = useRuntimeConfig()
   const headers: Record<string, string> = {}
 
   // CSRF
