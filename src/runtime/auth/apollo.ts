@@ -1,18 +1,17 @@
-import { ApolloClient, InMemoryCache } from '@apollo/client/core/index.js'
-import { setContext } from '@apollo/client/link/context/index.js'
+import { ApolloClient, ApolloLink, concat, InMemoryCache } from '@apollo/client/core/index.js'
 // @ts-expect-error - apollo-upload-client does not provide TypeScript definitions
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
 
-export function initApolloClient (endpoint: string, getHeaders: () => Promise<Record<string, string>>) {
+export function initApolloClient (endpoint: string, headers: Record<string, string>) {
   const httpLink = createUploadLink({ uri: endpoint })
-  // Fetch authorization headers dynamically on each request
-  const authMiddleware = setContext(async () => {
-    const headers = await getHeaders()
-    return { headers }
+  const authMiddleware = new ApolloLink((operation, forward) => {
+    // Add authorization headers
+    operation.setContext({ headers: headers })
+    return forward(operation)
   })
   const cache = new InMemoryCache()
   const apolloClient = new ApolloClient({
-    link: authMiddleware.concat(httpLink),
+    link: concat(authMiddleware, httpLink),
     cache
   })
   return apolloClient
