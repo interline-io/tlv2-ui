@@ -27,6 +27,13 @@ interface BoundingBox {
   ne: LonLat
 }
 
+export function positionToLonLat (p: Position): LonLat {
+  return {
+    lon: p[0] || 0,
+    lat: p[1] || 0,
+  }
+}
+
 export type {
   LonLat,
   BoundingBox,

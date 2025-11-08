@@ -197,7 +197,7 @@
                   v-if="entity.id && activeTab === tabNames.departures"
                   :show-fallback-selector="true"
                   :stop-ids="entityIds"
-                  :search-coords="entity?.geometry?.coordinates ?? undefined"
+                  :search-coords="positionToLonLat(entity?.geometry?.coordinates)"
                 />
                 <template #loginText>
                   <o-notification icon="lock">
@@ -222,7 +222,7 @@
               :route-ids="routeIds"
               :features="features"
               :auto-fit="false"
-              :center="entity.geometry.coordinates"
+              :center="positionToLonLat(entity.geometry.coordinates)"
               :include-stops="true"
               :circle-radius="20"
               :zoom="15"
@@ -251,6 +251,7 @@ import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
 import { useEntityPath } from '../../composables/useEntityPath'
 import { shortenName, makeRouteLink, makeStopLink } from '../../lib/filters'
+import { positionToLonLat } from '../../geom/geom'
 
 // Types
 interface StopResponse {
