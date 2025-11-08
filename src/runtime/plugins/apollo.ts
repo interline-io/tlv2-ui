@@ -3,43 +3,72 @@ import { defineNuxtPlugin } from 'nuxt/app'
 import { destr } from 'destr'
 import { ApolloClients, provideApolloClients } from '@vue/apollo-composable'
 import { createApolloProvider } from '@vue/apollo-option'
-import type { NormalizedCacheObject } from '@apollo/client/core/index.js'
-import { ApolloClient, InMemoryCache } from '@apollo/client/core/index.js'
-import { setContext } from '@apollo/client/link/context'
-// @ts-expect-error - apollo-upload-client does not provide TypeScript definitions
-import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloLink,
+  Observable,
+  type NormalizedCacheObject,
+  type Operation,
+  type NextLink,
+  type FetchResult
+} from '@apollo/client/core/index.js'
 
 // Our composables
 import { useApiEndpoint } from '../composables/useApiEndpoint'
 import { useAuthHeaders } from '../composables/useAuthHeaders'
 import { logAuthDebug } from '../lib'
 
+// Custom Apollo Link that uses Nuxt's $fetch with auth headers
+function createNuxtFetchLink (nuxtApp: NuxtApp, endpoint: string) {
+  return new ApolloLink((operation: Operation, _forward?: NextLink) => {
+    return new Observable<FetchResult>((observer) => {
+      const controller = new AbortController()
+
+      // Execute the GraphQL operation using $fetch
+      nuxtApp.runWithContext(async () => {
+        try {
+          // Get auth headers (server: cookie + API key, client: CSRF only)
+          const authHeaders = useAuthHeaders()
+          logAuthDebug('apollo: nuxt fetch link: using auth headers + cookies')
+
+          // Use $fetch with cookies automatically included for same-origin requests
+          const result = await $csrfFetch<FetchResult>(endpoint, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...authHeaders
+            },
+            body: {
+              query: operation.query,
+              variables: operation.variables,
+              operationName: operation.operationName
+            },
+            signal: controller.signal
+          })
+
+          observer.next(result)
+          observer.complete()
+        } catch (error) {
+          observer.error(error)
+        }
+      })
+
+      // Return cleanup function
+      return () => {
+        controller.abort()
+      }
+    })
+  })
+}
+
 // Apollo client factory
 function initApolloClient (nuxtApp: NuxtApp, endpoint: string) {
-  const httpLink = createUploadLink({
-    uri: endpoint,
-    credentials: 'same-origin', // or 'include' if hitting another origin
-  })
-
-  // Will be run before *every* operation
-  const authLink = setContext(async (_, { headers }) => {
-    // Wrap composable call so Nuxt context is available here
-    const authHeaders = await nuxtApp.runWithContext(async () => {
-      const headers = await useAuthHeaders()
-      logAuthDebug('apollo: authLink: refreshed headers')
-      return headers
-    })
-
-    return {
-      headers: {
-        ...(headers || {}),
-        ...(authHeaders || {}),
-      },
-    }
-  })
+  // Use our custom Nuxt $fetch link instead of createUploadLink
+  const httpLink = createNuxtFetchLink(nuxtApp, endpoint)
 
   return new ApolloClient({
-    link: authLink.concat(httpLink),
+    link: httpLink,
     cache: new InMemoryCache(),
     ssrMode: import.meta.server,
     connectToDevTools: import.meta.client,
@@ -49,7 +78,7 @@ function initApolloClient (nuxtApp: NuxtApp, endpoint: string) {
 // Nuxt plugin
 export default defineNuxtPlugin((nuxtApp) => {
   const app = nuxtApp as NuxtApp
-  const defaultClient = initApolloClient(app, useApiEndpoint('/query', 'default'),)
+  const defaultClient = initApolloClient(app, useApiEndpoint('/query', 'default'))
   const apolloClients = {
     default: defaultClient,
     stationEditor: initApolloClient(app, useApiEndpoint('/query', 'stationEditor')),

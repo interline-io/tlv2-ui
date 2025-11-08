@@ -1,44 +1,37 @@
-import { useRuntimeConfig, useCsrf } from '#imports'
-import { checkToken } from '../lib/auth0'
-import { clearUser } from '../auth'
-import { logAuthDebug } from '../lib/log'
+import { useRuntimeConfig, useCsrf, useCookie } from '#imports'
 
-// JWT
-const useJwt = async () => {
-  const { token, mustReauthorize } = await checkToken()
-  if (mustReauthorize) {
-    logAuthDebug('useJwt: mustReauthorize')
-    clearUser()
-    return ''
-  }
-  return token
-}
-
-// Headers, including CSRF
-export const useAuthHeaders = async () => {
+/**
+ * Auth headers for the three-tier architecture:
+ * 1. Client → Proxy: Sends cookie + CSRF token
+ * 2. Proxy reads cookie → Upstream: Sends Authorization header
+ * 3. SSR reads cookie → Upstream: Sends Authorization header
+ */
+export const useAuthHeaders = () => {
   const config = useRuntimeConfig()
   const headers: Record<string, string> = {}
 
-  // Server side configuration
+  // SERVER (SSR): Read JWT from client cookie, forward to upstream GraphQL
   if (import.meta.server) {
-    // Api key
+    // API key for server-side requests
     if (config.tlv2?.graphqlApikey) {
-      headers['apikey'] = config.tlv2?.graphqlApikey
+      headers.apikey = config.tlv2.graphqlApikey
+    }
+
+    // SSR: Read JWT from client cookie and forward via Authorization header
+    const authToken = useCookie('auth-token')
+    if (authToken.value) {
+      headers.Authorization = `Bearer ${authToken.value}`
     }
   }
 
-  // Client side configuration
+  // CLIENT: Add CSRF protection for proxy (cookie sent automatically by browser)
   if (import.meta.client) {
-    // CSRF
+    // CSRF required by proxy to prevent abuse from public endpoints
     if (config.public.tlv2?.useProxy) {
       const { headerName: csrfHeader, csrf: csrfToken } = useCsrf()
       headers[csrfHeader] = csrfToken
     }
-    // JWT
-    const token = await useJwt()
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`
-    }
   }
+
   return headers
 }

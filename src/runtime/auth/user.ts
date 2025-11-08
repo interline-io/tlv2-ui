@@ -1,5 +1,4 @@
-import { useStorage } from '@vueuse/core'
-
+// Pure TypeScript User class and interfaces
 export class User {
   loggedIn = false
   id = ''
@@ -8,6 +7,7 @@ export class User {
   roles = []
   externalData = {}
   checked = 0
+
   constructor (v: any) {
     Object.assign(this, v)
   }
@@ -22,12 +22,10 @@ export class User {
   }
 }
 
-export function clearUser () {
-  const checkUser = useStorage('user', {})
-  checkUser.value = new User({ loggedIn: false })
-}
-
-export const useUser = () => {
-  const user = useStorage('user', {})
-  return new User(user?.value || {})
+export interface UserData {
+  id?: string
+  name?: string
+  email?: string
+  external_data?: any
+  roles?: string[]
 }
