@@ -57,6 +57,10 @@ export function configureAuth0Client (options: Auth0Options): Auth0Client | null
 
 // Client MUST be configured
 export function getAuth0Client (): Auth0Client | null {
+  // Never touch Auth0 SPA on the server
+  if (import.meta.server) {
+    return null
+  }
   if (!authInit) {
     logAuthDebug('getAuth0Client called before client configured')
     return null

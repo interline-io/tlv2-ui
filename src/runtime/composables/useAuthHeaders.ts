@@ -19,23 +19,26 @@ export const useAuthHeaders = async () => {
   const config = useRuntimeConfig()
   const headers: Record<string, string> = {}
 
-  // CSRF
-  // NOTE: For unknown reasons, useCsrf will panic if called after useJwt.
-  // Only use CSRF on the client side, not during SSR
-  if (import.meta.client && config.public.tlv2?.useProxy) {
-    const { headerName: csrfHeader, csrf: csrfToken } = useCsrf()
-    headers[csrfHeader] = csrfToken
+  // Server side configuration
+  if (import.meta.server) {
+    // Api key
+    if (config.tlv2?.graphqlApikey) {
+      headers['apikey'] = config.tlv2?.graphqlApikey
+    }
   }
 
-  // JWT
-  const token = await useJwt()
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`
-  }
-
-  // Api key
-  if (import.meta.server && config.tlv2?.graphqlApikey) {
-    headers['apikey'] = config.tlv2?.graphqlApikey
+  // Client side configuration
+  if (import.meta.client) {
+    // CSRF
+    if (config.public.tlv2?.useProxy) {
+      const { headerName: csrfHeader, csrf: csrfToken } = useCsrf()
+      headers[csrfHeader] = csrfToken
+    }
+    // JWT
+    const token = await useJwt()
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
   }
   return headers
 }
