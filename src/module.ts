@@ -151,6 +151,7 @@ export default defineNuxtModule<ModuleOptions>({
     // - Ship as ESM but need to work in SSR/Node context
     // - Use modern JS features or TypeScript
     // - Contain Vue components or framework-specific code
+    nuxt.options.build.transpile = nuxt.options.build.transpile || []
     nuxt.options.build.transpile.push(
       'tlv2-ui', // This module itself - ensures it works when npm installed
       '@vue/apollo-composable', // Vue 3 Composition API wrapper - contains Vue reactivity code
@@ -187,6 +188,7 @@ export default defineNuxtModule<ModuleOptions>({
         'zen-observable', // Observable polyfill used by Apollo - avoid re-discovery
         'interval-tree-1d' // CommonJS package needs conversion to ESM for browser compatibility
       )
+      console.log('tlv2-ui: Applied Vite optimizeDeps configuration', viteConfig.optimizeDeps)
     })
   }
 })
