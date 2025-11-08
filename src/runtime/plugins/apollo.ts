@@ -4,7 +4,7 @@ import { destr } from 'destr'
 import { ApolloClients, provideApolloClients } from '@vue/apollo-composable'
 import { createApolloProvider } from '@vue/apollo-option'
 import type { NormalizedCacheObject } from '@apollo/client/core/index.js'
-import { ApolloClient, InMemoryCache, } from '@apollo/client/core/index.js'
+import { ApolloClient, InMemoryCache } from '@apollo/client/core/index.js'
 import { setContext } from '@apollo/client/link/context'
 // @ts-expect-error - apollo-upload-client does not provide TypeScript definitions
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
@@ -59,7 +59,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   // Restore cache on client
   if (import.meta.client && nuxtApp.payload.data['_apollo:default']) {
     const cacheState = destr(
-      JSON.stringify(nuxtApp.payload.data['_apollo:default']),
+      JSON.stringify(nuxtApp.payload.data['_apollo:default'])
     ) as NormalizedCacheObject
     defaultClient.cache.restore(cacheState)
   }
@@ -67,7 +67,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   // Options API
   const apolloProvider = createApolloProvider({
     defaultClient,
-    clients: { ...apolloClients },
+    clients: { ...apolloClients }
   })
   nuxtApp.vueApp.use(apolloProvider)
 
