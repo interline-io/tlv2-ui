@@ -1,4 +1,3 @@
-// plugins/apollo.ts
 import type { NuxtApp } from 'nuxt/app'
 import { defineNuxtPlugin } from 'nuxt/app'
 import { destr } from 'destr'
