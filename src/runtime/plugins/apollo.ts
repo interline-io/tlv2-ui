@@ -4,27 +4,15 @@ import { destr } from 'destr'
 import { ApolloClients, provideApolloClients } from '@vue/apollo-composable'
 import { createApolloProvider } from '@vue/apollo-option'
 import type { NormalizedCacheObject } from '@apollo/client/core/index.js'
-import { useRuntimeConfig, useAuthHeaders, } from '#imports'
 import { ApolloClient, InMemoryCache, } from '@apollo/client/core/index.js'
 import { setContext } from '@apollo/client/link/context'
 // @ts-expect-error - apollo-upload-client does not provide TypeScript definitions
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
 
-// Api endpoint helper
-const useApiEndpoint = (path: string, clientName: string) => {
-  const config = useRuntimeConfig()
-
-  if (import.meta.server) {
-    const proxyBases: Record<string, string> = config.tlv2?.proxyBase || {}
-    return (proxyBases[clientName] || '') + (path || '')
-  }
-
-  const clientApiBases: Record<string, string> = config.public.tlv2?.apiBase || {}
-  return (
-    clientApiBases[clientName]
-    || (window?.location?.origin ?? '') + '/api/v2'
-  ) + (path || '')
-}
+// Our composables
+import { useApiEndpoint } from '~/src/runtime/composables/useApiEndpoint'
+import { useAuthHeaders } from '~/src/runtime/composables/useAuthHeaders'
+import { logAuthDebug } from '../lib'
 
 // Apollo client factory
 function initApolloClient (nuxtApp: NuxtApp, endpoint: string) {
@@ -37,7 +25,9 @@ function initApolloClient (nuxtApp: NuxtApp, endpoint: string) {
   const authLink = setContext(async (_, { headers }) => {
     // Wrap composable call so Nuxt context is available here
     const authHeaders = await nuxtApp.runWithContext(async () => {
-      return await useAuthHeaders()
+      const headers = await useAuthHeaders()
+      logAuthDebug('apollo: authLink: refreshed headers')
+      return headers
     })
 
     return {
@@ -62,9 +52,9 @@ export default defineNuxtPlugin((nuxtApp) => {
   const defaultClient = initApolloClient(app, useApiEndpoint('/query', 'default'),)
   const apolloClients = {
     default: defaultClient,
-    transitland: initApolloClient(app, useApiEndpoint('/query', 'default'),),
-    stationEditor: initApolloClient(app, useApiEndpoint('/query', 'stationEditor'),),
-    feedManagement: initApolloClient(app, useApiEndpoint('/query', 'feedManagement'),),
+    transitland: initApolloClient(app, useApiEndpoint('/query', 'default')),
+    stationEditor: initApolloClient(app, useApiEndpoint('/query', 'stationEditor')),
+    feedManagement: initApolloClient(app, useApiEndpoint('/query', 'feedManagement')),
   }
 
   // Restore cache on client
