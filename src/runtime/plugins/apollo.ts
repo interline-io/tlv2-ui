@@ -52,7 +52,6 @@ export default defineNuxtPlugin((nuxtApp) => {
   const defaultClient = initApolloClient(app, useApiEndpoint('/query', 'default'),)
   const apolloClients = {
     default: defaultClient,
-    transitland: initApolloClient(app, useApiEndpoint('/query', 'default')),
     stationEditor: initApolloClient(app, useApiEndpoint('/query', 'stationEditor')),
     feedManagement: initApolloClient(app, useApiEndpoint('/query', 'feedManagement')),
   }
