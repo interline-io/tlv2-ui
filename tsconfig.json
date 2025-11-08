@@ -1,5 +1,24 @@
 {
   "extends": "./.nuxt/tsconfig.json",
+  "compilerOptions": {
+    // MAXIMUM STRICTNESS - because half-validation is worse than none
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true
+  },
+  "vueCompilerOptions": {
+    // Fail on unknown components in templates
+    "strictTemplates": true,
+    // Require explicit registration for all components
+    "fallthroughAttributes": false
+  },
   "exclude": [
     "dist",
     "node_modules",
