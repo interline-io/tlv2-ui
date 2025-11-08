@@ -10,8 +10,8 @@ import { setContext } from '@apollo/client/link/context'
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
 
 // Our composables
-import { useApiEndpoint } from '~/src/runtime/composables/useApiEndpoint'
-import { useAuthHeaders } from '~/src/runtime/composables/useAuthHeaders'
+import { useApiEndpoint } from '../composables/useApiEndpoint'
+import { useAuthHeaders } from '../composables/useAuthHeaders'
 import { logAuthDebug } from '../lib'
 
 // Apollo client factory
