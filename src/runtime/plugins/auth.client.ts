@@ -3,12 +3,9 @@ import { defineNuxtPlugin, addRouteMiddleware } from 'nuxt/app'
 import { useStorage } from '@vueuse/core'
 import { gql } from 'graphql-tag'
 import { configureAuth0Client, getAuth0Client, getAuthorizeUrl, checkToken } from '../lib/auth0'
-import { useUser, clearUser, User, initApolloClient } from '../auth'
-
+import { useUser, clearUser, User } from '../auth'
 import { logAuthDebug } from '../lib/log'
-
-import { useAuthHeaders } from '../composables/useAuthHeaders'
-import { useApiEndpoint } from '../composables/useApiEndpoint'
+import { useApolloClient } from '@vue/apollo-composable'
 
 const RECHECK_INTERVAL = 600_000
 const buildGraphqlUser = true
@@ -34,7 +31,8 @@ export default defineNuxtPlugin(() => {
 
         const targetPath = appState?.targetUrl || '/'
         logAuthDebug('auth mw: navigating to:', targetPath)
-        return navigateTo(targetPath, { replace: true })
+        // Force full page reload to reinitialize Apollo client with new credentials
+        return navigateTo(targetPath, { external: true })
       } catch (e) {
         logAuthDebug('auth mw: handleRedirectCallback failed:', e)
         clearUser()
@@ -91,9 +89,8 @@ async function buildUser () {
   let meData: any = null
   if (buildGraphqlUser) {
     try {
-      const headers = await useAuthHeaders()
-      const apolloClient = initApolloClient(useApiEndpoint('/query', 'default'), headers)
-      const response = await apolloClient.query({
+      const apolloClient = useApolloClient()
+      const response = await apolloClient.client.query({
         query: gql`query{me{id name email external_data roles}}`
       })
       meData = response.data?.me || null
