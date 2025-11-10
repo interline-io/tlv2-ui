@@ -177,8 +177,7 @@ export default defineNuxtModule<ModuleOptions>({
       viteConfig.optimizeDeps!.include.push(
         '@mapbox/mapbox-gl-draw', // Large library with 100+ modules - pre-bundle to avoid request waterfall
         '@observablehq/plot', // Complex plotting library with many internal imports
-        '@observablehq/plot > interval-tree-1d', // CommonJS nested dep needs conversion to ESM
-        'interval-tree-1d', // Also include directly for cases where it's imported standalone
+        'interval-tree-1d', // CommonJS package needed by Observable Plot - convert to ESM
         'cytoscape-fcose', // Graph layout algorithm - improves cold start performance
         'cytoscape', // Core graph library with numerous sub-modules
         'fast-json-stable-stringify', // Small utility but frequently imported - bundle once
