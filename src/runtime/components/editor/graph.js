@@ -1,4 +1,4 @@
-import haversine from 'haversine'
+import { haversinePosition } from '../../geom'
 
 export const DefaultWalkingSpeed = 1.3
 export const MinEdge = 0.0001
@@ -147,13 +147,10 @@ export class RoutingGraph {
       distances.push([])
       for (let j = 0; j < stops.length; j++) {
         const toStop = stops[j]
-        const d = haversine({
-          latitude: fromStop.geometry.coordinates[1],
-          longitude: fromStop.geometry.coordinates[0]
-        }, {
-          latitude: toStop.geometry.coordinates[1],
-          longitude: toStop.geometry.coordinates[0]
-        }, { unit: 'meter' })
+        const d = haversinePosition(
+          fromStop.geometry.coordinates,
+          toStop.geometry.coordinates
+        )
         distances[i].push(d)
         g[i].push(0) // init with 0
         h[i].push(d / 5) // assume maximum possible speed of 5m/s

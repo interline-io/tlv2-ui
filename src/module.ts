@@ -182,7 +182,6 @@ export default defineNuxtModule<ModuleOptions>({
         'cytoscape-fcose', // Graph layout algorithm - improves cold start performance
         'cytoscape', // Core graph library with numerous sub-modules
         'fast-json-stable-stringify', // Small utility but frequently imported - bundle once
-        'haversine', // Geo calculation utility - pre-bundle for consistent imports
         'maplibre-gl', // Large mapping library - dramatically speeds up dev cold starts
         'mixpanel-browser', // Analytics SDK with dynamic imports - needs pre-bundling
         'zen-observable', // Observable polyfill used by Apollo - avoid re-discovery
