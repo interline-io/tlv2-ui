@@ -178,6 +178,7 @@ export default defineNuxtModule<ModuleOptions>({
         '@mapbox/mapbox-gl-draw', // Large library with 100+ modules - pre-bundle to avoid request waterfall
         '@observablehq/plot', // Complex plotting library with many internal imports
         'interval-tree-1d', // CommonJS package needed by Observable Plot - convert to ESM
+        'binary-search-bounds', // CommonJS dependency of interval-tree-1d - needs ESM conversion
         'cytoscape-fcose', // Graph layout algorithm - improves cold start performance
         'cytoscape', // Core graph library with numerous sub-modules
         'fast-json-stable-stringify', // Small utility but frequently imported - bundle once
