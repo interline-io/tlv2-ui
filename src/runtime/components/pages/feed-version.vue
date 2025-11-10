@@ -227,12 +227,14 @@
               <p class="content">
                 Use this timeline view to see the range of dates for which service is scheduled in this feed version:
               </p>
-              <!-- <tl-feed-version-timeline-chart-plot
-                v-if="entity"
-                :feed="entity.feed"
-                :feed-versions="[entity]"
-                :show-status-legend="false"
-              /> -->
+              <client-only>
+                <tl-feed-version-timeline-chart-plot
+                  v-if="entity"
+                  :feed="entity.feed"
+                  :feed-versions="[entity]"
+                  :show-status-legend="false"
+                />
+              </client-only>
             </div>
           </template>
         </o-tab-item>
