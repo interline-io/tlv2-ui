@@ -156,10 +156,8 @@ export default defineNuxtModule<ModuleOptions>({
       'tlv2-ui', // This module itself - ensures it works when npm installed
       '@vue/apollo-composable', // Vue 3 Composition API wrapper - contains Vue reactivity code
       '@apollo/client', // GraphQL client with modern JS/TS - needs transpilation for SSR
-      'protomaps-themes-base', // ESM map themes - needed for server-side map rendering
       'markdown-it', // Markdown parser - ESM package used in SSR
       'markdown-it-anchor', // Markdown-it plugin - must match parent's transpilation
-      'interval-tree-1d', // CJS/ESM hybrid needed by @observablehq/plot in SSR context
       '@oruga-ui/oruga-next' // Oruga UI components - contains Vue code needing transpilation
     )
 
