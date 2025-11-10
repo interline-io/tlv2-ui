@@ -3949,13 +3949,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/haversine@npm:1.1.8":
-  version: 1.1.8
-  resolution: "@types/haversine@npm:1.1.8"
-  checksum: 10/c728627e328e877f2f0369f385130fc6a4fd68626942719dd7401076fd10a2ebb3fb1084355739d1b81d850e28533c4ef9782b90e16467fdd886d92a04fb6492
-  languageName: node
-  linkType: hard
-
 "@types/html-minifier-terser@npm:7.0.2":
   version: 7.0.2
   resolution: "@types/html-minifier-terser@npm:7.0.2"
@@ -9106,13 +9099,6 @@ __metadata:
   version: 0.0.3
   resolution: "hat@npm:0.0.3"
   checksum: 10/3be85f476e3b2082194ff43f55794325308ec6f77a6a88476b0a6539fe49934dca96554b0b75fef6ae234cc45958bc361384dcf1593e9bb0f50b01551a5aa452
-  languageName: node
-  linkType: hard
-
-"haversine@npm:1.1.1":
-  version: 1.1.1
-  resolution: "haversine@npm:1.1.1"
-  checksum: 10/4c2393d7dc32d75859bf3927f0432407ac7f6c95728c7543022a841c1a3e6e22eb6ed1e010024a27716b4c8972045549407ca152aaa7d078b490186863bf7ac4
   languageName: node
   linkType: hard
 
@@ -14456,7 +14442,6 @@ __metadata:
     "@types/cytoscape-fcose": "npm:2.2.4"
     "@types/d3-scale-chromatic": "npm:3.1.0"
     "@types/geojson": "npm:7946.0.16"
-    "@types/haversine": "npm:1.1.8"
     "@types/jsdom": "npm:21.1.7"
     "@types/mapbox__mapbox-gl-draw": "npm:1.4.8"
     "@types/node": "npm:latest"
@@ -14483,7 +14468,6 @@ __metadata:
     graphql-tag: "npm:2.12.6"
     h3: "npm:1.15.1"
     happy-dom: "npm:18.0.1"
-    haversine: "npm:1.1.1"
     jsdom: "npm:26.1.0"
     maplibre-gl: "npm:5.2.0"
     mixpanel-browser: "npm:2.61.2"
