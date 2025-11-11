@@ -23,8 +23,6 @@
     "editor.formatOnSave": true
   },
   "search.exclude": {
-    "**/yarn.lock": true,
-    "**/.yarn": true,
     "**/node_modules": true,
     "**/.git": true,
     "**/dist": true,

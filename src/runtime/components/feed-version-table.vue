@@ -2,12 +2,10 @@
   <div>
     <!-- Feed Version Timeline Chart -->
     <div v-if="showTimelineChart" class="mb-5">
-      <client-only>
-        <tl-feed-version-timeline-chart-plot
-          :feed="feed"
-          :feed-versions="entities"
-        />
-      </client-only>
+      <tl-feed-version-timeline-chart-plot
+        :feed="feed"
+        :feed-versions="entities"
+      />
     </div>
 
     <div class="table-container">
