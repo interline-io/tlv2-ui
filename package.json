@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "prepack": "nuxt-module-build prepare && nuxt-module-build build",
-    "dev": "yarn run dev:prepare && nuxi dev playground",
+    "dev": "pnpm run dev:prepare && nuxi dev playground",
     "dev:build": "nuxi build playground",
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
     "lint": "eslint .",
@@ -125,6 +125,5 @@
     "tiny-emitter": "2.1.0",
     "unstorage": "1.15.0",
     "vue-json-pretty": "2.6.0"
-  },
-  "packageManager": "yarn@4.3.0"
+  }
 }
