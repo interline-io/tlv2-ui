@@ -169,18 +169,11 @@ export default defineNuxtModule<ModuleOptions>({
       viteConfig.resolve!.preserveSymlinks = true
 
       // Use vendored interval-tree-1d instead of npm package
-      const vendoredIntervalTree = resolver.resolve('../vendor/interval-tree-1d.mjs')
+      const vendoredIntervalTree = resolveRuntimeModule('vendor/interval-tree-1d.mjs')
       const currentAlias = viteConfig.resolve!.alias
-      if (Array.isArray(currentAlias)) {
-        currentAlias.push({
-          find: 'interval-tree-1d',
-          replacement: vendoredIntervalTree
-        })
-      } else {
-        viteConfig.resolve!.alias = {
-          ...(currentAlias || {}),
-          'interval-tree-1d': vendoredIntervalTree
-        }
+      viteConfig.resolve!.alias = {
+        ...(currentAlias || {}),
+        'interval-tree-1d': vendoredIntervalTree
       }
 
       // Vite optimizeDeps pre-bundles dependencies for faster dev server
