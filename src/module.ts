@@ -1,6 +1,5 @@
 import { defineNuxtModule, addPlugin, createResolver, addImportsDir, addServerHandler } from '@nuxt/kit'
 import { defu } from 'defu'
-import { fileURLToPath } from 'node:url'
 
 // Config handler
 export interface ModuleOptions {
@@ -170,9 +169,18 @@ export default defineNuxtModule<ModuleOptions>({
       viteConfig.resolve!.preserveSymlinks = true
 
       // Use vendored interval-tree-1d instead of npm package
-      viteConfig.resolve!.alias = {
-        ...(viteConfig.resolve!.alias || {}),
-        'interval-tree-1d': fileURLToPath(new URL('../vendor/interval-tree-1d.mjs', import.meta.url))
+      const vendoredIntervalTree = resolver.resolve('../vendor/interval-tree-1d.mjs')
+      const currentAlias = viteConfig.resolve!.alias
+      if (Array.isArray(currentAlias)) {
+        currentAlias.push({
+          find: 'interval-tree-1d',
+          replacement: vendoredIntervalTree
+        })
+      } else {
+        viteConfig.resolve!.alias = {
+          ...(currentAlias || {}),
+          'interval-tree-1d': vendoredIntervalTree
+        }
       }
 
       // Vite optimizeDeps pre-bundles dependencies for faster dev server
@@ -184,7 +192,6 @@ export default defineNuxtModule<ModuleOptions>({
       viteConfig.optimizeDeps!.include.push(
         '@mapbox/mapbox-gl-draw', // Large library with 100+ modules - pre-bundle to avoid request waterfall
         '@observablehq/plot', // Complex plotting library with many internal imports
-        'interval-tree-1d', // CommonJS package needed by Observable Plot - convert to ESM
         'binary-search-bounds', // CommonJS dependency of interval-tree-1d - needs ESM conversion
         'cytoscape-fcose', // Graph layout algorithm - improves cold start performance
         'cytoscape', // Core graph library with numerous sub-modules
