@@ -132,7 +132,7 @@
 </template>
 
 <script>
-import haversine from 'haversine'
+import { haversinePosition } from '../../geom'
 import { PathwayModes } from './basemaps'
 import { Pathway } from './station'
 
@@ -161,13 +161,10 @@ export default {
   },
   computed: {
     stopLength () {
-      return haversine({
-        latitude: this.pathway.from_stop.geometry.coordinates[1],
-        longitude: this.pathway.from_stop.geometry.coordinates[0]
-      }, {
-        latitude: this.pathway.to_stop.geometry.coordinates[1],
-        longitude: this.pathway.to_stop.geometry.coordinates[0]
-      }, { unit: 'meter' }).toFixed(2)
+      return haversinePosition(
+        this.pathway.from_stop.geometry.coordinates,
+        this.pathway.to_stop.geometry.coordinates
+      ).toFixed(2)
     },
     stopTraversalTime () {
       return this.stopLength * 1.30

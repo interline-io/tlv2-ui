@@ -84,7 +84,7 @@
 </template>
 
 <script setup lang="ts">
-import haversine from 'haversine'
+import { haversinePosition } from '../geom'
 import { gql } from 'graphql-tag'
 import { ref, computed } from 'vue'
 import { useQuery } from '@vue/apollo-composable'
@@ -456,14 +456,7 @@ function nearbyRouteStops (stop: Stop): ProcessedRoute[] {
 }
 
 function hsin (fromPoint: Geometry, toPoint: Geometry): number {
-  const d = haversine({
-    latitude: fromPoint.coordinates[1],
-    longitude: fromPoint.coordinates[0]
-  }, {
-    latitude: toPoint.coordinates[1],
-    longitude: toPoint.coordinates[0]
-  }, { unit: 'meter' })
-  return d
+  return haversinePosition(fromPoint.coordinates, toPoint.coordinates)
 }
 </script>
 

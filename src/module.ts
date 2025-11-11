@@ -1,4 +1,4 @@
-import { defineNuxtModule, addPlugin, createResolver, addImportsDir, addServerHandler } from '@nuxt/kit'
+import { defineNuxtModule, addPlugin, createResolver, addImportsDir, addServerHandler, addVitePlugin } from '@nuxt/kit'
 import { defu } from 'defu'
 
 // Config handler
@@ -153,42 +153,43 @@ export default defineNuxtModule<ModuleOptions>({
     // - Contain Vue components or framework-specific code
     nuxt.options.build.transpile = nuxt.options.build.transpile || []
     nuxt.options.build.transpile.push(
-      'tlv2-ui', // This module itself - ensures it works when npm installed
       '@vue/apollo-composable', // Vue 3 Composition API wrapper - contains Vue reactivity code
       '@apollo/client', // GraphQL client with modern JS/TS - needs transpilation for SSR
-      'protomaps-themes-base', // ESM map themes - needed for server-side map rendering
       'markdown-it', // Markdown parser - ESM package used in SSR
       'markdown-it-anchor', // Markdown-it plugin - must match parent's transpilation
-      'interval-tree-1d', // CJS/ESM hybrid needed by @observablehq/plot in SSR context
-      '@oruga-ui/oruga-next' // Oruga UI components - contains Vue code needing transpilation
+      '@oruga-ui/oruga-next', // Oruga UI components - contains Vue code needing transpilation
     )
 
-    // Add Vite configuration - Nuxt 4 pattern
-    nuxt.hook('vite:extendConfig', (viteConfig) => {
-      // Fix for local development with symlinks (yarn/npm link, --stub mode)
-      // https://github.com/nuxt/nuxt/issues/20001
-      // Without this, Vite fails to resolve module files when using symlinked dependencies
-      viteConfig.resolve!.preserveSymlinks = true
+    // Add Vite plugin - Nuxt 4 pattern
+    addVitePlugin(() => ({
+      name: 'tlv2-ui:vite-config',
+      enforce: 'pre',
+      config (config) {
+        // Fix for local development with symlinks (yarn/npm link, --stub mode)
+        // https://github.com/nuxt/nuxt/issues/20001
+        // Without this, Vite fails to resolve module files when using symlinked dependencies
+        config.resolve = config.resolve || {}
+        config.resolve.preserveSymlinks = true
 
-      // Vite optimizeDeps pre-bundles dependencies for faster dev server
-      // Include packages that:
-      // - Have many internal modules (reduces waterfall requests)
-      // - Are CommonJS and need ESM conversion for browser
-      // - Cause slow cold starts or discovery issues
-      viteConfig.optimizeDeps!.include = viteConfig.optimizeDeps!.include || []
-      viteConfig.optimizeDeps!.include.push(
-        '@mapbox/mapbox-gl-draw', // Large library with 100+ modules - pre-bundle to avoid request waterfall
-        '@observablehq/plot', // Complex plotting library with many internal imports
-        'cytoscape-fcose', // Graph layout algorithm - improves cold start performance
-        'cytoscape', // Core graph library with numerous sub-modules
-        'fast-json-stable-stringify', // Small utility but frequently imported - bundle once
-        'haversine', // Geo calculation utility - pre-bundle for consistent imports
-        'maplibre-gl', // Large mapping library - dramatically speeds up dev cold starts
-        'mixpanel-browser', // Analytics SDK with dynamic imports - needs pre-bundling
-        'zen-observable', // Observable polyfill used by Apollo - avoid re-discovery
-        'interval-tree-1d' // CommonJS package needs conversion to ESM for browser compatibility
-      )
-      console.log('tlv2-ui: Applied Vite optimizeDeps configuration', viteConfig.optimizeDeps)
-    })
+        // Vite optimizeDeps pre-bundles dependencies for faster dev server
+        // Include packages that:
+        // - Have many internal modules (reduces waterfall requests)
+        // - Are CommonJS and need ESM conversion for browser
+        // - Cause slow cold starts or discovery issues
+        config.optimizeDeps = config.optimizeDeps || {}
+        config.optimizeDeps.include = config.optimizeDeps.include || []
+        config.optimizeDeps.include.push(
+          '@mapbox/mapbox-gl-draw', // Large library with 100+ modules - pre-bundle to avoid request waterfall
+          '@observablehq/plot', // Complex plotting library with many internal imports
+          'binary-search-bounds', // CommonJS dependency of interval-tree-1d - needs ESM conversion
+          'cytoscape-fcose', // Graph layout algorithm - improves cold start performance
+          'cytoscape', // Core graph library with numerous sub-modules
+          'fast-json-stable-stringify', // Small utility but frequently imported - bundle once
+          'maplibre-gl', // Large mapping library - dramatically speeds up dev cold starts
+          'mixpanel-browser', // Analytics SDK with dynamic imports - needs pre-bundling
+          'zen-observable' // Observable polyfill used by Apollo - avoid re-discovery
+        )
+      }
+    }))
   }
 })

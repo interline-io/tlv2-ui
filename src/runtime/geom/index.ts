@@ -1,2 +1,2 @@
 export * from './geom'
-export * from './util'
+export * from './haversine'
