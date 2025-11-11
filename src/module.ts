@@ -168,14 +168,6 @@ export default defineNuxtModule<ModuleOptions>({
       // Without this, Vite fails to resolve module files when using symlinked dependencies
       viteConfig.resolve!.preserveSymlinks = true
 
-      // Use vendored interval-tree-1d instead of npm package
-      const vendoredIntervalTree = resolveRuntimeModule('vendor/interval-tree-1d.mjs')
-      const currentAlias = viteConfig.resolve!.alias
-      viteConfig.resolve!.alias = {
-        ...(currentAlias || {}),
-        'interval-tree-1d': vendoredIntervalTree
-      }
-
       // Vite optimizeDeps pre-bundles dependencies for faster dev server
       // Include packages that:
       // - Have many internal modules (reduces waterfall requests)
