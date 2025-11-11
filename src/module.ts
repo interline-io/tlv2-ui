@@ -1,5 +1,6 @@
 import { defineNuxtModule, addPlugin, createResolver, addImportsDir, addServerHandler } from '@nuxt/kit'
 import { defu } from 'defu'
+import { fileURLToPath } from 'node:url'
 
 // Config handler
 export interface ModuleOptions {
@@ -167,6 +168,12 @@ export default defineNuxtModule<ModuleOptions>({
       // https://github.com/nuxt/nuxt/issues/20001
       // Without this, Vite fails to resolve module files when using symlinked dependencies
       viteConfig.resolve!.preserveSymlinks = true
+
+      // Use vendored interval-tree-1d instead of npm package
+      viteConfig.resolve!.alias = {
+        ...(viteConfig.resolve!.alias || {}),
+        'interval-tree-1d': fileURLToPath(new URL('../vendor/interval-tree-1d.mjs', import.meta.url))
+      }
 
       // Vite optimizeDeps pre-bundles dependencies for faster dev server
       // Include packages that:
