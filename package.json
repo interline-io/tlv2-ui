@@ -111,6 +111,7 @@
     "cytoscape": "3.31.1",
     "cytoscape-fcose": "2.2.0",
     "date-fns": "4.1.0",
+    "@observablehq/plot": "0.6.17",
     "defu": "6.1.4",
     "destr": "2.0.3",
     "graphql": "16.10.0",
