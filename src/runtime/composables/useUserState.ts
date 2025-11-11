@@ -1,58 +1,76 @@
-// Composable for reactive user state
-import { ref, computed } from 'vue'
-import { useUser, useUserSync, clearUser } from './useUser'
-import type { User } from '../auth/user'
+// Composable for reactive user state - now contains the main user management logic
+import { useCookie } from '#imports'
+import { useStorage } from '@vueuse/core'
+import { useApolloClient } from '@vue/apollo-composable'
+import { gql } from 'graphql-tag'
+import { User, type UserData } from '../auth/user'
 
-// Global reactive user state
-const userState = ref<User | null>(null)
-const isLoading = ref(false)
-const hasLoaded = ref(false)
+// const CACHE_DURATION = 600_000 // 10 minutes
 
-export const useUserState = () => {
-  // Load user data if not already loaded or loading
-  const loadUser = async () => {
-    if (isLoading.value || hasLoaded.value) return
-
-    isLoading.value = true
-    try {
-      const user = await useUser()
-      userState.value = user
-      hasLoaded.value = true
-    } catch (error) {
-      console.error('Failed to load user:', error)
-      userState.value = null
-    } finally {
-      isLoading.value = false
+export const useUserState = async () => {
+  // Get user from local storage if available
+  const anonUser = new User({ loggedIn: false })
+  const localStorageUser = useStorage('user', anonUser)
+  if (localStorageUser.loggedIn) {
+    return {
+      user: localStorageUser.value,
+      clearUserData
     }
   }
 
-  // Get user synchronously if already loaded
-  const getUserSync = () => {
-    if (hasLoaded.value) {
-      return userState.value
-    }
-    return useUserSync()
-  }
-
-  // Clear user state
-  const clearUserState = () => {
-    clearUser()
-    userState.value = null
-    hasLoaded.value = false
-    isLoading.value = false
-  }
-
-  // Auto-load user on first access
-  if (!hasLoaded.value && !isLoading.value) {
-    loadUser()
-  }
-
+  const newUser = await fetchUserFromGraphQL()
+  useStorage('user', newUser)
   return {
-    user: computed(() => userState.value),
-    isLoading: computed(() => isLoading.value),
-    hasLoaded: computed(() => hasLoaded.value),
-    loadUser,
-    getUserSync,
-    clearUser: clearUserState
+    user: newUser,
+    clearUserData
+  }
+}
+
+// Fetch user from GraphQL me resolver
+async function fetchUserFromGraphQL (): Promise<User> {
+  if (import.meta.server) {
+    // On server, we can't make GraphQL calls in this context
+    // Return empty user and let client-side handle it
+    return new User({ loggedIn: false })
+  }
+
+  try {
+    const apolloClient = useApolloClient()
+    const response = await apolloClient.client.query({
+      query: gql`query GetMe { me { id name email external_data roles } }`,
+      fetchPolicy: 'network-only' // Always fetch fresh data
+    })
+
+    const meData: UserData | null = response.data?.me
+
+    if (meData) {
+      return new User({
+        loggedIn: true,
+        id: meData.id || '',
+        name: meData.name || '',
+        email: meData.email || '',
+        externalData: meData.external_data || {},
+        roles: meData.roles || [],
+        checked: Date.now()
+      })
+    } else {
+      return new User({ loggedIn: false })
+    }
+  } catch (error) {
+    console.warn('Failed to fetch user:', error)
+    return new User({ loggedIn: false })
+  }
+}
+
+// Clear user data and auth cookie (moved from useUser)
+const clearUserData = () => {
+  const checkUser = useStorage('user', {})
+  checkUser.value = new User({ loggedIn: false }) as any
+
+  // Clear the auth cookie for SSR as well
+  if (import.meta.client) {
+    const authCookie = useCookie('auth-token')
+    // @ts-expect-error - useCookie typing issue
+    authCookie.value = null
   }
 }

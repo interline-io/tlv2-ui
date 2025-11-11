@@ -1,5 +1,5 @@
 import { useRuntimeConfig } from '#imports'
-import { useUser } from './useUser'
+import { useUserSync } from './useUser'
 
 /// ////////////////////
 // User
@@ -16,7 +16,7 @@ export const useLoginGate = (options: { hasRole?: string, hasAnyRole?: string[],
   }
 
   // Get user
-  const user = useUser()
+  const user = useUserSync()
   if (!user.loggedIn) {
     // Not logged in: not authorized
     console.log('useLoginGate: (gated) not logged in')

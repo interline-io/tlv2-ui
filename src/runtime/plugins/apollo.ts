@@ -33,7 +33,7 @@ function createNuxtFetchLink (nuxtApp: NuxtApp, endpoint: string) {
           logAuthDebug('apollo: nuxt fetch link: using auth headers + cookies')
 
           // Use $fetch with cookies automatically included for same-origin requests
-          const result = await $csrfFetch<FetchResult>(endpoint, {
+          const result = await $fetch<FetchResult>(endpoint, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

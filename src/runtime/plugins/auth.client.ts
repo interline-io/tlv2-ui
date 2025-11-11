@@ -20,14 +20,15 @@ export default defineNuxtPlugin(() => {
       try {
         logAuthDebug('auth mw: handle login')
         const { appState } = await client.handleRedirectCallback()
+        const targetPath = appState?.targetUrl || '/'
         logAuthDebug('auth mw: got appState:', appState)
 
         // Set cookie for SSR authentication
-        await setAuthCookie()
+        const { token } = await checkToken()
+        setAuthCookie(token)
 
-        const targetPath = appState?.targetUrl || '/'
-        logAuthDebug('auth mw: navigating to:', targetPath)
         // Force full page reload to reinitialize Apollo client with new credentials
+        logAuthDebug('auth mw: navigating to:', targetPath)
         return navigateTo(targetPath, { external: true })
       } catch (e) {
         logAuthDebug('auth mw: handleRedirectCallback failed:', e)
@@ -37,7 +38,7 @@ export default defineNuxtPlugin(() => {
     }
 
     // Check token state
-    const { loggedIn, mustReauthorize } = await checkToken()
+    const { token, loggedIn, mustReauthorize } = await checkToken()
     const requireLogin = !!config.public.tlv2?.requireLogin
     if (mustReauthorize || (requireLogin && !loggedIn)) {
       logAuthDebug('auth mw: need auth')
@@ -49,6 +50,9 @@ export default defineNuxtPlugin(() => {
     if (!loggedIn) {
       clearUser()
     }
+
+    // Refresh auth cookie
+    setAuthCookie(token)
   }, {
     global: true
   })
@@ -56,16 +60,14 @@ export default defineNuxtPlugin(() => {
 )
 
 // Set auth cookie after successful Auth0 login
-async function setAuthCookie () {
-  const { token } = await checkToken()
-  if (token) {
-    logAuthDebug('setAuthCookie: setting auth cookie for SSR')
-    const authCookie = useCookie('auth-token', {
-      secure: true,
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24, // 24 hours
-      path: '/'
-    })
-    authCookie.value = token
-  }
+function setAuthCookie (token: string) {
+  logAuthDebug('setAuthCookie: setting auth cookie for SSR')
+  useCookie('auth-token', {
+    secure: true,
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 24, // 24 hours
+    path: '/',
+    default: () => ({ token }),
+    watch: false,
+  })
 }

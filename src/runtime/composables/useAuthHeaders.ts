@@ -12,15 +12,15 @@ export const useAuthHeaders = () => {
 
   // SERVER (SSR): Read JWT from client cookie, forward to upstream GraphQL
   if (import.meta.server) {
-    // API key for server-side requests
+    // API key for unauthenticated server-side requests
     if (config.tlv2?.graphqlApikey) {
       headers.apikey = config.tlv2.graphqlApikey
     }
 
     // SSR: Read JWT from client cookie and forward via Authorization header
-    const authToken = useCookie('auth-token')
-    if (authToken.value) {
-      headers.Authorization = `Bearer ${authToken.value}`
+    const authToken = useCookie<string>('auth-token')
+    if (authToken) {
+      headers.Authorization = `Bearer ${authToken}`
     }
   }
 
