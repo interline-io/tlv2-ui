@@ -33,7 +33,7 @@ jobs:
         cache: 'pnpm'
         
     - name: Install dependencies
-      run: pnpm install --immutable
+      run: pnpm install
 
     - name: Prepare Nuxt  
       run: pnpm dev:prepare  
