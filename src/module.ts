@@ -182,7 +182,7 @@ export default defineNuxtModule<ModuleOptions>({
           'mixpanel-browser', // Analytics SDK with dynamic imports - needs pre-bundling
           'zen-observable' // Observable polyfill used by Apollo - avoid re-discovery
         )
-        console.log('tlv2-ui:vite-config applied', config.optimizeDeps.include)
+        // Debug log removed: tlv2-ui:vite-config applied
       },
       config (config) {
         // Fix for local development with symlinks (yarn/npm link, --stub mode)
