@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed } from '#imports'
 import { useUser } from '../composables/useUser'
 import { useLoginGate } from '../composables/useLoginGate'
 
