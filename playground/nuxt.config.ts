@@ -1,20 +1,16 @@
 const isDev = process.env.NODE_ENV === 'development'
 
 export default defineNuxtConfig({
-  ssr: false,
 
   modules: [
     '@nuxt/eslint',
     '../src/module',
     '@nuxt/devtools'
   ],
+  ssr: false,
 
   devtools: {
     enabled: isDev
-  },
-
-  tlv2: {
-    useProxy: true
   },
 
   runtimeConfig: {
@@ -43,6 +39,8 @@ export default defineNuxtConfig({
       'protomaps-themes-base'
     ]
   },
+
+  compatibilityDate: '2025-02-11',
 
   vite: {
     // https://github.com/nuxt/nuxt/issues/20001
@@ -74,5 +72,7 @@ export default defineNuxtConfig({
     }
   },
 
-  compatibilityDate: '2025-02-11'
+  tlv2: {
+    useProxy: true
+  },
 })
