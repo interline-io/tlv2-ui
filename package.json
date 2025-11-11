@@ -100,7 +100,6 @@
     "@mapbox/mapbox-gl-draw": "1.4.3",
     "@maplibre/maplibre-gl-geocoder": "1.9.0",
     "@mdi/font": "7.4.47",
-    "@observablehq/plot": "0.6.17",
     "@oruga-ui/oruga-next": "0.11.6",
     "@oruga-ui/theme-bulma": "0.7.3",
     "@vue/apollo-composable": "4.2.2",
@@ -111,7 +110,6 @@
     "commander": "14.0.0",
     "cytoscape": "3.31.1",
     "cytoscape-fcose": "2.2.0",
-    "d3-scale-chromatic": "3.1.0",
     "date-fns": "4.1.0",
     "defu": "6.1.4",
     "destr": "2.0.3",
@@ -125,5 +123,6 @@
     "tiny-emitter": "2.1.0",
     "unstorage": "1.15.0",
     "vue-json-pretty": "2.6.0"
-  }
+  },
+  "packageManager": "pnpm@10.21.0+sha512.da3337267e400fdd3d479a6c68079ac6db01d8ca4f67572083e722775a796788a7a9956613749e000fac20d424b594f7a791a5f4e2e13581c5ef947f26968a40"
 }
