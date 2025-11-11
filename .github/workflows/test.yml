@@ -25,19 +25,19 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version-file: '.nvmrc'
-        cache: 'yarn'
+        cache: 'pnpm'
         
     - name: Install dependencies
-      run: yarn install --immutable
+      run: pnpm install --immutable
 
     - name: Prepare Nuxt  
-      run: yarn dev:prepare  
+      run: pnpm dev:prepare  
 
     - name: Run linting
-      run: yarn lint
+      run: pnpm lint
       
     - name: Run type checking
-      run: yarn run nuxt typecheck
+      run: pnpm run nuxt typecheck
       
     - name: Run tests
-      run: yarn test
+      run: pnpm test
