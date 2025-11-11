@@ -163,14 +163,7 @@ export default defineNuxtModule<ModuleOptions>({
     // Add Vite plugin - Nuxt 4 pattern
     addVitePlugin(() => ({
       name: 'tlv2-ui:vite-config',
-      enforce: 'pre',
-      config (config) {
-        // Fix for local development with symlinks (yarn/npm link, --stub mode)
-        // https://github.com/nuxt/nuxt/issues/20001
-        // Without this, Vite fails to resolve module files when using symlinked dependencies
-        config.resolve = config.resolve || {}
-        config.resolve.preserveSymlinks = true
-
+      configEnvironment (name, config) {
         // Vite optimizeDeps pre-bundles dependencies for faster dev server
         // Include packages that:
         // - Have many internal modules (reduces waterfall requests)
@@ -189,6 +182,14 @@ export default defineNuxtModule<ModuleOptions>({
           'mixpanel-browser', // Analytics SDK with dynamic imports - needs pre-bundling
           'zen-observable' // Observable polyfill used by Apollo - avoid re-discovery
         )
+        // Debug log removed: tlv2-ui:vite-config applied
+      },
+      config (config) {
+        // Fix for local development with symlinks (yarn/npm link, --stub mode)
+        // https://github.com/nuxt/nuxt/issues/20001
+        // Without this, Vite fails to resolve module files when using symlinked dependencies
+        config.resolve = config.resolve || {}
+        config.resolve.preserveSymlinks = true
       }
     }))
   }
