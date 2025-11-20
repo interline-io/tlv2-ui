@@ -49,7 +49,7 @@ interface MapViewerProps {
   center?: LonLat | null
   circleRadius?: number
   circleColor?: string
-  zoom?: number
+  zoom?: number | null
   hash?: boolean
   features?: Feature[]
 }
