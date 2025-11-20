@@ -49,6 +49,9 @@ declare module '#imports' {
   export function useAuthHeaders (): Promise<Record<string, string>>
 }
 
+// Re-export all Oruga components, types, and utilities
+export * from '@oruga-ui/oruga-next'
+
 // Add type declaration for Oruga UI
 declare module '@oruga-ui/oruga-next/dist/oruga.mjs' {
   const Oruga: any
@@ -65,5 +68,3 @@ declare module 'vue' {
     }
   }
 }
-
-export {}
