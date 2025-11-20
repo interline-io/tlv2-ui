@@ -177,7 +177,7 @@ interface QueryVariables {
 }
 
 const props = withDefaults(defineProps<{
-  searchCoords?: LonLat
+  searchCoords?: LonLat | null
   searchRadius?: number
   nextSeconds?: number
   routesPerAgency?: number

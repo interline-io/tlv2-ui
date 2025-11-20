@@ -131,7 +131,7 @@ interface ExportOptions {
   prefix: string
   prefixFiles: string[]
   normalizeTimezones: boolean
-  simplifyShapes: number | null
+  simplifyShapes: number | null | undefined
   useBasicRouteTypes: boolean
   setValues: Record<string, string>
 }

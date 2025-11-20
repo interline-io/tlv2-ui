@@ -12,7 +12,7 @@
         :stop-features="stopFeatures"
         :center="center"
         :auto-fit="autoFit"
-        :zoom="zoom ? zoom : null"
+        :zoom="zoom"
         :circle-radius="circleRadius"
         :circle-color="circleColor"
         @set-agency-features="agencyFeatures = $event"

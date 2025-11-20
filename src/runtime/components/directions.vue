@@ -282,8 +282,8 @@ interface LegIcon {
 }
 
 const props = withDefaults(defineProps<{
-  fromPlace?: LonLat
-  toPlace?: LonLat
+  fromPlace?: LonLat | null
+  toPlace?: LonLat | null
   mode?: string
   departAt?: string
 }>(), {
@@ -300,7 +300,7 @@ const departAtTime = ref<string>(format(parseISO(props.departAt), 'HH:mm:ss'))
 
 const emit = defineEmits<{
   setMode: [mode: string]
-  setPlaces: [places: any]
+  setPlaces: [fromPlace: LonLat | null, toPlace: LonLat | null]
   setFeatures: [features: any[]]
   setMarkers: [markers: any[]]
   setDepartAt: [departAt: string]
