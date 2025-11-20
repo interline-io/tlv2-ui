@@ -211,13 +211,13 @@ watch(() => props.center, (newVal, oldVal) => {
     return
   }
   if (map.value && props.center) {
-    map.value.jumpTo({ center: [props.center.lon, props.center.lat], zoom: props.zoom })
+    map.value.jumpTo({ center: [props.center.lon, props.center.lat], zoom: props.zoom ?? undefined })
   }
 })
 
 watch(() => props.zoom, () => {
   if (map.value && props.center) {
-    map.value.jumpTo({ center: [props.center.lon, props.center.lat], zoom: props.zoom })
+    map.value.jumpTo({ center: [props.center.lon, props.center.lat], zoom: props.zoom ?? undefined })
   }
 })
 

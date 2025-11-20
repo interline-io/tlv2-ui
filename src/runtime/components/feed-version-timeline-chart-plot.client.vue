@@ -56,7 +56,7 @@ interface ServiceWindow {
   feed_end_date?: string
   earliest_calendar_date?: string
   latest_calendar_date?: string
-  fallback_week?: string
+  fallback_week?: boolean
 }
 
 interface FeedVersionGtfsImport {
@@ -65,12 +65,12 @@ interface FeedVersionGtfsImport {
 
 interface FeedState {
   feed_version?: {
-    id: string
+    id: number
   }
 }
 
 interface FeedVersion {
-  id: string
+  id: number
   sha1: string
   name?: string
   fetched_at?: string
