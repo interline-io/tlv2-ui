@@ -54,11 +54,11 @@
           <label class="label">Shape Simplification</label>
           <o-input
             :model-value="exportOptions.simplifyShapes?.toString() || ''"
-            @update:model-value="(v) => exportOptions.simplifyShapes = v ? parseFloat(v) || null : null"
             type="number"
             placeholder="Tolerance in meters (e.g., 10.0)"
             step="0.1"
             expanded
+            @update:model-value="(v) => exportOptions.simplifyShapes = v ? parseFloat(v) || null : null"
           />
           <p class="help">
             Simplify shape geometries to reduce file size
