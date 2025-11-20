@@ -1,3 +1,6 @@
+import './components.d.ts'
+import './oruga.d.ts'
+
 declare module 'nuxt/schema' {
   interface RuntimeConfig {
     tlv2: {
