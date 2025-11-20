@@ -140,7 +140,7 @@ Usage example:
             class="tl-tabs"
             type="boxed"
             :animated="false"
-            @update:model-value="setTab"
+            @update:model-value="(value) => setTab(value || '')"
           >
             <o-tab-item :value="tabNames.summary" label="Connections">
               <tl-rsp-viewer :route-ids="entityIds" :link-version="linkVersion" />
@@ -320,7 +320,7 @@ interface RouteResponse {
     service_date: string
     direction_id: number
     headway_secs: number
-    departures: number
+    departures: string[]
   }[]
   feed_version: {
     id: number

@@ -173,7 +173,7 @@
         <h4 class="title is-4">
           Operator Service
         </h4>
-        <o-tabs v-model="activeTab" class="tl-tabs" type="boxed" :animated="false" @update:model-value="setTab">
+        <o-tabs v-model="activeTab" class="tl-tabs" type="boxed" :animated="false" @update:model-value="(value) => setTab(value || '')">
           <o-tab-item :value="tabNames.map" label="Map">
             <tl-feed-version-map-viewer
               v-if="activeTab === tabNames.map"

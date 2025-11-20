@@ -149,7 +149,7 @@ interface FeedVersionResponse {
     feed_end_date?: string
     earliest_calendar_date?: string
     latest_calendar_date?: string
-    fallback_week?: boolean
+    fallback_week?: string
   }
   feed_infos?: {
     feed_publisher_name?: string

@@ -53,7 +53,8 @@
         <div class="field">
           <label class="label">Shape Simplification</label>
           <o-input
-            v-model="exportOptions.simplifyShapes"
+            :model-value="exportOptions.simplifyShapes?.toString() || ''"
+            @update:model-value="(v) => exportOptions.simplifyShapes = v ? parseFloat(v) || null : null"
             type="number"
             placeholder="Tolerance in meters (e.g., 10.0)"
             step="0.1"

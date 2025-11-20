@@ -15,7 +15,7 @@
       </o-tooltip>
       <o-tooltip
         v-else-if="feedVersionGtfsImport.success == false"
-        :label="`Not available through Transitland REST and GraphQL APIs:${feedVersionGtfsImport.exception_log.join('\n')}`"
+        :label="`Not available through Transitland REST and GraphQL APIs: ${feedVersionGtfsImport.exception_log || ''}`"
         position="top"
       >
         <o-icon icon="alert" />
@@ -32,10 +32,10 @@
 <script setup lang="ts">
 // TypeScript interfaces
 interface FeedVersionGtfsImport {
-  success: boolean | null
-  in_progress: boolean
-  schedule_removed: boolean
-  exception_log: string[]
+  success?: boolean | null
+  in_progress?: boolean
+  schedule_removed?: boolean
+  exception_log?: string
 }
 
 // Props

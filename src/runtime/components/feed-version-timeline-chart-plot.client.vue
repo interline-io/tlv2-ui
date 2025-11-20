@@ -56,7 +56,7 @@ interface ServiceWindow {
   feed_end_date?: string
   earliest_calendar_date?: string
   latest_calendar_date?: string
-  fallback_week?: boolean
+  fallback_week?: string
 }
 
 interface FeedVersionGtfsImport {
@@ -93,7 +93,7 @@ interface ChartDataItem {
   feedEnd: Date | null
   earliestService: Date | null
   latestService: Date | null
-  fallbackWeek: Date | null
+  fallbackWeek: string | null
   fetched_at: Date | null
   feed_start_date?: string
   feed_end_date?: string
@@ -181,7 +181,7 @@ const chartData = computed((): ChartDataItem[] => {
     const feedEnd = fv.service_window?.feed_end_date ? new Date(fv.service_window.feed_end_date) : null
     const earliestService = fv.service_window?.earliest_calendar_date ? new Date(fv.service_window.earliest_calendar_date) : null
     const latestService = fv.service_window?.latest_calendar_date ? new Date(fv.service_window.latest_calendar_date) : null
-    const fallbackWeek = fv.service_window?.fallback_week ? new Date(fv.service_window.fallback_week) : null
+    const fallbackWeek = fv.service_window?.fallback_week ?? null
 
     return {
       y: fv.sha1.substr(0, 6),
