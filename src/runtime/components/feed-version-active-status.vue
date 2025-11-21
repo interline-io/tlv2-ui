@@ -16,7 +16,7 @@ import { computed } from 'vue'
 
 // Types
 interface FeedVersion {
-  id: number | string
+  id: number
 }
 
 interface FeedState {
@@ -30,7 +30,7 @@ interface Feed {
 // Props
 const props = defineProps<{
   feed: Feed
-  feedVersionId: number | string
+  feedVersionId: number
 }>()
 
 // Computed

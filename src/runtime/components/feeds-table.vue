@@ -42,7 +42,7 @@
 
           <o-field label="Tags">
             <div class="pt-2">
-              <o-checkbox v-model="tagUnstableUrl" native-value="true" size="medium">
+              <o-checkbox v-model="tagUnstableUrl" :native-value="true" size="medium">
                 Unstable URL
               </o-checkbox>
             </div>

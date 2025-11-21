@@ -1,8 +1,8 @@
 <template>
   <o-select
-    :model-value="modelValue"
+    :model-value="modelValue?.toString() || null"
     placeholder="Route vehicle type"
-    @update:model-value="emit('update:modelValue', $event)"
+    @update:model-value="(value: string | null | undefined) => emit('update:modelValue', value ? parseInt(value) : null)"
   >
     <option :value="null">
       All

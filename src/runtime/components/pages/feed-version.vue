@@ -220,7 +220,7 @@
         <tl-feed-version-import :entity="entity" @update="refetchEntities" />
       </slot>
 
-      <o-tabs v-model="activeTab" class="tl-tabs" type="boxed" :animated="false" @update:model-value="setTab">
+      <o-tabs v-model="activeTab" class="tl-tabs" type="boxed" :animated="false" @update:model-value="(value) => setTab(value || '')">
         <o-tab-item :value="tabNames.timeline" label="Service coverage timeline">
           <template v-if="activeTab === tabNames.timeline">
             <div class="mb-4">
@@ -376,7 +376,7 @@ interface FeedVersionResponse {
     feed_end_date?: string
     earliest_calendar_date?: string
     latest_calendar_date?: string
-    fallback_week?: boolean
+    fallback_week?: string
   }
   agencies: {
     id: number

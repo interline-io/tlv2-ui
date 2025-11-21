@@ -578,7 +578,7 @@ const routesCoords = computed((): LonLat | null => {
 // Directions
 /// ////////////////////
 
-const directionsFeatures = ref([])
+const directionsFeatures = ref<any[]>([])
 
 const departAt = computed((): string => {
   const loadTime = (new Date()).toISOString()

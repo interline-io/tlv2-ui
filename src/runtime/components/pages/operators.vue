@@ -85,14 +85,12 @@ const cityName = computed<string | undefined>({
   }
 })
 
-const merged = computed<string | boolean | undefined>({
+const merged = computed<boolean | undefined>({
   get () {
     const value = route.query.merged
-    if (typeof value === 'string') return value
-    if (typeof value === 'boolean') return value
-    return undefined
+    return value === 'true' ? true : value === 'false' ? false : undefined
   },
-  set (v: string | boolean | undefined) {
+  set (v: boolean | undefined) {
     const queryValue = v === undefined ? undefined : String(v)
     router.replace({ query: { ...route.query, merged: queryValue } })
   }

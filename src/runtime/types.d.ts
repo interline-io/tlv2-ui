@@ -1,3 +1,6 @@
+import './components.d.ts'
+import './oruga.d.ts'
+
 declare module 'nuxt/schema' {
   interface RuntimeConfig {
     tlv2: {
@@ -47,23 +50,6 @@ declare module '#imports' {
     headerName: string
   }
   export function useAuthHeaders (): Promise<Record<string, string>>
-}
-
-// Add type declaration for Oruga UI
-declare module '@oruga-ui/oruga-next/dist/oruga.mjs' {
-  const Oruga: any
-  export default Oruga
-}
-
-// Add type declaration for Vue global properties
-declare module 'vue' {
-  interface ComponentCustomProperties {
-    $oruga: {
-      notification: {
-        open: (options: any) => void
-      }
-    }
-  }
 }
 
 export {}

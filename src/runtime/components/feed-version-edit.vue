@@ -120,14 +120,14 @@ watch(queryError, (newError) => {
 })
 
 // Computed properties
-const validationMessage = computed((): string | null => {
+const validationMessage = computed((): string | undefined => {
   if (!entity.value.name || entity.value.name.length === 0) {
     return 'Name required'
   }
   if (!entity.value.description || entity.value.description.length === 0) {
     return 'Description required'
   }
-  return null
+  return undefined
 })
 
 const valid = computed((): boolean => {

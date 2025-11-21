@@ -53,11 +53,12 @@
         <div class="field">
           <label class="label">Shape Simplification</label>
           <o-input
-            v-model="exportOptions.simplifyShapes"
+            :model-value="exportOptions.simplifyShapes?.toString() || ''"
             type="number"
             placeholder="Tolerance in meters (e.g., 10.0)"
             step="0.1"
             expanded
+            @update:model-value="(v) => exportOptions.simplifyShapes = v ? parseFloat(v) || null : null"
           />
           <p class="help">
             Simplify shape geometries to reduce file size
@@ -131,7 +132,7 @@ interface ExportOptions {
   prefix: string
   prefixFiles: string[]
   normalizeTimezones: boolean
-  simplifyShapes: number | null
+  simplifyShapes: number | null | undefined
   useBasicRouteTypes: boolean
   setValues: Record<string, string>
 }

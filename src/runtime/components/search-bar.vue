@@ -6,10 +6,10 @@
     :placeholder="modelValue ? modelValue : placeholder"
     type="text"
     icon="magnify"
-    :icon-right="modelValue ? 'close-circle' : null"
+    :icon-right="modelValue ? 'close-circle' : undefined"
     icon-right-clickable
     class="entity-search"
-    @update:model-value="emit('update:modelValue', $event)"
+    @update:model-value="emit('update:modelValue', $event ?? '')"
     @icon-right-click="clearSearch"
     @keydown.esc="clearSearch"
   />
@@ -18,7 +18,7 @@
 <script setup lang="ts">
 // Props
 withDefaults(defineProps<{
-  modelValue?: string
+  modelValue?: string | null
   placeholder?: string
 }>(), {
   modelValue: '',

@@ -367,6 +367,7 @@ interface FeedResponse {
     realtime_vehicle_positions?: string
   }
   associated_operators: {
+    id: number
     onestop_id: string
     name: string
     short_name?: string
@@ -483,6 +484,7 @@ query($onestopId: String, $ids: [Int!]) {
       realtime_vehicle_positions
     }
     associated_operators {
+      id
       onestop_id
       name
       short_name

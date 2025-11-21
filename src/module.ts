@@ -1,4 +1,4 @@
-import { defineNuxtModule, addPlugin, createResolver, addImportsDir, addServerHandler, addVitePlugin } from '@nuxt/kit'
+import { defineNuxtModule, addPlugin, createResolver, addImportsDir, addServerHandler, addVitePlugin, addComponentsDir } from '@nuxt/kit'
 import { defu } from 'defu'
 
 // Config handler
@@ -139,11 +139,10 @@ export default defineNuxtModule<ModuleOptions>({
     })
 
     // Add components
-    nuxt.hook('components:dirs', (dirs) => {
-      dirs.push({
-        path: resolveRuntimeModule('components'),
-        prefix: 'tl'
-      })
+    addComponentsDir({
+      path: resolveRuntimeModule('components'),
+      pathPrefix: true,
+      prefix: 'tl'
     })
 
     // Nuxt 4: Transpile packages for SSR compatibility

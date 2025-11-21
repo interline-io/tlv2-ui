@@ -63,16 +63,16 @@ const importStatus = computed({
 })
 
 const feedSpecs = computed({
-  get (): string[] {
+  get (): ('GTFS' | 'GTFS_RT' | 'GBFS')[] {
     const specs = route.query.feedSpecs
     // Handle both string and array values
     if (!specs) {
       return ['GTFS', 'GTFS_RT', 'GBFS']
     }
     const specsArray = Array.isArray(specs) ? specs : [specs]
-    return specsArray.filter((s): s is string => s !== null)
+    return specsArray.filter((s): s is 'GTFS' | 'GTFS_RT' | 'GBFS' => s === 'GTFS' || s === 'GTFS_RT' || s === 'GBFS')
   },
-  set (v: string[] | undefined) {
+  set (v: ('GTFS' | 'GTFS_RT' | 'GBFS')[] | undefined) {
     // If v is empty array or contains all default values, remove query param
     const defaultSpecs = ['GTFS', 'GTFS_RT', 'GBFS']
     const shouldRemoveParam = !v?.length
@@ -88,11 +88,12 @@ const feedSpecs = computed({
 })
 
 const tagUnstableUrl = computed({
-  get (): string | undefined {
-    return route.query.tagUnstableUrl as string | undefined
+  get (): boolean | undefined {
+    const value = route.query.tagUnstableUrl
+    return value === 'true' ? true : value === 'false' ? false : undefined
   },
-  set (v: string | undefined) {
-    router.replace({ query: { ...route.query, tagUnstableUrl: v } })
+  set (v: boolean | undefined) {
+    router.replace({ query: { ...route.query, tagUnstableUrl: v === undefined ? undefined : String(v) } })
   }
 })
 </script>

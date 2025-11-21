@@ -5,10 +5,11 @@
   "license": "SEE LICENSE IN LICENSE.md",
   "type": "module",
   "scripts": {
-    "prepack": "nuxt-module-build prepare && nuxt-module-build build",
+    "prepack": "yarn generate:types && nuxt-module-build prepare && nuxt-module-build build",
     "dev": "yarn run dev:prepare && nuxi dev playground",
     "dev:build": "nuxi build playground",
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
+    "generate:types": "tsx scripts/generate-component-types.ts",
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest watch",
@@ -37,17 +38,12 @@
     }
   },
   "main": "./dist/module.mjs",
-  "typesVersions": {
-    "*": {
-      ".": [
-        "./dist/types.d.mts"
-      ]
-    }
-  },
   "files": [
     "dist"
   ],
   "peerDependencies": {
+    "@oruga-ui/oruga-next": "0.11.6",
+    "@oruga-ui/theme-bulma": "0.7.3",
     "nuxt": "4.2.0",
     "vue": "3.5.22"
   },

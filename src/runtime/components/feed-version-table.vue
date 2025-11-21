@@ -87,7 +87,7 @@
               />
             </td>
             <td v-if="showDownloadColumn">
-              <template v-if="feed.license.redistribution_allowed !== 'no'">
+              <template v-if="feed.license?.redistribution_allowed !== 'no'">
                 <a @click="triggerDownload(fv.sha1)">
                   <o-icon
                     v-if="isLatestFeedVersion(fv.sha1)"
@@ -149,7 +149,7 @@ interface FeedVersionResponse {
     feed_end_date?: string
     earliest_calendar_date?: string
     latest_calendar_date?: string
-    fallback_week?: boolean
+    fallback_week?: string
   }
   feed_infos?: {
     feed_publisher_name?: string
@@ -171,9 +171,16 @@ interface License {
   redistribution_allowed?: string
 }
 
+interface FeedState {
+  feed_version?: {
+    id: number
+  }
+}
+
 interface Feed {
   onestop_id: string
-  license: License
+  license?: License
+  feed_state?: FeedState
 }
 
 interface QueryVariables {

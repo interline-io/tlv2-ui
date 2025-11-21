@@ -43,10 +43,10 @@ import { gql } from 'graphql-tag'
 // TypeScript interfaces
 interface FeedVersionGtfsImport {
   id: number
-  success: boolean
-  in_progress: boolean
-  schedule_removed: boolean
-  exception_log: string | null
+  success?: boolean | null
+  in_progress?: boolean
+  schedule_removed?: boolean
+  exception_log?: string
 }
 
 interface FeedVersionEntity {
