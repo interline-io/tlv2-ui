@@ -65,14 +65,6 @@
                 Save
               </o-button>
             </div>
-            <div class="level-item">
-              <o-button
-                class="button is-danger"
-                @click="$emit('delete', station)"
-              >
-                Delete
-              </o-button>
-            </div>
           </template>
           <template v-else>
             <div class="level-item">
@@ -88,6 +80,48 @@
         </div>
       </div>
     </div>
+
+    <hr>
+    <!-- Danger Zone -->
+    <div v-if="station.id" class="mt-6">
+      <tl-msg-box variant="danger" title="Danger Zone">
+        <p v-if="hasAssociatedContent" class="mb-4">
+          This station cannot be deleted because it has associated levels or stops. If you want to delete, first remove all levels and stop associations from this station.
+        </p>
+        <p v-else class="mb-4">
+          No associated levels or stops, so this station can be deleted if desired.
+        </p>
+        <o-button
+          class="button is-danger"
+          :disabled="hasAssociatedContent"
+          @click="showDeleteModal = true"
+        >
+          Delete Station
+        </o-button>
+      </tl-msg-box>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <tl-modal
+      v-if="station.id"
+      v-model="showDeleteModal"
+      title="Delete Station"
+    >
+      <p class="mb-4">
+        Are you sure you want to delete the station <strong>{{ station.stop.stop_name }}</strong>? This action cannot be undone.
+      </p>
+      <div class="buttons is-pulled-right">
+        <o-button @click="showDeleteModal = false">
+          Cancel
+        </o-button>
+        <o-button
+          variant="danger"
+          @click="confirmDelete"
+        >
+          Delete Station
+        </o-button>
+      </div>
+    </tl-modal>
   </div>
 </template>
 
@@ -109,7 +143,8 @@ export default {
   data () {
     return {
       station: new Station(this.value.stop),
-      basemap: 'carto'
+      basemap: 'carto',
+      showDeleteModal: false
     }
   },
   computed: {
@@ -129,6 +164,11 @@ export default {
         && this.station.stop.stop_name.length > 0
         && this.station.stop.stop_id
         && this.station.stop.stop_id.length > 0
+    },
+    hasAssociatedContent () {
+      const hasLevels = (this.station?.levels?.length || 0) > 0
+      const hasStops = (this.station?.stops?.length || 0) > 0
+      return hasLevels || hasStops
     }
   },
   watch: {
@@ -145,6 +185,10 @@ export default {
         return
       }
       this.station.stop.geometry = e.features[0].geometry
+    },
+    confirmDelete () {
+      this.showDeleteModal = false
+      this.$emit('delete', this.station)
     }
   }
 }

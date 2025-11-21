@@ -37,19 +37,17 @@ export default {
         })
         .catch(this.setError)
     },
-    deleteStationCheck (station) {
-      this.$buefy.dialog.confirm({
-        message: `Do you want to delete the station named <strong>${station.stop.stop_name}</strong>?`,
-        cancelText: 'No',
-        confirmText: 'Yes',
-        onConfirm: () => {
-          this.deleteStationHandler(station)
-        }
-      })
-    },
     deleteStationHandler (station) {
       this.station.deleteStation(this.$apollo, station)
         .then(() => {
+          this.$oruga.notification.open({
+            message: 'Station deleted successfully',
+            rootClass: 'toast-notification',
+            variant: 'success',
+            closable: true,
+            position: 'bottom',
+            duration: 3000
+          })
           navigateTo({
             name: this.editorRoutes.stations,
             params: {
