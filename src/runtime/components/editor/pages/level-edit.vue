@@ -10,6 +10,7 @@
       :station="station"
       :value="level"
       :center="station.geometry.coordinates"
+      :has-associated-stops="hasAssociatedStops"
       @update="updateLevelHandler"
       @delete="deleteLevelHandler"
       @cancel="cancelHandler"
@@ -28,13 +29,16 @@ export default {
   },
   computed: {
     level () {
-      const levels = this.station?.levels
+      const levels = this.station?.levels || []
       for (const level of levels) {
         if (level.level_id === this.levelKey) {
           return level
         }
       }
       return null
+    },
+    hasAssociatedStops () {
+      return (this.level?.stops?.length || 0) > 0
     }
   },
   methods: {
@@ -52,9 +56,17 @@ export default {
         })
         .catch(this.setError)
     },
-    deleteLevelHandler (levelId) {
-      this.station.deleteLevel(this.$apollo, levelId)
+    deleteLevelHandler (level) {
+      this.station.deleteLevel(this.$apollo, level)
         .then(() => {
+          this.$oruga.notification.open({
+            message: 'Level deleted successfully',
+            rootClass: 'toast-notification',
+            variant: 'success',
+            closable: true,
+            position: 'bottom',
+            duration: 3000
+          })
           navigateTo({
             name: this.editorRoutes.stationIndex,
             params: {
