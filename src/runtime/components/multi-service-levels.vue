@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="showFilters" class="block">
-      <o-field grouped expanded>
+      <o-field grouped class="is-expanded">
         <o-field v-if="showServiceRelative" label="Service relative to">
           <o-select v-model="maxAggMode">
             <option value="all">

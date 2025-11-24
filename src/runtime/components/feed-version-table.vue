@@ -92,10 +92,9 @@
                   <o-icon
                     v-if="isLatestFeedVersion(fv.sha1)"
                     icon="download"
-                    title="Download latest feed version"
                     variant="success"
                   />
-                  <o-icon v-else icon="download" title="Download feed version" />
+                  <o-icon v-else icon="download" />
                 </a>
               </template>
             </td>

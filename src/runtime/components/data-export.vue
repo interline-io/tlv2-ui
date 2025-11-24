@@ -1,7 +1,7 @@
 <template>
   <div>
-    <o-field grouped expanded class="block">
-      <o-field label="Stop Buffer Radius (m)" expanded class="pr-6">
+    <o-field grouped class="block is-expanded">
+      <o-field label="Stop Buffer Radius (m)" class="pr-6 is-expanded">
         <o-slider
           v-model="radius"
           size="medium"
@@ -19,7 +19,7 @@
         </o-slider>
       </o-field>
 
-      <o-field label="Summary Level" expanded>
+      <o-field label="Summary Level" class="is-expanded">
         <o-select v-model="layer">
           <option v-for="(v, k) of layerInfo" :key="k" :value="k">
             {{ v.name }}
@@ -27,12 +27,11 @@
         </o-select>
       </o-field>
 
-      <o-field label="Show on Map" expanded>
+      <o-field label="Show on Map" class="is-expanded">
         <o-dropdown
           v-model="showOnMap"
           selectable
           multiple
-          aria-role="list"
         >
           <template #trigger>
             <button class="button" type="button" icon="menu-down">

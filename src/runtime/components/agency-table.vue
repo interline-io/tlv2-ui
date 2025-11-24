@@ -26,7 +26,7 @@
           </tbody>
         </table>
       </div>
-      <tl-show-more v-if="entities.length === limit || hasMore" :limit="entities.length" @click="showAll" />
+      <tl-show-more v-if="entities.length === limit || hasMore" :limit="entities.length" @show-more="showAll" />
     </div>
   </div>
 </template>
@@ -76,7 +76,7 @@ const agenciesQuery = gql`
 `
 
 // Apollo query
-const { result, loading, error: queryError, fetchMore } = useQuery<{ entities: AgencyResponse[] }>(
+const { result, loading: queryLoading, error: queryError, fetchMore } = useQuery<{ entities: AgencyResponse[] }>(
   agenciesQuery,
   () => ({
     search: search.value,
@@ -85,6 +85,7 @@ const { result, loading, error: queryError, fetchMore } = useQuery<{ entities: A
   }),
   {}
 )
+const loading = computed(() => queryLoading.value ?? false)
 watch(queryError, (newError) => {
   if (newError) {
     error.value = newError.message

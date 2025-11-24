@@ -83,7 +83,7 @@
     <div v-else>
       <!-- INPUTS -->
       <div class="is-clearfix">
-        <o-field addons expanded>
+        <o-field addons class="is-expanded">
           <o-button
             v-for="(v, k) of modeIcons"
             :key="k"

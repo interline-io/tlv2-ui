@@ -11,7 +11,6 @@
     <div v-if="isComponentModalActive">
       <o-modal
         :active="isComponentModalActive"
-        has-modal-card
         @close="close"
       >
         <template #default>

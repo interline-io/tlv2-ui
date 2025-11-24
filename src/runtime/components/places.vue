@@ -7,10 +7,10 @@
     <slot name="description" />
     <div v-if="sortedPlaces.length > 1 && showSortBy" class="field">
       <label for="sortBy" class="label">Sort places by</label>
-      <o-radio v-model="sortBy" native-value="alphabetical">
+      <o-radio v-model="sortBy" :native-value="'alphabetical' as const">
         Alphabetical
       </o-radio>
-      <o-radio v-model="sortBy" native-value="count">
+      <o-radio v-model="sortBy" :native-value="'count' as const">
         Count
       </o-radio>
     </div>
@@ -24,7 +24,7 @@
     >
       <template v-if="(placeLevelInt > 1) ? (place.adm0_name && place.adm1_name && place.city_name) : true">
         <nuxt-link to="/places">
-          <o-icon icon="earth" title="earth" size="small" />
+          <o-icon icon="earth" size="small" />
         </nuxt-link> /
         <nuxt-link :to="{ name: 'places-adm0', params: { adm0: place.adm0_name } }">
           {{ place.adm0_name }}
@@ -181,10 +181,11 @@ const queryVariables = computed<QueryVariables>(() => {
 })
 
 // Apollo Query
-const { result, loading } = useQuery<{ places: PlaceResponse[] }>(
+const { result, loading: queryLoading } = useQuery<{ places: PlaceResponse[] }>(
   PLACES_QUERY,
   queryVariables)
 
+const loading = computed(() => queryLoading.value ?? false)
 const places = computed<Place[]>(() => result.value?.places || [])
 
 const placeTitleName = computed<string>(() => {

@@ -107,7 +107,6 @@
           <o-modal
             v-if="activeTab === ROUTES_TAB"
             :active="showSelectionModal"
-            has-modal-card
             @close="showSelectionModal = false"
           >
             <template #default>

@@ -4,7 +4,7 @@
       {{ error }}
     </tl-msg-error>
     <div v-else>
-      <o-field expanded grouped>
+      <o-field grouped class="is-expanded">
         <tl-search-bar v-model="search" placeholder="Filter routes by name..." />
         <tl-route-type-select v-model="selectedRouteType" />
       </o-field>
@@ -58,7 +58,7 @@
           </tbody>
         </table>
       </div>
-      <tl-show-more v-if="entities.length === limit || hasMore" :limit="entities.length" @click="showAll" />
+      <tl-show-more v-if="entities.length === limit || hasMore" :limit="entities.length" @show-more="showAll" />
     </div>
   </div>
 </template>
@@ -165,9 +165,11 @@ const queryVariables = computed<QueryVariables>(() => ({
 }))
 
 // Apollo Query
-const { result, loading, onError } = useQuery<RouteTableResponse>(
+const { result, loading: queryLoading, onError } = useQuery<RouteTableResponse>(
   ROUTES_QUERY,
   queryVariables)
+
+const loading = computed(() => queryLoading.value ?? false)
 
 // Handle errors
 onError((err) => {

@@ -4,8 +4,8 @@
       {{ error }}
     </tl-msg-error>
     <div v-else>
-      <o-field expanded grouped>
-        <tl-search-bar v-model="search" expanded placeholder="Filter stops by name..." />
+      <o-field grouped class="is-expanded">
+        <tl-search-bar v-model="search" class="is-expanded" placeholder="Filter stops by name..." />
         <tl-route-type-select v-if="showSelectedRouteType" v-model="selectedRouteType" />
       </o-field>
       <o-loading v-model:active="loading" :full-page="false" />
@@ -58,7 +58,7 @@
           </tbody>
         </table>
       </div>
-      <tl-show-more v-if="stops.length === limit || hasMore" :limit="stops.length" @click="showAll" />
+      <tl-show-more v-if="stops.length === limit || hasMore" :limit="stops.length" @show-more="showAll" />
     </div>
   </div>
 </template>
@@ -218,13 +218,15 @@ const queryVariables = computed<QueryVariables>(() => ({
 }))
 
 // Apollo Query
-const { result, loading, onError } = useQuery<{ feed_versions: FeedVersionResponse[] }>(
+const { result, loading: queryLoading, onError } = useQuery<{ feed_versions: FeedVersionResponse[] }>(
   STOPS_QUERY,
   queryVariables,
   {
     clientId: props.client
   }
 )
+
+const loading = computed(() => queryLoading.value ?? false)
 
 // Handle errors
 onError((err) => {

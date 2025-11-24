@@ -19,7 +19,7 @@
           </optgroup>
         </o-select>
       </o-field>
-      <o-field label="Transfers within (m)" expanded>
+      <o-field label="Transfers within (m)" class="is-expanded">
         <o-slider
           v-model="radius"
           class="radius-select"
