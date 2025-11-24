@@ -20,7 +20,7 @@
           </optgroup>
         </o-select>
       </o-field>
-      <o-field label="Transfers within (m)" class="is-expanded">
+      <o-field label="Transfers within (m)">
         <!-- @vue-skip -->
         <o-slider
           v-model="radius"
