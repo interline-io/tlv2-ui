@@ -3,6 +3,7 @@
     :class="['navbar-item', 'has-dropdown', 'is-hoverable']"
   >
     <a class="navbar-link  is-arrowless">
+      <!-- @vue-skip -->
       <o-input
         v-model="search"
         expanded
@@ -10,9 +11,7 @@
         type="text"
         :icon-right="search.length > 0 ? 'cancel' : 'magnify'"
         icon-right-clickable
-        data-1p-ignore
         @icon-right-click="close"
-        @keydown.esc="close"
       />
     </a>
     <div
@@ -61,7 +60,7 @@ import { useLazyQuery } from '@vue/apollo-composable'
 
 const minLength = 3
 const asyncDebounceTime = 200
-const search = ref('')
+const search = ref<string>('')
 const operatorLinks = computed(() => {
   return result.value?.operators || []
 })

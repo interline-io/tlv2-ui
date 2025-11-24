@@ -5,7 +5,7 @@
     </tl-msg-error>
     <div v-else>
       <tl-search-bar v-model="search" placeholder="Filter Agencies" />
-      <o-loading v-model:active="loading" :full-page="false" />
+      <tl-loading v-model:active="loading" :full-page="false" />
       <div class="table-container">
         <table class="table is-striped is-fullwidth">
           <thead>
@@ -26,7 +26,7 @@
           </tbody>
         </table>
       </div>
-      <tl-show-more v-if="entities.length === limit || hasMore" :limit="entities.length" @click="showAll" />
+      <tl-show-more v-if="entities.length === limit || hasMore" :limit="entities.length" @show-more="showAll" />
     </div>
   </div>
 </template>
@@ -46,7 +46,7 @@ const props = withDefaults(defineProps<{
 })
 
 // Reactive state
-const search = ref<string>('')
+const search = ref<string | null>(null)
 const hasMore = ref(false)
 const error = ref<string | null>(null)
 
@@ -76,7 +76,7 @@ const agenciesQuery = gql`
 `
 
 // Apollo query
-const { result, loading, error: queryError, fetchMore } = useQuery<{ entities: AgencyResponse[] }>(
+const { result, loading: queryLoading, error: queryError, fetchMore } = useQuery<{ entities: AgencyResponse[] }>(
   agenciesQuery,
   () => ({
     search: search.value,
@@ -85,6 +85,7 @@ const { result, loading, error: queryError, fetchMore } = useQuery<{ entities: A
   }),
   {}
 )
+const loading = computed<boolean>(() => queryLoading.value ?? false)
 watch(queryError, (newError) => {
   if (newError) {
     error.value = newError.message

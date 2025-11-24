@@ -2,7 +2,6 @@
   <div class="tl-modal">
     <o-modal
       :active="modelValue"
-      has-modal-card
       close-class="tl-modal-hideclose"
       :cancelable="closable"
       :full-screen="fullScreen"

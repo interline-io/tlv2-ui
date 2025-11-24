@@ -1,4 +1,5 @@
 <template>
+  <!-- @vue-skip -->
   <o-autocomplete
     v-model:input="searchInput"
     class="tl-map-search-autocomplete"
@@ -135,7 +136,7 @@ query($stopFilter: StopFilter, $routeFilter: RouteFilter, $includeStops: Boolean
 
 // Reactive data
 const search = ref('')
-const searchInput = ref('')
+const searchInput = ref<string>('')
 const minSearchLength = 4
 const stopResult = ref<Stop[]>([])
 const routeResult = ref<Route[]>([])

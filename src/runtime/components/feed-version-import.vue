@@ -11,7 +11,7 @@
       </o-button>
     </tl-msg-info>
 
-    <tl-msg-info v-else-if="fvi.in_progress" icon="clock">
+    <tl-msg-info v-else-if="fvi.in_progress">
       Import in progress! Please be patient.
     </tl-msg-info>
 
@@ -22,7 +22,7 @@
       </o-button>
     </tl-msg-success>
 
-    <tl-msg-success v-else-if="fvi.success" icon="check-all">
+    <tl-msg-success v-else-if="fvi.success">
       This feed version was successfully imported into the database.
       <o-button :disabled="mutationLoading" class="is-pulled-right is-primary" @click="unimportFeedVersion">
         {{ mutationLoading ? 'Unimporting...' : 'Unimport' }}

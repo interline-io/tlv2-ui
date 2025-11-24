@@ -1,7 +1,8 @@
 <template>
   <div>
-    <o-field grouped expanded class="block">
-      <o-field label="Stop Buffer Radius (m)" expanded class="pr-6">
+    <o-field grouped class="block is-expanded">
+      <o-field label="Stop Buffer Radius (m)" class="pr-6 is-expanded">
+        <!-- @vue-skip -->
         <o-slider
           v-model="radius"
           size="medium"
@@ -19,7 +20,8 @@
         </o-slider>
       </o-field>
 
-      <o-field label="Summary Level" expanded>
+      <o-field label="Summary Level" class="is-expanded">
+        <!-- @vue-skip -->
         <o-select v-model="layer">
           <option v-for="(v, k) of layerInfo" :key="k" :value="k">
             {{ v.name }}
@@ -27,15 +29,15 @@
         </o-select>
       </o-field>
 
-      <o-field label="Show on Map" expanded>
+      <o-field label="Show on Map" class="is-expanded">
+        <!-- @vue-skip -->
         <o-dropdown
           v-model="showOnMap"
           selectable
           multiple
-          aria-role="list"
         >
           <template #trigger>
-            <button class="button" type="button" icon="menu-down">
+            <button class="button" type="button">
               <span>
                 {{ showOnMap.map((s: string) => { return titleize(s) }).join(", ") }}
               </span>
@@ -111,8 +113,8 @@ const showOnMap = ref<MapLayerType[]>(['census', 'hull', 'buffer'])
 const censusFeatures = ref<Feature[]>([])
 const bufferFeatures = ref<Feature[]>([])
 const hullFeatures = ref<Feature[]>([])
-const radius = ref<number>(400.0)
-const layer = ref<string>('tract')
+const radius = ref(400.0)
+const layer = ref('tract')
 
 const layerInfo: Record<string, LayerInfo> = {
   tract: { name: 'Tract', plural: 'Tracts' },

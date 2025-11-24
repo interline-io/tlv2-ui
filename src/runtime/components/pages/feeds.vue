@@ -36,11 +36,11 @@ const staticTitle = computed(() => 'Feeds index')
 const staticDescription = computed(() => 'An index of data sources')
 
 const search = computed({
-  get (): string | undefined {
+  get (): string | undefined | null {
     return route.query.search as string | undefined
   },
-  set (v: string | undefined) {
-    router.replace({ query: { ...route.query, search: v } })
+  set (v: string | undefined | null) {
+    router.replace({ query: { ...route.query, search: v || undefined } })
   }
 })
 

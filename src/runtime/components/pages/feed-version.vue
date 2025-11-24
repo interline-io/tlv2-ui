@@ -176,7 +176,6 @@
               <tl-feed-version-active-status
                 :feed="entity.feed"
                 :feed-version-id="entity.id"
-                :show-description="true"
               />
             </td>
           </tr>
@@ -220,6 +219,7 @@
         <tl-feed-version-import :entity="entity" @update="refetchEntities" />
       </slot>
 
+      <!-- @vue-skip -->
       <o-tabs v-model="activeTab" class="tl-tabs" type="boxed" :animated="false" @update:model-value="(value) => setTab(value || '')">
         <o-tab-item :value="tabNames.timeline" label="Service coverage timeline">
           <template v-if="activeTab === tabNames.timeline">
@@ -232,7 +232,6 @@
                   v-if="entity"
                   :feed="entity.feed"
                   :feed-versions="[entity]"
-                  :show-status-legend="false"
                 />
               </client-only>
             </div>

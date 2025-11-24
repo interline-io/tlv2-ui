@@ -2,6 +2,7 @@
   <div>
     <o-field grouped>
       <o-field label="Trip pattern" class="pr-4">
+        <!-- @vue-skip -->
         <o-select
           v-model="activePatternId"
           placeholder="Select a trip pattern"
@@ -19,7 +20,8 @@
           </optgroup>
         </o-select>
       </o-field>
-      <o-field label="Transfers within (m)" expanded>
+      <o-field label="Transfers within (m)">
+        <!-- @vue-skip -->
         <o-slider
           v-model="radius"
           class="radius-select"
@@ -28,8 +30,8 @@
           :max="500"
           :step="100"
           ticks
-          lazy
         >
+          >
           <template v-for="val in [0, 100, 250, 500]" :key="val">
             <o-slider-tick :value="val">
               {{ val }}
@@ -69,7 +71,6 @@
                 :to="makeRouteLink(rs.onestop_id, rs.feed_onestop_id, rs.feed_version_sha1, rs.route_id, parseInt(rs.id), linkVersion)"
               >
                 <tl-route-icon
-                  :agency-name="rs.agency_name"
                   :route-short-name="rs.route_short_name"
                   :route-type="rs.route_type"
                   :route-long-name="rs.route_long_name"
