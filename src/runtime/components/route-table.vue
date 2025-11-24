@@ -4,11 +4,11 @@
       {{ error }}
     </tl-msg-error>
     <div v-else>
-      <o-field expanded grouped>
+      <o-field grouped class="is-expanded">
         <tl-search-bar v-model="search" placeholder="Filter routes by name..." />
         <tl-route-type-select v-model="selectedRouteType" />
       </o-field>
-      <o-loading v-model:active="loading" :full-page="false" />
+      <tl-loading v-model:active="loading" :full-page="false" />
       <div class="table-container">
         <table class="table is-striped is-fullwidth">
           <thead>
@@ -58,7 +58,7 @@
           </tbody>
         </table>
       </div>
-      <tl-show-more v-if="entities.length === limit || hasMore" :limit="entities.length" @click="showAll" />
+      <tl-show-more v-if="entities.length === limit || hasMore" :limit="entities.length" @show-more="showAll" />
     </div>
   </div>
 </template>
@@ -98,7 +98,7 @@ interface QueryVariables {
   limit?: number
   feed_version_sha1?: string | null
   agency_ids?: number[] | null
-  search?: string
+  search?: string | null
   route_type?: number | null
 }
 
@@ -150,7 +150,7 @@ const ROUTES_QUERY = gql`
 `
 
 // Reactive data
-const search = ref<string>('')
+const search = ref<string | null>(null)
 const selectedRouteType = ref<number | null>(null)
 const error = ref<Error | null>(null)
 const hasMore = ref<boolean>(false)
@@ -165,9 +165,11 @@ const queryVariables = computed<QueryVariables>(() => ({
 }))
 
 // Apollo Query
-const { result, loading, onError } = useQuery<RouteTableResponse>(
+const { result, loading: queryLoading, onError } = useQuery<RouteTableResponse>(
   ROUTES_QUERY,
   queryVariables)
+
+const loading = computed<boolean>(() => queryLoading.value ?? false)
 
 // Handle errors
 onError((err) => {

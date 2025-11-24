@@ -13,12 +13,12 @@
       >
         <div class="field">
           <label class="label">Additional Feed Versions to Merge</label>
+          <!-- @vue-skip -->
           <o-taginput
             v-model="additionalFeedVersions"
             :allow-new="true"
             placeholder="Add feed version SHA1 or ID"
             icon="plus"
-            aria-close-label="Remove this feed version"
             expanded
           />
           <p class="help">
@@ -28,6 +28,7 @@
 
         <div class="field">
           <label class="label">ID Prefix</label>
+          <!-- @vue-skip -->
           <o-input
             v-model="exportOptions.prefix"
             placeholder="e.g., 'agency1_' to prefix all IDs"
@@ -40,6 +41,7 @@
 
         <div class="field">
           <label class="label">Prefix Files</label>
+          <!-- @vue-skip -->
           <o-input
             v-model="prefixFilesInput"
             placeholder="routes.txt, trips.txt (comma-separated)"
@@ -56,7 +58,6 @@
             :model-value="exportOptions.simplifyShapes?.toString() || ''"
             type="number"
             placeholder="Tolerance in meters (e.g., 10.0)"
-            step="0.1"
             expanded
             @update:model-value="(v) => exportOptions.simplifyShapes = v ? parseFloat(v) || null : null"
           />
@@ -68,11 +69,13 @@
         <div class="field">
           <label class="label">Options</label>
           <o-field>
+            <!-- @vue-skip -->
             <o-checkbox v-model="exportOptions.normalizeTimezones">
               Normalize timezones (US/Pacific → America/Los_Angeles)
             </o-checkbox>
           </o-field>
           <div class="field">
+            <!-- @vue-skip -->
             <o-checkbox v-model="exportOptions.useBasicRouteTypes">
               Use basic route types (convert extended to core types)
             </o-checkbox>

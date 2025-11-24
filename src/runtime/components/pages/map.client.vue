@@ -24,6 +24,7 @@
     />
 
     <div class="tl-map-panel tl-map-panel-tabs">
+      <!-- @vue-skip -->
       <o-tabs v-model="activeTab" class="tl-tabs block" position="centered" type="boxed">
         <div class="tl-tab-nav">
           <o-field grouped>
@@ -107,7 +108,6 @@
           <o-modal
             v-if="activeTab === ROUTES_TAB"
             :active="showSelectionModal"
-            has-modal-card
             @close="showSelectionModal = false"
           >
             <template #default>
@@ -219,15 +219,18 @@
 
     <!-- Unified Options Modal -->
     <tl-modal v-model="showUnifiedOptionsModal" title="Map Options" :full-screen="true">
+      <!-- @vue-skip -->
       <o-tabs v-model="activeOptionsTab" class="tl-options-tabs" position="centered" type="boxed">
         <o-tab-item value="routes" label="Routes & Stops">
           <o-field horizontal label="Route lines">
+            <!-- @vue-skip -->
             <o-checkbox v-model="showGeneratedGeometries">
               Show stop-to-stop geometries
             </o-checkbox>
           </o-field>
 
           <o-field horizontal>
+            <!-- @vue-skip -->
             <o-checkbox v-model="showProblematicGeometries">
               Show problematic geometries
             </o-checkbox>
@@ -237,26 +240,31 @@
             Display the following types of stop points on the map
           </o-field>
           <o-field horizontal>
+            <!-- @vue-skip -->
             <o-checkbox v-model="showStopLocationTypes[0]">
               Stops & Station Platforms
             </o-checkbox>
           </o-field>
           <o-field horizontal>
+            <!-- @vue-skip -->
             <o-checkbox v-model="showStopLocationTypes[1]">
               Stations
             </o-checkbox>
           </o-field>
           <o-field horizontal>
+            <!-- @vue-skip -->
             <o-checkbox v-model="showStopLocationTypes[2]">
               Station Entrances/Exits
             </o-checkbox>
           </o-field>
           <o-field horizontal>
+            <!-- @vue-skip -->
             <o-checkbox v-model="showStopLocationTypes[3]">
               Generic Nodes in Station Pathways
             </o-checkbox>
           </o-field>
           <o-field horizontal>
+            <!-- @vue-skip -->
             <o-checkbox v-model="showStopLocationTypes[4]">
               Boarding Areas in Station Pathways
             </o-checkbox>
@@ -399,18 +407,18 @@ const showUnifiedOptionsModal = ref(false)
 const activeOptionsTab = ref('routes')
 const agencyFeatures = ref({})
 const stopFeatures = ref<StopFeatures>({})
-const showGeneratedGeometries = ref(true)
-const showProblematicGeometries = ref(false)
+const showGeneratedGeometries = ref<boolean>(true)
+const showProblematicGeometries = ref<boolean>(false)
 const currentBbox = ref<BoundingBox | null>(null)
 
 // Stop location type filters
-const showStopLocationTypes = ref<Record<number, boolean>>({
-  0: true, // Stop/platform
-  1: true, // Station
-  2: false, // Entrance/Exit
-  3: false, // Generic Node
-  4: false // Boarding Area
-})
+const showStopLocationTypes = ref<[boolean, boolean, boolean, boolean, boolean]>([
+  true, // 0: Stop/platform
+  true, // 1: Station
+  false, // 2: Entrance/Exit
+  false, // 3: Generic Node
+  false // 4: Boarding Area
+])
 
 // Departure settings
 const departureSearchRadius = ref<number>(200)

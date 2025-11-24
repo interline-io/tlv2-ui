@@ -4,11 +4,11 @@
       {{ error }}
     </tl-msg-error>
     <div v-else>
-      <o-field expanded grouped>
-        <tl-search-bar v-model="search" expanded placeholder="Filter stops by name..." />
+      <o-field grouped class="is-expanded">
+        <tl-search-bar v-model="search" class="is-expanded" placeholder="Filter stops by name..." />
         <tl-route-type-select v-if="showSelectedRouteType" v-model="selectedRouteType" />
       </o-field>
-      <o-loading v-model:active="loading" :full-page="false" />
+      <tl-loading v-model:active="loading" :full-page="false" />
       <div class="table-container">
         <table class="table is-striped is-fullwidth">
           <thead>
@@ -58,7 +58,7 @@
           </tbody>
         </table>
       </div>
-      <tl-show-more v-if="stops.length === limit || hasMore" :limit="stops.length" @click="showAll" />
+      <tl-show-more v-if="stops.length === limit || hasMore" :limit="stops.length" @show-more="showAll" />
     </div>
   </div>
 </template>
@@ -122,7 +122,7 @@ interface QueryVariables {
   servicedOnly?: boolean | null
   agency_ids?: number[]
   limit?: number
-  search?: string
+  search?: string | null
   location_type?: number | null
   route_type?: number | null
 }
@@ -200,7 +200,7 @@ const STOPS_QUERY = gql`
 `
 
 // Reactive data
-const search = ref<string>('')
+const search = ref<string | null>(null)
 const selectedRouteType = ref<number | null>(null)
 const error = ref<Error | null>(null)
 const hasMore = ref<boolean>(false)
@@ -218,13 +218,15 @@ const queryVariables = computed<QueryVariables>(() => ({
 }))
 
 // Apollo Query
-const { result, loading, onError } = useQuery<{ feed_versions: FeedVersionResponse[] }>(
+const { result, loading: queryLoading, onError } = useQuery<{ feed_versions: FeedVersionResponse[] }>(
   STOPS_QUERY,
   queryVariables,
   {
     clientId: props.client
   }
 )
+
+const loading = computed<boolean>(() => queryLoading.value ?? false)
 
 // Handle errors
 onError((err) => {

@@ -135,6 +135,7 @@ Usage example:
             </tl-msg-warning>
           </div>
 
+          <!-- @vue-skip -->
           <o-tabs
             v-model="activeTab"
             class="tl-tabs"

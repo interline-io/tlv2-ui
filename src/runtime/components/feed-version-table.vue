@@ -42,7 +42,6 @@
             v-for="fv of entities"
             :key="fv.id"
             :class="{ 'is-latest': isLatestFeedVersion(fv.sha1) }"
-            :data-is-latest="isLatestFeedVersion(fv.sha1)"
           >
             <td v-if="showDescriptionColumn">
               {{ fv.name }}
@@ -83,7 +82,6 @@
               <tl-feed-version-active-status
                 :feed="feed"
                 :feed-version-id="fv.id"
-                :show-description="false"
               />
             </td>
             <td v-if="showDownloadColumn">
@@ -92,10 +90,9 @@
                   <o-icon
                     v-if="isLatestFeedVersion(fv.sha1)"
                     icon="download"
-                    title="Download latest feed version"
                     variant="success"
                   />
-                  <o-icon v-else icon="download" title="Download feed version" />
+                  <o-icon v-else icon="download" />
                 </a>
               </template>
             </td>

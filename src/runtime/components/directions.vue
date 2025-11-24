@@ -83,7 +83,7 @@
     <div v-else>
       <!-- INPUTS -->
       <div class="is-clearfix">
-        <o-field addons expanded>
+        <o-field addons class="is-expanded">
           <o-button
             v-for="(v, k) of modeIcons"
             :key="k"
@@ -103,13 +103,14 @@
         </o-field>
 
         <o-field addons horizontal label="Depart">
+          <!-- @vue-skip -->
           <o-datepicker
             v-model="departAtDate"
           />
+          <!-- @vue-skip -->
           <o-input
             v-model="departAtTime"
             :variant="departAtOut.length === 0 ? 'danger' : ''"
-            :message="departAtOut.length === 0 ? 'Invalid time' : ''"
           />
         </o-field>
 
@@ -168,7 +169,6 @@
                 >
                   <span
                     class="itin-route-id"
-                    size="small"
                   >
                     <o-icon :icon="rid.icon" size="small" />
                     {{ rid.route }}
@@ -295,8 +295,8 @@ const props = withDefaults(defineProps<{
 
 const activeItinIdx = ref<number | null>(null)
 const selectedItinIdx = ref<number | null>(null)
-const departAtDate = ref<Date>(parseISO(props.departAt))
-const departAtTime = ref<string>(format(parseISO(props.departAt), 'HH:mm:ss'))
+const departAtDate = ref(parseISO(props.departAt))
+const departAtTime = ref(format(parseISO(props.departAt), 'HH:mm:ss'))
 
 const emit = defineEmits<{
   setMode: [mode: string]

@@ -6,13 +6,14 @@
     >
       <tl-search-bar v-model="search" placeholder="e.g. Bay Area Rapid Transit" />
 
-      <o-dropdown position="bottom-left" append-to-body aria-role="menu" trap-focus>
+      <o-dropdown position="bottom-left">
         <template #trigger="{ active }">
           <o-button label="Options" variant="primary" :icon-left="active ? 'menu-up' : 'menu-down'" />
         </template>
 
-        <div aria-role="menu-item" class="p-4">
+        <div role="menuitem" class="p-4">
           <div class="field">
+            <!-- @vue-skip -->
             <o-checkbox v-model="merged">
               Group agencies by operator
             </o-checkbox>
@@ -28,18 +29,18 @@
     </o-field>
 
     <o-field>
-      <o-field v-if="adm0Name" expanded>
-        <tl-tag attached closable aria-close-label="Close tag" @close="clearQuery">
+      <o-field v-if="adm0Name" class="is-expanded">
+        <tl-tag closable @close="clearQuery">
           Country: {{ adm0Name }}
         </tl-tag>
       </o-field>
-      <o-field v-if="adm1Name" expanded>
-        <tl-tag attached closable aria-close-label="Close tag" @close="clearQuery">
+      <o-field v-if="adm1Name" class="is-expanded">
+        <tl-tag closable @close="clearQuery">
           State/Province: {{ adm1Name }}
         </tl-tag>
       </o-field>
-      <o-field v-if="cityName" expanded>
-        <tl-tag attached closable aria-close-label="Close tag" @close="clearQuery">
+      <o-field v-if="cityName" class="is-expanded">
+        <tl-tag closable @close="clearQuery">
           City: {{ cityName }}
         </tl-tag>
       </o-field>
@@ -84,8 +85,8 @@
         </tbody>
       </table>
     </div>
-    <tl-show-more v-if="entities.length >= limit" :limit="entities.length" @click="fetchMoreFn" />
-    <o-loading v-model:active="loading" :full-page="false" />
+    <tl-show-more v-if="entities.length >= limit" :limit="entities.length" @show-more="fetchMoreFn" />
+    <tl-loading v-model:active="loading" :full-page="false" />
   </div>
 </template>
 
@@ -170,11 +171,11 @@ function nullBool (v: boolean | undefined): boolean | null {
 }
 
 const props = withDefaults(defineProps<{
-  search?: string | null
+  search?: string | null | undefined
   limit?: number
-  adm0Name?: string | null
-  adm1Name?: string | null
-  cityName?: string | null
+  adm0Name?: string | null | undefined
+  adm1Name?: string | null | undefined
+  cityName?: string | null | undefined
   merged?: boolean
 }>(), {
   search: null,
@@ -186,12 +187,12 @@ const props = withDefaults(defineProps<{
 })
 
 // shadow props
-const search = ref(props.search)
+const search = ref<string | null>(props.search ?? null)
 const limit = ref(props.limit)
-const adm0Name = ref(props.adm0Name)
-const adm1Name = ref(props.adm1Name)
-const cityName = ref(props.cityName)
-const merged = ref(props.merged)
+const adm0Name = ref<string | null>(props.adm0Name ?? null)
+const adm1Name = ref<string | null>(props.adm1Name ?? null)
+const cityName = ref<string | null>(props.cityName ?? null)
+const merged = ref<boolean>(props.merged)
 
 interface Emits {
   'update:search': [value: string | null]
@@ -210,7 +211,7 @@ watch(adm1Name, (v) => { emit('update:adm1Name', v) })
 watch(cityName, (v) => { emit('update:cityName', v) })
 watch(merged, (v) => { emit('update:merged', v) })
 
-const { result, loading, error, fetchMore } = useQuery<OperatorsTableResponse, QueryVariables>(
+const { result, loading: queryLoading, error, fetchMore } = useQuery<OperatorsTableResponse, QueryVariables>(
   query,
   () => ({
     search: nullString(search.value),
@@ -220,6 +221,8 @@ const { result, loading, error, fetchMore } = useQuery<OperatorsTableResponse, Q
     limit: limit.value,
     merged: nullBool(merged.value)
   }))
+
+const loading = computed<boolean>(() => queryLoading.value ?? false)
 
 const filteringByOperatorLocation = computed<boolean>(() => {
   return !!(adm0Name.value || adm1Name.value || cityName.value)

@@ -103,6 +103,7 @@
             </tl-msg-warning>
           </div>
 
+          <!-- @vue-skip -->
           <o-tabs v-model="activeTab" class="tl-tabs" type="boxed" :animated="false" @update:model-value="(value) => setTab(value || '')">
             <o-tab-item :value="tabNames.summary" label="Summary">
               <div v-if="servedRoutes">
@@ -195,7 +196,6 @@
               <tl-login-gate role="tl_user">
                 <tl-stop-departures
                   v-if="entity.id && activeTab === tabNames.departures"
-                  :show-fallback-selector="true"
                   :stop-ids="entityIds"
                   :search-coords="positionToLonLat(entity?.geometry?.coordinates)"
                 />

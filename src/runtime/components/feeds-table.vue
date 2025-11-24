@@ -3,13 +3,14 @@
     <o-field grouped label="Filter">
       <tl-search-bar v-model="search" placeholder="Filter by feed Onestop ID or feed name..." />
 
-      <o-dropdown position="bottom-left" append-to-body aria-role="menu" trap-focus menu-class="tl-feeds-table">
+      <o-dropdown position="bottom-left" menu-class="tl-feeds-table">
         <template #trigger="{ active }">
           <o-button label="Filter options" variant="primary" :icon-left="active ? 'menu-up' : 'menu-down'" />
         </template>
 
-        <div aria-role="menu-item" class="p-4">
+        <div role="menuitem" class="p-4">
           <o-field label="Fetch status">
+            <!-- @vue-skip -->
             <o-select v-model="fetchError">
               <option value="">
                 All
@@ -24,6 +25,7 @@
           </o-field>
 
           <o-field label="API Import status">
+            <!-- @vue-skip -->
             <o-select v-model="importStatus">
               <option value="">
                 All
@@ -42,7 +44,8 @@
 
           <o-field label="Tags">
             <div class="pt-2">
-              <o-checkbox v-model="tagUnstableUrl" :native-value="true" size="medium">
+              <!-- @vue-skip -->
+              <o-checkbox v-model="tagUnstableUrl" size="medium">
                 Unstable URL
               </o-checkbox>
             </div>
@@ -50,12 +53,15 @@
 
           <o-field label="Data format">
             <div class="pt-2">
+              <!-- @vue-skip -->
               <o-checkbox v-model="feedSpecs" native-value="GTFS" size="medium">
                 <abbr title="General Transit Feed Specification">GTFS</abbr>
               </o-checkbox>
+              <!-- @vue-skip -->
               <o-checkbox v-model="feedSpecs" native-value="GTFS_RT" size="medium">
                 GTFS Realtime
               </o-checkbox>
+              <!-- @vue-skip -->
               <o-checkbox v-model="feedSpecs" native-value="GBFS" size="medium">
                 <abbr title="General Bikeshare Feed Specification">GBFS</abbr>
               </o-checkbox>
@@ -144,7 +150,7 @@
         Show more feeds
       </a>
     </div>
-    <o-loading v-model:active="loading" :full-page="false" />
+    <tl-loading v-model:active="loading" :full-page="false" />
   </div>
 </template>
 
@@ -256,18 +262,18 @@ function nullBool (v: string | undefined): boolean | null {
   return null
 }
 
-function nullString (v: string | undefined): string | null {
+function nullString (v: string | undefined | null): string | null {
   if (!v || v.length === 0) {
     return null
   }
   return v
 }
 
-const search = defineModel<string>('search')
-const fetchError = defineModel<string>('fetchError')
-const importStatus = defineModel<string>('importStatus')
-const tagUnstableUrl = defineModel<boolean>('tagUnstableUrl')
-const feedSpecs = defineModel<FeedSpec[]>('feedSpecs')
+const search = defineModel<string | null>('search', { default: null })
+const fetchError = defineModel<string>('fetchError', { default: '' })
+const importStatus = defineModel<string>('importStatus', { default: '' })
+const tagUnstableUrl = defineModel<boolean>('tagUnstableUrl', { default: false })
+const feedSpecs = defineModel<FeedSpec[]>('feedSpecs', { default: () => [] })
 
 // Props
 const props = withDefaults(defineProps<{
@@ -279,7 +285,7 @@ const props = withDefaults(defineProps<{
   // by default excludes fetch_errors, last_imported and tags
 })
 
-const { result, loading, error, fetchMore } = useQuery<{ entities: FeedResponse[] }, QueryVariables>(
+const { result, loading: queryLoading, error, fetchMore } = useQuery<{ entities: FeedResponse[] }, QueryVariables>(
   query,
   () => ({
     search: nullString(search.value),
@@ -290,6 +296,7 @@ const { result, loading, error, fetchMore } = useQuery<{ entities: FeedResponse[
     tags: tagUnstableUrl.value ? { unstable_url: 'true' } : null
   }))
 
+const loading = computed<boolean>(() => queryLoading.value ?? false)
 const entities = computed<Feed[]>(() => result.value?.entities ?? [])
 
 function fetchMoreFn (): void {

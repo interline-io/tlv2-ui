@@ -37,6 +37,6 @@ withDefaults(defineProps<{
 
 // Emits
 const emit = defineEmits<{
-  'update:modelValue': [value: string | number | null]
+  'update:modelValue': [value: number | null]
 }>()
 </script>

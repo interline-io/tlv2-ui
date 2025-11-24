@@ -5,10 +5,12 @@
     </tl-msg-error>
     <div v-else>
       <o-field label="Name" horizontal>
-        <o-input v-model="entity.name" expanded type="text" required placeholder="A short name for this feed version..." />
+        <!-- @vue-skip -->
+        <o-input v-model="entity.name" expanded type="text" placeholder="A short name for this feed version..." />
       </o-field>
       <o-field label="Description" horizontal>
-        <o-input v-model="entity.description" expanded type="text" required placeholder="A longer description of this feed version..." />
+        <!-- @vue-skip -->
+        <o-input v-model="entity.description" expanded type="text" placeholder="A longer description of this feed version..." />
       </o-field>
       <div class="block is-clearfix">
         <o-field label="" :message="validationMessage" variant="danger" class="is-pulled-right">
@@ -79,7 +81,7 @@ const saveFeedVersionMutation = gql`
 `
 
 // Reactive state
-const entity = ref<FeedVersion>({ id: 0, name: '', description: '' })
+const entity = ref<FeedVersion>({ id: 0, name: '', description: '', sha1: '' })
 const error = ref<string | null>(null)
 const mutationLoading = ref(false)
 

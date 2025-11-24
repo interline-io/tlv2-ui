@@ -11,13 +11,14 @@
       Error: {{ networkError }}
     </o-notification>
 
+    <!-- @vue-skip -->
     <o-steps
       v-model="activeStep"
       :has-navigation="false"
     >
-      <o-loading
-        v-model="mutationLoading"
-        :is-full-page="false"
+      <tl-loading
+        v-model:active="fetchLoading"
+        :full-page="false"
       />
       <o-step-item
         value="1"
@@ -26,7 +27,6 @@
       >
         <o-notification
           variant="info"
-          has-icon
         >
           Upload a GTFS archive from your local computer or enter a URL to download a GTFS archive from another server. Provide a single ZIP archive that contains all relevant GTFS files without any subdirectories.
         </o-notification>
@@ -49,6 +49,7 @@
           label="Static GTFS URL"
           grouped
         >
+          <!-- @vue-skip -->
           <o-input
             v-model="feedUrl"
             type="text"
@@ -82,14 +83,13 @@
         step="2"
         label="Validate feed"
       >
-        <o-loading
-          v-model="fetchLoading"
+        <tl-loading
+          v-model:active="fetchLoading"
           :is-full-page="false"
         />
         <div v-if="entity">
           <div v-if="!entity.success">
             <o-notification
-              has-icon
               variant="danger"
             >
               Failed to validate file. {{ entity.failure_reason }}
@@ -97,7 +97,6 @@
           </div>
           <div v-else>
             <o-notification
-              has-icon
               variant="info"
             >
               Review validation results below. Errors are important to fix before proceeding, warnings are advisory.  When satisfied, press the <em>Import feed</em> button to continue.
@@ -123,7 +122,8 @@
 
             <hr>
 
-            <rgrt-validation-results :entity="entity" />
+            <!-- TODO: Add validation results component -->
+            <!-- <rgrt-validation-results :entity="entity" /> -->
           </div>
         </div>
       </o-step-item>
@@ -135,12 +135,11 @@
       >
         <o-notification
           variant="info"
-          has-icon
         >
           Please wait while your data is imported.
-          <o-loading
-            v-model="importLoading"
-            :is-full-page="false"
+          <tl-loading
+            v-model:active="importLoading"
+            :full-page="false"
           />
         </o-notification>
       </o-step-item>
@@ -153,7 +152,6 @@
         <div v-if="fetchResult">
           <o-notification
             v-if="fetchResult.fetch_error"
-            has-icon
             variant="danger"
           >
             Failed: {{ fetchResult }}
@@ -161,7 +159,6 @@
 
           <o-notification
             v-else-if="fetchResult.found_sha1 || fetchResult.found_dir_sha1"
-            has-icon
             variant="danger"
           >
             <slot name="existing-feed-version" :fetch-result="fetchResult">
@@ -171,7 +168,6 @@
 
           <template v-else>
             <o-notification
-              has-icon
               variant="info"
             >
               Success! The contents of your feed have been imported. The final step is to give this feed a name and description for future reference. Press the <em>Save</em> button to finish the upload process.
