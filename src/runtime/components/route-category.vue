@@ -26,8 +26,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { TreeNode } from '~/src/runtime/components/utils/tree'
-import { useRouteCategories } from '~/src/runtime/composables/useRouteCategories'
+import type { TreeNode } from '../components/utils/tree'
+import { useRouteCategories } from '../composables/useRouteCategories'
 
 const { getRouteCategory, getRouteSubcategory } = useRouteCategories()
 

@@ -8,7 +8,7 @@
     </o-notification>
 
     <!-- Feed version/service date/time-of-day selector -->
-    <feed-version-time-selector
+    <tl-feed-version-time-selector
       :model-value="feedVersionSelections"
       :time-of-day="scenario?.timeOfDay"
       :feed-version-options="mappedFeedVersionOptions"
@@ -146,7 +146,7 @@
             </div>
           </div>
           <div class="message-body">
-            <tree-control
+            <tl-tree-control
               v-if="scenarioResult"
               :hide-root="true"
               :node="scenarioResult.incomingTripTree"
@@ -181,7 +181,7 @@
             </div>
           </div>
           <div class="message-body">
-            <tree-control
+            <tl-tree-control
               v-if="scenarioResult"
               :hide-root="true"
               :node="scenarioResult.outgoingTripTree"

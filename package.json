@@ -106,6 +106,7 @@
     "apollo-upload-client": "18.0.1",
     "bulma": "1.0.4",
     "commander": "14.0.0",
+    "csv-stringify": "6.6.0",
     "cytoscape": "3.31.1",
     "cytoscape-fcose": "2.2.0",
     "d3-scale-chromatic": "3.1.0",

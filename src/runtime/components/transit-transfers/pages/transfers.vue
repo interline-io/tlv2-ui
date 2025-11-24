@@ -30,7 +30,7 @@
           <hr>
 
           <div class="is-pulled-right pb-4">
-            <csv-download :data="getCsvData(scenarioResult)" />
+            <tl-csv-download :data="getCsvData(scenarioResult)" />
           </div>
 
           <br>
@@ -94,7 +94,7 @@
                 <td>{{ tripGroup.agency_name }}</td>
                 <td>{{ tripGroup.route_name }}</td>
                 <td>
-                  <route-category-abbr
+                  <tl-route-category-abbr
                     :key="tripGroup.route?.id"
                     :category="tripGroup.route?.route_attribute?.category"
                     :subcategory="tripGroup.route?.route_attribute?.subcategory"
@@ -155,7 +155,7 @@
                   <td>{{ toTrip.agency_name }}</td>
                   <td>{{ toTrip.route_name }}</td>
                   <td>
-                    <route-category-abbr
+                    <tl-route-category-abbr
                       :key="tripGroup.route?.id"
                       :category="toTrip.route?.route_attribute?.category"
                       :subcategory="toTrip.route?.route_attribute?.subcategory"

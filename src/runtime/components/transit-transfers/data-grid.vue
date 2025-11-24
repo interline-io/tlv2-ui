@@ -6,10 +6,10 @@
       v-if="showCsv"
       class="is-pulled-right"
     >
-      <csv-download :data="csvData" />
+      <tl-csv-download :data="csvData" />
     </div>
 
-    <angle-table>
+    <tl-angle-table>
       <thead>
         <tr>
           <th
@@ -45,10 +45,10 @@
               {{ secondsToString(getValue(entry, key)) }}
             </template>
             <template v-else-if="key.transform === 'category'">
-              <route-category :category="entry.category" />
+              <tl-route-category :category="entry.category" />
             </template>
             <template v-else-if="key.transform === 'subcategory'">
-              <route-category
+              <tl-route-category
                 :category="entry.category"
                 :show-category="false"
                 :subcategory="entry.subcategory"
@@ -61,7 +61,7 @@
           <slot :entry="entry" />
         </tr>
       </tbody>
-    </angle-table>
+    </tl-angle-table>
   </div>
 </template>
 

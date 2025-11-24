@@ -9,7 +9,7 @@
 import { ref, onMounted, watch, onBeforeUnmount } from 'vue'
 import { Map as MapLibreMap, Marker, NavigationControl, Popup, LngLatBounds } from 'maplibre-gl'
 import type { LngLatLike } from 'maplibre-gl'
-import { useBasemapLayers } from '~/src/runtime/composables/useBasemapLayers'
+import { useBasemapLayers } from '../../composables/useBasemapLayers'
 import type { StationHub } from './types'
 
 interface Stop {

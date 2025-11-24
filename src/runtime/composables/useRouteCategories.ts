@@ -1,4 +1,4 @@
-import { TreeNode } from '~/src/runtime/components/utils/tree'
+import { TreeNode } from '../components/utils/tree'
 
 /**
  * Composable providing route category utility functions and tree structures

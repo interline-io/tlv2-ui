@@ -3,8 +3,8 @@ import { describe, test, expect } from 'vitest'
 import { Station } from './station'
 import { RoutingGraph } from './graph'
 
-import StopData from '~~/testdata/ftvl/stop.json'
-import StopsData from '~~/testdata/ftvl/stops.json'
+import StopData from '../../../../testdata/ftvl/stop.json'
+import StopsData from '../../../../testdata/ftvl/stops.json'
 
 function loadStation (): Station {
   const rootStop = StopData.data.feed_versions[0]?.stops[0]

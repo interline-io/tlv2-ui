@@ -24,7 +24,7 @@
         <div
           :class="hideRoot ? '' : 'indented'"
         >
-          <tree-control
+          <tl-tree-control
             :node="g"
             :max-deep="maxDeep - 1"
             @select="select"

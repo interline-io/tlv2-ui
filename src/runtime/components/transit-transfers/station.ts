@@ -3,7 +3,7 @@
  */
 
 import type { Point } from 'geojson'
-import { haversinePosition } from '~/src/runtime/geom'
+import { haversinePosition } from '../../geom'
 import type { Graph } from './graph'
 
 /**

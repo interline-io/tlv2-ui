@@ -8,9 +8,9 @@
 import { ref, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 import { Map as MapLibreMap, NavigationControl, Popup, LngLatBounds } from 'maplibre-gl'
 import type { LngLatLike, MapMouseEvent, GeoJSONSource } from 'maplibre-gl'
-import { useBasemapLayers } from '~/src/runtime/composables/useBasemapLayers'
+import { useBasemapLayers } from '../../composables/useBasemapLayers'
 import type { StationHub } from './types'
-import { haversinePosition } from '~/src/runtime/geom'
+import { haversinePosition } from '../../geom'
 
 const PIXEL_RADIUS = 10
 

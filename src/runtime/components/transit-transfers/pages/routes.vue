@@ -30,7 +30,7 @@
 import { useRoute } from '#app'
 import { windowToSeconds } from '../../utils/time-format'
 import type { StationHub } from '../types'
-import { departureStats } from '~/src/runtime/components/utils/departure-stats'
+import { departureStats } from '../../../components/utils/departure-stats'
 
 interface Props {
   stationArea: StationHub

@@ -6,7 +6,6 @@ import vue from '@vitejs/plugin-vue'
 const _dirname = dirname(fileURLToPath(import.meta.url))
 const alias = [
   { find: '~', replacement: _dirname },
-  { find: '~~', replacement: _dirname },
 ]
 
 export default defineConfig({
