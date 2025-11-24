@@ -109,7 +109,6 @@
           <o-input
             v-model="departAtTime"
             :variant="departAtOut.length === 0 ? 'danger' : ''"
-            :message="departAtOut.length === 0 ? 'Invalid time' : ''"
           />
         </o-field>
 
@@ -168,7 +167,6 @@
                 >
                   <span
                     class="itin-route-id"
-                    size="small"
                   >
                     <o-icon :icon="rid.icon" size="small" />
                     {{ rid.route }}

@@ -6,7 +6,7 @@
     >
       <tl-search-bar v-model="search" placeholder="e.g. Bay Area Rapid Transit" />
 
-      <o-dropdown position="bottom-left" trap-focus>
+      <o-dropdown position="bottom-left">
         <template #trigger="{ active }">
           <o-button label="Options" variant="primary" :icon-left="active ? 'menu-up' : 'menu-down'" />
         </template>

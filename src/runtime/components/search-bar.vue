@@ -2,7 +2,7 @@
   <o-input
     expanded
     root-class="is-expanded ml-0 mr-2"
-    :value="modelValue"
+    :model-value="modelValue"
     :placeholder="modelValue ? modelValue : placeholder"
     type="text"
     icon="magnify"
@@ -11,7 +11,6 @@
     class="entity-search"
     @update:model-value="emit('update:modelValue', $event ?? '')"
     @icon-right-click="clearSearch"
-    @keydown.esc="clearSearch"
   />
 </template>
 

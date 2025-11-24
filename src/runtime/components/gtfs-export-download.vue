@@ -18,7 +18,6 @@
             :allow-new="true"
             placeholder="Add feed version SHA1 or ID"
             icon="plus"
-            aria-close-label="Remove this feed version"
             expanded
           />
           <p class="help">
@@ -56,7 +55,6 @@
             :model-value="exportOptions.simplifyShapes?.toString() || ''"
             type="number"
             placeholder="Tolerance in meters (e.g., 10.0)"
-            step="0.1"
             expanded
             @update:model-value="(v) => exportOptions.simplifyShapes = v ? parseFloat(v) || null : null"
           />

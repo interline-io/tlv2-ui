@@ -21,7 +21,6 @@
       />
       <div v-if="overlay" class="tl-fv-map-panel">
         <tl-map-route-list
-          :current-zoom="currentZoom"
           :link-version="linkVersion"
           :agency-features="agencyFeatures"
           :is-component-modal-active="isComponentModalActive"

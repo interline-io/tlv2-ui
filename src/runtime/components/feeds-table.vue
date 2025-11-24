@@ -3,7 +3,7 @@
     <o-field grouped label="Filter">
       <tl-search-bar v-model="search" placeholder="Filter by feed Onestop ID or feed name..." />
 
-      <o-dropdown position="bottom-left" trap-focus menu-class="tl-feeds-table">
+      <o-dropdown position="bottom-left" menu-class="tl-feeds-table">
         <template #trigger="{ active }">
           <o-button label="Filter options" variant="primary" :icon-left="active ? 'menu-up' : 'menu-down'" />
         </template>

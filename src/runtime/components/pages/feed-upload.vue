@@ -16,7 +16,7 @@
       :has-navigation="false"
     >
       <o-loading
-        v-model="mutationLoading"
+        v-model:active="mutationLoading"
         :is-full-page="false"
       />
       <o-step-item
@@ -82,7 +82,7 @@
         label="Validate feed"
       >
         <o-loading
-          v-model="fetchLoading"
+          v-model:active="fetchLoading"
           :is-full-page="false"
         />
         <div v-if="entity">
@@ -120,7 +120,8 @@
 
             <hr>
 
-            <rgrt-validation-results :entity="entity" />
+            <!-- TODO: Add validation results component -->
+            <!-- <rgrt-validation-results :entity="entity" /> -->
           </div>
         </div>
       </o-step-item>
@@ -135,7 +136,7 @@
         >
           Please wait while your data is imported.
           <o-loading
-            v-model="importLoading"
+            v-model:active="importLoading"
             :is-full-page="false"
           />
         </o-notification>

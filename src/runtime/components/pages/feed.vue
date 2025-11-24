@@ -151,7 +151,7 @@
             <tr v-if="entity.spec == 'GTFS'">
               <td>
                 <o-tooltip
-                  multilined
+                  multiline
                   label="Information provided by the feed producer inside a feed_info.txt file"
                 >
                   Feed Info

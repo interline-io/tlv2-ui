@@ -176,7 +176,6 @@
               <tl-feed-version-active-status
                 :feed="entity.feed"
                 :feed-version-id="entity.id"
-                :show-description="true"
               />
             </td>
           </tr>
@@ -232,7 +231,6 @@
                   v-if="entity"
                   :feed="entity.feed"
                   :feed-versions="[entity]"
-                  :show-status-legend="false"
                 />
               </client-only>
             </div>

@@ -10,9 +10,7 @@
         type="text"
         :icon-right="search.length > 0 ? 'cancel' : 'magnify'"
         icon-right-clickable
-        data-1p-ignore
         @icon-right-click="close"
-        @keydown.esc="close"
       />
     </a>
     <div

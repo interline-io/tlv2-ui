@@ -19,7 +19,6 @@
             :unselectable-days-of-week="[0, 2, 3, 4, 5, 6]"
             placeholder="Click to select..."
             icon="calendar-today"
-            trap-focus
           />
         </o-field>
 
@@ -29,7 +28,6 @@
             :unselectable-days-of-week="[1, 2, 3, 4, 5, 6]"
             placeholder="Click to select..."
             icon="calendar-today"
-            trap-focus
           />
         </o-field>
 

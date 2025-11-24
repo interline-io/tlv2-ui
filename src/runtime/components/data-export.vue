@@ -34,7 +34,7 @@
           multiple
         >
           <template #trigger>
-            <button class="button" type="button" icon="menu-down">
+            <button class="button" type="button">
               <span>
                 {{ showOnMap.map((s: string) => { return titleize(s) }).join(", ") }}
               </span>
