@@ -195,7 +195,6 @@
               <tl-login-gate role="tl_user">
                 <tl-stop-departures
                   v-if="entity.id && activeTab === tabNames.departures"
-                  :show-fallback-selector="true"
                   :stop-ids="entityIds"
                   :search-coords="positionToLonLat(entity?.geometry?.coordinates)"
                 />

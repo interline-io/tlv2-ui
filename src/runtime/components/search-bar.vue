@@ -2,14 +2,14 @@
   <o-input
     expanded
     root-class="is-expanded ml-0 mr-2"
-    :model-value="modelValue"
+    :model-value="modelValue ?? undefined"
     :placeholder="modelValue ? modelValue : placeholder"
     type="text"
     icon="magnify"
     :icon-right="modelValue ? 'close-circle' : undefined"
     icon-right-clickable
     class="entity-search"
-    @update:model-value="emit('update:modelValue', $event ?? '')"
+    @update:model-value="emit('update:modelValue', $event === '' ? null : $event)"
     @icon-right-click="clearSearch"
   />
 </template>
@@ -26,12 +26,12 @@ withDefaults(defineProps<{
 
 // Emits
 const emit = defineEmits<{
-  'update:modelValue': [value: string]
+  'update:modelValue': [value: string | null]
 }>()
 
 // Methods
 const clearSearch = (): void => {
-  emit('update:modelValue', '')
+  emit('update:modelValue', null)
 }
 </script>
 

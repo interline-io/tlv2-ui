@@ -69,7 +69,6 @@
                 :to="makeRouteLink(rs.onestop_id, rs.feed_onestop_id, rs.feed_version_sha1, rs.route_id, parseInt(rs.id), linkVersion)"
               >
                 <tl-route-icon
-                  :agency-name="rs.agency_name"
                   :route-short-name="rs.route_short_name"
                   :route-type="rs.route_type"
                   :route-long-name="rs.route_long_name"

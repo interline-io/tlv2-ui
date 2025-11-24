@@ -172,11 +172,11 @@ function nullBool (v: boolean | undefined): boolean | null {
 }
 
 const props = withDefaults(defineProps<{
-  search?: string | null
+  search?: string | null | undefined
   limit?: number
-  adm0Name?: string | null
-  adm1Name?: string | null
-  cityName?: string | null
+  adm0Name?: string | null | undefined
+  adm1Name?: string | null | undefined
+  cityName?: string | null | undefined
   merged?: boolean
 }>(), {
   search: null,
@@ -188,11 +188,11 @@ const props = withDefaults(defineProps<{
 })
 
 // shadow props
-const search = ref(props.search)
+const search = ref<string | null>(props.search ?? null)
 const limit = ref(props.limit)
-const adm0Name = ref(props.adm0Name)
-const adm1Name = ref(props.adm1Name)
-const cityName = ref(props.cityName)
+const adm0Name = ref<string | null>(props.adm0Name ?? null)
+const adm1Name = ref<string | null>(props.adm1Name ?? null)
+const cityName = ref<string | null>(props.cityName ?? null)
 const merged = ref<boolean>(props.merged)
 
 interface Emits {
