@@ -86,8 +86,7 @@
       </table>
     </div>
     <tl-show-more v-if="entities.length >= limit" :limit="entities.length" @show-more="fetchMoreFn" />
-    <!-- @vue-skip -->
-    <o-loading v-model:active="loading" :full-page="false" />
+    <tl-loading v-model:active="loading" :full-page="false" />
   </div>
 </template>
 

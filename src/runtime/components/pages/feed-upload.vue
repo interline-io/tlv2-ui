@@ -16,8 +16,7 @@
       v-model="activeStep"
       :has-navigation="false"
     >
-      <!-- @vue-skip -->
-      <o-loading
+      <tl-loading
         v-model:active="fetchLoading"
         :full-page="false"
       />
@@ -84,7 +83,7 @@
         step="2"
         label="Validate feed"
       >
-        <o-loading
+        <tl-loading
           v-model:active="fetchLoading"
           :is-full-page="false"
         />
@@ -138,8 +137,7 @@
           variant="info"
         >
           Please wait while your data is imported.
-          <!-- @vue-skip -->
-          <o-loading
+          <tl-loading
             v-model:active="importLoading"
             :full-page="false"
           />

@@ -8,8 +8,7 @@
         <tl-search-bar v-model="search" class="is-expanded" placeholder="Filter stops by name..." />
         <tl-route-type-select v-if="showSelectedRouteType" v-model="selectedRouteType" />
       </o-field>
-      <!-- @vue-skip -->
-      <o-loading v-model:active="loading" :full-page="false" />
+      <tl-loading v-model:active="loading" :full-page="false" />
       <div class="table-container">
         <table class="table is-striped is-fullwidth">
           <thead>

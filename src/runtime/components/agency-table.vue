@@ -5,8 +5,7 @@
     </tl-msg-error>
     <div v-else>
       <tl-search-bar v-model="search" placeholder="Filter Agencies" />
-      <!-- @vue-skip -->
-      <o-loading v-model:active="loading" :full-page="false" />
+      <tl-loading v-model:active="loading" :full-page="false" />
       <div class="table-container">
         <table class="table is-striped is-fullwidth">
           <thead>

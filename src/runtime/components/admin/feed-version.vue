@@ -1,6 +1,6 @@
 <template>
   <div>
-    <o-loading v-model:active="loading" :full-page="false" />
+    <tl-loading v-model:active="loading" :full-page="false" />
     <o-notification
       v-if="error"
       variant="danger"

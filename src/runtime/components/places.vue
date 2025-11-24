@@ -15,8 +15,7 @@
       </o-radio>
     </div>
 
-    <!-- @vue-skip -->
-    <o-loading v-model:active="loading" :full-page="false" />
+    <tl-loading v-model:active="loading" :full-page="false" />
 
     <p
       v-for="place of sortedPlaces"

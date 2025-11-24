@@ -150,8 +150,7 @@
         Show more feeds
       </a>
     </div>
-    <!-- @vue-skip -->
-    <o-loading v-model:active="loading" :full-page="false" />
+    <tl-loading v-model:active="loading" :full-page="false" />
   </div>
 </template>
 
