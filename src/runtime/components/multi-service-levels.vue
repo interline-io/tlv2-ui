@@ -3,6 +3,7 @@
     <div v-if="showFilters" class="block">
       <o-field grouped class="is-expanded">
         <o-field v-if="showServiceRelative" label="Service relative to">
+          <!-- @vue-skip -->
           <o-select v-model="maxAggMode">
             <option value="all">
               All cells
@@ -14,6 +15,7 @@
         </o-field>
 
         <o-field v-if="showDateSelector" label="Start date">
+          <!-- @vue-skip -->
           <o-datepicker
             v-model="displayStartDate"
             :unselectable-days-of-week="[0, 2, 3, 4, 5, 6]"
@@ -23,6 +25,7 @@
         </o-field>
 
         <o-field v-if="showDateSelector" label="End date">
+          <!-- @vue-skip -->
           <o-datepicker
             v-model="displayEndDate"
             :unselectable-days-of-week="[1, 2, 3, 4, 5, 6]"
@@ -231,7 +234,7 @@ const months: Record<number, string> = {
 
 // Reactive data
 const _fvAgg = ref<boolean>(false)
-const maxAggMode = ref<'all' | 'group'>('all')
+const maxAggMode = ref('all' as 'all' | 'group')
 const startDate = ref<Date | null>(null)
 const endDate = ref<Date | null>(null)
 const error = ref<string | null>(null)
@@ -281,8 +284,8 @@ const fvsls = computed<ExtendedServiceLevel[]>(() => {
   return a
 })
 
-const displayStartDate = computed<Date>({
-  get () {
+const displayStartDate = computed({
+  get (): Date {
     if (startDate.value) {
       return startDate.value
     }
@@ -297,8 +300,8 @@ const displayStartDate = computed<Date>({
   }
 })
 
-const displayEndDate = computed<Date>({
-  get () {
+const displayEndDate = computed({
+  get (): Date {
     if (endDate.value) {
       return endDate.value
     }

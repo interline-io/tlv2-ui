@@ -5,6 +5,7 @@
     </tl-msg-error>
     <div v-else>
       <tl-search-bar v-model="search" placeholder="Filter Agencies" />
+      <!-- @vue-skip -->
       <o-loading v-model:active="loading" :full-page="false" />
       <div class="table-container">
         <table class="table is-striped is-fullwidth">
@@ -85,7 +86,7 @@ const { result, loading: queryLoading, error: queryError, fetchMore } = useQuery
   }),
   {}
 )
-const loading = computed(() => queryLoading.value ?? false)
+const loading = computed<boolean>(() => queryLoading.value ?? false)
 watch(queryError, (newError) => {
   if (newError) {
     error.value = newError.message

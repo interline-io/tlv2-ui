@@ -293,8 +293,8 @@ const props = withDefaults(defineProps<{
 
 const activeItinIdx = ref<number | null>(null)
 const selectedItinIdx = ref<number | null>(null)
-const departAtDate = ref<Date>(parseISO(props.departAt))
-const departAtTime = ref<string>(format(parseISO(props.departAt), 'HH:mm:ss'))
+const departAtDate = ref(parseISO(props.departAt))
+const departAtTime = ref(format(parseISO(props.departAt), 'HH:mm:ss'))
 
 const emit = defineEmits<{
   setMode: [mode: string]

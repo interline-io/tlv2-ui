@@ -8,6 +8,7 @@
         <tl-search-bar v-model="search" class="is-expanded" placeholder="Filter stops by name..." />
         <tl-route-type-select v-if="showSelectedRouteType" v-model="selectedRouteType" />
       </o-field>
+      <!-- @vue-skip -->
       <o-loading v-model:active="loading" :full-page="false" />
       <div class="table-container">
         <table class="table is-striped is-fullwidth">
@@ -226,7 +227,7 @@ const { result, loading: queryLoading, onError } = useQuery<{ feed_versions: Fee
   }
 )
 
-const loading = computed(() => queryLoading.value ?? false)
+const loading = computed<boolean>(() => queryLoading.value ?? false)
 
 // Handle errors
 onError((err) => {

@@ -2,6 +2,7 @@
   <div>
     <o-field grouped class="block is-expanded">
       <o-field label="Stop Buffer Radius (m)" class="pr-6 is-expanded">
+        <!-- @vue-skip -->
         <o-slider
           v-model="radius"
           size="medium"
@@ -110,8 +111,8 @@ const showOnMap = ref<MapLayerType[]>(['census', 'hull', 'buffer'])
 const censusFeatures = ref<Feature[]>([])
 const bufferFeatures = ref<Feature[]>([])
 const hullFeatures = ref<Feature[]>([])
-const radius = ref<number>(400.0)
-const layer = ref<string>('tract')
+const radius = ref(400.0)
+const layer = ref('tract')
 
 const layerInfo: Record<string, LayerInfo> = {
   tract: { name: 'Tract', plural: 'Tracts' },

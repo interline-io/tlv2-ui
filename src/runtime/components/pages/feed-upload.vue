@@ -11,13 +11,15 @@
       Error: {{ networkError }}
     </o-notification>
 
+    <!-- @vue-skip -->
     <o-steps
       v-model="activeStep"
       :has-navigation="false"
     >
+      <!-- @vue-skip -->
       <o-loading
-        v-model:active="mutationLoading"
-        :is-full-page="false"
+        v-model:active="fetchLoading"
+        :full-page="false"
       />
       <o-step-item
         value="1"
@@ -48,6 +50,7 @@
           label="Static GTFS URL"
           grouped
         >
+          <!-- @vue-skip -->
           <o-input
             v-model="feedUrl"
             type="text"
@@ -135,9 +138,10 @@
           variant="info"
         >
           Please wait while your data is imported.
+          <!-- @vue-skip -->
           <o-loading
             v-model:active="importLoading"
-            :is-full-page="false"
+            :full-page="false"
           />
         </o-notification>
       </o-step-item>

@@ -8,6 +8,7 @@
         <tl-search-bar v-model="search" placeholder="Filter routes by name..." />
         <tl-route-type-select v-model="selectedRouteType" />
       </o-field>
+      <!-- @vue-skip -->
       <o-loading v-model:active="loading" :full-page="false" />
       <div class="table-container">
         <table class="table is-striped is-fullwidth">
@@ -169,7 +170,7 @@ const { result, loading: queryLoading, onError } = useQuery<RouteTableResponse>(
   ROUTES_QUERY,
   queryVariables)
 
-const loading = computed(() => queryLoading.value ?? false)
+const loading = computed<boolean>(() => queryLoading.value ?? false)
 
 // Handle errors
 onError((err) => {

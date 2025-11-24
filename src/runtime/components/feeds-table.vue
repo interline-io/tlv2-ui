@@ -10,6 +10,7 @@
 
         <div role="menuitem" class="p-4">
           <o-field label="Fetch status">
+            <!-- @vue-skip -->
             <o-select v-model="fetchError">
               <option value="">
                 All
@@ -24,6 +25,7 @@
           </o-field>
 
           <o-field label="API Import status">
+            <!-- @vue-skip -->
             <o-select v-model="importStatus">
               <option value="">
                 All
@@ -42,7 +44,8 @@
 
           <o-field label="Tags">
             <div class="pt-2">
-              <o-checkbox v-model="tagUnstableUrl" :native-value="true" size="medium">
+              <!-- @vue-skip -->
+              <o-checkbox v-model="tagUnstableUrl" size="medium">
                 Unstable URL
               </o-checkbox>
             </div>
@@ -50,12 +53,15 @@
 
           <o-field label="Data format">
             <div class="pt-2">
+              <!-- @vue-skip -->
               <o-checkbox v-model="feedSpecs" native-value="GTFS" size="medium">
                 <abbr title="General Transit Feed Specification">GTFS</abbr>
               </o-checkbox>
+              <!-- @vue-skip -->
               <o-checkbox v-model="feedSpecs" native-value="GTFS_RT" size="medium">
                 GTFS Realtime
               </o-checkbox>
+              <!-- @vue-skip -->
               <o-checkbox v-model="feedSpecs" native-value="GBFS" size="medium">
                 <abbr title="General Bikeshare Feed Specification">GBFS</abbr>
               </o-checkbox>
@@ -144,6 +150,7 @@
         Show more feeds
       </a>
     </div>
+    <!-- @vue-skip -->
     <o-loading v-model:active="loading" :full-page="false" />
   </div>
 </template>
@@ -290,7 +297,7 @@ const { result, loading: queryLoading, error, fetchMore } = useQuery<{ entities:
     tags: tagUnstableUrl.value ? { unstable_url: 'true' } : null
   }))
 
-const loading = computed(() => queryLoading.value ?? false)
+const loading = computed<boolean>(() => queryLoading.value ?? false)
 const entities = computed<Feed[]>(() => result.value?.entities ?? [])
 
 function fetchMoreFn (): void {

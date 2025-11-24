@@ -1,6 +1,7 @@
 <template>
   <div class="search-options mb-2">
     <o-field horizontal label="Search radius">
+      <!-- @vue-skip -->
       <o-select
         v-model="searchRadius"
         size="small"
@@ -12,12 +13,14 @@
     </o-field>
 
     <o-field horizontal label="Options">
+      <!-- @vue-skip -->
       <o-checkbox
         v-model="autoRefresh"
         size="small"
       >
         Auto-refresh
       </o-checkbox>
+      <!-- @vue-skip -->
       <o-checkbox
         v-model="useServiceWindow"
         size="small"

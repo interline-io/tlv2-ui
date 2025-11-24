@@ -59,7 +59,7 @@ import { useLazyQuery } from '@vue/apollo-composable'
 
 const minLength = 3
 const asyncDebounceTime = 200
-const search = ref('')
+const search = ref<string>('')
 const operatorLinks = computed(() => {
   return result.value?.operators || []
 })

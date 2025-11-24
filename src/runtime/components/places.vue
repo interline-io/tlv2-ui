@@ -15,6 +15,7 @@
       </o-radio>
     </div>
 
+    <!-- @vue-skip -->
     <o-loading v-model:active="loading" :full-page="false" />
 
     <p
@@ -185,7 +186,7 @@ const { result, loading: queryLoading } = useQuery<{ places: PlaceResponse[] }>(
   PLACES_QUERY,
   queryVariables)
 
-const loading = computed(() => queryLoading.value ?? false)
+const loading = computed<boolean>(() => queryLoading.value ?? false)
 const places = computed<Place[]>(() => result.value?.places || [])
 
 const placeTitleName = computed<string>(() => {

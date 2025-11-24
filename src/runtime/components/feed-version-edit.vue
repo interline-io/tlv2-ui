@@ -79,7 +79,7 @@ const saveFeedVersionMutation = gql`
 `
 
 // Reactive state
-const entity = ref<FeedVersion>({ id: 0, name: '', description: '' })
+const entity = ref<FeedVersion>({ id: 0, name: '', description: '', sha1: '' })
 const error = ref<string | null>(null)
 const mutationLoading = ref(false)
 

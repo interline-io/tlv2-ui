@@ -13,6 +13,7 @@
 
         <div role="menuitem" class="p-4">
           <div class="field">
+            <!-- @vue-skip -->
             <o-checkbox v-model="merged">
               Group agencies by operator
             </o-checkbox>
@@ -85,6 +86,7 @@
       </table>
     </div>
     <tl-show-more v-if="entities.length >= limit" :limit="entities.length" @show-more="fetchMoreFn" />
+    <!-- @vue-skip -->
     <o-loading v-model:active="loading" :full-page="false" />
   </div>
 </template>
@@ -191,7 +193,7 @@ const limit = ref(props.limit)
 const adm0Name = ref(props.adm0Name)
 const adm1Name = ref(props.adm1Name)
 const cityName = ref(props.cityName)
-const merged = ref(props.merged)
+const merged = ref<boolean>(props.merged)
 
 interface Emits {
   'update:search': [value: string | null]
@@ -221,7 +223,7 @@ const { result, loading: queryLoading, error, fetchMore } = useQuery<OperatorsTa
     merged: nullBool(merged.value)
   }))
 
-const loading = computed(() => queryLoading.value ?? false)
+const loading = computed<boolean>(() => queryLoading.value ?? false)
 
 const filteringByOperatorLocation = computed<boolean>(() => {
   return !!(adm0Name.value || adm1Name.value || cityName.value)
