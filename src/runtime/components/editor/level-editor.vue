@@ -87,14 +87,6 @@
                 Save
               </o-button>
             </div>
-            <div class="level-item">
-              <o-button
-                class="button is-danger"
-                @click="$emit('delete', level)"
-              >
-                Delete
-              </o-button>
-            </div>
           </template>
           <template v-else>
             <div class="level-item">
@@ -109,6 +101,25 @@
           </template>
         </div>
       </div>
+    </div>
+    <hr>
+    <!-- Danger Zone -->
+    <div v-if="level.id" class="mt-6">
+      <tl-msg-box variant="danger" title="Danger Zone">
+        <p v-if="hasAssociatedStops" class="mb-4">
+          This level cannot be deleted because it has associated stops. If you want to delete, first disassociate all stops/nodes from this level using the Draw Pathways tab.
+        </p>
+        <p v-else class="mb-4">
+          No associated stops, so this level can be deleted if desired.
+        </p>
+        <o-button
+          class="button is-danger"
+          :disabled="hasAssociatedStops"
+          @click="showDeleteModal = true"
+        >
+          Delete Level
+        </o-button>
+      </tl-msg-box>
     </div>
     <tl-modal
       v-model="showGeojsonEditor"
@@ -126,6 +137,27 @@
       <o-button class="is-pulled-right" :disabled="!!geojsonError" :variant="geojsonError ? 'danger' : 'primary'" @click="showGeojsonEditor = false">
         {{ geojsonError ? geojsonError : 'OK' }}
       </o-button>
+    </tl-modal>
+
+    <!-- Delete Confirmation Modal -->
+    <tl-modal
+      v-model="showDeleteModal"
+      title="Delete Level"
+    >
+      <p class="mb-4">
+        Are you sure you want to delete this level? This action cannot be undone.
+      </p>
+      <div class="buttons is-pulled-right">
+        <o-button @click="showDeleteModal = false">
+          Cancel
+        </o-button>
+        <o-button
+          variant="danger"
+          @click="confirmDelete"
+        >
+          Delete Level
+        </o-button>
+      </div>
     </tl-modal>
   </div>
 </template>
@@ -195,6 +227,10 @@ export default {
     value: {
       type: Object,
       default () { return {} }
+    },
+    hasAssociatedStops: {
+      type: Boolean,
+      default: false
     }
   },
   emits: ['update', 'delete', 'create', 'cancel'],
@@ -204,7 +240,8 @@ export default {
       basemap: 'carto',
       showGeojsonEditor: false,
       geojsonError: null,
-      geojsonGeometryBuffer: ''
+      geojsonGeometryBuffer: '',
+      showDeleteModal: false
     }
   },
   computed: {
@@ -262,6 +299,10 @@ export default {
       } catch (e) {
         this.geojsonError = e.message || e.toString()
       }
+    },
+    confirmDelete () {
+      this.showDeleteModal = false
+      this.$emit('delete', this.level)
     }
   }
 }
