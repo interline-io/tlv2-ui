@@ -3,7 +3,7 @@
  * Implements A* pathfinding for optimal route calculation through transit stations
  */
 
-import { haversinePosition } from 'tlv2-ui/geom'
+import { haversinePosition } from '~/src/runtime/geom'
 import type { Stop, Pathway } from './station'
 
 /**

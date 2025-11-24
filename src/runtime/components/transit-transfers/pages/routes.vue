@@ -1,12 +1,12 @@
 <template>
   <div v-if="props.stationArea">
-    <transit-transfers-breadcrumbs
+    <tl-transit-transfers-breadcrumbs
       :station-area="props.stationArea"
     />
 
     <tl-title :title="`${props.stationArea.properties.name}: Routes`" />
 
-    <transit-transfers-scenario-with-controls
+    <tl-transit-transfers-scenario-with-controls
       :station-hubs="[]"
       :station-area="props.stationArea"
     >
@@ -15,14 +15,14 @@
           <span>No trips match the current location and filters.</span>
         </o-notification>
         <div v-else>
-          <transit-transfers-data-grid
+          <tl-transit-transfers-data-grid
             :grid-data="getRoutesWithServiceRows(scenario, scenarioResult)"
             :columns="routesGridColumns"
             default-sort-key="first_departure"
           />
         </div>
       </template>
-    </transit-transfers-scenario-with-controls>
+    </tl-transit-transfers-scenario-with-controls>
   </div>
 </template>
 

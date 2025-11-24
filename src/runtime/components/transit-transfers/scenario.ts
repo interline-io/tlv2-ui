@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { haversinePosition, type Point, type Polygon } from 'tlv2-ui/geom'
+import { haversinePosition, type Point, type Polygon } from '~/src/runtime/geom'
 import { gql } from 'graphql-tag'
 import { TreeNode } from '~/src/runtime/components/utils/tree'
 import { useRouteCategories } from '~/src/runtime/composables/useRouteCategories'

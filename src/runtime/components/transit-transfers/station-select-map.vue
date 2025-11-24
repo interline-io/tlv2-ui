@@ -10,7 +10,7 @@ import { Map as MapLibreMap, NavigationControl, Popup, LngLatBounds } from 'mapl
 import type { LngLatLike, MapMouseEvent, GeoJSONSource } from 'maplibre-gl'
 import { useBasemapLayers } from '~/src/runtime/composables/useBasemapLayers'
 import type { StationHub } from './types'
-import { haversinePosition } from 'tlv2-ui/geom'
+import { haversinePosition } from '~/src/runtime/geom'
 
 const PIXEL_RADIUS = 10
 

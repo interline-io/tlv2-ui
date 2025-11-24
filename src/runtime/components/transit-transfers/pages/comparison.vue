@@ -1,12 +1,12 @@
 <template>
   <div v-if="props.stationArea">
-    <transit-transfers-breadcrumbs
+    <tl-transit-transfers-breadcrumbs
       :station-area="props.stationArea"
     />
 
     <tl-title :title="`${props.stationArea.properties.name}: Transfers - Overview of Different Service Conditions`" />
 
-    <transit-transfers-scenario-with-controls
+    <tl-transit-transfers-scenario-with-controls
       :station-hubs="[]"
       :station-area="props.stationArea"
       :show-controls="false"
@@ -15,7 +15,7 @@
       <p class="notification is-danger">
         This report is currently disabled.
       </p>
-    </transit-transfers-scenario-with-controls>
+    </tl-transit-transfers-scenario-with-controls>
   </div>
 </template>
 

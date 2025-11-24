@@ -101,7 +101,7 @@
         </div>
       </div>
       <div class="column is-two-thirds">
-        <transit-transfers-time-scoring-control
+        <tl-transit-transfers-time-scoring-control
           :transfer-scoring-breakpoints="scenario?.transferScoringBreakpoints || []"
           @changed="transferScoringBreakpointsChanged"
         />

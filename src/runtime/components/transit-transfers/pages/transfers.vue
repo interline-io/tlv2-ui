@@ -1,12 +1,12 @@
 <template>
   <div v-if="props.stationArea">
-    <transit-transfers-breadcrumbs
+    <tl-transit-transfers-breadcrumbs
       :station-area="props.stationArea"
     />
 
     <tl-title :title="`${props.stationArea.properties.name}: Transfers – Individual`" />
 
-    <transit-transfers-scenario-with-controls
+    <tl-transit-transfers-scenario-with-controls
       :station-hubs="[]"
       :station-area="props.stationArea"
       :show-transfer-controls="true"
@@ -22,7 +22,7 @@
           <span>No incoming trips match the current location and filters.</span>
         </o-notification>
         <div v-else-if="scenarioResult && scenario && station">
-          <transit-transfers-time-scoring-histogram
+          <tl-transit-transfers-time-scoring-histogram
             :scenario="scenario as any"
             :transfer-groups="scenarioResult.transferGroups"
           />
@@ -115,7 +115,7 @@
                 </td>
                 <!-- Incoming Trip: Arrival Time -->
                 <td class="td-arrival">
-                  <transit-transfers-time-event
+                  <tl-transit-transfers-time-event
                     :schedule-relationship="tripGroup.schedule_relationship"
                     :scheduled-time="tripGroup.scheduled_arrival_time"
                     :observed-time="tripGroup.observed_arrival_time"
@@ -124,7 +124,7 @@
                     <template #canceled>
                       <span class="has-text-danger is-italic">Canceled</span>
                     </template>
-                  </transit-transfers-time-event>
+                  </tl-transit-transfers-time-event>
                 </td>
                 <td />
                 <td />
@@ -177,7 +177,7 @@
                   <td />
                   <!-- Outgoing trip: departure time -->
                   <td class="td-arrival">
-                    <transit-transfers-time-event
+                    <tl-transit-transfers-time-event
                       :schedule-relationship="toTrip.schedule_relationship"
                       :scheduled-time="toTrip.scheduled_departure_time"
                       :observed-time="toTrip.observed_departure_time"
@@ -186,7 +186,7 @@
                       <template #canceled>
                         <span class="has-text-danger is-italic">Canceled</span>
                       </template>
-                    </transit-transfers-time-event>
+                    </tl-transit-transfers-time-event>
                   </td>
                   <!-- Walking Time -->
                   <template v-if="toTrip.schedule_relationship === 'CANCELED'">
@@ -298,11 +298,11 @@
           </o-notification>
         </div>
       </template>
-    </transit-transfers-scenario-with-controls>
+    </tl-transit-transfers-scenario-with-controls>
   </div>
 
   <tl-modal v-model="showMap">
-    <transit-transfers-platform-pathway
+    <tl-transit-transfers-platform-pathway
       :station="currentStation"
       :edges="transferEdges"
       :trip="showTrip"
@@ -317,7 +317,7 @@
     <p class="content">
       This form allows you to override the transfer time between two trips. You can select either a single destination stop or "All Stops" to set a manual transfer time for all transfers from the incoming trip.
     </p>
-    <transit-transfers-time-override
+    <tl-transit-transfers-time-override
       :key="overrideFromStop + overrideToStop + overrideValue"
       :from-stop="overrideFromStop"
       :to-stop="overrideToStop"

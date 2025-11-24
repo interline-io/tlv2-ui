@@ -67,7 +67,7 @@ export function toSeconds (v?: TimeString | null): number {
  * Negative values are shown in parentheses
  */
 export function secondsToDuration (seconds: number | null): string {
-  if (seconds === null || isNaN(seconds)) {
+  if (seconds === null || Number.isNaN(seconds)) {
     return ''
   }
   let neg = false

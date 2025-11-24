@@ -1,12 +1,12 @@
 <template>
-  <transit-transfers-scenario-data
+  <tl-transit-transfers-scenario-data
     ref="dataComponentRef"
     :station-hubs="stationHubs"
     :station-area="stationArea"
     @data-ready="handleDataReady"
   >
     <template #default>
-      <transit-transfers-scenario-controls
+      <tl-transit-transfers-scenario-controls
         v-if="showControls"
         :feed-version-options="feedVersionOptions"
         :scenario="(scenario as Scenario)"
@@ -42,7 +42,7 @@
         :loading="loading"
       />
     </template>
-  </transit-transfers-scenario-data>
+  </tl-transit-transfers-scenario-data>
 </template>
 
 <script setup lang="ts">

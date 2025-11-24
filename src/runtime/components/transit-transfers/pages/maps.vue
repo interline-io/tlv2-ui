@@ -1,12 +1,12 @@
 <template>
   <div v-if="props.stationArea">
-    <transit-transfers-breadcrumbs
+    <tl-transit-transfers-breadcrumbs
       :station-area="props.stationArea"
     />
 
     <tl-title :title="`${props.stationArea.properties.name}: Maps & Platforms`" />
 
-    <transit-transfers-scenario-with-controls
+    <tl-transit-transfers-scenario-with-controls
       :station-hubs="[]"
       :station-area="props.stationArea"
     >
@@ -14,7 +14,7 @@
         <o-tabs :model-value="activeTab" @update:model-value="activeTab = $event ?? 1">
           <o-tab-item label="Platforms">
             <div id="map-wrap" class="mb-4">
-              <transit-transfers-platform-map
+              <tl-transit-transfers-platform-map
                 :stops="getStopsWithService(scenario, scenarioResult, station)"
                 :station-area="props.stationArea"
                 :center="mapCenter"
@@ -26,7 +26,7 @@
               <span>No trips match the current location and filters.</span>
             </o-notification>
             <div v-else>
-              <transit-transfers-data-grid
+              <tl-transit-transfers-data-grid
                 :grid-data="getTableData(scenario, scenarioResult, station)"
                 :columns="platformsGridColumns"
                 default-sort-key="first_departure"
@@ -42,7 +42,7 @@
           </o-tab-item>
         </o-tabs>
       </template>
-    </transit-transfers-scenario-with-controls>
+    </tl-transit-transfers-scenario-with-controls>
   </div>
 </template>
 

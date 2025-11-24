@@ -1,12 +1,12 @@
 <template>
   <div v-if="props.stationArea">
-    <transit-transfers-breadcrumbs
+    <tl-transit-transfers-breadcrumbs
       :station-area="props.stationArea"
     />
 
     <tl-title :title="`${props.stationArea.properties.name}: Transfers – Summary`" />
 
-    <transit-transfers-scenario-with-controls
+    <tl-transit-transfers-scenario-with-controls
       :station-hubs="[]"
       :station-area="props.stationArea"
       :show-transfer-controls="true"
@@ -21,15 +21,15 @@
             Displaying transfers for {{ scenarioResult.transferGroups.length }} incoming trips.
           </o-notification>
 
-          <transit-transfers-time-scoring-histogram :scenario="scenario as any" :transfer-groups="scenarioResult.transferGroups" />
+          <tl-transit-transfers-time-scoring-histogram :scenario="scenario as any" :transfer-groups="scenarioResult.transferGroups" />
 
-          <transit-transfers-data-grid
+          <tl-transit-transfers-data-grid
             :grid-data="getTransferSummaries(scenario, scenarioResult)"
             :columns="transfersGridColumns"
           />
         </div>
       </template>
-    </transit-transfers-scenario-with-controls>
+    </tl-transit-transfers-scenario-with-controls>
   </div>
 </template>
 

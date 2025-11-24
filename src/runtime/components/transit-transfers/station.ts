@@ -3,7 +3,7 @@
  */
 
 import type { Point } from 'geojson'
-import { haversinePosition } from 'tlv2-ui/geom'
+import { haversinePosition } from '~/src/runtime/geom'
 import type { Graph } from './graph'
 
 /**

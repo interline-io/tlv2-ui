@@ -4,7 +4,7 @@
       For <strong>debugging</strong> purposes only. Directionality of a step may be reversed. Errors may be present.
     </o-notification>
 
-    <transit-transfers-platform-pathway-map
+    <tl-transit-transfers-platform-pathway-map
       :station="station"
       :center="mapCenter"
       :selected-pathways="selectedPathways"
