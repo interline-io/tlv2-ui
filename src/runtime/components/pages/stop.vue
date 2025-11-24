@@ -103,6 +103,7 @@
             </tl-msg-warning>
           </div>
 
+          <!-- @vue-skip -->
           <o-tabs v-model="activeTab" class="tl-tabs" type="boxed" :animated="false" @update:model-value="(value) => setTab(value || '')">
             <o-tab-item :value="tabNames.summary" label="Summary">
               <div v-if="servedRoutes">

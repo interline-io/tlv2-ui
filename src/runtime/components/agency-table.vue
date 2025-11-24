@@ -47,7 +47,7 @@ const props = withDefaults(defineProps<{
 })
 
 // Reactive state
-const search = ref<string>('')
+const search = ref<string | null>(null)
 const hasMore = ref(false)
 const error = ref<string | null>(null)
 

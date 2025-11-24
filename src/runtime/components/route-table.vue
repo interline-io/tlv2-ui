@@ -99,7 +99,7 @@ interface QueryVariables {
   limit?: number
   feed_version_sha1?: string | null
   agency_ids?: number[] | null
-  search?: string
+  search?: string | null
   route_type?: number | null
 }
 
@@ -151,7 +151,7 @@ const ROUTES_QUERY = gql`
 `
 
 // Reactive data
-const search = ref<string>('')
+const search = ref<string | null>(null)
 const selectedRouteType = ref<number | null>(null)
 const error = ref<Error | null>(null)
 const hasMore = ref<boolean>(false)

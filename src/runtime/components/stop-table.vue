@@ -123,7 +123,7 @@ interface QueryVariables {
   servicedOnly?: boolean | null
   agency_ids?: number[]
   limit?: number
-  search?: string
+  search?: string | null
   location_type?: number | null
   route_type?: number | null
 }
@@ -201,7 +201,7 @@ const STOPS_QUERY = gql`
 `
 
 // Reactive data
-const search = ref<string>('')
+const search = ref<string | null>(null)
 const selectedRouteType = ref<number | null>(null)
 const error = ref<Error | null>(null)
 const hasMore = ref<boolean>(false)

@@ -24,6 +24,7 @@
     />
 
     <div class="tl-map-panel tl-map-panel-tabs">
+      <!-- @vue-skip -->
       <o-tabs v-model="activeTab" class="tl-tabs block" position="centered" type="boxed">
         <div class="tl-tab-nav">
           <o-field grouped>
@@ -218,15 +219,18 @@
 
     <!-- Unified Options Modal -->
     <tl-modal v-model="showUnifiedOptionsModal" title="Map Options" :full-screen="true">
+      <!-- @vue-skip -->
       <o-tabs v-model="activeOptionsTab" class="tl-options-tabs" position="centered" type="boxed">
         <o-tab-item value="routes" label="Routes & Stops">
           <o-field horizontal label="Route lines">
+            <!-- @vue-skip -->
             <o-checkbox v-model="showGeneratedGeometries">
               Show stop-to-stop geometries
             </o-checkbox>
           </o-field>
 
           <o-field horizontal>
+            <!-- @vue-skip -->
             <o-checkbox v-model="showProblematicGeometries">
               Show problematic geometries
             </o-checkbox>

@@ -13,6 +13,7 @@
       >
         <div class="field">
           <label class="label">Additional Feed Versions to Merge</label>
+          <!-- @vue-skip -->
           <o-taginput
             v-model="additionalFeedVersions"
             :allow-new="true"
@@ -174,7 +175,7 @@ const exportOptions = ref<ExportOptions>({
   prefix: '',
   prefixFiles: [],
   normalizeTimezones: false,
-  simplifyShapes: '',
+  simplifyShapes: null,
   useBasicRouteTypes: false,
   setValues: {}
 })

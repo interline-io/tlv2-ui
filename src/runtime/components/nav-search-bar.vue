@@ -3,6 +3,7 @@
     :class="['navbar-item', 'has-dropdown', 'is-hoverable']"
   >
     <a class="navbar-link  is-arrowless">
+      <!-- @vue-skip -->
       <o-input
         v-model="search"
         expanded

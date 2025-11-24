@@ -9,7 +9,7 @@
     :icon-right="modelValue ? 'close-circle' : undefined"
     icon-right-clickable
     class="entity-search"
-    @update:model-value="emit('update:modelValue', $event === '' ? null : $event)"
+    @update:model-value="emit('update:modelValue', ($event === '' || $event === undefined) ? null : $event)"
     @icon-right-click="clearSearch"
   />
 </template>

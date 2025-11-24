@@ -5,9 +5,11 @@
     </tl-msg-error>
     <div v-else>
       <o-field label="Name" horizontal>
+        <!-- @vue-skip -->
         <o-input v-model="entity.name" expanded type="text" placeholder="A short name for this feed version..." />
       </o-field>
       <o-field label="Description" horizontal>
+        <!-- @vue-skip -->
         <o-input v-model="entity.description" expanded type="text" placeholder="A longer description of this feed version..." />
       </o-field>
       <div class="block is-clearfix">

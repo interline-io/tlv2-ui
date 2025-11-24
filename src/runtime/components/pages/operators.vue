@@ -8,7 +8,7 @@
 
     <!-- key is to force update -->
     <tl-operators-table
-      :key="adm0Name"
+      :key="adm0Name || 'default'"
       v-model:search="search"
       v-model:adm0-name="adm0Name"
       v-model:adm1-name="adm1Name"
@@ -49,39 +49,39 @@ const staticDescription = computed<string>(() => {
 })
 
 // Query parameter computed properties with getters and setters
-const search = computed<string | undefined>({
+const search = computed<string | undefined | null>({
   get () {
     return typeof route.query.search === 'string' ? route.query.search : undefined
   },
-  set (v: string | undefined) {
-    router.replace({ query: { ...route.query, search: v } })
+  set (v: string | undefined | null) {
+    router.replace({ query: { ...route.query, search: v || undefined } })
   }
 })
 
-const adm0Name = computed<string | undefined>({
+const adm0Name = computed<string | undefined | null>({
   get () {
     return typeof route.query.adm0_name === 'string' ? route.query.adm0_name : undefined
   },
-  set (v: string | undefined) {
-    router.replace({ query: { ...route.query, adm0_name: v } })
+  set (v: string | undefined | null) {
+    router.replace({ query: { ...route.query, adm0_name: v || undefined } })
   }
 })
 
-const adm1Name = computed<string | undefined>({
+const adm1Name = computed<string | undefined | null>({
   get () {
     return typeof route.query.adm1_name === 'string' ? route.query.adm1_name : undefined
   },
-  set (v: string | undefined) {
-    router.replace({ query: { ...route.query, adm1_name: v } })
+  set (v: string | undefined | null) {
+    router.replace({ query: { ...route.query, adm1_name: v || undefined } })
   }
 })
 
-const cityName = computed<string | undefined>({
+const cityName = computed<string | undefined | null>({
   get () {
     return typeof route.query.city_name === 'string' ? route.query.city_name : undefined
   },
-  set (v: string | undefined) {
-    router.replace({ query: { ...route.query, city_name: v } })
+  set (v: string | undefined | null) {
+    router.replace({ query: { ...route.query, city_name: v || undefined } })
   }
 })
 

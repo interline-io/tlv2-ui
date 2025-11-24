@@ -219,6 +219,7 @@
         <tl-feed-version-import :entity="entity" @update="refetchEntities" />
       </slot>
 
+      <!-- @vue-skip -->
       <o-tabs v-model="activeTab" class="tl-tabs" type="boxed" :animated="false" @update:model-value="(value) => setTab(value || '')">
         <o-tab-item :value="tabNames.timeline" label="Service coverage timeline">
           <template v-if="activeTab === tabNames.timeline">

@@ -21,6 +21,7 @@
       </o-field>
 
       <o-field label="Summary Level" class="is-expanded">
+        <!-- @vue-skip -->
         <o-select v-model="layer">
           <option v-for="(v, k) of layerInfo" :key="k" :value="k">
             {{ v.name }}
@@ -29,6 +30,7 @@
       </o-field>
 
       <o-field label="Show on Map" class="is-expanded">
+        <!-- @vue-skip -->
         <o-dropdown
           v-model="showOnMap"
           selectable

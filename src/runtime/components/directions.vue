@@ -103,9 +103,11 @@
         </o-field>
 
         <o-field addons horizontal label="Depart">
+          <!-- @vue-skip -->
           <o-datepicker
             v-model="departAtDate"
           />
+          <!-- @vue-skip -->
           <o-input
             v-model="departAtTime"
             :variant="departAtOut.length === 0 ? 'danger' : ''"

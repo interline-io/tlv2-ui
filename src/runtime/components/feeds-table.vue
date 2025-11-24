@@ -263,14 +263,14 @@ function nullBool (v: string | undefined): boolean | null {
   return null
 }
 
-function nullString (v: string | undefined): string | null {
+function nullString (v: string | undefined | null): string | null {
   if (!v || v.length === 0) {
     return null
   }
   return v
 }
 
-const search = defineModel<string>('search', { default: '' })
+const search = defineModel<string | null>('search', { default: null })
 const fetchError = defineModel<string>('fetchError', { default: '' })
 const importStatus = defineModel<string>('importStatus', { default: '' })
 const tagUnstableUrl = defineModel<boolean>('tagUnstableUrl', { default: false })
