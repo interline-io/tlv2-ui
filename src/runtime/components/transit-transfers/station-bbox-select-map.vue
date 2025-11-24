@@ -28,7 +28,7 @@
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { Map as MapLibreMap, NavigationControl } from 'maplibre-gl'
 import type { LngLatLike } from 'maplibre-gl'
-import { useBasemapLayers } from '~/composables/useBasemapLayers'
+import { useBasemapLayers } from '~/src/runtime/composables/useBasemapLayers'
 
 interface Props {
   modelValue?: string | null

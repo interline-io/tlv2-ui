@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import type { PropType } from 'vue'
-import { useAuthHeaders } from '#imports'
+import { navigateTo, useAuthHeaders } from '#imports'
 import {
   TransferOverrides,
   FeedVersionOption,
@@ -30,6 +30,8 @@ import {
   Stop,
   addStreetPathways
 } from './station'
+import { useApiEndpoint } from '../../composables/useApiEndpoint'
+import { useMixpanel } from '../../composables/useMixpanel'
 
 interface AnalystScenarioDataState {
   feedVersions: any[]
@@ -547,7 +549,7 @@ export function tryBool (value: string | boolean | undefined | null): boolean {
  */
 export function tryNumber (value: string | number | undefined | null): number | null {
   const f = Number(value)
-  if (isNaN(f)) {
+  if (Number.isNaN(f)) {
     return null
   }
   return f

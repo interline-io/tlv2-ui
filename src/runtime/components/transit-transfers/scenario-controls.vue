@@ -205,6 +205,8 @@ import type { Scenario, ScenarioResult,
   FeedVersionOption } from './scenario'
 import type { Station } from './station'
 import { Profiles } from './graph'
+import { computed, ref, watch } from 'vue'
+import { useMixpanel } from '../../composables/useMixpanel'
 
 interface Props {
   scenario?: Scenario

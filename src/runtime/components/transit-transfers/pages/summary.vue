@@ -34,6 +34,7 @@
 </template>
 
 <script setup lang="ts">
+import { useRoute } from '#app'
 import type { StationHub } from '../types'
 
 interface Props {

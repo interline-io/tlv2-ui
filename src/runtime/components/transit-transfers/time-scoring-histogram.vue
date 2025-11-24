@@ -12,6 +12,7 @@ import {
 } from './scenario'
 import type { Scenario } from './scenario'
 import { binnedCounts, type BinCount } from './bins'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 
 interface Transfer {
   buffer_time: number

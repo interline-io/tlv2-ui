@@ -333,6 +333,7 @@
 import { ref } from 'vue'
 import { secondsToDuration, secondsToString } from '../../utils/time-format'
 import type { StationHub } from '../types'
+import { navigateTo, useRoute } from '#app'
 
 interface Props {
   stationArea: StationHub

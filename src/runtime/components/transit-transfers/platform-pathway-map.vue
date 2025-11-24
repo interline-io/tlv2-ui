@@ -9,9 +9,10 @@
 <script setup lang="ts">
 import { Map as MaplibreMap, FullscreenControl, NavigationControl } from 'maplibre-gl'
 import type { Feature } from 'geojson'
-import { useBasemapLayers } from '~/composables/useBasemapLayers'
+import { useBasemapLayers } from '~/src/runtime/composables/useBasemapLayers'
 import type { Station, Pathway } from './station'
 import { PathwayModeIcons } from './pathway-icons'
+import { onMounted, ref, watch } from 'vue'
 
 const LEVEL_COLORS = [
   '#d53e4f',
