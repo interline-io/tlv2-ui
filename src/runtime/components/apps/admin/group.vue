@@ -65,8 +65,10 @@
           </div>
         </o-field>
 
-        <o-field v-if="showActions" label="Your permissions" horizontal :title="`You are logged in as ${user.name} (${user.email})`">
-          <tl-apps-admin-perm-list :actions="group.actions" />
+        <o-field v-if="showActions" label="Your permissions" horizontal>
+          <div :title="`You are logged in as ${user.name} (${user.email})`">
+            <tl-apps-admin-perm-list :actions="group.actions" />
+          </div>
         </o-field>
 
         <div v-if="showMembers">
@@ -128,84 +130,125 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed } from 'vue'
 import { useUser } from '../../../composables/useUser'
-import Loadable from './loadable'
-import AuthzMixin from './authz-mixin'
+import { useAdminFetch, fetchAdmin } from './useAdminApi'
+import { useAuthz } from './useAuthz'
 
-export default {
-  mixins: [AuthzMixin, Loadable],
-  props: {
-    id: { type: [String, Number], required: true },
-    showFeeds: { type: Boolean, default: true },
-    showActions: { type: Boolean, default: true },
-    showTenant: { type: Boolean, default: true },
-    showMembers: { type: Boolean, default: true },
-    editable: { type: Boolean, default: true }
-  },
-  emits: ['changed'],
-  data () {
-    return {
-      showAssignTenant: false,
-      group: null,
-      pending: false,
-      user: useUser()
-    }
-  },
-  mounted () { this.getData() },
-  methods: {
-    permLevels (lvl) {
-      return {
-        can_edit: ['manager', 'editor'].includes(lvl),
-        can_view: ['manager', 'editor', 'viewer'].includes(lvl),
-        can_edit_members: ['manager'].includes(lvl),
-        can_create_feed: ['manager', 'editor'].includes(lvl),
-        can_delete_feed: ['manager', 'editor'].includes(lvl),
-        can_set_tenant: false
-      }
-    },
-    async getData () {
-      return await this.fetchAdmin(`/groups/${this.id}`).then((data) => {
-        this.group = data
-      })
-    },
-    async saveName (value) {
-      console.log('saveName', value)
-      await this.fetchAdmin(`/groups/${this.id}`, { name: value }, 'POST')
-      this.changed()
-    },
-    async addPermissions (relation, value) {
-      console.log('addPermissions:', relation, value)
-      const data = {
-        id: String(value.id),
-        type: this.ObjectTypes(value.type),
-        ref_relation: this.Relations(value.refrel),
-        relation: this.Relations(relation)
-      }
-      await this.fetchAdmin(`/groups/${this.id}/permissions`, data, 'POST')
-      this.getData()
-    },
-    async removePermissions (relation, value) {
-      console.log('removePermissions:', relation, value)
-      const data = {
-        id: String(value.id),
-        type: this.ObjectTypes(value.type),
-        ref_relation: this.Relations(value.refrel),
-        relation: this.Relations(relation)
-      }
-      await this.fetchAdmin(`/groups/${this.id}/permissions`, data, 'DELETE')
-      this.getData()
-    },
-    async setTenant (value) {
-      console.log('setTenant', value)
-      const data = { tenant_id: value.id }
-      await this.fetchAdmin(`/groups/${this.id}/tenant`, data, 'POST')
-      this.getData()
-    },
-    changed () {
-      this.getData()
-      this.$emit('changed')
-    }
+const props = withDefaults(defineProps<{
+  id: string | number
+  showFeeds?: boolean
+  showActions?: boolean
+  showTenant?: boolean
+  showMembers?: boolean
+  editable?: boolean
+}>(), {
+  showFeeds: true,
+  showActions: true,
+  showTenant: true,
+  showMembers: true,
+  editable: true
+})
+
+const emit = defineEmits<{
+  (e: 'changed'): void
+}>()
+
+const showAssignTenant = ref(false)
+const user = useUser()
+
+const { data: group, pending: fetchPending, error: fetchError, refresh } = await useAdminFetch<any>(() => `/groups/${props.id}`)
+const { getObjectType, getRelation } = useAuthz()
+
+const submitting = ref(false)
+const actionError = ref<any>(null)
+
+const loading = computed({
+  get: () => fetchPending.value || submitting.value,
+  set: (_v) => { /* handle if needed */ }
+})
+
+const error = computed(() => fetchError.value || actionError.value)
+
+const permLevels = (lvl: string) => {
+  return {
+    can_edit: ['manager', 'editor'].includes(lvl),
+    can_view: ['manager', 'editor', 'viewer'].includes(lvl),
+    can_edit_members: ['manager'].includes(lvl),
+    can_create_feed: ['manager', 'editor'].includes(lvl),
+    can_delete_feed: ['manager', 'editor'].includes(lvl),
+    can_set_tenant: false
   }
+}
+
+const saveName = async (value: string) => {
+  console.log('saveName', value)
+  submitting.value = true
+  try {
+    await fetchAdmin(`/groups/${props.id}`, { method: 'POST', body: { name: value } })
+    changed()
+  } catch (e) {
+    actionError.value = e
+  } finally {
+    submitting.value = false
+  }
+}
+
+const addPermissions = async (relation: string, value: any) => {
+  console.log('addPermissions:', relation, value)
+  const data = {
+    id: String(value.id),
+    type: getObjectType(value.type),
+    ref_relation: getRelation(value.refrel),
+    relation: getRelation(relation)
+  }
+  submitting.value = true
+  try {
+    await fetchAdmin(`/groups/${props.id}/permissions`, { method: 'POST', body: data })
+    refresh()
+  } catch (e) {
+    actionError.value = e
+  } finally {
+    submitting.value = false
+  }
+}
+
+const removePermissions = async (relation: string, value: any) => {
+  console.log('removePermissions:', relation, value)
+  const data = {
+    id: String(value.id),
+    type: getObjectType(value.type),
+    ref_relation: getRelation(value.refrel),
+    relation: getRelation(relation)
+  }
+  submitting.value = true
+  try {
+    await fetchAdmin(`/groups/${props.id}/permissions`, { method: 'DELETE', body: data })
+    refresh()
+  } catch (e) {
+    actionError.value = e
+  } finally {
+    submitting.value = false
+  }
+}
+
+const setTenant = async (value: any) => {
+  console.log('setTenant', value)
+  const data = { tenant_id: value.id }
+  submitting.value = true
+  try {
+    await fetchAdmin(`/groups/${props.id}/tenant`, { method: 'POST', body: data })
+    refresh()
+  } catch (e) {
+    actionError.value = e
+  } finally {
+    submitting.value = false
+  }
+}
+
+const changed = () => {
+  refresh()
+  emit('changed')
 }
 </script>

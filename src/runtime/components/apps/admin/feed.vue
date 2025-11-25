@@ -58,8 +58,10 @@
         </tl-apps-admin-input>
       </o-field>
 
-      <o-field label="Your permissions" horizontal :title="`You are logged in as ${user.name} (${user.email})`">
-        <tl-apps-admin-perm-list :actions="feed?.actions" />
+      <o-field label="Your permissions" horizontal>
+        <div :title="`You are logged in as ${user.name} (${user.email})`">
+          <tl-apps-admin-perm-list :actions="feed?.actions" />
+        </div>
       </o-field>
 
       <tl-modal
@@ -77,39 +79,51 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed } from 'vue'
 import { useUser } from '../../../composables/useUser'
-import Loadable from './loadable'
+import { useAdminFetch, fetchAdmin } from './useAdminApi'
 
-export default {
-  mixins: [Loadable],
-  props: {
-    id: { type: [String, Number], required: true }
-  },
-  emits: ['changed'],
-  data () {
-    return {
-      feed: null,
-      showAssignGroup: false,
-      user: useUser()
-    }
-  },
-  mounted () { this.getData() },
-  methods: {
-    async getData () {
-      return await this.fetchAdmin(`/feeds/${this.id}`).then((data) => {
-        this.feed = data
-      })
-    },
-    async setGroup (value) {
-      const data = { group_id: value.id }
-      await this.fetchAdmin(`/feeds/${this.id}/group`, data, 'POST')
-      this.getData()
-    },
-    changed () {
-      this.getData()
-      this.$emit('changed')
-    }
+const props = defineProps<{
+  id: string | number
+}>()
+
+const emit = defineEmits<{
+  (e: 'changed'): void
+}>()
+
+const showAssignGroup = ref(false)
+const user = useUser()
+
+const changed = () => {
+  refresh()
+  emit('changed')
+}
+
+const { data: feed, pending: fetchPending, error: fetchError, refresh } = useAdminFetch<any>(() => `/feeds/${props.id}`)
+
+const submitting = ref(false)
+const actionError = ref<any>(null)
+
+const loading = computed({
+  get: () => fetchPending.value || submitting.value,
+  set: (_v) => { /* handle if needed */ }
+})
+
+const error = computed(() => fetchError.value || actionError.value)
+
+const setGroup = async (value: any) => {
+  const data = { group_id: value.id }
+  submitting.value = true
+  try {
+    await fetchAdmin(`/feeds/${props.id}/group`, { method: 'POST', body: data })
+    changed()
+  } catch (e) {
+    actionError.value = e
+  } finally {
+    submitting.value = false
   }
 }
+
+defineExpose({ changed })
 </script>
