@@ -1,25 +1,25 @@
 export const TLV2_ROUTE_KEYS = [
   // Transfers
-  'transitTransfers',
-  'transitTransfers-stationKey-maps',
-  'transitTransfers-stationKey-routes',
-  'transitTransfers-stationKey-transfers',
-  'transitTransfers-stationKey-transfersummary',
-  'transitTransfers-stationKey-transferscomparison',
+  'apps-transfers',
+  'apps-transfers-stationKey-maps',
+  'apps-transfers-stationKey-routes',
+  'apps-transfers-stationKey-transfers',
+  'apps-transfers-stationKey-transfersummary',
+  'apps-transfers-stationKey-transferscomparison',
 
   // Editor
-  'stationEditor',
-  'stationEditor-feedKey-feedVersionKey-stations',
-  'stationEditor-feedKey-feedVersionKey-stations-new',
-  'stationEditor-feedKey-feedVersionKey-stations-stop-associations',
-  'stationEditor-feedVersionKey-export',
-  'stationEditor-feedKey-feedVersionKey-stations-stationKey',
-  'stationEditor-feedKey-feedVersionKey-stations-stationKey-edit',
-  'stationEditor-feedKey-feedVersionKey-stations-stationKey-stops',
-  'stationEditor-feedKey-feedVersionKey-stations-stationKey-pathways',
-  'stationEditor-feedKey-feedVersionKey-stations-stationKey-diagram',
-  'stationEditor-feedKey-feedVersionKey-stations-stationKey-levels-new',
-  'stationEditor-feedKey-feedVersionKey-stations-stationKey-levels-levelKey-edit'
+  'apps-stations',
+  'apps-stations-feedKey-feedVersionKey-stations',
+  'apps-stations-feedKey-feedVersionKey-stations-new',
+  'apps-stations-feedKey-feedVersionKey-stations-stop-associations',
+  'apps-stations-feedKey-feedVersionKey-export',
+  'apps-stations-feedKey-feedVersionKey-stations-stationKey',
+  'apps-stations-feedKey-feedVersionKey-stations-stationKey-edit',
+  'apps-stations-feedKey-feedVersionKey-stations-stationKey-stops',
+  'apps-stations-feedKey-feedVersionKey-stations-stationKey-pathways',
+  'apps-stations-feedKey-feedVersionKey-stations-stationKey-diagram',
+  'apps-stations-feedKey-feedVersionKey-stations-stationKey-levels-new',
+  'apps-stations-feedKey-feedVersionKey-stations-stationKey-levels-levelKey-edit'
 ] as const
 
 export type Tlv2RouteKey = typeof TLV2_ROUTE_KEYS[number]

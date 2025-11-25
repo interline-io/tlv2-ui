@@ -209,7 +209,7 @@ watch(prefixFilesInput, (newVal: string) => {
 // Methods
 const handleCancel = () => {
   router.push({
-    name: resolve('stationEditor-feedKey-feedVersionKey-stations'),
+    name: resolve('apps-stations-feedKey-feedVersionKey-stations'),
     params: {
       feedKey: props.feedKey,
       feedVersionKey: props.feedVersionKey

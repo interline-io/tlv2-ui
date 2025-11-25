@@ -42,8 +42,8 @@ const shorteners: nameVal = {
 
 const routeTags: nameOpts = {
   'editor-feedKey': 'Feed',
-  'stationEditor-feedVersionKey': 'Version',
-  'stationEditor-feedKey-feedVersionKey-stations-stationKey': 'Station',
+  'apps-stations-feedVersionKey': 'Version',
+  'apps-stations-feedKey-feedVersionKey-stations-stationKey': 'Station',
   'feeds-feedKey': 'Feed',
   'feeds-feedKey-versions-feedVersionKey': 'Version',
   'routes-routeKey': 'Route',
