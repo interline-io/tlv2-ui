@@ -46,6 +46,11 @@ interface FeedData {
   id: number
   onestop_id: string
   name?: string
+  feed_state?: {
+    feed_version?: {
+      id: number
+    }
+  }
   feed_versions: FeedVersionData[]
 }
 
@@ -222,6 +227,11 @@ fragment feed on Feed {
   id
   onestop_id
   name
+  feed_state {
+    feed_version {
+      id
+    }
+  }
   feed_versions(limit:300) {
     id
     sha1
@@ -248,14 +258,14 @@ fragment feed on Feed {
   }
 }
 
-query analystFeedQuery{
-  feeds {
+query analystFeedQuery($geometry: Polygon) {
+  feeds(where: { within: $geometry }) {
     ...feed
   }
 }`
 
 export const analystStopQuery = gql`
-query analystStopQuery($feed_version_ids: [Int!]!, $geometry: Polygon!) {
+query analystStopQuery($feed_version_ids: [Int!], $geometry: Polygon!) {
     feed_versions(ids: $feed_version_ids) {
       stops(where: { within: $geometry }) {
         id

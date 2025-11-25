@@ -35,6 +35,7 @@ import { useMixpanel } from '../../../composables/useMixpanel'
 
 interface AnalystScenarioDataState {
   feedVersions: any[]
+  activeFeedVersionIds: number[]
   sharedFeedVersions: any[]
   stopStopTimes: any[]
   stops: Stop[]
@@ -64,6 +65,7 @@ export default {
   data (): AnalystScenarioDataState {
     return {
       feedVersions: [],
+      activeFeedVersionIds: [],
       sharedFeedVersions: [],
       stopStopTimes: [],
       stops: [],
@@ -79,10 +81,22 @@ export default {
       error (this: any, e: Error) {
         this.setError(e)
       },
+      skip (this: any): boolean {
+        return !this.stationArea || !this.stationArea.geometry
+      },
+      variables (this: any): { geometry: any } {
+        return {
+          geometry: this.stationArea?.geometry
+        }
+      },
       update (this: any, data: any) {
         const feeds = data.feeds
         const fvs: any[] = []
+        const activeIds: number[] = []
         for (const feed of feeds) {
+          if (feed.feed_state?.feed_version?.id) {
+            activeIds.push(feed.feed_state.feed_version.id)
+          }
           for (const fv of feed.feed_versions) {
             if (fv.feed_version_gtfs_import?.success === true) {
               fvs.push(fv)
@@ -90,6 +104,7 @@ export default {
           }
         }
         this.feedVersions = fvs
+        this.activeFeedVersionIds = activeIds
       }
     },
     analystStopQuery: {
@@ -98,13 +113,14 @@ export default {
         this.setError(e)
       },
       skip (this: any): boolean {
-        return !this.stationArea || !this.stationArea.geometry || this.scenario?.selectedFeedVersions.length === 0
+        return !this.stationArea || !this.stationArea.geometry
       },
       variables (this: any): { feed_version_ids: number[], geometry: any } {
+        const ids = this.scenario?.selectedFeedVersions.map((s: any) => {
+          return s.id
+        }).filter((s: any) => { return s })
         return {
-          feed_version_ids: this.scenario?.selectedFeedVersions.map((s: any) => {
-            return s.id
-          }).filter((s: any) => { return s }),
+          feed_version_ids: ids,
           geometry: this.stationArea?.geometry
         }
       },
@@ -140,34 +156,42 @@ export default {
     },
     scenario (): Scenario {
       const query = (this as any).$route.query as Record<string, any>
-
-      // Convert fvs to fvos
-      const rgFvos = this.feedVersions
-        .slice(0)
-        .filter((a: any) => { return a.feed.onestop_id === 'RG' })
-        .map((fv: any) => {
-          return new SelectedFeedVersion({
-            id: fv.id,
-            serviceDate: feedVersionDefaultDate(fv) || ''
-          })
-        })
-      const defaultFvo = rgFvos.length > 0 && rgFvos ? rgFvos[0] : undefined
       const fvos: any[] = []
 
       // Process query params
       const paramFvos = (turnStringOrArrayIntoArray(query.selectedFeedVersions) || [])
         .map((s: string) => {
           const a = (s || '').split(':')
+          const id = Number.parseInt(a[0] || '0')
+          let date = a.length > 1 ? a[1] : undefined
+
+          if (!date) {
+            const fv = this.feedVersions.find((f: any) => f.id === id)
+            if (fv) {
+              date = feedVersionDefaultDate(fv) || undefined
+            }
+          }
+
           return new SelectedFeedVersion({
-            id: Number.parseInt(a[0] || '0'),
-            serviceDate: a.length > 1 ? a[1] : (defaultFvo?.serviceDate)
+            id: id,
+            serviceDate: date || ''
           })
         })
 
       if (paramFvos.length > 0) {
         fvos.push(...paramFvos)
-      } else if (rgFvos.length > 0) {
-        fvos.push(rgFvos[0])
+      } else {
+        console.log('Defaulting to active feed versions:', this.activeFeedVersionIds)
+        for (const id of this.activeFeedVersionIds) {
+          const fv = this.feedVersions.find((f: any) => f.id === id)
+          if (fv) {
+            console.log('Adding default active feed version:', fv.id, fv.feed.onestop_id)
+            fvos.push(new SelectedFeedVersion({
+              id: fv.id,
+              serviceDate: feedVersionDefaultDate(fv) || ''
+            }))
+          }
+        }
       }
 
       // Set transfer scoring breakpoints
