@@ -18,9 +18,14 @@
 <script>
 import { navigateTo } from '#imports'
 import StationMixin from './station-mixin'
+import { useRouteResolver } from '../../composables/useRouteResolver'
 
 export default {
   mixins: [StationMixin],
+  setup () {
+    const { resolve } = useRouteResolver()
+    return { resolve }
+  },
   head: {
     title: 'Editor: New Level'
   },
@@ -28,7 +33,7 @@ export default {
     createLevelHandler (level) {
       this.station.createLevel(this.$apollo, level).then(() => {
         navigateTo({
-          name: this.editorRoutes.stationIndex,
+          name: this.resolve('editor-feedKey-feedVersionKey-stations-stationKey'),
           params: {
             feedKey: this.feedKey,
             feedVersionKey: this.feedVersionKey,
@@ -39,7 +44,7 @@ export default {
     },
     cancelHandler () {
       navigateTo({
-        name: this.editorRoutes.stationIndex,
+        name: this.resolve('editor-feedKey-feedVersionKey-stations-stationKey'),
         params: {
           feedKey: this.feedKey,
           feedVersionKey: this.feedVersionKey,

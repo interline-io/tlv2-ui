@@ -669,10 +669,10 @@ export function feedVersionDefaultDate (fv: FeedVersionData): string | null {
 // ============================================================================
 
 export class TransferOverrides {
-  #m: Map<number, Map<number, number>>
+  _m: Map<number, Map<number, number>>
 
   constructor (v?: string) {
-    this.#m = new Map()
+    this._m = new Map()
     for (const elem of (v || '').split(',')) {
       const s = elem.split('|')
       if (s.length !== 3) {
@@ -691,26 +691,26 @@ export class TransferOverrides {
     const a = (fromStop === '*' ? -1 : Number.parseInt(String(fromStop)))
     const b = (toStop === '*' ? -1 : Number.parseInt(String(toStop)))
     const c = Number.parseInt(String(t))
-    const sm = this.#m.get(a) || new Map()
+    const sm = this._m.get(a) || new Map()
     sm.set(b, c)
-    this.#m.set(a, sm)
+    this._m.set(a, sm)
   }
 
   unset (fromStop: string | number, toStop: string | number): void {
     const a = (fromStop === '*' ? -1 : Number.parseInt(String(fromStop)))
     const b = (toStop === '*' ? -1 : Number.parseInt(String(toStop)))
-    const sm = this.#m.get(a) || new Map()
+    const sm = this._m.get(a) || new Map()
     sm.delete(b)
     sm.delete(-1)
-    this.#m.set(a, sm)
+    this._m.set(a, sm)
     if (a === -1) {
-      this.#m.delete(-1)
+      this._m.delete(-1)
     }
   }
 
   get (fromStop: number, toStop: number): number | null {
     // -1 is *
-    const a = this.#m.get(fromStop) || this.#m.get(-1)
+    const a = this._m.get(fromStop) || this._m.get(-1)
     if (!a) {
       return null
     }
@@ -719,7 +719,7 @@ export class TransferOverrides {
 
   getQueryString (): string {
     const a: string[] = []
-    for (const [k, v] of this.#m.entries()) {
+    for (const [k, v] of this._m.entries()) {
       const skey = (k === -1 ? '*' : String(k))
       for (const [subk, subv] of v.entries()) {
         const subkey = (subk === -1 ? '*' : String(subk))

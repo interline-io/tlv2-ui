@@ -44,15 +44,17 @@ export default {
     },
     handleError (response: any) {
       if (!response.ok) {
-        console.log('request failed', response.status, response.statusText)
+        console.error('request failed', response.status, response.statusText)
         throw new Error(`${response.status}: ${response.statusText || 'request failed'}`)
       } else {
         return response.json()
       }
     },
     setError (e: any) {
+      console.error(e)
       this.error = e
       this.loading = false
+      throw e
     }
   }
 }

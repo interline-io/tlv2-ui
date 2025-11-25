@@ -5,24 +5,27 @@
     </slot>
 
     <div class="buttons is-right">
-      <nuxt-link
-        :to="{ name: editorRoutes.stationsNew, params: { feedKey, feedVersionKey } }"
+      <tl-link
+        route-key="editor-feedKey-feedVersionKey-stations-new"
+        :to="{ params: { feedKey, feedVersionKey } }"
         class="button is-primary"
       >
         New Station
-      </nuxt-link>
-      <nuxt-link
-        :to="{ name: editorRoutes.stationsStopAssociations, params: { feedKey, feedVersionKey } }"
+      </tl-link>
+      <tl-link
+        route-key="editor-feedKey-feedVersionKey-stations-stop-associations"
+        :to="{ params: { feedKey, feedVersionKey } }"
         class="button is-primary"
       >
         Review stop ID associations
-      </nuxt-link>
-      <nuxt-link
-        :to="{ name: editorRoutes.export, params: { feedKey, feedVersionKey } }"
+      </tl-link>
+      <tl-link
+        route-key="editor-feedKey-feedVersionKey-export"
+        :to="{ params: { feedKey, feedVersionKey } }"
         class="button is-primary"
       >
         Export GTFS
-      </nuxt-link>
+      </tl-link>
     </div>
     <p class="content">
       Or select an existing station in this feed version:
@@ -37,11 +40,12 @@
       :show-selected-route-type="false"
     >
       <template #stopName="slotProps">
-        <nuxt-link
-          :to="{ name: editorRoutes.stationIndex, params: { feedKey, feedVersionKey, stationKey: slotProps.stop.stop_id } }"
+        <tl-link
+          route-key="editor-feedKey-feedVersionKey-stations-stationKey"
+          :to="{ params: { feedKey, feedVersionKey, stationKey: slotProps.stop.stop_id } }"
         >
           {{ slotProps.stop.stop_name }}
-        </nuxt-link>
+        </tl-link>
       </template>
     </tl-stop-table>
     <!-- <div v-for="station in stations" :key="station.id" class="box is-clearfix">

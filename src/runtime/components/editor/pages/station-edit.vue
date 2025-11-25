@@ -19,15 +19,20 @@
 <script>
 import { navigateTo } from '#imports'
 import StationMixin from './station-mixin'
+import { useRouteResolver } from '../../composables/useRouteResolver'
 
 export default {
   mixins: [StationMixin],
+  setup () {
+    const { resolve } = useRouteResolver()
+    return { resolve }
+  },
   methods: {
     updateStationHandler (station) {
       this.station.updateStation(this.$apollo, station.stop)
         .then(() => {
           navigateTo({
-            name: this.editorRoutes.stationIndex,
+            name: this.resolve('editor-feedKey-feedVersionKey-stations-stationKey'),
             params: {
               feedKey: this.feedKey,
               feedVersionKey: this.feedVersionKey,
@@ -51,7 +56,7 @@ export default {
       this.station.deleteStation(this.$apollo, station)
         .then(() => {
           navigateTo({
-            name: this.editorRoutes.stations,
+            name: this.resolve('editor-feedKey-feedVersionKey-stations'),
             params: {
               feedKey: this.feedKey,
               feedVersionKey: this.feedVersionKey
@@ -62,7 +67,7 @@ export default {
     },
     cancelHandler () {
       navigateTo({
-        name: this.editorRoutes.stationIndex,
+        name: this.resolve('editor-feedKey-feedVersionKey-stations-stationKey'),
         params: {
           feedKey: this.feedKey,
           feedVersionKey: this.feedVersionKey,

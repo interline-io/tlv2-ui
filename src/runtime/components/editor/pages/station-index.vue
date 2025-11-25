@@ -9,12 +9,13 @@
     <div class="box">
       <h4 class="title is-4 is-clearfix">
         Station Info
-        <nuxt-link
-          :to="{ name: editorRoutes.stationEdit, params: { feedKey, feedVersionKey, stationKey } }"
+        <tl-link
+          route-key="editor-feedKey-feedVersionKey-stations-stationKey-edit"
+          :to="{ params: { feedKey, feedVersionKey, stationKey } }"
           class="button is-primary is-outlined is-pulled-right right-pad"
         >
           Edit Station Info
-        </nuxt-link>
+        </tl-link>
       </h4>
       <div class="is-clearfix">
         <div class="is-pulled-right">
@@ -51,12 +52,13 @@
       <div>
         <tl-editor-station-levels-viewer-sorter :levels="station.levels" :station="station">
           <template #bottom-button-bar>
-            <nuxt-link
-              :to="{ name: editorRoutes.levelNew, params: { feedKey, feedVersionKey, stationKey } }"
+            <tl-link
+              route-key="editor-feedKey-feedVersionKey-stations-stationKey-levels-new"
+              :to="{ params: { feedKey, feedVersionKey, stationKey } }"
               class="button is-primary is-outlined is-pulled-right right-pad"
             >
               New Level
-            </nuxt-link>
+            </tl-link>
           </template>
         </tl-editor-station-levels-viewer-sorter>
       </div>

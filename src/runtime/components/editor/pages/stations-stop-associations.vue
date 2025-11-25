@@ -18,11 +18,12 @@
         label="Station"
       >
         <template v-if="props.row.parent">
-          <nuxt-link
-            :to="{ name: editorRoutes.stationIndex, params: { feedKey, feedVersionKey, stationKey: props.row.parent.stop_id } }"
+          <tl-link
+            route-key="editor-feedKey-feedVersionKey-stations-stationKey"
+            :to="{ params: { feedKey, feedVersionKey, stationKey: props.row.parent.stop_id } }"
           >
             {{ props.row.parent.stop_name }}
-          </nuxt-link>
+          </tl-link>
         </template>
       </o-table-column>
 
@@ -85,11 +86,12 @@
         label="Actions"
       >
         <template v-if="props.row.parent">
-          <nuxt-link
-            :to="{ name: editorRoutes.stationPathways, params: { feedKey, feedVersionKey, stationKey: props.row.parent.stop_id }, query: { selectedStop: props.row.id } }"
+          <tl-link
+            route-key="editor-feedKey-feedVersionKey-stations-stationKey-pathways"
+            :to="{ params: { feedKey, feedVersionKey, stationKey: props.row.parent.stop_id }, query: { selectedStop: props.row.id } }"
           >
             Re-assign stop
-          </nuxt-link>
+          </tl-link>
         </template>
       </o-table-column>
     </o-table>
@@ -145,6 +147,10 @@ export default {
   mixins: [FeedMixin],
   props: {
     client: { type: String, default: 'default' }
+  },
+  setup () {
+    const { resolve } = useRouteResolver()
+    return { resolve }
   },
   data () {
     return {

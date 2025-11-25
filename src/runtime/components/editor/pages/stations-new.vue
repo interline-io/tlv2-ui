@@ -17,9 +17,14 @@
 import { navigateTo } from '#imports'
 import { Station, Stop } from '../station'
 import FeedMixin from './feed-mixin'
+import { useRouteResolver } from '../../composables/useRouteResolver'
 
 export default {
   mixins: [FeedMixin],
+  setup () {
+    const { resolve } = useRouteResolver()
+    return { resolve }
+  },
   head: {
     title: 'Editor: New Station'
   },
@@ -33,7 +38,7 @@ export default {
       station.createStation(this.$apollo, station.stop)
         .then(() => {
           navigateTo({
-            name: this.editorRoutes.stationIndex,
+            name: this.resolve('editor-feedKey-feedVersionKey-stations-stationKey'),
             params: {
               feedKey: this.feedKey,
               feedVersionKey: this.feedVersionKey,
@@ -45,7 +50,7 @@ export default {
     },
     cancelHandler () {
       navigateTo({
-        name: this.editorRoutes.stations,
+        name: this.resolve('editor-feedKey-feedVersionKey-stations'),
         params: {
           feedKey: this.feedKey,
           feedVersionKey: this.feedVersionKey
