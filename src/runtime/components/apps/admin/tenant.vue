@@ -35,7 +35,7 @@
         <div class="field">
           <div class="field is-grouped is-grouped-multiline">
             <tl-apps-admin-group-item
-              v-for="group of nameSort(tenant.groups || [])"
+              v-for="group of (nameSort(tenant.groups || []) as any[])"
               :key="group.id"
               :value="group"
             />
@@ -43,8 +43,10 @@
         </div>
       </o-field>
 
-      <o-field label="Your permissions" horizontal :title="`You are logged in as ${user.name} (${user.email})`">
-        <tl-apps-admin-perm-list :actions="tenant.actions" />
+      <o-field label="Your permissions" horizontal>
+        <div :title="`You are logged in as ${user.name} (${user.email})`">
+          <tl-apps-admin-perm-list :actions="tenant.actions" />
+        </div>
       </o-field>
 
       <tl-apps-admin-entrel-list
@@ -75,79 +77,116 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed } from 'vue'
 import { useUser } from '../../../composables/useUser'
 import { nameSort } from '../../../lib/filters'
-import Loadable from './loadable'
-import AuthzMixin from './authz-mixin'
+import { useAdminFetch, fetchAdmin } from './useAdminApi'
+import { useAuthz } from './useAuthz'
 
-export default {
-  mixins: [AuthzMixin, Loadable],
-  props: {
-    id: { type: [String, Number], required: true },
-    filterAction: { type: String, default: null }
-  },
-  emits: ['changed'],
-  data () {
-    return {
-      tenant: null,
-      user: useUser()
-    }
-  },
-  mounted () { this.getData() },
-  methods: {
-    nameSort,
-    permLevels (lvl) {
-      return {
-        can_edit: ['admin'].includes(lvl),
-        can_view: ['admin', 'member'].includes(lvl),
-        can_edit_members: ['admin'].includes(lvl),
-        can_create_org: ['admin'].includes(lvl),
-        can_delete_org: ['admin'].includes(lvl)
-      }
-    },
-    async getData () {
-      return await this.fetchAdmin(`/tenants/${this.id}`).then((data) => {
-        this.tenant = data
-      })
-    },
-    async saveName (value) {
-      console.log('saveName', value)
-      await this.fetchAdmin(`/tenants/${this.id}`, { name: value }, 'POST')
-      this.changed()
-    },
-    async addPermissions (relation, value) {
-      console.log('addPermissions:', relation, value)
-      const data = {
-        id: value.id,
-        type: this.ObjectTypes(value.type),
-        ref_relation: this.Relations(value.refrel),
-        relation: this.Relations(relation)
-      }
-      await this.fetchAdmin(`/tenants/${this.id}/permissions`, data, 'POST')
-      this.getData()
-    },
-    async removePermissions (relation, value) {
-      console.log('removePermissions:', relation, value)
-      const data = {
-        id: value.id,
-        type: this.ObjectTypes(value.type),
-        ref_relation: this.Relations(value.refrel),
-        relation: this.Relations(relation)
-      }
-      await this.fetchAdmin(`/tenants/${this.id}/permissions`, data, 'DELETE')
-      this.getData()
-    },
-    async createGroup () {
-      console.log('createGroup')
-      const data = { group: { name: 'New Group' } }
-      await this.fetchAdmin(`/tenants/${this.id}/groups`, data, 'POST')
-      this.changed()
-    },
-    changed () {
-      this.getData()
-      this.$emit('changed')
-    }
+const props = withDefaults(defineProps<{
+  id: string | number
+  filterAction?: string | null
+}>(), {
+  filterAction: null
+})
+
+const emit = defineEmits<{
+  (e: 'changed'): void
+}>()
+
+const user = useUser()
+const { getObjectType, getRelation } = useAuthz()
+
+const { data: tenant, pending: fetchPending, error: fetchError, refresh } = await useAdminFetch<any>(() => `/tenants/${props.id}`)
+
+const submitting = ref(false)
+const actionError = ref<any>(null)
+
+const loading = computed({
+  get: () => fetchPending.value || submitting.value,
+  set: (_v) => { /* handle if needed */ }
+})
+
+const error = computed(() => fetchError.value || actionError.value)
+
+const permLevels = (lvl: string) => {
+  return {
+    can_edit: ['admin'].includes(lvl),
+    can_view: ['admin', 'member'].includes(lvl),
+    can_edit_members: ['admin'].includes(lvl),
+    can_create_org: ['admin'].includes(lvl),
+    can_delete_org: ['admin'].includes(lvl)
   }
+}
+
+const saveName = async (value: string) => {
+  console.log('saveName', value)
+  submitting.value = true
+  try {
+    await fetchAdmin(`/tenants/${props.id}`, { method: 'POST', body: { name: value } })
+    changed()
+  } catch (e) {
+    actionError.value = e
+  } finally {
+    submitting.value = false
+  }
+}
+
+const createGroup = async () => {
+  console.log('createGroup')
+  const data = { group: { name: 'New Group' } }
+  submitting.value = true
+  try {
+    await fetchAdmin(`/tenants/${props.id}/groups`, { method: 'POST', body: data })
+    changed()
+  } catch (e) {
+    actionError.value = e
+  } finally {
+    submitting.value = false
+  }
+}
+
+const addPermissions = async (relation: string, value: any) => {
+  console.log('addPermissions:', relation, value)
+  const data = {
+    id: value.id,
+    type: getObjectType(value.type),
+    ref_relation: getRelation(value.refrel),
+    relation: getRelation(relation)
+  }
+  submitting.value = true
+  try {
+    await fetchAdmin(`/tenants/${props.id}/permissions`, { method: 'POST', body: data })
+    refresh()
+  } catch (e) {
+    actionError.value = e
+  } finally {
+    submitting.value = false
+  }
+}
+
+const removePermissions = async (relation: string, value: any) => {
+  console.log('removePermissions:', relation, value)
+  const data = {
+    id: value.id,
+    type: getObjectType(value.type),
+    ref_relation: getRelation(value.refrel),
+    relation: getRelation(relation)
+  }
+  submitting.value = true
+  try {
+    await fetchAdmin(`/tenants/${props.id}/permissions`, { method: 'DELETE', body: data })
+    refresh()
+  } catch (e) {
+    actionError.value = e
+  } finally {
+    submitting.value = false
+  }
+}
+
+const changed = () => {
+  refresh()
+  emit('changed')
 }
 </script>

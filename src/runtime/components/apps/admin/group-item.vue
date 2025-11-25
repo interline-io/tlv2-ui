@@ -2,7 +2,6 @@
   <div class="control">
     <div class="tags has-addons">
       <tl-link
-        :target="newTab ? '_blank' : '_self'"
         route-key="apps-admin-groups-groupKey"
         :to="{ params: { groupKey: value.id } }"
       >
@@ -21,38 +20,42 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    value: { type: Object, default () { return {} } },
-    action: { type: String, default: null },
-    newTab: { type: Boolean, default: false }
-  },
-  emits: [
-    'select'
-  ],
-  computed: {
-    actionClass () {
-      if (this.action === 'add') {
-        return 'tag is-medium is-primary'
-      } else if (this.action === 'remove') {
-        return 'tag is-medium is-danger'
-      }
-      return null
-    },
-    actionIcon () {
-      if (this.action === 'add') {
-        return 'plus'
-      } else if (this.action === 'remove') {
-        return 'close'
-      }
-      return null
-    }
-  },
-  methods: {
-    select () {
-      this.$emit('select', this.value.id)
-    }
+<script setup lang="ts">
+import { computed } from 'vue'
+
+const props = withDefaults(defineProps<{
+  value?: Record<string, any>
+  action?: string | null
+  newTab?: boolean
+}>(), {
+  value: () => ({}),
+  action: null,
+  newTab: false
+})
+
+const emit = defineEmits<{
+  (e: 'select', id: string | number): void
+}>()
+
+const actionClass = computed(() => {
+  if (props.action === 'add') {
+    return 'tag is-medium is-primary'
+  } else if (props.action === 'remove') {
+    return 'tag is-medium is-danger'
   }
+  return null
+})
+
+const actionIcon = computed(() => {
+  if (props.action === 'add') {
+    return 'plus'
+  } else if (props.action === 'remove') {
+    return 'close'
+  }
+  return undefined
+})
+
+const select = () => {
+  emit('select', props.value.id)
 }
 </script>

@@ -18,7 +18,10 @@
     </o-notification>
 
     <ul>
-      <li v-for="v of groups" :key="v.id">
+      <li
+        v-for="v of groups"
+        :key="v.id"
+      >
         <tl-apps-admin-group-item
           :key="v.id"
           :value="v"
@@ -28,23 +31,17 @@
   </div>
 </template>
 
-<script>
-import Loadable from '../loadable'
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useAdminFetch } from '../useAdminApi'
 
-export default {
-  mixins: [Loadable],
-  data () {
-    return {
-      groups: []
-    }
-  },
-  mounted () { this.getData() },
-  methods: {
-    async getData () {
-      return await this.fetchAdmin('/groups').then((data) => {
-        this.groups = data.groups
-      })
-    }
-  }
+interface Group {
+  id: string
+  name: string
+  [key: string]: any
 }
+
+const { data, error } = await useAdminFetch<{ groups: Group[] }>('/groups')
+
+const groups = computed(() => data.value?.groups || [])
 </script>
