@@ -32,11 +32,14 @@
           >
             <template v-if="key.hide" />
             <template v-else-if="key.link && entry[key.link]">
-              <nuxt-link :to="getValue(entry, key)">
+              <tl-link
+                :to="getValue(entry, key)"
+                :route-key="getValue(entry, key)?.routeKey"
+              >
                 <template v-if="key.key !== 'link'">
                   {{ key.link_text }}
                 </template>
-              </nuxt-link>
+              </tl-link>
             </template>
             <template v-else-if="key.transform == 'secondsToDuration'">
               {{ secondsToDuration(getValue(entry, key)) }}

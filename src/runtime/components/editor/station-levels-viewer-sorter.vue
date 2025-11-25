@@ -41,13 +41,14 @@
             </div>
           </div>
           <div class="column is-3 has-text-right">
-            <nuxt-link
+            <tl-link
               v-if="level.id"
-              :to="{ name: editorRoutes.levelEdit, params: { feedKey: station.stop.feed_version.feed.onestop_id, feedVersionKey: station.stop.feed_version.id, stationKey: station.stop.stop_id, levelKey: level.level_id } }"
+              route-key="editor-feedKey-feedVersionKey-stations-stationKey-levels-levelKey-edit"
+              :to="{ params: { feedKey: station.stop.feed_version.feed.onestop_id, feedVersionKey: station.stop.feed_version.id, stationKey: station.stop.stop_id, levelKey: level.level_id } }"
               class="button is-primary is-outlined"
             >
               Edit Level
-            </nuxt-link>
+            </tl-link>
           </div>
         </div>
       </div>
@@ -61,16 +62,9 @@
 </template>
 
 <script lang="ts">
-import { useEditorRoutes } from '../../composables/useEditorRoutes'
-
 export default {
   props: {
     station: { type: Object, default () { return {} } }
-  },
-  data () {
-    return {
-      editorRoutes: useEditorRoutes()
-    }
   },
   computed: {
     groupedSortedStationLevels () {

@@ -146,7 +146,7 @@ function getRoutesWithServiceRows (scenario: any, scenarioResult: any) {
         category: rt.route_attribute?.category,
         subcategory: rt.route_attribute?.subcategory,
         link_to_tranfers_from: {
-          name: 'analyst-transit-transfers-stationKey-transfers',
+          routeKey: 'analyst-transit-transfers-stationKey-transfers',
           params: {
             stationKey: props.stationArea.properties.id
           },
@@ -156,7 +156,7 @@ function getRoutesWithServiceRows (scenario: any, scenarioResult: any) {
           }
         },
         link_to_tranfers_to: {
-          name: 'analyst-transit-transfers-stationKey-transfers',
+          routeKey: 'analyst-transit-transfers-stationKey-transfers',
           params: {
             stationKey: props.stationArea.properties.id
           },

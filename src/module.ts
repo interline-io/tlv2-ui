@@ -1,5 +1,6 @@
 import { defineNuxtModule, addPlugin, createResolver, addImportsDir, addServerHandler, addVitePlugin, addComponentsDir } from '@nuxt/kit'
 import { defu } from 'defu'
+import type { Tlv2RouteKey } from './runtime/route-keys'
 
 // Config handler
 export interface ModuleOptions {
@@ -7,8 +8,8 @@ export interface ModuleOptions {
   bulma: string
   // Link sources
   safelinkUtmSource?: string
-  // Route prefixes
-  editorRoutePrefix?: string
+  // Route resolver
+  routes?: Partial<Record<Tlv2RouteKey, string>>
   // Proxy options
   useProxy: boolean
   proxyBase?: string
@@ -48,7 +49,6 @@ export default defineNuxtModule<ModuleOptions>({
   defaults: {
     bulma: '',
     useProxy: false,
-    editorRoutePrefix: 'editor',
     loginGate: false,
     requireLogin: false,
     safelinkUtmSource: undefined,
@@ -99,7 +99,7 @@ export default defineNuxtModule<ModuleOptions>({
         mixpanelApikey: options.mixpanelApikey,
         loginGate: options.loginGate,
         requireLogin: options.requireLogin,
-        editorRoutePrefix: options.editorRoutePrefix,
+        routes: options.routes,
         auth0Domain: options.auth0Domain,
         auth0ClientId: options.auth0ClientId,
         auth0RedirectUri: options.auth0RedirectUri,

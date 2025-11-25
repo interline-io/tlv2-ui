@@ -12,12 +12,13 @@
             {{ props.stationArea.properties.name }}
           </div>
           <div>
-            <nuxt-link
+            <tl-link
               class="button is-outline"
-              :to="{ name: 'analyst-transit-transfers', query: route.query }"
+              route-key="analyst-transit-transfers"
+              :to="{ query: route.query }"
             >
               Change Station
-            </nuxt-link>
+            </tl-link>
           </div>
         </div>
         <div class="column is-half">
@@ -27,19 +28,18 @@
             </h5>
           </div>
           <div v-for="(report, reportId) in reports" :key="reportId">
-            <nuxt-link
+            <tl-link
+              :route-key="reportId"
               :to="{
-                name: reportId,
                 params: { stationKey: props.stationArea.properties.id },
                 query: ['analyst-transit-transfers-stationKey-maps', 'analyst-transit-transfers-stationKey-routes'].includes(reportId) ? queryParamsWithoutTripFilters : route.query,
               }"
               class="button is-outline is-fullwidth"
-              :class="[route.name == reportId ? 'is-active is-primary' : '', report.disabled ? 'is-disabled' : '']"
+              :class="[route.name == resolve(reportId) ? 'is-active is-primary' : '', report.disabled ? 'is-disabled' : '']"
               :title="report.disabled ? 'This report is currently disabled' : ''"
-              @click.prevent="report.disabled ? null : undefined"
             >
               {{ report.name }}
-            </nuxt-link>
+            </tl-link>
           </div>
         </div>
       </div>
@@ -51,6 +51,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { useRouteResolver } from '../../composables/useRouteResolver'
 import type { StationHub } from './types'
 
 interface Props {
@@ -60,6 +61,7 @@ interface Props {
 const props = defineProps<Props>()
 
 const route = useRoute()
+const { resolve } = useRouteResolver()
 
 interface Report {
   name: string
@@ -73,6 +75,7 @@ const reports: Record<string, Report> = {
   'analyst-transit-transfers-stationKey-transfersummary': { name: 'Transfers - Summary', disabled: false },
   'analyst-transit-transfers-stationKey-transferscomparison': { name: 'Transfers - Overview of Different Service Conditions', disabled: true }
 }
+// ...existing code...
 
 const queryParamsWithoutTripFilters = computed<Record<string, any>>(() => {
   // trip filters aren't relevant to the "Maps & Platforms" and "Routes" reports

@@ -1,9 +1,9 @@
 <template>
   <div class="buttons has-addons">
     <label class="label pr-2">View this stop in:</label>
-    <nuxt-link
+    <tl-link
+      route-key="editor-feedKey-feedVersionKey-stations-stationKey-pathways"
       :to="{
-        name: routeKeys['pathways'],
         params: params,
         query: query,
       }"
@@ -11,10 +11,10 @@
       :class="selectedMode === 'pathways' ? 'is-active' : 'is-outlined'"
     >
       Pathways Editor
-    </nuxt-link>
-    <nuxt-link
+    </tl-link>
+    <tl-link
+      route-key="editor-feedKey-feedVersionKey-stations-stationKey-diagram"
       :to="{
-        name: routeKeys['diagram'],
         params: params,
         query: query,
       }"
@@ -22,12 +22,12 @@
       :class="selectedMode === 'diagram' ? 'is-active' : 'is-outlined'"
     >
       Diagram Viewer
-    </nuxt-link>
+    </tl-link>
   </div>
 </template>
 
 <script>
-import { useEditorRoutes } from '../../composables/useEditorRoutes'
+import { useRouteResolver } from '../../composables/useRouteResolver'
 
 export default {
   props: {
@@ -40,12 +40,15 @@ export default {
       default: () => {}
     }
   },
+  setup () {
+    const { resolve } = useRouteResolver()
+    return { resolve }
+  },
   data () {
-    const routes = useEditorRoutes()
     return {
       routeKeys: {
-        pathways: routes.stationPathways,
-        diagram: routes.stationDiagram
+        pathways: 'editor-feedKey-feedVersionKey-stations-stationKey-pathways',
+        diagram: 'editor-feedKey-feedVersionKey-stations-stationKey-diagram'
       }
     }
   },
@@ -53,8 +56,8 @@ export default {
     selectedMode () {
       // TODO: pass this in?
       const currentRoute = this.$route.name
-      for (const [k, r] in Object.entries(this.routeKeys)) {
-        if (currentRoute === r) {
+      for (const [k, r] of Object.entries(this.routeKeys)) {
+        if (currentRoute === this.resolve(r)) {
           return k
         }
       }

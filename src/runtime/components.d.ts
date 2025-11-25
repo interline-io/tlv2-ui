@@ -83,6 +83,7 @@ declare module 'vue' {
     TlGtfsExportDownload: typeof import('./components/gtfs-export-download.vue')['default']
     TlHeadwayViewer: typeof import('./components/headway-viewer.vue')['default']
     TlJsonDownload: typeof import('./components/json-download.vue')['default']
+    TlLink: typeof import('./components/link.vue')['default']
     TlLoadable: typeof import('./components/loadable.vue')['default']
     TlLoading: typeof import('./components/loading.vue')['default']
     TlLoginGate: typeof import('./components/login-gate.vue')['default']

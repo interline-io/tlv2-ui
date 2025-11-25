@@ -1,5 +1,6 @@
 import './components.d.ts'
 import './oruga.d.ts'
+import type { Tlv2RouteKey } from './route-keys'
 
 declare module 'nuxt/schema' {
   interface RuntimeConfig {
@@ -27,6 +28,7 @@ declare module 'nuxt/schema' {
         stationEditor: string
         feedManagement: string
       }
+      routes?: Partial<Record<Tlv2RouteKey, string>>
       protomapsApikey?: string
       nearmapsApikey?: string
       mixpanelApikey?: string

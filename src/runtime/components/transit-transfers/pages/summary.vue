@@ -113,7 +113,7 @@ function getTransferSummaries (scenario: any, scenarioResult: any) {
   for (const r of ret) {
     if (r.trips_missed + r.trips_close + r.trips_acceptable + r.trips_unacceptable > 0) {
       r.link_to_individual_transfers = {
-        name: 'analyst-transit-transfers-stationKey-transfers',
+        routeKey: 'analyst-transit-transfers-stationKey-transfers',
         params: { stationKey: props.stationArea.properties.id },
         query: {
           ...route.query,
