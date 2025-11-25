@@ -4,7 +4,7 @@
       <tl-title title="New Station" />
     </slot>
 
-    <tl-apps-stations-station-editor-form
+    <tl-apps-stations-station-editor
       :value="newStation()"
       @create="createStationHandler"
       @cancel="cancelHandler"

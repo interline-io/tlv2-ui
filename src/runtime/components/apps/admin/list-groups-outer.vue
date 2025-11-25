@@ -1,6 +1,6 @@
 <template>
   <div>
-    <tl-admin-group
+    <tl-apps-admin-group
       :id="id"
       :editable="false"
       :show-feeds="true"

@@ -1,9 +1,3 @@
-<!--
-  Note: This file is named "station-editor-form.vue" instead of "station-editor.vue"
-  to avoid Nuxt's auto-import duplicate removal feature, which would strip the duplicate
-  "station-editor" path segment and create component name conflicts.
-  With this naming: station-editor/station-editor-form.vue → <Tlstation-editorstation-editorForm>
--->
 <template>
   <div>
     <div class="field">

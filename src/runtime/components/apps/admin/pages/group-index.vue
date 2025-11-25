@@ -4,7 +4,7 @@
       <tl-title title="Group" />
     </slot>
 
-    <tl-admin-group :id="groupKey" />
+    <tl-apps-admin-group :id="groupKey" />
   </div>
 </template>
 

@@ -13,7 +13,7 @@
         label="Name"
         horizontal
       >
-        <tl-admin-input
+        <tl-apps-admin-input
           :value="tenant.tenant?.name"
           :can-edit="tenant.actions.can_edit"
           @save="saveName"
@@ -34,7 +34,7 @@
         </o-button>
         <div class="field">
           <div class="field is-grouped is-grouped-multiline">
-            <tl-admin-group-item
+            <tl-apps-admin-group-item
               v-for="group of nameSort(tenant.groups || [])"
               :key="group.id"
               :value="group"
@@ -44,10 +44,10 @@
       </o-field>
 
       <o-field label="Your permissions" horizontal :title="`You are logged in as ${user.name} (${user.email})`">
-        <tl-admin-perm-list :actions="tenant.actions" />
+        <tl-apps-admin-perm-list :actions="tenant.actions" />
       </o-field>
 
-      <tl-admin-entrel-list
+      <tl-apps-admin-entrel-list
         v-if="tenant.actions.can_edit_members || tenant.users.admins?.length > 0"
         text="Admins"
         action-text="Add a tenant admin"
@@ -59,7 +59,7 @@
         @remove-permissions="removePermissions('admin', $event)"
       />
 
-      <tl-admin-entrel-list
+      <tl-apps-admin-entrel-list
         v-if="tenant.actions.can_edit_members || tenant.users.members?.length > 0"
         text="Members"
         action-text="Add a tenant member"

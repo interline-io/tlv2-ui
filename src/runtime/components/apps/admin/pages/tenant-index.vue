@@ -4,7 +4,7 @@
       <tl-title title="Tenant" />
     </slot>
 
-    <tl-admin-tenant :id="tenantKey" filter-action="can_edit_members" />
+    <tl-apps-admin-tenant :id="tenantKey" filter-action="can_edit_members" />
   </div>
 </template>
 

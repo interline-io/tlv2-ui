@@ -17,7 +17,7 @@
         group-multiline
         tags
       >
-        <tl-admin-tenant-item
+        <tl-apps-admin-tenant-item
           v-for="v of nameSort(tenants || [])"
           :key="v.id"
           :value="v"
@@ -25,7 +25,7 @@
           @select="$emit('removePermissions', { type: 'tenant', id: $event, refrel: 'member' })"
         />
 
-        <tl-admin-group-item
+        <tl-apps-admin-group-item
           v-for="v of nameSort(groups || [])"
           :key="v.id"
           :value="v"
@@ -33,7 +33,7 @@
           @select="$emit('removePermissions', { type: 'org', id: $event, refrel: 'viewer' })"
         />
 
-        <tl-admin-user-item
+        <tl-apps-admin-user-item
           v-for="v of nameSort(users || [])"
           :key="v.id"
           :user="v"
@@ -47,7 +47,7 @@
       v-model="showUserPicker"
       :title="actionText"
     >
-      <tl-admin-entrel-search
+      <tl-apps-admin-entrel-search
         :action-info="actionInfo"
         :show-users="showUsers"
         :show-groups="showGroups"

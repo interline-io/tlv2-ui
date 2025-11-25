@@ -200,7 +200,7 @@
             Permissions
           </o-button>
           <tl-modal v-model="showPermissionsModal" title="Feed Version Permissions">
-            <tl-admin-feed-version
+            <tl-apps-admin-feed-version
               :id="entity.id"
               client="feedManagement"
               @update="showPermissionsModal = false; refetchEntities()"

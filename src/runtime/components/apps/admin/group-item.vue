@@ -1,16 +1,17 @@
 <template>
   <div class="control">
     <div class="tags has-addons">
-      <nuxt-link
+      <tl-link
         :target="newTab ? '_blank' : '_self'"
-        :to="{ name: 'admin-groups-groupKey', params: { groupKey: value.id } }"
+        route-key="admin-groups-groupKey"
+        :to="{ params: { groupKey: value.id } }"
       >
         <o-icon
           icon="account-group"
           class="mr-2"
         />
         {{ value.name }}
-      </nuxt-link>
+      </tl-link>
       <a
         v-if="action"
         :class="actionClass"

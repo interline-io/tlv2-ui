@@ -1,14 +1,16 @@
 <template>
   <div>
     <slot name="title">
-      <tl-title title="Groups" />
+      <tl-title title="Tenants" />
     </slot>
 
     <slot name="description">
       <p class="content">
-        Your user belongs to the following groups. Each group grants access to one or more associated feeds and their feed versions.
+        Tenants are used by system administrators to organize groups and additional authorization information.
       </p>
     </slot>
+
+    <tl-loading v-model:active="loading" :full-page="false" />
 
     <o-notification
       v-if="error"
@@ -18,10 +20,12 @@
     </o-notification>
 
     <ul>
-      <li v-for="v of groups" :key="v.id">
-        <tl-admin-group-item
-          :key="v.id"
-          :value="v"
+      <li
+        v-for="tenant of nameSort(tenants)"
+        :key="tenant.id"
+      >
+        <tl-apps-admin-tenant-item
+          :value="tenant"
         />
       </li>
     </ul>
@@ -30,19 +34,21 @@
 
 <script>
 import Loadable from '../../loadable'
+import { nameSort } from '../../../lib/filters'
 
 export default {
   mixins: [Loadable],
   data () {
     return {
-      groups: []
+      tenants: []
     }
   },
   mounted () { this.getData() },
   methods: {
+    nameSort,
     async getData () {
-      return await this.fetchAdmin('/groups').then((data) => {
-        this.groups = data.groups
+      return await this.fetchAdmin('/tenants').then((data) => {
+        this.tenants = data.tenants
       })
     }
   }

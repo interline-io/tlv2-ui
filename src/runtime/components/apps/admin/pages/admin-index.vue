@@ -8,14 +8,14 @@
     <div class="content">
       <ul>
         <li>
-          <nuxt-link :to="{ name: 'admin-groups' }">
+          <tl-link route-key="admin-groups">
             Groups
-          </nuxt-link> (More information about groups you belong to)
+          </tl-link> (More information about groups you belong to)
         </li>
         <li>
-          <nuxt-link :to="{ name: 'admin-tenants' }">
+          <tl-link route-key="admin-tenants">
             Tenants
-          </nuxt-link> (For system administrators)
+          </tl-link> (For system administrators)
         </li>
       </ul>
     </div>

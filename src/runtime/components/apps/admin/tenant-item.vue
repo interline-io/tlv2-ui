@@ -1,18 +1,17 @@
 <template>
   <div class="control">
     <div class="tags has-addons">
-      <nuxt-link
-        class="tag is-medium desc"
-        :to="{ name: 'feeds-feedKey', params: { feedKey: value.onestop_id } }"
+      <tl-link
+        :target="newTab ? '_blank' : '_self'"
+        route-key="admin-tenants-tenantKey"
+        :to="{ params: { tenantKey: value.id } }"
       >
-        <!-- <o-icon icon="account-group" class="mr-2" /> -->
-        <template v-if="!value.name">
-          {{ value.onestop_id }}
-        </template>
-        <template v-else>
-          {{ value.name }}
-        </template>
-      </nuxt-link>
+        <o-icon
+          icon="star-box"
+          class="mr-2"
+        />
+        {{ value.name }}
+      </tl-link>
       <a
         v-if="action"
         :class="actionClass"
@@ -26,7 +25,8 @@
 export default {
   props: {
     value: { type: Object, default () { return {} } },
-    action: { type: String, default: null }
+    action: { type: String, default: null },
+    newTab: { type: Boolean, default: false }
   },
   emits: [
     'select'
@@ -51,8 +51,15 @@ export default {
   },
   methods: {
     select () {
-      this.$emit('select', this.value.onestop_id)
+      this.$emit('select', this.value.id)
     }
   }
 }
 </script>
+
+<style scoped>
+a.desc:hover {
+  text-decoration: none;
+  cursor: default;
+}
+</style>

@@ -13,7 +13,7 @@
           label="Group name"
           horizontal
         >
-          <tl-admin-input
+          <tl-apps-admin-input
             :value="group.group?.name"
             :can-edit="editable && group.actions.can_edit"
             @save="saveName"
@@ -25,18 +25,19 @@
           label="Parent"
           horizontal
         >
-          <tl-admin-input
+          <tl-apps-admin-input
             :value="group.tenant?.name"
             :link="true"
           >
             <template #link>
-              <nuxt-link
+              <tl-link
                 v-if="group.tenant"
                 class="button is-small"
-                :to="{ name: 'admin-tenants-tenantKey', params: { tenantKey: group.tenant.id } }"
+                route-key="admin-tenants-tenantKey"
+                :to="{ params: { tenantKey: group.tenant.id } }"
               >
                 View tenant
-              </nuxt-link>
+              </tl-link>
               <o-button
                 v-if="editable && group.actions.can_set_tenant"
                 size="small"
@@ -45,7 +46,7 @@
                 Set tenant
               </o-button>
             </template>
-          </tl-admin-input>
+          </tl-apps-admin-input>
         </o-field>
 
         <o-field
@@ -55,7 +56,7 @@
         >
           <div class="field">
             <div class="field is-grouped is-grouped-multiline">
-              <tl-admin-feed-item
+              <tl-apps-admin-feed-item
                 v-for="v of group.feeds || []"
                 :key="v.id"
                 :value="v"
@@ -65,11 +66,11 @@
         </o-field>
 
         <o-field v-if="showActions" label="Your permissions" horizontal :title="`You are logged in as ${user.name} (${user.email})`">
-          <tl-admin-perm-list :actions="group.actions" />
+          <tl-apps-admin-perm-list :actions="group.actions" />
         </o-field>
 
         <div v-if="showMembers">
-          <tl-admin-entrel-list
+          <tl-apps-admin-entrel-list
             v-if="(editable && group.actions.can_edit_members) || group.users.managers?.length > 0"
             text="Managers"
             action-text="Add a group manager"
@@ -81,7 +82,7 @@
             @remove-permissions="removePermissions('manager', $event)"
           />
 
-          <tl-admin-entrel-list
+          <tl-apps-admin-entrel-list
             v-if="(editable && group.actions.can_edit_members) || group.users.editors?.length > 0"
             text="Editors"
             action-text="Add a group editor"
@@ -94,7 +95,7 @@
             @remove-permissions="removePermissions('editor', $event)"
           />
 
-          <tl-admin-entrel-list
+          <tl-apps-admin-entrel-list
             v-if="(editable && group.actions.can_edit_members) || group.users.viewers?.length > 0"
             text="Viewers"
             action-text="Add a group viewer"
@@ -116,7 +117,7 @@
           v-model="showAssignTenant"
           title="Set tenant"
         >
-          <tl-admin-entrel-search
+          <tl-apps-admin-entrel-search
             :show-users="false"
             :show-tenants="true"
             @select="showAssignTenant = false; setTenant($event)"

@@ -9,10 +9,10 @@
     </o-notification>
     <div v-else-if="fv && perms">
       <o-field label="Your permissions" horizontal :title="`You are logged in as ${user.name} (${user.email})`">
-        <tl-admin-perm-list :actions="perms.actions" />
+        <tl-apps-admin-perm-list :actions="perms.actions" />
       </o-field>
 
-      <tl-admin-entrel-list
+      <tl-apps-admin-entrel-list
         v-if="perms.actions.can_edit_members || perms.users.editors?.length > 0"
         text="Editors"
         action-text="Add a feed version editor"
@@ -26,7 +26,7 @@
         @remove-permissions="removePermissions('editor', $event)"
       />
 
-      <tl-admin-entrel-list
+      <tl-apps-admin-entrel-list
         v-if="perms.actions.can_edit_members || perms.users.viewers?.length > 0"
         text="Viewers"
         action-text="Add a feed version viewer"

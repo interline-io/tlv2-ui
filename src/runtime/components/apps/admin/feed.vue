@@ -21,30 +21,32 @@
         label="Upload"
         horizontal
       >
-        <nuxt-link
-          :to="{ name: 'feeds-feedKey-upload', params: { feedKey: feed.feed?.onestop_id } }"
+        <tl-link
+          route-key="feeds-feedKey-upload"
+          :to="{ params: { feedKey: feed.feed?.onestop_id } }"
           class="button is-small is-primary"
         >
           Upload Feed Version
-        </nuxt-link>
+        </tl-link>
       </o-field> -->
 
       <o-field
         label="Group"
         horizontal
       >
-        <tl-admin-input
+        <tl-apps-admin-input
           :value="feed?.group?.name || 'Unnamed Group'"
           :link="true"
         >
           <template #link>
-            <nuxt-link
+            <tl-link
               v-if="feed?.group"
               class="button is-small mr-2"
-              :to="{ name: 'admin-groups-groupKey', params: { groupKey: feed.group.id } }"
+              route-key="admin-groups-groupKey"
+              :to="{ params: { groupKey: feed.group.id } }"
             >
               Show group
-            </nuxt-link>
+            </tl-link>
             <o-button
               v-if="feed.actions.can_set_group"
               size="small"
@@ -53,11 +55,11 @@
               Set group
             </o-button>
           </template>
-        </tl-admin-input>
+        </tl-apps-admin-input>
       </o-field>
 
       <o-field label="Your permissions" horizontal :title="`You are logged in as ${user.name} (${user.email})`">
-        <tl-admin-perm-list :actions="feed?.actions" />
+        <tl-apps-admin-perm-list :actions="feed?.actions" />
       </o-field>
 
       <tl-modal
@@ -65,7 +67,7 @@
         text="Show group"
         :title="`Set group`"
       >
-        <tl-admin-entrel-search
+        <tl-apps-admin-entrel-search
           :show-users="false"
           :show-groups="true"
           @select="showAssignGroup = false; setGroup($event)"
