@@ -230,6 +230,9 @@ fragment feed on Feed {
   feed_state {
     feed_version {
       id
+      stops(limit: 1, where: { within: $geometry }) {
+        id
+      }
     }
   }
   feed_versions(limit:300) {
@@ -254,6 +257,9 @@ fragment feed on Feed {
     feed_version_gtfs_import {
       success
       in_progress
+    }
+    stops(limit: 1, where: { within: $geometry }) {
+      id
     }
   }
 }

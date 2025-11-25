@@ -95,7 +95,9 @@ export default {
         const activeIds: number[] = []
         for (const feed of feeds) {
           if (feed.feed_state?.feed_version?.id) {
-            activeIds.push(feed.feed_state.feed_version.id)
+            if (feed.feed_state.feed_version.stops && feed.feed_state.feed_version.stops.length > 0) {
+              activeIds.push(feed.feed_state.feed_version.id)
+            }
           }
           for (const fv of feed.feed_versions) {
             if (fv.feed_version_gtfs_import?.success === true) {
@@ -113,12 +115,13 @@ export default {
         this.setError(e)
       },
       skip (this: any): boolean {
-        return !this.stationArea || !this.stationArea.geometry
+        return !this.stationArea || !this.stationArea.geometry || this.scenario.selectedFeedVersions.length === 0
       },
       variables (this: any): { feed_version_ids: number[], geometry: any } {
         const ids = this.scenario?.selectedFeedVersions.map((s: any) => {
           return s.id
         }).filter((s: any) => { return s })
+        console.log('analystStopQuery ids:', ids)
         return {
           feed_version_ids: ids,
           geometry: this.stationArea?.geometry
@@ -185,7 +188,7 @@ export default {
         for (const id of this.activeFeedVersionIds) {
           const fv = this.feedVersions.find((f: any) => f.id === id)
           if (fv) {
-            console.log('Adding default active feed version:', fv.id, fv.feed.onestop_id)
+            console.log('Adding default active feed version:', fv.id, fv.sha1, fv.feed.onestop_id)
             fvos.push(new SelectedFeedVersion({
               id: fv.id,
               serviceDate: feedVersionDefaultDate(fv) || ''
