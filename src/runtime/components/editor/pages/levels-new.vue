@@ -18,7 +18,7 @@
 <script>
 import { navigateTo } from '#imports'
 import StationMixin from './station-mixin'
-import { useRouteResolver } from '../../composables/useRouteResolver'
+import { useRouteResolver } from '../../../composables/useRouteResolver'
 
 export default {
   mixins: [StationMixin],

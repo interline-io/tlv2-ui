@@ -17,7 +17,7 @@
 import { navigateTo } from '#imports'
 import { Station, Stop } from '../station'
 import FeedMixin from './feed-mixin'
-import { useRouteResolver } from '../../composables/useRouteResolver'
+import { useRouteResolver } from '../../../composables/useRouteResolver'
 
 export default {
   mixins: [FeedMixin],
