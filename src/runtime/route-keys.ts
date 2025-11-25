@@ -22,10 +22,10 @@ export const TLV2_ROUTE_KEYS = [
   'apps-stations-feedKey-feedVersionKey-stations-stationKey-levels-levelKey-edit',
 
   // Admin
-  'admin-groups',
-  'admin-groups-groupKey',
-  'admin-tenants',
-  'admin-tenants-tenantKey',
+  'apps-admin-groups',
+  'apps-admin-groups-groupKey',
+  'apps-admin-tenants',
+  'apps-admin-tenants-tenantKey',
   'feeds-feedKey',
   'feeds-feedKey-upload'
 ] as const

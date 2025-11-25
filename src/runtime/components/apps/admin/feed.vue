@@ -42,7 +42,7 @@
             <tl-link
               v-if="feed?.group"
               class="button is-small mr-2"
-              route-key="admin-groups-groupKey"
+              route-key="apps-admin-groups-groupKey"
               :to="{ params: { groupKey: feed.group.id } }"
             >
               Show group
@@ -78,8 +78,8 @@
 </template>
 
 <script>
-import { useUser } from '../../composables/useUser'
-import Loadable from '../loadable'
+import { useUser } from '../../../composables/useUser'
+import Loadable from './loadable'
 
 export default {
   mixins: [Loadable],

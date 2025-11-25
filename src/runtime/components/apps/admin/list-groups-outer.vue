@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import Loadable from '../loadable'
+import Loadable from './loadable'
 
 export default {
   mixins: [Loadable],

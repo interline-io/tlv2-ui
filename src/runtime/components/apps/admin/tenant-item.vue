@@ -3,7 +3,7 @@
     <div class="tags has-addons">
       <tl-link
         :target="newTab ? '_blank' : '_self'"
-        route-key="admin-tenants-tenantKey"
+        route-key="apps-admin-tenants-tenantKey"
         :to="{ params: { tenantKey: value.id } }"
       >
         <o-icon

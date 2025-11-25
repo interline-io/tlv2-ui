@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import { nameSort } from '../../lib/filters'
+import { nameSort } from '../../../lib/filters'
 
 export default {
   props: {

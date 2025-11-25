@@ -3,7 +3,7 @@
     <div class="tags has-addons">
       <tl-link
         :target="newTab ? '_blank' : '_self'"
-        route-key="admin-groups-groupKey"
+        route-key="apps-admin-groups-groupKey"
         :to="{ params: { groupKey: value.id } }"
       >
         <o-icon

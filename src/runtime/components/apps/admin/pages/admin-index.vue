@@ -8,12 +8,12 @@
     <div class="content">
       <ul>
         <li>
-          <tl-link route-key="admin-groups">
+          <tl-link route-key="apps-admin-groups">
             Groups
           </tl-link> (More information about groups you belong to)
         </li>
         <li>
-          <tl-link route-key="admin-tenants">
+          <tl-link route-key="apps-admin-tenants">
             Tenants
           </tl-link> (For system administrators)
         </li>

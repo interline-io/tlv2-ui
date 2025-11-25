@@ -76,9 +76,9 @@
 </template>
 
 <script>
-import { useUser } from '../../composables/useUser'
-import { nameSort } from '../../lib/filters'
-import Loadable from '../loadable'
+import { useUser } from '../../../composables/useUser'
+import { nameSort } from '../../../lib/filters'
+import Loadable from './loadable'
 import AuthzMixin from './authz-mixin'
 
 export default {

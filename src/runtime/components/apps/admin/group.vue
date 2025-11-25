@@ -33,7 +33,7 @@
               <tl-link
                 v-if="group.tenant"
                 class="button is-small"
-                route-key="admin-tenants-tenantKey"
+                route-key="apps-admin-tenants-tenantKey"
                 :to="{ params: { tenantKey: group.tenant.id } }"
               >
                 View tenant
@@ -129,8 +129,8 @@
 </template>
 
 <script>
-import { useUser } from '../../composables/useUser'
-import Loadable from '../loadable'
+import { useUser } from '../../../composables/useUser'
+import Loadable from './loadable'
 import AuthzMixin from './authz-mixin'
 
 export default {

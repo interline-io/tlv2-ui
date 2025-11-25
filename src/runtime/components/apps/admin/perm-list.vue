@@ -37,8 +37,8 @@
 </template>
 
 <script>
-import { useUser } from '../../composables/useUser'
-import Loadable from '../loadable'
+import { useUser } from '../../../composables/useUser'
+import Loadable from './loadable'
 
 export default {
   mixins: [Loadable],

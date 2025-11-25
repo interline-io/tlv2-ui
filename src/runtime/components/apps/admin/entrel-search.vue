@@ -92,8 +92,8 @@
 </template>
 
 <script>
-import Loadable from '../loadable'
-import { nameSort } from '../../lib/filters'
+import Loadable from './loadable'
+import { nameSort } from '../../../lib/filters'
 
 export default {
   mixins: [Loadable],
