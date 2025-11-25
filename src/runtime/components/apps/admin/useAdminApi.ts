@@ -1,9 +1,10 @@
 import { useFetch } from '#imports'
-import type { UseFetchOptions } from 'nuxt/app'
+import type { UseFetchOptions, AsyncData } from 'nuxt/app'
+import type { FetchError } from 'ofetch'
 import { useApiEndpoint } from '../../../composables/useApiEndpoint'
 import { useAuthHeaders } from '../../../composables/useAuthHeaders'
 
-export function useAdminFetch<T> (path: string | (() => string), options: UseFetchOptions<T> = {}) {
+export function useAdminFetch<T> (path: string | (() => string), options: UseFetchOptions<T> = {}): AsyncData<T | undefined, FetchError | null> {
   const apiEndpoint = useApiEndpoint('', 'feedManagement')
 
   return useFetch(path, {
@@ -16,7 +17,7 @@ export function useAdminFetch<T> (path: string | (() => string), options: UseFet
       }
     },
     ...options
-  })
+  }) as AsyncData<T | undefined, FetchError | null>
 }
 
 export async function fetchAdmin<T> (path: string, options: any = {}) {

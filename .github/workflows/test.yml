@@ -41,3 +41,8 @@ jobs:
       
     - name: Run tests
       run: yarn test
+
+    - name: Build for dist
+      run: yarn prepack
+      
+      
