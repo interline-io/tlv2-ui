@@ -128,7 +128,7 @@ import { useRouter } from '#app'
 import { useApiEndpoint } from '../composables/useApiEndpoint'
 import { useAuthHeaders } from '../composables/useAuthHeaders'
 import { useToastNotification } from '../composables/useToastNotification'
-import { useEditorRoutes } from '../composables/useEditorRoutes'
+import { useRouteResolver } from '../composables/useRouteResolver'
 
 // Types
 interface ExportOptions {
@@ -191,7 +191,7 @@ const hasValidFeedVersion = computed(() => {
 
 // Composables
 const router = useRouter()
-const editorRoutes = useEditorRoutes()
+const { resolve } = useRouteResolver()
 const { showToast } = useToastNotification()
 
 // Watchers
@@ -209,7 +209,7 @@ watch(prefixFilesInput, (newVal: string) => {
 // Methods
 const handleCancel = () => {
   router.push({
-    name: editorRoutes.stations,
+    name: resolve('apps-stations-feedKey-feedVersionKey-stations'),
     params: {
       feedKey: props.feedKey,
       feedVersionKey: props.feedVersionKey

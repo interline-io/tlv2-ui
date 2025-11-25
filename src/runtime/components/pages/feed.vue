@@ -204,7 +204,7 @@
             Permissions
           </o-button>
           <tl-modal v-model="showPermissionsModal" title="Feed Permissions">
-            <tl-admin-feed :id="entity.id" />
+            <tl-apps-admin-feed :id="entity.id" />
           </tl-modal>
         </slot>
       </div>
