@@ -1,6 +1,7 @@
 <template>
   <div>
     <tl-apps-admin-group
+      v-if="id != null"
       :id="id"
       :editable="false"
       :show-feeds="true"
@@ -11,29 +12,14 @@
   </div>
 </template>
 
-<script>
-import Loadable from './loadable'
+<script setup lang="ts">
+import { useAdminFetch } from './useAdminApi'
 
-export default {
-  mixins: [Loadable],
-  props: { id: { type: Number, default: null } },
-  data () {
-    return {
-      group: []
-    }
-  },
-  computed: {
-    feedIds () {
-      return this.group?.feeds?.map((s) => { return s.id })
-    }
-  },
-  mounted () { this.getData() },
-  methods: {
-    async getData () {
-      return await this.fetchAdmin(`/groups/${this.id}`).then((data) => {
-        this.group = data
-      })
-    }
-  }
-}
+const props = withDefaults(defineProps<{
+  id?: number | null
+}>(), {
+  id: null
+})
+
+await useAdminFetch<any>(() => `/groups/${props.id}`)
 </script>

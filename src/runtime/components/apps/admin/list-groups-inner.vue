@@ -19,8 +19,18 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed } from 'vue'
 import { gql } from 'graphql-tag'
+import { useQuery } from '@vue/apollo-composable'
+
+const props = withDefaults(defineProps<{
+  feedIds?: number[]
+  client?: string
+}>(), {
+  feedIds: () => [],
+  client: 'default'
+})
 
 const feedQuery = gql`
   query($ids:[Int!]) {
@@ -35,32 +45,8 @@ const feedQuery = gql`
       }
     }
   }
-  `
+`
 
-export default {
-  props: {
-    feedIds: { type: Array, default () { return [] } },
-    client: { type: String, default: 'default' }
-  },
-  data () {
-    return {
-      feeds: [],
-      error: null,
-      fvs: []
-    }
-  },
-  apollo: {
-    feeds: {
-      client: 'feedManagement',
-      query: feedQuery,
-      variables () {
-        return { ids: this.feedIds }
-      },
-      fetchPolicy: 'no-cache',
-      error (e) {
-        this.error = e
-      }
-    }
-  }
-}
+const { result } = useQuery(feedQuery, () => ({ ids: props.feedIds }), { clientId: props.client, fetchPolicy: 'no-cache' })
+const feeds = computed(() => result.value?.feeds || [])
 </script>

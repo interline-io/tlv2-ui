@@ -8,8 +8,10 @@
       Error: {{ error }}
     </o-notification>
     <div v-else-if="fv && perms">
-      <o-field label="Your permissions" horizontal :title="`You are logged in as ${user.name} (${user.email})`">
-        <tl-apps-admin-perm-list :actions="perms.actions" />
+      <o-field label="Your permissions" horizontal>
+        <div :title="`You are logged in as ${user.name} (${user.email})`">
+          <tl-apps-admin-perm-list :actions="perms.actions" />
+        </div>
       </o-field>
 
       <tl-apps-admin-entrel-list
@@ -47,11 +49,27 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed } from 'vue'
 import { gql } from 'graphql-tag'
-import Loadable from './loadable'
-import AuthzMixin from './authz-mixin'
+import { useQuery } from '@vue/apollo-composable'
 import { useUser } from '../../../composables/useUser'
+import { useAdminFetch, fetchAdmin } from './useAdminApi'
+import { useAuthz } from './useAuthz'
+
+const props = withDefaults(defineProps<{
+  id: string | number
+  client?: string
+}>(), {
+  client: 'default'
+})
+
+defineEmits<{
+  (e: 'changed'): void
+}>()
+
+const user = useUser()
+const { getObjectType, getRelation } = useAuthz()
 
 const feedVersionQuery = gql`
 query($ids:[Int!]!) {
@@ -64,80 +82,64 @@ query($ids:[Int!]!) {
 }
 `
 
-export default {
-  mixins: [AuthzMixin, Loadable],
-  props: {
-    id: { type: [String, Number], required: true },
-    client: { type: String, default: 'default' }
-  },
-  emits: ['changed'],
-  apollo: {
-    fvs: {
-      client: 'feedManagement',
-      query: feedVersionQuery,
-      variables () {
-        return { ids: [this.id] }
-      },
-      update (data) {
-        if (data.feed_versions.length > 0) {
-          this.fv = data.feed_versions[0]
-        }
-      },
-      error (e) {
-        this.error = e
-      },
-      fetchPolicy: 'no-cache'
-    }
-  },
-  data () {
-    return {
-      showTenant: false,
-      fv: null,
-      perms: null,
-      pending: false,
-      user: useUser()
-    }
-  },
-  mounted () { this.getData() },
-  methods: {
-    permLevels (lvl) {
-      return {
-        can_edit: ['manager', 'editor'].includes(lvl),
-        can_view: ['manager', 'editor', 'viewer'].includes(lvl),
-        can_edit_members: ['manager'].includes(lvl)
-      }
-    },
-    async getData () {
-      return await this.fetchAdmin(`/feed_versions/${this.id}`).then((data) => {
-        this.perms = data
-      })
-    },
-    async addPermissions (relation, value) {
-      console.log('addPermissions:', relation, value)
-      const data = {
-        id: String(value.id),
-        type: this.ObjectTypes(value.type),
-        ref_relation: this.Relations(value.refrel),
-        relation: this.Relations(relation)
-      }
-      await this.fetchAdmin(`/feed_versions/${this.id}/permissions`, data, 'POST')
-      this.getData()
-    },
-    async removePermissions (relation, value) {
-      console.log('removePermissions:', relation, value)
-      const data = {
-        id: String(value.id),
-        type: this.ObjectTypes(value.type),
-        ref_relation: this.Relations(value.refrel),
-        relation: this.Relations(relation)
-      }
-      await this.fetchAdmin(`/feed_versions/${this.id}/permissions`, data, 'DELETE')
-      this.getData()
-    },
-    changed () {
-      this.getData()
-      this.$emit('changed')
-    }
+// Apollo for feed version details
+const { result: fvData, error: fvError } = useQuery(feedVersionQuery, () => ({ ids: [props.id] }), { clientId: props.client, fetchPolicy: 'no-cache' })
+const fv = computed(() => fvData.value?.feed_versions?.[0] || null)
+
+// Admin API for permissions
+const { data: perms, pending: fetchPending, error: fetchError, refresh } = await useAdminFetch<any>(() => `/feed_versions/${props.id}`)
+
+const submitting = ref(false)
+const actionError = ref<any>(null)
+
+const loading = computed({
+  get: () => fetchPending.value || submitting.value,
+  set: (_v) => { /* handle if needed */ }
+})
+
+const error = computed(() => fvError.value || fetchError.value || actionError.value)
+
+const permLevels = (lvl: string) => {
+  return {
+    can_edit: ['manager', 'editor'].includes(lvl),
+    can_view: ['manager', 'editor', 'viewer'].includes(lvl),
+    can_edit_members: ['manager'].includes(lvl)
+  }
+}
+
+const addPermissions = async (relation: string, value: any) => {
+  const data = {
+    id: String(value.id),
+    type: getObjectType(value.type),
+    ref_relation: getRelation(value.refrel),
+    relation: getRelation(relation)
+  }
+  submitting.value = true
+  try {
+    await fetchAdmin(`/feed_versions/${props.id}/permissions`, { method: 'POST', body: data })
+    refresh()
+  } catch (e) {
+    actionError.value = e
+  } finally {
+    submitting.value = false
+  }
+}
+
+const removePermissions = async (relation: string, value: any) => {
+  const data = {
+    id: String(value.id),
+    type: getObjectType(value.type),
+    ref_relation: getRelation(value.refrel),
+    relation: getRelation(relation)
+  }
+  submitting.value = true
+  try {
+    await fetchAdmin(`/feed_versions/${props.id}/permissions`, { method: 'DELETE', body: data })
+    refresh()
+  } catch (e) {
+    actionError.value = e
+  } finally {
+    submitting.value = false
   }
 }
 </script>

@@ -36,21 +36,18 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import { useUser } from '../../../composables/useUser'
-import Loadable from './loadable'
 
-export default {
-  mixins: [Loadable],
-  props: {
-    showUser: { type: Boolean, default: false },
-    actions: { type: Object, default () { return { can_view: false } } },
-    actionText: { type: String, default: null }
-  },
-  data () {
-    return {
-      user: useUser()
-    }
-  }
-}
+withDefaults(defineProps<{
+  showUser?: boolean
+  actions?: Record<string, boolean>
+  actionText?: string | null
+}>(), {
+  showUser: false,
+  actions: () => ({ can_view: false }),
+  actionText: null
+})
+
+const user = useUser()
 </script>

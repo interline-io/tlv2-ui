@@ -21,7 +21,7 @@
 
     <ul>
       <li
-        v-for="tenant of nameSort(tenants)"
+        v-for="tenant of sortedTenants"
         :key="tenant.id"
       >
         <tl-apps-admin-tenant-item
@@ -32,25 +32,19 @@
   </div>
 </template>
 
-<script>
-import Loadable from '../loadable'
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useAdminFetch } from '../useAdminApi'
 import { nameSort } from '../../../../lib/filters'
 
-export default {
-  mixins: [Loadable],
-  data () {
-    return {
-      tenants: []
-    }
-  },
-  mounted () { this.getData() },
-  methods: {
-    nameSort,
-    async getData () {
-      return await this.fetchAdmin('/tenants').then((data) => {
-        this.tenants = data.tenants
-      })
-    }
-  }
+interface Tenant {
+  id: string
+  name: string
+  [key: string]: any
 }
+
+const { data, error, pending: loading } = await useAdminFetch<{ tenants: Tenant[] }>('/tenants')
+
+const tenants = computed(() => data.value?.tenants || [])
+const sortedTenants = computed(() => nameSort(tenants.value) as Tenant[])
 </script>

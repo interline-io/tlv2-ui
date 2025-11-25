@@ -56,30 +56,34 @@
   </o-field>
 </template>
 
-<script>
-export default {
-  props: {
-    value: { type: String, default: '' },
-    canEdit: { type: Boolean, default: false },
-    link: { type: Boolean, default: false },
-  },
-  emits: ['save'],
-  data () {
-    return {
-      valueShadow: this.value,
-      currentlyEditing: false
-    }
-  },
-  methods: {
-    cancel () {
-      this.valueShadow = this.value
-      this.currentlyEditing = false
-    },
-    save () {
-      this.$emit('save', this.valueShadow)
-      this.currentlyEditing = false
-    }
-  }
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const props = withDefaults(defineProps<{
+  value?: string
+  canEdit?: boolean
+  link?: boolean
+}>(), {
+  value: '',
+  canEdit: false,
+  link: false
+})
+
+const emit = defineEmits<{
+  (e: 'save', value: string): void
+}>()
+
+const valueShadow = ref<string | undefined>(props.value ?? '')
+const currentlyEditing = ref(false)
+
+const cancel = () => {
+  valueShadow.value = props.value || ''
+  currentlyEditing.value = false
+}
+
+const save = () => {
+  emit('save', valueShadow.value || '')
+  currentlyEditing.value = false
 }
 </script>
 

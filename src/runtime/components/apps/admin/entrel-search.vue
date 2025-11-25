@@ -31,7 +31,7 @@
       </div>
       <div class="field is-grouped is-grouped-multiline">
         <tl-apps-admin-user-item
-          v-for="v of nameSort(users || [])"
+          v-for="v of (nameSort(users || []) as any[])"
           :key="v.id"
           :user="v"
           :new-tab="true"
@@ -70,7 +70,7 @@
       <div v-else>
         <div class="field is-grouped is-grouped-multiline">
           <tl-apps-admin-tenant-item
-            v-for="v of nameSort(tenants || [])"
+            v-for="v of (nameSort(tenants || []) as any[])"
             :key="v.id"
             :new-tab="true"
             :value="v"
@@ -78,7 +78,7 @@
             @select="$emit('select', { type: 'tenant', id: $event, refrel: 'member' })"
           />
           <tl-apps-admin-group-item
-            v-for="v of nameSort(groups || [])"
+            v-for="v of (nameSort(groups || []) as any[])"
             :key="v.id"
             :value="v"
             :new-tab="true"
@@ -91,69 +91,73 @@
   </div>
 </template>
 
-<script>
-import Loadable from './loadable'
+<script setup lang="ts">
+import { ref, computed, watch, onMounted } from 'vue'
 import { nameSort } from '../../../lib/filters'
+import { fetchAdmin } from './useAdminApi'
 
-export default {
-  mixins: [Loadable],
-  props: {
-    title: { type: String, default: '' },
-    showUsers: { type: Boolean, default: true },
-    showGroups: { type: Boolean, default: false },
-    showTenants: { type: Boolean, default: false },
-    showUserStar: { type: Boolean, default: false },
-    actionInfo: { type: Object, default () { return {} } }
-  },
-  emits: ['select'],
-  data () {
-    return {
-      loadingAll: false,
-      search: '',
-      userStar: {
-        id: '*',
-        name: 'All users'
-      },
-      users: [],
-      tenants: [],
-      groups: []
+withDefaults(defineProps<{
+  title?: string
+  showUsers?: boolean
+  showGroups?: boolean
+  showTenants?: boolean
+  showUserStar?: boolean
+  actionInfo?: Record<string, any>
+}>(), {
+  title: '',
+  showUsers: true,
+  showGroups: false,
+  showTenants: false,
+  showUserStar: false,
+  actionInfo: () => ({})
+})
+
+defineEmits<{
+  (e: 'select', value: any): void
+}>()
+
+const loadingAll = ref(false)
+const error = ref<any>(null)
+const search = ref<string | null>('')
+const userStar = ref({
+  id: '*',
+  name: 'All users'
+})
+const users = ref<any[]>([])
+const tenants = ref<any[]>([])
+const groups = ref<any[]>([])
+
+const typeMore = computed(() => {
+  return (!search.value || search.value.length < 2)
+})
+
+const getData = async (searchValue: string) => {
+  loadingAll.value = true
+  error.value = null
+  try {
+    // users
+    if (searchValue && searchValue.length > 1) {
+      const data: any = await fetchAdmin('/users', { query: { q: searchValue } })
+      users.value = (data?.users || []).slice(0, 10)
+    } else {
+      users.value = []
     }
-  },
-  computed: {
-    typeMore () {
-      return (!this.search || this.search.length < 2)
-    }
-  },
-  watch: {
-    search (v) { this.getData(v) }
-  },
-  mounted () { this.getData('') },
-  methods: {
-    nameSort,
-    async getData (search) {
-      this.loadingAll = true
-      // users
-      if (search && search.length > 1) {
-        await this.fetchAdmin('/users', { q: search }).then((data) => {
-          this.users = (data?.users || []).slice(0, 10)
-        })
-      } else {
-        this.users = []
-      }
 
-      // groups
-      await this.fetchAdmin('/groups').then((data) => {
-        this.groups = (data?.groups || []).slice(0, 100)
-      })
+    // groups
+    const groupsData: any = await fetchAdmin('/groups')
+    groups.value = (groupsData?.groups || []).slice(0, 100)
 
-      // tenants
-      await this.fetchAdmin('/tenants').then((data) => {
-        this.tenants = (data?.tenants || []).slice(0, 100)
-      })
-
-      // Done
-      this.loadingAll = false
-    }
+    // tenants
+    const tenantsData: any = await fetchAdmin('/tenants')
+    tenants.value = (tenantsData?.tenants || []).slice(0, 100)
+  } catch (e) {
+    error.value = e
+  } finally {
+    loadingAll.value = false
   }
 }
+
+watch(search, (v) => { getData(v || '') })
+
+onMounted(() => { getData('') })
 </script>

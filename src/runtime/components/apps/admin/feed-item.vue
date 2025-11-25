@@ -23,37 +23,40 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    value: { type: Object, default () { return {} } },
-    action: { type: String, default: null }
-  },
-  emits: [
-    'select'
-  ],
-  computed: {
-    actionClass () {
-      if (this.action === 'add') {
-        return 'tag is-medium is-primary'
-      } else if (this.action === 'remove') {
-        return 'tag is-medium is-danger'
-      }
-      return null
-    },
-    actionIcon () {
-      if (this.action === 'add') {
-        return 'plus'
-      } else if (this.action === 'remove') {
-        return 'close'
-      }
-      return null
-    }
-  },
-  methods: {
-    select () {
-      this.$emit('select', this.value.onestop_id)
-    }
+<script setup lang="ts">
+import { computed } from 'vue'
+
+const props = withDefaults(defineProps<{
+  value?: Record<string, any>
+  action?: string | null
+}>(), {
+  value: () => ({}),
+  action: null
+})
+
+const emit = defineEmits<{
+  (e: 'select', id: string): void
+}>()
+
+const actionClass = computed(() => {
+  if (props.action === 'add') {
+    return 'tag is-medium is-primary'
+  } else if (props.action === 'remove') {
+    return 'tag is-medium is-danger'
   }
+  return null
+})
+
+const actionIcon = computed(() => {
+  if (props.action === 'add') {
+    return 'plus'
+  } else if (props.action === 'remove') {
+    return 'close'
+  }
+  return undefined
+})
+
+const select = () => {
+  emit('select', props.value.onestop_id)
 }
 </script>

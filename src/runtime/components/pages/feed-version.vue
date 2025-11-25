@@ -203,7 +203,7 @@
             <tl-apps-admin-feed-version
               :id="entity.id"
               client="feedManagement"
-              @update="showPermissionsModal = false; refetchEntities()"
+              @changed="showPermissionsModal = false; refetchEntities()"
             />
           </tl-modal>
         </slot>

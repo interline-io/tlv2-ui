@@ -8,10 +8,8 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    tenantKey: { type: String, required: true }
-  }
-}
+<script setup lang="ts">
+defineProps<{
+  tenantKey: string
+}>()
 </script>

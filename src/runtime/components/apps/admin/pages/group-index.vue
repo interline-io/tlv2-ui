@@ -8,10 +8,10 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    groupKey: { type: String, default: '' }
-  }
-}
+<script setup lang="ts">
+withDefaults(defineProps<{
+  groupKey?: string
+}>(), {
+  groupKey: ''
+})
 </script>
