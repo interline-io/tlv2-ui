@@ -13,19 +13,19 @@ const { routeSubcategoriesTree, routeRunningWaysTree } = useRouteCategories()
 // GraphQL Query Type Definitions
 // ============================================================================
 
-interface FeedInfo {
+export interface FeedInfo {
   id: number
   feed_version: number
   feed_start_date?: string
   feed_end_date?: string
 }
 
-interface FeedVersionGtfsImport {
+export interface FeedVersionGtfsImport {
   success: boolean
   in_progress: boolean
 }
 
-interface FeedVersionData {
+export interface FeedVersionData {
   id: number
   sha1: string
   file?: string
@@ -42,19 +42,20 @@ interface FeedVersionData {
   feed_version_gtfs_import?: FeedVersionGtfsImport
 }
 
-interface FeedData {
+export interface FeedData {
   id: number
   onestop_id: string
   name?: string
   feed_state?: {
     feed_version?: {
       id: number
+      stops?: any[]
     }
   }
   feed_versions: FeedVersionData[]
 }
 
-interface AnalystFeedQueryResponse {
+export interface AnalystFeedQueryResponse {
   feeds: FeedData[]
 }
 
@@ -475,12 +476,10 @@ export const scenarioStopStopTimesQuery = gql`
 // ============================================================================
 
 export type {
-  AnalystFeedQueryResponse,
   AnalystStopQueryResponse,
   AnalystStopQueryVariables,
   ScenarioStopStopTimesQueryResponse,
   ScenarioStopStopTimesQueryVariables,
-  FeedVersionData,
   StopStopTimesData,
   StopTimeData,
   ObservationData,
@@ -1409,4 +1408,94 @@ function calculateTransfers (
   }
 
   return transfers.sort((a, b) => a.arrival_time - b.arrival_time)
+}
+
+// ============================================================================
+// Scenario Parsing
+// ============================================================================
+
+export function parseScenarioFromUrl (
+  query: Record<string, any>,
+  feedVersions: FeedVersionData[],
+  defaultSelectedFeedVersions: SelectedFeedVersion[]
+): Scenario {
+  const fvos: SelectedFeedVersion[] = []
+
+  // Process query params
+  const paramFvos = (turnStringOrArrayIntoArray(query.selectedFeedVersions) || [])
+    .map((s: string) => {
+      const a = (s || '').split(':')
+      const id = Number.parseInt(a[0] || '0')
+      let date = a.length > 1 ? a[1] : undefined
+
+      if (!date) {
+        const fv = feedVersions.find(f => f.id === id)
+        if (fv) {
+          date = feedVersionDefaultDate(fv) || undefined
+        }
+      }
+
+      return new SelectedFeedVersion({
+        id: id,
+        serviceDate: date || ''
+      })
+    })
+
+  if (paramFvos.length > 0) {
+    fvos.push(...paramFvos)
+  } else {
+    fvos.push(...defaultSelectedFeedVersions)
+  }
+
+  // Set transfer scoring breakpoints
+  let tsbp: number[] | undefined
+  if (query.transferScoringBreakpoints) {
+    tsbp = (query.transferScoringBreakpoints as string).split(',').map((s: string) => { return Number.parseInt(s) })
+  }
+
+  let useStopObservations = true
+  if (query.useStopObservations) {
+    useStopObservations = tryBool(query.useStopObservations)
+  }
+
+  return NewScenario({
+    selectedFeedVersions: fvos,
+    timeOfDay: (query.timeOfDay as string) || '05:00-07:00',
+    profileName: query.profileName as string | undefined,
+    transferScoringBreakpoints: tsbp,
+    useStopObservations,
+    excludeIncomingTrips: (turnStringOrArrayIntoArray(query.excludeIncomingTrips) || []) as string[],
+    excludeOutgoingTrips: (turnStringOrArrayIntoArray(query.excludeOutgoingTrips) || []) as string[],
+    hideSubsequentTransfers: tryNumber(query.hideSubsequentTransfers) ?? undefined,
+    transferOverrides: new TransferOverrides(query.transferOverrides)
+  })
+}
+
+function tryBool (value: string | boolean | undefined | null): boolean {
+  if (value === 'false' || value === '') {
+    return false
+  }
+  if (value === 'true' || value === true) {
+    return true
+  }
+  return false
+}
+
+function tryNumber (value: string | number | undefined | null): number | null {
+  const f = Number(value)
+  if (Number.isNaN(f)) {
+    return null
+  }
+  return f
+}
+
+function turnStringOrArrayIntoArray (value: string | string[] | null | undefined): string[] | null {
+  if (value == null) {
+    return null
+  }
+  if (value === '') {
+    return []
+  }
+  const a = String(value || '').split(',')
+  return a.length > 0 ? a : null
 }

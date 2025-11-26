@@ -3,16 +3,18 @@ import { useQuery } from '@vue/apollo-composable'
 import {
   analystFeedQuery,
   feedVersionDefaultDate,
-  SelectedFeedVersion
+  SelectedFeedVersion,
+  type FeedVersionData,
+  type AnalystFeedQueryResponse
 } from './scenario'
 import type { StationHub } from './types'
 
 export function useFeedVersions (stationArea: Ref<StationHub>) {
-  const feedVersions = ref<any[]>([])
+  const feedVersions = ref<FeedVersionData[]>([])
   const activeFeedVersionIds = ref<number[]>([])
   const error = ref<Error | null>(null)
 
-  const { result: feedResult, loading: feedLoading, error: feedError } = useQuery(analystFeedQuery,
+  const { result: feedResult, loading: feedLoading, error: feedError } = useQuery<AnalystFeedQueryResponse>(analystFeedQuery,
     () => ({
       geometry: stationArea.value?.geometry
     }),
@@ -29,12 +31,14 @@ export function useFeedVersions (stationArea: Ref<StationHub>) {
   watch(feedResult, (data) => {
     if (!data) return
     const feeds = data.feeds
-    const fvs: any[] = []
+    const fvs: FeedVersionData[] = []
     const activeIds: number[] = []
     for (const feed of feeds) {
       if (feed.feed_state?.feed_version?.id) {
-        if (feed.feed_state.feed_version.stops && feed.feed_state.feed_version.stops.length > 0) {
-          activeIds.push(feed.feed_state.feed_version.id)
+        // Note: The 'stops' field is not strictly typed in FeedData yet, but exists in the query
+        const fv = feed.feed_state.feed_version as any
+        if (fv.stops && fv.stops.length > 0) {
+          activeIds.push(fv.id)
         }
       }
       for (const fv of feed.feed_versions) {
@@ -53,12 +57,34 @@ export function useFeedVersions (stationArea: Ref<StationHub>) {
 
   const defaultSelectedFeedVersions = computed<SelectedFeedVersion[]>(() => {
     const defaults: SelectedFeedVersion[] = []
+    // 1. Try active feed versions
     for (const id of activeFeedVersionIds.value) {
-      const fv = feedVersions.value.find((f: any) => f.id === id)
+      const fv = feedVersions.value.find(f => f.id === id)
       if (fv) {
         defaults.push(new SelectedFeedVersion({
           id: fv.id,
           serviceDate: feedVersionDefaultDate(fv) || ''
+        }))
+      }
+    }
+
+    // 2. If no active feed versions, try to find ANY feed version that serves this station
+    // Note: We don't have explicit "stops" info for all feed versions in the list,
+    // but we can try to pick the most recent one as a fallback if the active one is missing/broken.
+    // However, without knowing if it has stops, it's risky.
+    // But if activeFeedVersionIds is empty, it means NO active feed has stops in this geometry.
+    // So we are likely in a state where we need to pick *something*.
+
+    if (defaults.length === 0 && feedVersions.value.length > 0) {
+      // Sort by fetched_at desc
+      const sorted = feedVersions.value.slice(0).sort((a, b) => {
+        return a.fetched_at > b.fetched_at ? -1 : 1
+      })
+      const latest = sorted[0]
+      if (latest) {
+        defaults.push(new SelectedFeedVersion({
+          id: latest.id,
+          serviceDate: feedVersionDefaultDate(latest) || ''
         }))
       }
     }

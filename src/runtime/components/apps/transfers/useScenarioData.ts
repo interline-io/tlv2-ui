@@ -5,7 +5,10 @@ import {
   analystStopQuery,
   scenarioStopStopTimesQuery,
   type Scenario,
-  type ScenarioResult
+  type ScenarioResult,
+  type StopStopTimesData,
+  type ScenarioStopStopTimesQueryResponse,
+  type AnalystStopQueryResponse
 } from './scenario'
 import { windowToSeconds } from '../../utils/time-format'
 import type { StationHub } from './types'
@@ -20,7 +23,7 @@ export function useScenarioData (
   scenario: Ref<Scenario>
 ) {
   // State
-  const stopStopTimes = ref<any[]>([])
+  const stopStopTimes = ref<StopStopTimesData[]>([])
   const stops = ref<Stop[]>([])
   const moreLoading = ref(false)
   const error = ref<Error | null>(null)
@@ -36,7 +39,7 @@ export function useScenarioData (
   // Queries
 
   // Analyst Stop Query
-  const { result: stopResult, loading: stopLoading, error: stopError } = useQuery(analystStopQuery,
+  const { result: stopResult, loading: stopLoading, error: stopError } = useQuery<AnalystStopQueryResponse>(analystStopQuery,
     () => {
       const ids = scenario.value?.selectedFeedVersions.map((s: any) => {
         return s.id
@@ -110,7 +113,7 @@ export function useScenarioData (
       const thisFvoId = thisFvo.id
 
       console.log('useScenarioData: fetching stop times for fv', thisFvoId, 'stops', stopGroups[thisFvoId]?.length)
-      return client.query({
+      return client.query<ScenarioStopStopTimesQueryResponse>({
         query: scenarioStopStopTimesQuery,
         variables: {
           service_date: thisFvo.serviceDate,
@@ -123,7 +126,7 @@ export function useScenarioData (
 
     try {
       const results = await Promise.all(promises)
-      const newStopStopTimes: any[] = []
+      const newStopStopTimes: StopStopTimesData[] = []
       for (const result of results) {
         if (result && result.data && result.data.stopStopTimes) {
           newStopStopTimes.push(...result.data.stopStopTimes)

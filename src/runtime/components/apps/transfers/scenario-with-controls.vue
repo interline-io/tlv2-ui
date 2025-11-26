@@ -51,10 +51,8 @@ import { useScenarioData } from './useScenarioData'
 import { useFeedVersions } from './useFeedVersions'
 import {
   SelectedFeedVersion,
-  NewScenario,
-  TransferOverrides,
-  feedVersionDefaultDate,
   FeedVersionOption,
+  parseScenarioFromUrl,
   type Scenario,
   type ScenarioResult
 } from './scenario'
@@ -93,56 +91,7 @@ watch(feedError, (e) => {
 // Computed
 const scenario = computed<Scenario>(() => {
   const query = route.query as Record<string, any>
-  const fvos: any[] = []
-
-  // Process query params
-  const paramFvos = (turnStringOrArrayIntoArray(query.selectedFeedVersions) || [])
-    .map((s: string) => {
-      const a = (s || '').split(':')
-      const id = Number.parseInt(a[0] || '0')
-      let date = a.length > 1 ? a[1] : undefined
-
-      if (!date) {
-        const fv = feedVersions.value.find((f: any) => f.id === id)
-        if (fv) {
-          date = feedVersionDefaultDate(fv) || undefined
-        }
-      }
-
-      return new SelectedFeedVersion({
-        id: id,
-        serviceDate: date || ''
-      })
-    })
-
-  if (paramFvos.length > 0) {
-    fvos.push(...paramFvos)
-  } else {
-    fvos.push(...defaultSelectedFeedVersions.value)
-  }
-
-  // Set transfer scoring breakpoints
-  let tsbp: number[] | undefined
-  if (query.transferScoringBreakpoints) {
-    tsbp = (query.transferScoringBreakpoints as string).split(',').map((s: string) => { return Number.parseInt(s) })
-  }
-
-  let useStopObservations = true
-  if (query.useStopObservations) {
-    useStopObservations = tryBool(query.useStopObservations)
-  }
-
-  return NewScenario({
-    selectedFeedVersions: fvos,
-    timeOfDay: (query.timeOfDay as string) || '05:00-07:00',
-    profileName: query.profileName as string | undefined,
-    transferScoringBreakpoints: tsbp,
-    useStopObservations,
-    excludeIncomingTrips: (turnStringOrArrayIntoArray(query.excludeIncomingTrips) || []) as string[],
-    excludeOutgoingTrips: (turnStringOrArrayIntoArray(query.excludeOutgoingTrips) || []) as string[],
-    hideSubsequentTransfers: tryNumber(query.hideSubsequentTransfers) ?? undefined,
-    transferOverrides: new TransferOverrides(query.transferOverrides)
-  })
+  return parseScenarioFromUrl(query, feedVersions.value, defaultSelectedFeedVersions.value)
 })
 
 // Use Scenario Data Composable
@@ -351,35 +300,6 @@ function handleSetError (val: string) {
 }
 
 // Helper functions
-function tryBool (value: string | boolean | undefined | null): boolean {
-  if (value === 'false' || value === '') {
-    return false
-  }
-  if (value === 'true' || value === true) {
-    return true
-  }
-  return false
-}
-
-function tryNumber (value: string | number | undefined | null): number | null {
-  const f = Number(value)
-  if (Number.isNaN(f)) {
-    return null
-  }
-  return f
-}
-
-function turnStringOrArrayIntoArray (value: string | string[] | null | undefined): string[] | null {
-  if (value == null) {
-    return null
-  }
-  if (value === '') {
-    return []
-  }
-  const a = String(value || '').split(',')
-  return a.length > 0 ? a : null
-}
-
 function removeEmpty<T extends Record<string, any>> (obj: T): Partial<T> {
   return Object.fromEntries(
     Object.entries(obj).filter(([, v]) => (v !== '' && v != null))
