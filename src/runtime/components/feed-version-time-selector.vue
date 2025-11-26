@@ -1,104 +1,142 @@
 <template>
-  <div class="columns">
-    <div class="column">
-      <label class="label">Feed version(s)</label>
-      <o-field
-        v-for="(item, idx) of internalValue"
-        :key="idx"
-      >
-        <o-select
-          expanded
-          :model-value="item.id"
-          :disabled="disabled"
-          @update:model-value="updateFeedVersionId(idx, $event)"
-        >
-          <optgroup
-            v-for="(fvGroup, fvGroupKey) of feedVersionOptionGroups"
-            :key="fvGroupKey"
-            :label="fvGroup.name"
-          >
-            <option
-              v-for="fvOpt of fvGroup.feedVersions"
-              :key="fvOpt.id"
-              :value="fvOpt.id"
-              :selected="fvOpt.id === item.id"
-            >
-              {{ fvOpt.displayName || fvOpt.id }}
-            </option>
-          </optgroup>
-        </o-select>
-        <a
-          v-if="idx > 0 && allowMultiple"
-          class="button is-danger"
-          title="Remove this feed version from selection"
-          @click="removeFeedVersion(idx)"
-        ><o-icon icon="delete" /></a>
-      </o-field>
-
-      <nuxt-link
-        v-if="showUploadLink"
-        :to="{ name: 'feeds' }"
-        target="_blank"
-        class="button is-primary is-outlined"
-      >
-        <o-icon icon="upload" /> <span>Upload a new user feed</span>
-      </nuxt-link>
-      <span class="is-pulled-right">
-        <a
-          v-if="allowMultiple"
-          class="button is-primary"
-          title="Add a feed version to selection"
-          @click="addFeedVersion"
-        ><o-icon
-          icon="plus"
-        /></a>
-      </span>
-    </div>
-
-    <div class="column is-one-quarter">
-      <label class="label">Service date(s)</label>
+  <div>
+    <div class="columns">
+      <div class="column">
+        <label class="label">Feed version(s)</label>
+      </div>
+      <div class="column is-one-quarter">
+        <label class="label">Service date(s)</label>
+      </div>
       <div
-        v-for="(item, idx) of internalValue"
-        :key="idx"
-        class="field"
+        v-if="showTimeOfDay"
+        class="column is-one-quarter"
       >
-        <input
-          :value="item.serviceDate"
-          :disabled="disabled"
-          class="input"
-          title="Set a date used to query schedules within the given feed version"
-          type="date"
-          :min="getFeedVersionOption(item.id)?.start_date"
-          :max="getFeedVersionOption(item.id)?.end_date"
-          required
-          @change="updateServiceDate(idx, ($event.target as HTMLInputElement).value)"
-        >
+        <label class="label">Time-of-day</label>
       </div>
     </div>
 
     <div
-      v-if="showTimeOfDay"
-      class="field column is-one-quarter"
+      v-for="(item, idx) of internalValue"
+      :key="idx"
+      class="columns is-mobile"
+      :class="{ 'mb-2': idx < internalValue.length - 1 }"
     >
-      <label class="label">Time-of-day</label>
-      <div class="control">
-        <div class="select">
-          <o-select
-            :model-value="timeOfDay"
-            :disabled="disabled"
-            required
-            @update:model-value="updateTimeOfDay"
+      <div class="column">
+        <div class="field has-addons mb-0">
+          <div class="control is-expanded">
+            <div class="select is-fullwidth">
+              <select
+                :value="item.id"
+                :disabled="disabled"
+                @change="updateFeedVersionId(idx, parseInt(($event.target as HTMLSelectElement).value))"
+              >
+                <optgroup
+                  v-for="(fvGroup, fvGroupKey) of feedVersionOptionGroups"
+                  :key="fvGroupKey"
+                  :label="fvGroup.name"
+                >
+                  <option
+                    v-for="fvOpt of fvGroup.feedVersions"
+                    :key="fvOpt.id"
+                    :value="fvOpt.id"
+                    :selected="fvOpt.id === item.id"
+                  >
+                    {{ fvOpt.displayName || fvOpt.id }}
+                  </option>
+                </optgroup>
+              </select>
+            </div>
+          </div>
+          <div
+            v-if="idx > 0 && allowMultiple"
+            class="control"
           >
-            <option
-              v-for="tod in timeOfDayOptions"
-              :key="tod.value"
-              :value="tod.value"
-              :selected="tod.value === timeOfDay"
+            <button
+              class="button is-danger"
+              title="Remove this feed version from selection"
+              @click="removeFeedVersion(idx)"
             >
-              {{ tod.display }}
-            </option>
-          </o-select>
+              <o-icon
+                icon="delete"
+                size="small"
+              />
+            </button>
+          </div>
         </div>
+        <slot :name="`warning-${idx}`" :item="item" :index="idx">
+          <!-- Warning messages can be inserted here via slot -->
+        </slot>
+      </div>
+
+      <div class="column is-one-quarter" style="align-self: flex-start;">
+        <div class="control">
+          <input
+            :value="item.serviceDate"
+            :disabled="disabled"
+            class="input"
+            title="Set a date used to query schedules within the given feed version"
+            type="date"
+            :min="getFeedVersionOption(item.id)?.start_date"
+            :max="getFeedVersionOption(item.id)?.end_date"
+            required
+            @change="updateServiceDate(idx, ($event.target as HTMLInputElement).value)"
+          >
+        </div>
+      </div>
+
+      <div
+        v-if="showTimeOfDay && idx === 0"
+        class="column is-one-quarter"
+        style="align-self: flex-start;"
+      >
+        <div class="field">
+          <div class="control">
+            <div class="select is-fullwidth">
+              <select
+                :value="timeOfDay"
+                :disabled="disabled"
+                required
+                @change="updateTimeOfDay(($event.target as HTMLSelectElement).value)"
+              >
+                <option
+                  v-for="tod in timeOfDayOptions"
+                  :key="tod.value"
+                  :value="tod.value"
+                  :selected="tod.value === timeOfDay"
+                >
+                  {{ tod.display }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        v-else-if="showTimeOfDay"
+        class="column is-one-quarter"
+      />
+    </div>
+
+    <div class="columns">
+      <div class="column">
+        <nuxt-link
+          v-if="showUploadLink"
+          :to="{ name: 'feeds' }"
+          target="_blank"
+          class="button is-primary is-outlined"
+        >
+          <o-icon icon="upload" /> <span>Upload a new user feed</span>
+        </nuxt-link>
+        <span class="is-pulled-right">
+          <a
+            v-if="allowMultiple"
+            class="button is-primary"
+            title="Add a feed version to selection"
+            @click="addFeedVersion"
+          ><o-icon
+            icon="plus"
+          /></a>
+        </span>
       </div>
     </div>
   </div>

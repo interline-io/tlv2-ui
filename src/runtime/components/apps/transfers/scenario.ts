@@ -660,7 +660,7 @@ export function feedVersionDisplayName (fv: FeedVersionData): string {
   const feedName = fv.feed.name || feedKey
   const date = dayjs(fv.fetched_at).format('MMMM D, YYYY')
   const versionName = fv.name || (fv.sha1.substr(0, 8) + '...')
-  let displayName = `${feedName}: ${versionName} (uploaded on ${date})`
+  let displayName = `${feedName}: ${versionName} (${date})`
   if (feedKey === 'historic') {
     // use UTC
     displayName = `Historic RG for ${fv.fetched_at.substr(0, 7)}`

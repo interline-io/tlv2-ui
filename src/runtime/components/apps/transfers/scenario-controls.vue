@@ -19,29 +19,27 @@
       :show-upload-link="showUploadNewFeedVersion"
       @update:model-value="handleFeedVersionSelectionsChanged"
       @update:time-of-day="emitSetTimeOfDay"
-    />
-
-    <!-- Validation messages for feed versions -->
-    <div
-      v-for="(fv, idx) of displayFeedVersionOptions"
-      :key="idx"
-      class="mb-2"
     >
-      <o-notification
-        v-if="station != null && fv.id != null && !loading && fv.hasStops === false"
-        variant="danger"
-        :closeable="false"
+      <!-- Validation messages for each feed version -->
+      <template
+        v-for="(fv, idx) of displayFeedVersionOptions"
+        :key="idx"
+        #[`warning-${idx}`]
       >
-        Feed version {{ fv.displayName || fv.id }}: No stops in current location
-      </o-notification>
-      <o-notification
-        v-if="station != null && fv.id != null && !loading && fv.hasStops && fv.hasDepartures === false"
-        variant="danger"
-        :closeable="false"
-      >
-        Feed version {{ fv.displayName || fv.id }}: No departures on {{ scenario?.selectedFeedVersions?.[0]?.serviceDate }} between {{ scenario?.timeOfDay }}
-      </o-notification>
-    </div>
+        <p
+          v-if="station != null && fv.id != null && !loading && fv.hasStops === false"
+          class="help is-danger"
+        >
+          No stops in current location
+        </p>
+        <p
+          v-if="station != null && fv.id != null && !loading && fv.hasStops && fv.hasDepartures === false"
+          class="help is-danger"
+        >
+          No departures on {{ scenario?.selectedFeedVersions?.[idx]?.serviceDate }} between {{ scenario?.timeOfDay }}
+        </p>
+      </template>
+    </tl-feed-version-time-selector>
 
     <div
       v-if="showTransfers"
