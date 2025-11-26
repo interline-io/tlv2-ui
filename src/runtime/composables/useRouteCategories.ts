@@ -112,7 +112,7 @@ function routeCategoriesTree (): TreeNode {
       unknown: {
         key: 'unknown',
         desc: 'There is no category associated with this route.',
-        name: 'Unknown',
+        name: 'Default',
         children: {}
       }
     }
@@ -137,7 +137,7 @@ function routeSubcategoriesTree (): TreeNode {
       402: { key: '402', name: 'Community Special' },
       403: { key: '403', name: 'Community OnDemand' },
       501: { key: '501', name: 'First Mile/Last Mile Connector' },
-      unknown: { key: '', name: 'Unknown route sub-category' }
+      unknown: { key: '', name: '' }
     }
   })
 }
@@ -154,7 +154,7 @@ function routeRunningWaysTree (): TreeNode {
       3: { key: '3', name: 'Limited Dedicated: Local Roadway' },
       4: { key: '4', name: 'Shared, with Signal Priority' },
       5: { key: '5', name: 'Shared, No Priority' },
-      unknown: { key: 'unknown', name: 'Unknown' }
+      unknown: { key: 'unknown', name: '' }
     }
   })
 }

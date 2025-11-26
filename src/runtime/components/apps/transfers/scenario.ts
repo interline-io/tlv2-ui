@@ -975,13 +975,13 @@ function makeTripTree (pkey: string, deps: StopTimeEvent[], groups: string[]): T
       case 'route_subcategory': {
         const subcat = dep.trip.route.route_attribute?.subcategory
         tn.key = String(subcat)
-        tn.name = (subcat !== undefined && routeSubcategories.children[subcat]?.name) || 'Unknown Route Sub-category'
+        tn.name = (subcat !== undefined && routeSubcategories.children[subcat]?.name) || 'Default'
         break
       }
       case 'route_running_way': {
         const runningWay = dep.trip.route.route_attribute?.running_way
         tn.key = String(runningWay)
-        tn.name = 'Running Way: ' + ((runningWay !== undefined && routeRunningWays.children[runningWay]?.name) || 'Unknown')
+        tn.name = 'Running Way: ' + ((runningWay !== undefined && routeRunningWays.children[runningWay]?.name) || 'Default')
         break
       }
         break

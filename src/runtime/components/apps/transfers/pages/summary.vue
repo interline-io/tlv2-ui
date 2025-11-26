@@ -59,11 +59,11 @@ const transfersGridColumns = [
     text: '',
     cls: 'ttat-trip ttat-trip-unacceptable'
   },
-  {
-    key: 'link_to_individual_transfers',
-    link: 'link_to_individual_transfers',
-    link_text: 'View Individual Transfers'
-  }
+  // {
+  //   key: 'link_to_individual_transfers',
+  //   link: 'link_to_individual_transfers',
+  //   link_text: 'View Individual Transfers'
+  // }
 ]
 
 function getTransferSummaries (scenario: any, scenarioResult: any) {
