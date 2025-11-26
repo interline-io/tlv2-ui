@@ -63,7 +63,6 @@ declare module 'vue' {
     TlAppsTransfersPlatformPathwayMap: typeof import('./components/apps/transfers/platform-pathway-map.vue')['default']
     TlAppsTransfersPlatformPathway: typeof import('./components/apps/transfers/platform-pathway.vue')['default']
     TlAppsTransfersScenarioControls: typeof import('./components/apps/transfers/scenario-controls.vue')['default']
-    TlAppsTransfersScenarioData: typeof import('./components/apps/transfers/scenario-data.vue')['default']
     TlAppsTransfersScenarioWithControls: typeof import('./components/apps/transfers/scenario-with-controls.vue')['default']
     TlAppsTransfersStationBboxSelectMap: typeof import('./components/apps/transfers/station-bbox-select-map.vue')['default']
     TlAppsTransfersStationSelectMap: typeof import('./components/apps/transfers/station-select-map.vue')['default']

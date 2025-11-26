@@ -179,7 +179,10 @@ export default defineNuxtModule<ModuleOptions>({
           'fast-json-stable-stringify', // Small utility but frequently imported - bundle once
           'maplibre-gl', // Large mapping library - dramatically speeds up dev cold starts
           'mixpanel-browser', // Analytics SDK with dynamic imports - needs pre-bundling
-          'zen-observable' // Observable polyfill used by Apollo - avoid re-discovery
+          'zen-observable', // Observable polyfill used by Apollo - avoid re-discovery
+          'vega', // Needs ESM: Visualization library
+          'vega-lite', // Needs ESM: High-level visualization grammar
+          'vega-embed' // Needs ESM: Embeds Vega visualizations
         )
         // Debug log removed: tlv2-ui:vite-config applied
       },

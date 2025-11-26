@@ -13,19 +13,19 @@ const { routeSubcategoriesTree, routeRunningWaysTree } = useRouteCategories()
 // GraphQL Query Type Definitions
 // ============================================================================
 
-interface FeedInfo {
+export interface FeedInfo {
   id: number
   feed_version: number
   feed_start_date?: string
   feed_end_date?: string
 }
 
-interface FeedVersionGtfsImport {
+export interface FeedVersionGtfsImport {
   success: boolean
   in_progress: boolean
 }
 
-interface FeedVersionData {
+export interface FeedVersionData {
   id: number
   sha1: string
   file?: string
@@ -42,14 +42,20 @@ interface FeedVersionData {
   feed_version_gtfs_import?: FeedVersionGtfsImport
 }
 
-interface FeedData {
+export interface FeedData {
   id: number
   onestop_id: string
   name?: string
+  feed_state?: {
+    feed_version?: {
+      id: number
+      stops?: any[]
+    }
+  }
   feed_versions: FeedVersionData[]
 }
 
-interface AnalystFeedQueryResponse {
+export interface AnalystFeedQueryResponse {
   feeds: FeedData[]
 }
 
@@ -222,6 +228,14 @@ fragment feed on Feed {
   id
   onestop_id
   name
+  feed_state {
+    feed_version {
+      id
+      stops(limit: 1, where: { within: $geometry }) {
+        id
+      }
+    }
+  }
   feed_versions(limit:300) {
     id
     sha1
@@ -245,11 +259,14 @@ fragment feed on Feed {
       success
       in_progress
     }
+    stops(limit: 1, where: { within: $geometry }) {
+      id
+    }
   }
 }
 
-query analystFeedQuery{
-  feeds {
+query analystFeedQuery($geometry: Polygon) {
+  feeds(where: { within: $geometry }) {
     ...feed
   }
 }`
@@ -459,12 +476,10 @@ export const scenarioStopStopTimesQuery = gql`
 // ============================================================================
 
 export type {
-  AnalystFeedQueryResponse,
   AnalystStopQueryResponse,
   AnalystStopQueryVariables,
   ScenarioStopStopTimesQueryResponse,
   ScenarioStopStopTimesQueryVariables,
-  FeedVersionData,
   StopStopTimesData,
   StopTimeData,
   ObservationData,
@@ -642,11 +657,13 @@ export function feedVersionDisplayName (fv: FeedVersionData): string {
     return fv.fetched_at ? dayjs(fv.fetched_at).format('MMMM D, YYYY') : 'Unknown Feed Version'
   }
   const feedKey = fv.feed.onestop_id
+  const feedName = fv.feed.name || feedKey
   const date = dayjs(fv.fetched_at).format('MMMM D, YYYY')
-  let displayName = `${fv.name || fv.sha1} (uploaded on ${date})`
+  const versionName = fv.name || (fv.sha1.substring(0, 8) + '...')
+  let displayName = `${feedName}: ${versionName} (${date})`
   if (feedKey === 'historic') {
     // use UTC
-    displayName = `Historic RG for ${fv.fetched_at.substr(0, 7)}`
+    displayName = `Historic RG for ${fv.fetched_at.substring(0, 7)}`
   } else if (feedKey === 'RG') {
     displayName = `Daily RG for ${date}`
   }
@@ -659,7 +676,7 @@ export function feedVersionDefaultDate (fv: FeedVersionData): string | null {
   }
   if (fv.feed.onestop_id === 'historic') {
     // use UTC day for historic fetched_at
-    return fv.fetched_at.substr(0, 10)
+    return fv.fetched_at.substring(0, 10)
   }
   return dayjs(fv.fetched_at).format('YYYY-MM-DD')
 }
@@ -925,6 +942,7 @@ function makeTripTree (pkey: string, deps: StopTimeEvent[], groups: string[]): T
       case 'feed_version':
         tn.key = String(dep.trip.feed_version.id)
         tn.name = feedVersionDisplayName(dep.trip.feed_version)
+        tn.opts = { style: 'bold' }
         break
       case 'agency':
         tn.key = dep.trip.route.agency.agency_id
@@ -953,22 +971,20 @@ function makeTripTree (pkey: string, deps: StopTimeEvent[], groups: string[]): T
         tn.opts = {
           routeCategory: dep.trip.route.route_attribute?.category ?? -1,
           showCategory: true,
-          style: 'bold'
         }
         break
       case 'route_subcategory': {
         const subcat = dep.trip.route.route_attribute?.subcategory
         tn.key = String(subcat)
-        tn.name = (subcat !== undefined && routeSubcategories.children[subcat]?.name) || 'Unknown Route Sub-category'
+        tn.name = (subcat !== undefined && routeSubcategories.children[subcat]?.name) || 'Default'
         break
       }
       case 'route_running_way': {
         const runningWay = dep.trip.route.route_attribute?.running_way
         tn.key = String(runningWay)
-        tn.name = 'Running Way: ' + ((runningWay !== undefined && routeRunningWays.children[runningWay]?.name) || 'Unknown')
+        tn.name = 'Running Way: ' + ((runningWay !== undefined && routeRunningWays.children[runningWay]?.name) || 'Default')
         break
       }
-        break
       case 'trip':
         tn.key = dep.trip.trip_id
         tn.name = dep.trip.trip_id
@@ -1393,4 +1409,97 @@ function calculateTransfers (
   }
 
   return transfers.sort((a, b) => a.arrival_time - b.arrival_time)
+}
+
+// ============================================================================
+// Scenario Parsing
+// ============================================================================
+
+export function parseScenarioFromUrl (
+  query: Record<string, any>,
+  feedVersions: FeedVersionData[],
+  defaultSelectedFeedVersions: SelectedFeedVersion[]
+): Scenario {
+  const fvos: SelectedFeedVersion[] = []
+
+  // Process query params
+  const paramFvos = (turnStringOrArrayIntoArray(query.selectedFeedVersions) || [])
+    .map((s: string) => {
+      const a = (s || '').split(':')
+      const id = Number.parseInt(a[0] || '0')
+      let date = a.length > 1 ? a[1] : undefined
+
+      if (!date) {
+        const fv = feedVersions.find(f => f.id === id)
+        if (fv) {
+          date = feedVersionDefaultDate(fv) || undefined
+        }
+      }
+
+      return new SelectedFeedVersion({
+        id: id,
+        serviceDate: date || ''
+      })
+    })
+
+  if (paramFvos.length > 0) {
+    fvos.push(...paramFvos)
+  } else {
+    fvos.push(...defaultSelectedFeedVersions)
+  }
+
+  // Set transfer scoring breakpoints
+  let tsbp: number[] | undefined
+  if (query.transferScoringBreakpoints) {
+    tsbp = (query.transferScoringBreakpoints as string)
+      .split(',')
+      .map((s: string) => Number.parseInt(s))
+      .filter(n => !Number.isNaN(n))
+  }
+
+  let useStopObservations = true
+  if (query.useStopObservations) {
+    useStopObservations = tryBool(query.useStopObservations)
+  }
+
+  return NewScenario({
+    selectedFeedVersions: fvos,
+    timeOfDay: (query.timeOfDay as string) || '05:00-07:00',
+    profileName: query.profileName as string | undefined,
+    transferScoringBreakpoints: tsbp,
+    useStopObservations,
+    excludeIncomingTrips: (turnStringOrArrayIntoArray(query.excludeIncomingTrips) || []) as string[],
+    excludeOutgoingTrips: (turnStringOrArrayIntoArray(query.excludeOutgoingTrips) || []) as string[],
+    hideSubsequentTransfers: tryNumber(query.hideSubsequentTransfers) ?? undefined,
+    transferOverrides: new TransferOverrides(query.transferOverrides)
+  })
+}
+
+function tryBool (value: string | boolean | undefined | null): boolean {
+  if (value === 'false' || value === '') {
+    return false
+  }
+  if (value === 'true' || value === true) {
+    return true
+  }
+  return false
+}
+
+function tryNumber (value: string | number | undefined | null): number | null {
+  const f = Number(value)
+  if (Number.isNaN(f)) {
+    return null
+  }
+  return f
+}
+
+function turnStringOrArrayIntoArray (value: string | string[] | null | undefined): string[] | null {
+  if (value == null) {
+    return null
+  }
+  if (value === '') {
+    return []
+  }
+  const a = String(value).split(',')
+  return a.length > 0 ? a : null
 }

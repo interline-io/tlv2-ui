@@ -7,7 +7,6 @@
     <tl-title :title="`${props.stationArea.properties.name}: Transfers – Summary`" />
 
     <tl-apps-transfers-scenario-with-controls
-      :station-hubs="[]"
       :station-area="props.stationArea"
       :show-transfer-controls="true"
       :show-trip-controls="true"
@@ -59,11 +58,11 @@ const transfersGridColumns = [
     text: '',
     cls: 'ttat-trip ttat-trip-unacceptable'
   },
-  {
-    key: 'link_to_individual_transfers',
-    link: 'link_to_individual_transfers',
-    link_text: 'View Individual Transfers'
-  }
+  // {
+  //   key: 'link_to_individual_transfers',
+  //   link: 'link_to_individual_transfers',
+  //   link_text: 'View Individual Transfers'
+  // }
 ]
 
 function getTransferSummaries (scenario: any, scenarioResult: any) {

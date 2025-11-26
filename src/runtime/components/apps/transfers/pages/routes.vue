@@ -7,7 +7,6 @@
     <tl-title :title="`${props.stationArea.properties.name}: Routes`" />
 
     <tl-apps-transfers-scenario-with-controls
-      :station-hubs="[]"
       :station-area="props.stationArea"
     >
       <template #default="{ scenario, scenarioResult }">
@@ -69,16 +68,17 @@ const routesGridColumns = [
   },
   { key: 'trip_count', text: 'Trips' },
   { key: 'p50', text: 'Headway', transform: 'secondsToDuration' },
-  {
-    key: 'link_to_tranfers_from',
-    link: 'link_to_tranfers_from',
-    link_text: 'View Transfers from Route'
-  },
-  {
-    key: 'link_to_tranfers_to',
-    link: 'link_to_tranfers_to',
-    link_text: 'View Transfers to Route'
-  }
+  // FIXME: Disabled because tree state is not correctly set
+  // {
+  //   key: 'link_to_tranfers_from',
+  //   link: 'link_to_tranfers_from',
+  //   link_text: 'View Transfers from Route'
+  // },
+  // {
+  //   key: 'link_to_tranfers_to',
+  //   link: 'link_to_tranfers_to',
+  //   link_text: 'View Transfers to Route'
+  // }
 ]
 
 function getRouteStopDepartures (scenario: any, scenarioResult: any) {

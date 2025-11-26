@@ -7,7 +7,6 @@
     <tl-title :title="`${props.stationArea.properties.name}: Transfers – Individual`" />
 
     <tl-apps-transfers-scenario-with-controls
-      :station-hubs="[]"
       :station-area="props.stationArea"
       :show-transfer-controls="true"
       :show-trip-controls="true"

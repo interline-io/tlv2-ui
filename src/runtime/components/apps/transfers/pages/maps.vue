@@ -7,7 +7,6 @@
     <tl-title :title="`${props.stationArea.properties.name}: Maps & Platforms`" />
 
     <tl-apps-transfers-scenario-with-controls
-      :station-hubs="[]"
       :station-area="props.stationArea"
     >
       <template #default="{ scenario, scenarioResult, station }">
