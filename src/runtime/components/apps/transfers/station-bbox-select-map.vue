@@ -212,7 +212,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .bbox-select-map-wrapper {
   position: relative;
-  height: 800px;
+  height: 400px;
   width: 100%;
 }
 

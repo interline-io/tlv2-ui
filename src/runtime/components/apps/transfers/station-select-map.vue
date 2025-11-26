@@ -215,7 +215,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .station-select-map-wrapper {
   position: relative;
-  height: 800px;
+  height: 400px;
   width: 100%;
 }
 

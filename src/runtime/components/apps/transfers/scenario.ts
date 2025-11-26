@@ -657,8 +657,10 @@ export function feedVersionDisplayName (fv: FeedVersionData): string {
     return fv.fetched_at ? dayjs(fv.fetched_at).format('MMMM D, YYYY') : 'Unknown Feed Version'
   }
   const feedKey = fv.feed.onestop_id
+  const feedName = fv.feed.name || feedKey
   const date = dayjs(fv.fetched_at).format('MMMM D, YYYY')
-  let displayName = `${fv.name || fv.sha1} (uploaded on ${date})`
+  const versionName = fv.name || (fv.sha1.substr(0, 8) + '...')
+  let displayName = `${feedName}: ${versionName} (uploaded on ${date})`
   if (feedKey === 'historic') {
     // use UTC
     displayName = `Historic RG for ${fv.fetched_at.substr(0, 7)}`
@@ -940,6 +942,7 @@ function makeTripTree (pkey: string, deps: StopTimeEvent[], groups: string[]): T
       case 'feed_version':
         tn.key = String(dep.trip.feed_version.id)
         tn.name = feedVersionDisplayName(dep.trip.feed_version)
+        tn.opts = { style: 'bold' }
         break
       case 'agency':
         tn.key = dep.trip.route.agency.agency_id
@@ -968,7 +971,6 @@ function makeTripTree (pkey: string, deps: StopTimeEvent[], groups: string[]): T
         tn.opts = {
           routeCategory: dep.trip.route.route_attribute?.category ?? -1,
           showCategory: true,
-          style: 'bold'
         }
         break
       case 'route_subcategory': {
