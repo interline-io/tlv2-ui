@@ -12,7 +12,7 @@ for (const rt of routeTypes) {
 }
 
 export function getRouteType (code: number): RouteType {
-  return routeTypeMap.get(code) || { code: -1, name: 'Default', parent: -1 }
+  return routeTypeMap.get(code) || { code: -1, name: 'Unknown', parent: -1 }
 }
 
 // GetBasicRouteType returns the closest approximate basic route_type for an extended route_type.
