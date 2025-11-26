@@ -261,7 +261,7 @@ watch(() => props.scenario?.selectedFeedVersions, (newVal) => {
   if (newVal) {
     selectedFeedVersions.value = newVal.slice(0)
   }
-}, { deep: true })
+}, { deep: true, immediate: true })
 
 const hasAtLeastOneStopObservation = computed(() => {
   if (!props.scenarioResult?.outgoingDepartures) return false

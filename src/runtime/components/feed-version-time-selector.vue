@@ -177,6 +177,25 @@ watch(() => props.modelValue, (newValue) => {
   }
 }, { immediate: true, deep: true })
 
+// Watch for options to populate if we are currently showing a placeholder
+watch(() => props.feedVersionOptions, (newOptions) => {
+  if (newOptions.length > 0 && internalValue.value.length === 1 && internalValue.value[0]?.id === 0) {
+    // If we have a placeholder (id=0) and now we have options, try to pick a better default
+    // BUT only if modelValue is empty. If modelValue has a value, we should respect it.
+    if (!props.modelValue || props.modelValue.length === 0) {
+      const firstOption = newOptions[0]
+      if (firstOption) {
+        const newVal = [{
+          id: firstOption.id,
+          serviceDate: firstOption.defaultServiceDate || new Date().toISOString().split('T')[0] || ''
+        }]
+        internalValue.value = newVal
+        emit('update:modelValue', newVal)
+      }
+    }
+  }
+})
+
 const timeOfDayOptions = computed((): TimeOfDayOption[] => {
   let tod: TimeOfDayOption[] = []
   if (props.showAllDayOption) {
