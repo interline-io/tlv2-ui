@@ -8,7 +8,7 @@
     </o-notification>
 
     <!-- Feed version/service date/time-of-day selector -->
-    <tl-feed-version-time-selector
+    <tl-apps-transfers-feed-version-time-selector
       :model-value="feedVersionSelections"
       :time-of-day="scenario?.timeOfDay"
       :feed-version-options="mappedFeedVersionOptions"
@@ -39,7 +39,7 @@
           No departures on {{ scenario?.selectedFeedVersions?.[idx]?.serviceDate }} between {{ scenario?.timeOfDay }}
         </p>
       </template>
-    </tl-feed-version-time-selector>
+    </tl-apps-transfers-feed-version-time-selector>
 
     <div
       v-if="showTransfers"

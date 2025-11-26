@@ -9,7 +9,7 @@
       <tl-csv-download :data="csvData" />
     </div>
 
-    <tl-angle-table>
+    <tl-apps-transfers-angle-table>
       <thead>
         <tr>
           <th
@@ -64,7 +64,7 @@
           <slot :entry="entry" />
         </tr>
       </tbody>
-    </tl-angle-table>
+    </tl-apps-transfers-angle-table>
   </div>
 </template>
 
