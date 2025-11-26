@@ -272,7 +272,7 @@ query analystFeedQuery($geometry: Polygon) {
 }`
 
 export const analystStopQuery = gql`
-query analystStopQuery($feed_version_ids: [Int!], $geometry: Polygon!) {
+query analystStopQuery($feed_version_ids: [Int!]!, $geometry: Polygon!) {
     feed_versions(ids: $feed_version_ids) {
       stops(where: { within: $geometry }) {
         id

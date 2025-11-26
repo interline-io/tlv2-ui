@@ -12,6 +12,6 @@ export const useApiEndpoint = (path?: string, clientName?: string) => {
     const clientApiBases: Record<string, string> = config.public.tlv2?.apiBase || {}
     base = clientApiBases[clientName] || window.location.origin + '/api/v2'
   }
-  console.log('clientName:', clientName, 'resolved base:', base, 'path:', path)
+  // console.log('clientName:', clientName, 'resolved base:', base, 'path:', path)
   return base + (path || '')
 }
