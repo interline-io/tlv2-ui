@@ -12,7 +12,7 @@
       >
         <span :class="node.opts?.style">
           {{ node.name }}
-          <strong><route-category v-if="node.opts.routeCategory" :show-category="node.opts.showCategory" :category="node.opts.routeCategory" :subcategory="node.opts.routeSubcategory" /></strong>
+          <strong><tl-route-category v-if="node.opts.routeCategory" :show-category="node.opts.showCategory" :category="node.opts.routeCategory" :subcategory="node.opts.routeSubcategory" /></strong>
         </span>
       </o-checkbox>
     </div>

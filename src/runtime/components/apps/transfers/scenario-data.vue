@@ -341,16 +341,18 @@ export default {
       this.moreLoading = false
     },
     async getSharedFeedVersions (): Promise<void> {
-      await fetch(useApiEndpoint('/admin/feed_versions'), {
-        headers: await useAuthHeaders()
-      })
-        .then(this.handleError)
-        .then((data: any) => {
-          this.sharedFeedVersions = data?.feed_versions || []
-        })
-        .catch((e: Error) => {
-          this.error = e
-        })
+      // FIXME: default deployment does not have admin api enabled...
+      // await fetch(useApiEndpoint('/admin/feed_versions', 'default'), {
+      //   credentials: 'same-origin',
+      //   headers: await useAuthHeaders()
+      // })
+      //   .then(this.handleError)
+      //   .then((data: any) => {
+      //     this.sharedFeedVersions = data?.feed_versions || []
+      //   })
+      //   .catch((e: Error) => {
+      //     this.error = e
+      //   })
     },
     mixpanelLogScenario (): void {
       const sfvs = this.scenario.selectedFeedVersions

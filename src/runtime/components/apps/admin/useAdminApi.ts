@@ -26,6 +26,7 @@ export async function fetchAdmin<T> (path: string, options: any = {}) {
 
   return $fetch<T>(path, {
     baseURL: apiEndpoint + '/admin',
+    credentials: 'same-origin',
     headers: {
       ...options.headers,
       ...authHeaders
