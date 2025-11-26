@@ -257,6 +257,12 @@ const selectedFeedVersions = ref<SelectedFeedVersion[]>(props.scenario?.selected
 const _enableStopObservations = ref(true)
 const error = ref<string | null>(null)
 
+watch(() => props.scenario?.selectedFeedVersions, (newVal) => {
+  if (newVal) {
+    selectedFeedVersions.value = newVal.slice(0)
+  }
+}, { deep: true })
+
 const hasAtLeastOneStopObservation = computed(() => {
   if (!props.scenarioResult?.outgoingDepartures) return false
   for (const d of props.scenarioResult.outgoingDepartures) {

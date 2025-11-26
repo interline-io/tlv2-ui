@@ -46,15 +46,14 @@
 <script setup lang="ts">
 import { ref, computed, watch, toRef } from 'vue'
 import { navigateTo, useRoute } from '#imports'
-import { useQuery } from '@vue/apollo-composable'
 import { useMixpanel } from '../../../composables/useMixpanel'
 import { useScenarioData } from './useScenarioData'
+import { useFeedVersions } from './useFeedVersions'
 import {
   SelectedFeedVersion,
   NewScenario,
   TransferOverrides,
   feedVersionDefaultDate,
-  analystFeedQuery,
   FeedVersionOption,
   type Scenario,
   type ScenarioResult
@@ -78,40 +77,14 @@ const route = useRoute()
 const mixpanel = useMixpanel()
 
 // State
-const feedVersions = ref<any[]>([])
-const activeFeedVersionIds = ref<number[]>([])
+const {
+  feedVersions,
+  defaultSelectedFeedVersions,
+  loading: feedLoading,
+  error: feedError
+} = useFeedVersions(toRef(props, 'stationArea'))
+
 const error = ref<Error | null>(null)
-
-// Queries
-const { result: feedResult, loading: feedLoading, error: feedError } = useQuery(analystFeedQuery,
-  () => ({
-    geometry: props.stationArea?.geometry
-  }),
-  () => ({
-    enabled: !!props.stationArea?.geometry
-  })
-)
-
-watch(feedResult, (data) => {
-  if (!data) return
-  const feeds = data.feeds
-  const fvs: any[] = []
-  const activeIds: number[] = []
-  for (const feed of feeds) {
-    if (feed.feed_state?.feed_version?.id) {
-      if (feed.feed_state.feed_version.stops && feed.feed_state.feed_version.stops.length > 0) {
-        activeIds.push(feed.feed_state.feed_version.id)
-      }
-    }
-    for (const fv of feed.feed_versions) {
-      if (fv.feed_version_gtfs_import?.success === true) {
-        fvs.push(fv)
-      }
-    }
-  }
-  feedVersions.value = fvs
-  activeFeedVersionIds.value = activeIds
-})
 
 watch(feedError, (e) => {
   if (e) error.value = e
@@ -145,17 +118,7 @@ const scenario = computed<Scenario>(() => {
   if (paramFvos.length > 0) {
     fvos.push(...paramFvos)
   } else {
-    console.log('Defaulting to active feed versions:', activeFeedVersionIds.value)
-    for (const id of activeFeedVersionIds.value) {
-      const fv = feedVersions.value.find((f: any) => f.id === id)
-      if (fv) {
-        console.log('Adding default active feed version:', fv.id, fv.sha1, fv.feed.onestop_id)
-        fvos.push(new SelectedFeedVersion({
-          id: fv.id,
-          serviceDate: feedVersionDefaultDate(fv) || ''
-        }))
-      }
-    }
+    fvos.push(...defaultSelectedFeedVersions.value)
   }
 
   // Set transfer scoring breakpoints
@@ -186,10 +149,15 @@ const scenario = computed<Scenario>(() => {
 const {
   scenarioResult,
   station,
-  displayProfiles,
   loading: dataLoading,
   error: dataError
 } = useScenarioData(toRef(props, 'stationArea'), scenario)
+
+const displayProfiles = computed<boolean>(() => {
+  return !!station.value
+    && station.value.pathways.filter((s) => { return (s.id || 0) > 0 }).length > 0
+    && scenario.value.selectedFeedVersions.length === 1
+})
 
 const loading = computed(() => dataLoading.value || feedLoading.value)
 

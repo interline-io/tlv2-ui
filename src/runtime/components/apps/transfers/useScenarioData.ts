@@ -75,12 +75,6 @@ export function useScenarioData (
     return NewScenarioResult(scenario.value, station.value, stopStopTimes.value)
   })
 
-  const displayProfiles = computed<boolean>(() => {
-    return !!station.value
-      && station.value.pathways.filter((s) => { return (s.id || 0) > 0 }).length > 0
-      && scenario.value.selectedFeedVersions.length === 1
-  })
-
   const fetchScenarioData = async (page: number): Promise<void> => {
     console.log('useScenarioData: fetchScenarioData', page)
     if (page === 0) {
@@ -173,7 +167,6 @@ export function useScenarioData (
   return {
     scenarioResult,
     station,
-    displayProfiles,
     stops,
     loading: isLoading,
     error,
