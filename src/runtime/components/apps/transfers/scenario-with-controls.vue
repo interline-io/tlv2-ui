@@ -204,7 +204,6 @@ function handleSetTimeOfDay (val: string) {
 }
 
 function handleSetSelectedFeedVersion (idx: number, id: number | null, serviceDate: string | null) {
-  console.log('handleSetSelectedFeedVersion:', idx, id, serviceDate)
   const fvos = new Map()
   for (const fvo of feedVersionOptions.value) {
     fvos.set(fvo.id, fvo)
@@ -302,7 +301,7 @@ function handleSetError (val: string) {
 // Helper functions
 function removeEmpty<T extends Record<string, any>> (obj: T): Partial<T> {
   return Object.fromEntries(
-    Object.entries(obj).filter(([, v]) => (v !== '' && v != null))
+    Object.entries(obj).filter(([, v]) => (v !== '' && v !== null && v !== undefined))
   ) as Partial<T>
 }
 </script>

@@ -659,11 +659,11 @@ export function feedVersionDisplayName (fv: FeedVersionData): string {
   const feedKey = fv.feed.onestop_id
   const feedName = fv.feed.name || feedKey
   const date = dayjs(fv.fetched_at).format('MMMM D, YYYY')
-  const versionName = fv.name || (fv.sha1.substr(0, 8) + '...')
+  const versionName = fv.name || (fv.sha1.substring(0, 8) + '...')
   let displayName = `${feedName}: ${versionName} (${date})`
   if (feedKey === 'historic') {
     // use UTC
-    displayName = `Historic RG for ${fv.fetched_at.substr(0, 7)}`
+    displayName = `Historic RG for ${fv.fetched_at.substring(0, 7)}`
   } else if (feedKey === 'RG') {
     displayName = `Daily RG for ${date}`
   }
@@ -676,7 +676,7 @@ export function feedVersionDefaultDate (fv: FeedVersionData): string | null {
   }
   if (fv.feed.onestop_id === 'historic') {
     // use UTC day for historic fetched_at
-    return fv.fetched_at.substr(0, 10)
+    return fv.fetched_at.substring(0, 10)
   }
   return dayjs(fv.fetched_at).format('YYYY-MM-DD')
 }
@@ -985,7 +985,6 @@ function makeTripTree (pkey: string, deps: StopTimeEvent[], groups: string[]): T
         tn.name = 'Running Way: ' + ((runningWay !== undefined && routeRunningWays.children[runningWay]?.name) || 'Default')
         break
       }
-        break
       case 'trip':
         tn.key = dep.trip.trip_id
         tn.name = dep.trip.trip_id
@@ -1452,7 +1451,10 @@ export function parseScenarioFromUrl (
   // Set transfer scoring breakpoints
   let tsbp: number[] | undefined
   if (query.transferScoringBreakpoints) {
-    tsbp = (query.transferScoringBreakpoints as string).split(',').map((s: string) => { return Number.parseInt(s) })
+    tsbp = (query.transferScoringBreakpoints as string)
+      .split(',')
+      .map((s: string) => Number.parseInt(s))
+      .filter(n => !Number.isNaN(n))
   }
 
   let useStopObservations = true
@@ -1498,6 +1500,6 @@ function turnStringOrArrayIntoArray (value: string | string[] | null | undefined
   if (value === '') {
     return []
   }
-  const a = String(value || '').split(',')
+  const a = String(value).split(',')
   return a.length > 0 ? a : null
 }

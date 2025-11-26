@@ -210,7 +210,7 @@ watch(() => props.modelValue, (newValue) => {
     const firstOption = props.feedVersionOptions[0]
     internalValue.value = [{
       id: firstOption?.id || 0,
-      serviceDate: firstOption?.defaultServiceDate || new Date().toISOString().split('T')[0] || ''
+      serviceDate: firstOption?.defaultServiceDate || (new Date().toISOString().split('T')[0] ?? '')
     }]
   }
 }, { immediate: true, deep: true })
@@ -225,7 +225,7 @@ watch(() => props.feedVersionOptions, (newOptions) => {
       if (firstOption) {
         const newVal = [{
           id: firstOption.id,
-          serviceDate: firstOption.defaultServiceDate || new Date().toISOString().split('T')[0] || ''
+          serviceDate: firstOption.defaultServiceDate || (new Date().toISOString().split('T')[0] ?? '')
         }]
         internalValue.value = newVal
         emit('update:modelValue', newVal)
@@ -306,7 +306,7 @@ function updateFeedVersionId (idx: number, newId: number | null | undefined) {
 
   updated[idx] = {
     id: newId,
-    serviceDate: fvOption?.defaultServiceDate || currentItem?.serviceDate || new Date().toISOString().split('T')[0] || '',
+    serviceDate: fvOption?.defaultServiceDate || currentItem?.serviceDate || (new Date().toISOString().split('T')[0] ?? ''),
     startTime: currentItem?.startTime,
     endTime: currentItem?.endTime
   }
@@ -341,7 +341,7 @@ function addFeedVersion () {
   const firstOption = props.feedVersionOptions[0]
   const newEntry: FeedVersionSelection = {
     id: firstOption?.id || 0,
-    serviceDate: firstOption?.defaultServiceDate || new Date().toISOString().split('T')[0] || ''
+    serviceDate: firstOption?.defaultServiceDate || (new Date().toISOString().split('T')[0] ?? '')
   }
 
   const updated = [...internalValue.value, newEntry]

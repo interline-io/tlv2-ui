@@ -43,8 +43,7 @@ export function useScenarioData (
     () => {
       const ids = scenario.value?.selectedFeedVersions.map((s: any) => {
         return s.id
-      }).filter((s: any) => { return s })
-      console.log('useScenarioData: analystStopQuery ids:', ids)
+      }).filter((s: any) => { return s != null })
       return {
         feed_version_ids: ids,
         geometry: stationArea.value?.geometry
@@ -79,7 +78,6 @@ export function useScenarioData (
   })
 
   const fetchScenarioData = async (page: number): Promise<void> => {
-    console.log('useScenarioData: fetchScenarioData', page)
     if (page === 0) {
       moreLoading.value = true
       stopStopTimes.value = []
@@ -112,7 +110,6 @@ export function useScenarioData (
       const maxAfter = Math.max(...scenario.value.transferScoringBreakpoints)
       const thisFvoId = thisFvo.id
 
-      console.log('useScenarioData: fetching stop times for fv', thisFvoId, 'stops', stopGroups[thisFvoId]?.length)
       return client.query<ScenarioStopStopTimesQueryResponse>({
         query: scenarioStopStopTimesQuery,
         variables: {
@@ -132,10 +129,8 @@ export function useScenarioData (
           newStopStopTimes.push(...result.data.stopStopTimes)
         }
       }
-      console.log('useScenarioData: fetched stop times', newStopStopTimes.length)
       stopStopTimes.value = newStopStopTimes
     } catch (e: any) {
-      console.error('useScenarioData: error fetching stop times', e)
       setError(e)
     } finally {
       moreLoading.value = false
@@ -144,7 +139,6 @@ export function useScenarioData (
 
   watch(stopResult, (data) => {
     if (!data) return
-    console.log('useScenarioData: stopResult received', data.feed_versions?.length)
     const ret: Stop[] = []
     for (const fv of data.feed_versions) {
       for (const stop of fv.stops) {
@@ -161,7 +155,6 @@ export function useScenarioData (
 
   // Watchers
   watch(scenario, () => {
-    console.log('useScenarioData: scenario changed')
     if (stops.value.length > 0) {
       fetchScenarioData(0)
     }
