@@ -28,14 +28,14 @@
       class="mb-2"
     >
       <o-notification
-        v-if="station != null && fv.id != null && !loading && !fv.hasStops"
+        v-if="station != null && fv.id != null && !loading && fv.hasStops === false"
         variant="danger"
         :closeable="false"
       >
         Feed version {{ fv.displayName || fv.id }}: No stops in current location
       </o-notification>
       <o-notification
-        v-if="station != null && fv.id != null && !loading && fv.hasStops && !fv.hasDepartures"
+        v-if="station != null && fv.id != null && !loading && fv.hasStops && fv.hasDepartures === false"
         variant="danger"
         :closeable="false"
       >

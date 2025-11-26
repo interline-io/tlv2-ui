@@ -7,7 +7,6 @@
     <tl-title :title="`${props.stationArea.properties.name}: Transfers - Overview of Different Service Conditions`" />
 
     <tl-apps-transfers-scenario-with-controls
-      :station-hubs="[]"
       :station-area="props.stationArea"
       :show-controls="false"
     >
