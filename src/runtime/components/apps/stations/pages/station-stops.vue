@@ -16,7 +16,7 @@
     <div class="columns">
       <div class="column is-narrow">
         <div class="editor-info">
-          <tl-msg-card class="card">
+          <tl-card class="card">
             <template #trigger>
               Node
             </template>
@@ -68,10 +68,10 @@
             <div v-else>
               Click to select a stop
             </div>
-          </tl-msg-card>
+          </tl-card>
 
           <br>
-          <tl-msg-card>
+          <tl-card>
             <template #trigger>
               Help
             </template>
@@ -80,7 +80,7 @@
               <li>You must select a level before importing</li>
               <li>Click the selected item again to unselect</li>
             </ul>
-          </tl-msg-card>
+          </tl-card>
         </div>
       </div>
 

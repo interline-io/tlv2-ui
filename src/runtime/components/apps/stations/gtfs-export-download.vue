@@ -1,11 +1,11 @@
 <template>
   <div>
-    <tl-msg-error v-if="error">
+    <tl-msg v-if="error" variant="error">
       {{ error }}
-    </tl-msg-error>
+    </tl-msg>
     <div v-else>
       <!-- Collapsible Advanced Transformations -->
-      <tl-msg-box
+      <tl-msg
         title="Advanced Transformations"
         :collapsible="true"
         :collapsed="true"
@@ -95,7 +95,7 @@
             </o-tooltip>
           </div>
         </div>
-      </tl-msg-box>
+      </tl-msg>
 
       <!-- Action Buttons -->
       <div class="field is-grouped is-grouped-right mt-5">
@@ -125,10 +125,10 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { useRouter } from '#app'
-import { useApiEndpoint } from '../composables/useApiEndpoint'
-import { useAuthHeaders } from '../composables/useAuthHeaders'
-import { useToastNotification } from '../composables/useToastNotification'
-import { useRouteResolver } from '../composables/useRouteResolver'
+import { useApiEndpoint } from '../../../composables/useApiEndpoint'
+import { useAuthHeaders } from '../../../composables/useAuthHeaders'
+import { useRouteResolver } from '../../../composables/useRouteResolver'
+import { useToastNotification } from '../../../composables/useToastNotification'
 
 // Types
 interface ExportOptions {

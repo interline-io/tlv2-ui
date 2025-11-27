@@ -2,7 +2,9 @@
   <div>
     <tl-loading v-if="loading" />
     <div v-else-if="error">
-      <tl-msg-error>{{ error }}</tl-msg-error>
+      <tl-msg variant="danger">
+        {{ error }}
+      </tl-msg>
     </div>
     <div v-else>
       <table class="table property-list tl-props">
@@ -85,7 +87,7 @@
 import { ref, computed } from 'vue'
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
-import { secondsToDuration } from '../../utils/time-format'
+import { secondsToDuration } from '../../../lib/time-format'
 
 interface Stop {
   id: number

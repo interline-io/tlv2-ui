@@ -1,4 +1,4 @@
-import { TreeNode } from '../components/utils/tree'
+import { TreeNode } from '../lib/tree'
 
 /**
  * Composable providing route category utility functions and tree structures
