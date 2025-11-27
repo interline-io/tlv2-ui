@@ -110,7 +110,7 @@
         </div>
       </div>
     </div>
-    <tl-modal
+    <t-modal
       v-model="showGeojsonEditor"
       title="Edit GeoJSON"
     >
@@ -126,7 +126,7 @@
       <o-button class="is-pulled-right" :disabled="!!geojsonError" :variant="geojsonError ? 'danger' : 'primary'" @click="showGeojsonEditor = false">
         {{ geojsonError ? geojsonError : 'OK' }}
       </o-button>
-    </tl-modal>
+    </t-modal>
   </div>
 </template>
 

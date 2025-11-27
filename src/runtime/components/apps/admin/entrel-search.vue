@@ -14,7 +14,7 @@
 
     <hr>
 
-    <tl-search-bar v-model="search" />
+    <t-search-bar v-model="search" />
 
     <hr>
 

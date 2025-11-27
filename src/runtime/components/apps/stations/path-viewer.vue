@@ -1,8 +1,8 @@
 <template>
   <div>
-    <tl-msg v-if="!path.length" variant="warning">
+    <t-msg v-if="!path.length" variant="warning">
       No pathways found for this path.
-    </tl-msg>
+    </t-msg>
 
     <table v-else class="table shaded is-narrow tl-path-table" cellpadding="0" cellspacing="0">
       <thead>

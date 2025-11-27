@@ -112,7 +112,7 @@
                 </t-field>
               </div>
 
-              <tl-modal
+              <t-modal
                 v-model="showAssignTenant"
                 title="Set tenant"
               >
@@ -121,7 +121,7 @@
                   :show-tenants="true"
                   @select="showAssignTenant = false; setTenant($event)"
                 />
-              </tl-modal>
+              </t-modal>
             </template>
           </tl-apps-admin-input>
         </t-field>

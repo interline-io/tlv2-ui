@@ -1,10 +1,10 @@
 <template>
   <div>
-    <t-loading :active="loading" />
+    <t-loading v-if="loading" :active="true" />
     <div v-else-if="error">
-      <tl-msg variant="danger">
+      <t-msg variant="danger">
         {{ error }}
-      </tl-msg>
+      </t-msg>
     </div>
     <div v-else>
       <table class="table property-list tl-props">

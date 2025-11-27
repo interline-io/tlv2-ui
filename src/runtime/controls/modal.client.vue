@@ -1,7 +1,7 @@
 <template>
-  <div class="modal tl-modal" :class="{ 'is-active': modelValue }">
+  <div class="modal t-modal" :class="{ 'is-active': modelValue }">
     <div class="modal-background" @click="handleBackgroundClick" />
-    <div class="modal-card" :class="{ 'tl-modal-fullscreen': fullScreen }">
+    <div class="modal-card" :class="{ 't-modal-fullscreen': fullScreen }">
       <header class="modal-card-head">
         <p class="modal-card-title">
           {{ title }}
@@ -31,11 +31,11 @@ import { watch, onMounted, onBeforeUnmount } from 'vue'
  * Modal component using Bulma modal-card structure.
  * Wrapper around native Bulma modal with v-model support.
  *
- * @component tl-modal
+ * @component t-modal
  * @example
- * <tl-modal v-model="showModal" title="Edit Item">
+ * <t-modal v-model="showModal" title="Edit Item">
  *   <p>Modal content</p>
- * </tl-modal>
+ * </t-modal>
  */
 
 interface Props {
@@ -116,10 +116,10 @@ onBeforeUnmount(() => {
 </script>
 
 <style>
-.tl-modal .modal-card {
+.t-modal .modal-card {
   min-width: 800px;
 }
-.tl-modal-fullscreen {
+.t-modal-fullscreen {
   padding-top: 30px;
   padding-bottom: 30px;
 }

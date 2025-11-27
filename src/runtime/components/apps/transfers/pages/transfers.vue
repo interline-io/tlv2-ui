@@ -305,16 +305,16 @@
     </tl-apps-transfers-scenario-with-controls>
   </div>
 
-  <tl-modal v-model="showMap">
+  <t-modal v-model="showMap">
     <tl-apps-transfers-platform-pathway
       :station="currentStation"
       :edges="transferEdges"
       :trip="showTrip"
       @close="showMap = false"
     />
-  </tl-modal>
+  </t-modal>
 
-  <tl-modal
+  <t-modal
     v-model="showOverrideModal"
     title="Override transfer walking time"
   >
@@ -328,7 +328,7 @@
       :time="overrideValue"
       @set-time="(fromStop: number | null, toStop: number | string | null, time: number | null) => saveTransferOverride(currentScenario, fromStop, toStop, time)"
     />
-  </tl-modal>
+  </t-modal>
 
   <!-- Modals moved outside the conditional div to ensure they work properly -->
 </template>

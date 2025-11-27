@@ -40,7 +40,7 @@
         />
       </t-field>
     </t-field>
-    <tl-modal
+    <t-modal
       v-slot="scope"
       v-model="showUserPicker"
       :title="actionText"
@@ -53,7 +53,7 @@
         :show-user-star="showUserStar"
         @select="$emit('addPermissions', $event); scope.close();"
       />
-    </tl-modal>
+    </t-modal>
   </div>
 </template>
 

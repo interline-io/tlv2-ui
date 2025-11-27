@@ -23,7 +23,7 @@
         <div
           :class="hideRoot ? '' : 'indented'"
         >
-          <tl-tree-control
+          <t-tree-control
             :node="g"
             :max-deep="maxDeep - 1"
             @select="select"

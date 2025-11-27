@@ -1,10 +1,10 @@
 <template>
   <div>
-    <tl-msg v-if="error" variant="error">
+    <t-msg v-if="error" variant="error">
       {{ error }}
-    </tl-msg>
+    </t-msg>
     <div v-else>
-      <tl-search-bar v-model="search" class="mb-4" placeholder="Filter stops by name..." />
+      <t-search-bar v-model="search" class="mb-4" placeholder="Filter stops by name..." />
       <t-loading :active="loading" :full-page="false" />
       <div class="table-container">
         <table class="table is-striped is-fullwidth">

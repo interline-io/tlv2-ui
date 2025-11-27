@@ -1,11 +1,11 @@
 <template>
   <div>
-    <tl-msg v-if="error" variant="error">
+    <t-msg v-if="error" variant="error">
       {{ error }}
-    </tl-msg>
+    </t-msg>
     <div v-else>
       <!-- Collapsible Advanced Transformations -->
-      <tl-msg
+      <t-msg
         title="Advanced Transformations"
         :collapsible="true"
         :collapsed="true"
@@ -95,7 +95,7 @@
             </o-tooltip>
           </div>
         </div>
-      </tl-msg>
+      </t-msg>
 
       <!-- Action Buttons -->
       <div class="field is-grouped is-grouped-right mt-5">

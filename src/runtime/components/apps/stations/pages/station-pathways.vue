@@ -25,7 +25,7 @@
             />
           </o-field>
           <!-- SELECT -->
-          <tl-card v-if="selectMode === 'select'">
+          <t-card v-if="selectMode === 'select'">
             <template #trigger>
               Select
             </template>
@@ -82,8 +82,8 @@
                 </ul>
               </div>
             </div>
-          </tl-card>
-          <tl-card v-else-if="selectMode === 'add-pathway'">
+          </t-card>
+          <t-card v-else-if="selectMode === 'add-pathway'">
             <template #trigger>
               Add Pathway
             </template>
@@ -95,9 +95,9 @@
                 @create="createPathwayHandler"
               />
             </div>
-          </tl-card>
+          </t-card>
           <template v-if="selectMode === 'edit-pathway'">
-            <tl-card v-for="spw of selectedPathways" :key="spw.id">
+            <t-card v-for="spw of selectedPathways" :key="spw.id">
               <template #trigger>
                 Edit Pathway
               </template>
@@ -118,10 +118,10 @@
                 @delete="deletePathwayHandler"
                 @update="updatePathwayHandler"
               />
-            </tl-card>
+            </t-card>
           </template>
           <template v-else-if="selectMode === 'edit-node'">
-            <tl-card v-for="ss of selectedStops" :key="ss.id" class="card">
+            <t-card v-for="ss of selectedStops" :key="ss.id" class="card">
               <template #trigger>
                 Edit Node
                 <o-button v-if="selectedStops.length > 0 || selectedPathways.length > 0" class="is-pulled-right m-2" variant="primary is-small" outlined @click="unselectAll">
@@ -147,10 +147,10 @@
                 @delete-association="deleteAssociationHandler"
                 @select-pathway="selectPathway"
               />
-            </tl-card>
+            </t-card>
           </template>
           <template v-else-if="selectMode === 'add-node'">
-            <tl-card v-if="selectMode === 'add-node'">
+            <t-card v-if="selectMode === 'add-node'">
               <template #trigger>
                 Add Node
               </template>
@@ -172,15 +172,15 @@
                   </o-dropdown-item>
                 </o-dropdown>
               </o-field>
-            </tl-card>
+            </t-card>
           </template>
           <template v-else-if="selectMode === 'find-route'">
-            <tl-card v-if="selectedStops.length > 1">
+            <t-card v-if="selectedStops.length > 1">
               <template #trigger>
                 Find Route
               </template>
               <tl-apps-stations-path-viewer :path="selectedPath" />
-            </tl-card>
+            </t-card>
           </template>
 
           <br>

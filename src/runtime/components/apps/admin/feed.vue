@@ -64,7 +64,7 @@
         </div>
       </t-field>
 
-      <tl-modal
+      <t-modal
         v-model="showAssignGroup"
         :title="`Set group`"
       >
@@ -73,7 +73,7 @@
           :show-groups="true"
           @select="showAssignGroup = false; setGroup($event)"
         />
-      </tl-modal>
+      </t-modal>
     </div>
   </div>
 </template>
