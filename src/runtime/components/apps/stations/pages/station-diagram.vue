@@ -17,7 +17,7 @@
     <div v-if="ready" class="columns">
       <div class="column is-narrow">
         <div class="block tl-apps-stations-info">
-          <tl-msg-card>
+          <tl-card>
             <template #trigger>
               Select
               <o-button v-if="selectedElements.length > 0" class="is-pulled-right m-2" variant="primary is-small" outlined @click="clearSelectedElements">
@@ -64,7 +64,7 @@
                 @select-pathway="selectPathway"
               />
             </div>
-          </tl-msg-card>
+          </tl-card>
         </div>
       </div>
       <div class="column">

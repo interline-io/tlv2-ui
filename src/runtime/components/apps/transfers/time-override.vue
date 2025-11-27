@@ -2,7 +2,9 @@
   <div>
     <tl-loading v-if="loading" />
     <div v-else-if="error">
-      <tl-msg-error>{{ error }}</tl-msg-error>
+      <tl-msg variant="danger">
+        {{ error }}
+      </tl-msg>
     </div>
     <div v-else>
       <table class="table property-list tl-props">
