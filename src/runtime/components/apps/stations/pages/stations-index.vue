@@ -30,14 +30,11 @@
     <p class="content">
       Or select an existing station in this feed version:
     </p>
-    <tl-stop-table
+    <tl-apps-stations-stop-table
       v-if="feedVersion?.id"
       :feed-version-ids="[feedVersion.id]"
       :location-type="1"
-      :show-links="false"
       :client="client"
-      :limit="1000"
-      :show-selected-route-type="false"
     >
       <template #stopName="slotProps">
         <tl-link
@@ -47,10 +44,7 @@
           {{ slotProps.stop.stop_name }}
         </tl-link>
       </template>
-    </tl-stop-table>
-    <!-- <div v-for="station in stations" :key="station.id" class="box is-clearfix">
-      <div class="is-pulled-right" />
-    </div> -->
+    </tl-apps-stations-stop-table>
   </div>
 </template>
 

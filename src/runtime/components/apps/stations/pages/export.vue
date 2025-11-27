@@ -26,7 +26,7 @@
 
       <hr>
 
-      <tl-gtfs-export-download
+      <tl-apps-stations-gtfs-export-download
         :feed-version-sha1="feedVersion?.sha1"
         :feed-version-id="feedVersion?.id || feedVersionKey"
         :feed-key="feedKey"
