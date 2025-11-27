@@ -128,7 +128,7 @@
             </div>
           </div>
           <div class="message-body">
-            <t-tree-control
+            <tl-tree-control
               v-if="scenarioResult"
               :hide-root="true"
               :node="scenarioResult.incomingTripTree"
@@ -157,7 +157,7 @@
             </div>
           </div>
           <div class="message-body">
-            <t-tree-control
+            <tl-tree-control
               v-if="scenarioResult"
               :hide-root="true"
               :node="scenarioResult.outgoingTripTree"

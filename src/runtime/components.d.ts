@@ -81,6 +81,7 @@ declare module 'vue' {
     TlRouteIcon: typeof import('./components/route-icon.vue')['default']
     TlSafelink: typeof import('./components/safelink.vue')['default']
     TlTitle: typeof import('./components/title.vue')['default']
+    TlTreeControl: typeof import('./components/tree-control.vue')['default']
     TButton: typeof import('./controls/button.vue')['default']
     TCard: typeof import('./controls/card.vue')['default']
     TCheckbox: typeof import('./controls/checkbox.vue')['default']
@@ -99,7 +100,6 @@ declare module 'vue' {
     TTabs: typeof import('./controls/tabs.vue')['default']
     TTag: typeof import('./controls/tag.vue')['default']
     TTooltip: typeof import('./controls/tooltip.vue')['default']
-    TTreeControl: typeof import('./controls/tree-control.vue')['default']
   }
 }
 
