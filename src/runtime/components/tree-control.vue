@@ -4,7 +4,6 @@
       <span v-if="!hasChildren" class="indent-spacer">&nbsp;</span>
       <span v-else-if="expanded" class="button indent-buttons is-small" @click="toggleExpand">-</span>
       <span v-else class="button indent-buttons is-small" @click="toggleExpand">+</span>
-      <!-- @vue-skip -->
       <t-checkbox
         :model-value="node.selected"
         :indeterminate="node.indet"
