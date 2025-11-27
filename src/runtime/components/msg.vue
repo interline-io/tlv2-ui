@@ -38,7 +38,7 @@
 import { computed, ref, watch } from 'vue'
 
 // TypeScript types and interfaces
-type MessageVariant = 'info' | 'success' | 'warning' | 'danger' | 'primary' | 'link' | 'dark'
+type MessageVariant = 'info' | 'success' | 'warning' | 'danger' | 'primary' | 'link' | 'dark' | 'error'
 
 const props = withDefaults(defineProps<{
   variant?: MessageVariant
@@ -71,7 +71,7 @@ const getIcon = computed<string>(() => {
   if (props.variant === 'info') {
     return 'information'
   }
-  if (props.variant === 'danger' || props.variant === 'warning') {
+  if (props.variant === 'danger' || props.variant === 'warning' || props.variant === 'error') {
     return 'alert'
   }
   return props.icon || props.variant
