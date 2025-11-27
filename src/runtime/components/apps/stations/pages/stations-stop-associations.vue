@@ -4,7 +4,7 @@
       <tl-title title="Stop ID Associations" />
     </slot>
 
-    <tl-loading v-model:active="$apollo.loading" :is-full-page="false" />
+    <t-loading :active="$apollo.loading" :full-page="false" />
     <o-table
       :data="stopsWithRefs"
       narrowed

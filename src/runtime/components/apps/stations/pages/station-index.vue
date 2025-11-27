@@ -40,7 +40,7 @@
       :stop-associations-enabled="stopAssociationsEnabled"
     />
 
-    <tl-loading v-if="$apollo.loading" />
+    <t-loading :active="$apollo.loading" />
     <div v-else>
       <h4 class="title is-4 is-clearfix">
         Levels

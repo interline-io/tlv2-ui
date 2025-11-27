@@ -10,7 +10,7 @@
       </p>
     </slot>
 
-    <tl-loading v-model:active="loading" :full-page="false" />
+    <t-loading :active="loading" :full-page="false" />
 
     <t-notification
       v-if="error"

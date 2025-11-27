@@ -1,6 +1,6 @@
 <template>
   <div>
-    <tl-loading v-if="loading" />
+    <t-loading :active="loading" />
     <div v-else-if="error">
       <tl-msg variant="danger">
         {{ error }}
