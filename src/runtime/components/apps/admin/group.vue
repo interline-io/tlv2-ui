@@ -1,15 +1,15 @@
 <template>
   <div>
     <tl-loading v-model:active="loading" :full-page="false" />
-    <o-notification
+    <t-notification
       v-if="error"
       variant="danger"
     >
       Error: {{ error }}
-    </o-notification>
+    </t-notification>
     <div v-else-if="group">
       <div>
-        <o-field
+        <t-field
           label="Group name"
           horizontal
         >
@@ -18,9 +18,9 @@
             :can-edit="editable && group.actions.can_edit"
             @save="saveName"
           />
-        </o-field>
+        </t-field>
 
-        <o-field
+        <t-field
           v-if="showTenant"
           label="Parent"
           horizontal
@@ -38,18 +38,15 @@
               >
                 View tenant
               </tl-link>
-              <o-button
+              <t-button
                 v-if="editable && group.actions.can_set_tenant"
                 size="small"
                 @click="showAssignTenant = true"
               >
                 Set tenant
-              </o-button>
-            </template>
-          </tl-apps-admin-input>
-        </o-field>
+              </t-button>
 
-        <o-field
+        <t-field
           v-if="showFeeds"
           label="Feeds"
           horizontal
@@ -63,13 +60,13 @@
               />
             </div>
           </div>
-        </o-field>
+        </t-field>
 
-        <o-field v-if="showActions" label="Your permissions" horizontal>
+        <t-field v-if="showActions" label="Your permissions" horizontal>
           <div :title="`You are logged in as ${user.name} (${user.email})`">
             <tl-apps-admin-perm-list :actions="group.actions" />
           </div>
-        </o-field>
+        </t-field>
 
         <div v-if="showMembers">
           <tl-apps-admin-entrel-list
@@ -110,9 +107,9 @@
             @remove-permissions="removePermissions('viewer', $event)"
           />
 
-          <o-field label="" horizontal>
+          <t-field label="" horizontal>
             * Admin users in parent {{ group.tenant?.name }} are also group managers (not shown)
-          </o-field>
+          </t-field>
         </div>
 
         <tl-modal

@@ -1,20 +1,20 @@
 <template>
   <div>
     <tl-loading v-model:active="loading" :full-page="false" />
-    <o-notification
+    <t-notification
       v-if="error"
       variant="danger"
     >
       Error: {{ error }}
-    </o-notification>
+    </t-notification>
     <div v-if="feed">
-      <o-field label="Feed name" horizontal>
+      <t-field label="Feed name" horizontal>
         {{ feed.feed.name }}
-      </o-field>
+      </t-field>
 
-      <o-field label="Feed ID" horizontal>
+      <t-field label="Feed ID" horizontal>
         {{ feed.feed.onestop_id }}
-      </o-field>
+      </t-field>
 
       <!-- <o-field
         v-if="feed.actions.can_create_feed_version"
@@ -30,7 +30,7 @@
         </tl-link>
       </o-field> -->
 
-      <o-field
+      <t-field
         label="Group"
         horizontal
       >
@@ -47,22 +47,22 @@
             >
               Show group
             </tl-link>
-            <o-button
+            <t-button
               v-if="feed.actions.can_set_group"
               size="small"
               @click="showAssignGroup = true"
             >
               Set group
-            </o-button>
+            </t-button>
           </template>
         </tl-apps-admin-input>
-      </o-field>
+      </t-field>
 
-      <o-field label="Your permissions" horizontal>
+      <t-field label="Your permissions" horizontal>
         <div :title="`You are logged in as ${user.name} (${user.email})`">
           <tl-apps-admin-perm-list :actions="feed?.actions" />
         </div>
-      </o-field>
+      </t-field>
 
       <tl-modal
         v-model="showAssignGroup"

@@ -1,17 +1,18 @@
 <template>
   <div>
-    <o-field
+    <t-field
       horizontal
       :label="text"
       grouped
     >
-      <o-button
+      <t-button
         v-if="canAdd"
-        icon-left="plus"
         size="small"
         @click="showUserPicker = true"
-      />
-      <o-field
+      >
+        <t-icon icon="plus" />
+      </t-button>
+      <t-field
         grouped
       >
         <tl-apps-admin-tenant-item
@@ -37,8 +38,8 @@
           :action="canRemove ? 'remove' : null"
           @select="$emit('removePermissions', { type: 'user', id: $event })"
         />
-      </o-field>
-    </o-field>
+      </t-field>
+    </t-field>
     <tl-modal
       v-slot="scope"
       v-model="showUserPicker"

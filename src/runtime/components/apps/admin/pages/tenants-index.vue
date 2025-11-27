@@ -12,12 +12,12 @@
 
     <tl-loading v-model:active="loading" :full-page="false" />
 
-    <o-notification
+    <t-notification
       v-if="error"
       variant="danger"
     >
       Error: {{ error }}
-    </o-notification>
+    </t-notification>
 
     <ul>
       <li

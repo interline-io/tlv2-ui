@@ -5,17 +5,17 @@
         route-key="apps-admin-groups-groupKey"
         :to="{ params: { groupKey: value.id } }"
       >
-        <o-icon
+        <t-icon
           icon="account-group"
           class="mr-2"
         />
         {{ value.name }}
       </tl-link>
       <a
-        v-if="action"
+        v-if="action && actionIcon"
         :class="actionClass"
         @click.stop.prevent="select"
-      ><o-icon :icon="actionIcon" /></a>
+      ><t-icon :icon="actionIcon" /></a>
     </div>
   </div>
 </template>

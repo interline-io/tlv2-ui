@@ -10,12 +10,12 @@
       </p>
     </slot>
 
-    <o-notification
+    <t-notification
       v-if="error"
       variant="danger"
     >
       Error: {{ error }}
-    </o-notification>
+    </t-notification>
 
     <ul>
       <li
