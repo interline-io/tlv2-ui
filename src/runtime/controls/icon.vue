@@ -1,5 +1,5 @@
 <template>
-  <span class="icon" :class="[sizeClass, variantClass]">
+  <span class="icon" :class="[sizeClass, variantClass]" @click="handleClick">
     <i :class="`mdi mdi-${icon}`" />
   </span>
 </template>
@@ -13,9 +13,17 @@ import { computed } from 'vue'
  * @component t-icon
  * @example
  * <t-icon icon="check" />
- * <t-icon icon="close" size="small" />
+ * <t-icon icon="close" size="small" @click="handleClick" />
  * <t-icon icon="loading" size="large" />
  */
+
+const emit = defineEmits<{
+  click: [event: MouseEvent]
+}>()
+
+function handleClick (event: MouseEvent): void {
+  emit('click', event)
+}
 
 interface Props {
   /**

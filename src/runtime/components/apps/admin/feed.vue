@@ -66,7 +66,6 @@
 
       <tl-modal
         v-model="showAssignGroup"
-        text="Show group"
         :title="`Set group`"
       >
         <tl-apps-admin-entrel-search

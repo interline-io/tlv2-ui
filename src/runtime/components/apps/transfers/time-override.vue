@@ -73,13 +73,12 @@
         </tbody>
       </table>
 
-      <span @click="setTime">
-        <t-button
-          class="is-primary is-pulled-right"
-        >
-          Save
-        </t-button>
-      </span>
+      <t-button
+        class="is-primary is-pulled-right"
+        @click="setTime"
+      >
+        Save
+      </t-button>
     </div>
   </div>
 </template>

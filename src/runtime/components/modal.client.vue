@@ -1,66 +1,118 @@
 <template>
-  <div class="tl-modal">
-    <o-modal
-      :active="modelValue"
-      close-class="tl-modal-hideclose"
-      :cancelable="closable"
-      :full-screen="fullScreen"
-      full-screen-class="tl-modal-fullscreen"
-      @update:model-value="$emit('update:modelValue', $event)"
-      @close="close"
-    >
-      <template #close>
-        ...
-      </template>
-      <div class="modal-card">
-        <header class="modal-card-head">
-          <p class="modal-card-title">
-            {{ title }}
-          </p>
-          <button
-            v-if="closable"
-            type="button"
-            class="delete"
-            @click="close"
-          />
-        </header>
-        <section class="modal-card-body">
-          <div v-if="modelValue" class="container">
-            <slot :close="close" />
-            <br>
-          </div>
-        </section>
-      </div>
-    </o-modal>
+  <div class="modal tl-modal" :class="{ 'is-active': modelValue }">
+    <div class="modal-background" @click="handleBackgroundClick" />
+    <div class="modal-card" :class="{ 'tl-modal-fullscreen': fullScreen }">
+      <header class="modal-card-head">
+        <p class="modal-card-title">
+          {{ title }}
+        </p>
+        <button
+          v-if="closable"
+          type="button"
+          class="delete"
+          aria-label="close"
+          @click="close"
+        />
+      </header>
+      <section class="modal-card-body">
+        <div v-if="modelValue" class="container">
+          <slot :close="close" />
+          <br>
+        </div>
+      </section>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-// Props
-withDefaults(defineProps<{
-  text?: string
-  title?: string
+import { watch, onMounted, onBeforeUnmount } from 'vue'
+
+/**
+ * Modal component using Bulma modal-card structure.
+ * Wrapper around native Bulma modal with v-model support.
+ *
+ * @component tl-modal
+ * @example
+ * <tl-modal v-model="showModal" title="Edit Item">
+ *   <p>Modal content</p>
+ * </tl-modal>
+ */
+
+interface Props {
+  /**
+   * Modal visibility state (v-model).
+   */
   modelValue?: boolean
+
+  /**
+   * Modal title displayed in header.
+   */
+  title?: string
+
+  /**
+   * Show close button and allow closing via background/ESC.
+   * @default true
+   */
   closable?: boolean
+
+  /**
+   * Apply fullscreen mode with padding.
+   * @default false
+   */
   fullScreen?: boolean
-}>(), {
-  text: '+',
-  title: '',
+}
+
+const props = withDefaults(defineProps<Props>(), {
   modelValue: false,
+  title: '',
   closable: true,
   fullScreen: false
 })
 
-// Emits
 const emit = defineEmits<{
-  'input': [value: boolean]
   'update:modelValue': [value: boolean]
 }>()
 
-// Methods
-const close = (): void => {
+function close (): void {
   emit('update:modelValue', false)
 }
+
+function handleBackgroundClick (): void {
+  if (props.closable) {
+    close()
+  }
+}
+
+function handleKeydown (event: KeyboardEvent): void {
+  if (event.key === 'Escape' && props.closable && props.modelValue) {
+    close()
+  }
+}
+
+// Add/remove html clipping when modal opens/closes
+watch(() => props.modelValue, (isActive) => {
+  if (typeof document !== 'undefined') {
+    if (isActive) {
+      document.documentElement.classList.add('is-clipped')
+    } else {
+      document.documentElement.classList.remove('is-clipped')
+    }
+  }
+})
+
+// Setup ESC key handler
+onMounted(() => {
+  if (typeof document !== 'undefined') {
+    document.addEventListener('keydown', handleKeydown)
+  }
+})
+
+onBeforeUnmount(() => {
+  if (typeof document !== 'undefined') {
+    document.removeEventListener('keydown', handleKeydown)
+    document.documentElement.classList.remove('is-clipped')
+  }
+})
 </script>
 
 <style>
@@ -68,10 +120,7 @@ const close = (): void => {
   min-width: 800px;
 }
 .tl-modal-fullscreen {
-  padding-top:30px;
-  padding-bottom:30px;
-}
-.tl-modal-hideclose {
-  display:none;
+  padding-top: 30px;
+  padding-bottom: 30px;
 }
 </style>

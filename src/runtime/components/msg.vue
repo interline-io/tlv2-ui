@@ -7,7 +7,7 @@
       @click="collapsible && toggleCollapsed()"
     >
       <span>{{ title || defaultTitle }}</span>
-      <o-icon
+      <t-icon
         v-if="collapsible"
         :icon="isCollapsed ? 'chevron-down' : 'chevron-up'"
         class="collapse-icon"
@@ -19,7 +19,7 @@
     >
       <template v-if="hasIcon">
         <div class="media message-body">
-          <o-icon :icon="getIcon" size="medium" class="media-left" />
+          <t-icon :icon="getIcon" size="medium" class="media-left" />
           <div class="media-content">
             <slot />
           </div>

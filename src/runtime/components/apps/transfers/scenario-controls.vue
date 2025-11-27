@@ -115,26 +115,16 @@
           <div class="message-header">
             <p>Incoming trips</p>
             <div class="field has-addons">
-              <p class="control">
-                <span
-                  style="cursor: pointer"
-                  @click="setExcludeIncomingTrips(false, '*')"
-                >
-                  <t-button size="small">
-                    None
-                  </t-button>
-                </span>
-              </p>
-              <p class="control">
-                <span
-                  style="cursor: pointer"
-                  @click="setExcludeIncomingTrips(true, '*')"
-                >
-                  <t-button size="small">
-                    All
-                  </t-button>
-                </span>
-              </p>
+              <div class="control">
+                <t-button size="small" @click="setExcludeIncomingTrips(false, '*')">
+                  None
+                </t-button>
+              </div>
+              <div class="control">
+                <t-button size="small" @click="setExcludeIncomingTrips(true, '*')">
+                  All
+                </t-button>
+              </div>
             </div>
           </div>
           <div class="message-body">
@@ -154,26 +144,16 @@
           <div class="message-header">
             <p>Outgoing trips</p>
             <div class="field has-addons">
-              <p class="control">
-                <span
-                  style="cursor: pointer"
-                  @click="setExcludeOutgoingTrips(false, '*')"
-                >
-                  <t-button size="small">
-                    None
-                  </t-button>
-                </span>
-              </p>
-              <p class="control">
-                <span
-                  style="cursor: pointer"
-                  @click="setExcludeOutgoingTrips(true, '*')"
-                >
-                  <t-button size="small">
-                    All
-                  </t-button>
-                </span>
-              </p>
+              <div class="control">
+                <t-button size="small" @click="setExcludeOutgoingTrips(false, '*')">
+                  None
+                </t-button>
+              </div>
+              <div class="control">
+                <t-button size="small" @click="setExcludeOutgoingTrips(true, '*')">
+                  All
+                </t-button>
+              </div>
             </div>
           </div>
           <div class="message-body">

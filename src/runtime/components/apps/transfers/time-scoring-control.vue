@@ -90,33 +90,30 @@
     </table>
     <div v-if="inEditMode" class="field is-grouped is-pulled-right pl-4 pt-2">
       <div class="control">
-        <span @click.prevent="cancel">
-          <t-button
-            class="is-pulled-right is-small is-danger is-outlined"
-          >
-            Cancel
-          </t-button>
-        </span>
+        <t-button
+          class="is-pulled-right is-small is-danger is-outlined"
+          @click.prevent="cancel"
+        >
+          Cancel
+        </t-button>
       </div>
       <div class="control">
-        <span @click.prevent="save">
-          <t-button
-            :disabled="!valid"
-            class="is-pulled-right is-small is-primary"
-          >
-            Save breakpoints
-          </t-button>
-        </span>
+        <t-button
+          :disabled="!valid"
+          class="is-pulled-right is-small is-primary"
+          @click.prevent="save"
+        >
+          Save breakpoints
+        </t-button>
       </div>
     </div>
     <div v-else class="control">
-      <span @click.prevent="modify">
-        <t-button
-          class="is-pulled-right is-primary is-small"
-        >
-          Modify breakpoints
-        </t-button>
-      </span>
+      <t-button
+        class="is-pulled-right is-primary is-small"
+        @click.prevent="modify"
+      >
+        Modify breakpoints
+      </t-button>
     </div>
   </t-field>
 </template>
