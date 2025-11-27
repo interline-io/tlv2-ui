@@ -8,6 +8,7 @@
 
 <script setup lang="ts">
 import { stringify } from 'csv-stringify/browser/esm/sync'
+import { useDownload } from '../composables/useDownload'
 
 interface Props {
   buttonText?: string
@@ -23,9 +24,7 @@ const props = withDefaults(defineProps<Props>(), {
   data: () => []
 })
 
-function sanitizeFilename (filename: string): string {
-  return filename.replace(/[^\w.-]/g, '_')
-}
+const { downloadFile, getFilename } = useDownload()
 
 function dataToBlob (csvData: Record<string, any>[]): Blob {
   const keys: Record<string, string> = {}
@@ -46,12 +45,7 @@ function dataToBlob (csvData: Record<string, any>[]): Blob {
 
 async function saveFile (): Promise<void> {
   const blob = await dataToBlob(props.data)
-  const e = document.createEvent('MouseEvents')
-  const a = document.createElement('a')
-  a.download = sanitizeFilename(props.filename + '.csv')
-  a.href = window.URL.createObjectURL(blob)
-  a.dataset.downloadurl = ['text/csv', a.download, a.href].join(':')
-  e.initEvent('click', true, false)
-  a.dispatchEvent(e)
+  const filename = getFilename(props.filename, 'csv')
+  downloadFile(blob, filename)
 }
 </script>

@@ -7,6 +7,8 @@
 </template>
 
 <script setup lang="ts">
+import { useDownload } from '../composables/useDownload'
+
 interface Props {
   buttonText?: string
   disabled?: boolean
@@ -21,18 +23,11 @@ const props = withDefaults(defineProps<Props>(), {
   data: ''
 })
 
-function sanitizeFilename (filename: string): string {
-  return filename.replace(/[^\w.-]/g, '_')
-}
+const { downloadFile, getFilename } = useDownload()
 
 function saveFile (): void {
   const blob = new Blob([props.data], { type: 'application/json' })
-  const e = document.createEvent('MouseEvents')
-  const a = document.createElement('a')
-  a.download = sanitizeFilename(props.filename + '.json')
-  a.href = window.URL.createObjectURL(blob)
-  a.dataset.downloadurl = ['text/json', a.download, a.href].join(':')
-  e.initEvent('click', true, false)
-  a.dispatchEvent(e)
+  const filename = getFilename(props.filename, 'json')
+  downloadFile(blob, filename)
 }
 </script>
