@@ -1,11 +1,11 @@
 <template>
   <div class="mb-4">
-    <o-notification
+    <t-notification
       v-if="error"
       variant="danger"
     >
       Error: {{ error }}
-    </o-notification>
+    </t-notification>
 
     <!-- Feed version/service date/time-of-day selector -->
     <tl-apps-transfers-feed-version-time-selector
@@ -46,73 +46,63 @@
       class="columns is-clearfix block"
     >
       <div class="column is-one-third">
-        <div class="control">
-          <o-field
-            label="Walking Profile (Beta)"
-            grouped
-            :message="enableProfiles ? undefined : 'Profiles may not be available for this station and/or feed version'"
+        <t-field
+          label="Walking Profile (Beta)"
+          :message="enableProfiles ? undefined : 'Profiles may not be available for this station and/or feed version'"
+        >
+          <t-select
+            :model-value="scenario?.profileName"
+            :disabled="!enableProfiles"
+            @update:model-value="emitSetProfileName"
           >
-            <o-select
-              :model-value="scenario?.profileName"
-              :disabled="!enableProfiles"
-              @update:model-value="emitSetProfileName"
+            <option :value="null">
+              Straight-line
+            </option>
+            <option
+              v-for="(p, i) of profiles"
+              :key="i"
+              :value="i"
             >
-              <option :value="null">
-                Straight-line
-              </option>
-              <option
-                v-for="(p, i) of profiles"
-                :key="i"
-                :value="i"
-              >
-                {{ i }}
-              </option>
-            </o-select>
-          </o-field>
-        </div>
-        <div class="control">
-          <o-field>
-            <template #message>
-              <p v-if="station == null || loading " />
-              <p
-                v-else-if="scenario?.useStopObservations && !hasAtLeastOneStopObservation"
-                class="help is-danger"
-              >
-                No real-time observations found on {{ scenario?.selectedFeedVersions?.[0]?.serviceDate }} between {{ scenario?.timeOfDay }}
-              </p>
-            </template>
-            <template #label>
-              Time Source
-            </template>
-            <o-select
-              :model-value="scenario?.useStopObservations"
-              @update:model-value="emitSetUseStopObservations"
+              {{ i }}
+            </option>
+          </t-select>
+        </t-field>
+        <t-field label="Time Source">
+          <template #message>
+            <p v-if="station == null || loading " />
+            <p
+              v-else-if="scenario?.useStopObservations && !hasAtLeastOneStopObservation"
+              class="help is-danger"
             >
-              <option value="true">
-                Static GTFS &amp; GTFS Realtime schedules
-              </option>
-              <option value="false">
-                Static GTFS schedule only
-              </option>
-            </o-select>
-          </o-field>
-        </div>
+              No real-time observations found on {{ scenario?.selectedFeedVersions?.[0]?.serviceDate }} between {{ scenario?.timeOfDay }}
+            </p>
+          </template>
+          <t-select
+            :model-value="scenario?.useStopObservations"
+            @update:model-value="emitSetUseStopObservations"
+          >
+            <option value="true">
+              Static GTFS &amp; GTFS Realtime schedules
+            </option>
+            <option value="false">
+              Static GTFS schedule only
+            </option>
+          </t-select>
+        </t-field>
       </div>
       <div class="column is-two-thirds">
         <tl-apps-transfers-time-scoring-control
           :transfer-scoring-breakpoints="scenario?.transferScoringBreakpoints || []"
           @changed="transferScoringBreakpointsChanged"
         />
-        <o-field label="Options">
-          <!-- @vue-skip -->
-          <o-checkbox
-            style="padding-top:8px;"
+        <t-field label="Options">
+          <t-checkbox
             :model-value="(scenario?.hideSubsequentTransfers || 0) > 0"
             @update:model-value="hideSubsequentTransfersChanged"
           >
             Hide subsequent transfers to the same route &amp; headsign
-          </o-checkbox>
-        </o-field>
+          </t-checkbox>
+        </t-field>
       </div>
     </div>
 
@@ -126,20 +116,24 @@
             <p>Incoming trips</p>
             <div class="field has-addons">
               <p class="control">
-                <o-button
-                  size="small"
+                <span
+                  style="cursor: pointer"
                   @click="setExcludeIncomingTrips(false, '*')"
                 >
-                  None
-                </o-button>
+                  <t-button size="small">
+                    None
+                  </t-button>
+                </span>
               </p>
               <p class="control">
-                <o-button
-                  size="small"
+                <span
+                  style="cursor: pointer"
                   @click="setExcludeIncomingTrips(true, '*')"
                 >
-                  All
-                </o-button>
+                  <t-button size="small">
+                    All
+                  </t-button>
+                </span>
               </p>
             </div>
           </div>
@@ -161,20 +155,24 @@
             <p>Outgoing trips</p>
             <div class="field has-addons">
               <p class="control">
-                <o-button
-                  size="small"
+                <span
+                  style="cursor: pointer"
                   @click="setExcludeOutgoingTrips(false, '*')"
                 >
-                  None
-                </o-button>
+                  <t-button size="small">
+                    None
+                  </t-button>
+                </span>
               </p>
               <p class="control">
-                <o-button
-                  size="small"
+                <span
+                  style="cursor: pointer"
                   @click="setExcludeOutgoingTrips(true, '*')"
                 >
-                  All
-                </o-button>
+                  <t-button size="small">
+                    All
+                  </t-button>
+                </span>
               </p>
             </div>
           </div>
@@ -356,14 +354,16 @@ function emitSetTimeOfDay (value: string | undefined) {
   }
 }
 
-function emitSetProfileName (value: string | null | undefined) {
-  if (value !== undefined) {
+function emitSetProfileName (value: string | number | boolean | null | undefined) {
+  if (value !== undefined && value !== null && typeof value === 'string') {
     emit('setProfileName', value)
+  } else if (value === null) {
+    emit('setProfileName', null)
   }
 }
 
-function emitSetUseStopObservations (value: boolean | undefined) {
-  if (value !== undefined) {
+function emitSetUseStopObservations (value: string | number | boolean | null | undefined) {
+  if (typeof value === 'boolean') {
     emit('setUseStopObservations', value)
   }
 }

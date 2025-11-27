@@ -12,9 +12,9 @@
           <tr :key="fromStopKey">
             <td>From Stop</td>
             <td>
-              <o-radio v-model="fromStopCopy" :native-value="from.id" name="fromStopCopy">
+              <t-radio v-model="fromStopCopy" :native-value="from.id" name="fromStopCopy">
                 {{ from.stop_name }} (id: {{ from.stop_id }})
-              </o-radio>
+              </t-radio>
               <ul>
                 <li class="served-by">
                   <i>Served by:</i>
@@ -28,13 +28,13 @@
           <tr :key="toStopKey">
             <td>To Stop</td>
             <td>
-              <o-radio v-model="toStopCopy" native-value="*" name="toStopCopy">
+              <t-radio v-model="toStopCopy" native-value="*" name="toStopCopy">
                 All Stops
-              </o-radio>
+              </t-radio>
               <br>
-              <o-radio v-model="toStopCopy" :native-value="to.id" name="toStopCopy">
+              <t-radio v-model="toStopCopy" :native-value="to.id" name="toStopCopy">
                 {{ to.stop_name }} (id: {{ to.stop_id }})
-              </o-radio>
+              </t-radio>
               <ul>
                 <li class="served-by">
                   <i>Served by:</i>
@@ -73,12 +73,13 @@
         </tbody>
       </table>
 
-      <o-button
-        class="is-primary is-pulled-right"
-        @click="setTime"
-      >
-        Save
-      </o-button>
+      <span @click="setTime">
+        <t-button
+          class="is-primary is-pulled-right"
+        >
+          Save
+        </t-button>
+      </span>
     </div>
   </div>
 </template>

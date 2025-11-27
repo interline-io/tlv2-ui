@@ -56,7 +56,7 @@
               title="Remove this feed version from selection"
               @click="removeFeedVersion(idx)"
             >
-              <o-icon
+              <t-icon
                 icon="delete"
                 size="small"
               />
@@ -125,7 +125,7 @@
           target="_blank"
           class="button is-primary is-outlined"
         >
-          <o-icon icon="upload" /> <span>Upload a new user feed</span>
+          <t-icon icon="upload" /> <span>Upload a new user feed</span>
         </nuxt-link>
         <span class="is-pulled-right">
           <a
@@ -133,7 +133,7 @@
             class="button is-primary"
             title="Add a feed version to selection"
             @click="addFeedVersion"
-          ><o-icon
+          ><t-icon
             icon="plus"
           /></a>
         </span>

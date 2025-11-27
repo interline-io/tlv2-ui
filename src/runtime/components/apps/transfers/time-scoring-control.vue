@@ -1,5 +1,5 @@
 <template>
-  <o-field :addons="false">
+  <t-field :addons="false">
     <template #label>
       Transfer time scoring
     </template>
@@ -18,14 +18,12 @@
             <span v-if="!inEditMode">{{ transferScoringBreakpointsDescriptions[0] }}</span>
           </td>
           <td v-if="inEditMode">
-            <!-- @vue-skip - step prop not in Oruga types -->
-            <o-input
-              :model-value="String(revisedTransferScoringBreakpointsMinutes[0] ?? '')"
+            <t-input
+              :model-value="revisedTransferScoringBreakpointsMinutes[0]"
               step="0.5"
               size="small"
               type="number"
-              controls-position="compact"
-              @update:model-value="revisedTransferScoringBreakpointsMinutes[0] = parseFloat($event || '0'); changeBreakPoint()"
+              @update:model-value="revisedTransferScoringBreakpointsMinutes[0] = Number($event) || 0; changeBreakPoint()"
             />
           </td>
           <td class="trip-missed">
@@ -34,14 +32,12 @@
             </span>
           </td>
           <td v-if="inEditMode">
-            <!-- @vue-skip - step prop not in Oruga types -->
-            <o-input
-              :model-value="String(revisedTransferScoringBreakpointsMinutes[1] ?? '')"
+            <t-input
+              :model-value="revisedTransferScoringBreakpointsMinutes[1]"
               step="0.5"
               size="small"
               type="number"
-              controls-position="compact"
-              @update:model-value="revisedTransferScoringBreakpointsMinutes[1] = parseFloat($event || '0'); changeBreakPoint()"
+              @update:model-value="revisedTransferScoringBreakpointsMinutes[1] = Number($event) || 0; changeBreakPoint()"
             />
           </td>
           <td class="trip-close">
@@ -50,14 +46,12 @@
             </span>
           </td>
           <td v-if="inEditMode">
-            <!-- @vue-skip - step prop not in Oruga types -->
-            <o-input
-              :model-value="String(revisedTransferScoringBreakpointsMinutes[2] ?? '')"
+            <t-input
+              :model-value="revisedTransferScoringBreakpointsMinutes[2]"
               step="0.5"
               type="number"
               size="small"
-              controls-position="compact"
-              @update:model-value="revisedTransferScoringBreakpointsMinutes[2] = parseFloat($event || '0'); changeBreakPoint()"
+              @update:model-value="revisedTransferScoringBreakpointsMinutes[2] = Number($event) || 0; changeBreakPoint()"
             />
           </td>
           <td class="trip-acceptable">
@@ -66,14 +60,12 @@
             </span>
           </td>
           <td v-if="inEditMode">
-            <!-- @vue-skip - step prop not in Oruga types -->
-            <o-input
-              :model-value="String(revisedTransferScoringBreakpointsMinutes[3] ?? '')"
+            <t-input
+              :model-value="revisedTransferScoringBreakpointsMinutes[3]"
               step="0.5"
               type="number"
               size="small"
-              controls-position="compact"
-              @update:model-value="revisedTransferScoringBreakpointsMinutes[3] = parseFloat($event || '0'); changeBreakPoint()"
+              @update:model-value="revisedTransferScoringBreakpointsMinutes[3] = Number($event) || 0; changeBreakPoint()"
             />
           </td>
           <td class="trip-unacceptable">
@@ -82,14 +74,12 @@
             </span>
           </td>
           <td v-if="inEditMode">
-            <!-- @vue-skip - step prop not in Oruga types -->
-            <o-input
-              :model-value="String(revisedTransferScoringBreakpointsMinutes[4] ?? '')"
+            <t-input
+              :model-value="revisedTransferScoringBreakpointsMinutes[4]"
               step="0.5"
               type="number"
               size="small"
-              controls-position="compact"
-              @update:model-value="revisedTransferScoringBreakpointsMinutes[4] = parseFloat($event || '0'); changeBreakPoint()"
+              @update:model-value="revisedTransferScoringBreakpointsMinutes[4] = Number($event) || 0; changeBreakPoint()"
             />
           </td>
           <td class="trip-not-considered">
@@ -100,32 +90,35 @@
     </table>
     <div v-if="inEditMode" class="field is-grouped is-pulled-right pl-4 pt-2">
       <div class="control">
-        <o-button
-          class="is-pulled-right is-small is-danger is-outlined"
-          @click.prevent="cancel"
-        >
-          Cancel
-        </o-button>
+        <span @click.prevent="cancel">
+          <t-button
+            class="is-pulled-right is-small is-danger is-outlined"
+          >
+            Cancel
+          </t-button>
+        </span>
       </div>
       <div class="control">
-        <o-button
-          :disabled="!valid"
-          class="is-pulled-right is-small is-primary"
-          @click.prevent="save"
-        >
-          Save breakpoints
-        </o-button>
+        <span @click.prevent="save">
+          <t-button
+            :disabled="!valid"
+            class="is-pulled-right is-small is-primary"
+          >
+            Save breakpoints
+          </t-button>
+        </span>
       </div>
     </div>
     <div v-else class="control">
-      <o-button
-        class="is-pulled-right is-primary is-small"
-        @click.prevent="modify"
-      >
-        Modify breakpoints
-      </o-button>
+      <span @click.prevent="modify">
+        <t-button
+          class="is-pulled-right is-primary is-small"
+        >
+          Modify breakpoints
+        </t-button>
+      </span>
     </div>
-  </o-field>
+  </t-field>
 </template>
 
 <script setup lang="ts">

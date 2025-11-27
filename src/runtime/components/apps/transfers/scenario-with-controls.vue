@@ -25,12 +25,12 @@
       @set-hide-subsequent-transfers="handleSetHideSubsequentTransfers"
       @error="handleSetError"
     />
-    <o-notification
+    <t-notification
       v-if="error"
       variant="danger"
     >
       Error loading data: {{ error.message }}
-    </o-notification>
+    </t-notification>
     <slot
       v-else
       :scenario="scenario"

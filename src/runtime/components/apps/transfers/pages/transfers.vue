@@ -13,13 +13,13 @@
     >
       <template #default="{ scenario, scenarioResult, station }">
         {{ (currentScenario = scenario, currentStation = station, '') }}
-        <o-notification
+        <t-notification
           v-if="scenarioResult && scenarioResult.transferGroups.length === 0"
           variant="warning"
           :closeable="false"
         >
           <span>No incoming trips match the current location and filters.</span>
-        </o-notification>
+        </t-notification>
         <div v-else-if="scenarioResult && scenario && station">
           <tl-apps-transfers-time-scoring-histogram
             :scenario="scenario as any"
@@ -204,13 +204,16 @@
                         <span
                           @click="openOverrideModal(tripGroup.stop_key, toTrip.stop_key, toTrip.transfer_walking_time)"
                         >{{ secondsToDuration(toTrip.transfer_walking_time) }}</span>
-                        <o-icon
-                          style="padding-left:10px"
-                          variant="primary"
-                          icon="timer-outline"
-                          size="small"
+                        <span
+                          style="padding-left:10px; cursor: pointer"
                           @click="unsetTransferOverride(scenario, tripGroup.stop_key, toTrip.stop_key)"
-                        />
+                        >
+                          <t-icon
+                            variant="primary"
+                            icon="timer-outline"
+                            size="small"
+                          />
+                        </span>
                       </span>
                       <span
                         v-else-if="toTrip.transfer_uses_pathways"
@@ -277,24 +280,26 @@
             </tbody>
           </table>
 
-          <o-notification
+          <t-notification
             v-if="scenarioResult.transferGroups.length > transferDisplayLimit"
             variant="warning"
           >
-            <o-button
-              variant="primary"
+            <span
               class="is-pulled-right"
+              style="cursor: pointer"
               @click="transferDisplayLimit = 100000"
             >
-              Show all
-            </o-button>
+              <t-button variant="primary">
+                Show all
+              </t-button>
+            </span>
             <p>
               Displaying transfer details for first {{ transferDisplayLimit }} of {{ scenarioResult.transferGroups.length }}
               total incoming trips. You may display more, but your browser may slow down. Note that all trips are always
               included in the bar chart histogram, even if they are not all listed simultaneously in the detailed table
               view.
             </p>
-          </o-notification>
+          </t-notification>
         </div>
       </template>
     </tl-apps-transfers-scenario-with-controls>
