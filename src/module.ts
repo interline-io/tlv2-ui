@@ -181,7 +181,8 @@ export default defineNuxtModule<ModuleOptions>({
           'zen-observable', // Observable polyfill used by Apollo - avoid re-discovery
           'vega', // Needs ESM: Visualization library
           'vega-lite', // Needs ESM: High-level visualization grammar
-          'vega-embed' // Needs ESM: Embeds Vega visualizations
+          'vega-embed', // Needs ESM: Embeds Vega visualizations
+          'dayjs', // Needs ESM: Date library
         )
         // Debug log removed: tlv2-ui:vite-config applied
       },
