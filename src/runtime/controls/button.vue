@@ -5,6 +5,7 @@
     :disabled="disabled || loading"
     :type="type"
     v-bind="$attrs"
+    @click="handleClick"
   >
     <span v-if="loading" class="icon">
       <i class="mdi mdi-loading mdi-spin" />
@@ -29,8 +30,18 @@ import { computed } from 'vue'
 
 // Inherit native button attributes
 defineOptions({
-  inheritAttrs: true
+  inheritAttrs: false
 })
+
+const emit = defineEmits<{
+  click: [event: MouseEvent]
+}>()
+
+function handleClick (event: MouseEvent): void {
+  if (!props.disabled && !props.loading) {
+    emit('click', event)
+  }
+}
 
 interface Props {
   /**
