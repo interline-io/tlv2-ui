@@ -190,20 +190,20 @@
       <div class="column">
         <o-field grouped>
           <o-field>
-            <o-dropdown
+            <t-dropdown
               v-model="selectedLevels"
               :width="300"
               aria-role="list"
               multiple
               selectable
             >
-              <template #trigger>
-                <button class="button" type="button">
+              <template #trigger="{ toggle }">
+                <button class="button" type="button" @click="toggle">
                   Levels &nbsp;
-                  <o-icon icon="menu-down" />
+                  <t-icon icon="menu-down" />
                 </button>
               </template>
-              <o-dropdown-item v-for="level of sortedStationLevels" :key="level.id" :value="mapLevelKeyFn(level)" aria-role="listitem">
+              <t-dropdown-item v-for="level of sortedStationLevels" :key="level.id" :value="mapLevelKeyFn(level)" aria-role="listitem">
                 <div class="media">
                   <div class="media-left">
                     {{ level.level_index == null ? '&nbsp;&nbsp;&nbsp;' : level.level_index }}
@@ -213,8 +213,8 @@
                     <small>{{ level.stops.length }} nodes </small>
                   </div>
                 </div>
-              </o-dropdown-item>
-            </o-dropdown>
+              </t-dropdown-item>
+            </t-dropdown>
           </o-field>
           <o-field>
             <tl-apps-stations-basemap-control v-model="basemap" />

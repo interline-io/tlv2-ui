@@ -1,26 +1,26 @@
 <template>
   <div>
-    <o-dropdown
-      :value="modelValue"
+    <t-dropdown
+      :model-value="modelValue"
       aria-role="list"
       selectable
       @update:model-value="$emit('update:modelValue', $event)"
     >
-      <template #trigger>
-        <button class="button" type="button">
+      <template #trigger="{ toggle }">
+        <button class="button" type="button" @click="toggle">
           Basemap &nbsp;
-          <o-icon icon="menu-down" />
+          <t-icon icon="menu-down" />
         </button>
       </template>
-      <o-dropdown-item
+      <t-dropdown-item
         v-for="(bm, key) in basemapLayers"
         :key="key"
         :value="key"
         aria-role="listitem"
       >
         {{ bm.label }}
-      </o-dropdown-item>
-    </o-dropdown>
+      </t-dropdown-item>
+    </t-dropdown>
   </div>
 </template>
 

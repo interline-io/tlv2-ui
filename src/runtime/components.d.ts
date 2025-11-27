@@ -85,6 +85,8 @@ declare module 'vue' {
     TButton: typeof import('./controls/button.vue')['default']
     TCard: typeof import('./controls/card.vue')['default']
     TCheckbox: typeof import('./controls/checkbox.vue')['default']
+    TDropdownItem: typeof import('./controls/dropdown-item.vue')['default']
+    TDropdown: typeof import('./controls/dropdown.vue')['default']
     TField: typeof import('./controls/field.vue')['default']
     TIcon: typeof import('./controls/icon.vue')['default']
     TInput: typeof import('./controls/input.vue')['default']
