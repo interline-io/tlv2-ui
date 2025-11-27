@@ -144,6 +144,12 @@ export default defineNuxtModule<ModuleOptions>({
       prefix: 'tl'
     })
 
+    // Add controls (t-* components)
+    addComponentsDir({
+      path: resolveRuntimeModule('controls'),
+      prefix: 't'
+    })
+
     // Nuxt 4: Transpile packages for SSR compatibility
     // These packages need transpilation because they:
     // - Ship as ESM but need to work in SSR/Node context

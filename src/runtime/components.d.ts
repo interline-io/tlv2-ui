@@ -88,6 +88,15 @@ declare module 'vue' {
     TlTag: typeof import('./components/tag.vue')['default']
     TlTitle: typeof import('./components/title.vue')['default']
     TlTreeControl: typeof import('./components/tree-control.vue')['default']
+    TButton: typeof import('./controls/button.vue')['default']
+    TCheckbox: typeof import('./controls/checkbox.vue')['default']
+    TField: typeof import('./controls/field.vue')['default']
+    TIcon: typeof import('./controls/icon.vue')['default']
+    TLoading: typeof import('./controls/loading.vue')['default']
+    TNotification: typeof import('./controls/notification.vue')['default']
+    TSelect: typeof import('./controls/select.vue')['default']
+    TSwitch: typeof import('./controls/switch.vue')['default']
+    TTooltip: typeof import('./controls/tooltip.vue')['default']
   }
 }
 
