@@ -92,10 +92,14 @@ declare module 'vue' {
     TCheckbox: typeof import('./controls/checkbox.vue')['default']
     TField: typeof import('./controls/field.vue')['default']
     TIcon: typeof import('./controls/icon.vue')['default']
+    TInput: typeof import('./controls/input.vue')['default']
     TLoading: typeof import('./controls/loading.vue')['default']
     TNotification: typeof import('./controls/notification.vue')['default']
+    TRadio: typeof import('./controls/radio.vue')['default']
     TSelect: typeof import('./controls/select.vue')['default']
     TSwitch: typeof import('./controls/switch.vue')['default']
+    TTabItem: typeof import('./controls/tab-item.vue')['default']
+    TTabs: typeof import('./controls/tabs.vue')['default']
     TTooltip: typeof import('./controls/tooltip.vue')['default']
   }
 }

@@ -16,18 +16,34 @@
     <div v-if="horizontal" class="field-body">
       <div class="field" :class="{ 'has-addons': addons }">
         <slot />
+        <p v-if="message || $slots.message" class="help" :class="messageClass">
+          <slot name="message">
+            {{ message }}
+          </slot>
+        </p>
       </div>
     </div>
 
-    <div v-else :class="{ control: !addons && !grouped }">
-      <slot />
-    </div>
-
-    <p v-if="message || $slots.message" class="help" :class="messageClass">
-      <slot name="message">
-        {{ message }}
-      </slot>
-    </p>
+    <template v-else>
+      <template v-if="addons || grouped">
+        <slot />
+        <p v-if="message || $slots.message" class="help" :class="messageClass">
+          <slot name="message">
+            {{ message }}
+          </slot>
+        </p>
+      </template>
+      <template v-else>
+        <div class="control">
+          <slot />
+        </div>
+        <p v-if="message || $slots.message" class="help" :class="messageClass">
+          <slot name="message">
+            {{ message }}
+          </slot>
+        </p>
+      </template>
+    </template>
   </div>
 </template>
 
