@@ -118,7 +118,6 @@ export default defineNuxtModule<ModuleOptions>({
     addPlugin(resolveRuntimeModule('plugins/mixpanel.client'))
     addPlugin(resolveRuntimeModule('plugins/auth.client'))
     addPlugin(resolveRuntimeModule('plugins/oruga'))
-    addPlugin(resolveRuntimeModule('plugins/filters'))
     addImportsDir(resolveRuntimeModule('composables'))
 
     // Proxy options

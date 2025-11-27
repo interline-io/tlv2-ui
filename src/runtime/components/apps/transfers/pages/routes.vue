@@ -27,9 +27,9 @@
 
 <script setup lang="ts">
 import { useRoute } from '#app'
-import { windowToSeconds } from '../../../utils/time-format'
+import { windowToSeconds } from '../../../../lib/time-format'
 import type { StationHub } from '../types'
-import { departureStats } from '../../../../components/utils/departure-stats'
+import { departureStats } from '../../../../lib/departure-stats'
 
 interface Props {
   stationArea: StationHub

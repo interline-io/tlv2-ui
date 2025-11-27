@@ -48,9 +48,9 @@
 <script setup lang="ts">
 import centroid from '@turf/centroid'
 import { ref, computed, watch } from 'vue'
-import { windowToSeconds, secondsToString } from '../../../utils/time-format'
+import { windowToSeconds, secondsToString } from '../../../../lib/time-format'
 import type { StationHub } from '../types'
-import { departureStats } from '../../../../components/utils/departure-stats'
+import { departureStats } from '../../../../lib/departure-stats'
 import { navigateTo, useRoute } from '#app'
 
 interface Props {

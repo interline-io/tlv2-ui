@@ -37,7 +37,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { TreeNode } from './utils/tree'
+import type { TreeNode } from '../lib/tree'
 
 interface Props {
   node?: TreeNode

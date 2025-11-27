@@ -29,7 +29,7 @@
           <hr>
 
           <div class="is-pulled-right pb-4">
-            <tl-csv-download :data="getCsvData(scenarioResult)" />
+            <tl-download-csv :data="getCsvData(scenarioResult)" />
           </div>
 
           <br>
@@ -330,7 +330,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { secondsToDuration, secondsToString } from '../../../utils/time-format'
+import { secondsToDuration, secondsToString } from '../../../../lib/time-format'
 import type { StationHub } from '../types'
 import { navigateTo, useRoute } from '#app'
 

@@ -1,9 +1,9 @@
 import dayjs from 'dayjs'
 import { haversinePosition, type Point, type Polygon } from '../../../geom'
 import { gql } from 'graphql-tag'
-import { TreeNode } from '../../../components/utils/tree'
+import { TreeNode } from '../../../lib/tree'
 import { useRouteCategories } from '../../../composables/useRouteCategories'
-import { toSeconds, windowToSeconds } from '../../utils/time-format'
+import { toSeconds, windowToSeconds } from '../../../lib/time-format'
 import { NewGraph, Profiles, type Graph, type CostFunction } from './graph'
 import { FeedVersion, type Stop } from './station'
 
