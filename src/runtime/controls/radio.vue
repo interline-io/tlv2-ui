@@ -81,6 +81,16 @@ function handleChange () {
 <style scoped>
 .radio {
   cursor: pointer;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  margin-right: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.radio input[type="radio"] {
+  flex-shrink: 0;
 }
 
 .radio.is-disabled {
@@ -88,29 +98,87 @@ function handleChange () {
   cursor: not-allowed;
 }
 
-/* Variant colors for radio using accent-color */
+/* Enhanced radio button styling with padding */
+.radio input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 1.125rem;
+  height: 1.125rem;
+  border: 2px solid #dbdbdb;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.15s ease-in-out;
+}
+
+.radio input[type="radio"]:hover {
+  border-color: #b5b5b5;
+}
+
+.radio input[type="radio"]:checked {
+  border-color: #00d1b2;
+  background-color: transparent;
+}
+
+.radio input[type="radio"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #00d1b2;
+  transform: translate(-50%, -50%);
+}
+
+/* Variant colors for radio */
 .radio.is-primary input[type="radio"]:checked {
-  accent-color: #00d1b2;
+  border-color: #00d1b2;
+}
+
+.radio.is-primary input[type="radio"]:checked::after {
+  background-color: #00d1b2;
 }
 
 .radio.is-link input[type="radio"]:checked {
-  accent-color: #485fc7;
+  border-color: #485fc7;
+}
+
+.radio.is-link input[type="radio"]:checked::after {
+  background-color: #485fc7;
 }
 
 .radio.is-info input[type="radio"]:checked {
-  accent-color: #3e8ed0;
+  border-color: #3e8ed0;
+}
+
+.radio.is-info input[type="radio"]:checked::after {
+  background-color: #3e8ed0;
 }
 
 .radio.is-success input[type="radio"]:checked {
-  accent-color: #48c78e;
+  border-color: #48c78e;
+}
+
+.radio.is-success input[type="radio"]:checked::after {
+  background-color: #48c78e;
 }
 
 .radio.is-warning input[type="radio"]:checked {
-  accent-color: #ffe08a;
+  border-color: #ffe08a;
+}
+
+.radio.is-warning input[type="radio"]:checked::after {
+  background-color: #ffe08a;
 }
 
 .radio.is-danger input[type="radio"]:checked {
-  accent-color: #f14668;
+  border-color: #f14668;
+}
+
+.radio.is-danger input[type="radio"]:checked::after {
+  background-color: #f14668;
 }
 
 /* Size variants */

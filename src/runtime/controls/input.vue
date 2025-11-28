@@ -7,7 +7,7 @@
       :value="modelValue"
       :placeholder="placeholder"
       :disabled="disabled"
-      :readonly="readonly"
+      :readonly="readonly || static"
       :maxlength="maxlength"
       :min="min"
       :max="max"
@@ -28,22 +28,23 @@
       <i :class="`mdi mdi-${iconRight}`" />
     </span>
   </div>
-  <input
-    v-else
-    class="input"
-    :class="inputClasses"
-    :type="type"
-    :value="modelValue"
-    :placeholder="placeholder"
-    :disabled="disabled"
-    :readonly="readonly"
-    :maxlength="maxlength"
-    :min="min"
-    :max="max"
-    :step="step"
-    v-bind="$attrs"
-    @input="handleInput"
-  >
+  <p v-else class="control" :class="controlClasses">
+    <input
+      class="input"
+      :class="inputClasses"
+      :type="type"
+      :value="modelValue"
+      :placeholder="placeholder"
+      :disabled="disabled"
+      :readonly="readonly || static"
+      :maxlength="maxlength"
+      :min="min"
+      :max="max"
+      :step="step"
+      v-bind="$attrs"
+      @input="handleInput"
+    >
+  </p>
 </template>
 
 <script setup lang="ts">
@@ -120,7 +121,7 @@ interface Props {
   /**
    * Maximum length attribute.
    */
-  maxlength?: number
+  maxlength?: number | string
 
   /**
    * Minimum value for number/date inputs.
@@ -186,7 +187,7 @@ const emit = defineEmits<{
   'icon-right-click': [event: MouseEvent]
 }>()
 
-const hasIcons = computed(() => !!(props.icon || props.iconRight))
+const hasIcons = computed(() => !!(props.icon || props.iconRight || props.loading))
 
 const controlClasses = computed(() => {
   const classes: string[] = []
@@ -197,6 +198,10 @@ const controlClasses = computed(() => {
 
   if (props.iconRight) {
     classes.push('has-icons-right')
+  }
+
+  if (props.loading) {
+    classes.push('is-loading')
   }
 
   if (props.expanded) {
@@ -219,10 +224,6 @@ const inputClasses = computed(() => {
 
   if (props.rounded) {
     classes.push('is-rounded')
-  }
-
-  if (props.loading) {
-    classes.push('is-loading')
   }
 
   if (props.static) {

@@ -19,7 +19,7 @@
           Basic Radio Group
         </h2>
         <div class="box">
-          <t-field label="Choose an option:">
+          <t-field>
             <t-radio v-model="basic" native-value="option1">
               Option 1
             </t-radio>
@@ -98,9 +98,42 @@
           </t-field>
         </div>
 
+        <!-- With Additional Content -->
+        <h2 class="title is-3">
+          With Additional Content
+        </h2>
+        <div class="box">
+          <t-field>
+            <t-radio v-model="contentDemo" native-value="option1">
+              <div>
+                <strong>Option 1</strong>
+                <p class="help">
+                  Additional content for option 1
+                </p>
+              </div>
+            </t-radio>
+            <t-radio v-model="contentDemo" native-value="option2">
+              <div>
+                <strong>Option 2</strong>
+                <p class="help">
+                  Additional content for option 2
+                </p>
+              </div>
+            </t-radio>
+            <t-radio v-model="contentDemo" native-value="option3">
+              <div>
+                <strong>Option 3</strong>
+                <p class="help">
+                  Additional content for option 3
+                </p>
+              </div>
+            </t-radio>
+          </t-field>
+        </div>
+
         <!-- Practical Examples -->
         <h2 class="title is-3">
-          Payment Method Selection
+          Example: Payment Method Selection
         </h2>
         <div class="box">
           <t-field label="Choose payment method:">
@@ -136,7 +169,7 @@
 
         <!-- Shipping Options -->
         <h2 class="title is-3">
-          Shipping Options
+          Example: Shipping Options
         </h2>
         <div class="box">
           <t-field label="Select shipping speed:">
@@ -154,7 +187,7 @@
 
         <!-- Survey Question -->
         <h2 class="title is-3">
-          Survey Question
+          Example: Survey Question
         </h2>
         <div class="box">
           <p class="mb-3">
@@ -190,6 +223,7 @@ const basic = ref('option2')
 const variantDemo = ref('success')
 const sizeDemo = ref('normal')
 const disabledDemo = ref('enabled')
+const contentDemo = ref('option1')
 const payment = ref('credit')
 const shipping = ref('standard')
 const satisfaction = ref('satisfied')

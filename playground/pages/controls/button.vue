@@ -175,7 +175,7 @@
           Full Width
         </h2>
         <div class="box">
-          <t-button variant="primary" expanded>
+          <t-button variant="primary" fullwidth>
             Full Width Button
           </t-button>
         </div>

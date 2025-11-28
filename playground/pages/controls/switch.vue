@@ -105,6 +105,33 @@
           </t-field>
         </div>
 
+        <!-- With Additional Content -->
+        <h2 class="title is-3">
+          With Additional Content
+        </h2>
+        <div class="box">
+          <t-field>
+            <t-switch v-model="content1" variant="primary">
+              <div>
+                <strong>Option 1</strong>
+                <p class="help">
+                  Additional content for option 1
+                </p>
+              </div>
+            </t-switch>
+          </t-field>
+          <t-field>
+            <t-switch v-model="content2" variant="info">
+              <div>
+                <strong>Option 2</strong>
+                <p class="help">
+                  Additional content for option 2
+                </p>
+              </div>
+            </t-switch>
+          </t-field>
+        </div>
+
         <!-- Rounded Style -->
         <h2 class="title is-3">
           Rounded Style
@@ -119,7 +146,7 @@
 
         <!-- Settings Panel Example -->
         <h2 class="title is-3">
-          Settings Panel
+          Example: Settings Panel
         </h2>
         <div class="box">
           <h3 class="subtitle is-5">
@@ -183,7 +210,7 @@
 
         <!-- Feature Toggles -->
         <h2 class="title is-3">
-          Feature Toggles
+          Example: Feature Toggles
         </h2>
         <div class="box">
           <t-field>
@@ -208,7 +235,7 @@
 
         <!-- Interactive Demo -->
         <h2 class="title is-3">
-          Interactive Demo
+          Example: Interactive Demo
         </h2>
         <div class="box">
           <t-field>
@@ -261,6 +288,9 @@ const sizeLarge = ref(true)
 
 const disabledOff = ref(false)
 const disabledOn = ref(true)
+
+const content1 = ref(true)
+const content2 = ref(false)
 
 const rounded = ref(true)
 

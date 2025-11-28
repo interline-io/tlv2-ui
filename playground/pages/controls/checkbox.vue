@@ -21,7 +21,7 @@
         <div class="box">
           <t-field>
             <t-checkbox v-model="basic">
-              Accept terms and conditions
+              Checkbox label
             </t-checkbox>
           </t-field>
           <p class="has-text-grey">
@@ -214,21 +214,21 @@
         </h2>
         <div class="box">
           <t-field>
-            <t-checkbox v-model="newsletter">
+            <t-checkbox v-model="option1Content">
               <div>
-                <strong>Subscribe to newsletter</strong>
+                <strong>Option 1</strong>
                 <p class="help">
-                  Get updates about new features and products
+                  Additional content for option 1
                 </p>
               </div>
             </t-checkbox>
           </t-field>
           <t-field>
-            <t-checkbox v-model="marketing">
+            <t-checkbox v-model="option2Content">
               <div>
-                <strong>Marketing emails</strong>
+                <strong>Option 2</strong>
                 <p class="help">
-                  Receive promotional offers and discounts
+                  Additional content for option 2
                 </p>
               </div>
             </t-checkbox>
@@ -262,8 +262,8 @@ const stateDisabled = ref(false)
 const stateDisabledChecked = ref(true)
 
 const fruits = ref(['banana', 'orange'])
-const newsletter = ref(true)
-const marketing = ref(false)
+const option1Content = ref(true)
+const option2Content = ref(false)
 
 // Indeterminate state demo
 const selectAll = ref(false)

@@ -148,7 +148,6 @@ const messageClass = computed(() => {
 })
 
 const labelSizeClass = computed(() => {
-  if (props.labelSize === 'normal') return ''
   return `is-${props.labelSize}`
 })
 </script>

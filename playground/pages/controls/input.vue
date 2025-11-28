@@ -109,6 +109,22 @@
           </t-field>
         </div>
 
+        <!-- Static -->
+        <h2 class="title is-3">
+          Static
+        </h2>
+        <div class="box">
+          <p class="mb-3">
+            Static inputs display like plain text, useful for read-only values in forms.
+          </p>
+          <t-field label="Username" horizontal>
+            <t-input v-model="staticUsername" static />
+          </t-field>
+          <t-field label="Email" horizontal>
+            <t-input v-model="staticEmail" type="email" static />
+          </t-field>
+        </div>
+
         <!-- Rounded -->
         <h2 class="title is-3">
           Rounded
@@ -125,18 +141,13 @@
         </h2>
         <div class="box">
           <t-field label="Search">
-            <t-input v-model="search" placeholder="Search...">
-              <template #left>
-                <t-icon icon="magnify" />
-              </template>
-            </t-input>
+            <t-input v-model="search" icon="magnify" placeholder="Search..." />
           </t-field>
           <t-field label="Email with Icon">
-            <t-input v-model="emailIcon" type="email" placeholder="email@example.com">
-              <template #left>
-                <t-icon icon="email" />
-              </template>
-            </t-input>
+            <t-input v-model="emailIcon" type="email" icon="email" placeholder="email@example.com" />
+          </t-field>
+          <t-field label="With Right Icon">
+            <t-input v-model="clearable" icon="magnify" icon-right="close-circle" icon-right-clickable placeholder="Clearable search" @icon-right-click="clearable = ''" />
           </t-field>
         </div>
 
@@ -189,9 +200,12 @@ const large = ref('')
 const disabled = ref('This is disabled')
 const readonly = ref('This is readonly')
 const loadingValue = ref('')
+const staticUsername = ref('john_doe')
+const staticEmail = ref('john@example.com')
 const rounded = ref('')
 const search = ref('')
 const emailIcon = ref('')
+const clearable = ref('Type to test')
 const username = ref('')
 const expanded = ref('')
 </script>
