@@ -6,7 +6,6 @@
         route-key="feeds-feedKey"
         :to="{ params: { feedKey: value.onestop_id } }"
       >
-        <!-- <o-icon icon="account-group" class="mr-2" /> -->
         <template v-if="!value.name">
           {{ value.onestop_id }}
         </template>

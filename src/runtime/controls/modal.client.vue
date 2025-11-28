@@ -120,7 +120,9 @@ onBeforeUnmount(() => {
   min-width: 800px;
 }
 .t-modal-fullscreen {
-  padding-top: 30px;
-  padding-bottom: 30px;
+  width: calc(100vw - 40px);
+  height: calc(100vh - 40px);
+  max-height: calc(100vh - 40px);
+  margin: 20px;
 }
 </style>

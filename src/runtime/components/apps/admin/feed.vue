@@ -16,20 +16,6 @@
         {{ feed.feed.onestop_id }}
       </t-field>
 
-      <!-- <o-field
-        v-if="feed.actions.can_create_feed_version"
-        label="Upload"
-        horizontal
-      >
-        <tl-link
-          route-key="feeds-feedKey-upload"
-          :to="{ params: { feedKey: feed.feed?.onestop_id } }"
-          class="button is-small is-primary"
-        >
-          Upload Feed Version
-        </tl-link>
-      </o-field> -->
-
       <t-field
         label="Group"
         horizontal

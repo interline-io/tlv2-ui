@@ -53,10 +53,6 @@
         </div>
       </div>
     </div>
-    <!-- TODO: -->
-    <!-- <o-button variant="primary" outlined>
-      Reorder Levels
-    </o-button> -->
     <slot name="bottom-button-bar" />
   </div>
 </template>

@@ -5,96 +5,73 @@
     </slot>
 
     <t-loading :active="$apollo.loading" :full-page="false" />
-    <o-table
+    <t-table
       :data="stopsWithRefs"
       narrowed
       striped
+      hoverable
       :default-sort="['target_stops', 'asc']"
     >
-      <o-table-column
-        v-slot="props"
-        sortable
-        field="stop.parent.stop_name"
-        label="Station"
-      >
-        <template v-if="props.row.parent">
+      <template #columns>
+        <t-table-column field="stop.parent.stop_name" label="Station" sortable />
+        <t-table-column field="target_feed_onestop_id" label="Target feed Onestop ID" sortable />
+        <t-table-column field="target_stop_id" label="Target stop ID" sortable />
+        <t-table-column field="target_stops" label="Stop ID association found?" sortable />
+        <t-table-column field="location_type" label="Target location type" sortable />
+        <t-table-column label="Routes serving stop" />
+        <t-table-column label="Actions" />
+      </template>
+
+      <template #default="{ row }">
+        <td>
           <tl-link
+            v-if="row.parent"
             route-key="apps-stations-feedKey-feedVersionKey-stations-stationKey"
-            :to="{ params: { feedKey, feedVersionKey, stationKey: props.row.parent.stop_id } }"
+            :to="{ params: { feedKey, feedVersionKey, stationKey: row.parent.stop_id } }"
           >
-            {{ props.row.parent.stop_name }}
+            {{ row.parent.stop_name }}
           </tl-link>
-        </template>
-      </o-table-column>
-
-      <o-table-column
-        v-slot="props"
-        sortable
-        field="target_feed_onestop_id"
-        label="Target feed Onestop ID"
-      >
-        <code>{{ props.row.external_reference.target_feed_onestop_id }}</code>
-      </o-table-column>
-      <o-table-column
-        v-slot="props"
-        sortable
-        field="target_stop_id"
-        label="Target stop ID"
-      >
-        <code>{{ props.row.external_reference.target_stop_id }}</code>
-      </o-table-column>
-      <o-table-column
-        v-slot="props"
-        field="target_stops"
-        label="Stop ID association found?"
-        sortable
-      >
-        <span v-if="props.row.external_reference.target_active_stop">
-          <span class="icon"><i class="mdi mdi-check mdi-24px" /></span>
-        </span><span v-else>
-          <span class="icon has-text-warning"><i class="mdi mdi-alert mdi-24px" /></span>
-        </span>
-      </o-table-column>
-
-      <o-table-column
-        v-slot="props"
-        field="location_type"
-        label="Target location type"
-        sortable
-      >
-        <span v-if="props.row.external_reference?.target_active_stop">
-          <span class="icon">{{ props.row.external_reference?.target_active_stop?.location_type }}</span>
-        </span><span v-else>
-          <span class="icon has-text-warning"><i class="mdi mdi-alert mdi-24px" /></span>
-        </span>
-      </o-table-column>
-
-      <o-table-column
-        v-slot="props"
-        label="Routes serving stop"
-      >
-        <span v-if="props.row.external_reference.target_active_stop && props.row.external_reference.target_active_stop.route_stops">
-          <ul>
-            <li v-for="rs of props.row.external_reference.target_active_stop.route_stops" :key="rs.route.id">
-              {{ rs.route.agency.agency_name }}: {{ rs.route.route_short_name || rs.route.route_long_name }}
-            </li>
-          </ul>
-        </span>
-      </o-table-column>
-      <o-table-column
-        v-slot="props"
-        label="Actions"
-      >
-        <template v-if="props.row.parent">
+        </td>
+        <td>
+          <code>{{ row.external_reference.target_feed_onestop_id }}</code>
+        </td>
+        <td>
+          <code>{{ row.external_reference.target_stop_id }}</code>
+        </td>
+        <td>
+          <span v-if="row.external_reference.target_active_stop">
+            <span class="icon"><i class="mdi mdi-check mdi-24px" /></span>
+          </span><span v-else>
+            <span class="icon has-text-warning"><i class="mdi mdi-alert mdi-24px" /></span>
+          </span>
+        </td>
+        <td>
+          <span v-if="row.external_reference?.target_active_stop">
+            <span class="icon">{{ row.external_reference?.target_active_stop?.location_type }}</span>
+          </span><span v-else>
+            <span class="icon has-text-warning"><i class="mdi mdi-alert mdi-24px" /></span>
+          </span>
+        </td>
+        <td>
+          <span v-if="row.external_reference.target_active_stop && row.external_reference.target_active_stop.route_stops">
+            <ul>
+              <li v-for="rs of row.external_reference.target_active_stop.route_stops" :key="rs.route.id">
+                {{ rs.route.agency.agency_name }}: {{ rs.route.route_short_name || rs.route.route_long_name }}
+              </li>
+            </ul>
+          </span>
+        </td>
+        <td>
           <tl-link
+            v-if="row.parent"
             route-key="apps-stations-feedKey-feedVersionKey-stations-stationKey-pathways"
-            :to="{ params: { feedKey, feedVersionKey, stationKey: props.row.parent.stop_id }, query: { selectedStop: props.row.id } }"
+            :to="{ params: { feedKey, feedVersionKey, stationKey: row.parent.stop_id }, query: { selectedStop: row.id } }"
           >
             Re-assign stop
           </tl-link>
-        </template>
-      </o-table-column>
-    </o-table>
+        </td>
+      </template>
+    </t-table>
   </div>
 </template>
 

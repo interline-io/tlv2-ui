@@ -50,24 +50,21 @@
             <td style="width:500px">
               {{ secondsToDuration(timeCopy) }}
               <br>
-              <o-slider
+              <t-slider
                 :model-value="timeCopy ?? undefined"
                 size="medium"
                 :min="0"
                 :max="600"
                 @update:model-value="timeCopy = $event ?? null"
               >
-                <template
+                <t-slider-tick
                   v-for="val in [0, 60, 120, 180, 240, 300, 360, 420, 480, 540, 600]"
                   :key="val"
+                  :value="val"
                 >
-                  <o-slider-tick
-                    :value="val"
-                  >
-                    {{ secondsToDuration(val) }}
-                  </o-slider-tick>
-                </template>
-              </o-slider>
+                  {{ secondsToDuration(val) }}
+                </t-slider-tick>
+              </t-slider>
             </td>
           </tr>
         </tbody>
