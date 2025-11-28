@@ -85,6 +85,7 @@ declare module 'vue' {
     TButton: typeof import('./controls/button.vue')['default']
     TCard: typeof import('./controls/card.vue')['default']
     TCheckbox: typeof import('./controls/checkbox.vue')['default']
+    TBox: typeof import('./controls/demo/box.vue')['default']
     TDropdownItem: typeof import('./controls/dropdown-item.vue')['default']
     TDropdown: typeof import('./controls/dropdown.vue')['default']
     TField: typeof import('./controls/field.vue')['default']
@@ -106,6 +107,7 @@ declare module 'vue' {
     TTabs: typeof import('./controls/tabs.vue')['default']
     TTag: typeof import('./controls/tag.vue')['default']
     TTextarea: typeof import('./controls/textarea.vue')['default']
+    TThemeToggle: typeof import('./controls/theme-toggle.vue')['default']
     TTooltip: typeof import('./controls/tooltip.vue')['default']
   }
 }

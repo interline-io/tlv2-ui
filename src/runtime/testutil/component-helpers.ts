@@ -102,7 +102,7 @@ export function testDisabledState (
  * Test if component applies correct Bulma classes
  */
 export function testBulmaClasses (
-  wrapper: VueWrapper,
+  wrapper: VueWrapper | ReturnType<VueWrapper['find']>,
   expectedClasses: string[]
 ): void {
   const classes = wrapper.classes()

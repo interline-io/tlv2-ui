@@ -14,11 +14,7 @@
       </p>
 
       <div class="content">
-        <!-- Basic Checkbox -->
-        <h2 class="title is-3">
-          Basic Checkbox
-        </h2>
-        <div class="box">
+        <t-demo-box label="Basic Checkbox">
           <t-field>
             <t-checkbox v-model="basic">
               Checkbox label
@@ -27,13 +23,9 @@
           <p class="has-text-grey">
             Checked: {{ basic }}
           </p>
-        </div>
+        </t-demo-box>
 
-        <!-- Multiple Checkboxes -->
-        <h2 class="title is-3">
-          Multiple Checkboxes
-        </h2>
-        <div class="box">
+        <t-demo-box label="Multiple Checkboxes">
           <t-field>
             <t-checkbox v-model="option1">
               Option 1
@@ -52,13 +44,9 @@
           <p class="has-text-grey">
             Selected: {{ [option1 && 'Option 1', option2 && 'Option 2', option3 && 'Option 3'].filter(Boolean).join(', ') || 'None' }}
           </p>
-        </div>
+        </t-demo-box>
 
-        <!-- Variants -->
-        <h2 class="title is-3">
-          Variants
-        </h2>
-        <div class="box">
+        <t-demo-box label="Variants">
           <t-field>
             <t-checkbox v-model="variantPrimary" variant="primary">
               Primary
@@ -84,13 +72,9 @@
               Danger
             </t-checkbox>
           </t-field>
-        </div>
+        </t-demo-box>
 
-        <!-- Sizes -->
-        <h2 class="title is-3">
-          Sizes
-        </h2>
-        <div class="box">
+        <t-demo-box label="Sizes">
           <t-field>
             <t-checkbox v-model="sizeSmall" size="small">
               Small checkbox
@@ -111,13 +95,9 @@
               Large checkbox
             </t-checkbox>
           </t-field>
-        </div>
+        </t-demo-box>
 
-        <!-- States -->
-        <h2 class="title is-3">
-          States
-        </h2>
-        <div class="box">
+        <t-demo-box label="States">
           <t-field>
             <t-checkbox v-model="stateDisabled" disabled>
               Disabled checkbox
@@ -128,13 +108,9 @@
               Disabled checked
             </t-checkbox>
           </t-field>
-        </div>
+        </t-demo-box>
 
-        <!-- Indeterminate State -->
-        <h2 class="title is-3">
-          Indeterminate State
-        </h2>
-        <div class="box">
+        <t-demo-box label="Indeterminate State">
           <p class="mb-3">
             The indeterminate state is useful for "Select All" checkboxes when some but not all items are selected.
           </p>
@@ -173,13 +149,9 @@
           <p class="has-text-grey mt-3">
             Selected: {{ selectedItemsCount }} of {{ totalItems }}
           </p>
-        </div>
+        </t-demo-box>
 
-        <!-- Array Binding -->
-        <h2 class="title is-3">
-          Array Binding
-        </h2>
-        <div class="box">
+        <t-demo-box label="Array Binding">
           <p class="mb-3">
             Select your favorite fruits:
           </p>
@@ -206,13 +178,9 @@
           <p class="has-text-grey mt-3">
             Selected: {{ fruits.length > 0 ? fruits.join(', ') : 'None' }}
           </p>
-        </div>
+        </t-demo-box>
 
-        <!-- With Description -->
-        <h2 class="title is-3">
-          With Additional Content
-        </h2>
-        <div class="box">
+        <t-demo-box label="With Additional Content">
           <t-field>
             <t-checkbox v-model="option1Content">
               <div>
@@ -233,7 +201,7 @@
               </div>
             </t-checkbox>
           </t-field>
-        </div>
+        </t-demo-box>
       </div>
     </section>
   </div>

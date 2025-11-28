@@ -1,17 +1,22 @@
 <template>
-  <div
-    class="select"
-    :class="selectClasses"
-  >
-    <select
-      ref="selectRef"
-      :value="modelValue"
-      :disabled="disabled"
-      v-bind="$attrs"
-      @change="handleChange"
+  <div class="control" :class="controlClasses">
+    <div
+      class="select"
+      :class="selectClasses"
     >
-      <slot />
-    </select>
+      <select
+        ref="selectRef"
+        :value="modelValue"
+        :disabled="disabled || readonly"
+        v-bind="$attrs"
+        @change="handleChange"
+      >
+        <slot />
+      </select>
+    </div>
+    <span v-if="icon" class="icon is-left">
+      <i :class="`mdi mdi-${icon}`" />
+    </span>
   </div>
 </template>
 
@@ -71,6 +76,18 @@ interface Props {
    * @default false
    */
   loading?: boolean
+
+  /**
+   * Make the select readonly (not editable).
+   * @default false
+   */
+  readonly?: boolean
+
+  /**
+   * MDI icon name for left icon (without mdi- prefix).
+   * @example 'magnify', 'account', 'calendar'
+   */
+  icon?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -80,7 +97,9 @@ const props = withDefaults(defineProps<Props>(), {
   disabled: false,
   fullwidth: false,
   rounded: false,
-  loading: false
+  loading: false,
+  readonly: false,
+  icon: undefined
 })
 
 const emit = defineEmits<{
@@ -88,6 +107,24 @@ const emit = defineEmits<{
 }>()
 
 const selectRef = ref<HTMLSelectElement | null>(null)
+
+const controlClasses = computed(() => {
+  const classes: string[] = []
+
+  if (props.icon) {
+    classes.push('has-icons-left')
+  }
+
+  if (props.loading) {
+    classes.push('is-loading')
+  }
+
+  if (props.fullwidth) {
+    classes.push('is-expanded')
+  }
+
+  return classes
+})
 
 // Sync selected options for multiple select
 function syncMultipleSelect () {
@@ -135,7 +172,7 @@ const selectClasses = computed(() => {
     classes.push('is-rounded')
   }
 
-  if (props.loading) {
+  if (props.loading && !props.icon) {
     classes.push('is-loading')
   }
 
@@ -174,6 +211,15 @@ function handleChange (event: Event) {
 
 <style scoped>
 /* Inherits Bulma select styles from global stylesheet */
+
+/* Make select expand to fill container by default, like input */
+.select {
+  width: 100%;
+}
+
+.select select {
+  width: 100%;
+}
 
 /* Ensure multiple select displays properly with specified size */
 .select.is-multiple select {

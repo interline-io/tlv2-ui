@@ -14,11 +14,7 @@
       </p>
 
       <div class="content">
-        <!-- Basic Switch -->
-        <h2 class="title is-3">
-          Basic Switch
-        </h2>
-        <div class="box">
+        <t-demo-box label="Basic Switch">
           <t-field>
             <t-switch v-model="basic">
               Enable notifications
@@ -27,13 +23,9 @@
           <p class="has-text-grey">
             Value: {{ basic }}
           </p>
-        </div>
+        </t-demo-box>
 
-        <!-- Variants -->
-        <h2 class="title is-3">
-          Variants
-        </h2>
-        <div class="box">
+        <t-demo-box label="Variants">
           <t-field>
             <t-switch v-model="variantPrimary" variant="primary">
               Primary
@@ -59,13 +51,9 @@
               Danger
             </t-switch>
           </t-field>
-        </div>
+        </t-demo-box>
 
-        <!-- Sizes -->
-        <h2 class="title is-3">
-          Sizes
-        </h2>
-        <div class="box">
+        <t-demo-box label="Sizes">
           <t-field>
             <t-switch v-model="sizeSmall" size="small">
               Small switch
@@ -86,13 +74,9 @@
               Large switch
             </t-switch>
           </t-field>
-        </div>
+        </t-demo-box>
 
-        <!-- Disabled State -->
-        <h2 class="title is-3">
-          Disabled State
-        </h2>
-        <div class="box">
+        <t-demo-box label="Disabled State">
           <t-field>
             <t-switch v-model="disabledOff" disabled>
               Disabled (off)
@@ -103,13 +87,9 @@
               Disabled (on)
             </t-switch>
           </t-field>
-        </div>
+        </t-demo-box>
 
-        <!-- With Additional Content -->
-        <h2 class="title is-3">
-          With Additional Content
-        </h2>
-        <div class="box">
+        <t-demo-box label="With Additional Content">
           <t-field>
             <t-switch v-model="content1" variant="primary">
               <div>
@@ -130,25 +110,17 @@
               </div>
             </t-switch>
           </t-field>
-        </div>
+        </t-demo-box>
 
-        <!-- Rounded Style -->
-        <h2 class="title is-3">
-          Rounded Style
-        </h2>
-        <div class="box">
+        <t-demo-box label="Rounded Style">
           <t-field>
             <t-switch v-model="rounded" rounded variant="success">
               Rounded switch
             </t-switch>
           </t-field>
-        </div>
+        </t-demo-box>
 
-        <!-- Settings Panel Example -->
-        <h2 class="title is-3">
-          Example: Settings Panel
-        </h2>
-        <div class="box">
+        <t-demo-box label="Example: Settings Panel">
           <h3 class="subtitle is-5">
             Notification Settings
           </h3>
@@ -206,13 +178,9 @@
               </p>
             </t-switch>
           </t-field>
-        </div>
+        </t-demo-box>
 
-        <!-- Feature Toggles -->
-        <h2 class="title is-3">
-          Example: Feature Toggles
-        </h2>
-        <div class="box">
+        <t-demo-box label="Example: Feature Toggles">
           <t-field>
             <t-switch v-model="features.darkMode" variant="dark">
               <t-icon icon="weather-night" />
@@ -231,13 +199,9 @@
               <span>Experimental Features</span>
             </t-switch>
           </t-field>
-        </div>
+        </t-demo-box>
 
-        <!-- Interactive Demo -->
-        <h2 class="title is-3">
-          Example: Interactive Demo
-        </h2>
-        <div class="box">
+        <t-demo-box label="Example: Interactive Demo">
           <t-field>
             <t-switch v-model="demo.enabled" variant="success" size="large">
               <strong>Feature Enabled</strong>
@@ -264,7 +228,7 @@
               Feature is disabled. Enable it to see more options.
             </p>
           </div>
-        </div>
+        </t-demo-box>
       </div>
     </section>
   </div>

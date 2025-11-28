@@ -14,11 +14,7 @@
       </p>
 
       <div class="content">
-        <!-- Basic Select -->
-        <h2 class="title is-3">
-          Basic Select
-        </h2>
-        <div class="box">
+        <t-demo-box label="Basic Select">
           <t-field label="Choose a country:">
             <t-select v-model="basic" placeholder="Select a country">
               <option value="us">
@@ -41,13 +37,9 @@
           <p class="has-text-grey">
             Selected: {{ basic || 'None' }}
           </p>
-        </div>
+        </t-demo-box>
 
-        <!-- Multiple Selection -->
-        <h2 class="title is-3">
-          Multiple Selection
-        </h2>
-        <div class="box">
+        <t-demo-box label="Multiple Selection">
           <t-field label="Select multiple languages:">
             <t-select v-model="multiple" multiple size="6">
               <option value="js">
@@ -73,13 +65,9 @@
           <p class="has-text-grey">
             Selected: {{ multiple.length > 0 ? multiple.join(', ') : 'None' }}
           </p>
-        </div>
+        </t-demo-box>
 
-        <!-- Variants -->
-        <h2 class="title is-3">
-          Variants
-        </h2>
-        <div class="box">
+        <t-demo-box label="Variants">
           <t-field label="Primary:">
             <t-select v-model="variantPrimary" variant="primary">
               <option value="1">
@@ -133,13 +121,9 @@
               </option>
             </t-select>
           </t-field>
-        </div>
+        </t-demo-box>
 
-        <!-- Sizes -->
-        <h2 class="title is-3">
-          Sizes
-        </h2>
-        <div class="box">
+        <t-demo-box label="Sizes">
           <t-field label="Small:">
             <t-select v-model="sizeSmall" size="small">
               <option value="1">
@@ -168,13 +152,9 @@
               </option>
             </t-select>
           </t-field>
-        </div>
+        </t-demo-box>
 
-        <!-- States -->
-        <h2 class="title is-3">
-          States
-        </h2>
-        <div class="box">
+        <t-demo-box label="States">
           <t-field label="Disabled:">
             <t-select v-model="stateDisabled" disabled>
               <option value="1">
@@ -199,13 +179,9 @@
               </option>
             </t-select>
           </t-field>
-        </div>
+        </t-demo-box>
 
-        <!-- Rounded Style -->
-        <h2 class="title is-3">
-          Rounded Style
-        </h2>
-        <div class="box">
+        <t-demo-box label="Rounded Style">
           <t-field label="Choose an option:">
             <t-select v-model="rounded" rounded>
               <option value="1">
@@ -219,30 +195,25 @@
               </option>
             </t-select>
           </t-field>
-        </div>
+        </t-demo-box>
 
-        <!-- Expanded (Full Width) -->
-        <h2 class="title is-3">
-          Expanded (Full Width)
-        </h2>
-        <div class="box">
-          <t-field label="Full width select:">
-            <t-select v-model="expanded" expanded>
-              <option value="1">
-                This select takes the full width
+        <t-demo-box label="With Icon">
+          <t-field label="Choose a theme:">
+            <t-select v-model="theme" icon="palette" expanded>
+              <option value="light">
+                Light Theme
               </option>
-              <option value="2">
-                Option 2
+              <option value="dark">
+                Dark Theme
+              </option>
+              <option value="auto">
+                Auto (System)
               </option>
             </t-select>
           </t-field>
-        </div>
+        </t-demo-box>
 
-        <!-- Practical Examples -->
-        <h2 class="title is-3">
-          Product Filter
-        </h2>
-        <div class="box">
+        <t-demo-box label="Example: Product Filter">
           <div class="columns">
             <div class="column">
               <t-field label="Category:">
@@ -308,13 +279,9 @@
           <p class="has-text-grey">
             Filters: Category={{ filter.category || 'All' }}, Sort={{ filter.sort }}, Price={{ filter.price }}
           </p>
-        </div>
+        </t-demo-box>
 
-        <!-- Time Zone Selector -->
-        <h2 class="title is-3">
-          Time Zone Selector
-        </h2>
-        <div class="box">
+        <t-demo-box label="Example: Time Zone Selector">
           <t-field label="Select your time zone:">
             <t-select v-model="timezone" expanded>
               <optgroup label="North America">
@@ -355,27 +322,7 @@
               </optgroup>
             </t-select>
           </t-field>
-        </div>
-
-        <!-- With Icons -->
-        <h2 class="title is-3">
-          With Icon
-        </h2>
-        <div class="box">
-          <t-field label="Choose a theme:">
-            <t-select v-model="theme" icon="palette" expanded>
-              <option value="light">
-                Light Theme
-              </option>
-              <option value="dark">
-                Dark Theme
-              </option>
-              <option value="auto">
-                Auto (System)
-              </option>
-            </t-select>
-          </t-field>
-        </div>
+        </t-demo-box>
       </div>
     </section>
   </div>
@@ -403,7 +350,6 @@ const stateLoading = ref('1')
 const stateReadonly = ref('selected')
 
 const rounded = ref('1')
-const expanded = ref('1')
 
 const filter = ref({
   category: 'electronics',

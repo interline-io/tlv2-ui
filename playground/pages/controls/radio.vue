@@ -14,11 +14,7 @@
       </p>
 
       <div class="content">
-        <!-- Basic Radio -->
-        <h2 class="title is-3">
-          Basic Radio Group
-        </h2>
-        <div class="box">
+        <t-demo-box label="Basic Radio Group">
           <t-field>
             <t-radio v-model="basic" native-value="option1">
               Option 1
@@ -33,13 +29,9 @@
           <p class="has-text-grey">
             Selected: {{ basic }}
           </p>
-        </div>
+        </t-demo-box>
 
-        <!-- Variants -->
-        <h2 class="title is-3">
-          Variants
-        </h2>
-        <div class="box">
+        <t-demo-box label="Variants">
           <t-field>
             <t-radio v-model="variantDemo" native-value="primary" variant="primary">
               Primary
@@ -57,13 +49,9 @@
               Danger
             </t-radio>
           </t-field>
-        </div>
+        </t-demo-box>
 
-        <!-- Sizes -->
-        <h2 class="title is-3">
-          Sizes
-        </h2>
-        <div class="box">
+        <t-demo-box label="Sizes">
           <t-field>
             <t-radio v-model="sizeDemo" native-value="small" size="small">
               Small radio
@@ -78,13 +66,9 @@
               Large radio
             </t-radio>
           </t-field>
-        </div>
+        </t-demo-box>
 
-        <!-- Disabled State -->
-        <h2 class="title is-3">
-          Disabled State
-        </h2>
-        <div class="box">
+        <t-demo-box label="Disabled State">
           <t-field>
             <t-radio v-model="disabledDemo" native-value="enabled">
               Enabled option
@@ -96,13 +80,9 @@
               Another enabled option
             </t-radio>
           </t-field>
-        </div>
+        </t-demo-box>
 
-        <!-- With Additional Content -->
-        <h2 class="title is-3">
-          With Additional Content
-        </h2>
-        <div class="box">
+        <t-demo-box label="With Additional Content">
           <t-field>
             <t-radio v-model="contentDemo" native-value="option1">
               <div>
@@ -129,13 +109,9 @@
               </div>
             </t-radio>
           </t-field>
-        </div>
+        </t-demo-box>
 
-        <!-- Practical Examples -->
-        <h2 class="title is-3">
-          Example: Payment Method Selection
-        </h2>
-        <div class="box">
+        <t-demo-box label="Example: Payment Method Selection">
           <t-field label="Choose payment method:">
             <t-radio v-model="payment" native-value="credit">
               <div>
@@ -165,13 +141,9 @@
           <p class="has-text-grey mt-3">
             Selected method: {{ payment }}
           </p>
-        </div>
+        </t-demo-box>
 
-        <!-- Shipping Options -->
-        <h2 class="title is-3">
-          Example: Shipping Options
-        </h2>
-        <div class="box">
+        <t-demo-box label="Example: Shipping Options">
           <t-field label="Select shipping speed:">
             <t-radio v-model="shipping" native-value="standard">
               <span><strong>Standard Shipping</strong> - FREE (5-7 days)</span>
@@ -183,13 +155,9 @@
               <span><strong>Overnight Shipping</strong> - $24.99 (next day)</span>
             </t-radio>
           </t-field>
-        </div>
+        </t-demo-box>
 
-        <!-- Survey Question -->
-        <h2 class="title is-3">
-          Example: Survey Question
-        </h2>
-        <div class="box">
+        <t-demo-box label="Example: Survey Question">
           <p class="mb-3">
             <strong>How satisfied are you with our service?</strong>
           </p>
@@ -210,7 +178,7 @@
               Very Dissatisfied
             </t-radio>
           </t-field>
-        </div>
+        </t-demo-box>
       </div>
     </section>
   </div>

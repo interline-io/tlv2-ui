@@ -1,17 +1,19 @@
 <template>
-  <button
-    class="button"
-    :class="buttonClasses"
-    :disabled="disabled || loading"
-    :type="type"
-    v-bind="$attrs"
-    @click="handleClick"
-  >
-    <span v-if="loading" class="icon">
-      <i class="mdi mdi-loading mdi-spin" />
-    </span>
-    <slot />
-  </button>
+  <div class="control">
+    <button
+      class="button"
+      :class="buttonClasses"
+      :disabled="disabled || loading"
+      :type="type"
+      v-bind="$attrs"
+      @click="handleClick"
+    >
+      <span v-if="loading" class="icon">
+        <i class="mdi mdi-loading mdi-spin" />
+      </span>
+      <slot />
+    </button>
+  </div>
 </template>
 
 <script setup lang="ts">

@@ -15,23 +15,17 @@
 
       <div class="content">
         <!-- Basic Textarea -->
-        <h2 class="title is-3">
-          Basic Textarea
-        </h2>
-        <div class="box">
+        <t-demo-box label="Basic Textarea">
           <t-field label="Enter your message:">
             <t-textarea v-model="basic" placeholder="Type something..." />
           </t-field>
           <p class="has-text-grey">
             Length: {{ basic.length }} characters
           </p>
-        </div>
+        </t-demo-box>
 
         <!-- Variants -->
-        <h2 class="title is-3">
-          Variants
-        </h2>
-        <div class="box">
+        <t-demo-box label="Variants">
           <t-field label="Primary:">
             <t-textarea v-model="variantPrimary" variant="primary" placeholder="Primary textarea" />
           </t-field>
@@ -47,13 +41,10 @@
           <t-field label="Danger:">
             <t-textarea v-model="variantDanger" variant="danger" placeholder="Danger textarea" />
           </t-field>
-        </div>
+        </t-demo-box>
 
         <!-- Sizes -->
-        <h2 class="title is-3">
-          Sizes
-        </h2>
-        <div class="box">
+        <t-demo-box label="Sizes">
           <t-field label="Small:">
             <t-textarea v-model="sizeSmall" size="small" placeholder="Small textarea" />
           </t-field>
@@ -66,13 +57,10 @@
           <t-field label="Large:">
             <t-textarea v-model="sizeLarge" size="large" placeholder="Large textarea" />
           </t-field>
-        </div>
+        </t-demo-box>
 
         <!-- Rows -->
-        <h2 class="title is-3">
-          Custom Row Height
-        </h2>
-        <div class="box">
+        <t-demo-box label="Custom Row Height">
           <t-field label="3 rows:">
             <t-textarea v-model="rows3" :rows="3" placeholder="3 rows" />
           </t-field>
@@ -82,13 +70,10 @@
           <t-field label="10 rows:">
             <t-textarea v-model="rows10" :rows="10" placeholder="10 rows" />
           </t-field>
-        </div>
+        </t-demo-box>
 
         <!-- States -->
-        <h2 class="title is-3">
-          States
-        </h2>
-        <div class="box">
+        <t-demo-box label="States">
           <t-field label="Disabled:">
             <t-textarea v-model="stateDisabled" disabled placeholder="This is disabled" />
           </t-field>
@@ -98,26 +83,20 @@
           <t-field label="Loading:">
             <t-textarea v-model="stateLoading" loading placeholder="Loading..." />
           </t-field>
-        </div>
+        </t-demo-box>
 
         <!-- Maxlength -->
-        <h2 class="title is-3">
-          With Maxlength Counter
-        </h2>
-        <div class="box">
+        <t-demo-box label="With Maxlength Counter">
           <t-field label="Tweet (280 characters max):">
             <t-textarea v-model="tweet" :maxlength="280" placeholder="What's happening?" />
           </t-field>
           <p class="has-text-grey">
             {{ tweet.length }} / 280 characters
           </p>
-        </div>
+        </t-demo-box>
 
         <!-- Fixed Size -->
-        <h2 class="title is-3">
-          Fixed Size (No Resize)
-        </h2>
-        <div class="box">
+        <t-demo-box label="Fixed Size (No Resize)">
           <t-field label="Fixed size textarea:">
             <t-textarea
               v-model="fixed"
@@ -125,13 +104,10 @@
               placeholder="This textarea cannot be resized"
             />
           </t-field>
-        </div>
+        </t-demo-box>
 
         <!-- Practical Examples -->
-        <h2 class="title is-3">
-          Example: Feedback Form
-        </h2>
-        <div class="box">
+        <t-demo-box label="Example: Feedback Form">
           <t-field label="Your Feedback:" message="Help us improve our service">
             <t-textarea
               v-model="feedback"
@@ -146,13 +122,10 @@
           <t-button variant="primary" class="mt-3" @click="submitFeedback">
             Submit Feedback
           </t-button>
-        </div>
+        </t-demo-box>
 
         <!-- Code Editor -->
-        <h2 class="title is-3">
-          Example: Code Snippet
-        </h2>
-        <div class="box">
+        <t-demo-box label="Example: Code Snippet">
           <t-field label="Enter your code:">
             <t-textarea
               v-model="code"
@@ -161,13 +134,10 @@
               class="is-family-monospace"
             />
           </t-field>
-        </div>
+        </t-demo-box>
 
         <!-- Comment Section -->
-        <h2 class="title is-3">
-          Example: Comment Section
-        </h2>
-        <div class="box">
+        <t-demo-box label="Example: Comment Section">
           <t-field label="Add a comment:">
             <t-textarea
               v-model="comment"
@@ -188,13 +158,10 @@
               Post Comment
             </t-button>
           </div>
-        </div>
+        </t-demo-box>
 
         <!-- Description with Help -->
-        <h2 class="title is-3">
-          Example: With Help Text
-        </h2>
-        <div class="box">
+        <t-demo-box label="Example: With Help Text">
           <t-field
             label="Product Description:"
             message="Provide a detailed description of your product"
@@ -205,7 +172,7 @@
               placeholder="Describe features, specifications, and benefits..."
             />
           </t-field>
-        </div>
+        </t-demo-box>
       </div>
     </section>
   </div>

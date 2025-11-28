@@ -14,11 +14,7 @@
       </p>
 
       <div class="content">
-        <!-- Variants -->
-        <h2 class="title is-3">
-          Variants
-        </h2>
-        <div class="box">
+        <t-demo-box label="Variants">
           <div class="buttons">
             <t-button>
               Default
@@ -45,13 +41,9 @@
               Dark
             </t-button>
           </div>
-        </div>
+        </t-demo-box>
 
-        <!-- Sizes -->
-        <h2 class="title is-3">
-          Sizes
-        </h2>
-        <div class="box">
+        <t-demo-box label="Sizes">
           <div class="buttons">
             <t-button size="small">
               Small
@@ -66,13 +58,9 @@
               Large
             </t-button>
           </div>
-        </div>
+        </t-demo-box>
 
-        <!-- Outlined -->
-        <h2 class="title is-3">
-          Outlined
-        </h2>
-        <div class="box">
+        <t-demo-box label="Outlined">
           <div class="buttons">
             <t-button variant="primary" outlined>
               Primary
@@ -90,13 +78,9 @@
               Danger
             </t-button>
           </div>
-        </div>
+        </t-demo-box>
 
-        <!-- Rounded -->
-        <h2 class="title is-3">
-          Rounded
-        </h2>
-        <div class="box">
+        <t-demo-box label="Rounded">
           <div class="buttons">
             <t-button variant="primary" rounded>
               Rounded
@@ -105,13 +89,9 @@
               Rounded Outlined
             </t-button>
           </div>
-        </div>
+        </t-demo-box>
 
-        <!-- With Icons -->
-        <h2 class="title is-3">
-          With Icons
-        </h2>
-        <div class="box">
+        <t-demo-box label="With Icons">
           <div class="buttons">
             <t-button variant="primary">
               <t-icon icon="check" />
@@ -126,13 +106,9 @@
               <t-icon icon="download" />
             </t-button>
           </div>
-        </div>
+        </t-demo-box>
 
-        <!-- Icon Only -->
-        <h2 class="title is-3">
-          Icon Only
-        </h2>
-        <div class="box">
+        <t-demo-box label="Icon Only">
           <div class="buttons">
             <t-button variant="primary">
               <t-icon icon="heart" />
@@ -150,13 +126,9 @@
               <t-icon icon="close" />
             </t-button>
           </div>
-        </div>
+        </t-demo-box>
 
-        <!-- States -->
-        <h2 class="title is-3">
-          States
-        </h2>
-        <div class="box">
+        <t-demo-box label="States">
           <div class="buttons">
             <t-button variant="primary" loading>
               Loading
@@ -168,23 +140,15 @@
               Click Me ({{ clickCount }})
             </t-button>
           </div>
-        </div>
+        </t-demo-box>
 
-        <!-- Full Width -->
-        <h2 class="title is-3">
-          Full Width
-        </h2>
-        <div class="box">
+        <t-demo-box label="Full Width">
           <t-button variant="primary" fullwidth>
             Full Width Button
           </t-button>
-        </div>
+        </t-demo-box>
 
-        <!-- Grouped Buttons -->
-        <h2 class="title is-3">
-          Button Groups
-        </h2>
-        <div class="box">
+        <t-demo-box label="Button Groups">
           <div class="buttons has-addons">
             <t-button variant="primary">
               Left
@@ -196,7 +160,7 @@
               Right
             </t-button>
           </div>
-        </div>
+        </t-demo-box>
       </div>
     </section>
   </div>

@@ -19,7 +19,7 @@ describe('TButton', () => {
 
     expect(wrapper.html()).toContain('Click me')
     expect(wrapper.find('button').exists()).toBe(true)
-    testBulmaClasses(wrapper, ['button'])
+    testBulmaClasses(wrapper.find('button'), ['button'])
   })
 
   it('renders all variants', () => {
@@ -29,7 +29,7 @@ describe('TButton', () => {
         slots: { default: 'Button' }
       })
 
-      testBulmaClasses(wrapper, ['button', `is-${variant}`])
+      testBulmaClasses(wrapper.find('button'), ['button', `is-${variant}`])
     })
   })
 
@@ -42,7 +42,7 @@ describe('TButton', () => {
         slots: { default: 'Button' }
       })
 
-      testBulmaClasses(wrapper, ['button', `is-${size}`])
+      testBulmaClasses(wrapper.find('button'), ['button', `is-${size}`])
     })
   })
 
@@ -55,7 +55,7 @@ describe('TButton', () => {
       slots: { default: 'Button' }
     })
 
-    testBulmaClasses(wrapper, ['button', 'is-primary', 'is-outlined'])
+    testBulmaClasses(wrapper.find('button'), ['button', 'is-primary', 'is-outlined'])
   })
 
   it('renders rounded variant', () => {
@@ -64,7 +64,7 @@ describe('TButton', () => {
       slots: { default: 'Button' }
     })
 
-    testBulmaClasses(wrapper, ['button', 'is-rounded'])
+    testBulmaClasses(wrapper.find('button'), ['button', 'is-rounded'])
   })
 
   it('renders loading state', () => {
@@ -73,7 +73,7 @@ describe('TButton', () => {
       slots: { default: 'Button' }
     })
 
-    testBulmaClasses(wrapper, ['button', 'is-loading'])
+    testBulmaClasses(wrapper.find('button'), ['button', 'is-loading'])
   })
 
   it('handles disabled state', () => {

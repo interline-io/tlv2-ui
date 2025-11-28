@@ -18,7 +18,7 @@ describe('TInput', () => {
     const input = wrapper.find('input')
     expect(input.exists()).toBe(true)
     expect(input.attributes('type')).toBe('text')
-    testBulmaClasses(wrapper, ['input'])
+    testBulmaClasses(input, ['input'])
   })
 
   it('handles v-model binding', async () => {
@@ -53,7 +53,7 @@ describe('TInput', () => {
         }
       })
 
-      testBulmaClasses(wrapper, ['input', `is-${variant}`])
+      testBulmaClasses(wrapper.find('input'), ['input', `is-${variant}`])
     })
   })
 
@@ -68,7 +68,7 @@ describe('TInput', () => {
         }
       })
 
-      testBulmaClasses(wrapper, ['input', `is-${size}`])
+      testBulmaClasses(wrapper.find('input'), ['input', `is-${size}`])
     })
   })
 
@@ -103,7 +103,8 @@ describe('TInput', () => {
       }
     })
 
-    testBulmaClasses(wrapper, ['input', 'is-loading'])
+    testBulmaClasses(wrapper.find('input'), ['input'])
+    testBulmaClasses(wrapper, ['control', 'is-loading'])
   })
 
   it('renders rounded input', () => {
@@ -114,7 +115,7 @@ describe('TInput', () => {
       }
     })
 
-    testBulmaClasses(wrapper, ['input', 'is-rounded'])
+    testBulmaClasses(wrapper.find('input'), ['input', 'is-rounded'])
   })
 
   it('handles placeholder', () => {

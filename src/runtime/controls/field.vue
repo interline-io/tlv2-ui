@@ -25,24 +25,12 @@
     </div>
 
     <template v-else>
-      <template v-if="addons || grouped">
-        <slot />
-        <p v-if="message || $slots.message" class="help" :class="messageClass">
-          <slot name="message">
-            {{ message }}
-          </slot>
-        </p>
-      </template>
-      <template v-else>
-        <div class="control">
-          <slot />
-        </div>
-        <p v-if="message || $slots.message" class="help" :class="messageClass">
-          <slot name="message">
-            {{ message }}
-          </slot>
-        </p>
-      </template>
+      <slot />
+      <p v-if="message || $slots.message" class="help" :class="messageClass">
+        <slot name="message">
+          {{ message }}
+        </slot>
+      </p>
     </template>
   </div>
 </template>

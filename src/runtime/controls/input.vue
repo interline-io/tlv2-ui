@@ -1,5 +1,5 @@
 <template>
-  <div v-if="hasIcons" class="control" :class="controlClasses">
+  <div class="control" :class="controlClasses">
     <input
       class="input"
       :class="inputClasses"
@@ -28,23 +28,6 @@
       <i :class="`mdi mdi-${iconRight}`" />
     </span>
   </div>
-  <p v-else class="control" :class="controlClasses">
-    <input
-      class="input"
-      :class="inputClasses"
-      :type="type"
-      :value="modelValue"
-      :placeholder="placeholder"
-      :disabled="disabled"
-      :readonly="readonly || static"
-      :maxlength="maxlength"
-      :min="min"
-      :max="max"
-      :step="step"
-      v-bind="$attrs"
-      @input="handleInput"
-    >
-  </p>
 </template>
 
 <script setup lang="ts">
@@ -186,8 +169,6 @@ const emit = defineEmits<{
   'update:modelValue': [value: string | number]
   'icon-right-click': [event: MouseEvent]
 }>()
-
-const hasIcons = computed(() => !!(props.icon || props.iconRight || props.loading))
 
 const controlClasses = computed(() => {
   const classes: string[] = []
