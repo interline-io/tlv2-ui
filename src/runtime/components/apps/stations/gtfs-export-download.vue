@@ -11,9 +11,8 @@
         :collapsed="true"
         no-icon
       >
-        <div class="field">
+        <!-- <div class="field">
           <label class="label">Additional Feed Versions to Merge</label>
-          <!-- @vue-skip -->
           <t-taginput
             v-model="additionalFeedVersions"
             :allow-new="true"
@@ -24,11 +23,10 @@
           <p class="help">
             Add additional feed version SHA1s or IDs to merge with this export
           </p>
-        </div>
+        </div> -->
 
-        <div class="field">
+        <!-- <div class="field">
           <label class="label">ID Prefix</label>
-          <!-- @vue-skip -->
           <t-input
             v-model="exportOptions.prefix"
             placeholder="e.g., 'agency1_' to prefix all IDs"
@@ -37,11 +35,10 @@
           <p class="help">
             Add prefix to entity IDs for namespacing when merging feeds
           </p>
-        </div>
+        </div> -->
 
-        <div class="field">
+        <!-- <div class="field">
           <label class="label">Prefix Files</label>
-          <!-- @vue-skip -->
           <t-input
             v-model="prefixFilesInput"
             placeholder="routes.txt, trips.txt (comma-separated)"
@@ -50,7 +47,7 @@
           <p class="help">
             Specific files to apply prefix to (leave empty for all files)
           </p>
-        </div>
+        </div> -->
 
         <div class="field">
           <label class="label">Shape Simplification</label>
@@ -69,13 +66,11 @@
         <div class="field">
           <label class="label">Options</label>
           <t-field>
-            <!-- @vue-skip -->
             <t-checkbox v-model="exportOptions.normalizeTimezones">
               Normalize timezones (US/Pacific → America/Los_Angeles)
             </t-checkbox>
           </t-field>
           <div class="field">
-            <!-- @vue-skip -->
             <t-checkbox v-model="exportOptions.useBasicRouteTypes">
               Use basic route types (convert extended to core types)
             </t-checkbox>
