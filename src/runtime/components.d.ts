@@ -101,6 +101,7 @@ declare module 'vue' {
     TTabItem: typeof import('./controls/tab-item.vue')['default']
     TTabs: typeof import('./controls/tabs.vue')['default']
     TTag: typeof import('./controls/tag.vue')['default']
+    TTextarea: typeof import('./controls/textarea.vue')['default']
     TTooltip: typeof import('./controls/tooltip.vue')['default']
   }
 }

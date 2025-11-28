@@ -6,7 +6,7 @@
       </tl-title>
     </slot>
 
-    <tl-apps-stations-form
+    <tl-apps-stations-station-editor
       :center="station.geometry.coordinates"
       :value="station"
       @update="updateStationHandler"

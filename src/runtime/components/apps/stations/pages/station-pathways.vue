@@ -16,14 +16,14 @@
     <div v-if="ready" class="columns">
       <div class="column is-narrow">
         <div class="block tl-apps-stations-info">
-          <o-field label="Station Validation Reports">
+          <t-field label="Station Validation Reports">
             <tl-apps-stations-station-validator
               :station="station"
               @select-path="selectPath"
               @select-stop="selectStop"
               @select-pathway="selectPathway"
             />
-          </o-field>
+          </t-field>
           <!-- SELECT -->
           <t-card v-if="selectMode === 'select'">
             <template #trigger>
@@ -33,15 +33,15 @@
               <div class="mb-2">
                 <p class="label">
                   {{ selectedStops.length }} stops selected
-                  <o-button v-if="selectedStops.length > 0" class="is-pulled-right m-2" variant="primary is-small" outlined @click="unselectAll">
+                  <t-button v-if="selectedStops.length > 0" class="is-pulled-right m-2" variant="primary is-small" outlined @click="unselectAll">
                     Unselect All
-                  </o-button>
+                  </t-button>
                 </p>
-                <o-field label="Select Stops">
+                <t-field label="Select Stops">
                   <div class="buttons has-addons">
                     <a v-for="pwm of LocationTypes" :key="pwm[0]" class="button is-small" @click="selectLocationTypes(pwm[0])">{{ pwm[1] }}</a>
                   </div>
-                </o-field><o-field>
+                </t-field><t-field>
                   <div class="buttons has-addons">
                     <a class="button is-small" @click="selectStopsWithAssociations()">With associations</a>
                     <a class="button is-small" @click="selectStopsPlatformsWithoutAssociations()">Platforms w/o assoc.</a>
@@ -50,16 +50,16 @@
                   <div class="buttons has-addons">
                     <a class="button is-small" @click="selectStopsWithPairedPathways()">With paired pathways</a>
                   </div>
-                </o-field>
+                </t-field>
               </div>
               <div class="mb-2">
                 <p class="label">
                   {{ selectedPathways.length }} pathways selected
-                  <o-button v-if="selectedPathways.length > 0" class="is-pulled-right m-2" variant="primary is-small" outlined @click="unselectAll">
+                  <t-button v-if="selectedPathways.length > 0" class="is-pulled-right m-2" variant="primary is-small" outlined @click="unselectAll">
                     Unselect All
-                  </o-button>
+                  </t-button>
                 </p>
-                <o-field label="Select Pathways">
+                <t-field label="Select Pathways">
                   <div class="buttons has-addons">
                     <a v-for="pwm of PathwayModes" :key="pwm[0]" class="button is-small" @click="selectPathwayModes(pwm[0])">{{ pwm[1] }}</a>
                   </div>
@@ -68,7 +68,7 @@
                     <a class="button is-small" @click="selectPathwaysOneway()">One-directional</a>
                     <a class="button is-small" @click="selectPathwaysBidirectional()">Bi-directional</a>
                   </div>
-                </o-field>
+                </t-field>
                 <ul>
                   <li class="blue-rectangle">
                     blue pathways are on the same level
@@ -124,9 +124,9 @@
             <t-card v-for="ss of selectedStops" :key="ss.id" class="card">
               <template #trigger>
                 Edit Node
-                <o-button v-if="selectedStops.length > 0 || selectedPathways.length > 0" class="is-pulled-right m-2" variant="primary is-small" outlined @click="unselectAll">
+                <t-button v-if="selectedStops.length > 0 || selectedPathways.length > 0" class="is-pulled-right m-2" variant="primary is-small" outlined @click="unselectAll">
                   Unselect
-                </o-button>
+                </t-button>
               </template>
               <tl-apps-stations-mode-switch
                 :params="{
@@ -154,24 +154,24 @@
               <template #trigger>
                 Add Node
               </template>
-              <o-field label="Level">
-                <o-dropdown
+              <t-field label="Level">
+                <t-dropdown
                   v-model="selectedLevel"
                   selectable
                   aria-role="list"
                 >
-                  <template #trigger>
-                    <button class="button" type="button">
+                  <template #trigger="{ toggle }">
+                    <button class="button" type="button" @click="toggle">
                       {{ levelIndex[selectedLevel] ? levelIndex[selectedLevel].level_name : 'None' }} &nbsp;
-                      <o-icon icon="menu-down" />
+                      <t-icon icon="menu-down" />
                     </button>
                   </template>
-                  <o-dropdown-item v-for="level of station.levels" :key="level.id" :value="level.id" aria-role="listitem">
+                  <t-dropdown-item v-for="level of station.levels" :key="level.id" :value="level.id" aria-role="listitem">
                     <h3>{{ level.level_name }}</h3>
                     <small> {{ level.stops.length }} nodes</small>
-                  </o-dropdown-item>
-                </o-dropdown>
-              </o-field>
+                  </t-dropdown-item>
+                </t-dropdown>
+              </t-field>
             </t-card>
           </template>
           <template v-else-if="selectMode === 'find-route'">
@@ -188,8 +188,8 @@
       </div>
 
       <div class="column">
-        <o-field grouped>
-          <o-field>
+        <t-field grouped>
+          <t-field>
             <t-dropdown
               v-model="selectedLevels"
               :width="300"
@@ -215,43 +215,43 @@
                 </div>
               </t-dropdown-item>
             </t-dropdown>
-          </o-field>
-          <o-field>
+          </t-field>
+          <t-field>
             <tl-apps-stations-basemap-control v-model="basemap" />
-          </o-field>
-          <o-field>
-            <o-button icon-left="download" @click="downloadGeojson">
+          </t-field>
+          <t-field>
+            <t-button icon-left="download" @click="downloadGeojson">
               GeoJSON
-            </o-button>
-          </o-field>
-          <o-field>
-            <o-radio
+            </t-button>
+          </t-field>
+          <t-field>
+            <t-radio
               v-model="selectMode"
               native-value="select"
             >
               <span>Select</span>
-            </o-radio>
-            <o-radio
+            </t-radio>
+            <t-radio
               v-model="selectMode"
               :disabled="!(selectedStop && selectedSource)"
               native-value="add-pathway"
             >
               <span>Add Pathway</span>
-            </o-radio>
-            <o-radio
+            </t-radio>
+            <t-radio
               v-model="selectMode"
               native-value="find-route"
             >
               <span>Find Route</span>
-            </o-radio>
-            <o-radio
+            </t-radio>
+            <t-radio
               v-model="selectMode"
               native-value="add-node"
             >
               Add Node
-            </o-radio>
-          </o-field>
-        </o-field>
+            </t-radio>
+          </t-field>
+        </t-field>
 
         <tl-apps-stations-pathway-map
           :center="station.geometry.coordinates"

@@ -14,7 +14,7 @@
       </a>
     </div>
 
-    <o-modal
+    <t-modal
       v-model:active="openStops"
       trap-focus
       has-modal-card
@@ -66,9 +66,9 @@
           </o-table>
         </section>
       </div>
-    </o-modal>
+    </t-modal>
 
-    <o-modal
+    <t-modal
       v-model:active="openPathways"
       :striped="true"
       trap-focus
@@ -111,9 +111,9 @@
           </o-table>
         </section>
       </div>
-    </o-modal>
+    </t-modal>
 
-    <o-modal
+    <t-modal
       v-model:active="openPaths"
       :striped="true"
       trap-focus
@@ -129,9 +129,9 @@
           </p>
         </header>
         <section class="modal-card-body">
-          <o-checkbox v-model="showAllPaths">
+          <t-checkbox v-model="showAllPaths">
             Show OK Paths
-          </o-checkbox>
+          </t-checkbox>
 
           <o-table
             :data="stopPaths"
@@ -150,7 +150,7 @@
                   <template v-if="err.error || showAllPaths">
                     <span class="button is-small" @click="$emit('select-path', props.row.stop.id, err.target.id); openPaths = false">Find route</span>
                     <span class="button is-small" @click="$emit('select-stop', err.target.id); openPaths = false">Select dest</span>
-                    <o-icon v-if="err.error" icon="alert" variant="error" /><o-icon v-else icon="check" />
+                    <t-icon v-if="err.error" icon="alert" variant="error" /><t-icon v-else icon="check" />
                     <span>{{ err.target.stop_name }} ({{ err.target.id }})</span>
                     <span v-if="err.distance > 0">(dist: {{ err.distance.toFixed(0) }} m)
                     </span>
@@ -164,7 +164,7 @@
           </o-table>
         </section>
       </div>
-    </o-modal>
+    </t-modal>
   </div>
 </template>
 
