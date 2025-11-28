@@ -109,7 +109,7 @@
             <t-textarea v-model="tweet" :maxlength="280" placeholder="What's happening?" />
           </t-field>
           <p class="has-text-grey">
-            {{ tweet.length }}/280 characters
+            {{ tweet.length }} / 280 characters
           </p>
         </div>
 
@@ -129,7 +129,7 @@
 
         <!-- Practical Examples -->
         <h2 class="title is-3">
-          Feedback Form
+          Example: Feedback Form
         </h2>
         <div class="box">
           <t-field label="Your Feedback:" message="Help us improve our service">
@@ -141,7 +141,7 @@
             />
           </t-field>
           <p class="help">
-            {{ feedback.length }}/500 characters
+            {{ feedback.length }} / 500 characters
           </p>
           <t-button variant="primary" class="mt-3" @click="submitFeedback">
             Submit Feedback
@@ -150,7 +150,7 @@
 
         <!-- Code Editor -->
         <h2 class="title is-3">
-          Code Snippet
+          Example: Code Snippet
         </h2>
         <div class="box">
           <t-field label="Enter your code:">
@@ -165,7 +165,7 @@
 
         <!-- Comment Section -->
         <h2 class="title is-3">
-          Comment Section
+          Example: Comment Section
         </h2>
         <div class="box">
           <t-field label="Add a comment:">
@@ -192,7 +192,7 @@
 
         <!-- Description with Help -->
         <h2 class="title is-3">
-          With Help Text
+          Example: With Help Text
         </h2>
         <div class="box">
           <t-field

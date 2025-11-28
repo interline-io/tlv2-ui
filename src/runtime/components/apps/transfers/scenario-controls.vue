@@ -53,7 +53,7 @@
           <t-select
             :model-value="scenario?.profileName"
             :disabled="!enableProfiles"
-            @update:model-value="emitSetProfileName"
+            @update:model-value="(value) => emitSetProfileName(value as string | number | boolean | null | undefined)"
           >
             <option :value="null">
               Straight-line
@@ -79,7 +79,7 @@
           </template>
           <t-select
             :model-value="scenario?.useStopObservations"
-            @update:model-value="emitSetUseStopObservations"
+            @update:model-value="(value) => emitSetUseStopObservations(value as string | number | boolean | null | undefined)"
           >
             <option value="true">
               Static GTFS &amp; GTFS Realtime schedules
@@ -98,7 +98,7 @@
         <t-field label="Options">
           <t-checkbox
             :model-value="(scenario?.hideSubsequentTransfers || 0) > 0"
-            @update:model-value="hideSubsequentTransfersChanged"
+            @update:model-value="(value) => hideSubsequentTransfersChanged(Array.isArray(value) ? false : value)"
           >
             Hide subsequent transfers to the same route &amp; headsign
           </t-checkbox>

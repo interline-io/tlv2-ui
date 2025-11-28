@@ -1,18 +1,20 @@
 <template>
-  <textarea
-    class="textarea"
-    :class="textareaClasses"
-    :value="modelValue"
-    :placeholder="placeholder"
-    :disabled="disabled"
-    :readonly="readonly"
-    :maxlength="maxlength"
-    :rows="rows"
-    :cols="cols"
-    :wrap="wrap"
-    v-bind="$attrs"
-    @input="handleInput"
-  />
+  <p class="control" :class="controlClasses">
+    <textarea
+      class="textarea"
+      :class="textareaClasses"
+      :value="modelValue"
+      :placeholder="placeholder"
+      :disabled="disabled"
+      :readonly="readonly"
+      :maxlength="maxlength"
+      :rows="rows"
+      :cols="cols"
+      :wrap="wrap"
+      v-bind="$attrs"
+      @input="handleInput"
+    />
+  </p>
 </template>
 
 <script setup lang="ts">
@@ -93,6 +95,12 @@ interface Props {
    * @default false
    */
   expanded?: boolean
+
+  /**
+   * Disable textarea resizing.
+   * @default false
+   */
+  hasFixedSize?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -108,12 +116,27 @@ const props = withDefaults(defineProps<Props>(), {
   rows: 4,
   cols: undefined,
   wrap: undefined,
-  expanded: false
+  expanded: false,
+  hasFixedSize: false
 })
 
 const emit = defineEmits<{
   'update:modelValue': [value: string]
 }>()
+
+const controlClasses = computed(() => {
+  const classes: string[] = []
+
+  if (props.loading) {
+    classes.push('is-loading')
+  }
+
+  if (props.expanded) {
+    classes.push('is-expanded')
+  }
+
+  return classes
+})
 
 const textareaClasses = computed(() => {
   const classes: string[] = []
@@ -130,12 +153,8 @@ const textareaClasses = computed(() => {
     classes.push('is-rounded')
   }
 
-  if (props.loading) {
-    classes.push('is-loading')
-  }
-
-  if (props.expanded) {
-    classes.push('is-expanded')
+  if (props.hasFixedSize) {
+    classes.push('has-fixed-size')
   }
 
   return classes

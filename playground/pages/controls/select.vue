@@ -49,7 +49,7 @@
         </h2>
         <div class="box">
           <t-field label="Select multiple languages:">
-            <t-select v-model="multiple" multiple>
+            <t-select v-model="multiple" multiple size="6">
               <option value="js">
                 JavaScript
               </option>

@@ -66,12 +66,12 @@
         <div class="field">
           <label class="label">Options</label>
           <t-field>
-            <t-checkbox v-model="exportOptions.normalizeTimezones">
+            <t-checkbox v-model="exportOptions.normalizeTimezones as boolean">
               Normalize timezones (US/Pacific → America/Los_Angeles)
             </t-checkbox>
           </t-field>
           <div class="field">
-            <t-checkbox v-model="exportOptions.useBasicRouteTypes">
+            <t-checkbox v-model="exportOptions.useBasicRouteTypes as boolean">
               Use basic route types (convert extended to core types)
             </t-checkbox>
             <t-tooltip text="Converts extended GTFS route types (e.g., 100-1700) to basic types (0-12). Learn more about route vehicle types at https://www.transit.land/documentation/concepts/routes/#route-vehicle-types">

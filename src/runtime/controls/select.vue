@@ -4,6 +4,7 @@
     :class="selectClasses"
   >
     <select
+      ref="selectRef"
       :value="modelValue"
       :disabled="disabled"
       v-bind="$attrs"
@@ -15,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch, onMounted, nextTick } from 'vue'
 
 /**
  * Select dropdown component with Bulma styling.
@@ -32,8 +33,9 @@ import { computed } from 'vue'
 interface Props {
   /**
    * The selected value (v-model).
+   * For multiple select, use an array.
    */
-  modelValue?: string | number | boolean | null
+  modelValue?: string | number | boolean | null | (string | number)[]
 
   /**
    * Select size variant.
@@ -82,8 +84,37 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  'update:modelValue': [value: string | number | boolean | null]
+  'update:modelValue': [value: string | number | boolean | null | (string | number)[]]
 }>()
+
+const selectRef = ref<HTMLSelectElement | null>(null)
+
+// Sync selected options for multiple select
+function syncMultipleSelect () {
+  if (!selectRef.value || !Array.isArray(props.modelValue)) return
+
+  const options = selectRef.value.options
+  for (let i = 0; i < options.length; i++) {
+    const option = options[i]
+    if (option) {
+      option.selected = props.modelValue.includes(option.value)
+    }
+  }
+}
+
+watch(() => props.modelValue, () => {
+  if (Array.isArray(props.modelValue)) {
+    nextTick(() => {
+      syncMultipleSelect()
+    })
+  }
+}, { deep: true })
+
+onMounted(() => {
+  if (Array.isArray(props.modelValue)) {
+    syncMultipleSelect()
+  }
+})
 
 const selectClasses = computed(() => {
   const classes: string[] = []
@@ -108,11 +139,24 @@ const selectClasses = computed(() => {
     classes.push('is-loading')
   }
 
+  if (Array.isArray(props.modelValue)) {
+    classes.push('is-multiple')
+  }
+
   return classes
 })
 
 function handleChange (event: Event) {
   const target = event.target as HTMLSelectElement
+
+  // Handle multiple select
+  if (target.multiple) {
+    const selectedValues = Array.from(target.selectedOptions).map(option => option.value)
+    emit('update:modelValue', selectedValues)
+    return
+  }
+
+  // Handle single select
   let value: string | number | boolean | null = target.value
 
   // Try to preserve the type of the original modelValue
@@ -130,4 +174,9 @@ function handleChange (event: Event) {
 
 <style scoped>
 /* Inherits Bulma select styles from global stylesheet */
+
+/* Ensure multiple select displays properly with specified size */
+.select.is-multiple select {
+  height: auto;
+}
 </style>

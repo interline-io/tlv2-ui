@@ -160,18 +160,8 @@
             <t-input v-model="username" maxlength="20" placeholder="Enter username" />
           </t-field>
           <p class="has-text-grey">
-            {{ username.length }}/20 characters
+            {{ username.length }} / 20 characters
           </p>
-        </div>
-
-        <!-- Expanded -->
-        <h2 class="title is-3">
-          Expanded (Full Width)
-        </h2>
-        <div class="box">
-          <t-field label="Full Width Input">
-            <t-input v-model="expanded" expanded placeholder="This input takes full width" />
-          </t-field>
         </div>
       </div>
     </section>
@@ -207,5 +197,4 @@ const search = ref('')
 const emailIcon = ref('')
 const clearable = ref('Type to test')
 const username = ref('')
-const expanded = ref('')
 </script>
