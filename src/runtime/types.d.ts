@@ -1,5 +1,4 @@
 import './components.d.ts'
-import './oruga.d.ts'
 import type { Tlv2RouteKey } from './route-keys'
 
 declare module 'nuxt/schema' {

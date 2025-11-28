@@ -81,7 +81,6 @@ declare module 'vue' {
     TlRouteIcon: typeof import('./components/route-icon.vue')['default']
     TlSafelink: typeof import('./components/safelink.vue')['default']
     TlTitle: typeof import('./components/title.vue')['default']
-    TlToastContainer: typeof import('./components/toast-container.client.vue')['default']
     TlTreeControl: typeof import('./components/tree-control.vue')['default']
     TButton: typeof import('./controls/button.vue')['default']
     TCard: typeof import('./controls/card.vue')['default']

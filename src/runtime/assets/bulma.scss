@@ -1,9 +1,8 @@
 $primary: #8c67ef;
 $link: $primary;
 
-@use '@oruga-ui/theme-bulma/dist/scss/bulma-build' with (
+@use "bulma/sass" with (
     $family-primary: '"Nunito", sans-serif',
     $primary: $primary,
     $link: $link,
 );
-

@@ -117,7 +117,6 @@ export default defineNuxtModule<ModuleOptions>({
     addPlugin(resolveRuntimeModule('plugins/apollo'))
     addPlugin(resolveRuntimeModule('plugins/mixpanel.client'))
     addPlugin(resolveRuntimeModule('plugins/auth.client'))
-    addPlugin(resolveRuntimeModule('plugins/oruga'))
     addImportsDir(resolveRuntimeModule('composables'))
 
     // Proxy options
@@ -161,7 +160,6 @@ export default defineNuxtModule<ModuleOptions>({
       '@apollo/client', // GraphQL client with modern JS/TS - needs transpilation for SSR
       'markdown-it', // Markdown parser - ESM package used in SSR
       'markdown-it-anchor', // Markdown-it plugin - must match parent's transpilation
-      '@oruga-ui/oruga-next', // Oruga UI components - contains Vue code needing transpilation
     )
 
     // Add Vite plugin - Nuxt 4 pattern
