@@ -59,6 +59,17 @@ interface Props {
    * Switch size.
    */
   size?: 'small' | 'medium' | 'large'
+
+  /**
+   * Color variant for the switch.
+   */
+  variant?: 'primary' | 'link' | 'info' | 'success' | 'warning' | 'danger' | 'dark'
+
+  /**
+   * Use rounded style for the switch.
+   * @default false
+   */
+  rounded?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -67,7 +78,9 @@ const props = withDefaults(defineProps<Props>(), {
   falseValue: false,
   disabled: false,
   label: undefined,
-  size: undefined
+  size: undefined,
+  variant: undefined,
+  rounded: false
 })
 
 /**
@@ -91,6 +104,14 @@ const switchClasses = computed(() => {
 
   if (props.disabled) {
     classes.push('is-disabled')
+  }
+
+  if (props.variant) {
+    classes.push(`is-${props.variant}`)
+  }
+
+  if (props.rounded) {
+    classes.push('is-rounded')
   }
 
   return classes
@@ -170,5 +191,43 @@ function handleChange (event: Event) {
 
 .switch.is-large {
   font-size: 1.5rem;
+}
+
+/* Variant colors */
+.switch.is-primary input[type="checkbox"]:checked + .check {
+  background: #00d1b2;
+}
+
+.switch.is-link input[type="checkbox"]:checked + .check {
+  background: #485fc7;
+}
+
+.switch.is-info input[type="checkbox"]:checked + .check {
+  background: #3e8ed0;
+}
+
+.switch.is-success input[type="checkbox"]:checked + .check {
+  background: #48c78e;
+}
+
+.switch.is-warning input[type="checkbox"]:checked + .check {
+  background: #ffe08a;
+}
+
+.switch.is-danger input[type="checkbox"]:checked + .check {
+  background: #f14668;
+}
+
+.switch.is-dark input[type="checkbox"]:checked + .check {
+  background: #363636;
+}
+
+/* Rounded switch style */
+.switch.is-rounded .check {
+  border-radius: 4px;
+}
+
+.switch.is-rounded .check::before {
+  border-radius: 2px;
 }
 </style>

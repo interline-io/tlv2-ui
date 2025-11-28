@@ -40,34 +40,23 @@
           Variants
         </h2>
         <div class="box">
-          <t-field label="Primary:">
+          <t-field>
             <t-radio v-model="variantDemo" native-value="primary" variant="primary">
-              Primary option
+              Primary
             </t-radio>
-          </t-field>
-          <t-field label="Info:">
             <t-radio v-model="variantDemo" native-value="info" variant="info">
-              Info option
+              Info
             </t-radio>
-          </t-field>
-          <t-field label="Success:">
             <t-radio v-model="variantDemo" native-value="success" variant="success">
-              Success option
+              Success
             </t-radio>
-          </t-field>
-          <t-field label="Warning:">
             <t-radio v-model="variantDemo" native-value="warning" variant="warning">
-              Warning option
+              Warning
             </t-radio>
-          </t-field>
-          <t-field label="Danger:">
             <t-radio v-model="variantDemo" native-value="danger" variant="danger">
-              Danger option
+              Danger
             </t-radio>
           </t-field>
-          <p class="has-text-grey mt-3">
-            Selected: {{ variantDemo }}
-          </p>
         </div>
 
         <!-- Sizes -->
@@ -75,22 +64,16 @@
           Sizes
         </h2>
         <div class="box">
-          <t-field label="Small:">
+          <t-field>
             <t-radio v-model="sizeDemo" native-value="small" size="small">
               Small radio
             </t-radio>
-          </t-field>
-          <t-field label="Normal:">
             <t-radio v-model="sizeDemo" native-value="normal">
               Normal radio
             </t-radio>
-          </t-field>
-          <t-field label="Medium:">
             <t-radio v-model="sizeDemo" native-value="medium" size="medium">
               Medium radio
             </t-radio>
-          </t-field>
-          <t-field label="Large:">
             <t-radio v-model="sizeDemo" native-value="large" size="large">
               Large radio
             </t-radio>

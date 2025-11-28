@@ -112,6 +112,7 @@ export default defineNuxtModule<ModuleOptions>({
     // Setup CSS
     nuxt.options.css.push(options.bulma || resolveRuntimeModule('assets/bulma.scss'))
     nuxt.options.css.push(resolveRuntimeModule('assets/main.css'))
+    nuxt.options.css.push('@mdi/font/css/materialdesignicons.css')
 
     // Setup plugins (run in order added)
     addPlugin(resolveRuntimeModule('plugins/apollo'))

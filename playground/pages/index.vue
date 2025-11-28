@@ -2,7 +2,7 @@
   <div class="container">
     <section class="section">
       <h1 class="title is-1">
-        TLv2-UI Component Library
+        tlv2-ui Component Library
       </h1>
       <p class="subtitle">
         Interactive demos and testing playground for all t-* components
@@ -114,6 +114,10 @@
           <NuxtLink to="/controls/search-bar" class="button is-warning">
             <t-icon icon="magnify" />
             <span>Search Bar</span>
+          </NuxtLink>
+          <NuxtLink to="/controls/theme-toggle" class="button is-warning">
+            <t-icon icon="theme-light-dark" />
+            <span>Theme Toggle</span>
           </NuxtLink>
         </div>
       </div>

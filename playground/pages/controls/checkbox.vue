@@ -130,6 +130,51 @@
           </t-field>
         </div>
 
+        <!-- Indeterminate State -->
+        <h2 class="title is-3">
+          Indeterminate State
+        </h2>
+        <div class="box">
+          <p class="mb-3">
+            The indeterminate state is useful for "Select All" checkboxes when some but not all items are selected.
+          </p>
+          <t-field>
+            <t-checkbox
+              v-model="selectAll"
+              :indeterminate="indeterminate"
+              variant="primary"
+              @change="handleSelectAll"
+            >
+              <strong>Select All</strong>
+            </t-checkbox>
+          </t-field>
+          <div class="ml-5 mt-3">
+            <t-field>
+              <t-checkbox v-model="items.item1" @change="updateSelectAll">
+                Item 1
+              </t-checkbox>
+            </t-field>
+            <t-field>
+              <t-checkbox v-model="items.item2" @change="updateSelectAll">
+                Item 2
+              </t-checkbox>
+            </t-field>
+            <t-field>
+              <t-checkbox v-model="items.item3" @change="updateSelectAll">
+                Item 3
+              </t-checkbox>
+            </t-field>
+            <t-field>
+              <t-checkbox v-model="items.item4" @change="updateSelectAll">
+                Item 4
+              </t-checkbox>
+            </t-field>
+          </div>
+          <p class="has-text-grey mt-3">
+            Selected: {{ selectedItemsCount }} of {{ totalItems }}
+          </p>
+        </div>
+
         <!-- Array Binding -->
         <h2 class="title is-3">
           Array Binding
@@ -195,7 +240,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 const basic = ref(false)
 const option1 = ref(false)
@@ -219,4 +264,47 @@ const stateDisabledChecked = ref(true)
 const fruits = ref(['banana', 'orange'])
 const newsletter = ref(true)
 const marketing = ref(false)
+
+// Indeterminate state demo
+const selectAll = ref(false)
+const indeterminate = ref(true)
+const items = ref({
+  item1: true,
+  item2: false,
+  item3: true,
+  item4: false
+})
+
+const selectedItemsCount = computed(() => {
+  return Object.values(items.value).filter(Boolean).length
+})
+
+const totalItems = computed(() => {
+  return Object.keys(items.value).length
+})
+
+function updateSelectAll () {
+  const selected = selectedItemsCount.value
+  const total = totalItems.value
+
+  if (selected === 0) {
+    selectAll.value = false
+    indeterminate.value = false
+  } else if (selected === total) {
+    selectAll.value = true
+    indeterminate.value = false
+  } else {
+    selectAll.value = false
+    indeterminate.value = true
+  }
+}
+
+function handleSelectAll () {
+  const newValue = selectAll.value
+  items.value.item1 = newValue
+  items.value.item2 = newValue
+  items.value.item3 = newValue
+  items.value.item4 = newValue
+  indeterminate.value = false
+}
 </script>
