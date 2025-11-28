@@ -213,7 +213,7 @@
           </t-field>
         </t-demo-box>
 
-        <t-demo-box label="Example: Product Filter">
+        <t-demo-box label="Example: Product Filter" example>
           <div class="columns">
             <div class="column">
               <t-field label="Category:">
@@ -281,7 +281,7 @@
           </p>
         </t-demo-box>
 
-        <t-demo-box label="Example: Time Zone Selector">
+        <t-demo-box label="Example: Time Zone Selector" example>
           <t-field label="Select your time zone:">
             <t-select v-model="timezone" expanded>
               <optgroup label="North America">

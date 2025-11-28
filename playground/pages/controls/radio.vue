@@ -111,7 +111,7 @@
           </t-field>
         </t-demo-box>
 
-        <t-demo-box label="Example: Payment Method Selection">
+        <t-demo-box label="Example: Payment Method Selection" example>
           <t-field label="Choose payment method:">
             <t-radio v-model="payment" native-value="credit">
               <div>
@@ -143,7 +143,7 @@
           </p>
         </t-demo-box>
 
-        <t-demo-box label="Example: Shipping Options">
+        <t-demo-box label="Example: Shipping Options" example>
           <t-field label="Select shipping speed:">
             <t-radio v-model="shipping" native-value="standard">
               <span><strong>Standard Shipping</strong> - FREE (5-7 days)</span>
@@ -157,7 +157,7 @@
           </t-field>
         </t-demo-box>
 
-        <t-demo-box label="Example: Survey Question">
+        <t-demo-box label="Example: Survey Question" example>
           <p class="mb-3">
             <strong>How satisfied are you with our service?</strong>
           </p>

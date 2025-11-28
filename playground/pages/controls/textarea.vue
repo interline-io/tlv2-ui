@@ -107,7 +107,7 @@
         </t-demo-box>
 
         <!-- Practical Examples -->
-        <t-demo-box label="Example: Feedback Form">
+        <t-demo-box label="Example: Feedback Form" example>
           <t-field label="Your Feedback:" message="Help us improve our service">
             <t-textarea
               v-model="feedback"
@@ -125,7 +125,7 @@
         </t-demo-box>
 
         <!-- Code Editor -->
-        <t-demo-box label="Example: Code Snippet">
+        <t-demo-box label="Example: Code Snippet" example>
           <t-field label="Enter your code:">
             <t-textarea
               v-model="code"
@@ -137,7 +137,7 @@
         </t-demo-box>
 
         <!-- Comment Section -->
-        <t-demo-box label="Example: Comment Section">
+        <t-demo-box label="Example: Comment Section" example>
           <t-field label="Add a comment:">
             <t-textarea
               v-model="comment"
@@ -161,7 +161,7 @@
         </t-demo-box>
 
         <!-- Description with Help -->
-        <t-demo-box label="Example: With Help Text">
+        <t-demo-box label="Example: With Help Text" example>
           <t-field
             label="Product Description:"
             message="Provide a detailed description of your product"

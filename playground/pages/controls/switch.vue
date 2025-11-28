@@ -120,7 +120,7 @@
           </t-field>
         </t-demo-box>
 
-        <t-demo-box label="Example: Settings Panel">
+        <t-demo-box label="Example: Settings Panel" example>
           <h3 class="subtitle is-5">
             Notification Settings
           </h3>
@@ -180,7 +180,7 @@
           </t-field>
         </t-demo-box>
 
-        <t-demo-box label="Example: Feature Toggles">
+        <t-demo-box label="Example: Feature Toggles" example>
           <t-field>
             <t-switch v-model="features.darkMode" variant="dark">
               <t-icon icon="weather-night" />
@@ -201,7 +201,7 @@
           </t-field>
         </t-demo-box>
 
-        <t-demo-box label="Example: Interactive Demo">
+        <t-demo-box label="Example: Interactive Demo" example>
           <t-field>
             <t-switch v-model="demo.enabled" variant="success" size="large">
               <strong>Feature Enabled</strong>
