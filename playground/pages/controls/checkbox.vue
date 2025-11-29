@@ -8,196 +8,194 @@
         Checkbox input control with various styles
       </p>
 
-      <div class="content">
-        <t-demo-box label="Basic Checkbox">
-          <t-field>
-            <t-checkbox v-model="basic">
-              Checkbox label
-            </t-checkbox>
-          </t-field>
-          <p class="has-text-grey">
-            Checked: {{ basic }}
-          </p>
-        </t-demo-box>
+      <t-demo-box label="Basic Checkbox">
+        <t-field>
+          <t-checkbox v-model="basic">
+            Checkbox label
+          </t-checkbox>
+        </t-field>
+        <p class="has-text-grey">
+          Checked: {{ basic }}
+        </p>
+      </t-demo-box>
 
-        <t-demo-box label="Multiple Checkboxes">
-          <t-field>
-            <t-checkbox v-model="option1">
-              Option 1
-            </t-checkbox>
-          </t-field>
-          <t-field>
-            <t-checkbox v-model="option2">
-              Option 2
-            </t-checkbox>
-          </t-field>
-          <t-field>
-            <t-checkbox v-model="option3">
-              Option 3
-            </t-checkbox>
-          </t-field>
-          <p class="has-text-grey">
-            Selected: {{ [option1 && 'Option 1', option2 && 'Option 2', option3 && 'Option 3'].filter(Boolean).join(', ') || 'None' }}
-          </p>
-        </t-demo-box>
+      <t-demo-box label="Multiple Checkboxes">
+        <t-field>
+          <t-checkbox v-model="option1">
+            Option 1
+          </t-checkbox>
+        </t-field>
+        <t-field>
+          <t-checkbox v-model="option2">
+            Option 2
+          </t-checkbox>
+        </t-field>
+        <t-field>
+          <t-checkbox v-model="option3">
+            Option 3
+          </t-checkbox>
+        </t-field>
+        <p class="has-text-grey">
+          Selected: {{ [option1 && 'Option 1', option2 && 'Option 2', option3 && 'Option 3'].filter(Boolean).join(', ') || 'None' }}
+        </p>
+      </t-demo-box>
 
-        <t-demo-box label="Variants">
-          <t-field>
-            <t-checkbox v-model="variantPrimary" variant="primary">
-              Primary
-            </t-checkbox>
-          </t-field>
-          <t-field>
-            <t-checkbox v-model="variantInfo" variant="info">
-              Info
-            </t-checkbox>
-          </t-field>
-          <t-field>
-            <t-checkbox v-model="variantSuccess" variant="success">
-              Success
-            </t-checkbox>
-          </t-field>
-          <t-field>
-            <t-checkbox v-model="variantWarning" variant="warning">
-              Warning
-            </t-checkbox>
-          </t-field>
-          <t-field>
-            <t-checkbox v-model="variantDanger" variant="danger">
-              Danger
-            </t-checkbox>
-          </t-field>
-        </t-demo-box>
+      <t-demo-box label="Variants">
+        <t-field>
+          <t-checkbox v-model="variantPrimary" variant="primary">
+            Primary
+          </t-checkbox>
+        </t-field>
+        <t-field>
+          <t-checkbox v-model="variantInfo" variant="info">
+            Info
+          </t-checkbox>
+        </t-field>
+        <t-field>
+          <t-checkbox v-model="variantSuccess" variant="success">
+            Success
+          </t-checkbox>
+        </t-field>
+        <t-field>
+          <t-checkbox v-model="variantWarning" variant="warning">
+            Warning
+          </t-checkbox>
+        </t-field>
+        <t-field>
+          <t-checkbox v-model="variantDanger" variant="danger">
+            Danger
+          </t-checkbox>
+        </t-field>
+      </t-demo-box>
 
-        <t-demo-box label="Sizes">
-          <t-field>
-            <t-checkbox v-model="sizeSmall" size="small">
-              Small checkbox
-            </t-checkbox>
-          </t-field>
-          <t-field>
-            <t-checkbox v-model="sizeNormal">
-              Normal checkbox
-            </t-checkbox>
-          </t-field>
-          <t-field>
-            <t-checkbox v-model="sizeMedium" size="medium">
-              Medium checkbox
-            </t-checkbox>
-          </t-field>
-          <t-field>
-            <t-checkbox v-model="sizeLarge" size="large">
-              Large checkbox
-            </t-checkbox>
-          </t-field>
-        </t-demo-box>
+      <t-demo-box label="Sizes">
+        <t-field>
+          <t-checkbox v-model="sizeSmall" size="small">
+            Small checkbox
+          </t-checkbox>
+        </t-field>
+        <t-field>
+          <t-checkbox v-model="sizeNormal">
+            Normal checkbox
+          </t-checkbox>
+        </t-field>
+        <t-field>
+          <t-checkbox v-model="sizeMedium" size="medium">
+            Medium checkbox
+          </t-checkbox>
+        </t-field>
+        <t-field>
+          <t-checkbox v-model="sizeLarge" size="large">
+            Large checkbox
+          </t-checkbox>
+        </t-field>
+      </t-demo-box>
 
-        <t-demo-box label="States">
-          <t-field>
-            <t-checkbox v-model="stateDisabled" disabled>
-              Disabled checkbox
-            </t-checkbox>
-          </t-field>
-          <t-field>
-            <t-checkbox v-model="stateDisabledChecked" disabled>
-              Disabled checked
-            </t-checkbox>
-          </t-field>
-        </t-demo-box>
+      <t-demo-box label="States">
+        <t-field>
+          <t-checkbox v-model="stateDisabled" disabled>
+            Disabled checkbox
+          </t-checkbox>
+        </t-field>
+        <t-field>
+          <t-checkbox v-model="stateDisabledChecked" disabled>
+            Disabled checked
+          </t-checkbox>
+        </t-field>
+      </t-demo-box>
 
-        <t-demo-box label="Indeterminate State">
-          <p class="mb-3">
-            The indeterminate state is useful for "Select All" checkboxes when some but not all items are selected.
-          </p>
+      <t-demo-box label="Indeterminate State">
+        <p class="mb-3">
+          The indeterminate state is useful for "Select All" checkboxes when some but not all items are selected.
+        </p>
+        <t-field>
+          <t-checkbox
+            v-model="selectAll"
+            :indeterminate="indeterminate"
+            variant="primary"
+            @change="handleSelectAll"
+          >
+            <strong>Select All</strong>
+          </t-checkbox>
+        </t-field>
+        <div class="ml-5 mt-3">
           <t-field>
-            <t-checkbox
-              v-model="selectAll"
-              :indeterminate="indeterminate"
-              variant="primary"
-              @change="handleSelectAll"
-            >
-              <strong>Select All</strong>
+            <t-checkbox v-model="items.item1" @change="updateSelectAll">
+              Item 1
             </t-checkbox>
           </t-field>
-          <div class="ml-5 mt-3">
-            <t-field>
-              <t-checkbox v-model="items.item1" @change="updateSelectAll">
-                Item 1
-              </t-checkbox>
-            </t-field>
-            <t-field>
-              <t-checkbox v-model="items.item2" @change="updateSelectAll">
-                Item 2
-              </t-checkbox>
-            </t-field>
-            <t-field>
-              <t-checkbox v-model="items.item3" @change="updateSelectAll">
-                Item 3
-              </t-checkbox>
-            </t-field>
-            <t-field>
-              <t-checkbox v-model="items.item4" @change="updateSelectAll">
-                Item 4
-              </t-checkbox>
-            </t-field>
-          </div>
-          <p class="has-text-grey mt-3">
-            Selected: {{ selectedItemsCount }} of {{ totalItems }}
-          </p>
-        </t-demo-box>
+          <t-field>
+            <t-checkbox v-model="items.item2" @change="updateSelectAll">
+              Item 2
+            </t-checkbox>
+          </t-field>
+          <t-field>
+            <t-checkbox v-model="items.item3" @change="updateSelectAll">
+              Item 3
+            </t-checkbox>
+          </t-field>
+          <t-field>
+            <t-checkbox v-model="items.item4" @change="updateSelectAll">
+              Item 4
+            </t-checkbox>
+          </t-field>
+        </div>
+        <p class="has-text-grey mt-3">
+          Selected: {{ selectedItemsCount }} of {{ totalItems }}
+        </p>
+      </t-demo-box>
 
-        <t-demo-box label="Array Binding">
-          <p class="mb-3">
-            Select your favorite fruits:
-          </p>
-          <t-field>
-            <t-checkbox v-model="fruits" native-value="apple">
-              Apple
-            </t-checkbox>
-          </t-field>
-          <t-field>
-            <t-checkbox v-model="fruits" native-value="banana">
-              Banana
-            </t-checkbox>
-          </t-field>
-          <t-field>
-            <t-checkbox v-model="fruits" native-value="orange">
-              Orange
-            </t-checkbox>
-          </t-field>
-          <t-field>
-            <t-checkbox v-model="fruits" native-value="grape">
-              Grape
-            </t-checkbox>
-          </t-field>
-          <p class="has-text-grey mt-3">
-            Selected: {{ fruits.length > 0 ? fruits.join(', ') : 'None' }}
-          </p>
-        </t-demo-box>
+      <t-demo-box label="Array Binding">
+        <p class="mb-3">
+          Select your favorite fruits:
+        </p>
+        <t-field>
+          <t-checkbox v-model="fruits" native-value="apple">
+            Apple
+          </t-checkbox>
+        </t-field>
+        <t-field>
+          <t-checkbox v-model="fruits" native-value="banana">
+            Banana
+          </t-checkbox>
+        </t-field>
+        <t-field>
+          <t-checkbox v-model="fruits" native-value="orange">
+            Orange
+          </t-checkbox>
+        </t-field>
+        <t-field>
+          <t-checkbox v-model="fruits" native-value="grape">
+            Grape
+          </t-checkbox>
+        </t-field>
+        <p class="has-text-grey mt-3">
+          Selected: {{ fruits.length > 0 ? fruits.join(', ') : 'None' }}
+        </p>
+      </t-demo-box>
 
-        <t-demo-box label="With Additional Content">
-          <t-field>
-            <t-checkbox v-model="option1Content">
-              <div>
-                <strong>Option 1</strong>
-                <p class="help">
-                  Additional content for option 1
-                </p>
-              </div>
-            </t-checkbox>
-          </t-field>
-          <t-field>
-            <t-checkbox v-model="option2Content">
-              <div>
-                <strong>Option 2</strong>
-                <p class="help">
-                  Additional content for option 2
-                </p>
-              </div>
-            </t-checkbox>
-          </t-field>
-        </t-demo-box>
-      </div>
+      <t-demo-box label="With Additional Content">
+        <t-field>
+          <t-checkbox v-model="option1Content">
+            <div>
+              <strong>Option 1</strong>
+              <p class="help">
+                Additional content for option 1
+              </p>
+            </div>
+          </t-checkbox>
+        </t-field>
+        <t-field>
+          <t-checkbox v-model="option2Content">
+            <div>
+              <strong>Option 2</strong>
+              <p class="help">
+                Additional content for option 2
+              </p>
+            </div>
+          </t-checkbox>
+        </t-field>
+      </t-demo-box>
     </section>
   </div>
 </template>

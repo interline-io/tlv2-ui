@@ -8,7 +8,7 @@
         Loading indicators and spinners
       </p>
 
-      <div class="content">
+      <div>
         <!-- Basic Loading -->
         <h2 class="title is-3">
           Basic Loading Spinner

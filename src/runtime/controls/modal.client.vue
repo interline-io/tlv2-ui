@@ -1,31 +1,36 @@
 <template>
-  <div class="modal t-modal" :class="{ 'is-active': modelValue }">
-    <div class="modal-background" @click="handleBackgroundClick" />
-    <div class="modal-card" :class="{ 't-modal-fullscreen': fullScreen }">
-      <header class="modal-card-head">
-        <p class="modal-card-title">
-          {{ title }}
-        </p>
-        <button
-          v-if="closable"
-          type="button"
-          class="delete"
-          aria-label="close"
-          @click="close"
-        />
-      </header>
-      <section class="modal-card-body">
-        <div v-if="modelValue" class="container">
-          <slot :close="close" />
-          <br>
-        </div>
-      </section>
+  <Teleport to="body">
+    <div class="modal t-modal" :class="{ 'is-active': modelValue }">
+      <div class="modal-background" @click="handleBackgroundClick" />
+      <div class="modal-card" :class="modalCardClasses">
+        <header class="modal-card-head">
+          <p class="modal-card-title">
+            {{ title }}
+          </p>
+          <button
+            v-if="closable"
+            type="button"
+            class="delete"
+            aria-label="close"
+            @click="close"
+          />
+        </header>
+        <section class="modal-card-body">
+          <div v-if="modelValue" class="container">
+            <slot :close="close" />
+            <br>
+          </div>
+        </section>
+        <footer v-if="$slots.footer" class="modal-card-foot">
+          <slot name="footer" :close="close" />
+        </footer>
+      </div>
     </div>
-  </div>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
-import { watch, onMounted, onBeforeUnmount } from 'vue'
+import { computed, watch, onMounted, onBeforeUnmount } from 'vue'
 
 /**
  * Modal component using Bulma modal-card structure.
@@ -60,18 +65,32 @@ interface Props {
    * @default false
    */
   fullScreen?: boolean
+
+  /**
+   * Modal size
+   * @default 'medium'
+   */
+  size?: 'small' | 'medium' | 'large'
 }
 
 const props = withDefaults(defineProps<Props>(), {
   modelValue: false,
   title: '',
   closable: true,
-  fullScreen: false
+  fullScreen: false,
+  size: 'medium'
 })
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
 }>()
+
+const modalCardClasses = computed(() => ({
+  't-modal-fullscreen': props.fullScreen,
+  't-modal-small': props.size === 'small',
+  't-modal-medium': props.size === 'medium',
+  't-modal-large': props.size === 'large'
+}))
 
 function close (): void {
   emit('update:modelValue', false)
@@ -117,12 +136,25 @@ onBeforeUnmount(() => {
 
 <style>
 .t-modal .modal-card {
-  min-width: 800px;
+  width: 800px;
+  max-width: 90vw;
 }
-.t-modal-fullscreen {
+.t-modal .modal-card.t-modal-small {
+  width: 480px;
+}
+.t-modal .modal-card.t-modal-medium {
+  width: 800px;
+}
+.t-modal .modal-card.t-modal-large {
+  width: 1200px;
+}
+.t-modal .modal-card.t-modal-fullscreen {
   width: calc(100vw - 40px);
   height: calc(100vh - 40px);
   max-height: calc(100vh - 40px);
   margin: 20px;
+}
+.t-modal .modal-card-foot {
+  justify-content: flex-end;
 }
 </style>
