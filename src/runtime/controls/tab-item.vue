@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onMounted, computed, ref, type ComputedRef } from 'vue'
+import { inject, onMounted, computed, type ComputedRef } from 'vue'
 
 /**
  * Tab item component - child of t-tabs.
