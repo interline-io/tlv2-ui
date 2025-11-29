@@ -1,32 +1,32 @@
 <template>
-  <o-field grouped>
+  <t-field grouped>
     <!-- These are arranged in this specific way to get correct widths and 'addon' rounding -->
 
     <!-- Text or edit -->
-    <o-field addons class="is-fullwidth">
+    <t-field addons class="is-fullwidth">
       <!-- Editable field -->
       <template v-if="currentlyEditing">
-        <o-input
+        <t-input
           v-model="valueShadow"
           size="small"
           expanded
         />
         <!-- Editing buttons -->
-        <o-button
+        <t-button
           variant="danger"
           size="small"
           @click="cancel"
         >
           Cancel
-        </o-button>
-        <o-button
+        </t-button>
+        <t-button
           variant="primary"
-          icon-left="pencil"
           size="small"
           @click="save"
         >
-          Save
-        </o-button>
+          <t-icon icon="pencil" />
+          <span>Save</span>
+        </t-button>
       </template>
 
       <div v-else class="is-fullwidth">
@@ -34,26 +34,26 @@
       </div>
 
       <!-- Show edit button? -->
-      <o-field v-if="canEdit && !currentlyEditing">
-        <o-button
+      <t-field v-if="canEdit && !currentlyEditing">
+        <t-button
           size="small"
           variant="primary"
-          icon-left="pencil"
           @click="currentlyEditing = true"
         >
-          Edit
-        </o-button>
-      </o-field>
-    </o-field>
+          <t-icon icon="pencil" />
+          <span>Edit</span>
+        </t-button>
+      </t-field>
+    </t-field>
 
     <!-- Show links -->
-    <o-field
+    <t-field
       v-if="link"
       grouped
     >
       <slot name="link" />
-    </o-field>
-  </o-field>
+    </t-field>
+  </t-field>
 </template>
 
 <script setup lang="ts">
@@ -73,7 +73,7 @@ const emit = defineEmits<{
   (e: 'save', value: string): void
 }>()
 
-const valueShadow = ref<string | undefined>(props.value ?? '')
+const valueShadow = ref<string | number>(props.value ?? '')
 const currentlyEditing = ref(false)
 
 const cancel = () => {
@@ -82,7 +82,7 @@ const cancel = () => {
 }
 
 const save = () => {
-  emit('save', valueShadow.value || '')
+  emit('save', String(valueShadow.value || ''))
   currentlyEditing.value = false
 }
 </script>

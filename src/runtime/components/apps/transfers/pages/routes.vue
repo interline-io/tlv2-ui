@@ -10,9 +10,9 @@
       :station-area="props.stationArea"
     >
       <template #default="{ scenario, scenarioResult }">
-        <o-notification v-if="getRoutesWithServiceRows(scenario, scenarioResult).length === 0" variant="warning">
-          <span>No trips match the current location and filters.</span>
-        </o-notification>
+        <t-notification v-if="getRoutesWithServiceRows(scenario, scenarioResult).length === 0" variant="warning">
+          <span>No incoming trips match the current location and filters.</span>
+        </t-notification>
         <div v-else>
           <tl-apps-transfers-data-grid
             :grid-data="getRoutesWithServiceRows(scenario, scenarioResult)"

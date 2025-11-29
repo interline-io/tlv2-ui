@@ -19,14 +19,14 @@
           <span
             v-if="v"
             class="tag is-primary"
-          ><o-icon
+          ><t-icon
             icon="check"
             size="small"
           /></span>
           <span
             v-else
             class="tag is-warning"
-          ><o-icon
+          ><t-icon
             icon="alert"
             size="small"
           /></span>

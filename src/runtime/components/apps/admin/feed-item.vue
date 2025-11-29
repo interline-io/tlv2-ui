@@ -6,7 +6,6 @@
         route-key="feeds-feedKey"
         :to="{ params: { feedKey: value.onestop_id } }"
       >
-        <!-- <o-icon icon="account-group" class="mr-2" /> -->
         <template v-if="!value.name">
           {{ value.onestop_id }}
         </template>
@@ -15,10 +14,10 @@
         </template>
       </tl-link>
       <a
-        v-if="action"
+        v-if="action && actionIcon"
         :class="actionClass"
         @click.stop.prevent="select"
-      ><o-icon :icon="actionIcon" /></a>
+      ><t-icon :icon="actionIcon" /></a>
     </div>
   </div>
 </template>

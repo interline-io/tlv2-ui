@@ -2,11 +2,11 @@
   <div>
     <div class="columns">
       <div class="column is-one-half">
-        <o-field label="Pathway ID">
+        <t-field label="Pathway ID">
           <code v-if="readOnly">{{ pathway.pathway_id }}</code>
-          <o-input v-else v-model="pathway.pathway_id" />
-        </o-field>
-        <o-field label="From">
+          <t-input v-else v-model="pathway.pathway_id" />
+        </t-field>
+        <t-field label="From">
           <span class="button stop-label" @click="$emit('select-stop', pathway.from_stop.id)">
             <template v-if="pathway.from_stop.stop_name">
               {{ pathway.from_stop.stop_name }}</template>
@@ -15,8 +15,8 @@
             </template>
 
           </span>
-        </o-field>
-        <o-field label="To">
+        </t-field>
+        <t-field label="To">
           <span class="button stop-label" @click="$emit('select-stop', pathway.to_stop.id)">
             <template v-if="pathway.to_stop.stop_name">
               {{ pathway.to_stop.stop_name }}</template>
@@ -24,36 +24,36 @@
               Node (id: {{ pathway.to_stop.stop_id }})
             </template>
           </span>
-        </o-field>
+        </t-field>
 
-        <o-field label="Mode">
-          <o-select v-model="pathway.pathway_mode" :disabled="readOnly">
+        <t-field label="Mode">
+          <t-select v-model="pathway.pathway_mode" :disabled="readOnly">
             <option v-for="[mode, label] in PathwayModes" :key="mode" :value="mode">
               {{ label }}
             </option>
-          </o-select>
-        </o-field>
+          </t-select>
+        </t-field>
 
-        <o-field>
-          <o-switch v-model="pathway.is_bidirectional" :true-value="1" :false-value="0" :disabled="readOnly">
+        <t-field>
+          <t-switch v-model="pathway.is_bidirectional" :true-value="1" :false-value="0" :disabled="readOnly">
             Bidirectional
-          </o-switch>
-        </o-field>
+          </t-switch>
+        </t-field>
 
-        <o-field label="Signposted as">
+        <t-field label="Signposted as">
           <span v-if="readOnly">{{ pathway.signposted_as }}</span>
-          <o-input v-else v-model="pathway.signposted_as" placeholder="Forward" />
-        </o-field>
-        <o-field>
+          <t-input v-else v-model="pathway.signposted_as" placeholder="Forward" />
+        </t-field>
+        <t-field>
           <span v-if="readOnly">{{ pathway.reverse_signposted_as }}</span>
-          <o-input v-else v-model="pathway.reverse_signposted_as" placeholder="Reverse" />
-        </o-field>
+          <t-input v-else v-model="pathway.reverse_signposted_as" placeholder="Reverse" />
+        </t-field>
       </div>
 
       <div class="column is-one-half">
-        <o-field label="Length">
-          <o-field>
-            <o-input
+        <t-field label="Length">
+          <t-field>
+            <t-input
               v-model="pathway.length"
               number
               type="number"
@@ -62,12 +62,12 @@
               :disabled="readOnly"
               controls-position="compact"
             />
-          </o-field>
-        </o-field>
+          </t-field>
+        </t-field>
 
-        <o-field label="Traversal time">
-          <o-field>
-            <o-input
+        <t-field label="Traversal time">
+          <t-field>
+            <t-input
               v-model="pathway.traversal_time"
               number
               type="number"
@@ -75,24 +75,24 @@
               :disabled="readOnly"
               controls-position="compact"
             />
-          </o-field>
-        </o-field>
+          </t-field>
+        </t-field>
 
-        <o-field label="Stair count">
-          <o-field>
-            <o-input
+        <t-field label="Stair count">
+          <t-field>
+            <t-input
               v-model="pathway.stair_count"
               number
               type="number"
               controls-position="compact"
               :disabled="readOnly"
             />
-          </o-field>
-        </o-field>
+          </t-field>
+        </t-field>
 
-        <o-field label="Max slope">
-          <o-field>
-            <o-input
+        <t-field label="Max slope">
+          <t-field>
+            <t-input
               v-model="pathway.max_slope"
               number
               type="number"
@@ -100,12 +100,12 @@
               controls-position="compact"
               :disabled="readOnly"
             />
-          </o-field>
-        </o-field>
+          </t-field>
+        </t-field>
 
-        <o-field label="Minimum width">
-          <o-field>
-            <o-input
+        <t-field label="Minimum width">
+          <t-field>
+            <t-input
               v-model="pathway.min_width"
               number
               min="0"
@@ -114,8 +114,8 @@
               controls-position="compact"
               :disabled="readOnly"
             />
-          </o-field>
-        </o-field>
+          </t-field>
+        </t-field>
       </div>
     </div>
 

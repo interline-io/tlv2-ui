@@ -21,13 +21,13 @@
     </div>
 
     <div class="field">
-      <o-field label="Location">
+      <t-field label="Location">
         <span v-if="!station.stop.geometry" class="is-pulled-right">Draw a point by clicking on map</span>
         <span v-else class="is-pulled-right">Click the point twice to enable dragging</span>
-      </o-field>
-      <o-field>
+      </t-field>
+      <t-field>
         <tl-apps-stations-basemap-control v-model="basemap" />
-      </o-field>
+      </t-field>
 
       <tl-apps-stations-level-map
         :basemap="basemap"
@@ -46,43 +46,43 @@
       <div class="level mt-5">
         <div class="level-left">
           <div class="level-item">
-            <o-button
+            <t-button
               class="button is-outlined"
               @click="$emit('cancel')"
             >
               Cancel
-            </o-button>
+            </t-button>
           </div>
         </div>
         <div class="level-right">
           <template v-if="station.id">
             <div class="level-item">
-              <o-button
+              <t-button
                 class="button is-primary"
                 :disabled="!valid"
                 @click="$emit('update', station)"
               >
                 Save
-              </o-button>
+              </t-button>
             </div>
             <div class="level-item">
-              <o-button
+              <t-button
                 class="button is-danger"
                 @click="$emit('delete', station)"
               >
                 Delete
-              </o-button>
+              </t-button>
             </div>
           </template>
           <template v-else>
             <div class="level-item">
-              <o-button
+              <t-button
                 class="button is-primary"
                 :disabled="!valid"
                 @click="$emit('create', station)"
               >
                 Create Station
-              </o-button>
+              </t-button>
             </div>
           </template>
         </div>

@@ -12,13 +12,13 @@
       :show-trip-controls="true"
     >
       <template #default="{ scenario, scenarioResult }">
-        <o-notification v-if="scenarioResult && scenarioResult.transferGroups.length === 0" variant="warning">
+        <t-notification v-if="scenarioResult && scenarioResult.transferGroups.length === 0" variant="warning">
           <span>No incoming trips match the current location and filters.</span>
-        </o-notification>
+        </t-notification>
         <div v-else-if="scenarioResult && scenario">
-          <o-notification :closeable="false">
+          <t-notification :closeable="false">
             Displaying transfers for {{ scenarioResult.transferGroups.length }} incoming trips.
-          </o-notification>
+          </t-notification>
 
           <tl-apps-transfers-time-scoring-histogram :scenario="scenario as any" :transfer-groups="scenarioResult.transferGroups" />
 

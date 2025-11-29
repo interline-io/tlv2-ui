@@ -1,26 +1,20 @@
 <template>
   <span>
-    <o-tooltip
+    <t-tooltip
       v-if="rc && showCategory"
-      multiline
       class="rc-tooltip"
+      :text="rcDesc"
     >
       {{ rc?.name }}
-      <template #content>
-        {{ rcDesc }}
-      </template>
-    </o-tooltip>
+    </t-tooltip>
     <span v-if="rc && showCategory && rsc && showSubcategory"> / </span>
-    <o-tooltip
+    <t-tooltip
       v-if="rsc && showSubcategory"
-      multiline
       class="rc-tooltip"
+      :text="rscDesc"
     >
       {{ rsc.name }}
-      <template #content>
-        {{ rscDesc }}
-      </template>
-    </o-tooltip>
+    </t-tooltip>
   </span>
 </template>
 

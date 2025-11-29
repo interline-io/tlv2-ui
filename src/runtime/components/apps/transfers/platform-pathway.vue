@@ -1,8 +1,8 @@
 <template>
   <div>
-    <o-notification variant="warning">
+    <t-notification variant="warning">
       For <strong>debugging</strong> purposes only. Directionality of a step may be reversed. Errors may be present.
-    </o-notification>
+    </t-notification>
 
     <tl-apps-transfers-platform-pathway-map
       :station="station"

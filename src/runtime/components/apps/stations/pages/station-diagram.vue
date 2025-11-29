@@ -17,12 +17,12 @@
     <div v-if="ready" class="columns">
       <div class="column is-narrow">
         <div class="block tl-apps-stations-info">
-          <tl-card>
+          <t-card>
             <template #trigger>
               Select
-              <o-button v-if="selectedElements.length > 0" class="is-pulled-right m-2" variant="primary is-small" outlined @click="clearSelectedElements">
+              <t-button v-if="selectedElements.length > 0" class="is-pulled-right m-2" variant="primary is-small" outlined @click="clearSelectedElements">
                 Unselect All
-              </o-button>
+              </t-button>
             </template>
             <p v-if="selectedElements.length === 0" class="notification">
               Click to select a stop node or a pathway edge. Hold down the Ctrl or Shift keys to select multiple.
@@ -64,7 +64,7 @@
                 @select-pathway="selectPathway"
               />
             </div>
-          </tl-card>
+          </t-card>
         </div>
       </div>
       <div class="column">

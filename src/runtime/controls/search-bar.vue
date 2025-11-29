@@ -1,15 +1,14 @@
 <template>
-  <o-input
+  <t-input
     expanded
-    root-class="is-expanded ml-0 mr-2"
     :model-value="modelValue ?? undefined"
     :placeholder="modelValue ? modelValue : placeholder"
     type="text"
     icon="magnify"
     :icon-right="modelValue ? 'close-circle' : undefined"
     icon-right-clickable
-    class="entity-search"
-    @update:model-value="emit('update:modelValue', ($event === '' || $event === undefined) ? null : $event)"
+    class="entity-search ml-0 mr-2"
+    @update:model-value="handleInput"
     @icon-right-click="clearSearch"
   />
 </template>
@@ -30,6 +29,11 @@ const emit = defineEmits<{
 }>()
 
 // Methods
+function handleInput (value: string | number): void {
+  const stringValue = String(value)
+  emit('update:modelValue', (stringValue === '' || stringValue === undefined) ? null : stringValue)
+}
+
 const clearSearch = (): void => {
   emit('update:modelValue', null)
 }

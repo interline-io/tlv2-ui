@@ -1,24 +1,24 @@
 <template>
   <div>
-    <tl-loading v-model:active="loadingAll" :full-page="false" />
-    <o-notification
+    <t-loading :active="loadingAll" :full-page="false" />
+    <t-notification
       v-if="error"
       variant="danger"
     >
       Error: {{ error }}
-    </o-notification>
+    </t-notification>
 
-    <o-field v-if="actionInfo">
+    <t-field v-if="actionInfo">
       <tl-apps-admin-perm-list :actions="actionInfo" action-text="This permission level permits the following actions:" :show-user="false" />
-    </o-field>
+    </t-field>
 
     <hr>
 
-    <tl-search-bar v-model="search" />
+    <t-search-bar v-model="search" />
 
     <hr>
 
-    <o-field
+    <t-field
       v-if="showUsers"
       label="Users"
       class="mb-4"
@@ -39,9 +39,9 @@
           @select="$emit('select', { type: 'user', id: $event })"
         />
       </div>
-    </o-field>
+    </t-field>
 
-    <o-field
+    <t-field
       v-if="showUserStar"
       class="mb-4"
       label="All users"
@@ -57,9 +57,9 @@
           />
         </template>
       </div>
-    </o-field>
+    </t-field>
 
-    <o-field
+    <t-field
       v-if="showGroups || showTenants"
       label="Groups"
       class="mb-4"
@@ -87,7 +87,7 @@
           />
         </div>
       </div>
-    </o-field>
+    </t-field>
   </div>
 </template>
 

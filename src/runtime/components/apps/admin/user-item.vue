@@ -5,17 +5,17 @@
         :target="newTab ? '_blank' : '_self'"
         class="tag is-medium desc"
       >
-        <o-icon
+        <t-icon
           icon="account"
           class="mr-2"
         />
         {{ user.name }}
       </a>
       <a
-        v-if="action"
+        v-if="action && actionIcon"
         :class="actionClass"
         @click.stop.prevent="select"
-      ><o-icon :icon="actionIcon" /></a>
+      ><t-icon :icon="actionIcon" /></a>
     </div>
   </div>
 </template>

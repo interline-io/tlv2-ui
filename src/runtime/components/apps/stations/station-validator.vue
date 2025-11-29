@@ -14,157 +14,155 @@
       </a>
     </div>
 
-    <o-modal
-      v-model:active="openStops"
+    <t-modal
+      v-model="openStops"
       trap-focus
       has-modal-card
       full-screen
       :destroy-on-hide="false"
       aria-role="dialog"
       aria-modal
+      title="Station validation: Stops Report"
     >
-      <div class="modal-card">
-        <header class="modal-card-head">
-          <p class="modal-card-title">
-            Station Validation: Stops Report
-          </p>
-        </header>
-        <section class="modal-card-body">
-          <o-table
-            :data="station.stops"
-          >
-            <o-table-column v-slot="props" field="stop_id" label="Stop ID" sortable>
-              {{ props.row.stop_id }}
-            </o-table-column>
-            <o-table-column v-slot="props" field="stop_name" label="Stop Name" sortable>
-              {{ props.row.stop_name }}
-            </o-table-column>
-            <o-table-column v-slot="props" field="location_type" label="Location Type" sortable numeric>
-              {{ LocationTypes.get(props.row.location_type) || props.row.location_type }}
-            </o-table-column>
-            <o-table-column v-slot="props" field="level.level_index" label="Level" sortable>
-              <span v-if="props.row.level">{{ props.row.level.level_name }}</span><span v-else>None</span>
-            </o-table-column>
-            <o-table-column v-slot="props" field="pathways" label="Pathways (From/To)">
-              {{ props.row.pathways_from_stop.length }} / {{ props.row.pathways_to_stop.length }}
-            </o-table-column>
-            <o-table-column v-slot="props" field="routes" label="Routes">
-              {{ routeSummary(props.row) }}
-            </o-table-column>
-            <o-table-column v-slot="props" field="errors" label="Errors">
-              <div v-if="errors.stops[props.row.id]">
-                <ul>
-                  <li v-for="err of errors.stops[props.row.id]" :key="props.row.id + err.message">
-                    {{ err.message }}
-                  </li>
-                </ul>
-              </div>
-            </o-table-column>
-            <o-table-column v-slot="props" field="edit" label="Edit">
-              <span class="button is-small" @click="$emit('select-stop', null); $emit('select-stop', props.row.id); openStops = false">Select</span>
-            </o-table-column>
-          </o-table>
-        </section>
-      </div>
-    </o-modal>
+      <t-table
+        :data="station.stops"
+        hoverable
+        striped
+      >
+        <template #columns>
+          <t-table-column field="stop_id" label="Stop ID" sortable />
+          <t-table-column field="stop_name" label="Stop Name" sortable />
+          <t-table-column field="location_type" label="Location Type" sortable numeric />
+          <t-table-column field="level.level_index" label="Level" sortable />
+          <t-table-column field="pathways" label="Pathways (From/To)" />
+          <t-table-column field="routes" label="Routes" />
+          <t-table-column field="errors" label="Errors" />
+          <t-table-column field="edit" label="Edit" />
+        </template>
 
-    <o-modal
-      v-model:active="openPathways"
-      :striped="true"
-      trap-focus
-      full-screen
-      :destroy-on-hide="false"
-      aria-role="dialog"
-      aria-modal
-    >
-      <div class="modal-card tl-apps-stations-report">
-        <header class="modal-card-head">
-          <p class="modal-card-title">
-            Station Validation: Pathways Report
-          </p>
-        </header>
-        <section class="modal-card-body">
-          <o-table
-            :data="pathways"
-          >
-            <o-table-column v-slot="props" field="pathway_id" label="Pathway ID" sortable>
-              {{ props.row.pathway_id }}
-            </o-table-column>
-            <o-table-column v-slot="props" field="pathway_mode" label="Pathway Mode" sortable numeric>
-              {{ PathwayModes.get(props.row.pathway_mode) || props.row.pathway_mode }}
-            </o-table-column>
-            <o-table-column v-slot="props" field="from_stop.stop_name" label="From Stop" sortable>
-              {{ props.row.from_stop.stop_name }}
-            </o-table-column>
-            <o-table-column v-slot="props" field="to_stop.stop_name" label="To Stop" sortable>
-              {{ props.row.to_stop.stop_name }}
-            </o-table-column>
-            <o-table-column v-slot="props" field="is_bidirectional" label="Bidirectional" sortable>
-              {{ props.row.is_bidirectional }}
-            </o-table-column>
-            <o-table-column v-slot="props" field="errors" label="Errors">
-              {{ (errors.pathways[props.row.id] || []).map((s) => { return s.message }).join(', ') }}
-            </o-table-column>
-            <o-table-column v-slot="props" field="edit" label="Edit">
-              <span class="button is-small" @click="$emit('select-pathway', null); $emit('select-pathway', props.row.id); openPathways = false">Select</span>
-            </o-table-column>
-          </o-table>
-        </section>
-      </div>
-    </o-modal>
-
-    <o-modal
-      v-model:active="openPaths"
-      :striped="true"
-      trap-focus
-      full-screen
-      :destroy-on-hide="false"
-      aria-role="dialog"
-      aria-modal
-    >
-      <div class="modal-card tl-apps-stations-report">
-        <header class="modal-card-head">
-          <p class="modal-card-title">
-            Station Validation: Connectivity Report
-          </p>
-        </header>
-        <section class="modal-card-body">
-          <o-checkbox v-model="showAllPaths">
-            Show OK Paths
-          </o-checkbox>
-
-          <o-table
-            :data="stopPaths"
-          >
-            <o-table-column v-slot="props" field="stop_id" label="Source ID" sortable>
-              {{ props.row.stop.stop_id }}
-            </o-table-column>
-            <o-table-column v-slot="props" field="stop_name" label="Source Name" sortable>
-              {{ props.row.stop.stop_name }}
-            </o-table-column>
-            <o-table-column v-slot="props" field="stopPaths" label="Destinations">
-              <span> {{ props.row.paths.filter((s) => { return !s.error }).length }} OK / {{ props.row.paths.filter((s) => { return s.error }).length }} Errors </span>
-
+        <template #default="{ row }">
+          <td>{{ row.stop_id }}</td>
+          <td>{{ row.stop_name }}</td>
+          <td class="has-text-right">
+            {{ LocationTypes.get(row.location_type) || row.location_type }}
+          </td>
+          <td>
+            <span v-if="row.level">{{ row.level.level_name }}</span><span v-else>None</span>
+          </td>
+          <td>
+            {{ row.pathways_from_stop.length }} / {{ row.pathways_to_stop.length }}
+          </td>
+          <td>
+            {{ routeSummary(row) }}
+          </td>
+          <td>
+            <div v-if="errors.stops[row.id]">
               <ul>
-                <li v-for="err of props.row.paths" :key="props.row.stop.id + '-' + err.target.id">
-                  <template v-if="err.error || showAllPaths">
-                    <span class="button is-small" @click="$emit('select-path', props.row.stop.id, err.target.id); openPaths = false">Find route</span>
-                    <span class="button is-small" @click="$emit('select-stop', err.target.id); openPaths = false">Select dest</span>
-                    <o-icon v-if="err.error" icon="alert" variant="error" /><o-icon v-else icon="check" />
-                    <span>{{ err.target.stop_name }} ({{ err.target.id }})</span>
-                    <span v-if="err.distance > 0">(dist: {{ err.distance.toFixed(0) }} m)
-                    </span>
-                  </template>
+                <li v-for="err of errors.stops[row.id]" :key="row.id + err.message">
+                  {{ err.message }}
                 </li>
               </ul>
-            </o-table-column>
-            <o-table-column v-slot="props" field="edit" label="Edit">
-              <span class="button is-small" @click="$emit('select-stop', null); $emit('select-stop', props.row.stop.id); openPaths = false">Select source</span>
-            </o-table-column>
-          </o-table>
-        </section>
-      </div>
-    </o-modal>
+            </div>
+          </td>
+          <td>
+            <span class="button is-small" @click="$emit('select-stop', null); $emit('select-stop', row.id); openStops = false">Select</span>
+          </td>
+        </template>
+      </t-table>
+    </t-modal>
+
+    <t-modal
+      v-model="openPathways"
+      :striped="true"
+      trap-focus
+      full-screen
+      :destroy-on-hide="false"
+      aria-role="dialog"
+      aria-modal
+      title="Station Validation: Pathways Report"
+    >
+      <t-table
+        :data="pathways"
+        hoverable
+        striped
+      >
+        <template #columns>
+          <t-table-column field="pathway_id" label="Pathway ID" sortable />
+          <t-table-column field="pathway_mode" label="Pathway Mode" sortable numeric />
+          <t-table-column field="from_stop.stop_name" label="From Stop" sortable />
+          <t-table-column field="to_stop.stop_name" label="To Stop" sortable />
+          <t-table-column field="is_bidirectional" label="Bidirectional" sortable />
+          <t-table-column field="errors" label="Errors" />
+          <t-table-column field="edit" label="Edit" />
+        </template>
+
+        <template #default="{ row }">
+          <td>{{ row.pathway_id }}</td>
+          <td class="has-text-right">
+            {{ PathwayModes.get(row.pathway_mode) || row.pathway_mode }}
+          </td>
+          <td>{{ row.from_stop.stop_name }}</td>
+          <td>{{ row.to_stop.stop_name }}</td>
+          <td>{{ row.is_bidirectional }}</td>
+          <td>{{ (errors.pathways[row.id] || []).map((s) => { return s.message }).join(', ') }}</td>
+          <td>
+            <span class="button is-small" @click="$emit('select-pathway', null); $emit('select-pathway', row.id); openPathways = false">Select</span>
+          </td>
+        </template>
+      </t-table>
+    </t-modal>
+
+    <t-modal
+      v-model="openPaths"
+      :striped="true"
+      trap-focus
+      full-screen
+      :destroy-on-hide="false"
+      aria-role="dialog"
+      aria-modal
+      title="Station Validation: Connectivity Report"
+    >
+      <t-checkbox v-model="showAllPaths">
+        Show OK Paths
+      </t-checkbox>
+
+      <t-table
+        :data="stopPaths"
+        hoverable
+        striped
+      >
+        <template #columns>
+          <t-table-column field="stop_id" label="Source ID" sortable />
+          <t-table-column field="stop_name" label="Source Name" sortable />
+          <t-table-column field="stopPaths" label="Destinations" />
+          <t-table-column field="edit" label="Edit" />
+        </template>
+
+        <template #default="{ row }">
+          <td>{{ row.stop.stop_id }}</td>
+          <td>{{ row.stop.stop_name }}</td>
+          <td>
+            <span> {{ row.paths.filter((s) => { return !s.error }).length }} OK / {{ row.paths.filter((s) => { return s.error }).length }} Errors </span>
+
+            <ul>
+              <li v-for="err of row.paths" :key="row.stop.id + '-' + err.target.id">
+                <template v-if="err.error || showAllPaths">
+                  <span class="button is-small" @click="$emit('select-path', row.stop.id, err.target.id); openPaths = false">Find route</span>
+                  <span class="button is-small" @click="$emit('select-stop', err.target.id); openPaths = false">Select dest</span>
+                  <t-icon v-if="err.error" icon="alert" variant="error" /><t-icon v-else icon="check" />
+                  <span>{{ err.target.stop_name }} ({{ err.target.id }})</span>
+                  <span v-if="err.distance > 0">(dist: {{ err.distance.toFixed(0) }} m)
+                  </span>
+                </template>
+              </li>
+            </ul>
+          </td>
+          <td>
+            <span class="button is-small" @click="$emit('select-stop', null); $emit('select-stop', row.stop.id); openPaths = false">Select source</span>
+          </td>
+        </template>
+      </t-table>
+    </t-modal>
   </div>
 </template>
 
