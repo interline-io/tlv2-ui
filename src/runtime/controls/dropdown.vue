@@ -4,18 +4,24 @@
     class="dropdown"
     :class="dropdownClass"
   >
-    <div class="dropdown-trigger">
+    <div
+      class="dropdown-trigger"
+      @click="toggle"
+    >
       <slot name="trigger" :toggle="toggle">
         <button
           class="button"
+          :class="{ [`is-${props.triggerVariant}`]: props.triggerVariant }"
           type="button"
           aria-haspopup="true"
           :aria-controls="`dropdown-menu-${uid}`"
-          @click="toggle"
         >
+          <span v-if="triggerIconLeft" class="icon is-small">
+            <i :class="`mdi mdi-${triggerIconLeft}`" aria-hidden="true" />
+          </span>
           <span>{{ triggerLabel }}</span>
-          <span class="icon is-small">
-            <i class="mdi mdi-menu-down" aria-hidden="true" />
+          <span v-if="triggerIcon" class="icon is-small">
+            <i :class="`mdi mdi-${triggerIcon}`" aria-hidden="true" />
           </span>
         </button>
       </slot>
@@ -93,6 +99,27 @@ interface Props {
    * Label shown in default trigger button
    */
   triggerLabel?: string
+
+  /**
+   * Icon shown in default trigger button (after label)
+   * @default 'menu-down'
+   */
+  triggerIcon?: string
+
+  /**
+   * Icon shown before the label in default trigger button
+   */
+  triggerIconLeft?: string
+
+  /**
+   * Button variant for default trigger
+   */
+  triggerVariant?: 'primary' | 'link' | 'info' | 'success' | 'warning' | 'danger' | 'white' | 'light' | 'dark' | 'text' | 'ghost'
+
+  /**
+   * Open dropdown on hover instead of click
+   */
+  hoverable?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -102,12 +129,17 @@ const props = withDefaults(defineProps<Props>(), {
   position: 'bottom-left',
   inline: false,
   ariaRole: 'list',
-  triggerLabel: 'Select'
+  triggerLabel: 'Select',
+  triggerIcon: 'menu-down',
+  triggerIconLeft: undefined,
+  triggerVariant: undefined,
+  hoverable: false
 })
 
 const emit = defineEmits<{
   'update:modelValue': [value: any]
   'change': [value: any]
+  'select': [value: any]
   'open': []
   'close': []
 }>()
@@ -118,6 +150,7 @@ const uid = ref(`dropdown-${Math.random().toString(36).substr(2, 9)}`)
 
 const dropdownClass = computed(() => ({
   'is-active': isActive.value,
+  'is-hoverable': props.hoverable,
   [`is-${props.position}`]: props.position !== 'bottom-left'
 }))
 
@@ -152,7 +185,16 @@ function close () {
 }
 
 function handleItemClick (value: any) {
-  if (!props.selectable) return
+  // Always emit select event for any item click
+  emit('select', value)
+
+  if (!props.selectable) {
+    // Close dropdown even if not selectable (for action menus)
+    if (!props.inline && !props.hoverable) {
+      close()
+    }
+    return
+  }
 
   if (props.multiple) {
     const currentValues = Array.isArray(props.modelValue) ? [...props.modelValue] : []

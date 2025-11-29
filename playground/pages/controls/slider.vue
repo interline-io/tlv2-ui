@@ -1,11 +1,6 @@
 <template>
   <div class="container">
     <section class="section">
-      <NuxtLink to="/" class="button is-light mb-4">
-        <t-icon icon="arrow-left" />
-        <span>Back to Index</span>
-      </NuxtLink>
-
       <h1 class="title is-1">
         Slider Component
       </h1>

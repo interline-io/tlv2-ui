@@ -1,11 +1,6 @@
 <template>
   <div class="container">
     <section class="section">
-      <NuxtLink to="/" class="button is-light mb-4">
-        <t-icon icon="arrow-left" />
-        <span>Back to Index</span>
-      </NuxtLink>
-
       <h1 class="title is-1">
         Button Component
       </h1>
@@ -149,7 +144,7 @@
         </t-demo-box>
 
         <t-demo-box label="Button Groups">
-          <div class="buttons has-addons">
+          <t-field addons>
             <t-button variant="primary">
               Left
             </t-button>
@@ -159,7 +154,19 @@
             <t-button variant="primary">
               Right
             </t-button>
-          </div>
+          </t-field>
+
+          <t-field addons>
+            <t-button>
+              Yes
+            </t-button>
+            <t-button variant="info">
+              Maybe
+            </t-button>
+            <t-button variant="danger">
+              No
+            </t-button>
+          </t-field>
         </t-demo-box>
       </div>
     </section>

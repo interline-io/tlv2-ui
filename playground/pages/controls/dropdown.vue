@@ -1,11 +1,6 @@
 <template>
   <div class="container">
     <section class="section">
-      <NuxtLink to="/" class="button is-light mb-4">
-        <t-icon icon="arrow-left" />
-        <span>Back to Index</span>
-      </NuxtLink>
-
       <h1 class="title is-1">
         Dropdown Component
       </h1>
@@ -14,18 +9,8 @@
       </p>
 
       <div class="content">
-        <!-- Basic Dropdown -->
-        <h2 class="title is-3">
-          Basic Dropdown
-        </h2>
-        <div class="box">
-          <t-dropdown>
-            <template #trigger>
-              <t-button>
-                Actions
-                <t-icon icon="menu-down" />
-              </t-button>
-            </template>
+        <t-demo-box label="Basic Dropdown">
+          <t-dropdown trigger-label="Actions">
             <t-dropdown-item value="edit">
               <t-icon icon="pencil" />
               <span>Edit</span>
@@ -39,23 +24,13 @@
               <span>Delete</span>
             </t-dropdown-item>
           </t-dropdown>
-        </div>
+        </t-demo-box>
 
-        <!-- Hoverable -->
-        <h2 class="title is-3">
-          Hoverable Dropdown
-        </h2>
-        <div class="box">
+        <t-demo-box label="Hoverable Dropdown">
           <p class="mb-3">
             Hover over the button to open the dropdown
           </p>
-          <t-dropdown hoverable>
-            <template #trigger>
-              <t-button variant="info">
-                Hover me
-                <t-icon icon="menu-down" />
-              </t-button>
-            </template>
+          <t-dropdown hoverable trigger-label="Hover me" trigger-variant="info">
             <t-dropdown-item value="option1">
               Option 1
             </t-dropdown-item>
@@ -66,21 +41,10 @@
               Option 3
             </t-dropdown-item>
           </t-dropdown>
-        </div>
+        </t-demo-box>
 
-        <!-- With Icons -->
-        <h2 class="title is-3">
-          User Menu
-        </h2>
-        <div class="box">
-          <t-dropdown>
-            <template #trigger>
-              <t-button>
-                <t-icon icon="account-circle" />
-                <span>My Account</span>
-                <t-icon icon="menu-down" />
-              </t-button>
-            </template>
+        <t-demo-box label="With Icons">
+          <t-dropdown trigger-label="My Account" trigger-icon-left="account-circle">
             <t-dropdown-item value="profile">
               <t-icon icon="account" />
               <span>Profile</span>
@@ -99,20 +63,11 @@
               <span>Logout</span>
             </t-dropdown-item>
           </t-dropdown>
-        </div>
+        </t-demo-box>
 
-        <!-- Position Variants -->
-        <h2 class="title is-3">
-          Dropdown Positions
-        </h2>
-        <div class="box">
+        <t-demo-box label="Dropdown Positions">
           <div class="buttons">
-            <t-dropdown>
-              <template #trigger>
-                <t-button>
-                  Bottom Left (Default)
-                </t-button>
-              </template>
+            <t-dropdown trigger-label="Bottom Left (Default)">
               <t-dropdown-item value="1">
                 Item 1
               </t-dropdown-item>
@@ -121,12 +76,7 @@
               </t-dropdown-item>
             </t-dropdown>
 
-            <t-dropdown position="bottom-right">
-              <template #trigger>
-                <t-button>
-                  Bottom Right
-                </t-button>
-              </template>
+            <t-dropdown position="bottom-right" trigger-label="Bottom Right">
               <t-dropdown-item value="1">
                 Item 1
               </t-dropdown-item>
@@ -135,12 +85,7 @@
               </t-dropdown-item>
             </t-dropdown>
 
-            <t-dropdown position="top-left">
-              <template #trigger>
-                <t-button>
-                  Top Left
-                </t-button>
-              </template>
+            <t-dropdown position="top-left" trigger-label="Top Left">
               <t-dropdown-item value="1">
                 Item 1
               </t-dropdown-item>
@@ -149,12 +94,7 @@
               </t-dropdown-item>
             </t-dropdown>
 
-            <t-dropdown position="top-right">
-              <template #trigger>
-                <t-button>
-                  Top Right
-                </t-button>
-              </template>
+            <t-dropdown position="top-right" trigger-label="Top Right">
               <t-dropdown-item value="1">
                 Item 1
               </t-dropdown-item>
@@ -163,20 +103,10 @@
               </t-dropdown-item>
             </t-dropdown>
           </div>
-        </div>
+        </t-demo-box>
 
-        <!-- With Disabled Items -->
-        <h2 class="title is-3">
-          With Disabled Items
-        </h2>
-        <div class="box">
-          <t-dropdown>
-            <template #trigger>
-              <t-button>
-                File
-                <t-icon icon="menu-down" />
-              </t-button>
-            </template>
+        <t-demo-box label="With Disabled Items">
+          <t-dropdown trigger-label="File">
             <t-dropdown-item value="new">
               <t-icon icon="file-plus" />
               <span>New</span>
@@ -195,13 +125,9 @@
               <span>Export</span>
             </t-dropdown-item>
           </t-dropdown>
-        </div>
+        </t-demo-box>
 
-        <!-- Custom Trigger -->
-        <h2 class="title is-3">
-          Custom Trigger
-        </h2>
-        <div class="box">
+        <t-demo-box label="Custom Trigger">
           <t-dropdown>
             <template #trigger>
               <a class="navbar-item">
@@ -219,20 +145,16 @@
               API Reference
             </t-dropdown-item>
           </t-dropdown>
-        </div>
+        </t-demo-box>
 
-        <!-- Interactive Example -->
-        <h2 class="title is-3">
-          Interactive Example
-        </h2>
-        <div class="box">
+        <t-demo-box label="Example: Interactive Actions" example>
           <p class="mb-3">
             Selected action: <strong>{{ selectedAction || 'None' }}</strong>
           </p>
           <t-dropdown @select="handleSelect">
             <template #trigger>
               <t-button variant="primary">
-                Choose Action
+                <span>Choose Action</span>
                 <t-icon icon="menu-down" />
               </t-button>
             </template>
@@ -254,13 +176,9 @@
               <span>Share</span>
             </t-dropdown-item>
           </t-dropdown>
-        </div>
+        </t-demo-box>
 
-        <!-- Notification Menu -->
-        <h2 class="title is-3">
-          Notification Menu
-        </h2>
-        <div class="box">
+        <t-demo-box label="Example: Notification Menu" example>
           <t-dropdown>
             <template #trigger>
               <t-button variant="info">
@@ -309,13 +227,9 @@
               </p>
             </t-dropdown-item>
           </t-dropdown>
-        </div>
+        </t-demo-box>
 
-        <!-- Language Selector -->
-        <h2 class="title is-3">
-          Language Selector
-        </h2>
-        <div class="box">
+        <t-demo-box label="Example: Language Selector" example>
           <p class="mb-3">
             Current language: <strong>{{ currentLanguage }}</strong>
           </p>
@@ -343,7 +257,7 @@
               🇯🇵 日本語
             </t-dropdown-item>
           </t-dropdown>
-        </div>
+        </t-demo-box>
       </div>
     </section>
   </div>

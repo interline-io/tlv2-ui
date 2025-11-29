@@ -1,51 +1,50 @@
 <template>
   <div id="app">
-    <header class="navbar is-primary" role="navigation" aria-label="main navigation">
-      <div class="container">
-        <div class="navbar-brand">
-          <NuxtLink to="/" class="navbar-item">
-            <strong>tlv2-ui Component Library</strong>
-          </NuxtLink>
-        </div>
-        <div class="navbar-menu">
-          <div class="navbar-end">
-            <div class="navbar-item">
-              <t-theme-toggle />
-            </div>
-          </div>
-        </div>
+    <header class="navbar is-justify-content-center" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
+        <NuxtLink to="/" class="navbar-item">
+          <strong>tlv2-ui Component Library</strong>
+        </NuxtLink>
       </div>
     </header>
-    <NuxtPage />
+
+    <div class="columns is-gapless p-5">
+      <aside class="column is-narrow menu">
+        <t-theme-toggle class="mb-3" />
+        <div v-for="group in navigationGroups" :key="group.title">
+          <p class="menu-label">
+            {{ group.title }}
+          </p>
+          <ul class="menu-list">
+            <li v-for="item in group.items" :key="item.path">
+              <NuxtLink
+                :to="item.path"
+                :class="{ 'is-active': route.path === item.path }"
+              >
+                <t-icon :icon="item.icon" />
+                <span>{{ item.name }}</span>
+              </NuxtLink>
+            </li>
+          </ul>
+        </div>
+      </aside>
+
+      <main class="column">
+        <NuxtPage />
+      </main>
+    </div>
   </div>
 </template>
 
+<script setup lang="ts">
+import { useRoute } from 'vue-router'
+import { navigationGroups } from './navigation'
+
+const route = useRoute()
+</script>
+
 <style>
-body {
-  margin: 0;
-  padding: 0;
-}
-
-#app {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
 .navbar {
-  flex-shrink: 0;
-}
-
-.navbar-item strong {
-  color: white;
-  font-size: 1.1rem;
-}
-
-.navbar-item {
-  color: white;
-}
-
-.navbar-brand .navbar-item:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  border-bottom:solid 1px #ccc;
 }
 </style>

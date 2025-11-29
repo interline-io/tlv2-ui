@@ -22,24 +22,26 @@ import { inject, onMounted, computed, ref, type ComputedRef } from 'vue'
 interface Props {
   /** The label displayed in the tab header */
   label: string
+  /** The value used to identify this tab */
+  value: string | number
+  /** Optional icon to display */
+  icon?: string
 }
 
 const props = defineProps<Props>()
 
-const registerTab = inject<(label: string) => number>('registerTab')
-const activeTab = inject<ComputedRef<number>>('activeTab')
-
-const tabIndex = ref<number>(-1)
+const registerTab = inject<(label: string, value: string | number, icon?: string) => void>('registerTab')
+const activeTab = inject<ComputedRef<string | number>>('activeTab')
 
 onMounted(() => {
   if (registerTab) {
-    tabIndex.value = registerTab(props.label)
+    registerTab(props.label, props.value, props.icon)
   }
 })
 
 const isActive = computed(() => {
-  if (activeTab && tabIndex.value >= 0) {
-    return activeTab.value === tabIndex.value
+  if (activeTab) {
+    return activeTab.value === props.value
   }
   return false
 })

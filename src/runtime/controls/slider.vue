@@ -12,7 +12,18 @@
       :disabled="disabled"
       v-bind="$attrs"
       @input="handleInput"
+      @mousedown="showTooltip = true"
+      @mouseup="showTooltip = false"
+      @touchstart="showTooltip = true"
+      @touchend="showTooltip = false"
     >
+    <div
+      v-if="tooltip && showTooltip && modelValue !== null"
+      class="slider-tooltip"
+      :style="tooltipStyle"
+    >
+      {{ modelValue }}
+    </div>
     <div v-if="hasTicks" class="slider-ticks">
       <slot />
     </div>
@@ -81,8 +92,18 @@ const emit = defineEmits<{
 
 const slots = useSlots()
 const sliderRef = ref<HTMLInputElement>()
+const showTooltip = ref(false)
 
 const hasTicks = computed(() => !!slots.default)
+
+const tooltipStyle = computed(() => {
+  if (!props.modelValue || props.modelValue === null) return {}
+
+  const percentage = ((props.modelValue - props.min) / (props.max - props.min)) * 100
+  return {
+    left: `${percentage}%`
+  }
+})
 
 const sliderClasses = computed(() => {
   const classes: string[] = []
@@ -207,5 +228,29 @@ provide('sliderSetValue', setValue)
   margin-top: -0.5rem;
   font-size: 0.75rem;
   color: #7a7a7a;
+}
+
+.slider-tooltip {
+  position: absolute;
+  top: -2.5rem;
+  transform: translateX(-50%);
+  background: #363636;
+  color: #fff;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.slider-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 0.25rem solid transparent;
+  border-top-color: #363636;
 }
 </style>

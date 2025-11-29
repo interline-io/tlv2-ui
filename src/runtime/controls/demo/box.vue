@@ -1,9 +1,11 @@
 <template>
-  <div>
-    <h2 class="title is-3 m-0 mt-5 mb-3">
-      {{ label }}
-    </h2>
-    <div class="box" :class="{ 'demo-example': example }">
+  <div class="card">
+    <header class="card-header" :class="{ 'demo-example': example }">
+      <p class="card-header-title">
+        {{ label }}
+      </p>
+    </header>
+    <div class="card-content">
       <slot />
     </div>
   </div>
@@ -35,6 +37,6 @@ defineProps<Props>()
 
 <style scoped>
 .demo-example {
-  border-left: 3px solid hsl(171, 100%, 41%);
+background:#eee;
 }
 </style>

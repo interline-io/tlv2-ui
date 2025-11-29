@@ -3,8 +3,8 @@
     :variant="isDark ? 'dark' : 'light'"
     @click="toggleTheme"
   >
-    <t-icon :icon="isDark ? 'weather-sunny' : 'weather-night'" />
-    <span>{{ isDark ? 'Light' : 'Dark' }} Mode</span>
+    <t-icon :icon="isDark ? 'weather-night' : 'weather-sunny'" />
+    <span>{{ isDark ? 'Dark' : 'Light' }} Mode</span>
   </t-button>
 </template>
 

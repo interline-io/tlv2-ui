@@ -6,12 +6,13 @@
     >
       <ul>
         <li
-          v-for="(tab, index) in tabs"
-          :key="index"
-          :class="{ 'is-active': modelValue === index }"
+          v-for="tab in tabs"
+          :key="tab.value"
+          :class="{ 'is-active': modelValue === tab.value }"
         >
-          <a @click.prevent="selectTab(index)">
-            {{ tab.label }}
+          <a @click.prevent="selectTab(tab.value)">
+            <t-icon v-if="tab.icon" :icon="tab.icon" />
+            <span>{{ tab.label }}</span>
           </a>
         </li>
       </ul>
@@ -39,61 +40,62 @@ import { computed, provide, ref, watch, nextTick } from 'vue'
  */
 
 interface Props {
-  /** The active tab index (v-model) */
-  modelValue?: number
-  /** Alignment: 'left' (default), 'centered', 'right' */
-  align?: 'left' | 'centered' | 'right'
+  /** The active tab value (v-model) */
+  modelValue?: string | number
+  /** Position: 'left' (default), 'centered', 'right' */
+  position?: 'left' | 'centered' | 'right'
   /** Size: 'small', 'normal', 'medium', 'large' */
   size?: 'small' | 'normal' | 'medium' | 'large'
-  /** Style: 'default', 'boxed', 'toggle', 'toggle-rounded' */
-  style?: 'default' | 'boxed' | 'toggle' | 'toggle-rounded'
+  /** Type: 'default', 'boxed', 'toggle', 'toggle-rounded' */
+  type?: 'default' | 'boxed' | 'toggle' | 'toggle-rounded'
   /** Make tabs take full width */
-  fullwidth?: boolean
+  expanded?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  modelValue: 0,
-  align: 'left',
+  modelValue: undefined,
+  position: 'left',
   size: 'normal',
-  style: 'default',
-  fullwidth: false
+  type: 'default',
+  expanded: false
 })
 
 const emit = defineEmits<{
-  'update:modelValue': [value: number]
+  'update:modelValue': [value: string | number]
 }>()
 
 interface TabItem {
   label: string
+  value: string | number
+  icon?: string
 }
 
 const tabs = ref<TabItem[]>([])
 
-function registerTab (label: string) {
-  tabs.value.push({ label })
-  return tabs.value.length - 1
+function registerTab (label: string, value: string | number, icon?: string) {
+  tabs.value.push({ label, value, icon })
 }
 
 provide('registerTab', registerTab)
 provide('activeTab', computed(() => props.modelValue))
 
-function selectTab (index: number) {
-  emit('update:modelValue', index)
+function selectTab (value: string | number) {
+  emit('update:modelValue', value)
 }
 
 const tabsClasses = computed(() => {
   const classes: string[] = []
 
-  if (props.align === 'centered') classes.push('is-centered')
-  if (props.align === 'right') classes.push('is-right')
+  if (props.position === 'centered') classes.push('is-centered')
+  if (props.position === 'right') classes.push('is-right')
 
   if (props.size !== 'normal') classes.push(`is-${props.size}`)
 
-  if (props.style === 'boxed') classes.push('is-boxed')
-  if (props.style === 'toggle') classes.push('is-toggle')
-  if (props.style === 'toggle-rounded') classes.push('is-toggle', 'is-toggle-rounded')
+  if (props.type === 'boxed') classes.push('is-boxed')
+  if (props.type === 'toggle') classes.push('is-toggle')
+  if (props.type === 'toggle-rounded') classes.push('is-toggle', 'is-toggle-rounded')
 
-  if (props.fullwidth) classes.push('is-fullwidth')
+  if (props.expanded) classes.push('is-fullwidth')
 
   return classes
 })
@@ -107,3 +109,12 @@ watch(() => props.modelValue, () => {
   })
 })
 </script>
+
+<style>
+/* Override .content ul styles for tabs */
+.content .tabs ul {
+  margin-left: 0;
+  margin-inline-start: 0;
+  list-style: none;
+}
+</style>

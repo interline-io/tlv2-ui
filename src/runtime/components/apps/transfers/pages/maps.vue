@@ -11,7 +11,7 @@
     >
       <template #default="{ scenario, scenarioResult, station }">
         <t-tabs v-model="activeTab">
-          <t-tab-item label="Platforms">
+          <t-tab-item label="Platforms" value="Platforms">
             <div id="map-wrap" class="mb-4">
               <tl-apps-transfers-platform-map
                 :key="`map-${activeTab}`"
@@ -33,7 +33,7 @@
               />
             </div>
           </t-tab-item>
-          <t-tab-item v-for="map in maps" :key="map.url" :label="map.name">
+          <t-tab-item v-for="map in maps" :key="map.url" :label="map.name" :value="map.url">
             <img :src="map.img" :alt="map.name">
             <div class="notification is-info">
               <strong>Alternative</strong>: Open as a
@@ -61,7 +61,7 @@ interface Props {
 const props = defineProps<Props>()
 const route = useRoute()
 
-const activeTab = ref(Number(route.query.activeTab) || 0)
+const activeTab = ref<string | number>(route.query.activeTab?.toString() || 'Platforms')
 
 const platformsGridColumns = [
   { key: 'stop_name', text: 'Stop' },

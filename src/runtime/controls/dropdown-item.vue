@@ -1,5 +1,10 @@
 <template>
+  <hr
+    v-if="separator"
+    class="dropdown-divider"
+  >
   <a
+    v-else
     :class="itemClass"
     :role="ariaRole"
     @click="handleClick"
@@ -39,6 +44,11 @@ interface Props {
   active?: boolean
 
   /**
+   * Render as a separator (divider)
+   */
+  separator?: boolean
+
+  /**
    * ARIA role for accessibility
    * @default 'listitem'
    */
@@ -49,6 +59,7 @@ const props = withDefaults(defineProps<Props>(), {
   value: undefined,
   disabled: false,
   active: false,
+  separator: false,
   ariaRole: 'listitem'
 })
 
@@ -111,5 +122,13 @@ function handleClick (event: MouseEvent) {
 .dropdown-item.is-disabled {
   cursor: not-allowed;
   opacity: 0.5;
+}
+
+.dropdown-divider {
+  background-color: #ededed;
+  border: none;
+  display: block;
+  height: 1px;
+  margin: 0.5rem 0;
 }
 </style>
