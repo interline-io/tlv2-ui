@@ -20,36 +20,15 @@
 
       <!-- Variants -->
       <t-demo-box label="Variants">
-        <t-field label="Primary:">
-          <t-textarea v-model="variantPrimary" variant="primary" placeholder="Primary textarea" />
-        </t-field>
-        <t-field label="Info:">
-          <t-textarea v-model="variantInfo" variant="info" placeholder="Info textarea" />
-        </t-field>
-        <t-field label="Success:">
-          <t-textarea v-model="variantSuccess" variant="success" placeholder="Success textarea" />
-        </t-field>
-        <t-field label="Warning:">
-          <t-textarea v-model="variantWarning" variant="warning" placeholder="Warning textarea" />
-        </t-field>
-        <t-field label="Danger:">
-          <t-textarea v-model="variantDanger" variant="danger" placeholder="Danger textarea" />
+        <t-field v-for="variant in variants" :key="variant" :label="capitalize(variant) + ':'">
+          <t-textarea v-model="variantValues[variant]" :variant="variant" :placeholder="capitalize(variant) + ' textarea'" />
         </t-field>
       </t-demo-box>
 
       <!-- Sizes -->
       <t-demo-box label="Sizes">
-        <t-field label="Small:">
-          <t-textarea v-model="sizeSmall" size="small" placeholder="Small textarea" />
-        </t-field>
-        <t-field label="Normal:">
-          <t-textarea v-model="sizeNormal" placeholder="Normal textarea" />
-        </t-field>
-        <t-field label="Medium:">
-          <t-textarea v-model="sizeMedium" size="medium" placeholder="Medium textarea" />
-        </t-field>
-        <t-field label="Large:">
-          <t-textarea v-model="sizeLarge" size="large" placeholder="Large textarea" />
+        <t-field v-for="textareaSize in sizes" :key="textareaSize" :label="capitalize(textareaSize) + ':'">
+          <t-textarea v-model="sizeValues[textareaSize]" :size="textareaSize" :placeholder="capitalize(textareaSize) + ' textarea'" />
         </t-field>
       </t-demo-box>
 
@@ -172,20 +151,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
+import { TextareaVariants, TextareaSizes } from '../../../src/runtime/controls/types'
+
+const variants = TextareaVariants
+const sizes = TextareaSizes
+
+const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 
 const basic = ref('')
 
-const variantPrimary = ref('Primary styled textarea')
-const variantInfo = ref('Info styled textarea')
-const variantSuccess = ref('Success styled textarea')
-const variantWarning = ref('Warning styled textarea')
-const variantDanger = ref('Danger styled textarea')
+const variantValues = reactive<Record<string, string>>({})
+for (const variant of variants) {
+  variantValues[variant] = ''
+}
 
-const sizeSmall = ref('')
-const sizeNormal = ref('')
-const sizeMedium = ref('')
-const sizeLarge = ref('')
+const sizeValues = reactive<Record<string, string>>({})
+for (const textareaSize of sizes) {
+  sizeValues[textareaSize] = ''
+}
 
 const rows3 = ref('')
 const rows5 = ref('')

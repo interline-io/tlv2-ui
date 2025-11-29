@@ -19,6 +19,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { TextareaVariant, TextareaSize } from './types'
 
 interface Props {
   /**
@@ -36,13 +37,13 @@ interface Props {
    * The size of the textarea.
    * @values small, normal, medium, large
    */
-  size?: 'small' | 'normal' | 'medium' | 'large'
+  size?: TextareaSize
 
   /**
    * The color variant of the textarea.
    * @values primary, link, info, success, warning, danger, white, light, dark
    */
-  variant?: 'primary' | 'link' | 'info' | 'success' | 'warning' | 'danger' | 'white' | 'light' | 'dark'
+  variant?: TextareaVariant
 
   /**
    * Whether the textarea is disabled.

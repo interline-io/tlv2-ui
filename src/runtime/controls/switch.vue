@@ -15,6 +15,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { SwitchVariant, SwitchSize } from './types'
 
 /**
  * Toggle switch component with v-model support.
@@ -58,12 +59,12 @@ interface Props {
   /**
    * Switch size.
    */
-  size?: 'small' | 'medium' | 'large'
+  size?: SwitchSize
 
   /**
    * Color variant for the switch.
    */
-  variant?: 'primary' | 'link' | 'info' | 'success' | 'warning' | 'danger' | 'dark'
+  variant?: SwitchVariant
 
   /**
    * Use rounded style for the switch.

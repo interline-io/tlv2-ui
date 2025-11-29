@@ -20,52 +20,17 @@
       </t-demo-box>
 
       <t-demo-box label="Variants">
-        <t-field>
-          <t-switch v-model="variantPrimary" variant="primary">
-            Primary
-          </t-switch>
-        </t-field>
-        <t-field>
-          <t-switch v-model="variantInfo" variant="info">
-            Info
-          </t-switch>
-        </t-field>
-        <t-field>
-          <t-switch v-model="variantSuccess" variant="success">
-            Success
-          </t-switch>
-        </t-field>
-        <t-field>
-          <t-switch v-model="variantWarning" variant="warning">
-            Warning
-          </t-switch>
-        </t-field>
-        <t-field>
-          <t-switch v-model="variantDanger" variant="danger">
-            Danger
+        <t-field v-for="variant in variants" :key="variant">
+          <t-switch v-model="variantValues[variant]" :variant="variant">
+            {{ capitalize(variant) }}
           </t-switch>
         </t-field>
       </t-demo-box>
 
       <t-demo-box label="Sizes">
-        <t-field>
-          <t-switch v-model="sizeSmall" size="small">
-            Small switch
-          </t-switch>
-        </t-field>
-        <t-field>
-          <t-switch v-model="sizeNormal">
-            Normal switch
-          </t-switch>
-        </t-field>
-        <t-field>
-          <t-switch v-model="sizeMedium" size="medium">
-            Medium switch
-          </t-switch>
-        </t-field>
-        <t-field>
-          <t-switch v-model="sizeLarge" size="large">
-            Large switch
+        <t-field v-for="size in sizes" :key="size">
+          <t-switch v-model="sizeValues[size]" :size="size">
+            {{ capitalize(size) }} switch
           </t-switch>
         </t-field>
       </t-demo-box>
@@ -228,20 +193,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
+import { SwitchVariants, SwitchSizes } from '../../../src/runtime/controls/types'
+
+const variants = SwitchVariants
+const sizes = SwitchSizes
+
+const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 
 const basic = ref(true)
 
-const variantPrimary = ref(true)
-const variantInfo = ref(true)
-const variantSuccess = ref(true)
-const variantWarning = ref(true)
-const variantDanger = ref(true)
+const variantValues = reactive<Record<string, boolean>>({
+  primary: true,
+  link: true,
+  info: true,
+  success: true,
+  warning: true,
+  danger: true,
+  dark: true
+})
 
-const sizeSmall = ref(true)
-const sizeNormal = ref(true)
-const sizeMedium = ref(true)
-const sizeLarge = ref(true)
+const sizeValues = reactive<Record<string, boolean>>({
+  small: true,
+  medium: true,
+  large: true
+})
 
 const disabledOff = ref(false)
 const disabledOn = ref(true)

@@ -32,6 +32,7 @@
 
 <script setup lang="ts">
 import { ref, computed, useSlots, provide } from 'vue'
+import type { SliderSize, SliderVariant } from './types'
 
 interface Props {
   /**
@@ -61,7 +62,13 @@ interface Props {
    * The size of the slider.
    * @values small, normal, medium, large
    */
-  size?: 'small' | 'normal' | 'medium' | 'large'
+  size?: SliderSize
+
+  /**
+   * The color variant of the slider.
+   * @values primary, link, info, success, warning, danger
+   */
+  variant?: SliderVariant
 
   /**
    * Whether the slider is disabled.
@@ -82,6 +89,7 @@ const props = withDefaults(defineProps<Props>(), {
   max: 100,
   step: 1,
   size: undefined,
+  variant: undefined,
   disabled: false,
   tooltip: false
 })
@@ -110,6 +118,10 @@ const sliderClasses = computed(() => {
 
   if (props.size) {
     classes.push(`is-${props.size}`)
+  }
+
+  if (props.variant) {
+    classes.push(`is-${props.variant}`)
   }
 
   return classes
@@ -220,6 +232,67 @@ provide('sliderSetValue', setValue)
 .slider.is-large::-moz-range-thumb {
   width: 1.5rem;
   height: 1.5rem;
+}
+
+/* Variants */
+.slider.is-primary::-webkit-slider-thumb {
+  background: #00d1b2;
+  border-color: #00d1b2;
+}
+
+.slider.is-primary::-moz-range-thumb {
+  background: #00d1b2;
+  border-color: #00d1b2;
+}
+
+.slider.is-link::-webkit-slider-thumb {
+  background: #485fc7;
+  border-color: #485fc7;
+}
+
+.slider.is-link::-moz-range-thumb {
+  background: #485fc7;
+  border-color: #485fc7;
+}
+
+.slider.is-info::-webkit-slider-thumb {
+  background: #3e8ed0;
+  border-color: #3e8ed0;
+}
+
+.slider.is-info::-moz-range-thumb {
+  background: #3e8ed0;
+  border-color: #3e8ed0;
+}
+
+.slider.is-success::-webkit-slider-thumb {
+  background: #48c78e;
+  border-color: #48c78e;
+}
+
+.slider.is-success::-moz-range-thumb {
+  background: #48c78e;
+  border-color: #48c78e;
+}
+
+.slider.is-warning::-webkit-slider-thumb {
+  background: #ffe08a;
+  border-color: #ffe08a;
+}
+
+.slider.is-warning::-moz-range-thumb {
+  background: #ffe08a;
+  border-color: #ffe08a;
+}
+
+.slider.is-danger::-webkit-slider-thumb {
+  background: #f14668;
+  border-color: #f14668;
+}
+
+.slider.is-danger::-moz-range-thumb {
+  background: #f14668;
+  border-color: #f14668;
 }
 
 .slider-ticks {

@@ -39,15 +39,17 @@ import { computed, provide, ref, watch, nextTick } from 'vue'
  * ```
  */
 
+import type { TabsSize, TabsPosition, TabsType } from './types'
+
 interface Props {
   /** The active tab value (v-model) */
   modelValue?: string | number
   /** Position: 'left' (default), 'centered', 'right' */
-  position?: 'left' | 'centered' | 'right'
+  position?: TabsPosition
   /** Size: 'small', 'normal', 'medium', 'large' */
-  size?: 'small' | 'normal' | 'medium' | 'large'
+  size?: TabsSize
   /** Type: 'default', 'boxed', 'toggle', 'toggle-rounded' */
-  type?: 'default' | 'boxed' | 'toggle' | 'toggle-rounded'
+  type?: TabsType
   /** Make tabs take full width */
   expanded?: boolean
 }

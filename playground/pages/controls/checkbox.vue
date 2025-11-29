@@ -41,52 +41,17 @@
       </t-demo-box>
 
       <t-demo-box label="Variants">
-        <t-field>
-          <t-checkbox v-model="variantPrimary" variant="primary">
-            Primary
-          </t-checkbox>
-        </t-field>
-        <t-field>
-          <t-checkbox v-model="variantInfo" variant="info">
-            Info
-          </t-checkbox>
-        </t-field>
-        <t-field>
-          <t-checkbox v-model="variantSuccess" variant="success">
-            Success
-          </t-checkbox>
-        </t-field>
-        <t-field>
-          <t-checkbox v-model="variantWarning" variant="warning">
-            Warning
-          </t-checkbox>
-        </t-field>
-        <t-field>
-          <t-checkbox v-model="variantDanger" variant="danger">
-            Danger
+        <t-field v-for="variant in variants" :key="variant">
+          <t-checkbox v-model="variantValues[variant]" :variant="variant">
+            {{ capitalize(variant) }}
           </t-checkbox>
         </t-field>
       </t-demo-box>
 
       <t-demo-box label="Sizes">
-        <t-field>
-          <t-checkbox v-model="sizeSmall" size="small">
-            Small checkbox
-          </t-checkbox>
-        </t-field>
-        <t-field>
-          <t-checkbox v-model="sizeNormal">
-            Normal checkbox
-          </t-checkbox>
-        </t-field>
-        <t-field>
-          <t-checkbox v-model="sizeMedium" size="medium">
-            Medium checkbox
-          </t-checkbox>
-        </t-field>
-        <t-field>
-          <t-checkbox v-model="sizeLarge" size="large">
-            Large checkbox
+        <t-field v-for="size in sizes" :key="size">
+          <t-checkbox v-model="sizeValues[size]" :size="size">
+            {{ capitalize(size) }} checkbox
           </t-checkbox>
         </t-field>
       </t-demo-box>
@@ -201,23 +166,34 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, reactive } from 'vue'
+import { CheckboxVariants, CheckboxSizes } from '../../../src/runtime/controls/types'
+
+const variants = CheckboxVariants
+const sizes = CheckboxSizes
+
+const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 
 const basic = ref(false)
 const option1 = ref(false)
 const option2 = ref(true)
 const option3 = ref(false)
 
-const variantPrimary = ref(true)
-const variantInfo = ref(true)
-const variantSuccess = ref(true)
-const variantWarning = ref(true)
-const variantDanger = ref(true)
+const variantValues = reactive<Record<string, boolean>>({
+  primary: true,
+  link: true,
+  info: true,
+  success: true,
+  warning: true,
+  danger: true
+})
 
-const sizeSmall = ref(true)
-const sizeNormal = ref(true)
-const sizeMedium = ref(true)
-const sizeLarge = ref(true)
+const sizeValues = reactive<Record<string, boolean>>({
+  small: true,
+  normal: true,
+  medium: true,
+  large: true
+})
 
 const stateDisabled = ref(false)
 const stateDisabledChecked = ref(true)

@@ -18,6 +18,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { ButtonVariant, ButtonSize } from './types'
 
 /**
  * Button component with Bulma styling.
@@ -49,13 +50,13 @@ interface Props {
   /**
    * Button color variant using Bulma color classes.
    */
-  variant?: 'primary' | 'link' | 'info' | 'success' | 'warning' | 'danger' | 'white' | 'light' | 'dark' | 'text' | 'ghost'
+  variant?: ButtonVariant
 
   /**
    * Button size using Bulma size classes.
    * @default undefined (normal size)
    */
-  size?: 'small' | 'normal' | 'medium' | 'large'
+  size?: ButtonSize
 
   /**
    * Show loading spinner and disable button.

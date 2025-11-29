@@ -27,37 +27,16 @@
 
       <t-demo-box label="Variants">
         <t-field>
-          <t-radio v-model="variantDemo" native-value="primary" variant="primary">
-            Primary
-          </t-radio>
-          <t-radio v-model="variantDemo" native-value="info" variant="info">
-            Info
-          </t-radio>
-          <t-radio v-model="variantDemo" native-value="success" variant="success">
-            Success
-          </t-radio>
-          <t-radio v-model="variantDemo" native-value="warning" variant="warning">
-            Warning
-          </t-radio>
-          <t-radio v-model="variantDemo" native-value="danger" variant="danger">
-            Danger
+          <t-radio v-for="variant in variants" :key="variant" v-model="variantDemo" :native-value="variant" :variant="variant">
+            {{ capitalize(variant) }}
           </t-radio>
         </t-field>
       </t-demo-box>
 
       <t-demo-box label="Sizes">
         <t-field>
-          <t-radio v-model="sizeDemo" native-value="small" size="small">
-            Small radio
-          </t-radio>
-          <t-radio v-model="sizeDemo" native-value="normal">
-            Normal radio
-          </t-radio>
-          <t-radio v-model="sizeDemo" native-value="medium" size="medium">
-            Medium radio
-          </t-radio>
-          <t-radio v-model="sizeDemo" native-value="large" size="large">
-            Large radio
+          <t-radio v-for="size in sizes" :key="size" v-model="sizeDemo" :native-value="size" :size="size">
+            {{ capitalize(size) }} radio
           </t-radio>
         </t-field>
       </t-demo-box>
@@ -179,6 +158,12 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { RadioVariants, RadioSizes } from '../../../src/runtime/controls/types'
+
+const variants = RadioVariants
+const sizes = RadioSizes
+
+const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 
 const basic = ref('option2')
 const variantDemo = ref('success')

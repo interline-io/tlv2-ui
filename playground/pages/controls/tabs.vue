@@ -35,32 +35,18 @@
         </p>
       </t-demo-box>
 
-      <!-- Boxed Style -->
-      <t-demo-box label="Boxed Style">
-        <t-tabs v-model="boxedTab" type="boxed">
-          <t-tab-item label="Pictures" value="pictures" />
-          <t-tab-item label="Music" value="music" />
-          <t-tab-item label="Videos" value="videos" />
-          <t-tab-item label="Documents" value="documents" />
-        </t-tabs>
-      </t-demo-box>
-
-      <!-- Toggle Style -->
-      <t-demo-box label="Toggle Style">
-        <t-tabs v-model="toggleTab" type="toggle">
-          <t-tab-item label="Option A" value="a" />
-          <t-tab-item label="Option B" value="b" />
-          <t-tab-item label="Option C" value="c" />
-        </t-tabs>
-      </t-demo-box>
-
-      <!-- Toggle Rounded -->
-      <t-demo-box label="Toggle Rounded">
-        <t-tabs v-model="roundedTab" type="toggle-rounded">
-          <t-tab-item label="One" value="1" />
-          <t-tab-item label="Two" value="2" />
-          <t-tab-item label="Three" value="3" />
-        </t-tabs>
+      <!-- Types -->
+      <t-demo-box label="Types">
+        <div v-for="tabsType in tabsTypes" :key="tabsType" class="mb-4">
+          <h3 class="subtitle is-5">
+            {{ formatType(tabsType) }}
+          </h3>
+          <t-tabs v-model="typeValues[tabsType]" :type="tabsType">
+            <t-tab-item label="Home" value="1" />
+            <t-tab-item label="Profile" value="2" />
+            <t-tab-item label="Settings" value="3" />
+          </t-tabs>
+        </div>
       </t-demo-box>
 
       <!-- With Icons -->
@@ -75,59 +61,29 @@
 
       <!-- Sizes -->
       <t-demo-box label="Sizes">
-        <h3 class="subtitle is-5">
-          Small
-        </h3>
-        <t-tabs v-model="sizeSmall" size="small">
-          <t-tab-item label="Tab 1" value="1" />
-          <t-tab-item label="Tab 2" value="2" />
-        </t-tabs>
-
-        <h3 class="subtitle is-5 mt-4">
-          Medium
-        </h3>
-        <t-tabs v-model="sizeMedium" size="medium">
-          <t-tab-item label="Tab 1" value="1" />
-          <t-tab-item label="Tab 2" value="2" />
-        </t-tabs>
-
-        <h3 class="subtitle is-5 mt-4">
-          Large
-        </h3>
-        <t-tabs v-model="sizeLarge" size="large">
-          <t-tab-item label="Tab 1" value="1" />
-          <t-tab-item label="Tab 2" value="2" />
-        </t-tabs>
+        <div v-for="tabsSize in sizes" :key="tabsSize" class="mb-4">
+          <h3 class="subtitle is-5">
+            {{ capitalize(tabsSize) }}
+          </h3>
+          <t-tabs v-model="sizeValues[tabsSize]" :size="tabsSize">
+            <t-tab-item label="Tab 1" value="1" />
+            <t-tab-item label="Tab 2" value="2" />
+          </t-tabs>
+        </div>
       </t-demo-box>
 
       <!-- Alignment -->
       <t-demo-box label="Alignment">
-        <h3 class="subtitle is-5">
-          Left-aligned
-        </h3>
-        <t-tabs v-model="alignLeft" position="left">
-          <t-tab-item label="One" value="1" />
-          <t-tab-item label="Two" value="2" />
-          <t-tab-item label="Three" value="3" />
-        </t-tabs>
-
-        <h3 class="subtitle is-5 mt-4">
-          Centered
-        </h3>
-        <t-tabs v-model="alignCenter" position="centered">
-          <t-tab-item label="One" value="1" />
-          <t-tab-item label="Two" value="2" />
-          <t-tab-item label="Three" value="3" />
-        </t-tabs>
-
-        <h3 class="subtitle is-5 mt-4">
-          Right-aligned
-        </h3>
-        <t-tabs v-model="alignRight" position="right">
-          <t-tab-item label="One" value="1" />
-          <t-tab-item label="Two" value="2" />
-          <t-tab-item label="Three" value="3" />
-        </t-tabs>
+        <div v-for="position in positions" :key="position" class="mb-4">
+          <h3 class="subtitle is-5">
+            {{ capitalize(position) }}{{ position === 'left' ? '-aligned' : position === 'right' ? '-aligned' : '' }}
+          </h3>
+          <t-tabs v-model="positionValues[position]" :position="position">
+            <t-tab-item label="One" value="1" />
+            <t-tab-item label="Two" value="2" />
+            <t-tab-item label="Three" value="3" />
+          </t-tabs>
+        </div>
       </t-demo-box>
 
       <!-- Full Width -->
@@ -286,21 +242,37 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
+import { TabsSizes, TabsPositions, TabsTypes } from '../../../src/runtime/controls/types'
+
+const sizes = TabsSizes
+const positions = TabsPositions
+const tabsTypes = TabsTypes
+
+const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
+const formatType = (tabsType: string) => {
+  if (tabsType === 'toggle-rounded') return 'Toggle Rounded'
+  return capitalize(tabsType)
+}
 
 const basicTab = ref('home')
-const boxedTab = ref('pictures')
-const toggleTab = ref('b')
-const roundedTab = ref('2')
 const iconTab = ref('dashboard')
 
-const sizeSmall = ref('1')
-const sizeMedium = ref('1')
-const sizeLarge = ref('1')
+const sizeValues = reactive<Record<string, string>>({})
+for (const tabsSize of sizes) {
+  sizeValues[tabsSize] = '1'
+}
 
-const alignLeft = ref('2')
-const alignCenter = ref('2')
-const alignRight = ref('2')
+const positionValues = reactive<Record<string, string>>({})
+for (const position of positions) {
+  positionValues[position] = '2'
+}
+
+const typeValues = reactive<Record<string, string>>({})
+for (const tabsType of tabsTypes) {
+  typeValues[tabsType] = '1'
+}
+
 const fullWidth = ref('2')
 
 const settingsTab = ref('account')

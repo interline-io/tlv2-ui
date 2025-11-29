@@ -13,63 +13,24 @@
           <t-button>
             Default
           </t-button>
-          <t-button variant="primary">
-            Primary
-          </t-button>
-          <t-button variant="info">
-            Info
-          </t-button>
-          <t-button variant="success">
-            Success
-          </t-button>
-          <t-button variant="warning">
-            Warning
-          </t-button>
-          <t-button variant="danger">
-            Danger
-          </t-button>
-          <t-button variant="light">
-            Light
-          </t-button>
-          <t-button variant="dark">
-            Dark
+          <t-button v-for="variant in variants" :key="variant" :variant="variant">
+            {{ capitalize(variant) }}
           </t-button>
         </div>
       </t-demo-box>
 
       <t-demo-box label="Sizes">
         <div class="buttons">
-          <t-button size="small">
-            Small
-          </t-button>
-          <t-button>
-            Normal
-          </t-button>
-          <t-button size="medium">
-            Medium
-          </t-button>
-          <t-button size="large">
-            Large
+          <t-button v-for="size in sizes" :key="size" :size="size">
+            {{ capitalize(size) }}
           </t-button>
         </div>
       </t-demo-box>
 
       <t-demo-box label="Outlined">
         <div class="buttons">
-          <t-button variant="primary" outlined>
-            Primary
-          </t-button>
-          <t-button variant="info" outlined>
-            Info
-          </t-button>
-          <t-button variant="success" outlined>
-            Success
-          </t-button>
-          <t-button variant="warning" outlined>
-            Warning
-          </t-button>
-          <t-button variant="danger" outlined>
-            Danger
+          <t-button v-for="variant in outlinedVariants" :key="variant" :variant="variant" outlined>
+            {{ capitalize(variant) }}
           </t-button>
         </div>
       </t-demo-box>
@@ -173,6 +134,13 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { ButtonVariants, ButtonSizes } from '../../../src/runtime/controls/types'
+
+const variants = ButtonVariants
+const sizes = ButtonSizes
+const outlinedVariants = ButtonVariants
+
+const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 
 const clickCount = ref(0)
 

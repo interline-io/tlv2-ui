@@ -18,6 +18,13 @@
         </p>
       </t-demo-box>
 
+      <!-- Variants -->
+      <t-demo-box label="Variants">
+        <t-field v-for="variant in variants" :key="variant" :label="capitalize(variant)">
+          <t-slider v-model="variantValues[variant]" :min="0" :max="100" :variant="variant" />
+        </t-field>
+      </t-demo-box>
+
       <!-- Slider with Step -->
       <t-demo-box label="Slider with Step">
         <t-field label="Rating (step of 0.5)">
@@ -62,17 +69,8 @@
 
       <!-- Slider Sizes -->
       <t-demo-box label="Slider Sizes">
-        <t-field label="Small">
-          <t-slider v-model="small" :min="0" :max="100" size="small" />
-        </t-field>
-        <t-field label="Normal">
-          <t-slider v-model="normal" :min="0" :max="100" />
-        </t-field>
-        <t-field label="Medium">
-          <t-slider v-model="medium" :min="0" :max="100" size="medium" />
-        </t-field>
-        <t-field label="Large">
-          <t-slider v-model="large" :min="0" :max="100" size="large" />
+        <t-field v-for="sliderSize in sizes" :key="sliderSize" :label="capitalize(sliderSize)">
+          <t-slider v-model="sizeValues[sliderSize]" :min="0" :max="100" :size="sliderSize" />
         </t-field>
       </t-demo-box>
 
@@ -119,15 +117,28 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
+import { SliderSizes, SliderVariants } from '../../../src/runtime/controls/types'
+
+const sizes = SliderSizes
+const variants = SliderVariants
+
+const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 
 const volume = ref(50)
 const rating = ref(3.5)
 const time = ref(30)
-const small = ref(25)
-const normal = ref(50)
-const medium = ref(75)
-const large = ref(100)
+
+const sizeValues = reactive<Record<string, number>>({})
+for (const sliderSize of sizes) {
+  sizeValues[sliderSize] = sliderSize === 'small' ? 25 : sliderSize === 'normal' ? 50 : sliderSize === 'medium' ? 75 : 100
+}
+
+const variantValues = reactive<Record<string, number>>({})
+for (const variant of variants) {
+  variantValues[variant] = 50
+}
+
 const disabled = ref(60)
 const brightness = ref(80)
 

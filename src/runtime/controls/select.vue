@@ -22,6 +22,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch, onMounted, nextTick } from 'vue'
+import type { SelectVariant, SelectSize } from './types'
 
 /**
  * Select dropdown component with Bulma styling.
@@ -46,12 +47,12 @@ interface Props {
    * Select size variant.
    * @default undefined (normal size)
    */
-  size?: 'small' | 'normal' | 'medium' | 'large'
+  size?: SelectSize
 
   /**
    * Select color variant.
    */
-  variant?: 'primary' | 'link' | 'info' | 'success' | 'warning' | 'danger'
+  variant?: SelectVariant
 
   /**
    * Disable the select.

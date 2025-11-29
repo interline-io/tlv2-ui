@@ -62,8 +62,8 @@
       </t-demo-box>
 
       <t-demo-box label="Variants">
-        <t-field label="Primary:">
-          <t-select v-model="variantPrimary" variant="primary">
+        <t-field v-for="variant in variants" :key="variant" :label="capitalize(variant) + ':'">
+          <t-select v-model="variantValues[variant]" :variant="variant">
             <option value="1">
               Option 1
             </option>
@@ -75,74 +75,13 @@
             </option>
           </t-select>
         </t-field>
-        <t-field label="Info:">
-          <t-select v-model="variantInfo" variant="info">
-            <option value="1">
-              Option 1
-            </option>
-            <option value="2">
-              Option 2
-            </option>
-          </t-select>
-        </t-field>
-        <t-field label="Success:">
-          <t-select v-model="variantSuccess" variant="success">
-            <option value="1">
-              Option 1
-            </option>
-            <option value="2">
-              Option 2
-            </option>
-          </t-select>
-        </t-field>
-        <t-field label="Warning:">
-          <t-select v-model="variantWarning" variant="warning">
-            <option value="1">
-              Option 1
-            </option>
-            <option value="2">
-              Option 2
-            </option>
-          </t-select>
-        </t-field>
-        <t-field label="Danger:">
-          <t-select v-model="variantDanger" variant="danger">
-            <option value="1">
-              Option 1
-            </option>
-            <option value="2">
-              Option 2
-            </option>
-          </t-select>
-        </t-field>
       </t-demo-box>
 
       <t-demo-box label="Sizes">
-        <t-field label="Small:">
-          <t-select v-model="sizeSmall" size="small">
+        <t-field v-for="size in sizes" :key="size" :label="capitalize(size) + ':'">
+          <t-select v-model="sizeValues[size]" :size="size">
             <option value="1">
-              Small select
-            </option>
-          </t-select>
-        </t-field>
-        <t-field label="Normal:">
-          <t-select v-model="sizeNormal">
-            <option value="1">
-              Normal select
-            </option>
-          </t-select>
-        </t-field>
-        <t-field label="Medium:">
-          <t-select v-model="sizeMedium" size="medium">
-            <option value="1">
-              Medium select
-            </option>
-          </t-select>
-        </t-field>
-        <t-field label="Large:">
-          <t-select v-model="sizeLarge" size="large">
-            <option value="1">
-              Large select
+              {{ capitalize(size) }} select
             </option>
           </t-select>
         </t-field>
@@ -322,21 +261,32 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
+import { SelectVariants, SelectSizes } from '../../../src/runtime/controls/types'
+
+const variants = SelectVariants
+const sizes = SelectSizes
+
+const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 
 const basic = ref('us')
 const multiple = ref(['js', 'ts'])
 
-const variantPrimary = ref('1')
-const variantInfo = ref('1')
-const variantSuccess = ref('1')
-const variantWarning = ref('1')
-const variantDanger = ref('1')
+const variantValues = reactive<Record<string, string>>({
+  primary: '1',
+  link: '1',
+  info: '1',
+  success: '1',
+  warning: '1',
+  danger: '1'
+})
 
-const sizeSmall = ref('1')
-const sizeNormal = ref('1')
-const sizeMedium = ref('1')
-const sizeLarge = ref('1')
+const sizeValues = reactive<Record<string, string>>({
+  small: '1',
+  normal: '1',
+  medium: '1',
+  large: '1'
+})
 
 const stateDisabled = ref('1')
 const stateLoading = ref('1')

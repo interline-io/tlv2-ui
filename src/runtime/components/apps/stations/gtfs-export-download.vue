@@ -9,7 +9,6 @@
         title="Advanced Transformations"
         :collapsible="true"
         :collapsed="true"
-        no-icon
       >
         <!-- <div class="field">
           <label class="label">Additional Feed Versions to Merge</label>

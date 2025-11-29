@@ -14,6 +14,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { RadioVariant, RadioSize } from './types'
 
 /**
  * Radio button component using native HTML radio input with Bulma styling.
@@ -35,9 +36,9 @@ interface Props<T = string | number | boolean | null> {
   /** Whether the radio button is disabled */
   disabled?: boolean
   /** Color variant for the radio button */
-  variant?: 'primary' | 'link' | 'info' | 'success' | 'warning' | 'danger'
+  variant?: RadioVariant
   /** Size of the radio button */
-  size?: 'small' | 'normal' | 'medium' | 'large'
+  size?: RadioSize
 }
 
 const props = withDefaults(defineProps<Props>(), {

@@ -7,6 +7,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { NotificationVariant } from './types'
 
 /**
  * Notification/alert message component using Bulma styling.
@@ -25,7 +26,7 @@ interface Props {
    * Notification color variant using Bulma color classes.
    * @default 'info'
    */
-  variant?: 'primary' | 'link' | 'info' | 'success' | 'warning' | 'danger' | 'white' | 'light' | 'dark'
+  variant?: NotificationVariant
 
   /**
    * Show close button and allow user to dismiss.

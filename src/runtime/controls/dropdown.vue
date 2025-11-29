@@ -114,7 +114,7 @@ interface Props {
   /**
    * Button variant for default trigger
    */
-  triggerVariant?: 'primary' | 'link' | 'info' | 'success' | 'warning' | 'danger' | 'white' | 'light' | 'dark' | 'text' | 'ghost'
+  triggerVariant?: import('./types').DropdownTriggerVariant
 
   /**
    * Open dropdown on hover instead of click

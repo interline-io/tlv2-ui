@@ -8,11 +8,7 @@
         Sortable table component with column configuration
       </p>
 
-      <!-- Basic Table -->
-      <h2 class="title is-3">
-        Basic Table
-      </h2>
-      <div class="box">
+      <t-demo-box label="Basic Table">
         <t-table :data="basicData">
           <template #columns>
             <t-table-column field="name" label="Name" />
@@ -25,13 +21,9 @@
             <td>{{ row.city }}</td>
           </template>
         </t-table>
-      </div>
+      </t-demo-box>
 
-      <!-- Sortable Table -->
-      <h2 class="title is-3">
-        Sortable Table
-      </h2>
-      <div class="box">
+      <t-demo-box label="Sortable Columns">
         <t-table :data="sortableData" hoverable>
           <template #columns>
             <t-table-column field="product" label="Product" sortable />
@@ -50,16 +42,9 @@
             <td>{{ row.category }}</td>
           </template>
         </t-table>
-      </div>
+      </t-demo-box>
 
-      <!-- Table with Variants -->
-      <h2 class="title is-3">
-        Table Variants
-      </h2>
-      <div class="box">
-        <h3 class="subtitle is-5">
-          Striped
-        </h3>
+      <t-demo-box label="Striped">
         <t-table :data="basicData" striped>
           <template #columns>
             <t-table-column field="name" label="Name" />
@@ -72,10 +57,9 @@
             <td>{{ row.city }}</td>
           </template>
         </t-table>
+      </t-demo-box>
 
-        <h3 class="subtitle is-5 mt-4">
-          Bordered
-        </h3>
+      <t-demo-box label="Bordered">
         <t-table :data="basicData" bordered>
           <template #columns>
             <t-table-column field="name" label="Name" />
@@ -88,10 +72,9 @@
             <td>{{ row.city }}</td>
           </template>
         </t-table>
+      </t-demo-box>
 
-        <h3 class="subtitle is-5 mt-4">
-          Narrowed
-        </h3>
+      <t-demo-box label="Narrowed">
         <t-table :data="basicData" narrowed>
           <template #columns>
             <t-table-column field="name" label="Name" />
@@ -104,10 +87,9 @@
             <td>{{ row.city }}</td>
           </template>
         </t-table>
+      </t-demo-box>
 
-        <h3 class="subtitle is-5 mt-4">
-          Hoverable + Striped + Bordered
-        </h3>
+      <t-demo-box label="Combined Modifiers">
         <t-table :data="basicData" hoverable striped bordered>
           <template #columns>
             <t-table-column field="name" label="Name" />
@@ -120,13 +102,9 @@
             <td>{{ row.city }}</td>
           </template>
         </t-table>
-      </div>
+      </t-demo-box>
 
-      <!-- Table with Nested Fields -->
-      <h2 class="title is-3">
-        Nested Field Sorting
-      </h2>
-      <div class="box">
+      <t-demo-box label="Nested Field Sorting">
         <t-table :data="nestedData" hoverable striped>
           <template #columns>
             <t-table-column field="name" label="Name" sortable />
@@ -141,13 +119,9 @@
             <td>{{ row.contact.email }}</td>
           </template>
         </t-table>
-      </div>
+      </t-demo-box>
 
-      <!-- Empty State -->
-      <h2 class="title is-3">
-        Empty State
-      </h2>
-      <div class="box">
+      <t-demo-box label="Empty State">
         <t-table :data="[]" hoverable>
           <template #columns>
             <t-table-column field="name" label="Name" />
@@ -166,28 +140,7 @@
             </div>
           </template>
         </t-table>
-      </div>
-
-      <!-- Full Width Table -->
-      <h2 class="title is-3">
-        Full Width Table
-      </h2>
-      <div class="box">
-        <t-table :data="basicData" fullwidth hoverable striped>
-          <template #columns>
-            <t-table-column field="name" label="Name" sortable />
-            <t-table-column field="age" label="Age" sortable numeric />
-            <t-table-column field="city" label="City" sortable />
-          </template>
-          <template #default="{ row }">
-            <td>{{ row.name }}</td>
-            <td class="has-text-right">
-              {{ row.age }}
-            </td>
-            <td>{{ row.city }}</td>
-          </template>
-        </t-table>
-      </div>
+      </t-demo-box>
     </section>
   </div>
 </template>

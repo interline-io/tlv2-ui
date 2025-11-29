@@ -1,18 +1,102 @@
 <template>
-  <div class="tag message is-small">
+  <a
+    v-if="isDelete"
+    class="tag is-delete"
+    @click="handleClick"
+  />
+  <span
+    v-else
+    class="tag"
+    :class="tagClasses"
+    @click="handleClick"
+  >
     <slot />
-    <t-icon v-if="closable" class="ml-1" size="small" icon="close" @click="$emit('close')" />
-  </div>
+    <button
+      v-if="closable"
+      type="button"
+      class="delete is-small"
+      @click.stop="handleClose"
+    />
+  </span>
 </template>
 
 <script setup lang="ts">
-withDefaults(defineProps<{
+import { computed } from 'vue'
+import type { TagVariant, TagSize } from './types'
+
+interface Props {
+  /**
+   * Color variant of the tag.
+   */
+  variant?: TagVariant
+
+  /**
+   * Size of the tag.
+   */
+  size?: TagSize
+
+  /**
+   * Whether the tag has rounded corners.
+   */
+  rounded?: boolean
+
+  /**
+   * Whether the tag uses light color variant.
+   */
+  light?: boolean
+
+  /**
+   * Whether the tag has a close button.
+   */
   closable?: boolean
-}>(), {
-  closable: false
+
+  /**
+   * Whether the tag is a delete button (renders as pure delete X).
+   */
+  isDelete?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  variant: undefined,
+  size: undefined,
+  rounded: false,
+  light: false,
+  closable: false,
+  isDelete: false
 })
 
-defineEmits<{
+const emit = defineEmits<{
   close: []
+  click: []
 }>()
+
+const handleClick = () => emit('click')
+const handleClose = () => emit('close')
+
+const tagClasses = computed(() => {
+  const classes: string[] = []
+
+  if (props.isDelete) {
+    classes.push('is-delete')
+    return classes
+  }
+
+  if (props.variant) {
+    classes.push(`is-${props.variant}`)
+  }
+
+  if (props.size) {
+    classes.push(`is-${props.size}`)
+  }
+
+  if (props.rounded) {
+    classes.push('is-rounded')
+  }
+
+  if (props.light) {
+    classes.push('is-light')
+  }
+
+  return classes
+})
 </script>

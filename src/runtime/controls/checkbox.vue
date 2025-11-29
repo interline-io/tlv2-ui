@@ -13,6 +13,7 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted, computed } from 'vue'
+import type { CheckboxVariant, CheckboxSize } from './types'
 
 /**
  * Checkbox input component with v-model support.
@@ -57,12 +58,12 @@ interface Props {
   /**
    * Color variant for the checkbox.
    */
-  variant?: 'primary' | 'link' | 'info' | 'success' | 'warning' | 'danger'
+  variant?: CheckboxVariant
 
   /**
    * Size of the checkbox.
    */
-  size?: 'small' | 'normal' | 'medium' | 'large'
+  size?: CheckboxSize
 }
 
 const props = withDefaults(defineProps<Props>(), {

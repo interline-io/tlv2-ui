@@ -32,6 +32,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { InputVariant, InputSize } from './types'
 
 /**
  * Text input component with Bulma styling.
@@ -64,12 +65,12 @@ interface Props {
   /**
    * Input size variant.
    */
-  size?: 'small' | 'normal' | 'medium' | 'large'
+  size?: InputSize
 
   /**
    * Input color variant.
    */
-  variant?: 'primary' | 'link' | 'info' | 'success' | 'warning' | 'danger' | 'white' | 'light' | 'dark'
+  variant?: InputVariant
 
   /**
    * Disable the input.

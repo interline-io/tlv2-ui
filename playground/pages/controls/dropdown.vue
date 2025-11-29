@@ -25,6 +25,22 @@
         </t-dropdown>
       </t-demo-box>
 
+      <t-demo-box label="Trigger Variants">
+        <div class="buttons">
+          <t-dropdown v-for="variant in triggerVariants" :key="variant" :trigger-variant="variant" :trigger-label="capitalize(variant)">
+            <t-dropdown-item value="1">
+              Option 1
+            </t-dropdown-item>
+            <t-dropdown-item value="2">
+              Option 2
+            </t-dropdown-item>
+            <t-dropdown-item value="3">
+              Option 3
+            </t-dropdown-item>
+          </t-dropdown>
+        </div>
+      </t-demo-box>
+
       <t-demo-box label="Hoverable Dropdown">
         <p class="mb-3">
           Hover over the button to open the dropdown
@@ -263,6 +279,11 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { DropdownTriggerVariants } from '../../../src/runtime/controls/types'
+
+const triggerVariants = DropdownTriggerVariants
+
+const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 
 const selectedAction = ref('')
 const currentLanguage = ref('English')

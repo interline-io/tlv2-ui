@@ -79,12 +79,6 @@ interface Props {
   hoverable?: boolean
 
   /**
-   * Whether the table takes full width.
-   * @default false
-   */
-  fullwidth?: boolean
-
-  /**
    * Default sort field and direction [field, 'asc' | 'desc'].
    */
   defaultSort?: [string, 'asc' | 'desc']
@@ -96,7 +90,6 @@ const props = withDefaults(defineProps<Props>(), {
   striped: false,
   bordered: false,
   hoverable: false,
-  fullwidth: false,
   defaultSort: undefined
 })
 
@@ -125,9 +118,7 @@ const tableClasses = computed(() => {
     classes.push('is-hoverable')
   }
 
-  if (props.fullwidth) {
-    classes.push('is-fullwidth')
-  }
+  classes.push('is-fullwidth')
 
   return classes
 })
