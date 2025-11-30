@@ -27,19 +27,19 @@
       </t-demo-box>
 
       <t-demo-box label="Closable">
-        <t-notification variant="info" closable>
+        <t-notification variant="info" closeable>
           <strong>Closable notification.</strong> Click the X to dismiss.
         </t-notification>
       </t-demo-box>
 
       <t-demo-box label="Example: Closable Notifications" example>
-        <t-notification v-if="notifications.welcome" variant="info" closable @close="notifications.welcome = false">
+        <t-notification v-if="notifications.welcome" variant="info" closeable @close="notifications.welcome = false">
           <strong>Welcome!</strong> Thanks for joining our platform.
         </t-notification>
-        <t-notification v-if="notifications.update" variant="success" closable @close="notifications.update = false">
+        <t-notification v-if="notifications.update" variant="success" closeable @close="notifications.update = false">
           <strong>Updated!</strong> Your profile has been updated successfully.
         </t-notification>
-        <t-notification v-if="notifications.warning" variant="warning" closable @close="notifications.warning = false">
+        <t-notification v-if="notifications.warning" variant="warning" closeable @close="notifications.warning = false">
           <strong>Attention:</strong> Your trial period expires in 3 days.
         </t-notification>
         <t-button v-if="!allNotificationsVisible" @click="resetNotifications">
@@ -130,7 +130,7 @@
       <t-demo-box label="Example: Loading State" example>
         <t-notification variant="info">
           <div class="is-flex is-align-items-center">
-            <t-loading inline />
+            <t-loading />
             <span class="ml-3">Processing your request...</span>
           </div>
         </t-notification>

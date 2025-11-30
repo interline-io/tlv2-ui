@@ -129,7 +129,7 @@ for (const size of sizes) {
   sizeValues[size] = ''
 }
 
-const typeValues = reactive<Record<string, string | number>>({})
+const typeValues = reactive<Record<string, string>>({})
 for (const inputType of inputTypes) {
   typeValues[inputType] = ''
 }

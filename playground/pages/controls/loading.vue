@@ -23,7 +23,7 @@
         </h2>
         <div class="box">
           <p class="is-flex is-align-items-center">
-            <t-loading inline />
+            <t-loading />
             <span class="ml-3">Loading data...</span>
           </p>
         </div>
@@ -35,7 +35,7 @@
         <div class="box">
           <div class="is-flex is-align-items-center is-justify-content-space-around">
             <div class="has-text-centered">
-              <t-loading size="small" />
+              <t-loading />
               <p class="mt-2 is-size-7">
                 Small
               </p>
@@ -47,13 +47,13 @@
               </p>
             </div>
             <div class="has-text-centered">
-              <t-loading size="medium" />
+              <t-loading />
               <p class="mt-2 is-size-7">
                 Medium
               </p>
             </div>
             <div class="has-text-centered">
-              <t-loading size="large" />
+              <t-loading />
               <p class="mt-2 is-size-7">
                 Large
               </p>
@@ -126,7 +126,7 @@
           </t-button>
           <div v-if="dataLoading" class="mt-3">
             <div class="is-flex is-align-items-center">
-              <t-loading inline />
+              <t-loading />
               <span class="ml-3">Loading data...</span>
             </div>
           </div>
@@ -257,7 +257,7 @@
       <!-- Full Page Loading Overlay -->
       <div v-if="fullPageLoading" class="full-page-overlay">
         <div class="has-text-centered">
-          <t-loading size="large" />
+          <t-loading />
           <p class="mt-4 has-text-white has-text-weight-bold">
             Processing...
           </p>

@@ -14,11 +14,4 @@ export default defineNuxtConfig({
       }
     }
   },
-
-  tlv2: {
-    bulma: '',
-    useProxy: false,
-    loginGate: false,
-    requireLogin: false
-  },
 })

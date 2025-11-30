@@ -80,11 +80,7 @@ async function generateComponentTypes () {
 
   // Generate type declarations for controls (T prefix)
   const controlTypeDeclarations = controls.map((filePath) => {
-    const parsed = parse(filePath)
-    const name = parsed.name
-    // Remove .client or .server suffix
-    const cleanName = name.replace(/\.(client|server)$/, '')
-    const componentName = 'T' + toPascalCase(cleanName)
+    const componentName = getComponentName(filePath, 'T', true)
     const importPath = `./controls/${filePath.replace(/\\/g, '/')}`
     return `    ${componentName}: typeof import('${importPath}')['default']`
   }).join('\n')

@@ -14,11 +14,30 @@
 </template>
 
 <script setup lang="ts">
-// Props
-withDefaults(defineProps<{
+/**
+ * Search bar component wrapping t-input with search-specific styling.
+ * Automatically shows clear button when populated and emits null when cleared.
+ *
+ * @component t-search-bar
+ * @example
+ * <t-search-bar v-model="searchQuery" placeholder="Search..." />
+ */
+
+interface Props {
+  /**
+   * Search query value (v-model).
+   * Can be null when cleared.
+   */
   modelValue?: string | null
+
+  /**
+   * Placeholder text.
+   * @default 'Search'
+   */
   placeholder?: string
-}>(), {
+}
+
+const props = withDefaults(defineProps<Props>(), {
   modelValue: '',
   placeholder: 'Search'
 })

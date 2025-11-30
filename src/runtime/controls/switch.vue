@@ -31,19 +31,19 @@ interface Props {
   /**
    * Switch state (v-model).
    */
-  modelValue?: boolean | number | string
+  modelValue?: boolean
 
   /**
    * Value when switch is on.
    * @default true
    */
-  trueValue?: boolean | number | string
+  trueValue?: boolean
 
   /**
    * Value when switch is off.
    * @default false
    */
-  falseValue?: boolean | number | string
+  falseValue?: boolean
 
   /**
    * Disable switch interaction.
@@ -89,7 +89,7 @@ const props = withDefaults(defineProps<Props>(), {
  * @event update:modelValue
  */
 const emit = defineEmits<{
-  'update:modelValue': [value: boolean | number | string]
+  'update:modelValue': [value: boolean]
 }>()
 
 const isChecked = computed(() => {

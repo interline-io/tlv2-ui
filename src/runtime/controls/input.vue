@@ -48,8 +48,11 @@ import type { InputVariant, InputSize } from './types'
 interface Props {
   /**
    * Input value (v-model).
+   * Always emits string values, even for type="number".
+   * Empty string represents empty input (never null).
+   * Use native input validation and convert to number in your handler if needed.
    */
-  modelValue?: string | number | null
+  modelValue?: string
 
   /**
    * Input type attribute.
@@ -167,7 +170,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  'update:modelValue': [value: string | number]
+  'update:modelValue': [value: string]
   'icon-right-click': [event: MouseEvent]
 }>()
 
@@ -217,14 +220,7 @@ const inputClasses = computed(() => {
 
 function handleInput (event: Event) {
   const target = event.target as HTMLInputElement
-  let value: string | number = target.value
-
-  // Convert to number if type is number
-  if (props.type === 'number' && value !== '') {
-    value = Number.parseFloat(value)
-  }
-
-  emit('update:modelValue', value)
+  emit('update:modelValue', target.value)
 }
 
 function handleIconRightClick (event: MouseEvent) {

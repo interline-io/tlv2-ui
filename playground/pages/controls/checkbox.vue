@@ -78,29 +78,29 @@
             v-model="selectAll"
             :indeterminate="indeterminate"
             variant="primary"
-            @change="handleSelectAll"
+            @update:model-value="handleSelectAll"
           >
             <strong>Select All</strong>
           </t-checkbox>
         </t-field>
         <div class="ml-5 mt-3">
           <t-field>
-            <t-checkbox v-model="items.item1" @change="updateSelectAll">
+            <t-checkbox v-model="items.item1" @update:model-value="updateSelectAll">
               Item 1
             </t-checkbox>
           </t-field>
           <t-field>
-            <t-checkbox v-model="items.item2" @change="updateSelectAll">
+            <t-checkbox v-model="items.item2" @update:model-value="updateSelectAll">
               Item 2
             </t-checkbox>
           </t-field>
           <t-field>
-            <t-checkbox v-model="items.item3" @change="updateSelectAll">
+            <t-checkbox v-model="items.item3" @update:model-value="updateSelectAll">
               Item 3
             </t-checkbox>
           </t-field>
           <t-field>
-            <t-checkbox v-model="items.item4" @change="updateSelectAll">
+            <t-checkbox v-model="items.item4" @update:model-value="updateSelectAll">
               Item 4
             </t-checkbox>
           </t-field>
@@ -135,7 +135,7 @@
           </t-checkbox>
         </t-field>
         <p class="has-text-grey mt-3">
-          Selected: {{ fruits.length > 0 ? fruits.join(', ') : 'None' }}
+          Selected: {{ Array.isArray(fruits) && fruits.length > 0 ? fruits.join(', ') : 'None' }}
         </p>
       </t-demo-box>
 
@@ -174,12 +174,12 @@ const sizes = CheckboxSizes
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 
-const basic = ref(false)
-const option1 = ref(false)
-const option2 = ref(true)
-const option3 = ref(false)
+const basic = ref<boolean | any[]>(false)
+const option1 = ref<boolean | any[]>(false)
+const option2 = ref<boolean | any[]>(true)
+const option3 = ref<boolean | any[]>(false)
 
-const variantValues = reactive<Record<string, boolean>>({
+const variantValues = reactive<Record<string, boolean | any[]>>({
   primary: true,
   link: true,
   info: true,
@@ -188,24 +188,24 @@ const variantValues = reactive<Record<string, boolean>>({
   danger: true
 })
 
-const sizeValues = reactive<Record<string, boolean>>({
+const sizeValues = reactive<Record<string, boolean | any[]>>({
   small: true,
   normal: true,
   medium: true,
   large: true
 })
 
-const stateDisabled = ref(false)
-const stateDisabledChecked = ref(true)
+const stateDisabled = ref<boolean | any[]>(false)
+const stateDisabledChecked = ref<boolean | any[]>(true)
 
-const fruits = ref(['banana', 'orange'])
-const option1Content = ref(true)
-const option2Content = ref(false)
+const fruits = ref<boolean | string[]>(['banana', 'orange'])
+const option1Content = ref<boolean | any[]>(true)
+const option2Content = ref<boolean | any[]>(false)
 
 // Indeterminate state demo
-const selectAll = ref(false)
+const selectAll = ref<boolean | any[]>(false)
 const indeterminate = ref(true)
-const items = ref({
+const items = ref<Record<string, boolean | any[]>>({
   item1: true,
   item2: false,
   item3: true,

@@ -5,7 +5,7 @@
       type="range"
       class="slider"
       :class="sliderClasses"
-      :value="modelValue"
+      :value="currentValue"
       :min="min"
       :max="max"
       :step="step"
@@ -18,11 +18,11 @@
       @touchend="showTooltip = false"
     >
     <div
-      v-if="tooltip && showTooltip && modelValue !== null"
+      v-if="tooltip && showTooltip"
       class="slider-tooltip"
       :style="tooltipStyle"
     >
-      {{ modelValue }}
+      {{ currentValue }}
     </div>
     <div v-if="hasTicks" class="slider-ticks">
       <slot />
@@ -38,7 +38,7 @@ interface Props {
   /**
    * The v-model value of the slider.
    */
-  modelValue?: number | null
+  modelValue?: number
 
   /**
    * Minimum value.
@@ -84,7 +84,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  modelValue: null,
+  modelValue: undefined,
   min: 0,
   max: 100,
   step: 1,
@@ -95,19 +95,22 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  'update:modelValue': [value: number | null]
+  'update:modelValue': [value: number]
 }>()
 
 const slots = useSlots()
 const sliderRef = ref<HTMLInputElement>()
 const showTooltip = ref(false)
 
+// Compute the actual value, defaulting to midpoint if undefined
+const currentValue = computed(() => {
+  return props.modelValue ?? ((props.max + props.min) / 2)
+})
+
 const hasTicks = computed(() => !!slots.default)
 
 const tooltipStyle = computed(() => {
-  if (!props.modelValue || props.modelValue === null) return {}
-
-  const percentage = ((props.modelValue - props.min) / (props.max - props.min)) * 100
+  const percentage = ((currentValue.value - props.min) / (props.max - props.min)) * 100
   return {
     left: `${percentage}%`
   }
@@ -129,7 +132,7 @@ const sliderClasses = computed(() => {
 
 function handleInput (event: Event) {
   const target = event.target as HTMLInputElement
-  const value = target.value === '' ? null : Number.parseFloat(target.value)
+  const value = Number.parseFloat(target.value)
   emit('update:modelValue', value)
 }
 

@@ -34,7 +34,7 @@
       </t-demo-box>
 
       <t-demo-box label="With Icons">
-        <t-msg variant="info" has-icon>
+        <t-msg variant="info" show-icon>
           <template #header>
             <div class="is-flex is-align-items-center">
               <t-icon icon="information" class="mr-2" />

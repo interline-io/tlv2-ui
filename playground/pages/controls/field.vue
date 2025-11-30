@@ -46,10 +46,10 @@
 
       <!-- Required Field -->
       <t-demo-box label="Required Field">
-        <t-field label="Full Name:" required>
+        <t-field label="Full Name:">
           <t-input v-model="fullName" placeholder="John Doe" />
         </t-field>
-        <t-field label="Company:" required message="This information is required">
+        <t-field label="Company:" message="This information is required">
           <t-input v-model="company" placeholder="Acme Corp" />
         </t-field>
       </t-demo-box>
@@ -134,19 +134,19 @@
 
       <!-- Practical Form Example -->
       <t-demo-box label="Example: Registration Form" example>
-        <t-field label="Username:" required message="Choose a unique username">
+        <t-field label="Username:" message="Choose a unique username">
           <t-input v-model="regUsername" placeholder="username" />
         </t-field>
 
-        <t-field label="Email Address:" required>
+        <t-field label="Email Address:">
           <t-input v-model="regEmail" type="email" placeholder="you@example.com" />
         </t-field>
 
-        <t-field label="Password:" required message="Minimum 8 characters">
+        <t-field label="Password:" message="Minimum 8 characters">
           <t-input v-model="regPassword" type="password" placeholder="••••••••" />
         </t-field>
 
-        <t-field label="Confirm Password:" required>
+        <t-field label="Confirm Password:">
           <t-input
             v-model="regPasswordConfirm"
             type="password"
@@ -161,7 +161,7 @@
         </t-field>
 
         <t-field label="Country:">
-          <t-select v-model="regCountry" expanded>
+          <t-select v-model="regCountry" fullwidth>
             <option value="">
               Select a country
             </option>
@@ -202,7 +202,7 @@
 
       <!-- Stacked Fields -->
       <t-demo-box label="Example: Address Form" example>
-        <t-field label="Street Address:" required>
+        <t-field label="Street Address:">
           <t-input v-model="address.street" placeholder="123 Main St" />
         </t-field>
 
@@ -212,17 +212,17 @@
 
         <div class="columns">
           <div class="column">
-            <t-field label="City:" required>
+            <t-field label="City:">
               <t-input v-model="address.city" placeholder="New York" />
             </t-field>
           </div>
           <div class="column">
-            <t-field label="State:" required>
+            <t-field label="State:">
               <t-input v-model="address.state" placeholder="NY" />
             </t-field>
           </div>
           <div class="column">
-            <t-field label="ZIP Code:" required>
+            <t-field label="ZIP Code:">
               <t-input v-model="address.zip" placeholder="10001" />
             </t-field>
           </div>
@@ -265,8 +265,8 @@ const regUsername = ref('')
 const regEmail = ref('')
 const regPassword = ref('')
 const regPasswordConfirm = ref('')
-const regCountry = ref('')
-const regTerms = ref(false)
+const regCountry = ref<string | number | boolean | null | (string | number)[]>('')
+const regTerms = ref<boolean | any[]>(false)
 
 const address = ref({
   street: '',

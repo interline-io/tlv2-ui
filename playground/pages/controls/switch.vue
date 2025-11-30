@@ -193,7 +193,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, type Ref } from 'vue'
 import { SwitchVariants, SwitchSizes } from '../../../src/runtime/controls/types'
 
 const variants = SwitchVariants
@@ -201,7 +201,7 @@ const sizes = SwitchSizes
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 
-const basic = ref(true)
+const basic: Ref<boolean> = ref(true)
 
 const variantValues = reactive<Record<string, boolean>>({
   primary: true,
@@ -219,15 +219,22 @@ const sizeValues = reactive<Record<string, boolean>>({
   large: true
 })
 
-const disabledOff = ref(false)
-const disabledOn = ref(true)
+const disabledOff: Ref<boolean> = ref(false)
+const disabledOn: Ref<boolean> = ref(true)
 
-const content1 = ref(true)
-const content2 = ref(false)
+const content1: Ref<boolean> = ref(true)
+const content2: Ref<boolean> = ref(false)
 
-const rounded = ref(true)
+const rounded: Ref<boolean> = ref(true)
 
-const settings = ref({
+const settings = ref<{
+  emailNotifications: boolean
+  pushNotifications: boolean
+  smsNotifications: boolean
+  profilePublic: boolean
+  showEmail: boolean
+  allowMessages: boolean
+}>({
   emailNotifications: true,
   pushNotifications: false,
   smsNotifications: false,
@@ -236,13 +243,21 @@ const settings = ref({
   allowMessages: true
 })
 
-const features = ref({
+const features = ref<{
+  darkMode: boolean
+  autoSave: boolean
+  experimental: boolean
+}>({
   darkMode: false,
   autoSave: true,
   experimental: false
 })
 
-const demo = ref({
+const demo = ref<{
+  enabled: boolean
+  autoUpdate: boolean
+  notifications: boolean
+}>({
   enabled: true,
   autoUpdate: false,
   notifications: true

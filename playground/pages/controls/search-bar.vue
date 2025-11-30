@@ -24,7 +24,7 @@
         With Search Icon
       </h2>
       <div class="box">
-        <t-search-bar v-model="iconSearch" placeholder="Search products..." icon="magnify" />
+        <t-search-bar v-model="iconSearch" placeholder="Search products..." />
       </div>
 
       <!-- Sizes -->
@@ -32,10 +32,10 @@
         Sizes
       </h2>
       <div class="box">
-        <t-search-bar v-model="sizeSmall" placeholder="Small search" size="small" class="mb-3" />
+        <t-search-bar v-model="sizeSmall" placeholder="Small search" class="mb-3" />
         <t-search-bar v-model="sizeNormal" placeholder="Normal search" class="mb-3" />
-        <t-search-bar v-model="sizeMedium" placeholder="Medium search" size="medium" class="mb-3" />
-        <t-search-bar v-model="sizeLarge" placeholder="Large search" size="large" />
+        <t-search-bar v-model="sizeMedium" placeholder="Medium search" class="mb-3" />
+        <t-search-bar v-model="sizeLarge" placeholder="Large search" />
       </div>
 
       <!-- Rounded Style -->
@@ -43,7 +43,7 @@
         Rounded Style
       </h2>
       <div class="box">
-        <t-search-bar v-model="roundedSearch" placeholder="Rounded search..." rounded icon="magnify" />
+        <t-search-bar v-model="roundedSearch" placeholder="Rounded search..." />
       </div>
 
       <!-- Loading State -->
@@ -51,7 +51,7 @@
         Loading State
       </h2>
       <div class="box">
-        <t-search-bar v-model="loadingSearch" placeholder="Search..." loading icon="magnify" />
+        <t-search-bar v-model="loadingSearch" placeholder="Search..." />
         <p class="has-text-grey mt-3">
           Shows a loading spinner while fetching results
         </p>
@@ -62,7 +62,7 @@
         With Clear Button
       </h2>
       <div class="box">
-        <t-search-bar v-model="clearableSearch" placeholder="Search..." clearable icon="magnify" />
+        <t-search-bar v-model="clearableSearch" placeholder="Search..." />
       </div>
 
       <!-- Full Width -->
@@ -70,7 +70,7 @@
         Full Width
       </h2>
       <div class="box">
-        <t-search-bar v-model="fullWidthSearch" placeholder="Search across the entire site..." expanded icon="magnify" />
+        <t-search-bar v-model="fullWidthSearch" placeholder="Search across the entire site..." />
       </div>
 
       <!-- Interactive Search -->
@@ -79,11 +79,8 @@
       </h2>
       <div class="box">
         <t-search-bar
-          v-model="interactiveSearch"
+          v-model="interactiveSearch as string | null"
           placeholder="Search products..."
-          icon="magnify"
-          clearable
-          @input="handleSearch"
         />
         <div v-if="searchResults.length > 0" class="mt-4">
           <p class="has-text-weight-bold mb-3">
@@ -119,7 +116,7 @@
       <div class="box">
         <div class="field has-addons">
           <div class="control is-expanded">
-            <t-search-bar v-model="filterSearch" placeholder="Search..." icon="magnify" />
+            <t-search-bar v-model="filterSearch" placeholder="Search..." />
           </div>
           <div class="control">
             <t-select v-model="filterCategory">
@@ -164,7 +161,7 @@
             </div>
             <div class="navbar-end">
               <div class="navbar-item">
-                <t-search-bar v-model="navbarSearch" placeholder="Search..." size="small" icon="magnify" />
+                <t-search-bar v-model="navbarSearch" placeholder="Search..." />
               </div>
             </div>
           </div>
@@ -179,8 +176,6 @@
         <t-search-bar
           v-model="suggestionSearch"
           placeholder="Type to see suggestions..."
-          icon="magnify"
-          clearable
         />
         <div v-if="suggestionSearch && suggestions.length > 0" class="dropdown is-active" style="width: 100%;">
           <div class="dropdown-menu" style="width: 100%;">
@@ -205,7 +200,7 @@
         Advanced Search Form
       </h2>
       <div class="box">
-        <t-search-bar v-model="advancedSearch" placeholder="Search..." icon="magnify" clearable class="mb-4" />
+        <t-search-bar v-model="advancedSearch" placeholder="Search..." class="mb-4" />
         <div v-if="showAdvancedOptions" class="content">
           <p class="has-text-weight-bold">
             Advanced Options:
@@ -213,7 +208,7 @@
           <div class="columns">
             <div class="column">
               <t-field label="Category:">
-                <t-select v-model="advancedCategory" expanded>
+                <t-select v-model="advancedCategory" fullwidth>
                   <option value="">
                     All
                   </option>
@@ -231,7 +226,7 @@
             </div>
             <div class="column">
               <t-field label="Date Range:">
-                <t-select v-model="advancedDateRange" expanded>
+                <t-select v-model="advancedDateRange" fullwidth>
                   <option value="any">
                     Any time
                   </option>
@@ -270,13 +265,10 @@
         <t-search-bar
           v-model="realtimeSearch"
           placeholder="Search users..."
-          icon="account-search"
-          clearable
-          @input="handleRealtimeSearch"
         />
         <div v-if="isSearching" class="mt-3">
           <div class="is-flex is-align-items-center">
-            <t-loading inline />
+            <t-loading />
             <span class="ml-3">Searching...</span>
           </div>
         </div>
@@ -294,7 +286,7 @@
                 <td>{{ user.name }}</td>
                 <td>{{ user.email }}</td>
                 <td>
-                  <t-tag size="small">
+                  <t-tag>
                     {{ user.role }}
                   </t-tag>
                 </td>
@@ -308,19 +300,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 
-const basicSearch = ref('')
-const iconSearch = ref('')
-const sizeSmall = ref('')
-const sizeNormal = ref('')
-const sizeMedium = ref('')
-const sizeLarge = ref('')
-const roundedSearch = ref('')
-const loadingSearch = ref('')
-const clearableSearch = ref('Sample text')
-const fullWidthSearch = ref('')
-const navbarSearch = ref('')
+const basicSearch = ref<string | null>('')
+const iconSearch = ref<string | null>('')
+const sizeSmall = ref<string | null>('')
+const sizeNormal = ref<string | null>('')
+const sizeMedium = ref<string | null>('')
+const sizeLarge = ref<string | null>('')
+const roundedSearch = ref<string | null>('')
+const loadingSearch = ref<string | null>('')
+const clearableSearch = ref<string | null>('Sample text')
+const fullWidthSearch = ref<string | null>('')
+const navbarSearch = ref<string | null>('')
 
 const interactiveSearch = ref('')
 const products = [
@@ -334,19 +326,15 @@ const products = [
 
 const searchResults = computed(() => {
   if (!interactiveSearch.value) return []
-  const query = interactiveSearch.value.toLowerCase()
+  const query = (interactiveSearch.value || '').toLowerCase()
   return products.filter(p =>
     p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query))
 })
 
-const handleSearch = () => {
-  // Search handler
-}
+const filterSearch = ref<string | null>('')
+const filterCategory = ref<string | number | boolean | null | (string | number)[]>('')
 
-const filterSearch = ref('')
-const filterCategory = ref('')
-
-const suggestionSearch = ref('')
+const suggestionSearch = ref<string | null>('')
 const allSuggestions = [
   'laptop computer',
   'laptop bag',
@@ -360,7 +348,7 @@ const allSuggestions = [
 
 const suggestions = computed(() => {
   if (!suggestionSearch.value) return []
-  const query = suggestionSearch.value.toLowerCase()
+  const query = (suggestionSearch.value || '').toLowerCase()
   return allSuggestions.filter(s => s.includes(query)).slice(0, 5)
 })
 
@@ -368,13 +356,13 @@ const applySuggestion = (suggestion: string) => {
   suggestionSearch.value = suggestion
 }
 
-const advancedSearch = ref('')
+const advancedSearch = ref<string | null>('')
 const showAdvancedOptions = ref(false)
-const advancedCategory = ref('')
-const advancedDateRange = ref('any')
-const advancedExact = ref(false)
+const advancedCategory = ref<string | number | boolean | null | (string | number)[]>('')
+const advancedDateRange = ref<string | number | boolean | null | (string | number)[]>('any')
+const advancedExact = ref<boolean | any[]>(false)
 
-const realtimeSearch = ref('')
+const realtimeSearch = ref<string | null>('')
 const isSearching = ref(false)
 const allUsers = [
   { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin' },
@@ -394,7 +382,7 @@ const handleRealtimeSearch = () => {
 
   isSearching.value = true
   setTimeout(() => {
-    const query = realtimeSearch.value.toLowerCase()
+    const query = realtimeSearch.value?.toLowerCase() || ''
     realtimeResults.value = allUsers.filter(u =>
       u.name.toLowerCase().includes(query)
       || u.email.toLowerCase().includes(query)
@@ -402,6 +390,9 @@ const handleRealtimeSearch = () => {
     isSearching.value = false
   }, 500)
 }
+
+// Watch for changes and trigger search
+watch(realtimeSearch, handleRealtimeSearch)
 </script>
 
 <style scoped>
