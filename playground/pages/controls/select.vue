@@ -10,7 +10,7 @@
 
       <t-demo-box label="Basic Select">
         <t-field label="Choose a country:">
-          <t-select v-model="basic" placeholder="Select a country">
+          <t-select v-model="basic">
             <option value="us">
               United States
             </option>
@@ -35,7 +35,7 @@
 
       <t-demo-box label="Multiple Selection">
         <t-field label="Select multiple languages:">
-          <t-select v-model="multiple" multiple size="6">
+          <t-select v-model="multiple" multiple>
             <option value="js">
               JavaScript
             </option>
@@ -57,7 +57,7 @@
           </t-select>
         </t-field>
         <p class="has-text-grey">
-          Selected: {{ multiple.length > 0 ? multiple.join(', ') : 'None' }}
+          Selected: {{ Array.isArray(multiple) && multiple.length > 0 ? multiple.join(', ') : 'None' }}
         </p>
       </t-demo-box>
 
@@ -132,7 +132,7 @@
 
       <t-demo-box label="With Icon">
         <t-field label="Choose a theme:">
-          <t-select v-model="theme" icon="palette" expanded>
+          <t-select v-model="theme" icon="palette" fullwidth>
             <option value="light">
               Light Theme
             </option>
@@ -149,8 +149,8 @@
       <t-demo-box label="Example: Product Filter" example>
         <div class="columns">
           <div class="column">
-            <t-field label="Category:">
-              <t-select v-model="filter.category" expanded>
+            <t-field label="Category">
+              <t-select v-model="filter.category" fullwidth>
                 <option value="">
                   All Categories
                 </option>
@@ -170,8 +170,8 @@
             </t-field>
           </div>
           <div class="column">
-            <t-field label="Sort by:">
-              <t-select v-model="filter.sort" expanded>
+            <t-field label="Sort By">
+              <t-select v-model="filter.sort" fullwidth>
                 <option value="popular">
                   Most Popular
                 </option>
@@ -188,8 +188,8 @@
             </t-field>
           </div>
           <div class="column">
-            <t-field label="Price Range:">
-              <t-select v-model="filter.price" expanded>
+            <t-field label="Price Range">
+              <t-select v-model="filter.price" fullwidth>
                 <option value="all">
                   All Prices
                 </option>
@@ -216,7 +216,7 @@
 
       <t-demo-box label="Example: Time Zone Selector" example>
         <t-field label="Select your time zone:">
-          <t-select v-model="timezone" expanded>
+          <t-select v-model="timezone" fullwidth>
             <optgroup label="North America">
               <option value="PST">
                 Pacific Time (PST)
@@ -269,10 +269,10 @@ const sizes = SelectSizes
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 
-const basic = ref('us')
-const multiple = ref(['js', 'ts'])
+const basic = ref<string | null | string[]>('us')
+const multiple = ref<string | null | string[]>(['js', 'ts'])
 
-const variantValues = reactive<Record<string, string>>({
+const variantValues = reactive<Record<string, string | null | string[]>>({
   primary: '1',
   link: '1',
   info: '1',
@@ -281,25 +281,29 @@ const variantValues = reactive<Record<string, string>>({
   danger: '1'
 })
 
-const sizeValues = reactive<Record<string, string>>({
+const sizeValues = reactive<Record<string, string | null | string[]>>({
   small: '1',
   normal: '1',
   medium: '1',
   large: '1'
 })
 
-const stateDisabled = ref('1')
-const stateLoading = ref('1')
-const stateReadonly = ref('selected')
+const stateDisabled = ref<string | null | string[]>('1')
+const stateLoading = ref<string | null | string[]>('1')
+const stateReadonly = ref<string | null | string[]>('selected')
 
-const rounded = ref('1')
+const rounded = ref<string | null | string[]>('1')
 
-const filter = ref({
+const filter = ref<{
+  category: string | null | string[]
+  sort: string | null | string[]
+  price: string | null | string[]
+}>({
   category: 'electronics',
   sort: 'popular',
   price: 'all'
 })
 
-const timezone = ref('PST')
-const theme = ref('auto')
+const timezone = ref<string | null | string[]>('PST')
+const theme = ref<string | null | string[]>('auto')
 </script>

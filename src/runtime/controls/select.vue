@@ -8,6 +8,7 @@
         ref="selectRef"
         :value="modelValue"
         :disabled="disabled || readonly"
+        :multiple="multiple"
         v-bind="$attrs"
         @change="handleChange"
       >
@@ -41,7 +42,7 @@ interface Props {
    * The selected value (v-model).
    * For multiple select, use an array.
    */
-  modelValue?: string | number | boolean | null | (string | number)[]
+  modelValue?: string | null | string[]
 
   /**
    * Select size variant.
@@ -89,6 +90,12 @@ interface Props {
    * @example 'magnify', 'account', 'calendar'
    */
   icon?: string
+
+  /**
+   * Allow multiple selections.
+   * @default false
+   */
+  multiple?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -100,11 +107,12 @@ const props = withDefaults(defineProps<Props>(), {
   rounded: false,
   loading: false,
   readonly: false,
-  icon: undefined
+  icon: undefined,
+  multiple: false
 })
 
 const emit = defineEmits<{
-  'update:modelValue': [value: string | number | boolean | null | (string | number)[]]
+  'update:modelValue': [value: string | null | string[]]
 }>()
 
 const selectRef = ref<HTMLSelectElement | null>(null)
@@ -195,16 +203,7 @@ function handleChange (event: Event) {
   }
 
   // Handle single select
-  let value: string | number | boolean | null = target.value
-
-  // Try to preserve the type of the original modelValue
-  if (typeof props.modelValue === 'number') {
-    value = Number.parseFloat(target.value)
-  } else if (typeof props.modelValue === 'boolean') {
-    value = target.value === 'true'
-  } else if (target.value === 'null') {
-    value = null
-  }
+  const value: string | null = target.value === '' ? null : target.value
 
   emit('update:modelValue', value)
 }
