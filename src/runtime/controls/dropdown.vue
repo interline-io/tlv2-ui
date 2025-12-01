@@ -1,11 +1,11 @@
 <template>
   <div
     ref="dropdownRef"
-    class="dropdown"
+    class="t-dropdown"
     :class="dropdownClass"
   >
     <div
-      class="dropdown-trigger"
+      class="t-dropdown-trigger"
       @click="toggle"
     >
       <slot name="trigger" :toggle="toggle">
@@ -28,11 +28,11 @@
     </div>
     <div
       :id="`dropdown-menu-${uid}`"
-      class="dropdown-menu"
+      class="t-dropdown-menu"
       role="menu"
       :style="menuStyle"
     >
-      <div class="dropdown-content">
+      <div class="t-dropdown-content">
         <slot :close="close" />
       </div>
     </div>
@@ -250,18 +250,35 @@ provide('dropdown', {
 defineExpose({ open, close, toggle })
 </script>
 
-<style scoped>
-.dropdown {
+<style lang="scss" scoped>
+@use "bulma/sass/utilities/initial-variables" as *;
+@use "bulma/sass/utilities/derived-variables" as *;
+
+.t-dropdown {
   display: inline-flex;
   position: relative;
   vertical-align: top;
+
+  &.is-active .t-dropdown-menu {
+    display: block;
+  }
+
+  &.is-top-left .t-dropdown-menu,
+  &.is-top-right .t-dropdown-menu {
+    bottom: 100%;
+    padding-bottom: 4px;
+    padding-top: initial;
+    top: auto;
+  }
+
+  &.is-bottom-right .t-dropdown-menu,
+  &.is-top-right .t-dropdown-menu {
+    left: auto;
+    right: 0;
+  }
 }
 
-.dropdown.is-active .dropdown-menu {
-  display: block;
-}
-
-.dropdown-menu {
+.t-dropdown-menu {
   display: none;
   left: 0;
   min-width: 12rem;
@@ -271,24 +288,10 @@ defineExpose({ open, close, toggle })
   z-index: 20;
 }
 
-.dropdown.is-top-left .dropdown-menu,
-.dropdown.is-top-right .dropdown-menu {
-  bottom: 100%;
-  padding-bottom: 4px;
-  padding-top: initial;
-  top: auto;
-}
-
-.dropdown.is-bottom-right .dropdown-menu,
-.dropdown.is-top-right .dropdown-menu {
-  left: auto;
-  right: 0;
-}
-
-.dropdown-content {
-  background-color: white;
-  border-radius: 4px;
-  box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1), 0 0px 0 1px rgba(10, 10, 10, 0.02);
+.t-dropdown-content {
+  background-color: $white;
+  border-radius: $radius;
+  box-shadow: 0 0.5em 1em -0.125em rgba($black, 0.1), 0 0px 0 1px rgba($black, 0.02);
   padding: 0.5rem 0;
 }
 </style>

@@ -1,9 +1,9 @@
 <template>
-  <div class="slider-wrapper">
+  <div class="t-slider-wrapper">
     <input
       ref="sliderRef"
       type="range"
-      class="slider"
+      class="t-slider"
       :class="sliderClasses"
       :value="currentValue"
       :min="min"
@@ -19,12 +19,12 @@
     >
     <div
       v-if="tooltip && showTooltip"
-      class="slider-tooltip"
+      class="t-slider-tooltip"
       :style="tooltipStyle"
     >
       {{ currentValue }}
     </div>
-    <div v-if="hasTicks" class="slider-ticks">
+    <div v-if="hasTicks" class="t-slider-ticks">
       <slot />
     </div>
   </div>
@@ -145,188 +145,204 @@ function setValue (value: number) {
 provide('sliderSetValue', setValue)
 </script>
 
-<style scoped>
-.slider-wrapper {
+<style lang="scss" scoped>
+@use "bulma/sass/utilities/initial-variables" as *;
+@use "bulma/sass/utilities/derived-variables" as *;
+
+.t-slider-wrapper {
   position: relative;
   width: 100%;
 }
 
-.slider {
+.t-slider {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
   height: 0.5rem;
-  border-radius: 290486px;
-  background: #dbdbdb;
+  border-radius: $radius-rounded;
+  background: $grey-lighter;
   outline: none;
   margin: 1rem 0;
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background: $link;
+    cursor: pointer;
+    border: 1px solid $link;
+  }
+
+  &::-moz-range-thumb {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background: $link;
+    cursor: pointer;
+    border: 1px solid $link;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+
+    &::-webkit-slider-thumb {
+      cursor: not-allowed;
+    }
+
+    &::-moz-range-thumb {
+      cursor: not-allowed;
+    }
+  }
+
+  // Size variants
+  &.is-small {
+    height: 0.375rem;
+
+    &::-webkit-slider-thumb {
+      width: 0.75rem;
+      height: 0.75rem;
+    }
+
+    &::-moz-range-thumb {
+      width: 0.75rem;
+      height: 0.75rem;
+    }
+  }
+
+  &.is-medium {
+    height: 0.625rem;
+
+    &::-webkit-slider-thumb {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
+    &::-moz-range-thumb {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+  }
+
+  &.is-large {
+    height: 0.75rem;
+
+    &::-webkit-slider-thumb {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+
+    &::-moz-range-thumb {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+  }
+
+  // Color variants
+  &.is-primary {
+    &::-webkit-slider-thumb {
+      background: $primary;
+      border-color: $primary;
+    }
+
+    &::-moz-range-thumb {
+      background: $primary;
+      border-color: $primary;
+    }
+  }
+
+  &.is-link {
+    &::-webkit-slider-thumb {
+      background: $link;
+      border-color: $link;
+    }
+
+    &::-moz-range-thumb {
+      background: $link;
+      border-color: $link;
+    }
+  }
+
+  &.is-info {
+    &::-webkit-slider-thumb {
+      background: $info;
+      border-color: $info;
+    }
+
+    &::-moz-range-thumb {
+      background: $info;
+      border-color: $info;
+    }
+  }
+
+  &.is-success {
+    &::-webkit-slider-thumb {
+      background: $success;
+      border-color: $success;
+    }
+
+    &::-moz-range-thumb {
+      background: $success;
+      border-color: $success;
+    }
+  }
+
+  &.is-warning {
+    &::-webkit-slider-thumb {
+      background: $warning;
+      border-color: $warning;
+    }
+
+    &::-moz-range-thumb {
+      background: $warning;
+      border-color: $warning;
+    }
+  }
+
+  &.is-danger {
+    &::-webkit-slider-thumb {
+      background: $danger;
+      border-color: $danger;
+    }
+
+    &::-moz-range-thumb {
+      background: $danger;
+      border-color: $danger;
+    }
+  }
 }
 
-.slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 1rem;
-  height: 1rem;
-  border-radius: 50%;
-  background: #485fc7;
-  cursor: pointer;
-  border: 1px solid #485fc7;
-}
-
-.slider::-moz-range-thumb {
-  width: 1rem;
-  height: 1rem;
-  border-radius: 50%;
-  background: #485fc7;
-  cursor: pointer;
-  border: 1px solid #485fc7;
-}
-
-.slider:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.slider:disabled::-webkit-slider-thumb {
-  cursor: not-allowed;
-}
-
-.slider:disabled::-moz-range-thumb {
-  cursor: not-allowed;
-}
-
-.slider.is-small {
-  height: 0.375rem;
-}
-
-.slider.is-small::-webkit-slider-thumb {
-  width: 0.75rem;
-  height: 0.75rem;
-}
-
-.slider.is-small::-moz-range-thumb {
-  width: 0.75rem;
-  height: 0.75rem;
-}
-
-.slider.is-medium {
-  height: 0.625rem;
-}
-
-.slider.is-medium::-webkit-slider-thumb {
-  width: 1.25rem;
-  height: 1.25rem;
-}
-
-.slider.is-medium::-moz-range-thumb {
-  width: 1.25rem;
-  height: 1.25rem;
-}
-
-.slider.is-large {
-  height: 0.75rem;
-}
-
-.slider.is-large::-webkit-slider-thumb {
-  width: 1.5rem;
-  height: 1.5rem;
-}
-
-.slider.is-large::-moz-range-thumb {
-  width: 1.5rem;
-  height: 1.5rem;
-}
-
-/* Variants */
-.slider.is-primary::-webkit-slider-thumb {
-  background: #00d1b2;
-  border-color: #00d1b2;
-}
-
-.slider.is-primary::-moz-range-thumb {
-  background: #00d1b2;
-  border-color: #00d1b2;
-}
-
-.slider.is-link::-webkit-slider-thumb {
-  background: #485fc7;
-  border-color: #485fc7;
-}
-
-.slider.is-link::-moz-range-thumb {
-  background: #485fc7;
-  border-color: #485fc7;
-}
-
-.slider.is-info::-webkit-slider-thumb {
-  background: #3e8ed0;
-  border-color: #3e8ed0;
-}
-
-.slider.is-info::-moz-range-thumb {
-  background: #3e8ed0;
-  border-color: #3e8ed0;
-}
-
-.slider.is-success::-webkit-slider-thumb {
-  background: #48c78e;
-  border-color: #48c78e;
-}
-
-.slider.is-success::-moz-range-thumb {
-  background: #48c78e;
-  border-color: #48c78e;
-}
-
-.slider.is-warning::-webkit-slider-thumb {
-  background: #ffe08a;
-  border-color: #ffe08a;
-}
-
-.slider.is-warning::-moz-range-thumb {
-  background: #ffe08a;
-  border-color: #ffe08a;
-}
-
-.slider.is-danger::-webkit-slider-thumb {
-  background: #f14668;
-  border-color: #f14668;
-}
-
-.slider.is-danger::-moz-range-thumb {
-  background: #f14668;
-  border-color: #f14668;
-}
-
-.slider-ticks {
+.t-slider-ticks {
   display: flex;
   justify-content: space-between;
   margin-top: -0.5rem;
-  font-size: 0.75rem;
-  color: #7a7a7a;
+  font-size: $size-small;
+  color: $grey;
 }
 
-.slider-tooltip {
+.t-slider-tooltip {
   position: absolute;
   top: -2.5rem;
   transform: translateX(-50%);
-  background: #363636;
-  color: #fff;
+  background: $grey-darker;
+  color: $white;
   padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
+  border-radius: $radius;
+  font-size: $size-small;
   white-space: nowrap;
   pointer-events: none;
   z-index: 10;
-}
 
-.slider-tooltip::after {
-  content: '';
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 0.25rem solid transparent;
-  border-top-color: #363636;
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 0.25rem solid transparent;
+    border-top-color: $grey-darker;
+  }
 }
 </style>

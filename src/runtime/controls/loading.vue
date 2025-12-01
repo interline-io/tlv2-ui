@@ -59,7 +59,10 @@ function handleCancel () {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@use "bulma/sass/utilities/initial-variables" as *;
+@use "bulma/sass/utilities/derived-variables" as *;
+
 .t-loading {
   position: absolute;
   top: 0;
@@ -71,11 +74,11 @@ function handleCancel () {
   justify-content: center;
   overflow: hidden;
   z-index: 29;
-}
 
-.t-loading.is-full-page {
-  position: fixed;
-  z-index: 999;
+  &.is-full-page {
+    position: fixed;
+    z-index: 999;
+  }
 }
 
 .t-loading-background {
@@ -84,11 +87,11 @@ function handleCancel () {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(255, 255, 255, 0.8);
-}
+  background: rgba($white, 0.8);
 
-.t-loading-background.is-full-page {
-  background: rgba(255, 255, 255, 0.9);
+  &.is-full-page {
+    background: rgba($white, 0.9);
+  }
 }
 
 .t-loading-icon {
@@ -99,8 +102,8 @@ function handleCancel () {
 /* Bulma loader styles */
 .loader {
   animation: spinAround 500ms infinite linear;
-  border: 2px solid #dbdbdb;
-  border-radius: 9999px;
+  border: 2px solid $grey-light;
+  border-radius: $radius-rounded;
   border-right-color: transparent;
   border-top-color: transparent;
   content: "";

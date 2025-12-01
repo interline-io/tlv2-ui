@@ -43,7 +43,16 @@ import { navigationGroups } from './navigation'
 const route = useRoute()
 </script>
 
-<style>
+<style lang="scss">
+$primary: #8c67ef;
+$link: $primary;
+
+@use "bulma/sass" with (
+    $family-primary: '"Nunito", sans-serif',
+    $primary: $primary,
+    $link: $link,
+);
+
 .navbar {
   border-bottom:solid 1px #ccc;
 }

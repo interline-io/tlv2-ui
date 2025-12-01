@@ -1,13 +1,13 @@
 <template>
-  <label class="switch" :class="switchClasses">
+  <label class="switch t-switch" :class="switchClasses">
     <input
       type="checkbox"
       :checked="isChecked"
       :disabled="disabled"
       @change="handleChange"
     >
-    <span class="check" />
-    <span v-if="$slots.default || label" class="control-label">
+    <span class="check t-check" />
+    <span v-if="$slots.default || label" class="control-label t-control-label">
       <slot>{{ label }}</slot>
     </span>
   </label>
@@ -130,111 +130,115 @@ function handleChange (event: Event) {
 }
 </script>
 
-<style scoped>
-.switch {
+<style lang="scss" scoped>
+@use "bulma/sass/utilities/initial-variables" as *;
+@use "bulma/sass/utilities/derived-variables" as *;
+
+.t-switch {
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   position: relative;
-}
 
-.switch.is-disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
+  &.is-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 
-.switch input[type="checkbox"] {
-  position: absolute;
-  left: 0;
-  opacity: 0;
-  outline: none;
-  z-index: -1;
-}
+  input[type="checkbox"] {
+    position: absolute;
+    left: 0;
+    opacity: 0;
+    outline: none;
+    z-index: -1;
+  }
 
-.switch .check {
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-  width: 2.75em;
-  height: 1.575em;
-  padding: 0.2em;
-  background: #b5b5b5;
-  border-radius: 9999px;
-  transition: background 150ms ease-out;
-  position: relative;
-}
+  .t-check {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    width: 2.75em;
+    height: 1.575em;
+    padding: 0.2em;
+    background: $grey;
+    border-radius: $radius-rounded;
+    transition: background 150ms ease-out;
+    position: relative;
 
-.switch .check::before {
-  content: "";
-  display: block;
-  border-radius: 9999px;
-  width: 1.175em;
-  height: 1.175em;
-  background: #fff;
-  box-shadow: 0 3px 1px 0 rgba(0, 0, 0, 0.05), 0 2px 2px 0 rgba(0, 0, 0, 0.1), 0 3px 3px 0 rgba(0, 0, 0, 0.05);
-  transition: transform 150ms ease-out;
-  will-change: transform;
-}
+    &::before {
+      content: "";
+      display: block;
+      border-radius: $radius-rounded;
+      width: 1.175em;
+      height: 1.175em;
+      background: $white;
+      box-shadow: 0 3px 1px 0 rgba($black, 0.05), 0 2px 2px 0 rgba($black, 0.1), 0 3px 3px 0 rgba($black, 0.05);
+      transition: transform 150ms ease-out;
+      will-change: transform;
+    }
+  }
 
-.switch input[type="checkbox"]:checked + .check {
-  background: #3273dc;
-}
+  input[type="checkbox"]:checked + .t-check {
+    background: $link;
 
-.switch input[type="checkbox"]:checked + .check::before {
-  transform: translateX(1.175em);
-}
+    &::before {
+      transform: translateX(1.175em);
+    }
+  }
 
-.switch .control-label {
-  padding-left: 0.5em;
-}
+  .t-control-label {
+    padding-left: 0.5em;
+  }
 
-.switch.is-small {
-  font-size: 0.75rem;
-}
+  // Size variants
+  &.is-small {
+    font-size: $size-small;
+  }
 
-.switch.is-medium {
-  font-size: 1.25rem;
-}
+  &.is-medium {
+    font-size: $size-medium;
+  }
 
-.switch.is-large {
-  font-size: 1.5rem;
-}
+  &.is-large {
+    font-size: $size-large;
+  }
 
-/* Variant colors */
-.switch.is-primary input[type="checkbox"]:checked + .check {
-  background: #00d1b2;
-}
+  // Color variants
+  &.is-primary input[type="checkbox"]:checked + .t-check {
+    background: $primary;
+  }
 
-.switch.is-link input[type="checkbox"]:checked + .check {
-  background: #485fc7;
-}
+  &.is-link input[type="checkbox"]:checked + .t-check {
+    background: $link;
+  }
 
-.switch.is-info input[type="checkbox"]:checked + .check {
-  background: #3e8ed0;
-}
+  &.is-info input[type="checkbox"]:checked + .t-check {
+    background: $info;
+  }
 
-.switch.is-success input[type="checkbox"]:checked + .check {
-  background: #48c78e;
-}
+  &.is-success input[type="checkbox"]:checked + .t-check {
+    background: $success;
+  }
 
-.switch.is-warning input[type="checkbox"]:checked + .check {
-  background: #ffe08a;
-}
+  &.is-warning input[type="checkbox"]:checked + .t-check {
+    background: $warning;
+  }
 
-.switch.is-danger input[type="checkbox"]:checked + .check {
-  background: #f14668;
-}
+  &.is-danger input[type="checkbox"]:checked + .t-check {
+    background: $danger;
+  }
 
-.switch.is-dark input[type="checkbox"]:checked + .check {
-  background: #363636;
-}
+  &.is-dark input[type="checkbox"]:checked + .t-check {
+    background: $dark;
+  }
 
-/* Rounded switch style */
-.switch.is-rounded .check {
-  border-radius: 4px;
-}
+  // Rounded switch style
+  &.is-rounded .t-check {
+    border-radius: $radius;
 
-.switch.is-rounded .check::before {
-  border-radius: 2px;
+    &::before {
+      border-radius: $radius-small;
+    }
+  }
 }
 </style>

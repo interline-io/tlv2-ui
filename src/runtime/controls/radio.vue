@@ -1,5 +1,5 @@
 <template>
-  <label class="radio" :class="radioClasses">
+  <label class="t-radio" :class="radioClasses">
     <input
       type="radio"
       :checked="modelValue === nativeValue"
@@ -81,7 +81,7 @@ function handleChange () {
 </script>
 
 <style scoped>
-.radio {
+.t-radio {
   cursor: pointer;
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
@@ -91,17 +91,17 @@ function handleChange () {
   gap: 0.5rem;
 }
 
-.radio input[type="radio"] {
+.t-radio input[type="radio"] {
   flex-shrink: 0;
 }
 
-.radio.is-disabled {
+.t-radio.is-disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 /* Enhanced radio button styling with padding */
-.radio input[type="radio"] {
+.t-radio input[type="radio"] {
   appearance: none;
   -webkit-appearance: none;
   width: 1.125rem;
@@ -113,16 +113,16 @@ function handleChange () {
   transition: all 0.15s ease-in-out;
 }
 
-.radio input[type="radio"]:hover {
+.t-radio input[type="radio"]:hover {
   border-color: #b5b5b5;
 }
 
-.radio input[type="radio"]:checked {
+.t-radio input[type="radio"]:checked {
   border-color: #00d1b2;
   background-color: transparent;
 }
 
-.radio input[type="radio"]:checked::after {
+.t-radio input[type="radio"]:checked::after {
   content: '';
   position: absolute;
   left: 50%;
@@ -135,78 +135,78 @@ function handleChange () {
 }
 
 /* Variant colors for radio */
-.radio.is-primary input[type="radio"]:checked {
+.t-radio.is-primary input[type="radio"]:checked {
   border-color: #00d1b2;
 }
 
-.radio.is-primary input[type="radio"]:checked::after {
+.t-radio.is-primary input[type="radio"]:checked::after {
   background-color: #00d1b2;
 }
 
-.radio.is-link input[type="radio"]:checked {
+.t-radio.is-link input[type="radio"]:checked {
   border-color: #485fc7;
 }
 
-.radio.is-link input[type="radio"]:checked::after {
+.t-radio.is-link input[type="radio"]:checked::after {
   background-color: #485fc7;
 }
 
-.radio.is-info input[type="radio"]:checked {
+.t-radio.is-info input[type="radio"]:checked {
   border-color: #3e8ed0;
 }
 
-.radio.is-info input[type="radio"]:checked::after {
+.t-radio.is-info input[type="radio"]:checked::after {
   background-color: #3e8ed0;
 }
 
-.radio.is-success input[type="radio"]:checked {
+.t-radio.is-success input[type="radio"]:checked {
   border-color: #48c78e;
 }
 
-.radio.is-success input[type="radio"]:checked::after {
+.t-radio.is-success input[type="radio"]:checked::after {
   background-color: #48c78e;
 }
 
-.radio.is-warning input[type="radio"]:checked {
+.t-radio.is-warning input[type="radio"]:checked {
   border-color: #ffe08a;
 }
 
-.radio.is-warning input[type="radio"]:checked::after {
+.t-radio.is-warning input[type="radio"]:checked::after {
   background-color: #ffe08a;
 }
 
-.radio.is-danger input[type="radio"]:checked {
+.t-radio.is-danger input[type="radio"]:checked {
   border-color: #f14668;
 }
 
-.radio.is-danger input[type="radio"]:checked::after {
+.t-radio.is-danger input[type="radio"]:checked::after {
   background-color: #f14668;
 }
 
 /* Size variants */
-.radio.is-small {
+.t-radio.is-small {
   font-size: 0.75rem;
 }
 
-.radio.is-small input[type="radio"] {
+.t-radio.is-small input[type="radio"] {
   width: 0.875rem;
   height: 0.875rem;
 }
 
-.radio.is-medium {
+.t-radio.is-medium {
   font-size: 1.25rem;
 }
 
-.radio.is-medium input[type="radio"] {
+.t-radio.is-medium input[type="radio"] {
   width: 1.25rem;
   height: 1.25rem;
 }
 
-.radio.is-large {
+.t-radio.is-large {
   font-size: 1.5rem;
 }
 
-.radio.is-large input[type="radio"] {
+.t-radio.is-large input[type="radio"] {
   width: 1.5rem;
   height: 1.5rem;
 }

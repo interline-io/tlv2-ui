@@ -73,7 +73,3 @@ function handleClose () {
   emit('close')
 }
 </script>
-
-<style scoped>
-/* Inherits Bulma notification styles from global stylesheet */
-</style>

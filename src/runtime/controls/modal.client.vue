@@ -134,7 +134,7 @@ onBeforeUnmount(() => {
 })
 </script>
 
-<style>
+<style scoped>
 .t-modal .modal-card {
   width: 800px;
   max-width: 90vw;

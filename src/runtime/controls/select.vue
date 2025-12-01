@@ -1,7 +1,7 @@
 <template>
-  <div class="control" :class="controlClasses">
+  <div class="control t-control" :class="controlClasses">
     <div
-      class="select"
+      class="select t-select"
       :class="selectClasses"
     >
       <select
@@ -210,19 +210,17 @@ function handleChange (event: Event) {
 </script>
 
 <style scoped>
-/* Inherits Bulma select styles from global stylesheet */
-
 /* Make select expand to fill container by default, like input */
-.select {
+.t-select {
   width: 100%;
 }
 
-.select select {
+.t-select select {
   width: 100%;
 }
 
 /* Ensure multiple select displays properly with specified size */
-.select.is-multiple select {
+.t-select.is-multiple select {
   height: auto;
 }
 </style>

@@ -57,9 +57,3 @@ const clearSearch = (): void => {
   emit('update:modelValue', null)
 }
 </script>
-
-<style scoped>
-.entity-search {
-  margin-bottom: 10px;
-}
-</style>

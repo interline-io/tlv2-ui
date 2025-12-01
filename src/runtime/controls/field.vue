@@ -139,7 +139,3 @@ const labelSizeClass = computed(() => {
   return `is-${props.labelSize}`
 })
 </script>
-
-<style scoped>
-/* Inherits Bulma field styles from global stylesheet */
-</style>

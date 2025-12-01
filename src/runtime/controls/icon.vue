@@ -1,5 +1,5 @@
 <template>
-  <span class="icon" :class="[sizeClass, variantClass]" @click="handleClick">
+  <span class="t-icon" :class="[sizeClass, variantClass]" @click="handleClick">
     <i :class="`mdi mdi-${icon}`" />
   </span>
 </template>
@@ -58,43 +58,46 @@ const variantClass = computed(() => {
 })
 </script>
 
-<style scoped>
-.icon {
+<style lang="scss" scoped>
+@use "bulma/sass/utilities/initial-variables" as *;
+@use "bulma/sass/utilities/derived-variables" as *;
+
+.t-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   height: 1.5rem;
   width: 1.5rem;
-}
 
-.icon.is-small {
-  height: 1rem;
-  width: 1rem;
-}
+  i {
+    font-size: 1.5rem;
+  }
 
-.icon.is-small i {
-  font-size: 1rem;
-}
+  &.is-small {
+    height: 1rem;
+    width: 1rem;
 
-.icon.is-medium {
-  height: 2rem;
-  width: 2rem;
-}
+    i {
+      font-size: 1rem;
+    }
+  }
 
-.icon.is-medium i {
-  font-size: 2rem;
-}
+  &.is-medium {
+    height: 2rem;
+    width: 2rem;
 
-.icon.is-large {
-  height: 3rem;
-  width: 3rem;
-}
+    i {
+      font-size: 2rem;
+    }
+  }
 
-.icon.is-large i {
-  font-size: 3rem;
-}
+  &.is-large {
+    height: 3rem;
+    width: 3rem;
 
-.icon i {
-  font-size: 1.5rem;
+    i {
+      font-size: 3rem;
+    }
+  }
 }
 </style>

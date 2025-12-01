@@ -1,5 +1,5 @@
 <template>
-  <div class="slider-tick" :class="{ 'is-clickable': !!setValue }" @click="handleClick">
+  <div class="t-slider-tick" :class="{ 'is-clickable': !!setValue }" @click="handleClick">
     <slot />
   </div>
 </template>
@@ -26,7 +26,7 @@ function handleClick () {
 </script>
 
 <style scoped>
-.slider-tick {
+.t-slider-tick {
   flex: 0 0 auto;
   text-align: center;
   white-space: nowrap;
@@ -34,12 +34,12 @@ function handleClick () {
   color: #7a7a7a;
 }
 
-.slider-tick.is-clickable {
+.t-slider-tick.is-clickable {
   cursor: pointer;
   user-select: none;
 }
 
-.slider-tick.is-clickable:hover {
+.t-slider-tick.is-clickable:hover {
   color: #485fc7;
 }
 </style>

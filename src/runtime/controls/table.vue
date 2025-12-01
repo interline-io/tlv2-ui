@@ -14,7 +14,7 @@
               @click="column.sortable ? handleSort(column.field) : null"
             >
               {{ column.label }}
-              <span v-if="column.sortable" class="sort-icon">
+              <span v-if="column.sortable" class="t-sort-icon">
                 <i v-if="sortField === column.field" :class="sortIcon" />
                 <i v-else class="mdi mdi-sort" />
               </span>
@@ -197,22 +197,25 @@ function registerColumn (column: Column) {
 provide('registerColumn', registerColumn)
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@use "bulma/sass/utilities/initial-variables" as *;
+@use "bulma/sass/utilities/derived-variables" as *;
+
 th.is-sortable {
   cursor: pointer;
   user-select: none;
+
+  &:hover {
+    background-color: $white-bis;
+  }
 }
 
-th.is-sortable:hover {
-  background-color: #f5f5f5;
-}
-
-.sort-icon {
+.t-sort-icon {
   margin-left: 0.25rem;
-}
 
-.sort-icon .mdi {
-  font-size: 1rem;
-  vertical-align: middle;
+  .mdi {
+    font-size: $size-normal;
+    vertical-align: middle;
+  }
 }
 </style>

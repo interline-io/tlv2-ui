@@ -147,7 +147,3 @@ const buttonClasses = computed(() => {
   return classes
 })
 </script>
-
-<style scoped>
-/* Inherits Bulma button styles from global stylesheet */
-</style>

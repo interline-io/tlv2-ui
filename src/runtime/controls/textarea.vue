@@ -166,7 +166,3 @@ function handleInput (event: Event) {
   emit('update:modelValue', target.value)
 }
 </script>
-
-<style scoped>
-/* Inherits Bulma textarea styles from global stylesheet */
-</style>

@@ -57,8 +57,3 @@ onMounted(() => {
   }
 })
 </script>
-
-<style>
-/* Bulma handles theme switching via data-theme attribute and built-in CSS variables */
-/* No additional styles needed - Bulma's dark theme is already included */
-</style>

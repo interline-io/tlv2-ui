@@ -1,5 +1,5 @@
 <template>
-  <label class="checkbox" :class="checkboxClasses">
+  <label class="t-checkbox" :class="checkboxClasses">
     <input
       ref="inputRef"
       type="checkbox"
@@ -150,144 +150,142 @@ watch(() => props.indeterminate, updateIndeterminate)
 onMounted(updateIndeterminate)
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@use "bulma/sass/utilities/initial-variables" as *;
+@use "bulma/sass/utilities/derived-variables" as *;
+
 /* Inherits Bulma checkbox styles from global stylesheet */
-.checkbox {
+.t-checkbox {
   /* Add slight padding for better vertical alignment */
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-}
 
-.checkbox input[type="checkbox"] {
-  flex-shrink: 0;
-}
+  input[type="checkbox"] {
+    flex-shrink: 0;
+    appearance: none;
+    -webkit-appearance: none;
+    width: 1.125rem;
+    height: 1.125rem;
+    border: 2px solid $grey-light;
+    border-radius: $radius;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.15s ease-in-out;
 
-.checkbox.is-disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
+    &:hover {
+      border-color: $grey;
+    }
 
-/* Enhanced checkbox styling with padding */
-.checkbox input[type="checkbox"] {
-  appearance: none;
-  -webkit-appearance: none;
-  width: 1.125rem;
-  height: 1.125rem;
-  border: 2px solid #dbdbdb;
-  border-radius: 4px;
-  cursor: pointer;
-  position: relative;
-  transition: all 0.15s ease-in-out;
-}
+    &:checked {
+      border-color: $primary;
+      background-color: $primary;
 
-.checkbox input[type="checkbox"]:hover {
-  border-color: #b5b5b5;
-}
+      &::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 4px;
+        height: 8px;
+        border: solid $white;
+        border-width: 0 2px 2px 0;
+        transform: translate(-50%, -60%) rotate(45deg);
+      }
+    }
 
-.checkbox input[type="checkbox"]:checked {
-  border-color: #00d1b2;
-  background-color: #00d1b2;
-}
+    &:indeterminate {
+      border-color: $primary;
+      background-color: $primary;
 
-.checkbox input[type="checkbox"]:checked::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 4px;
-  height: 8px;
-  border: solid white;
-  border-width: 0 2px 2px 0;
-  transform: translate(-50%, -60%) rotate(45deg);
-}
+      &::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 8px;
+        height: 2px;
+        background-color: $white;
+        transform: translate(-50%, -50%);
+      }
+    }
+  }
 
-.checkbox input[type="checkbox"]:indeterminate {
-  border-color: #00d1b2;
-  background-color: #00d1b2;
-}
+  &.is-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 
-.checkbox input[type="checkbox"]:indeterminate::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 8px;
-  height: 2px;
-  background-color: white;
-  transform: translate(-50%, -50%);
-}
+  /* Variant colors for checkbox */
+  &.is-primary input[type="checkbox"]:checked,
+  &.is-primary input[type="checkbox"]:indeterminate {
+    border-color: $primary;
+    background-color: $primary;
+  }
 
-/* Variant colors for checkbox */
-.checkbox.is-primary input[type="checkbox"]:checked,
-.checkbox.is-primary input[type="checkbox"]:indeterminate {
-  border-color: #00d1b2;
-  background-color: #00d1b2;
-}
+  &.is-link input[type="checkbox"]:checked,
+  &.is-link input[type="checkbox"]:indeterminate {
+    border-color: $link;
+    background-color: $link;
+  }
 
-.checkbox.is-link input[type="checkbox"]:checked,
-.checkbox.is-link input[type="checkbox"]:indeterminate {
-  border-color: #485fc7;
-  background-color: #485fc7;
-}
+  &.is-info input[type="checkbox"]:checked,
+  &.is-info input[type="checkbox"]:indeterminate {
+    border-color: $info;
+    background-color: $info;
+  }
 
-.checkbox.is-info input[type="checkbox"]:checked,
-.checkbox.is-info input[type="checkbox"]:indeterminate {
-  border-color: #3e8ed0;
-  background-color: #3e8ed0;
-}
+  &.is-success input[type="checkbox"]:checked,
+  &.is-success input[type="checkbox"]:indeterminate {
+    border-color: $success;
+    background-color: $success;
+  }
 
-.checkbox.is-success input[type="checkbox"]:checked,
-.checkbox.is-success input[type="checkbox"]:indeterminate {
-  border-color: #48c78e;
-  background-color: #48c78e;
-}
+  &.is-warning input[type="checkbox"]:checked,
+  &.is-warning input[type="checkbox"]:indeterminate {
+    border-color: $warning;
+    background-color: $warning;
 
-.checkbox.is-warning input[type="checkbox"]:checked,
-.checkbox.is-warning input[type="checkbox"]:indeterminate {
-  border-color: #ffe08a;
-  background-color: #ffe08a;
-}
+    &::after {
+      border-color: rgba($black, 0.7);
+      background-color: rgba($black, 0.7);
+    }
+  }
 
-.checkbox.is-warning input[type="checkbox"]:checked::after,
-.checkbox.is-warning input[type="checkbox"]:indeterminate::after {
-  border-color: rgba(0, 0, 0, 0.7);
-  background-color: rgba(0, 0, 0, 0.7);
-}
+  &.is-danger input[type="checkbox"]:checked,
+  &.is-danger input[type="checkbox"]:indeterminate {
+    border-color: $danger;
+    background-color: $danger;
+  }
 
-.checkbox.is-danger input[type="checkbox"]:checked,
-.checkbox.is-danger input[type="checkbox"]:indeterminate {
-  border-color: #f14668;
-  background-color: #f14668;
-}
+  /* Size variants */
+  &.is-small {
+    font-size: $size-small;
 
-/* Size variants */
-.checkbox.is-small {
-  font-size: 0.75rem;
-}
+    input[type="checkbox"] {
+      width: 0.875rem;
+      height: 0.875rem;
+    }
+  }
 
-.checkbox.is-small input[type="checkbox"] {
-  width: 0.875rem;
-  height: 0.875rem;
-}
+  &.is-medium {
+    font-size: $size-medium;
 
-.checkbox.is-medium {
-  font-size: 1.25rem;
-}
+    input[type="checkbox"] {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+  }
 
-.checkbox.is-medium input[type="checkbox"] {
-  width: 1.25rem;
-  height: 1.25rem;
-}
+  &.is-large {
+    font-size: $size-large;
 
-.checkbox.is-large {
-  font-size: 1.5rem;
-}
-
-.checkbox.is-large input[type="checkbox"] {
-  width: 1.5rem;
-  height: 1.5rem;
+    input[type="checkbox"] {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+  }
 }
 </style>

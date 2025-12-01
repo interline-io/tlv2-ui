@@ -10,7 +10,7 @@
       <t-icon
         v-if="collapsible"
         :icon="isCollapsed ? 'chevron-down' : 'chevron-up'"
-        class="collapse-icon"
+        class="t-collapse-icon"
       />
       <button
         v-if="closable"
@@ -21,7 +21,7 @@
     </div>
     <div
       v-if="!collapsible || !isCollapsed"
-      :class="collapsible ? 'collapsible-content' : ''"
+      :class="collapsible ? 't-collapsible-content' : ''"
     >
       <template v-if="hasIcon">
         <div class="media message-body">
@@ -117,25 +117,6 @@ const handleClose = (): void => {
 </script>
 
 <style scoped>
-.media {
-    align-items: flex-start;
-    display: flex;
-}
-
-.media-content {
-    flex-basis: auto;
-    flex-grow: 1;
-    flex-shrink: 1;
-    overflow:hidden; /* hack */
-}
-
-.media-left {
-    flex-basis: auto;
-    flex-grow: 0;
-    flex-shrink: 0;
-    padding: 1em;
-}
-
 /* Collapsible styles */
 .message-header.is-clickable {
     cursor: pointer;
@@ -145,15 +126,15 @@ const handleClose = (): void => {
     transition: background-color 0.2s ease;
 }
 
-.message-header.is-clickable:hover {
+.t-message-header.is-clickable:hover {
     opacity: 0.8;
 }
 
-.collapse-icon {
+.t-collapse-icon {
     transition: transform 0.2s ease;
 }
 
-.collapsible-content {
+.t-collapsible-content {
     transition: all 0.2s ease;
 }
 </style>

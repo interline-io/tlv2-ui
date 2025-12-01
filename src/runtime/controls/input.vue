@@ -235,7 +235,3 @@ function handleIconRightClick (event: MouseEvent) {
   }
 }
 </script>
-
-<style scoped>
-/* Inherits Bulma input styles from global stylesheet */
-</style>

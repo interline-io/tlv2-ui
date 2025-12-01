@@ -1,7 +1,7 @@
 <template>
   <hr
     v-if="separator"
-    class="dropdown-divider"
+    class="t-dropdown-divider"
   >
   <a
     v-else
@@ -78,7 +78,7 @@ const isSelected = computed(() => {
 })
 
 const itemClass = computed(() => ({
-  'dropdown-item': true,
+  't-dropdown-item': true,
   'is-active': isSelected.value,
   'is-disabled': props.disabled
 }))
@@ -95,11 +95,14 @@ function handleClick (event: MouseEvent) {
 }
 </script>
 
-<style scoped>
-.dropdown-item {
-  color: #4a4a4a;
+<style lang="scss" scoped>
+@use "bulma/sass/utilities/initial-variables" as *;
+@use "bulma/sass/utilities/derived-variables" as *;
+
+.t-dropdown-item {
+  color: $text;
   display: block;
-  font-size: 0.875rem;
+  font-size: $size-small;
   line-height: 1.5;
   padding: 0.375rem 1rem;
   position: relative;
@@ -107,25 +110,25 @@ function handleClick (event: MouseEvent) {
   text-decoration: none;
   white-space: nowrap;
   transition: none;
+
+  &:hover:not(.is-disabled) {
+    background-color: lighten($link, 20%);
+    color: $white;
+  }
+
+  &.is-active {
+    background-color: $link;
+    color: $white;
+  }
+
+  &.is-disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
 }
 
-.dropdown-item:hover:not(.is-disabled) {
-  background-color: #7a8fd9;
-  color: #fff;
-}
-
-.dropdown-item.is-active {
-  background-color: #485fc7;
-  color: #fff;
-}
-
-.dropdown-item.is-disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-
-.dropdown-divider {
-  background-color: #ededed;
+.t-dropdown-divider {
+  background-color: $background;
   border: none;
   display: block;
   height: 1px;
