@@ -51,9 +51,8 @@
           :message="enableProfiles ? undefined : 'Profiles may not be available for this station and/or feed version'"
         >
           <t-select
-            :model-value="scenario?.profileName"
+            v-model="profileName"
             :disabled="!enableProfiles"
-            @update:model-value="(value) => emitSetProfileName(value as string | number | boolean | null | undefined)"
           >
             <option :value="null">
               Straight-line
@@ -78,8 +77,7 @@
             </p>
           </template>
           <t-select
-            :model-value="String(scenario?.useStopObservations)"
-            @update:model-value="(value) => emitSetUseStopObservations(value === 'true')"
+            v-model="useStopObservations"
           >
             <option value="true">
               Static GTFS &amp; GTFS Realtime schedules
@@ -232,12 +230,30 @@ const profiles = Profiles
 const selectedFeedVersions = ref<SelectedFeedVersion[]>(props.scenario?.selectedFeedVersions?.slice(0) || [])
 const _enableStopObservations = ref(true)
 const error = ref<string | null>(null)
+const profileName = ref<string | null>(props.scenario?.profileName || null)
+const useStopObservations = ref<string>(String(props.scenario?.useStopObservations))
 
 watch(() => props.scenario?.selectedFeedVersions, (newVal) => {
   if (newVal) {
     selectedFeedVersions.value = newVal.slice(0)
   }
 }, { deep: true, immediate: true })
+
+watch(() => props.scenario?.profileName, (newVal) => {
+  profileName.value = newVal || null
+})
+
+watch(profileName, (newVal) => {
+  emit('setProfileName', newVal)
+})
+
+watch(() => props.scenario?.useStopObservations, (newVal) => {
+  useStopObservations.value = String(newVal)
+})
+
+watch(useStopObservations, (newVal) => {
+  emit('setUseStopObservations', newVal === 'true')
+})
 
 const hasAtLeastOneStopObservation = computed(() => {
   if (!props.scenarioResult?.outgoingDepartures) return false
@@ -331,20 +347,6 @@ function setExcludeOutgoingTrips (state: boolean, keys: string) {
 function emitSetTimeOfDay (value: string | undefined) {
   if (value !== undefined) {
     emit('setTimeOfDay', value)
-  }
-}
-
-function emitSetProfileName (value: string | number | boolean | null | undefined) {
-  if (value !== undefined && value !== null && typeof value === 'string') {
-    emit('setProfileName', value)
-  } else if (value === null) {
-    emit('setProfileName', null)
-  }
-}
-
-function emitSetUseStopObservations (value: string | number | boolean | null | undefined) {
-  if (typeof value === 'boolean') {
-    emit('setUseStopObservations', value)
   }
 }
 

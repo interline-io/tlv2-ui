@@ -3,7 +3,9 @@
     :variant="isDark ? 'dark' : 'light'"
     @click="toggleTheme"
   >
-    <t-icon :icon="isDark ? 'weather-night' : 'weather-sunny'" />
+    <span class="icon">
+      <i :class="`mdi mdi-${isDark ? 'weather-night' : 'weather-sunny'}`" />
+    </span>
     <span>{{ isDark ? 'Dark' : 'Light' }} Mode</span>
   </t-button>
 </template>

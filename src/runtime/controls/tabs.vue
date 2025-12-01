@@ -11,7 +11,9 @@
           :class="{ 'is-active': modelValue === tab.value }"
         >
           <a @click.prevent="selectTab(tab.value)">
-            <t-icon v-if="tab.icon" :icon="tab.icon" />
+            <span v-if="tab.icon" class="icon">
+              <i :class="`mdi mdi-${tab.icon}`" />
+            </span>
             <span>{{ tab.label }}</span>
           </a>
         </li>
