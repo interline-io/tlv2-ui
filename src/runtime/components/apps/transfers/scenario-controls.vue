@@ -78,8 +78,8 @@
             </p>
           </template>
           <t-select
-            :model-value="scenario?.useStopObservations"
-            @update:model-value="(value) => emitSetUseStopObservations(value as string | number | boolean | null | undefined)"
+            :model-value="String(scenario?.useStopObservations)"
+            @update:model-value="(value) => emitSetUseStopObservations(value === 'true')"
           >
             <option value="true">
               Static GTFS &amp; GTFS Realtime schedules

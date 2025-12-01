@@ -21,7 +21,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends string | null | string[] = string | null">
 import { computed, ref, watch, onMounted, nextTick } from 'vue'
 import type { SelectVariant, SelectSize } from './types'
 
@@ -42,7 +42,7 @@ interface Props {
    * The selected value (v-model).
    * For multiple select, use an array.
    */
-  modelValue?: string | null | string[]
+  modelValue?: T
 
   /**
    * Select size variant.
@@ -112,7 +112,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  'update:modelValue': [value: string | null | string[]]
+  'update:modelValue': [value: T]
 }>()
 
 const selectRef = ref<HTMLSelectElement | null>(null)
@@ -198,14 +198,14 @@ function handleChange (event: Event) {
   // Handle multiple select
   if (target.multiple) {
     const selectedValues = Array.from(target.selectedOptions).map(option => option.value)
-    emit('update:modelValue', selectedValues)
+    emit('update:modelValue', selectedValues as T)
     return
   }
 
   // Handle single select
   const value: string | null = target.value === '' ? null : target.value
 
-  emit('update:modelValue', value)
+  emit('update:modelValue', value as T)
 }
 </script>
 

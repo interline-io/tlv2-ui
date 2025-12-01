@@ -30,7 +30,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends string | number = string">
 import { computed } from 'vue'
 import type { InputVariant, InputSize } from './types'
 
@@ -42,17 +42,16 @@ import type { InputVariant, InputSize } from './types'
  * @example
  * <t-input v-model="value" placeholder="Enter text" />
  * <t-input v-model="email" type="email" variant="primary" />
- * <t-input v-model="search" icon="magnify" icon-right="close-circle" icon-right-clickable @icon-right-click="clear" />
+ * <t-input v-model="numberValue" type="number" />
  */
 
 interface Props {
   /**
    * Input value (v-model).
-   * Always emits string values, even for type="number".
-   * Empty string represents empty input (never null).
-   * Use native input validation and convert to number in your handler if needed.
+   * Type is inferred from the binding: string for text inputs, number for numeric inputs.
+   * For type="number", bind to a number variable to get automatic number conversion.
    */
-  modelValue?: string
+  modelValue?: T
 
   /**
    * Input type attribute.
@@ -149,7 +148,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  modelValue: '',
+  modelValue: undefined,
   type: 'text',
   placeholder: undefined,
   size: undefined,
@@ -170,7 +169,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  'update:modelValue': [value: string]
+  'update:modelValue': [value: T]
   'icon-right-click': [event: MouseEvent]
 }>()
 
@@ -220,7 +219,14 @@ const inputClasses = computed(() => {
 
 function handleInput (event: Event) {
   const target = event.target as HTMLInputElement
-  emit('update:modelValue', target.value)
+
+  // Convert to number if the modelValue type is number
+  if (props.type === 'number' && typeof props.modelValue === 'number') {
+    const numValue = target.value === '' ? 0 : Number(target.value)
+    emit('update:modelValue', numValue as T)
+  } else {
+    emit('update:modelValue', target.value as T)
+  }
 }
 
 function handleIconRightClick (event: MouseEvent) {

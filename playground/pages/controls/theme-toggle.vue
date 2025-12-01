@@ -8,22 +8,14 @@
         Switch between light and dark themes
       </p>
 
-      <!-- Basic Usage -->
-      <h2 class="title is-3">
-        Basic Usage
-      </h2>
-      <div class="box">
+      <t-demo-box label="Basic Usage">
         <p class="mb-3">
           Click the button below to toggle between light and dark themes. The preference is saved to localStorage.
         </p>
         <t-theme-toggle />
-      </div>
+      </t-demo-box>
 
-      <!-- Demo Content -->
-      <h2 class="title is-3">
-        Theme Preview
-      </h2>
-      <div class="box">
+      <t-demo-box label="Example: Theme Preview" example>
         <h3 class="subtitle is-5">
           Sample Content
         </h3>
@@ -87,44 +79,38 @@
             Danger Button
           </t-button>
         </div>
-      </div>
+      </t-demo-box>
 
-      <!-- Cards -->
-      <h2 class="title is-3">
-        Card Examples
-      </h2>
-      <div class="columns">
-        <div class="column">
-          <t-card>
-            <template #header>
-              <p class="card-header-title">
-                Sample Card 1
-              </p>
-            </template>
-            <div class="content">
-              <p>Card content adapts to the theme automatically.</p>
-            </div>
-          </t-card>
+      <t-demo-box label="Example: Cards" example>
+        <div class="columns">
+          <div class="column">
+            <t-card>
+              <template #header>
+                <p class="card-header-title">
+                  Sample Card 1
+                </p>
+              </template>
+              <div class="content">
+                <p>Card content adapts to the theme automatically.</p>
+              </div>
+            </t-card>
+          </div>
+          <div class="column">
+            <t-card>
+              <template #header>
+                <p class="card-header-title">
+                  Sample Card 2
+                </p>
+              </template>
+              <div class="content">
+                <p>All components work seamlessly in both light and dark modes.</p>
+              </div>
+            </t-card>
+          </div>
         </div>
-        <div class="column">
-          <t-card>
-            <template #header>
-              <p class="card-header-title">
-                Sample Card 2
-              </p>
-            </template>
-            <div class="content">
-              <p>All components work seamlessly in both light and dark modes.</p>
-            </div>
-          </t-card>
-        </div>
-      </div>
+      </t-demo-box>
 
-      <!-- Notifications -->
-      <h2 class="title is-3">
-        Notifications
-      </h2>
-      <div class="box">
+      <t-demo-box label="Example: Notifications" example>
         <t-notification variant="info" class="mb-3">
           <strong>Info:</strong> This is an info notification.
         </t-notification>
@@ -137,13 +123,9 @@
         <t-notification variant="danger">
           <strong>Error:</strong> This is an error notification.
         </t-notification>
-      </div>
+      </t-demo-box>
 
-      <!-- Table -->
-      <h2 class="title is-3">
-        Table Example
-      </h2>
-      <div class="box">
+      <t-demo-box label="Example: Table" example>
         <t-table>
           <thead>
             <tr>
@@ -170,13 +152,9 @@
             </tr>
           </tbody>
         </t-table>
-      </div>
+      </t-demo-box>
 
-      <!-- Implementation -->
-      <h2 class="title is-3">
-        Implementation
-      </h2>
-      <div class="box">
+      <t-demo-box label="Implementation">
         <h3 class="subtitle is-5">
           How It Works
         </h3>
@@ -198,7 +176,7 @@
         <p class="help">
           Place this component anywhere in your layout, typically in the header or navigation bar.
         </p>
-      </div>
+      </t-demo-box>
     </section>
   </div>
 </template>

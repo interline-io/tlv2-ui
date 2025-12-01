@@ -188,6 +188,28 @@
           </p>
         </div>
       </t-demo-box>
+
+      <t-demo-box label="Example: Custom Values (Numeric)" example>
+        <t-field>
+          <t-switch v-model="statusCode" :true-value="1" :false-value="0" variant="success">
+            API Status (1 = active, 0 = inactive)
+          </t-switch>
+        </t-field>
+        <p class="has-text-grey">
+          Status Code: {{ statusCode }} (type: {{ typeof statusCode }})
+        </p>
+      </t-demo-box>
+
+      <t-demo-box label="Example: Custom Values (String)" example>
+        <t-field>
+          <t-switch v-model="theme" true-value="dark" false-value="light" variant="dark">
+            Dark Mode
+          </t-switch>
+        </t-field>
+        <p class="has-text-grey">
+          Theme: {{ theme }} (type: {{ typeof theme }})
+        </p>
+      </t-demo-box>
     </section>
   </div>
 </template>
@@ -262,4 +284,7 @@ const demo = ref<{
   autoUpdate: false,
   notifications: true
 })
+
+const statusCode = ref<number>(1)
+const theme = ref<string>('light')
 </script>

@@ -167,19 +167,19 @@
 
 <script setup lang="ts">
 import { ref, computed, reactive } from 'vue'
-import { CheckboxVariants, CheckboxSizes } from '../../../src/runtime/controls/types'
+import { CoreVariants, CheckboxSizes } from '../../../src/runtime/controls/types'
 
-const variants = CheckboxVariants
+const variants = CoreVariants
 const sizes = CheckboxSizes
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 
-const basic = ref<boolean | any[]>(false)
-const option1 = ref<boolean | any[]>(false)
-const option2 = ref<boolean | any[]>(true)
-const option3 = ref<boolean | any[]>(false)
+const basic = ref<boolean>(false)
+const option1 = ref<boolean>(false)
+const option2 = ref<boolean>(true)
+const option3 = ref<boolean>(false)
 
-const variantValues = reactive<Record<string, boolean | any[]>>({
+const variantValues = reactive<Record<string, boolean>>({
   primary: true,
   link: true,
   info: true,
@@ -188,24 +188,24 @@ const variantValues = reactive<Record<string, boolean | any[]>>({
   danger: true
 })
 
-const sizeValues = reactive<Record<string, boolean | any[]>>({
+const sizeValues = reactive<Record<string, boolean>>({
   small: true,
   normal: true,
   medium: true,
   large: true
 })
 
-const stateDisabled = ref<boolean | any[]>(false)
-const stateDisabledChecked = ref<boolean | any[]>(true)
+const stateDisabled = ref<boolean>(false)
+const stateDisabledChecked = ref<boolean>(true)
 
-const fruits = ref<boolean | string[]>(['banana', 'orange'])
-const option1Content = ref<boolean | any[]>(true)
-const option2Content = ref<boolean | any[]>(false)
+const fruits = ref<string[]>(['banana', 'orange'])
+const option1Content = ref<boolean>(true)
+const option2Content = ref<boolean>(false)
 
 // Indeterminate state demo
-const selectAll = ref<boolean | any[]>(false)
+const selectAll = ref<boolean>(false)
 const indeterminate = ref(true)
-const items = ref<Record<string, boolean | any[]>>({
+const items = ref<Record<string, boolean>>({
   item1: true,
   item2: false,
   item3: true,

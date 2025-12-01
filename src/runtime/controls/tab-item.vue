@@ -4,7 +4,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends string | number = string">
 import { inject, onMounted, computed, type ComputedRef } from 'vue'
 
 /**
@@ -23,7 +23,7 @@ interface Props {
   /** The label displayed in the tab header */
   label: string
   /** The value used to identify this tab */
-  value: string | number
+  value: T
   /** Optional icon to display */
   icon?: string
 }
@@ -31,7 +31,7 @@ interface Props {
 const props = defineProps<Props>()
 
 const registerTab = inject<(label: string, value: string | number, icon?: string) => void>('registerTab')
-const activeTab = inject<ComputedRef<string | number>>('activeTab')
+const activeTab = inject<ComputedRef<string | number | undefined>>('activeTab')
 
 onMounted(() => {
   if (registerTab) {

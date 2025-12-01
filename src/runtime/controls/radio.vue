@@ -12,21 +12,22 @@
   </label>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends string | number | boolean | null = string">
 import { computed } from 'vue'
 import type { RadioVariant, RadioSize } from './types'
 
 /**
  * Radio button component using native HTML radio input with Bulma styling.
+ * Type-safe with generic support for different value types.
  *
+ * @component t-radio
  * @example
- * ```vue
  * <t-radio v-model="selected" native-value="option1" name="choice">Option 1</t-radio>
  * <t-radio v-model="selected" native-value="option2" name="choice">Option 2</t-radio>
- * ```
+ * <t-radio v-model="count" :native-value="1" name="number">One</t-radio>
  */
 
-interface Props<T = string | number | boolean | null> {
+interface Props {
   /** The v-model value - should match nativeValue when this radio is selected */
   modelValue?: T
   /** The value this radio represents - what gets emitted when selected */
@@ -51,7 +52,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  'update:modelValue': [value: any]
+  'update:modelValue': [value: T]
 }>()
 
 const radioClasses = computed(() => {

@@ -8,76 +8,14 @@
         Search input with suggestions and filtering
       </p>
 
-      <!-- Basic Search Bar -->
-      <h2 class="title is-3">
-        Basic Search Bar
-      </h2>
-      <div class="box">
+      <t-demo-box label="Basic Search Bar">
         <t-search-bar v-model="basicSearch" placeholder="Search..." />
         <p class="has-text-grey mt-3">
           Search query: {{ basicSearch || 'None' }}
         </p>
-      </div>
+      </t-demo-box>
 
-      <!-- With Icon -->
-      <h2 class="title is-3">
-        With Search Icon
-      </h2>
-      <div class="box">
-        <t-search-bar v-model="iconSearch" placeholder="Search products..." />
-      </div>
-
-      <!-- Sizes -->
-      <h2 class="title is-3">
-        Sizes
-      </h2>
-      <div class="box">
-        <t-search-bar v-model="sizeSmall" placeholder="Small search" class="mb-3" />
-        <t-search-bar v-model="sizeNormal" placeholder="Normal search" class="mb-3" />
-        <t-search-bar v-model="sizeMedium" placeholder="Medium search" class="mb-3" />
-        <t-search-bar v-model="sizeLarge" placeholder="Large search" />
-      </div>
-
-      <!-- Rounded Style -->
-      <h2 class="title is-3">
-        Rounded Style
-      </h2>
-      <div class="box">
-        <t-search-bar v-model="roundedSearch" placeholder="Rounded search..." />
-      </div>
-
-      <!-- Loading State -->
-      <h2 class="title is-3">
-        Loading State
-      </h2>
-      <div class="box">
-        <t-search-bar v-model="loadingSearch" placeholder="Search..." />
-        <p class="has-text-grey mt-3">
-          Shows a loading spinner while fetching results
-        </p>
-      </div>
-
-      <!-- With Clear Button -->
-      <h2 class="title is-3">
-        With Clear Button
-      </h2>
-      <div class="box">
-        <t-search-bar v-model="clearableSearch" placeholder="Search..." />
-      </div>
-
-      <!-- Full Width -->
-      <h2 class="title is-3">
-        Full Width
-      </h2>
-      <div class="box">
-        <t-search-bar v-model="fullWidthSearch" placeholder="Search across the entire site..." />
-      </div>
-
-      <!-- Interactive Search -->
-      <h2 class="title is-3">
-        Interactive Search with Results
-      </h2>
-      <div class="box">
+      <t-demo-box label="Example: Interactive Search with Results" example>
         <t-search-bar
           v-model="interactiveSearch as string | null"
           placeholder="Search products..."
@@ -107,13 +45,9 @@
         <p v-else-if="interactiveSearch" class="has-text-grey mt-3">
           No results found
         </p>
-      </div>
+      </t-demo-box>
 
-      <!-- Search with Filters -->
-      <h2 class="title is-3">
-        Search with Filters
-      </h2>
-      <div class="box">
+      <t-demo-box label="Example: Search with Filters" example>
         <div class="field has-addons">
           <div class="control is-expanded">
             <t-search-bar v-model="filterSearch" placeholder="Search..." />
@@ -140,13 +74,9 @@
             </t-button>
           </div>
         </div>
-      </div>
+      </t-demo-box>
 
-      <!-- Navbar Search -->
-      <h2 class="title is-3">
-        Navbar Search
-      </h2>
-      <div class="box">
+      <t-demo-box label="Example: Navbar Search" example>
         <nav class="navbar is-light">
           <div class="navbar-brand">
             <a class="navbar-item" href="#">
@@ -166,13 +96,9 @@
             </div>
           </div>
         </nav>
-      </div>
+      </t-demo-box>
 
-      <!-- Search Suggestions -->
-      <h2 class="title is-3">
-        With Suggestions
-      </h2>
-      <div class="box">
+      <t-demo-box label="Example: With Suggestions" example>
         <t-search-bar
           v-model="suggestionSearch"
           placeholder="Type to see suggestions..."
@@ -193,13 +119,9 @@
             </div>
           </div>
         </div>
-      </div>
+      </t-demo-box>
 
-      <!-- Advanced Search -->
-      <h2 class="title is-3">
-        Advanced Search Form
-      </h2>
-      <div class="box">
+      <t-demo-box label="Example: Advanced Search Form" example>
         <t-search-bar v-model="advancedSearch" placeholder="Search..." class="mb-4" />
         <div v-if="showAdvancedOptions" class="content">
           <p class="has-text-weight-bold">
@@ -252,13 +174,9 @@
         <t-button size="small" @click="showAdvancedOptions = !showAdvancedOptions">
           {{ showAdvancedOptions ? 'Hide' : 'Show' }} Advanced Options
         </t-button>
-      </div>
+      </t-demo-box>
 
-      <!-- Real-time Search -->
-      <h2 class="title is-3">
-        Real-time Search
-      </h2>
-      <div class="box">
+      <t-demo-box label="Example: Real-time Search" example>
         <p class="mb-3">
           Search updates as you type
         </p>
@@ -294,7 +212,7 @@
             </tbody>
           </table>
         </div>
-      </div>
+      </t-demo-box>
     </section>
   </div>
 </template>
@@ -303,15 +221,6 @@
 import { ref, computed, watch } from 'vue'
 
 const basicSearch = ref<string | null>('')
-const iconSearch = ref<string | null>('')
-const sizeSmall = ref<string | null>('')
-const sizeNormal = ref<string | null>('')
-const sizeMedium = ref<string | null>('')
-const sizeLarge = ref<string | null>('')
-const roundedSearch = ref<string | null>('')
-const loadingSearch = ref<string | null>('')
-const clearableSearch = ref<string | null>('Sample text')
-const fullWidthSearch = ref<string | null>('')
 const navbarSearch = ref<string | null>('')
 
 const interactiveSearch = ref('')
@@ -332,7 +241,7 @@ const searchResults = computed(() => {
 })
 
 const filterSearch = ref<string | null>('')
-const filterCategory = ref<string | number | boolean | null | (string | number)[]>('')
+const filterCategory = ref<string | null>('')
 
 const suggestionSearch = ref<string | null>('')
 const allSuggestions = [
@@ -358,8 +267,8 @@ const applySuggestion = (suggestion: string) => {
 
 const advancedSearch = ref<string | null>('')
 const showAdvancedOptions = ref(false)
-const advancedCategory = ref<string | number | boolean | null | (string | number)[]>('')
-const advancedDateRange = ref<string | number | boolean | null | (string | number)[]>('any')
+const advancedCategory = ref<string | null>('')
+const advancedDateRange = ref<string | null>('any')
 const advancedExact = ref<boolean | any[]>(false)
 
 const realtimeSearch = ref<string | null>('')

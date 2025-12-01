@@ -23,7 +23,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends string | number = string">
 import { computed, provide, ref, watch, nextTick } from 'vue'
 
 /**
@@ -43,7 +43,7 @@ import type { TabsSize, TabsPosition, TabsType } from './types'
 
 interface Props {
   /** The active tab value (v-model) */
-  modelValue?: string | number
+  modelValue?: T
   /** Position: 'left' (default), 'centered', 'right' */
   position?: TabsPosition
   /** Size: 'small', 'normal', 'medium', 'large' */
@@ -63,7 +63,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  'update:modelValue': [value: string | number]
+  'update:modelValue': [value: T]
 }>()
 
 interface TabItem {
@@ -82,7 +82,7 @@ provide('registerTab', registerTab)
 provide('activeTab', computed(() => props.modelValue))
 
 function selectTab (value: string | number) {
-  emit('update:modelValue', value)
+  emit('update:modelValue', value as T)
 }
 
 const tabsClasses = computed(() => {

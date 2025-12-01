@@ -152,6 +152,32 @@
           </t-radio>
         </t-field>
       </t-demo-box>
+
+      <t-demo-box label="Example: Numeric Values (Rating)" example>
+        <p class="mb-3">
+          <strong>Rate this product (1-5 stars):</strong>
+        </p>
+        <t-field>
+          <t-radio v-model="rating" :native-value="1">
+            ⭐ 1 Star
+          </t-radio>
+          <t-radio v-model="rating" :native-value="2">
+            ⭐⭐ 2 Stars
+          </t-radio>
+          <t-radio v-model="rating" :native-value="3">
+            ⭐⭐⭐ 3 Stars
+          </t-radio>
+          <t-radio v-model="rating" :native-value="4">
+            ⭐⭐⭐⭐ 4 Stars
+          </t-radio>
+          <t-radio v-model="rating" :native-value="5">
+            ⭐⭐⭐⭐⭐ 5 Stars
+          </t-radio>
+        </t-field>
+        <p class="has-text-grey mt-3">
+          Rating: {{ rating }} (type: {{ typeof rating }})
+        </p>
+      </t-demo-box>
     </section>
   </div>
 </template>
@@ -173,4 +199,5 @@ const contentDemo = ref('option1')
 const payment = ref('credit')
 const shipping = ref('standard')
 const satisfaction = ref('satisfied')
+const rating = ref<number>(4)
 </script>

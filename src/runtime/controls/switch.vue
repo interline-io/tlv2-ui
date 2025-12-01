@@ -13,37 +13,39 @@
   </label>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends boolean | string | number = boolean">
 import { computed } from 'vue'
 import type { SwitchVariant, SwitchSize } from './types'
 
 /**
  * Toggle switch component with v-model support.
- * Supports boolean or custom true/false values.
+ * Supports boolean or custom true/false values with type safety.
  *
  * @component t-switch
  * @example
  * <t-switch v-model="enabled">Enable feature</t-switch>
  * <t-switch v-model="status" :true-value="1" :false-value="0">Active</t-switch>
+ * <t-switch v-model="mode" true-value="dark" false-value="light">Dark Mode</t-switch>
  */
 
 interface Props {
   /**
    * Switch state (v-model).
+   * Type is inferred from trueValue/falseValue or the bound variable.
    */
-  modelValue?: boolean
+  modelValue?: T
 
   /**
    * Value when switch is on.
    * @default true
    */
-  trueValue?: boolean
+  trueValue?: T
 
   /**
    * Value when switch is off.
    * @default false
    */
-  falseValue?: boolean
+  falseValue?: T
 
   /**
    * Disable switch interaction.
@@ -74,9 +76,9 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  modelValue: false,
-  trueValue: true,
-  falseValue: false,
+  modelValue: undefined,
+  trueValue: undefined,
+  falseValue: undefined,
   disabled: false,
   label: undefined,
   size: undefined,
@@ -89,11 +91,12 @@ const props = withDefaults(defineProps<Props>(), {
  * @event update:modelValue
  */
 const emit = defineEmits<{
-  'update:modelValue': [value: boolean]
+  'update:modelValue': [value: T]
 }>()
 
 const isChecked = computed(() => {
-  return props.modelValue === props.trueValue
+  const trueVal = props.trueValue !== undefined ? props.trueValue : true as T
+  return props.modelValue === trueVal
 })
 
 const switchClasses = computed(() => {
@@ -120,7 +123,10 @@ const switchClasses = computed(() => {
 
 function handleChange (event: Event) {
   const target = event.target as HTMLInputElement
-  emit('update:modelValue', target.checked ? props.trueValue : props.falseValue)
+  const trueVal = props.trueValue !== undefined ? props.trueValue : true as T
+  const falseVal = props.falseValue !== undefined ? props.falseValue : false as T
+  const newValue = target.checked ? trueVal : falseVal
+  emit('update:modelValue', newValue)
 }
 </script>
 

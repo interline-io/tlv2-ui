@@ -265,7 +265,7 @@ const regUsername = ref('')
 const regEmail = ref('')
 const regPassword = ref('')
 const regPasswordConfirm = ref('')
-const regCountry = ref<string | number | boolean | null | (string | number)[]>('')
+const regCountry = ref<string | null>('')
 const regTerms = ref<boolean | any[]>(false)
 
 const address = ref({

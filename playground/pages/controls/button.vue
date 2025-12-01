@@ -13,7 +13,12 @@
           <t-button>
             Default
           </t-button>
-          <t-button v-for="variant in variants" :key="variant" :variant="variant">
+          <t-button v-for="variant in coreVariants" :key="variant" :variant="variant">
+            {{ capitalize(variant) }}
+          </t-button>
+        </div>
+        <div class="buttons">
+          <t-button v-for="variant in additionalVariants" :key="variant" :variant="variant">
             {{ capitalize(variant) }}
           </t-button>
         </div>
@@ -29,7 +34,12 @@
 
       <t-demo-box label="Outlined">
         <div class="buttons">
-          <t-button v-for="variant in outlinedVariants" :key="variant" :variant="variant" outlined>
+          <t-button v-for="variant in coreVariants" :key="variant" :variant="variant" outlined>
+            {{ capitalize(variant) }}
+          </t-button>
+        </div>
+        <div class="buttons">
+          <t-button v-for="variant in additionalVariants" :key="variant" :variant="variant" outlined>
             {{ capitalize(variant) }}
           </t-button>
         </div>
@@ -134,11 +144,11 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { ButtonVariants, ButtonSizes } from '../../../src/runtime/controls/types'
+import { CoreVariants, ButtonVariants, ButtonSizes } from '../../../src/runtime/controls/types'
 
-const variants = ButtonVariants
+const coreVariants = CoreVariants
+const additionalVariants = ButtonVariants.filter(v => !CoreVariants.includes(v as any))
 const sizes = ButtonSizes
-const outlinedVariants = ButtonVariants
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 

@@ -59,5 +59,42 @@ const variantClass = computed(() => {
 </script>
 
 <style scoped>
-/* Inherits Bulma icon and MDI styles from global stylesheet */
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.5rem;
+  width: 1.5rem;
+}
+
+.icon.is-small {
+  height: 1rem;
+  width: 1rem;
+}
+
+.icon.is-small i {
+  font-size: 1rem;
+}
+
+.icon.is-medium {
+  height: 2rem;
+  width: 2rem;
+}
+
+.icon.is-medium i {
+  font-size: 2rem;
+}
+
+.icon.is-large {
+  height: 3rem;
+  width: 3rem;
+}
+
+.icon.is-large i {
+  font-size: 3rem;
+}
+
+.icon i {
+  font-size: 1.5rem;
+}
 </style>

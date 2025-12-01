@@ -8,64 +8,21 @@
         Loading indicators and spinners
       </p>
 
-      <div>
-        <!-- Basic Loading -->
-        <h2 class="title is-3">
-          Basic Loading Spinner
-        </h2>
-        <div class="box has-text-centered">
+      <t-demo-box label="Basic Loading Spinner">
+        <div class="has-text-centered">
           <t-loading />
         </div>
+      </t-demo-box>
 
-        <!-- Inline Loading -->
-        <h2 class="title is-3">
-          Inline Loading
-        </h2>
-        <div class="box">
-          <p class="is-flex is-align-items-center">
-            <t-loading />
-            <span class="ml-3">Loading data...</span>
-          </p>
-        </div>
+      <t-demo-box label="Inline Loading">
+        <p class="is-flex is-align-items-center">
+          <t-loading />
+          <span class="ml-3">Loading data...</span>
+        </p>
+      </t-demo-box>
 
-        <!-- Sizes -->
-        <h2 class="title is-3">
-          Sizes
-        </h2>
-        <div class="box">
-          <div class="is-flex is-align-items-center is-justify-content-space-around">
-            <div class="has-text-centered">
-              <t-loading />
-              <p class="mt-2 is-size-7">
-                Small
-              </p>
-            </div>
-            <div class="has-text-centered">
-              <t-loading />
-              <p class="mt-2 is-size-7">
-                Normal
-              </p>
-            </div>
-            <div class="has-text-centered">
-              <t-loading />
-              <p class="mt-2 is-size-7">
-                Medium
-              </p>
-            </div>
-            <div class="has-text-centered">
-              <t-loading />
-              <p class="mt-2 is-size-7">
-                Large
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Loading Overlay -->
-        <h2 class="title is-3">
-          Loading Overlay
-        </h2>
-        <div class="box" style="position: relative; min-height: 200px;">
+      <t-demo-box label="Loading Overlay">
+        <div style="position: relative; min-height: 200px;">
           <div v-if="overlayLoading" class="loading-overlay">
             <t-loading />
           </div>
@@ -84,175 +41,48 @@
             {{ overlayLoading ? 'Stop Loading' : 'Start Loading' }}
           </t-button>
         </div>
+      </t-demo-box>
 
-        <!-- Loading in Buttons -->
-        <h2 class="title is-3">
-          Loading in Buttons
-        </h2>
-        <div class="box">
-          <div class="buttons">
-            <t-button variant="primary" :loading="buttonLoading" @click="simulateAction">
-              {{ buttonLoading ? '' : 'Submit' }}
-            </t-button>
-            <t-button variant="info" :loading="buttonLoading2" @click="simulateAction2">
-              {{ buttonLoading2 ? '' : 'Save' }}
-            </t-button>
-            <t-button variant="success" :loading="buttonLoading3" @click="simulateAction3">
-              {{ buttonLoading3 ? '' : 'Download' }}
-            </t-button>
-          </div>
-        </div>
-
-        <!-- Full Page Loading -->
-        <h2 class="title is-3">
-          Full Page Loading
-        </h2>
-        <div class="box">
-          <p class="mb-3">
-            Click the button to show a full-page loading overlay
-          </p>
-          <t-button variant="primary" @click="showFullPageLoading">
-            Show Full Page Loading
+      <t-demo-box label="Loading in Buttons">
+        <div class="buttons">
+          <t-button variant="primary" :loading="buttonLoading" @click="simulateAction">
+            {{ buttonLoading ? '' : 'Submit' }}
+          </t-button>
+          <t-button variant="info" :loading="buttonLoading2" @click="simulateAction2">
+            {{ buttonLoading2 ? '' : 'Save' }}
+          </t-button>
+          <t-button variant="success" :loading="buttonLoading3" @click="simulateAction3">
+            {{ buttonLoading3 ? '' : 'Download' }}
           </t-button>
         </div>
+      </t-demo-box>
 
-        <!-- Loading States -->
-        <h2 class="title is-3">
-          Loading States
-        </h2>
-        <div class="box">
-          <t-button variant="primary" @click="loadData">
-            Load Data
-          </t-button>
-          <div v-if="dataLoading" class="mt-3">
-            <div class="is-flex is-align-items-center">
-              <t-loading />
-              <span class="ml-3">Loading data...</span>
-            </div>
-          </div>
-          <div v-else-if="dataLoaded" class="mt-3">
-            <div class="notification is-success is-light">
-              <t-icon icon="check-circle" />
-              Data loaded successfully!
-            </div>
+      <t-demo-box label="Full Page Loading">
+        <p class="mb-3">
+          Click the button to show a full-page loading overlay
+        </p>
+        <t-button variant="primary" @click="showFullPageLoading">
+          Show Full Page Loading
+        </t-button>
+      </t-demo-box>
+
+      <t-demo-box label="Loading States">
+        <t-button variant="primary" @click="loadData">
+          Load Data
+        </t-button>
+        <div v-if="dataLoading" class="mt-3">
+          <div class="is-flex is-align-items-center">
+            <t-loading />
+            <span class="ml-3">Loading data...</span>
           </div>
         </div>
-
-        <!-- Loading with Message -->
-        <h2 class="title is-3">
-          Loading with Message
-        </h2>
-        <div class="box has-text-centered">
-          <t-loading />
-          <p class="mt-3 has-text-grey">
-            Please wait while we process your request...
-          </p>
-        </div>
-
-        <!-- Card Loading State -->
-        <h2 class="title is-3">
-          Card Loading State
-        </h2>
-        <div class="columns">
-          <div class="column">
-            <t-card>
-              <div class="card-content" style="min-height: 150px; position: relative;">
-                <div v-if="cardLoading1" class="loading-overlay">
-                  <t-loading />
-                </div>
-                <div :class="{ 'is-invisible': cardLoading1 }">
-                  <p class="title is-4">
-                    Card 1
-                  </p>
-                  <p>
-                    Content for the first card.
-                  </p>
-                </div>
-              </div>
-              <template #footer>
-                <a href="#" class="card-footer-item" @click.prevent="toggleCard1">
-                  {{ cardLoading1 ? 'Stop' : 'Load' }}
-                </a>
-              </template>
-            </t-card>
-          </div>
-          <div class="column">
-            <t-card>
-              <div class="card-content" style="min-height: 150px; position: relative;">
-                <div v-if="cardLoading2" class="loading-overlay">
-                  <t-loading />
-                </div>
-                <div :class="{ 'is-invisible': cardLoading2 }">
-                  <p class="title is-4">
-                    Card 2
-                  </p>
-                  <p>
-                    Content for the second card.
-                  </p>
-                </div>
-              </div>
-              <template #footer>
-                <a href="#" class="card-footer-item" @click.prevent="toggleCard2">
-                  {{ cardLoading2 ? 'Stop' : 'Load' }}
-                </a>
-              </template>
-            </t-card>
+        <div v-else-if="dataLoaded" class="mt-3">
+          <div class="notification is-success is-light">
+            <t-icon icon="check-circle" />
+            Data loaded successfully!
           </div>
         </div>
-
-        <!-- Table Loading -->
-        <h2 class="title is-3">
-          Table Loading State
-        </h2>
-        <div class="box">
-          <t-button variant="info" class="mb-3" @click="toggleTableLoading">
-            {{ tableLoading ? 'Stop Loading' : 'Load Table Data' }}
-          </t-button>
-          <div style="position: relative; min-height: 200px;">
-            <div v-if="tableLoading" class="loading-overlay">
-              <t-loading />
-            </div>
-            <table :class="{ 'is-invisible': tableLoading }" class="table is-fullwidth">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Status</th>
-                  <th>Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>John Doe</td>
-                  <td>
-                    <t-tag variant="success">
-                      Active
-                    </t-tag>
-                  </td>
-                  <td>2024-01-15</td>
-                </tr>
-                <tr>
-                  <td>Jane Smith</td>
-                  <td>
-                    <t-tag variant="warning">
-                      Pending
-                    </t-tag>
-                  </td>
-                  <td>2024-01-16</td>
-                </tr>
-                <tr>
-                  <td>Bob Johnson</td>
-                  <td>
-                    <t-tag variant="success">
-                      Active
-                    </t-tag>
-                  </td>
-                  <td>2024-01-17</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+      </t-demo-box>
 
       <!-- Full Page Loading Overlay -->
       <div v-if="fullPageLoading" class="full-page-overlay">
@@ -276,9 +106,6 @@ const buttonLoading2 = ref(false)
 const buttonLoading3 = ref(false)
 const dataLoading = ref(false)
 const dataLoaded = ref(false)
-const cardLoading1 = ref(false)
-const cardLoading2 = ref(false)
-const tableLoading = ref(false)
 const fullPageLoading = ref(false)
 
 const toggleOverlay = () => {
@@ -313,18 +140,6 @@ const loadData = () => {
     dataLoading.value = false
     dataLoaded.value = true
   }, 2000)
-}
-
-const toggleCard1 = () => {
-  cardLoading1.value = !cardLoading1.value
-}
-
-const toggleCard2 = () => {
-  cardLoading2.value = !cardLoading2.value
-}
-
-const toggleTableLoading = () => {
-  tableLoading.value = !tableLoading.value
 }
 
 const showFullPageLoading = () => {

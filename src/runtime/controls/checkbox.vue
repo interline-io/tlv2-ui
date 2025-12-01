@@ -11,7 +11,7 @@
   </label>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends boolean | any[] = boolean">
 import { ref, watch, onMounted, computed } from 'vue'
 import type { CheckboxVariant, CheckboxSize } from './types'
 
@@ -23,20 +23,21 @@ import type { CheckboxVariant, CheckboxSize } from './types'
  * @example
  * <t-checkbox v-model="checked">Accept terms</t-checkbox>
  * <t-checkbox v-model="checked" disabled>Disabled option</t-checkbox>
- * <t-checkbox v-model="checked" :indeterminate="someChildrenChecked">Select all</t-checkbox>
+ * <t-checkbox v-model="options" native-value="option1">Option 1</t-checkbox>
  */
 
 interface Props {
   /**
    * Checkbox checked state (v-model).
-   * Can be a boolean for single checkboxes or an array for checkbox groups.
+   * Type is inferred: boolean for single checkbox, array for checkbox groups.
    */
-  modelValue?: boolean | any[]
+  modelValue?: T
 
   /**
    * Value to add/remove from array when used with array binding.
+   * Required when modelValue is an array.
    */
-  nativeValue?: any
+  nativeValue?: T extends any[] ? T[number] : never
 
   /**
    * Disable checkbox interaction.
@@ -67,7 +68,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  modelValue: false,
+  modelValue: undefined,
   nativeValue: undefined,
   disabled: false,
   indeterminate: false,
@@ -81,7 +82,7 @@ const props = withDefaults(defineProps<Props>(), {
  * @event update:modelValue
  */
 const emit = defineEmits<{
-  'update:modelValue': [value: boolean | any[]]
+  'update:modelValue': [value: T]
 }>()
 
 const inputRef = ref<HTMLInputElement | null>(null)
@@ -129,10 +130,10 @@ function handleChange (event: Event) {
         newValue.splice(index, 1)
       }
     }
-    emit('update:modelValue', newValue)
+    emit('update:modelValue', newValue as T)
   } else {
     // Boolean binding mode
-    emit('update:modelValue', target.checked)
+    emit('update:modelValue', target.checked as T)
   }
 }
 
