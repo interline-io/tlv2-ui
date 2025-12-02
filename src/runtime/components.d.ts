@@ -30,7 +30,6 @@ declare module 'vue' {
     TlAppsStationsModeSwitch: typeof import('./components/apps/stations/mode-switch.vue')['default']
     TlAppsStationsPagesEditorIndex: typeof import('./components/apps/stations/pages/editor-index.vue')['default']
     TlAppsStationsPagesExport: typeof import('./components/apps/stations/pages/export.vue')['default']
-    TlAppsStationsPagesFeedMixin: typeof import('./components/apps/stations/pages/feed-mixin.vue')['default']
     TlAppsStationsPagesLevelEdit: typeof import('./components/apps/stations/pages/level-edit.vue')['default']
     TlAppsStationsPagesLevelsNew: typeof import('./components/apps/stations/pages/levels-new.vue')['default']
     TlAppsStationsPagesStationDiagram: typeof import('./components/apps/stations/pages/station-diagram.vue')['default']
