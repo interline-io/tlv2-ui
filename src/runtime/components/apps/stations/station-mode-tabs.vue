@@ -22,7 +22,6 @@
         <tl-link
           route-key="apps-stations-feedKey-feedVersionKey-stations-stationKey-pathways"
           :to="{ params: { feedKey: feedKey, feedVersionKey: feedVersionKey, stationKey: stationKey } }"
-          :event="pathwaysModeEnabled ? 'click' : ''"
           :class="pathwaysModeEnabled ? '' : 'disabled'"
         >
           <i class="mdi mdi-chart-timeline-variant-shimmer mdi-16px" /> &nbsp; Draw Pathways
@@ -40,13 +39,15 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue'
 import { useRouteResolver } from '../../../composables/useRouteResolver'
+import type { Station } from './station'
 
-export default {
+export default defineComponent({
   props: {
     station: {
-      type: Object,
+      type: Object as PropType<Station | null>,
       default: null
     },
     feedKey: {
@@ -81,14 +82,15 @@ export default {
     }
   },
   computed: {
-    pathwaysModeEnabled () {
+    pathwaysModeEnabled (): boolean {
       return true
       // return (this.station && this.station.stops && this.station.stops.length > 0)
     },
-    currentRoute () {
-      return this.$route.name
+    currentRoute (): string | undefined {
+      const name = this.$route.name
+      return typeof name === 'string' ? name : undefined
     },
-    activeTab () {
+    activeTab (): string {
       for (const [k, r] of Object.entries(this.routeKeys)) {
         if (this.currentRoute === this.resolve(r)) {
           return k
@@ -97,7 +99,7 @@ export default {
       return ''
     }
   }
-}
+})
 </script>
 
 <style scoped lang="scss">

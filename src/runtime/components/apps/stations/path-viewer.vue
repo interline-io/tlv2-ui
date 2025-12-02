@@ -18,12 +18,16 @@
             <span class="tl-path-icon"><img :src="pathwayIcon(edge.pathway.pathway_mode).url" :title="pathwayIcon(edge.pathway.pathway_mode).label"></span>
           </td>
           <td>
-            {{ stopName(edge.pathway.from_stop) }}
-            ({{ locationType(edge.pathway.from_stop.location_type) }})
+            <template v-if="edge.pathway.from_stop">
+              {{ stopName(edge.pathway.from_stop) }}
+              ({{ locationType(edge.pathway.from_stop.location_type) }})
+            </template>
           </td>
           <td>
-            {{ stopName(edge.pathway.to_stop) }}
-            ({{ locationType(edge.pathway.to_stop.location_type) }})
+            <template v-if="edge.pathway.to_stop">
+              {{ stopName(edge.pathway.to_stop) }}
+              ({{ locationType(edge.pathway.to_stop.location_type) }})
+            </template>
           </td>
         </tr>
       </tbody>
@@ -31,13 +35,20 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue'
 import { PathwayModeIcons, LocationTypes } from './basemaps'
+import type { PathwayData, StopData } from './types'
 
-export default {
+interface PathEdge {
+  pathway: PathwayData
+}
+
+export default defineComponent({
   props: {
     path: {
-      type: Array, default () { return [] }
+      type: Array as PropType<PathEdge[]>,
+      default: () => []
     }
   },
   data () {
@@ -46,19 +57,22 @@ export default {
     }
   },
   methods: {
-    stopName (node) {
+    stopName (node: StopData): string {
       if (node.stop_name === 'Node' && node.location_type === 3) {
         return ''
       }
-      return node.stop_name
+      return node.stop_name || ''
     },
-    locationType (lt) {
-    //   if (lt === 3) {
-    //     return ''
-    //   }
+    locationType (lt?: number): string | undefined {
+      if (lt === undefined) {
+        return undefined
+      }
       return LocationTypes.get(lt)
     },
-    pathwayIcon (mode) {
+    pathwayIcon (mode?: number): { url: string, label: string } {
+      if (mode === undefined) {
+        return { url: '', label: '' }
+      }
       const m = PathwayModeIcons[mode]
       if (!m) {
         return { url: '', label: '' }
@@ -66,7 +80,7 @@ export default {
       return { url: `/icons/${m.altIcon ? m.altIcon : m.icon}.png`, label: m.label }
     }
   }
-}
+})
 </script>
 
 <style scoped>

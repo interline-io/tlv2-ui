@@ -16,12 +16,7 @@
 
     <t-modal
       v-model="openStops"
-      trap-focus
-      has-modal-card
       full-screen
-      :destroy-on-hide="false"
-      aria-role="dialog"
-      aria-modal
       title="Station validation: Stops Report"
     >
       <t-table
@@ -73,12 +68,7 @@
 
     <t-modal
       v-model="openPathways"
-      :striped="true"
-      trap-focus
       full-screen
-      :destroy-on-hide="false"
-      aria-role="dialog"
-      aria-modal
       title="Station Validation: Pathways Report"
     >
       <t-table
@@ -114,12 +104,7 @@
 
     <t-modal
       v-model="openPaths"
-      :striped="true"
-      trap-focus
       full-screen
-      :destroy-on-hide="false"
-      aria-role="dialog"
-      aria-modal
       title="Station Validation: Connectivity Report"
     >
       <t-checkbox v-model="showAllPaths">
@@ -142,16 +127,16 @@
           <td>{{ row.stop.stop_id }}</td>
           <td>{{ row.stop.stop_name }}</td>
           <td>
-            <span> {{ row.paths.filter((s) => { return !s.error }).length }} OK / {{ row.paths.filter((s) => { return s.error }).length }} Errors </span>
+            <span> {{ row.paths.filter((s: any) => { return !s.error }).length }} OK / {{ row.paths.filter((s: any) => { return s.error }).length }} Errors </span>
 
             <ul>
               <li v-for="err of row.paths" :key="row.stop.id + '-' + err.target.id">
                 <template v-if="err.error || showAllPaths">
                   <span class="button is-small" @click="$emit('select-path', row.stop.id, err.target.id); openPaths = false">Find route</span>
                   <span class="button is-small" @click="$emit('select-stop', err.target.id); openPaths = false">Select dest</span>
-                  <t-icon v-if="err.error" icon="alert" variant="error" /><t-icon v-else icon="check" />
+                  <t-icon v-if="err.error" icon="alert" variant="danger" /><t-icon v-else icon="check" />
                   <span>{{ err.target.stop_name }} ({{ err.target.id }})</span>
-                  <span v-if="err.distance > 0">(dist: {{ err.distance.toFixed(0) }} m)
+                  <span v-if="err.distance && err.distance > 0">(dist: {{ err.distance.toFixed(0) }} m)
                   </span>
                 </template>
               </li>
@@ -166,14 +151,26 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue'
 import { PathwayModes, LocationTypes } from './basemaps'
+import type { Station, Stop, Pathway } from './station'
+import type { ValidationPath } from './types'
 
-export default {
+interface ValidationError {
+  message: string
+}
+
+interface StopPathData {
+  stop: Stop
+  paths: ValidationPath[]
+}
+
+export default defineComponent({
   props: {
     station: {
-      type: Object,
-      default () { return {} }
+      type: Object as PropType<Station>,
+      required: true
     }
   },
   emits: ['select-stop', 'select-pathway', 'select-path'],
@@ -188,10 +185,8 @@ export default {
     }
   },
   computed: {
-    stopPaths () {
-      const ret = []
-      // const stationExits = this.station.stops.filter((s) => { return s.location_type === 2 })
-      // const stationPlatforms = this.station.stops.filter((s) => { return s.location_type === 0 || s.location_type === 4 })
+    stopPaths (): StopPathData[] {
+      const ret: StopPathData[] = []
       const stationFromStops = this.station.stops.filter((s) => { return s.location_type === 2 })
       const stationMustReach = this.station.stops.filter((s) => { return s.location_type !== 1 })
       for (const stop of stationFromStops) {
@@ -202,40 +197,47 @@ export default {
       }
       return ret
     },
-    stopPathErrorCount () {
+    stopPathErrorCount (): number {
       let count = 0
       for (const c of this.stopPaths) {
         count = count + c.paths.filter((s) => { return s.error }).length
       }
       return count
     },
-    errors () {
-      const errors = { stops: {}, pathways: {} }
+    errors (): { stops: Record<number, ValidationError[]>, pathways: Record<number, ValidationError[]> } {
+      const errors: { stops: Record<number, ValidationError[]>, pathways: Record<number, ValidationError[]> } = { stops: {}, pathways: {} }
       for (const stop of this.station.stops) {
-        errors.stops[stop.id] = this.validateStop(stop)
+        if (stop.id) {
+          errors.stops[stop.id] = this.validateStop(stop)
+        }
       }
       for (const pw of this.pathways) {
-        errors.pathways[pw.id] = this.validatePathway(pw)
+        if (pw.id) {
+          errors.pathways[pw.id] = this.validatePathway(pw)
+        }
       }
-      errors.paths = 0
       return errors
     },
-    errorCount () {
+    errorCount (): { stops: number, pathways: number } {
       const count = { stops: 0, pathways: 0 }
       for (const [k, v] of Object.entries(this.errors)) {
         let c = 0
         for (const e of Object.values(v)) {
-          c = c + e.length
+          if (Array.isArray(e)) {
+            c = c + e.length
+          }
         }
-        count[k] = c
+        if (k === 'stops' || k === 'pathways') {
+          count[k] = c
+        }
       }
       return count
     },
-    levels () {
+    levels (): Array<typeof this.station.levels[0]> {
       return this.station ? this.station.levels : []
     },
-    pathways () {
-      const pws = []
+    pathways (): Pathway[] {
+      const pws: Pathway[] = []
       for (const stop of this.station.stops) {
         for (const pw of stop.pathways_from_stop || []) {
           pws.push(pw)
@@ -245,22 +247,25 @@ export default {
     }
   },
   methods: {
-    routeSummary (stop) {
+    routeSummary (stop: Stop): string {
       if (stop && stop.external_reference && stop.external_reference.target_active_stop && stop.external_reference.target_active_stop.route_stops) {
-        return stop.external_reference.target_active_stop.route_stops.map((rs) => { return `${rs.route.agency.agency_id}:${rs.route.route_short_name || rs.route.route_long_name}` }).join(', ')
+        return stop.external_reference.target_active_stop.route_stops
+          .filter(rs => rs.route)
+          .map((rs) => { return `${rs.route?.agency?.agency_id}:${rs.route?.route_short_name || rs.route?.route_long_name}` })
+          .join(', ')
       }
       return ''
     },
-    validateConnectivity (_station) {
+    validateConnectivity (_station: Station): ValidationError[] {
       // TODO: "Unreachable location in a station"
       // TODO: "Missing reciprocal pathways"
       return []
     },
-    validateStop (stop) {
+    validateStop (stop: Stop): ValidationError[] {
       const fromPathways = stop.pathways_from_stop || []
       const toPathways = stop.pathways_to_stop || []
       const targetStop = stop.external_reference?.target_active_stop || null
-      const errs = []
+      const errs: ValidationError[] = []
       if (stop.location_type === 0 && !targetStop) {
         // errs.push({
         //   message: 'Platform (location_type = 0) must have a stop association'
@@ -298,7 +303,7 @@ export default {
           message: 'Boarding areas require a Platform (location_type = 0) as a parent_station'
         })
       }
-      if (stop.external_reference && stop.external_reference.target_active_stop == null) {
+      if (stop.external_reference && stop.external_reference.target_active_stop === null) {
         errs.push({
           message: `Cannot resolve reference to stop ${stop.external_reference.target_feed_onestop_id}:${stop.external_reference.target_stop_id}`
         })
@@ -320,8 +325,8 @@ export default {
       }
       return errs
     },
-    validatePathway (pathway) {
-      const errs = []
+    validatePathway (pathway: Pathway): ValidationError[] {
+      const errs: ValidationError[] = []
       if (pathway.from_stop.id === pathway.to_stop.id) {
         errs.push({
           message: 'Pathway is a loop - from_stop_id cannot equal to_stop_id'
@@ -332,7 +337,7 @@ export default {
           message: 'Exit-gate pathways must be one-way'
         })
       }
-      if (pathway.pathway_mode === 2 && pathway.stair_count == null) {
+      if (pathway.pathway_mode === 2 && pathway.stair_count === null) {
         if (pathway.from_stop.level?.id !== pathway.to_stop.level?.id) {
           // ok
         } else {
@@ -344,7 +349,7 @@ export default {
       return errs
     }
   }
-}
+})
 </script>
 
 <style scoped>

@@ -26,18 +26,19 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue'
 import { useRouteResolver } from '../../../composables/useRouteResolver'
 
-export default {
+export default defineComponent({
   props: {
     params: {
-      type: Object,
-      default: () => {}
+      type: Object as PropType<Record<string, string>>,
+      default: () => ({})
     },
     query: {
-      type: Object,
-      default: () => {}
+      type: Object as PropType<Record<string, string>>,
+      default: () => ({})
     }
   },
   setup () {
@@ -53,7 +54,7 @@ export default {
     }
   },
   computed: {
-    selectedMode () {
+    selectedMode (): string {
       // TODO: pass this in?
       const currentRoute = this.$route.name
       for (const [k, r] of Object.entries(this.routeKeys)) {
@@ -64,5 +65,5 @@ export default {
       return ''
     }
   }
-}
+})
 </script>
