@@ -415,6 +415,7 @@ export default defineComponent({
       if (stopid === null) {
         return
       }
+      if (!this.station) return
       const stop = this.station.getStop(stopid) // copy
       if (!stop) {
         return
@@ -437,8 +438,6 @@ export default defineComponent({
     newPathway (): Pathway {
       return new Pathway({
         // other fields will be defaults
-        from_stop_id: this.selectedSource!.id,
-        to_stop_id: this.selectedStop!.id,
         from_stop: this.selectedSource || undefined,
         to_stop: this.selectedStop || undefined,
         pathway_id: `${this.selectedSource!.id}-${this.selectedStop!.id}-${Date.now()}`
@@ -461,6 +460,7 @@ export default defineComponent({
         .catch(this.setError)
     },
     deletePathwayHandler (pw: Pathway) {
+      if (!this.station) return
       this.selectPathway(null)
       this.station.deletePathway((this.$apollo as any), pw)
         .then(() => { return this.refetch() })
@@ -476,6 +476,7 @@ export default defineComponent({
         console.log('selectStop: no stopid')
         return
       }
+      if (!this.station) return
       const cur = this.station.getStop(stopId)
       console.log('selectStop: cur stop', cur)
       const prev = this.selectedStops.length > 0 ? this.selectedStops[this.selectedStops.length - 1] : null
@@ -511,6 +512,7 @@ export default defineComponent({
       console.log('selectStop: set selectedStops to', this.selectedStops, 'and selectMode to', this.selectMode)
     },
     selectPath (fromId: number, toId: number) {
+      if (!this.station) return
       this.selectMode = 'find-route'
       this.selectedStops = [this.station.getStop(fromId)!, this.station.getStop(toId)!]
     },
@@ -545,20 +547,20 @@ export default defineComponent({
       }
     },
     selectStopsWithAssociations () {
-      this.selectedStops = (this.station as any)?.stops?.filter((s) => { return s.external_reference?.target_stop_id })
+      this.selectedStops = (this.station as any)?.stops?.filter((s: any) => { return s.external_reference?.target_stop_id })
       this.selectMode = 'select'
     },
     selectStopsPlatformsWithoutAssociations () {
-      this.selectedStops = (this.station as any)?.stops?.filter((s) => { return s.location_type === 0 && !s.external_reference })
+      this.selectedStops = (this.station as any)?.stops?.filter((s: any) => { return s.location_type === 0 && !s.external_reference })
       this.selectMode = 'select'
     },
     selectStopsEntrancesWithoutAssociations () {
-      this.selectedStops = (this.station as any)?.stops?.filter((s) => { return s.location_type === 2 && !s.external_reference })
+      this.selectedStops = (this.station as any)?.stops?.filter((s: any) => { return s.location_type === 2 && !s.external_reference })
       this.selectMode = 'select'
     },
     selectStopsWithPairedPathways () {
       const pairedPathways = new Map()
-      this.selectedStops = (this.station as any)?.stops?.filter((s) => {
+      this.selectedStops = (this.station as any)?.stops?.filter((s: any) => {
         const pwKeys = []
         for (const pw of s.pathways_from_stop) {
           pwKeys.push(`${pw.from_stop.id}-${pw.to_stop.id}`)
@@ -578,14 +580,14 @@ export default defineComponent({
       this.selectMode = 'select'
     },
     selectLocationTypes (stype: number) {
-      this.selectedStops = (this.station as any)?.stops?.filter((s) => { return s.location_type === stype })
+      this.selectedStops = (this.station as any)?.stops?.filter((s: any) => { return s.location_type === stype })
     },
     selectPathwayModes (stype: number) {
-      this.selectedPathways = (this.station as any)?.pathways?.filter((s) => { return s.pathway_mode === stype })
+      this.selectedPathways = (this.station as any)?.pathways?.filter((s: any) => { return s.pathway_mode === stype })
     },
     selectPathwaysWithPairs () {
       const pwPairs = new Map()
-      this.selectedPathways = (this.station as any)?.pathways?.filter((s) => {
+      this.selectedPathways = (this.station as any)?.pathways?.filter((s: any) => {
         const pwKeys = [
           `${s.from_stop.id}-${s.to_stop.id}`,
           `${s.to_stop.id}-${s.from_stop.id}`
@@ -602,10 +604,10 @@ export default defineComponent({
       this.selectMode = 'select'
     },
     selectPathwaysOneway () {
-      this.selectedPathways = (this.station as any)?.pathways?.filter((s) => { return !s.is_bidirectional })
+      this.selectedPathways = (this.station as any)?.pathways?.filter((s: any) => { return !s.is_bidirectional })
     },
     selectPathwaysBidirectional () {
-      this.selectedPathways = (this.station as any)?.pathways?.filter((s) => { return s.is_bidirectional })
+      this.selectedPathways = (this.station as any)?.pathways?.filter((s: any) => { return s.is_bidirectional })
     },
     unselectAll () {
       this.selectedStops = []

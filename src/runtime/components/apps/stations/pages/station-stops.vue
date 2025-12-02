@@ -20,7 +20,7 @@
             <template #trigger>
               Node
             </template>
-            <div v-if="selectedStop" :key="selectedStop">
+            <div v-if="selectedStop" :key="selectedStop.id">
               <template v-if="selectedStop.id === station.id">
                 This is the station.
               </template>
@@ -39,7 +39,7 @@
                 </t-field>
 
                 <t-field label="Location Type">
-                  <t-select v-model="selectedStop.location_type" :disabled="true">
+                  <t-select :model-value="String(selectedStop.location_type || '')" :disabled="true">
                     <option v-for="[type, label] of LocationTypes.entries()" :key="type" :value="type">
                       {{ label }}
                     </option>
@@ -47,7 +47,7 @@
                 </t-field>
 
                 <t-field label="Import to Level">
-                  <t-select v-model="selectedStop.level.id">
+                  <t-select :model-value="String(selectedStop.level?.id || '')" @update:model-value="(val: any) => { if (selectedStop && selectedStop.level) selectedStop.level.id = Number(val) }">
                     <option v-for="level of station.levels" :key="level.id" :value="level.id">
                       {{ level.level_name }}
                     </option>
@@ -55,8 +55,8 @@
                 </t-field>
                 <t-field v-if="selectedStop.route_stops.length > 0" label="Routes">
                   <ul>
-                    <li v-for="rt of selectedStop.route_stops" :key="rt.route.id">
-                      {{ rt.route.agency.agency_id }}: {{ rt.route.route_short_name || rt.route.route_long_name }}
+                    <li v-for="rt of selectedStop.route_stops" :key="rt.route?.id">
+                      {{ rt.route?.agency?.agency_id }}: {{ rt.route?.route_short_name || rt.route?.route_long_name }}
                     </li>
                   </ul>
                 </t-field>
@@ -308,13 +308,14 @@ export default defineComponent({
       }
 
       // Exclude specified feeds and stops that are already associated with the station
+      const station = this.station
       const excludeFeeds = new Set(['RG', 'historic', 'mtc'])
       const excludeStops = new Set()
-      const associatedStops = this.station.stops.filter((s) => {
+      const associatedStops = station.stops.filter((s) => {
         return s.external_reference?.target_active_stop
       })
       for (const stop of associatedStops) {
-        const key = `${stop.external_reference.target_feed_onestop_id}:${stop.external_reference.target_stop_id}`
+        const key = `${stop.external_reference?.target_feed_onestop_id}:${stop.external_reference?.target_stop_id}`
         excludeStops.add(key)
       }
 
@@ -325,11 +326,11 @@ export default defineComponent({
           return false
         }
         // Exclude stops that are already associated with the station
-        if (stop.parent?.id === this.station.id) {
+        if (stop.parent?.id === station.id) {
           return false
         }
         // Exclude stops that are in the same feed version as the station
-        if (stop.feed_version?.id === this.station.stop?.feed_version?.id) {
+        if (stop.feed_version?.id === station.stop?.feed_version?.id) {
           return false
         }
         // Exclude stops that are in the excluded feeds
@@ -360,20 +361,24 @@ export default defineComponent({
             return false
           }
         }
-        return this.selectedLocationTypes.includes(stop.location_type.toString())
+        return this.selectedLocationTypes.includes(stop.location_type?.toString() || '')
       })
     },
     stationFiltered () {
+      if (!this.station) {
+        return { id: 0, geometry: null, levels: [], pathways: [], stops: [] }
+      }
+      const station = this.station
       return {
-        id: this.station.id,
-        geometry: this.station.geometry,
-        levels: this.station.levels,
+        id: station.id,
+        geometry: station.geometry,
+        levels: station.levels,
         pathways: [],
         stops: !this.selectedSources.includes('station')
           ? []
-          : this.station.stops.filter((s) => {
+          : station.stops.filter((s) => {
               const target = s.external_reference?.target_active_stop
-              return target && this.selectedLocationTypes.includes(target.location_type.toString())
+              return target && this.selectedLocationTypes.includes(target.location_type?.toString() || '')
             })
       }
     },
@@ -400,22 +405,27 @@ export default defineComponent({
         }
         return Array.from(allAgencies.keys())
       },
-      set (v) {
+      set (v: any) {
         this.selectedAgenciesShadow = v || []
       }
     },
     agencies (): Record<string, string> {
       const ret: Record<string, string> = {}
+      if (!this.station) return ret
       for (const stop of this.station.stops) {
         if (stop.external_reference && stop.external_reference.target_active_stop && stop.external_reference.target_active_stop.route_stops) {
           for (const rs of stop.external_reference.target_active_stop.route_stops || []) {
-            ret[rs.route.agency.agency_id] = rs.route.agency.agency_name
+            if (rs.route?.agency?.agency_id) {
+              ret[rs.route.agency.agency_id] = rs.route.agency.agency_name || ''
+            }
           }
         }
       }
       for (const stop of this.nearbyStops || []) {
         for (const rs of stop.route_stops || []) {
-          ret[rs.route.agency.agency_id] = rs.route.agency.agency_name
+          if (rs.route?.agency?.agency_id) {
+            ret[rs.route.agency.agency_id] = rs.route.agency.agency_name || ''
+          }
         }
       }
       return ret
@@ -429,10 +439,10 @@ export default defineComponent({
         return null
       }
       const s = this.$route.query.selectedStop
-      if (!s) {
+      if (!s || Array.isArray(s)) {
         return null
       }
-      const si = Number.parseInt(s)
+      const si = Number.parseInt(s as string)
       for (const stop of this.station.stops) {
         if (stop.id === si) {
           return stop
@@ -448,6 +458,7 @@ export default defineComponent({
   },
   methods: {
     importStopHandler (ent: Stop) {
+      if (!this.station) return
       this.station.importStop((this.$apollo as any), ent)
         .then(() => { return this.refetch() })
         .then((data: any) => { this.selectStop(data.id) })

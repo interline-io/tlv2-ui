@@ -163,8 +163,8 @@ export default defineComponent({
         ret.push(stop)
       }
       return ret.sort((a, b) => {
-        const nameA = (a.parent ? a.parent.stop_name : 'zzz') + a.stop_id
-        const nameB = (b.parent ? b.parent.stop_name : 'zzz') + b.stop_id
+        const nameA = (a.parent ? a.parent.stop_name : 'zzz') + (a.stop_id || '')
+        const nameB = (b.parent ? b.parent.stop_name : 'zzz') + (b.stop_id || '')
         if (nameA < nameB) {
           return -1
         }

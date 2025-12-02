@@ -35,7 +35,7 @@
                   stationKey: stationKey,
                 }"
                 :query="{
-                  selectedPathway: p.match('[0-9]+')?.[0],
+                  selectedPathway: p.match('[0-9]+')?.[0] || undefined,
                 }"
               />
               <tl-apps-stations-pathway-editor
@@ -53,7 +53,7 @@
                   stationKey: stationKey,
                 }"
                 :query="{
-                  selectedStop: s.match('[0-9]+')?.[0],
+                  selectedStop: s.match('[0-9]+')?.[0] || undefined,
                 }"
               />
               <tl-apps-stations-stop-editor
@@ -96,7 +96,7 @@ const cytoscapeConfig = {
       style: {
         'curve-style': 'bezier',
         'target-arrow-shape': 'triangle',
-        'source-arrow-shape': edge => edge.data.bidirectional ? 'triangle' : null,
+        'source-arrow-shape': (edge: any) => edge.data.bidirectional ? 'triangle' : null,
         'width': 3,
         'line-color': 'data(lineColor)',
         'target-arrow-color': '#ccc'
