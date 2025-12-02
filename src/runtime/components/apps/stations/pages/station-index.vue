@@ -66,12 +66,13 @@
   </div>
 </template>
 
-<script>
-import StationMixin from './station-mixin'
+<script lang="ts">
+import { defineComponent } from 'vue'
+import StationMixin from './station-mixin.vue'
 
-export default {
+export default defineComponent({
   mixins: [StationMixin]
-}
+})
 </script>
 
   <style scoped>

@@ -15,22 +15,21 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
 import { navigateTo } from '#imports'
-import StationMixin from './station-mixin'
+import type { Level } from '../station'
+import StationMixin from './station-mixin.vue'
 import { useRouteResolver } from '../../../../composables/useRouteResolver'
 
-export default {
+export default defineComponent({
   mixins: [StationMixin],
   setup () {
     const { resolve } = useRouteResolver()
     return { resolve }
   },
-  head: {
-    title: 'Editor: New Level'
-  },
   methods: {
-    createLevelHandler (level) {
+    createLevelHandler (level: Level) {
       this.station.createLevel(this.$apollo, level).then(() => {
         navigateTo({
           name: this.resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),
@@ -53,5 +52,5 @@ export default {
       })
     }
   }
-}
+})
 </script>

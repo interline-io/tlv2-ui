@@ -169,14 +169,15 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
 import { navigateTo } from '#imports'
 import { gql } from 'graphql-tag'
 import { Stop } from '../station'
-import StationMixin from './station-mixin'
+import StationMixin from './station-mixin.vue'
 import { LocationTypes } from '../basemaps'
 
-function intersection (setA, setB) {
+function intersection (setA: Set<string>, setB: Iterable<string>): Set<string> {
   const _intersection = new Set()
   for (const elem of setB) {
     if (setA.has(elem)) {
@@ -257,7 +258,7 @@ const nearbyStopsQuery = gql`
   }
   `
 
-export default {
+export default defineComponent({
   mixins: [StationMixin],
   props: {
     client: { type: String, default: 'default' }
@@ -276,23 +277,23 @@ export default {
           lat: this.station.geometry.coordinates[1]
         }
       },
-      update (data) {
-        this.nearbyStops = (data.stops || []).map((s) => { return new Stop(s) })
+      update (data: any) {
+        this.nearbyStops = (data.stops || []).map((s: any) => { return new Stop(s) })
       }
     }
   },
   data () {
     return {
-      nearbyStops: [],
+      nearbyStops: [] as Stop[],
       selectMode: 'select',
       basemap: 'carto',
-      LocationTypes: LocationTypes,
+      LocationTypes,
       selectedLocationTypes: ['0', '2'], // must be stringy
       selectedSources: ['nearby', 'station'],
       SourceTypes: {
         station: 'Associated Stops',
         nearby: 'Unassociated Stops'
-      },
+      }
     }
   },
   computed: {
@@ -403,8 +404,8 @@ export default {
         this.selectedAgenciesShadow = v || []
       }
     },
-    agencies () {
-      const ret = {}
+    agencies (): Record<string, string> {
+      const ret: Record<string, string> = {}
       for (const stop of this.station.stops) {
         if (stop.external_reference && stop.external_reference.target_active_stop && stop.external_reference.target_active_stop.route_stops) {
           for (const rs of stop.external_reference.target_active_stop.route_stops || []) {
@@ -419,11 +420,11 @@ export default {
       }
       return ret
     },
-    selectedStops () {
+    selectedStops (): Stop[] {
       if (this.selectedStop) { return [this.selectedStop] }
       return []
     },
-    selectedStop () {
+    selectedStop (): Stop | null {
       if (!this.station) {
         return null
       }
@@ -446,19 +447,19 @@ export default {
     }
   },
   methods: {
-    importStopHandler (ent) {
+    importStopHandler (ent: Stop) {
       this.station.importStop(this.$apollo, ent)
         .then(() => { return this.refetch() })
-        .then((data) => { this.selectStop(data.id) })
+        .then((data: any) => { this.selectStop(data.id) })
         .catch(this.setError)
     },
-    selectStop (stopid) {
+    selectStop (stopid: number) {
       navigateTo({
         query: { ...this.$route.query, selectedStop: stopid }
       })
     }
   }
-}
+})
 </script>
 
   <style scoped>

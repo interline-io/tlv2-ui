@@ -41,13 +41,11 @@
   </div>
 </template>
 
-<script>
-import FeedMixin from './feed-mixin'
+<script lang="ts">
+import { defineComponent } from 'vue'
+import FeedMixin from './feed-mixin.vue'
 
-export default {
-  mixins: [FeedMixin],
-  head: {
-    title: 'Editor'
-  }
-}
+export default defineComponent({
+  mixins: [FeedMixin]
+})
 </script>

@@ -12,21 +12,19 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 // Note: this uses FeedMixin, not station mixin.
+import { defineComponent } from 'vue'
 import { navigateTo } from '#imports'
 import { Station, Stop } from '../station'
-import FeedMixin from './feed-mixin'
+import FeedMixin from './feed-mixin.vue'
 import { useRouteResolver } from '../../../../composables/useRouteResolver'
 
-export default {
+export default defineComponent({
   mixins: [FeedMixin],
   setup () {
     const { resolve } = useRouteResolver()
     return { resolve }
-  },
-  head: {
-    title: 'Editor: New Station'
   },
   methods: {
     newStation () {
@@ -34,7 +32,7 @@ export default {
       const newStation = new Station(newStop).setDefaults()
       return newStation
     },
-    createStationHandler (station) {
+    createStationHandler (station: Station) {
       station.createStation(this.$apollo, station.stop)
         .then(() => {
           navigateTo({
@@ -58,5 +56,5 @@ export default {
       })
     }
   }
-}
+})
 </script>

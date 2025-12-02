@@ -17,22 +17,21 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
 import { navigateTo } from '#imports'
-import StationMixin from './station-mixin'
+import type { Level } from '../station'
+import StationMixin from './station-mixin.vue'
 import { useRouteResolver } from '../../../../composables/useRouteResolver'
 
-export default {
+export default defineComponent({
   mixins: [StationMixin],
   setup () {
     const { resolve } = useRouteResolver()
     return { resolve }
   },
-  head: {
-    title: 'Editor: Edit Level'
-  },
   computed: {
-    level () {
+    level (): Level | null {
       const levels = this.station?.levels
       for (const level of levels) {
         if (level.level_id === this.levelKey) {
@@ -43,7 +42,7 @@ export default {
     }
   },
   methods: {
-    updateLevelHandler (level) {
+    updateLevelHandler (level: Level) {
       this.station.updateLevel(this.$apollo, level)
         .then(() => {
           navigateTo({
@@ -57,7 +56,7 @@ export default {
         })
         .catch(this.setError)
     },
-    deleteLevelHandler (levelId) {
+    deleteLevelHandler (levelId: string) {
       this.station.deleteLevel(this.$apollo, levelId)
         .then(() => {
           navigateTo({
@@ -82,5 +81,5 @@ export default {
       })
     }
   }
-}
+})
 </script>

@@ -261,23 +261,33 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
+import type { LngLat } from 'maplibre-gl'
 import { PathwayModes } from '../../../../pathways/pathway-icons'
 import { LocationTypes } from '../basemaps'
 import { Stop, Pathway, mapLevelKeyFn } from '../station'
-import StationMixin from './station-mixin'
+import type { Level } from '../station'
+import StationMixin from './station-mixin.vue'
 
-export default {
+type SelectMode = 'select' | 'add-node' | 'edit-node' | 'add-pathway' | 'edit-pathway' | 'find-route'
+
+interface PathwayEdge {
+  cost: number
+  pathway: Pathway
+}
+
+export default defineComponent({
   mixins: [StationMixin],
   layout: 'wide',
   query: ['selectedStop', 'selectedPathway'],
   data () {
     return {
-      id: undefined,
-      selectMode: 'select',
-      selectedPoint: null,
-      selectedStops: [],
-      selectedPathways: [],
+      id: undefined as number | undefined,
+      selectMode: 'select' as SelectMode,
+      selectedPoint: null as LngLat | null,
+      selectedStops: [] as Stop[],
+      selectedPathways: [] as Pathway[],
       openStationValidator: false,
       basemap: 'carto',
       PathwayModes,
@@ -285,12 +295,12 @@ export default {
     }
   },
   computed: {
-    selectedPath () {
+    selectedPath (): PathwayEdge[] | null {
       if (this.selectMode !== 'find-route' || this.selectedStops.length < 2) {
         return null
       }
       const p = this.station.findRoute(this.selectedStops[0].id, this.selectedStops[1].id)
-      const edges = []
+      const edges: PathwayEdge[] = []
       for (const edge of p.edges || []) {
         edges.push({
           cost: 0,
@@ -299,33 +309,33 @@ export default {
       }
       return edges
     },
-    selectedSource () {
+    selectedSource (): Stop | null | undefined {
       if (this.selectedStops.length === 2) {
         return this.selectedStops[0]
       }
       return null
     },
-    selectedStop () {
+    selectedStop (): Stop | null | undefined {
       if (this.selectedStops.length > 0) {
         return this.selectedStops[this.selectedStops.length - 1]
       }
       return null
     },
-    levelIndex () {
-      const si = {}
+    levelIndex (): Record<number, Level> {
+      const si: Record<number, Level> = {}
       for (const level of this.station.levels) {
-        si[level.id] = level
+        si[level.id!] = level
       }
       return si
     },
-    pathwayIndex () {
-      const pwi = {}
+    pathwayIndex (): Record<number, Pathway> {
+      const pwi: Record<number, Pathway> = {}
       for (const pw of this.station.pathways) {
-        pwi[pw.id] = pw
+        pwi[pw.id!] = pw
       }
       return pwi
     },
-    sortedStationLevels () {
+    sortedStationLevels (): Level[] {
       return this.station.levels.slice(0).sort(
         (a, b) => (b.level_index != null ? b.level_index : -Infinity) - (a.level_index != null ? a.level_index : -Infinity)
       )
@@ -339,7 +349,7 @@ export default {
         this.selectStop(Number(this.$route.query.selectedStop))
       }
       if (this.ready && this.$route.query.selectedPathway) {
-        this.selectPathway(this.$route.query.selectedPathway)
+        this.selectPathway(Number(this.$route.query.selectedPathway))
       }
     },
     selectedLevels () {
@@ -361,10 +371,10 @@ export default {
   methods: {
     mapLevelKeyFn,
     // stops
-    createStopHandler (node) {
+    createStopHandler (node: Stop) {
       let newStopId = 0
       this.station.createStop(this.$apollo, node)
-        .then((d) => {
+        .then((d: any) => {
           newStopId = d?.data?.stop_create?.id
           return this.refetch()
         })
@@ -374,19 +384,19 @@ export default {
         })
         .catch(this.setError)
     },
-    updateStopHandler (node) {
+    updateStopHandler (node: Stop) {
       this.station.updateStop(this.$apollo, node)
         .then(() => { return this.refetch() })
-        .then(() => { this.selectStop(node.id) })
+        .then(() => { this.selectStop(node.id!) })
         .catch(this.setError)
     },
-    deleteStopHandler (nodeId) {
-      return this.station.deleteStop(this.$apollo, nodeId)
+    deleteStopHandler (node: Stop) {
+      return this.station.deleteStop(this.$apollo, node)
         .then(() => { return this.refetch() })
         .then(() => { this.selectStop(null) })
         .catch(this.setError)
     },
-    moveStopSave (stopid, e) {
+    moveStopSave (stopid: number, e: LngLat) {
       if (stopid === null) {
         return
       }
@@ -398,36 +408,36 @@ export default {
       this.updateStopHandler(stop)
     },
     // node associations
-    deleteAssociationHandler (node) {
+    deleteAssociationHandler (node: Stop) {
       this.station.deleteAssociation(this.$apollo, node)
         .then(() => { return this.refetch() })
         .then(() => { this.selectStop(null) })
         .catch(this.setError)
     },
     // pathways
-    newPathway () {
+    newPathway (): Pathway {
       return new Pathway({
         // other fields will be defaults
-        from_stop_id: this.selectedSource.id,
-        to_stop_id: this.selectedStop.id,
+        from_stop_id: this.selectedSource!.id,
+        to_stop_id: this.selectedStop!.id,
         from_stop: this.selectedSource,
         to_stop: this.selectedStop,
-        pathway_id: `${this.selectedSource.id}-${this.selectedStop.id}-${Date.now()}`
+        pathway_id: `${this.selectedSource!.id}-${this.selectedStop!.id}-${Date.now()}`
       }).setDefaults()
     },
-    createPathwayHandler (pw) {
+    createPathwayHandler (pw: Pathway) {
       this.station.createPathway(this.$apollo, pw)
         .then(() => { return this.refetch() })
         .then(() => { this.selectPathway(null) })
         .catch(this.setError) // todo: select
     },
-    updatePathwayHandler (pw) {
+    updatePathwayHandler (pw: Pathway) {
       this.station.updatePathway(this.$apollo, pw)
         .then(() => { return this.refetch() })
         .then(() => { this.selectPathway(null) })
         .catch(this.setError)
     },
-    deletePathwayHandler (pw) {
+    deletePathwayHandler (pw: Pathway) {
       this.selectPathway(null)
       this.station.deletePathway(this.$apollo, pw)
         .then(() => { return this.refetch() })
@@ -435,7 +445,7 @@ export default {
         .catch(this.setError)
     },
     // select tools
-    selectStop (stopId) {
+    selectStop (stopId: number | null) {
       console.log('selectStop: start', stopId)
       if (stopId === null) {
         this.selectedStops = []
@@ -477,11 +487,11 @@ export default {
       }
       console.log('selectStop: set selectedStops to', this.selectedStops, 'and selectMode to', this.selectMode)
     },
-    selectPath (fromId, toId) {
+    selectPath (fromId: number, toId: number) {
       this.selectMode = 'find-route'
-      this.selectedStops = [this.station.getStop(fromId), this.station.getStop(toId)]
+      this.selectedStops = [this.station.getStop(fromId)!, this.station.getStop(toId)!]
     },
-    selectPathway (pwid) {
+    selectPathway (pwid: number | null) {
       if (pwid === null) {
         this.selectedPathways = []
         this.selectMode = 'select'
@@ -498,7 +508,7 @@ export default {
         this.selectMode = 'edit-pathway'
       }
     },
-    selectPoint (ll) {
+    selectPoint (ll: LngLat) {
       this.selectedPoint = ll
       if (this.selectMode === 'add-node') {
         const stop = new Stop({
@@ -544,10 +554,10 @@ export default {
       })
       this.selectMode = 'select'
     },
-    selectLocationTypes (stype) {
+    selectLocationTypes (stype: number) {
       this.selectedStops = this.station.stops.filter((s) => { return s.location_type === stype })
     },
-    selectPathwayModes (stype) {
+    selectPathwayModes (stype: number) {
       this.selectedPathways = this.station.pathways.filter((s) => { return s.pathway_mode === stype })
     },
     selectPathwaysWithPairs () {
@@ -658,7 +668,7 @@ export default {
       a.dispatchEvent(e)
     }
   }
-}
+})
 </script>
 
   <style scoped>

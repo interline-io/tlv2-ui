@@ -19,7 +19,7 @@
         <p>
           <strong>Version ID:</strong> {{ feedVersionKey }}
         </p>
-        <p v-if="feedVersion?.sha1">
+        <p v-if="typeof feedVersion !== 'string' && feedVersion?.sha1">
           <strong>SHA1:</strong> <code>{{ feedVersion.sha1 }}</code>
         </p>
       </div>
@@ -27,8 +27,8 @@
       <hr>
 
       <tl-apps-stations-gtfs-export-download
-        :feed-version-sha1="feedVersion?.sha1"
-        :feed-version-id="feedVersion?.id || feedVersionKey"
+        :feed-version-sha1="typeof feedVersion !== 'string' ? feedVersion?.sha1 : undefined"
+        :feed-version-id="typeof feedVersion !== 'string' ? feedVersion?.id : feedVersionKey"
         :feed-key="feedKey"
         :feed-version-key="feedVersionKey"
         :client="client"
@@ -37,13 +37,11 @@
   </div>
 </template>
 
-<script>
-import FeedMixin from './feed-mixin'
+<script lang="ts">
+import { defineComponent } from 'vue'
+import FeedMixin from './feed-mixin.vue'
 
-export default {
-  mixins: [FeedMixin],
-  head: {
-    title: 'Export GTFS'
-  }
-}
+export default defineComponent({
+  mixins: [FeedMixin]
+})
 </script>

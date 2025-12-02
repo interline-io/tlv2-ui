@@ -75,9 +75,12 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
 import { gql } from 'graphql-tag'
-import FeedMixin from './feed-mixin'
+import { useRouteResolver } from '../../../../composables/useRouteResolver'
+import type { Stop } from '../station'
+import FeedMixin from './feed-mixin.vue'
 
 const q = gql`
   query ($feed_onestop_id: String!, $after: Int!) {
@@ -120,7 +123,7 @@ const q = gql`
   }
   `
 
-export default {
+export default defineComponent({
   mixins: [FeedMixin],
   props: {
     client: { type: String, default: 'default' }
@@ -131,7 +134,7 @@ export default {
   },
   data () {
     return {
-      stops: []
+      stops: [] as Stop[]
     }
   },
   apollo: {
@@ -148,11 +151,11 @@ export default {
     }
   },
   computed: {
-    lastStopId () {
-      return this.stops.length > 0 ? this.stops[this.stops.length - 1].id : 0
+    lastStopId (): number {
+      return this.stops.length > 0 ? this.stops[this.stops.length - 1]?.id || 0 : 0
     },
-    stopsWithRefs () {
-      const ret = []
+    stopsWithRefs (): Stop[] {
+      const ret: Stop[] = []
       for (const stop of this.stops) {
         if (!stop.external_reference || !stop) {
           continue
@@ -176,7 +179,7 @@ export default {
     this.fetchMore(0)
   },
   methods: {
-    fetchMore (after) {
+    fetchMore (after: number) {
       // console.log('fetchMore after:', after)
       this.$apollo.queries.stops.fetchMore({
         variables: {
@@ -185,13 +188,13 @@ export default {
           // feed_version_file: this.feedVersionKey,
           after
         },
-        updateQuery: (previousResult, { fetchMoreResult }) => {
+        updateQuery: (previousResult: any, { fetchMoreResult }: any) => {
           const newTags = fetchMoreResult.stops
           if (newTags.length === 0) {
             return
           }
           const newAfter = newTags[newTags.length - 1].id
-          let result = []
+          let result: any[] = []
           if (after === 0) {
             result = newTags
           } else {
@@ -205,5 +208,5 @@ export default {
       })
     }
   }
-}
+})
 </script>

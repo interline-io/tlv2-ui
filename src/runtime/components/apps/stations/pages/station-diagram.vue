@@ -74,11 +74,12 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, nextTick } from 'vue'
 import { navigateTo } from '#imports'
 import { schemeRdGy, schemeDark2 } from 'd3-scale-chromatic'
-import { nextTick } from 'vue'
-import StationMixin from './station-mixin'
+import type { Level, Stop, Pathway } from '../station'
+import StationMixin from './station-mixin.vue'
 import cytoscape from 'cytoscape'
 import fcose from 'cytoscape-fcose'
 
@@ -115,21 +116,21 @@ const cytoscapeConfig = {
   }
 }
 
-export default {
+export default defineComponent({
   mixins: [StationMixin],
   query: ['selectedPathway', 'selectedStop'],
   data () {
     return {
-      id: undefined,
-      selectedElements: [],
-      cy: null
+      id: undefined as number | undefined,
+      selectedElements: [] as string[],
+      cy: null as any
     }
   },
   computed: {
-    sortedLevels () {
-      return [...this.station.levels].sort((a, b) => { return (a.level_index > b.level_index) })
+    sortedLevels (): Level[] {
+      return [...this.station.levels].sort((a, b) => { return (a.level_index! > b.level_index!) ? 1 : -1 })
     },
-    cytoscapeElements () {
+    cytoscapeElements (): any[] {
       const levelColors = schemeRdGy[5]
       const stopColors = schemeDark2
       const arr = []
@@ -181,10 +182,10 @@ export default {
       }
       return arr
     },
-    selectedStops () {
+    selectedStops (): string[] {
       return this.selectedElements.filter(id => id.startsWith('s'))
     },
-    selectedPathways () {
+    selectedPathways (): string[] {
       return this.selectedElements.filter(id => id.startsWith('p'))
     }
   },
@@ -196,7 +197,7 @@ export default {
     }
   },
   methods: {
-    cytoscapeInit () {
+    cytoscapeInit (): void {
       if (this.cytoscapeElements.length === 0) {
         console.log('cytoscape not ready')
         return
@@ -225,19 +226,23 @@ export default {
         }
       })
     },
-    elementSelected (event) {
+    elementSelected (event: any) {
       this.selectedElements = Array.from(new Set(this.selectedElements).add(event.target.id()))
     },
-    elementUnselected (event) {
-      this.selectedElements = Array.from(new Set(this.selectedElements).delete(event.target.id()))
+    elementUnselected (event: any) {
+      const set = new Set(this.selectedElements)
+      set.delete(event.target.id())
+      this.selectedElements = Array.from(set)
     },
     clearSelectedElements () {
       this.selectedElements = []
       navigateTo({ path: this.$route.path, query: { selectedStop: null, selectedPathway: null } })
-      this.$refs.cy.instance.filter(':selected').forEach(element => element.unselect())
+      this.$refs.cy.instance.filter(':selected').forEach((element: any) => element.unselect())
     },
-    getElementById (elementId) {
-      const id = Number(elementId.match('[0-9]+')[0])
+    getElementById (elementId: string): Stop | Pathway | Level | undefined {
+      const match = elementId.match('[0-9]+')
+      if (!match) return undefined
+      const id = Number(match[0])
       if (elementId.startsWith('s')) {
         return this.station.stops.find(s => s.id === id)
       } else if (elementId.startsWith('p')) {
@@ -246,24 +251,24 @@ export default {
         return this.station.levels.find(l => l.id === id)
       }
     },
-    selectStop (id, clearSelectedElements = true) {
+    selectStop (id: number, clearSelectedElements = true) {
       if (clearSelectedElements) { this.clearSelectedElements() }
       this.selectElement(`s-${id}`)
     },
-    selectPathway (id, clearSelectedElements = true) {
+    selectPathway (id: number, clearSelectedElements = true) {
       if (clearSelectedElements) { this.clearSelectedElements() }
       this.clearSelectedElements()
       this.selectElement(`p-${id}`)
     },
-    selectElement (elementId) {
-      this.$refs.cy.instance.filter(':unselected').forEach((element) => {
+    selectElement (elementId: string) {
+      this.$refs.cy.instance.filter(':unselected').forEach((element: any) => {
         if (element.id() === elementId) {
           element.select()
         }
       })
     }
   }
-}
+})
 </script>
 
 <style scoped>

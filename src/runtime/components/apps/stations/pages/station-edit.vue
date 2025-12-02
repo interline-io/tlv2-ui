@@ -16,19 +16,21 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
 import { navigateTo } from '#imports'
-import StationMixin from './station-mixin'
+import type { Station } from '../station'
+import StationMixin from './station-mixin.vue'
 import { useRouteResolver } from '../../../../composables/useRouteResolver'
 
-export default {
+export default defineComponent({
   mixins: [StationMixin],
   setup () {
     const { resolve } = useRouteResolver()
     return { resolve }
   },
   methods: {
-    updateStationHandler (station) {
+    updateStationHandler (station: Station) {
       this.station.updateStation(this.$apollo, station.stop)
         .then(() => {
           navigateTo({
@@ -42,7 +44,7 @@ export default {
         })
         .catch(this.setError)
     },
-    deleteStationCheck (station) {
+    deleteStationCheck (station: Station) {
       this.$buefy.dialog.confirm({
         message: `Do you want to delete the station named <strong>${station.stop.stop_name}</strong>?`,
         cancelText: 'No',
@@ -52,7 +54,7 @@ export default {
         }
       })
     },
-    deleteStationHandler (station) {
+    deleteStationHandler (station: Station) {
       this.station.deleteStation(this.$apollo, station)
         .then(() => {
           navigateTo({
@@ -76,5 +78,5 @@ export default {
       })
     }
   }
-}
+})
 </script>
