@@ -13,11 +13,11 @@
 </template>
 
 <script setup lang="ts">
-import { toRefs } from 'vue'
+import { ref, toRefs } from 'vue'
 import { navigateTo } from '#imports'
-import { useApolloClient } from '@vue/apollo-composable'
 import { Station, Stop } from '../station'
 import { useFeed } from '../composables/useFeed'
+import { useStation } from '../composables/useStation'
 import { useRouteResolver } from '../../../../composables/useRouteResolver'
 
 const props = defineProps<{
@@ -29,11 +29,17 @@ const props = defineProps<{
 const { feedKey, feedVersionKey, clientId } = toRefs(props)
 
 const { resolve } = useRouteResolver()
-const { resolveClient } = useApolloClient()
 
 const { feedVersion } = useFeed({
   feedKey,
   feedVersionKey,
+  clientId: clientId.value
+})
+
+const { createStation, handleError } = useStation({
+  feedKey,
+  feedVersionKey,
+  stationKey: ref('new'),
   clientId: clientId.value
 })
 
@@ -45,13 +51,7 @@ const newStation = () => {
 }
 
 const createStationHandler = (station: Station) => {
-  const apollo = resolveClient(clientId?.value)
-  if (!apollo) {
-    console.error('Apollo client not available')
-    return
-  }
-  // @ts-expect-error - Vue Apollo global injection
-  station.createStation(apollo, station.stop)
+  createStation(station.stop)
     .then(() => {
       navigateTo({
         name: resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),
@@ -62,9 +62,7 @@ const createStationHandler = (station: Station) => {
         }
       })
     })
-    .catch((err: Error) => {
-      console.error('Error creating station:', err)
-    })
+    .catch(handleError)
 }
 
 const cancelHandler = () => {

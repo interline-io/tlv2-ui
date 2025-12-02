@@ -2,6 +2,7 @@ import { ref, computed, watch, type Ref } from 'vue'
 import { gql } from 'graphql-tag'
 import { useQuery, useApolloClient } from '@vue/apollo-composable'
 import { useToastNotification } from '../../../../composables/useToastNotification'
+import { symmetricDifference } from '../../../../lib/sets'
 import type { Level, Pathway } from '../station'
 import { Stop, Station, stationQuery, stationStopQuery, mapLevelKeyFn } from '../station'
 import type { FeedQueryResponse, StationQueryResponse, StopsQueryResponse } from '../types'
@@ -33,18 +34,6 @@ query currentFeeds ($feed_onestop_id: String, $feed_version_ids: [Int!]) {
   }
 }
 `
-
-function symmetricDifference<T> (setA: Set<T>, setB: Set<T>): Set<T> {
-  const _difference = new Set(setA)
-  for (const elem of setB) {
-    if (_difference.has(elem)) {
-      _difference.delete(elem)
-    } else {
-      _difference.add(elem)
-    }
-  }
-  return _difference
-}
 
 export interface UseStationOptions {
   feedKey: Ref<string>
@@ -298,6 +287,24 @@ export function useStation (options: UseStationOptions) {
     }
   `
 
+  const stationCreateMutation = gql`
+    mutation($set: StopSetInput!) {
+      stop_create(set: $set) { id }
+    }
+  `
+
+  const stationUpdateMutation = gql`
+    mutation($set: StopSetInput!) {
+      stop_update(set: $set) { id }
+    }
+  `
+
+  const stationDeleteMutation = gql`
+    mutation($id: Int!) {
+      stop_delete(id: $id) { id }
+    }
+  `
+
   // Apollo Client for mutations
   const { resolveClient } = useApolloClient()
   const executeMutation = async (mutation: any, variables: Record<string, unknown>): Promise<any> => {
@@ -443,6 +450,39 @@ export function useStation (options: UseStationOptions) {
     return createStop(stop)
   }
 
+  // Station mutations
+  const createStation = async (ent: Stop): Promise<any> => {
+    if (!feedVersion.value) {
+      throw new Error('Feed version not available')
+    }
+    ent.feed_version.id = feedVersion.value.id
+    ent.parent = { id: undefined }
+    const v = ent.value()
+    const vars = { set: v }
+    return executeMutation(stationCreateMutation, vars)
+  }
+
+  const updateStation = async (ent: Stop): Promise<any> => {
+    if (!ent.id) {
+      throw new Error('Station ID required for update')
+    }
+    if (!feedVersion.value) {
+      throw new Error('Feed version not available')
+    }
+    const v = ent.value()
+    // Station has no parent (it IS the parent)
+    v.parent = { id: null }
+    const vars = { set: v }
+    return executeMutation(stationUpdateMutation, vars)
+  }
+
+  const deleteStation = async (ent: Stop): Promise<any> => {
+    if (!ent.id) {
+      throw new Error('Station ID required for delete')
+    }
+    return executeMutation(stationDeleteMutation, { id: ent.id })
+  }
+
   return {
     // State
     ready,
@@ -479,6 +519,11 @@ export function useStation (options: UseStationOptions) {
     createStop,
     updateStop,
     deleteStop,
-    importStop
+    importStop,
+
+    // Station mutations
+    createStation,
+    updateStation,
+    deleteStation
   }
 }

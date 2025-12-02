@@ -19,7 +19,6 @@
 <script setup lang="ts">
 import { toRefs } from 'vue'
 import { navigateTo } from '#imports'
-import { useApolloClient } from '@vue/apollo-composable'
 import type { Station } from '../station'
 import { useStation } from '../composables/useStation'
 import { useRouteResolver } from '../../../../composables/useRouteResolver'
@@ -34,12 +33,13 @@ const props = defineProps<{
 const { feedKey, feedVersionKey, stationKey, clientId } = toRefs(props)
 
 const { resolve } = useRouteResolver()
-const { resolveClient } = useApolloClient()
 
 const {
   station,
   stationName,
-  handleError
+  handleError,
+  updateStation,
+  deleteStation
 } = useStation({
   feedKey,
   feedVersionKey,
@@ -49,13 +49,7 @@ const {
 
 const updateStationHandler = (updatedStation: Station) => {
   if (!station.value) return
-  const apollo = resolveClient(clientId?.value)
-  if (!apollo) {
-    handleError('Apollo client not available')
-    return
-  }
-  const stationObj = station.value as any
-  stationObj.updateStation(apollo, updatedStation.stop)
+  updateStation(updatedStation.stop)
     .then(() => {
       navigateTo({
         name: resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),
@@ -71,13 +65,7 @@ const updateStationHandler = (updatedStation: Station) => {
 
 const deleteStationHandler = (stationToDelete: Station) => {
   if (!station.value) return
-  const apollo = resolveClient(clientId?.value)
-  if (!apollo) {
-    handleError('Apollo client not available')
-    return
-  }
-  const stationObj = station.value as any
-  stationObj.deleteStation(apollo, stationToDelete)
+  deleteStation(stationToDelete.stop)
     .then(() => {
       navigateTo({
         name: resolve('apps-stations-feedKey-feedVersionKey-stations'),

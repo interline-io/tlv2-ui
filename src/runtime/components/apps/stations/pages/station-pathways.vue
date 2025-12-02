@@ -525,17 +525,26 @@ function moveStopSave (stopId: number, e: LngLat) {
 
 // Pathways
 function newPathway (): Pathway {
+  const fromId = selectedSource.value?.id ?? 'unknown'
+  const toId = selectedStop.value?.id ?? 'unknown'
   return new Pathway({
     from_stop: selectedSource.value || undefined,
     to_stop: selectedStop.value || undefined,
-    pathway_id: `${selectedSource.value!.id}-${selectedStop.value!.id}-${Date.now()}`
+    pathway_id: `${fromId}-${toId}-${Date.now()}`
   }).setDefaults()
 }
 
 function createPathwayHandler (pw: Pathway) {
   if (!station.value) return
+  let newPathwayId = 0
   createPathway(pw)
-    .then(() => { selectPathway(null) })
+    .then((d) => {
+      newPathwayId = d?.data?.pathway_create?.id
+    })
+    .then(() => {
+      // Wait for refetch to complete before selecting the new pathway
+      setTimeout(() => { selectPathway(newPathwayId) }, REFETCH_SELECTION_DELAY)
+    })
     .catch(handleError)
 }
 

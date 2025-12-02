@@ -416,17 +416,24 @@ export class Pathway {
   }
 
   value (): Record<string, unknown> {
+    // Convert empty strings to undefined for numeric fields to avoid GraphQL validation errors
+    const toNumber = (val: any): number | undefined => {
+      if (val === '' || val === null || val === undefined) return undefined
+      const num = Number(val)
+      return Number.isNaN(num) ? undefined : num
+    }
+
     return {
       id: this.id,
-      length: this.length,
+      length: toNumber(this.length),
       pathway_id: this.pathway_id,
       pathway_mode: this.pathway_mode,
-      max_slope: this.max_slope,
-      min_width: this.min_width,
+      max_slope: toNumber(this.max_slope),
+      min_width: toNumber(this.min_width),
       signposted_as: this.signposted_as,
       reverse_signposted_as: this.reverse_signposted_as,
-      stair_count: this.stair_count,
-      traversal_time: this.traversal_time,
+      stair_count: toNumber(this.stair_count),
+      traversal_time: toNumber(this.traversal_time),
       is_bidirectional: this.is_bidirectional,
       from_stop: { id: this.from_stop.id },
       to_stop: { id: this.to_stop.id },
