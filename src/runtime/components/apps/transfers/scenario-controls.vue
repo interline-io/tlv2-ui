@@ -178,7 +178,7 @@ import {
 import type { Scenario, ScenarioResult,
   FeedVersionOption } from './scenario'
 import type { Station } from './station'
-import { Profiles } from './graph'
+import { Profiles } from '../../../pathways/graph'
 import { computed, ref, watch } from 'vue'
 import { useMixpanel } from '../../../composables/useMixpanel'
 

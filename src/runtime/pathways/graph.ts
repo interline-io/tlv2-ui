@@ -3,8 +3,36 @@
  * Implements A* pathfinding for optimal route calculation through transit stations
  */
 
-import { haversinePosition } from '../../../geom'
-import type { Stop, Pathway } from './station'
+import { haversinePosition } from '../geom'
+
+/**
+ * Minimal pathway interface for routing graph construction
+ * Contains only the properties needed to build a routable graph
+ */
+export interface RoutablePathway {
+  id?: number
+  pathway_id?: string
+  pathway_mode?: number
+  is_bidirectional?: number
+  from_stop: { id?: number }
+  to_stop: { id?: number }
+}
+
+/**
+ * Minimal stop interface for routing graph construction
+ * Contains only the properties needed for graph routing and debugging
+ */
+export interface RoutableStop {
+  id?: number
+  stop_id?: string
+  stop_name?: string
+  location_type?: number
+  geometry?: { coordinates: number[] }
+  parent_station?: number
+  parent?: { id?: number }
+  pathways_from_stop: RoutablePathway[]
+  pathways_to_stop: RoutablePathway[]
+}
 
 /**
  * Default walking speed in meters per second
@@ -23,12 +51,12 @@ export const MinEdge = 0.0001
  * @param speed - Optional walking speed
  * @returns Cost in seconds (or 0 if pathway is inaccessible)
  */
-export type CostFunction = (pw: Pathway, d: number, speed?: number) => number
+export type CostFunction = (pw: RoutablePathway, d: number, speed?: number) => number
 
 /**
  * Calculate default distance cost (time = distance / speed)
  */
-export function DefaultDistance (_pw: Pathway, d: number, speed?: number): number {
+export function DefaultDistance (_pw: RoutablePathway, d: number, speed?: number): number {
   speed = DefaultWalkingSpeed
   const t = (d / speed)
   return t
@@ -38,7 +66,7 @@ export function DefaultDistance (_pw: Pathway, d: number, speed?: number): numbe
  * Calculate cost based on pathway mode (stairs, escalators, etc.)
  * Applies different penalties based on pathway type
  */
-export function DefaultCost (pw: Pathway, d: number, speed?: number): number {
+export function DefaultCost (pw: RoutablePathway, d: number, speed?: number): number {
   speed = DefaultWalkingSpeed
   let t = (d / speed)
   if (pw.pathway_mode === 1) {
@@ -71,7 +99,7 @@ export function DefaultCost (pw: Pathway, d: number, speed?: number): number {
  * Wheelchair-accessible profile
  * Returns 0 (inaccessible) for stairs and escalators
  */
-export function WheelchairProfile (pw: Pathway, d: number): number {
+export function WheelchairProfile (pw: RoutablePathway, d: number): number {
   const speed = 0.7
   if (pw.pathway_mode === 2) {
     return 0.0
@@ -121,11 +149,11 @@ export class RoutingGraph {
   heuristic: number[][]
   distances: Record<number, number[]>
   pwids: (number | undefined)[][]
-  stopsById: Map<number, Stop>
-  pwsById: Map<number, Pathway>
+  stopsById: Map<number, RoutableStop>
+  pwsById: Map<number, RoutablePathway>
   stopIndex: Record<number, number>
 
-  constructor (stops: Stop[], profile?: CostFunction) {
+  constructor (stops: RoutableStop[], profile?: CostFunction) {
     profile = DefaultDistance
     this.adjacency = []
     this.heuristic = []
@@ -133,8 +161,8 @@ export class RoutingGraph {
     this.pwids = []
 
     // Stops and pathways by ID
-    const stopsById = new Map<number, Stop>()
-    const pwsById = new Map<number, Pathway>()
+    const stopsById = new Map<number, RoutableStop>()
+    const pwsById = new Map<number, RoutablePathway>()
     for (const stop of stops) {
       if (stop.id) {
         stopsById.set(stop.id, stop)
@@ -206,7 +234,7 @@ export class RoutingGraph {
   /**
    * Build adjacency matrix and heuristic values
    */
-  buildGraph (stops: Stop[], profile: CostFunction): void {
+  buildGraph (stops: RoutableStop[], profile: CostFunction): void {
     if (!stops || stops.length === 0 || !profile) {
       return
     }
@@ -314,7 +342,7 @@ export class RoutingGraph {
  * Graph interface returned by NewGraph (legacy)
  */
 export interface Graph {
-  nodes: Stop[]
+  nodes: RoutableStop[]
   adjacency: number[][]
   heuristic: number[][]
   distances: number[][]
@@ -325,7 +353,7 @@ export interface Graph {
  * Create a routing graph (legacy function, use RoutingGraph class instead)
  * @deprecated Use RoutingGraph class
  */
-export function NewGraph (stops: Stop[], profile: CostFunction): Graph | null {
+export function NewGraph (stops: RoutableStop[], profile: CostFunction): Graph | null {
   if (!stops || stops.length === 0 || !profile) {
     return null
   }
@@ -375,8 +403,8 @@ export function NewGraph (stops: Stop[], profile: CostFunction): Graph | null {
   }
 
   // init pathway edges
-  const stopIndex = new Map<number, Stop>()
-  const pwIndex = new Map<number, Pathway>()
+  const stopIndex = new Map<number, RoutableStop>()
+  const pwIndex = new Map<number, RoutablePathway>()
   for (const stop of stops) {
     if (stop.id) {
       stopIndex.set(stop.id, stop)
