@@ -99,7 +99,15 @@
             </div>
           </t-card>
           <template v-if="selectMode === 'edit-pathway'">
-            <t-card v-for="spw of selectedPathways" :key="spw.id" label="Edit Pathway">
+            <t-card v-for="spw of selectedPathways" :key="spw.id">
+              <template #header>
+                <p class="card-header-title">
+                  Edit Pathway
+                </p>
+                <t-button class="card-header-icon" variant="primary" outlined @click="unselectAll">
+                  Unselect
+                </t-button>
+              </template>
               <tl-apps-stations-mode-switch
                 :params="{
                   feedKey: feedKey,
@@ -120,7 +128,15 @@
             </t-card>
           </template>
           <template v-else-if="selectMode === 'edit-node'">
-            <t-card v-for="ss of selectedStops" :key="ss.id" class="card" label="Edit Node">
+            <t-card v-for="ss of selectedStops" :key="ss.id" class="card">
+              <template #header>
+                <p class="card-header-title">
+                  Edit Node
+                </p>
+                <t-button class="card-header-icon" variant="primary" outlined @click="unselectAll">
+                  Unselect
+                </t-button>
+              </template>
               <tl-apps-stations-mode-switch
                 :params="{
                   feedKey: feedKey,
