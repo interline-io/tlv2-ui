@@ -1,9 +1,14 @@
 <template>
   <div>
-    <div v-if="!hideRoot && node">
+    <div v-if="!hideRoot && node" class="tree-row">
       <span v-if="!hasChildren" class="indent-spacer">&nbsp;</span>
-      <span v-else-if="expanded" class="button indent-buttons is-small" @click="toggleExpand">-</span>
-      <span v-else class="button indent-buttons is-small" @click="toggleExpand">+</span>
+      <span
+        v-else
+        class="expand-button"
+        :class="expanded ? 'expand-button-down' : 'expand-button-right'"
+        :title="expanded ? 'Collapse' : 'Expand'"
+        @click="toggleExpand"
+      />
       <t-checkbox
         :model-value="node.selected"
         :indeterminate="node.indet"
@@ -73,14 +78,64 @@ function toggleExpand (): void {
 
 <style scoped>
 .bold {
-  font-weight:bold
+  font-weight: bold;
 }
-.indent-buttons {
-  padding:0px;
-  margin:0px;
-  height:15px;
-  width:15px;
 
+.tree-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.indent-spacer {
+  width: 1.125rem;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.expand-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.125rem;
+  height: 1.125rem;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.expand-button-right::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 0.375rem solid #363636;
+  border-top: 0.25rem solid transparent;
+  border-bottom: 0.25rem solid transparent;
+}
+
+.expand-button-down::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 0.375rem solid #363636;
+  border-left: 0.25rem solid transparent;
+  border-right: 0.25rem solid transparent;
+}
+
+.expand-button:hover {
+  opacity: 0.7;
 }
 .indented {
   margin-left:30px;
