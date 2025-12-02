@@ -35,6 +35,10 @@
     "./testutil": {
       "types": "./dist/runtime/testutil/index.d.ts",
       "import": "./dist/runtime/testutil/index.js"
+    },
+    "./composables": {
+      "types": "./dist/runtime/composables/index.d.ts",
+      "import": "./dist/runtime/composables/index.js"
     }
   },
   "main": "./dist/module.mjs",
