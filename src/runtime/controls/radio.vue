@@ -1,5 +1,5 @@
 <template>
-  <label class="t-radio" :class="radioClasses">
+  <label class="radio t-radio" :class="radioClasses">
     <input
       type="radio"
       :checked="modelValue === nativeValue"
