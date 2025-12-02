@@ -1,5 +1,6 @@
 <script>
 import { gql } from 'graphql-tag'
+import { useToastNotification } from '../../../../composables/useToastNotification'
 
 const currentFeeds = gql`
 query currentFeeds ($feed_onestop_id: String, $feed_version_ids: [Int!]) {
@@ -25,6 +26,15 @@ query currentFeeds ($feed_onestop_id: String, $feed_version_ids: [Int!]) {
 `
 
 export default {
+  props: {
+    feedKey: { type: String, default: null },
+    feedVersionKey: { type: String, default: null },
+    client: { type: String, default: 'stationEditor' }
+  },
+  setup () {
+    const { showToast } = useToastNotification()
+    return { showToast }
+  },
   apollo: {
     feeds: {
       client: 'stationEditor',
@@ -40,11 +50,6 @@ export default {
         }
       }
     }
-  },
-  props: {
-    feedKey: { type: String, default: null },
-    feedVersionKey: { type: String, default: null },
-    client: { type: String, default: 'stationEditor' }
   },
   data () {
     return {
@@ -72,14 +77,7 @@ export default {
   methods: {
     error (error) {
       const msg = error.message ? error.message : JSON.stringify(error)
-      this.$oruga.notification.open({
-        message: `Error: ${msg}`,
-        indefinite: true,
-        rootClass: 'toast-notification',
-        variant: 'danger',
-        closable: true,
-        position: 'top'
-      })
+      this.showToast(`Error: ${msg}`, 'danger')
     }
   }
 }

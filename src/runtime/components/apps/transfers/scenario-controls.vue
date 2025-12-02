@@ -1,11 +1,11 @@
 <template>
   <div class="mb-4">
-    <o-notification
+    <t-notification
       v-if="error"
       variant="danger"
     >
       Error: {{ error }}
-    </o-notification>
+    </t-notification>
 
     <!-- Feed version/service date/time-of-day selector -->
     <tl-apps-transfers-feed-version-time-selector
@@ -46,73 +46,61 @@
       class="columns is-clearfix block"
     >
       <div class="column is-one-third">
-        <div class="control">
-          <o-field
-            label="Walking Profile (Beta)"
-            grouped
-            :message="enableProfiles ? undefined : 'Profiles may not be available for this station and/or feed version'"
+        <t-field
+          label="Walking Profile (Beta)"
+          :message="enableProfiles ? undefined : 'Profiles may not be available for this station and/or feed version'"
+        >
+          <t-select
+            v-model="profileName"
+            :disabled="!enableProfiles"
           >
-            <o-select
-              :model-value="scenario?.profileName"
-              :disabled="!enableProfiles"
-              @update:model-value="emitSetProfileName"
+            <option :value="null">
+              Straight-line
+            </option>
+            <option
+              v-for="(p, i) of profiles"
+              :key="i"
+              :value="i"
             >
-              <option :value="null">
-                Straight-line
-              </option>
-              <option
-                v-for="(p, i) of profiles"
-                :key="i"
-                :value="i"
-              >
-                {{ i }}
-              </option>
-            </o-select>
-          </o-field>
-        </div>
-        <div class="control">
-          <o-field>
-            <template #message>
-              <p v-if="station == null || loading " />
-              <p
-                v-else-if="scenario?.useStopObservations && !hasAtLeastOneStopObservation"
-                class="help is-danger"
-              >
-                No real-time observations found on {{ scenario?.selectedFeedVersions?.[0]?.serviceDate }} between {{ scenario?.timeOfDay }}
-              </p>
-            </template>
-            <template #label>
-              Time Source
-            </template>
-            <o-select
-              :model-value="scenario?.useStopObservations"
-              @update:model-value="emitSetUseStopObservations"
+              {{ i }}
+            </option>
+          </t-select>
+        </t-field>
+        <t-field label="Time Source">
+          <template #message>
+            <p v-if="station == null || loading " />
+            <p
+              v-else-if="scenario?.useStopObservations && !hasAtLeastOneStopObservation"
+              class="help is-danger"
             >
-              <option value="true">
-                Static GTFS &amp; GTFS Realtime schedules
-              </option>
-              <option value="false">
-                Static GTFS schedule only
-              </option>
-            </o-select>
-          </o-field>
-        </div>
+              No real-time observations found on {{ scenario?.selectedFeedVersions?.[0]?.serviceDate }} between {{ scenario?.timeOfDay }}
+            </p>
+          </template>
+          <t-select
+            v-model="useStopObservations"
+          >
+            <option value="true">
+              Static GTFS &amp; GTFS Realtime schedules
+            </option>
+            <option value="false">
+              Static GTFS schedule only
+            </option>
+          </t-select>
+        </t-field>
       </div>
       <div class="column is-two-thirds">
         <tl-apps-transfers-time-scoring-control
           :transfer-scoring-breakpoints="scenario?.transferScoringBreakpoints || []"
           @changed="transferScoringBreakpointsChanged"
         />
-        <o-field label="Options">
-          <!-- @vue-skip -->
-          <o-checkbox
-            style="padding-top:8px;"
+        <t-field label="Options">
+          <t-checkbox
             :model-value="(scenario?.hideSubsequentTransfers || 0) > 0"
-            @update:model-value="hideSubsequentTransfersChanged"
+            @update:model-value="(value) => hideSubsequentTransfersChanged(Array.isArray(value) ? false : value)"
           >
             Hide subsequent transfers to the same route &amp; headsign
-          </o-checkbox>
-        </o-field>
+          </t-checkbox>
+        </t-field>
       </div>
     </div>
 
@@ -125,22 +113,16 @@
           <div class="message-header">
             <p>Incoming trips</p>
             <div class="field has-addons">
-              <p class="control">
-                <o-button
-                  size="small"
-                  @click="setExcludeIncomingTrips(false, '*')"
-                >
+              <div class="control">
+                <t-button size="small" @click="setExcludeIncomingTrips(false, '*')">
                   None
-                </o-button>
-              </p>
-              <p class="control">
-                <o-button
-                  size="small"
-                  @click="setExcludeIncomingTrips(true, '*')"
-                >
+                </t-button>
+              </div>
+              <div class="control">
+                <t-button size="small" @click="setExcludeIncomingTrips(true, '*')">
                   All
-                </o-button>
-              </p>
+                </t-button>
+              </div>
             </div>
           </div>
           <div class="message-body">
@@ -160,22 +142,16 @@
           <div class="message-header">
             <p>Outgoing trips</p>
             <div class="field has-addons">
-              <p class="control">
-                <o-button
-                  size="small"
-                  @click="setExcludeOutgoingTrips(false, '*')"
-                >
+              <div class="control">
+                <t-button size="small" @click="setExcludeOutgoingTrips(false, '*')">
                   None
-                </o-button>
-              </p>
-              <p class="control">
-                <o-button
-                  size="small"
-                  @click="setExcludeOutgoingTrips(true, '*')"
-                >
+                </t-button>
+              </div>
+              <div class="control">
+                <t-button size="small" @click="setExcludeOutgoingTrips(true, '*')">
                   All
-                </o-button>
-              </p>
+                </t-button>
+              </div>
             </div>
           </div>
           <div class="message-body">
@@ -254,12 +230,30 @@ const profiles = Profiles
 const selectedFeedVersions = ref<SelectedFeedVersion[]>(props.scenario?.selectedFeedVersions?.slice(0) || [])
 const _enableStopObservations = ref(true)
 const error = ref<string | null>(null)
+const profileName = ref<string | null>(props.scenario?.profileName || null)
+const useStopObservations = ref<string>(String(props.scenario?.useStopObservations))
 
 watch(() => props.scenario?.selectedFeedVersions, (newVal) => {
   if (newVal) {
     selectedFeedVersions.value = newVal.slice(0)
   }
 }, { deep: true, immediate: true })
+
+watch(() => props.scenario?.profileName, (newVal) => {
+  profileName.value = newVal || null
+})
+
+watch(profileName, (newVal) => {
+  emit('setProfileName', newVal)
+})
+
+watch(() => props.scenario?.useStopObservations, (newVal) => {
+  useStopObservations.value = String(newVal)
+})
+
+watch(useStopObservations, (newVal) => {
+  emit('setUseStopObservations', newVal === 'true')
+})
 
 const hasAtLeastOneStopObservation = computed(() => {
   if (!props.scenarioResult?.outgoingDepartures) return false
@@ -353,18 +347,6 @@ function setExcludeOutgoingTrips (state: boolean, keys: string) {
 function emitSetTimeOfDay (value: string | undefined) {
   if (value !== undefined) {
     emit('setTimeOfDay', value)
-  }
-}
-
-function emitSetProfileName (value: string | null | undefined) {
-  if (value !== undefined) {
-    emit('setProfileName', value)
-  }
-}
-
-function emitSetUseStopObservations (value: boolean | undefined) {
-  if (value !== undefined) {
-    emit('setUseStopObservations', value)
   }
 }
 

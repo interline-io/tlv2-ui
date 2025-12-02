@@ -1,18 +1,18 @@
 <template>
   <div>
-    <tl-loading v-model:active="loading" :full-page="false" />
-    <o-notification
+    <t-loading :active="loading" :full-page="false" />
+    <t-notification
       v-if="error"
       variant="danger"
     >
       Error: {{ error }}
-    </o-notification>
+    </t-notification>
     <div v-else-if="fv && perms">
-      <o-field label="Your permissions" horizontal>
+      <t-field label="Your permissions" horizontal>
         <div :title="`You are logged in as ${user.name} (${user.email})`">
           <tl-apps-admin-perm-list :actions="perms.actions" />
         </div>
-      </o-field>
+      </t-field>
 
       <tl-apps-admin-entrel-list
         v-if="perms.actions.can_edit_members || perms.users.editors?.length > 0"
@@ -42,9 +42,9 @@
         @remove-permissions="removePermissions('viewer', $event)"
       />
 
-      <o-field label="" horizontal>
+      <t-field label="" horizontal>
         * Permissions are additive with permissions defined by feed and group (not shown)
-      </o-field>
+      </t-field>
     </div>
   </div>
 </template>

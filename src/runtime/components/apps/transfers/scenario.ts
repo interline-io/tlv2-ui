@@ -817,7 +817,7 @@ export class Scenario {
     this.excludeIncomingTrips = v.excludeIncomingTrips || []
     this.excludeOutgoingTrips = v.excludeOutgoingTrips || []
     this.tripFilterGroups = v.tripFilterGroups || ['feed_version', 'route_category', 'agency', 'route', 'trip_headsign']
-    this.profileName = v.profileName || null
+    this.profileName = v.profileName || 'Straight-line'
     this.useStopObservations = v.useStopObservations
     this.transferScoringBreakpoints = (v.transferScoringBreakpoints || [-5 * 60, 0, 6 * 60, 10 * 60, 20 * 60]).slice(0)
     this.transferOverrides = v.transferOverrides || new TransferOverrides()

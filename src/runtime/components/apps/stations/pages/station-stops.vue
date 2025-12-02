@@ -16,7 +16,7 @@
     <div class="columns">
       <div class="column is-narrow">
         <div class="editor-info">
-          <tl-card class="card">
+          <t-card class="card">
             <template #trigger>
               Node
             </template>
@@ -28,38 +28,38 @@
                 This stop is already associated with the station. Use the pathways editor.
               </template>
               <div v-else-if="selectedStop">
-                <o-field label="Feed ID">
-                  <o-input v-model="selectedStop.feed_version.feed.onestop_id" :disabled="true" />
-                </o-field>
-                <o-field label="Stop ID">
-                  <o-input v-model="selectedStop.stop_id" :disabled="true" />
-                </o-field>
-                <o-field label="Name">
-                  <o-input v-model="selectedStop.stop_name" :disabled="true" />
-                </o-field>
+                <t-field label="Feed ID">
+                  <t-input v-model="selectedStop.feed_version.feed.onestop_id" :disabled="true" />
+                </t-field>
+                <t-field label="Stop ID">
+                  <t-input v-model="selectedStop.stop_id" :disabled="true" />
+                </t-field>
+                <t-field label="Name">
+                  <t-input v-model="selectedStop.stop_name" :disabled="true" />
+                </t-field>
 
-                <o-field label="Location Type">
-                  <o-select v-model="selectedStop.location_type" :disabled="true">
+                <t-field label="Location Type">
+                  <t-select v-model="selectedStop.location_type" :disabled="true">
                     <option v-for="[type, label] of LocationTypes.entries()" :key="type" :value="type">
                       {{ label }}
                     </option>
-                  </o-select>
-                </o-field>
+                  </t-select>
+                </t-field>
 
-                <o-field label="Import to Level">
-                  <o-select v-model="selectedStop.level.id">
+                <t-field label="Import to Level">
+                  <t-select v-model="selectedStop.level.id">
                     <option v-for="level of station.levels" :key="level.id" :value="level.id">
                       {{ level.level_name }}
                     </option>
-                  </o-select>
-                </o-field>
-                <o-field v-if="selectedStop.route_stops.length > 0" label="Routes">
+                  </t-select>
+                </t-field>
+                <t-field v-if="selectedStop.route_stops.length > 0" label="Routes">
                   <ul>
                     <li v-for="rt of selectedStop.route_stops" :key="rt.route.id">
                       {{ rt.route.agency.agency_id }}: {{ rt.route.route_short_name || rt.route.route_long_name }}
                     </li>
                   </ul>
-                </o-field>
+                </t-field>
                 <span class="button is-primary" @click="importStopHandler(selectedStop)">
                   Import Node
                 </span>
@@ -68,10 +68,10 @@
             <div v-else>
               Click to select a stop
             </div>
-          </tl-card>
+          </t-card>
 
           <br>
-          <tl-card>
+          <t-card>
             <template #trigger>
               Help
             </template>
@@ -80,26 +80,21 @@
               <li>You must select a level before importing</li>
               <li>Click the selected item again to unselect</li>
             </ul>
-          </tl-card>
+          </t-card>
         </div>
       </div>
 
       <div class="column">
-        <o-field>
-          <o-dropdown
+        <t-field>
+          <t-dropdown
             v-model="selectedLevels"
             :width="300"
             aria-role="list"
             selectable
             multiple
+            trigger-label="Levels"
           >
-            <template #trigger>
-              <button class="button" type="button">
-                Levels &nbsp;
-                <o-icon icon="menu-down" />
-              </button>
-            </template>
-            <o-dropdown-item v-for="level of station.levels" :key="level.id" :value="level.id" aria-role="listitem">
+            <t-dropdown-item v-for="level of station.levels" :key="level.id" :value="level.id" aria-role="listitem">
               <div class="media">
                 <div class="media-left">
                   {{ level.level_index !== undefined ? level.level_index : ' ' }}
@@ -111,68 +106,53 @@
                   <small>{{ level.stops.length }} nodes </small>
                 </div>
               </div>
-            </o-dropdown-item>
-          </o-dropdown>
+            </t-dropdown-item>
+          </t-dropdown>
 
           <tl-apps-stations-basemap-control v-model="basemap" />
 
-          <o-dropdown
+          <t-dropdown
             v-model="selectedSources"
             :width="300"
             aria-role="list"
             multiple
+            trigger-label="Sources"
           >
-            <template #trigger>
-              <button class="button" type="button">
-                Sources &nbsp;
-                <o-icon icon="menu-down" />
-              </button>
-            </template>
-            <o-dropdown-item v-for="(sourceType, key) of SourceTypes" :key="sourceType" :value="key" aria-role="listitem">
+            <t-dropdown-item v-for="(sourceType, key) of SourceTypes" :key="sourceType" :value="key" aria-role="listitem">
               <div class="media">
                 {{ sourceType }}
               </div>
-            </o-dropdown-item>
-          </o-dropdown>
+            </t-dropdown-item>
+          </t-dropdown>
 
-          <o-dropdown
+          <t-dropdown
             v-model="selectedLocationTypes"
             :width="300"
             aria-role="list"
+            trigger-label="Location Types"
             multiple
           >
-            <template #trigger>
-              <button class="button" type="button">
-                Location Types &nbsp;
-                <o-icon icon="menu-down" />
-              </button>
-            </template>
-            <o-dropdown-item v-for="[key, locationType] of LocationTypes.entries()" :key="locationType" :value="key.toString()" aria-role="listitem">
+            <t-dropdown-item v-for="[key, locationType] of LocationTypes.entries()" :key="locationType" :value="key.toString()" aria-role="listitem">
               <div class="media">
                 {{ locationType }}
               </div>
-            </o-dropdown-item>
-          </o-dropdown>
+            </t-dropdown-item>
+          </t-dropdown>
 
-          <o-dropdown
+          <t-dropdown
             v-model="selectedAgencies"
             :width="300"
             aria-role="list"
             multiple
+            trigger-label="Agencies"
           >
-            <template #trigger>
-              <button class="button" type="button">
-                Agencies &nbsp;
-                <o-icon icon="menu-down" />
-              </button>
-            </template>
-            <o-dropdown-item v-for="(agency, key) of agencies" :key="key" :value="key" aria-role="listitem">
+            <t-dropdown-item v-for="(agency, key) of agencies" :key="key" :value="key" aria-role="listitem">
               <div class="media">
                 {{ key }} {{ agency }}
               </div>
-            </o-dropdown-item>
-          </o-dropdown>
-        </o-field>
+            </t-dropdown-item>
+          </t-dropdown>
+        </t-field>
         <tl-apps-stations-pathway-map
           :center="station.geometry.coordinates"
           :other-stops="filteredStops"

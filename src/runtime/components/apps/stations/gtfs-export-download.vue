@@ -1,20 +1,18 @@
 <template>
   <div>
-    <tl-msg v-if="error" variant="error">
+    <t-msg v-if="error" variant="error">
       {{ error }}
-    </tl-msg>
+    </t-msg>
     <div v-else>
       <!-- Collapsible Advanced Transformations -->
-      <tl-msg
+      <t-msg
         title="Advanced Transformations"
         :collapsible="true"
         :collapsed="true"
-        no-icon
       >
-        <div class="field">
+        <!-- <div class="field">
           <label class="label">Additional Feed Versions to Merge</label>
-          <!-- @vue-skip -->
-          <o-taginput
+          <t-taginput
             v-model="additionalFeedVersions"
             :allow-new="true"
             placeholder="Add feed version SHA1 or ID"
@@ -24,12 +22,11 @@
           <p class="help">
             Add additional feed version SHA1s or IDs to merge with this export
           </p>
-        </div>
+        </div> -->
 
-        <div class="field">
+        <!-- <div class="field">
           <label class="label">ID Prefix</label>
-          <!-- @vue-skip -->
-          <o-input
+          <t-input
             v-model="exportOptions.prefix"
             placeholder="e.g., 'agency1_' to prefix all IDs"
             expanded
@@ -37,12 +34,11 @@
           <p class="help">
             Add prefix to entity IDs for namespacing when merging feeds
           </p>
-        </div>
+        </div> -->
 
-        <div class="field">
+        <!-- <div class="field">
           <label class="label">Prefix Files</label>
-          <!-- @vue-skip -->
-          <o-input
+          <t-input
             v-model="prefixFilesInput"
             placeholder="routes.txt, trips.txt (comma-separated)"
             expanded
@@ -50,16 +46,16 @@
           <p class="help">
             Specific files to apply prefix to (leave empty for all files)
           </p>
-        </div>
+        </div> -->
 
         <div class="field">
           <label class="label">Shape Simplification</label>
-          <o-input
+          <t-input
             :model-value="exportOptions.simplifyShapes?.toString() || ''"
             type="number"
             placeholder="Tolerance in meters (e.g., 10.0)"
             expanded
-            @update:model-value="(v) => exportOptions.simplifyShapes = v ? parseFloat(v) || null : null"
+            @update:model-value="(v) => exportOptions.simplifyShapes = v ? parseFloat(v.toString()) || null : null"
           />
           <p class="help">
             Simplify shape geometries to reduce file size
@@ -68,34 +64,21 @@
 
         <div class="field">
           <label class="label">Options</label>
-          <o-field>
-            <!-- @vue-skip -->
-            <o-checkbox v-model="exportOptions.normalizeTimezones">
+          <t-field>
+            <t-checkbox v-model="exportOptions.normalizeTimezones as boolean">
               Normalize timezones (US/Pacific → America/Los_Angeles)
-            </o-checkbox>
-          </o-field>
+            </t-checkbox>
+          </t-field>
           <div class="field">
-            <!-- @vue-skip -->
-            <o-checkbox v-model="exportOptions.useBasicRouteTypes">
+            <t-checkbox v-model="exportOptions.useBasicRouteTypes as boolean">
               Use basic route types (convert extended to core types)
-            </o-checkbox>
-            <o-tooltip>
-              <template #content>
-                <p>Converts extended GTFS route types (e.g., 100-1700) to basic types (0-12).</p>
-                <p>
-                  Learn more about
-                  <a
-                    href="https://www.transit.land/documentation/concepts/routes/#route-vehicle-types"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >route vehicle types</a>.
-                </p>
-              </template>
+            </t-checkbox>
+            <t-tooltip text="Converts extended GTFS route types (e.g., 100-1700) to basic types (0-12). Learn more about route vehicle types at https://www.transit.land/documentation/concepts/routes/#route-vehicle-types">
               <i class="fas fa-info-circle" style="margin-left: 0.5rem; cursor: help;" />
-            </o-tooltip>
+            </t-tooltip>
           </div>
         </div>
-      </tl-msg>
+      </t-msg>
 
       <!-- Action Buttons -->
       <div class="field is-grouped is-grouped-right mt-5">

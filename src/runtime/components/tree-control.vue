@@ -4,8 +4,7 @@
       <span v-if="!hasChildren" class="indent-spacer">&nbsp;</span>
       <span v-else-if="expanded" class="button indent-buttons is-small" @click="toggleExpand">-</span>
       <span v-else class="button indent-buttons is-small" @click="toggleExpand">+</span>
-      <!-- @vue-skip -->
-      <o-checkbox
+      <t-checkbox
         :model-value="node.selected"
         :indeterminate="node.indet"
         @update:model-value="select(Array.isArray($event) ? $event[0] : $event, node.key)"
@@ -14,7 +13,7 @@
           {{ node.name }}
           <tl-route-category v-if="node.opts.routeCategory" :show-category="node.opts.showCategory" :category="node.opts.routeCategory" :subcategory="node.opts.routeSubcategory" />
         </span>
-      </o-checkbox>
+      </t-checkbox>
     </div>
     <div v-if="expanded">
       <div

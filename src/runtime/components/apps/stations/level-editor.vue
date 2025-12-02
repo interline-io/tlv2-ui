@@ -23,7 +23,7 @@
     <div class="field">
       <label class="label">Level Index</label>
       <div class="control">
-        <o-input
+        <t-input
           v-model="level.level_index"
           type="number"
           number
@@ -36,17 +36,27 @@
     </div>
 
     <div class="field">
-      <o-field label="Location">
-        <o-button class="is-pulled-right" @click="showGeojsonEditor = true">
-          Edit GeoJSON
-        </o-button>
-        <span v-if="!geometry" class="p-2 is-pulled-right">Draw a polygon by clicking on map; click twice to end</span>
-        <span v-else class="p-2 is-pulled-right">Click the polygon twice to enter edit mode</span>
-      </o-field>
-
-      <o-field>
-        <tl-apps-stations-basemap-control v-model="basemap" />
-      </o-field>
+      <div class="level mb-2">
+        <div class="level-left">
+          <div class="level-item">
+            <label class="label mb-0">Location</label>
+          </div>
+          <div class="level-item">
+            <tl-apps-stations-basemap-control v-model="basemap" />
+          </div>
+        </div>
+        <div class="level-right">
+          <div class="level-item">
+            <span v-if="!geometry" class="mr-3">Draw a polygon by clicking on map; click twice to end</span>
+            <span v-else class="mr-3">Click the polygon twice to enter edit mode</span>
+          </div>
+          <div class="level-item">
+            <t-button @click="showGeojsonEditor = true">
+              Edit GeoJSON
+            </t-button>
+          </div>
+        </div>
+      </div>
 
       <tl-apps-stations-level-map
         :basemap="basemap"
@@ -68,65 +78,63 @@
       <div class="level mt-5">
         <div class="level-left">
           <div class="level-item">
-            <o-button
+            <t-button
               class="button is-outlined"
               @click="$emit('cancel')"
             >
               Cancel
-            </o-button>
+            </t-button>
           </div>
         </div>
         <div class="level-right">
           <template v-if="level.id">
             <div class="level-item">
-              <o-button
+              <t-button
                 class="button is-primary"
                 :disabled="!valid"
                 @click="$emit('update', level)"
               >
                 Save
-              </o-button>
+              </t-button>
             </div>
             <div class="level-item">
-              <o-button
+              <t-button
                 class="button is-danger"
                 @click="$emit('delete', level)"
               >
                 Delete
-              </o-button>
+              </t-button>
             </div>
           </template>
           <template v-else>
             <div class="level-item">
-              <o-button
+              <t-button
                 class="button is-primary"
                 :disabled="!valid"
                 @click="$emit('create', level)"
               >
                 Create Level
-              </o-button>
+              </t-button>
             </div>
           </template>
         </div>
       </div>
     </div>
-    <tl-modal
+    <t-modal
       v-model="showGeojsonEditor"
       title="Edit GeoJSON"
     >
-      <o-input
+      <t-textarea
         v-model="geojsonGeometry"
         :variant="geojsonError ? 'danger' : 'primary'"
-        :message="geojsonError || ''"
-        type="textarea"
         expanded
         rows="20"
         :style="{ 'max-height': '50vh' }"
       />
-      <o-button class="is-pulled-right" :disabled="!!geojsonError" :variant="geojsonError ? 'danger' : 'primary'" @click="showGeojsonEditor = false">
+      <t-button class="is-pulled-right" :disabled="!!geojsonError" :variant="geojsonError ? 'danger' : 'primary'" @click="showGeojsonError = false">
         {{ geojsonError ? geojsonError : 'OK' }}
-      </o-button>
-    </tl-modal>
+      </t-button>
+    </t-modal>
   </div>
 </template>
 

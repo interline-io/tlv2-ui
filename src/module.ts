@@ -110,14 +110,13 @@ export default defineNuxtModule<ModuleOptions>({
     }))
 
     // Setup CSS
-    nuxt.options.css.push(options.bulma || resolveRuntimeModule('assets/bulma.scss'))
     nuxt.options.css.push(resolveRuntimeModule('assets/main.css'))
+    nuxt.options.css.push('@mdi/font/css/materialdesignicons.css')
 
     // Setup plugins (run in order added)
     addPlugin(resolveRuntimeModule('plugins/apollo'))
     addPlugin(resolveRuntimeModule('plugins/mixpanel.client'))
     addPlugin(resolveRuntimeModule('plugins/auth.client'))
-    addPlugin(resolveRuntimeModule('plugins/oruga'))
     addImportsDir(resolveRuntimeModule('composables'))
 
     // Proxy options
@@ -144,6 +143,12 @@ export default defineNuxtModule<ModuleOptions>({
       prefix: 'tl'
     })
 
+    // Add controls (t-* components)
+    addComponentsDir({
+      path: resolveRuntimeModule('controls'),
+      prefix: 't'
+    })
+
     // Nuxt 4: Transpile packages for SSR compatibility
     // These packages need transpilation because they:
     // - Ship as ESM but need to work in SSR/Node context
@@ -155,7 +160,6 @@ export default defineNuxtModule<ModuleOptions>({
       '@apollo/client', // GraphQL client with modern JS/TS - needs transpilation for SSR
       'markdown-it', // Markdown parser - ESM package used in SSR
       'markdown-it-anchor', // Markdown-it plugin - must match parent's transpilation
-      '@oruga-ui/oruga-next', // Oruga UI components - contains Vue code needing transpilation
     )
 
     // Add Vite plugin - Nuxt 4 pattern

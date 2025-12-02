@@ -1,7 +1,7 @@
 <template>
   <div>
     <button :disabled="disabled" class="button" style="margin-right:10px" @click="saveFile">
-      <o-icon icon="download" /> <span>{{ buttonText }}</span>
+      <t-icon icon="download" /> <span>{{ buttonText }}</span>
     </button>
   </div>
 </template>
