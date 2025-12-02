@@ -120,30 +120,40 @@
           <t-table-column field="stop_id" label="Source ID" sortable />
           <t-table-column field="stop_name" label="Source Name" sortable />
           <t-table-column field="stopPaths" label="Destinations" />
-          <t-table-column field="edit" label="Edit" />
         </template>
 
         <template #default="{ row }">
           <td>{{ row.stop.stop_id }}</td>
           <td>{{ row.stop.stop_name }}</td>
           <td>
-            <span> {{ row.paths.filter((s: any) => { return !s.error }).length }} OK / {{ row.paths.filter((s: any) => { return s.error }).length }} Errors </span>
+            <div class="is-flex is-align-items-center is-justify-content-space-between mb-2">
+              <span>{{ row.paths.filter((s: any) => { return !s.error }).length }} OK / {{ row.paths.filter((s: any) => { return s.error }).length }} Errors</span>
+              <t-button size="small" @click="emit('selectStop', null); emit('selectStop', row.stop.id); openPaths = false">
+                Select source
+              </t-button>
+            </div>
 
-            <ul>
-              <li v-for="err of row.paths" :key="row.stop.id + '-' + err.target.id">
-                <template v-if="err.error || showAllPaths">
-                  <span class="button is-small" @click="emit('selectPath', row.stop.id, err.target.id); openPaths = false">Find route</span>
-                  <span class="button is-small" @click="emit('selectStop', err.target.id); openPaths = false">Select dest</span>
-                  <t-icon v-if="err.error" icon="alert" variant="danger" /><t-icon v-else icon="check" />
-                  <span>{{ err.target.stop_name }} ({{ err.target.id }})</span>
-                  <span v-if="err.distance && err.distance > 0">(dist: {{ err.distance.toFixed(0) }} m)
+            <ul class="mt-2">
+              <li v-for="err of row.paths" :key="row.stop.id + '-' + err.target.id" class="mb-1">
+                <div v-if="err.error || showAllPaths" class="is-flex is-align-items-start">
+                  <t-icon v-if="err.error" icon="alert" variant="danger" class="mr-2" style="flex-shrink: 0;" />
+                  <t-icon v-else icon="check" class="mr-2" style="flex-shrink: 0;" />
+                  <span class="is-flex-grow-1" style="word-break: break-word; min-width: 0;">
+                    <span>{{ err.target.stop_name || 'Node' }}</span>
+                    <span class="has-text-grey"> ({{ err.target.stop_id }})</span>
+                    <span v-if="err.distance && err.distance > 0" class="has-text-grey-light"> — {{ err.distance.toFixed(0) }}m</span>
                   </span>
-                </template>
+                  <div class="buttons has-addons ml-2" style="flex-shrink: 0;">
+                    <t-button size="small" @click="emit('selectPath', row.stop.id, err.target.id); openPaths = false">
+                      Find route
+                    </t-button>
+                    <t-button size="small" @click="emit('selectStop', err.target.id); openPaths = false">
+                      Select
+                    </t-button>
+                  </div>
+                </div>
               </li>
             </ul>
-          </td>
-          <td>
-            <span class="button is-small" @click="emit('selectStop', null); emit('selectStop', row.stop.id); openPaths = false">Select source</span>
           </td>
         </template>
       </t-table>
@@ -190,6 +200,7 @@ const stopPaths = computed((): StopPathData[] => {
   const stationMustReach = props.station.stops.filter((s) => { return s.location_type !== 1 })
   for (const stop of stationFromStops) {
     const errs = props.station.validatePathsToStops(stop, stationMustReach)
+      .filter((path) => { return path.target.id !== stop.id })
     if (errs.length > 0) {
       ret.push({ stop, paths: errs })
     }

@@ -228,7 +228,7 @@ export function useStation (options: UseStationOptions) {
     await refetchStation()
     // Refetch stops if we have a station with stops to reload
     if (station.value && stopList.value.length > 0) {
-      await refetchStops()
+      await refetchStops({ stop_ids: stopList.value })
     }
   }
 

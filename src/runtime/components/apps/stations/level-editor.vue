@@ -57,6 +57,7 @@
       </div>
 
       <tl-apps-stations-level-map
+        :key="mapKey"
         :basemap="basemap"
         :zoom="18"
         :center="center"
@@ -121,6 +122,7 @@
     <t-modal
       v-model="showGeojsonEditor"
       title="Edit GeoJSON"
+      @update:model-value="onCloseGeojsonEditor"
     >
       <t-textarea
         v-model="geojsonGeometry"
@@ -210,6 +212,7 @@ const basemap = ref('carto')
 const showGeojsonEditor = ref(false)
 const geojsonError = ref<string | null>(null)
 const geojsonGeometryBuffer = ref('')
+const mapKey = ref(0)
 
 const geometry = computed((): MultiPolygon | null => {
   return level.value.geometry ?? null
@@ -221,14 +224,17 @@ const geojsonGeometry = computed({
   },
   set (value: string) {
     geojsonGeometryBuffer.value = value
-    let parsed = null
     try {
-      parsed = JSON.parse(value)
-    } catch {
-      geojsonError.value = 'Invalid JSON'
-      return
+      const parsed = JSON.parse(value)
+      const mp = convertToMultiPolygon(parsed)
+      // Directly assign to trigger reactivity
+      level.value.geometry = mp
+      // Force map to re-render with new geometry
+      mapKey.value++
+      geojsonError.value = null
+    } catch (err) {
+      geojsonError.value = err instanceof Error ? err.message : 'Invalid JSON'
     }
-    setGeometry(parsed)
   }
 })
 
@@ -258,6 +264,13 @@ function setGeometry (e: FeatureCollection | Feature | Polygon | MultiPolygon) {
     geojsonError.value = null
   } catch (err) {
     geojsonError.value = err instanceof Error ? err.message : String(err)
+  }
+}
+
+function onCloseGeojsonEditor (isOpen: boolean) {
+  if (!isOpen) {
+    // Clear the buffer when closing the editor
+    geojsonGeometryBuffer.value = ''
   }
 }
 

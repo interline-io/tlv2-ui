@@ -25,10 +25,7 @@
             />
           </t-field>
           <!-- SELECT -->
-          <t-card v-if="selectMode === 'select'">
-            <template #trigger>
-              Select
-            </template>
+          <t-card v-if="selectMode === 'select'" label="Select">
             <div>
               <div class="mb-2">
                 <div class="is-flex is-justify-content-space-between is-align-items-center mb-2">
@@ -88,10 +85,7 @@
               </div>
             </div>
           </t-card>
-          <t-card v-else-if="selectMode === 'add-pathway'">
-            <template #trigger>
-              Add Pathway
-            </template>
+          <t-card v-else-if="selectMode === 'add-pathway'" label="Add Pathway">
             <div>
               <tl-apps-stations-pathway-editor
                 :station="station"
@@ -102,10 +96,7 @@
             </div>
           </t-card>
           <template v-if="selectMode === 'edit-pathway'">
-            <t-card v-for="spw of selectedPathways" :key="spw.id">
-              <template #trigger>
-                Edit Pathway
-              </template>
+            <t-card v-for="spw of selectedPathways" :key="spw.id" label="Edit Pathway">
               <tl-apps-stations-mode-switch
                 :params="{
                   feedKey: feedKey,
@@ -127,9 +118,11 @@
           </template>
           <template v-else-if="selectMode === 'edit-node'">
             <t-card v-for="ss of selectedStops" :key="ss.id" class="card">
-              <template #trigger>
-                Edit Node
-                <t-button v-if="selectedStops.length > 0 || selectedPathways.length > 0" class="is-pulled-right m-2" variant="primary" size="small" outlined @click="unselectAll">
+              <template #header>
+                <p class="card-header-title">
+                  Edit Node
+                </p>
+                <t-button v-if="selectedStops.length > 0 || selectedPathways.length > 0" class="card-header-icon m-2" variant="primary" size="small" outlined @click="unselectAll">
                   Unselect
                 </t-button>
               </template>
@@ -154,10 +147,7 @@
             </t-card>
           </template>
           <template v-else-if="selectMode === 'add-node'">
-            <t-card>
-              <template #trigger>
-                Add Node
-              </template>
+            <t-card label="Add Node">
               <t-field label="Level">
                 <t-dropdown
                   v-model="selectedLevel"
@@ -173,10 +163,7 @@
             </t-card>
           </template>
           <template v-else-if="selectMode === 'find-route'">
-            <t-card v-if="selectedStops.length > 1">
-              <template #trigger>
-                Find Route
-              </template>
+            <t-card v-if="selectedStops.length > 1" label="Find Route">
               <tl-apps-stations-path-viewer :path="selectedPath || []" />
             </t-card>
           </template>
@@ -187,64 +174,57 @@
 
       <div class="column">
         <t-field grouped>
-          <t-field>
-            <t-dropdown
-              v-model="selectedLevels"
-              :width="300"
-              trigger-label="Levels"
-              multiple
-              selectable
-            >
-              <t-dropdown-item v-for="level of sortedStationLevels" :key="level.id" :value="mapLevelKeyFn(level)">
-                <div class="media">
-                  <div class="media-left">
-                    {{ level.level_index == null ? '&nbsp;&nbsp;&nbsp;' : level.level_index }}
-                  </div>
-                  <div class="media-content">
-                    <h3>{{ level.level_name }}</h3>
-                    <small>{{ level.stops.length }} nodes </small>
-                  </div>
+          <t-dropdown
+            v-model="selectedLevels"
+            :width="300"
+            trigger-label="Levels"
+            multiple
+            selectable
+            variant="primary"
+          >
+            <t-dropdown-item v-for="level of sortedStationLevels" :key="level.id" :value="mapLevelKeyFn(level)">
+              <div class="media">
+                <div class="media-left">
+                  {{ level.level_index == null ? '&nbsp;&nbsp;&nbsp;' : level.level_index }}
                 </div>
-              </t-dropdown-item>
-            </t-dropdown>
-          </t-field>
-          <t-field>
-            <tl-apps-stations-basemap-control v-model="basemap" />
-          </t-field>
-          <t-field>
-            <tl-download-geojson
-              :features="geojsonFeatures"
-              filename="station"
-              label="Download GeoJSON"
-            />
-          </t-field>
-          <t-field>
-            <t-radio
-              v-model="selectMode"
-              native-value="select"
-            >
-              <span>Select</span>
-            </t-radio>
-            <t-radio
-              v-model="selectMode"
-              :disabled="!(selectedStop && selectedSource)"
-              native-value="add-pathway"
-            >
-              <span>Add Pathway</span>
-            </t-radio>
-            <t-radio
-              v-model="selectMode"
-              native-value="find-route"
-            >
-              <span>Find Route</span>
-            </t-radio>
-            <t-radio
-              v-model="selectMode"
-              native-value="add-node"
-            >
-              Add Node
-            </t-radio>
-          </t-field>
+                <div class="media-content">
+                  <h3>{{ level.level_name }}</h3>
+                  <small>{{ level.stops.length }} nodes </small>
+                </div>
+              </div>
+            </t-dropdown-item>
+          </t-dropdown>
+          <tl-apps-stations-basemap-control v-model="basemap" />
+          <tl-download-geojson
+            :features="geojsonFeatures"
+            filename="station"
+            label="GeoJSON"
+          />
+          <t-radio
+            v-model="selectMode"
+            native-value="select"
+          >
+            <span>Select</span>
+          </t-radio>
+          <t-radio
+            v-model="selectMode"
+            :disabled="!(selectedStop && selectedSource)"
+            native-value="add-pathway"
+          >
+            <span>Add Pathway</span>
+          </t-radio>
+          <t-radio
+            v-model="selectMode"
+            native-value="find-route"
+          >
+            <span>Find Route</span>
+          </t-radio>
+          <t-radio
+            v-model="selectMode"
+            native-value="add-node"
+          >
+            Add Node
+          </t-radio>
         </t-field>
 
         <tl-pathway-map
@@ -275,6 +255,7 @@ import { LocationTypes } from '../basemaps'
 import { Stop, Pathway, mapLevelKeyFn } from '../station'
 import type { Level } from '../station'
 import { useStation } from '../composables/useStation'
+import { useToastNotification } from '../../../../composables/useToastNotification'
 
 type SelectMode = 'select' | 'add-node' | 'edit-node' | 'add-pathway' | 'edit-pathway' | 'find-route'
 
@@ -304,6 +285,7 @@ const {
   selectedLevels,
   selectedLevel,
   handleError,
+  refetch,
   createStop,
   updateStop,
   deleteStop,
@@ -313,6 +295,7 @@ const {
 } = useStation({ feedKey, feedVersionKey, stationKey, clientId: clientId?.value })
 
 const route = useRoute()
+const { showToast } = useToastNotification()
 
 // Reactive data
 const selectMode = ref<SelectMode>('select')
@@ -482,34 +465,42 @@ watch(selectMode, (mode) => {
 })
 
 // Methods - Stops
-// Delay to allow GraphQL refetch to complete before selecting newly created stop
-const REFETCH_SELECTION_DELAY = 100
-
 function createStopHandler (node: Stop) {
   if (!station.value) return
-  let newStopId = 0
   createStop(node)
     .then((d) => {
-      newStopId = d?.data?.stop_create?.id
+      const newStopId = d?.data?.stop_create?.id
+      return refetch().then(() => newStopId)
     })
-    .then(() => {
-      // Wait for refetch to complete before selecting the new stop
-      setTimeout(() => { selectStop(newStopId) }, REFETCH_SELECTION_DELAY)
+    .then((newStopId) => {
+      if (newStopId) {
+        showToast('Stop created successfully', 'success')
+        selectStop(newStopId)
+      }
     })
     .catch(handleError)
 }
 
 function updateStopHandler (node: Stop) {
   if (!station.value) return
+  const stopId = node.id!
   updateStop(node)
-    .then(() => { selectStop(node.id!) })
+    .then(() => refetch())
+    .then(() => {
+      showToast('Stop updated successfully', 'success')
+      selectStop(stopId)
+    })
     .catch(handleError)
 }
 
 function deleteStopHandler (node: Stop) {
   if (!station.value) return
   return deleteStop(node)
-    .then(() => { selectStop(null) })
+    .then(() => refetch())
+    .then(() => {
+      showToast('Stop deleted successfully', 'success')
+      selectStop(null)
+    })
     .catch(handleError)
 }
 
@@ -536,14 +527,16 @@ function newPathway (): Pathway {
 
 function createPathwayHandler (pw: Pathway) {
   if (!station.value) return
-  let newPathwayId = 0
   createPathway(pw)
     .then((d) => {
-      newPathwayId = d?.data?.pathway_create?.id
+      const newPathwayId = d?.data?.pathway_create?.id
+      return refetch().then(() => newPathwayId)
     })
-    .then(() => {
-      // Wait for refetch to complete before selecting the new pathway
-      setTimeout(() => { selectPathway(newPathwayId) }, REFETCH_SELECTION_DELAY)
+    .then((newPathwayId) => {
+      if (newPathwayId) {
+        showToast('Pathway created successfully', 'success')
+        selectPathway(newPathwayId)
+      }
     })
     .catch(handleError)
 }
@@ -551,14 +544,22 @@ function createPathwayHandler (pw: Pathway) {
 function updatePathwayHandler (pw: Pathway) {
   if (!station.value) return
   updatePathway(pw)
-    .then(() => { selectPathway(null) })
+    .then(() => refetch())
+    .then(() => {
+      showToast('Pathway updated successfully', 'success')
+      selectPathway(null)
+    })
     .catch(handleError)
 }
 
 function deletePathwayHandler (pw: Pathway) {
   if (!station.value) return
   deletePathway(pw)
-    .then(() => { selectPathway(null) })
+    .then(() => refetch())
+    .then(() => {
+      showToast('Pathway deleted successfully', 'success')
+      selectPathway(null)
+    })
     .catch(handleError)
 }
 
