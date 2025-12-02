@@ -48,6 +48,7 @@ export function useStation (options: UseStationOptions) {
 
   // Reactive state
   const ready = ref(false)
+  const refetching = ref(false)
   const station = ref<Station | null>(null)
   const stopList = ref<number[]>([])
   const selectedAgenciesShadow = ref<string[] | null>(null)
@@ -113,7 +114,8 @@ export function useStation (options: UseStationOptions) {
     }),
     () => ({
       ...(clientId && { clientId }),
-      fetchPolicy: 'network-only'
+      fetchPolicy: 'network-only',
+      notifyOnNetworkStatusChange: true
     })
   )
 
@@ -146,7 +148,8 @@ export function useStation (options: UseStationOptions) {
     () => ({
       ...(clientId && { clientId }),
       fetchPolicy: 'network-only',
-      enabled: stopList.value.length > 0
+      enabled: stopList.value.length > 0,
+      notifyOnNetworkStatusChange: true
     })
   )
 
@@ -225,10 +228,15 @@ export function useStation (options: UseStationOptions) {
   })
 
   const refetch = async () => {
-    await refetchStation()
-    // Refetch stops if we have a station with stops to reload
-    if (station.value && stopList.value.length > 0) {
-      await refetchStops({ stop_ids: stopList.value })
+    refetching.value = true
+    try {
+      await refetchStation()
+      // Refetch stops if we have a station with stops to reload
+      if (station.value && stopList.value.length > 0) {
+        await refetchStops({ stop_ids: stopList.value })
+      }
+    } finally {
+      refetching.value = false
     }
   }
 
@@ -486,6 +494,7 @@ export function useStation (options: UseStationOptions) {
   return {
     // State
     ready,
+    refetching,
     station,
     feeds,
     feed,
