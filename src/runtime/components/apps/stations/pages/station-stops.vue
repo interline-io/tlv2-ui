@@ -89,12 +89,11 @@
           <t-dropdown
             v-model="selectedLevels"
             :width="300"
-            aria-role="list"
             selectable
             multiple
             trigger-label="Levels"
           >
-            <t-dropdown-item v-for="level of station.levels" :key="level.id" :value="level.id" aria-role="listitem">
+            <t-dropdown-item v-for="level of station.levels" :key="level.id" :value="level.id">
               <div class="media">
                 <div class="media-left">
                   {{ level.level_index !== undefined ? level.level_index : ' ' }}
@@ -114,11 +113,10 @@
           <t-dropdown
             v-model="selectedSources"
             :width="300"
-            aria-role="list"
             multiple
             trigger-label="Sources"
           >
-            <t-dropdown-item v-for="(sourceType, key) of SourceTypes" :key="sourceType" :value="key" aria-role="listitem">
+            <t-dropdown-item v-for="(sourceType, key) of SourceTypes" :key="sourceType" :value="key">
               <div class="media">
                 {{ sourceType }}
               </div>
@@ -128,11 +126,10 @@
           <t-dropdown
             v-model="selectedLocationTypes"
             :width="300"
-            aria-role="list"
             trigger-label="Location Types"
             multiple
           >
-            <t-dropdown-item v-for="[key, locationType] of LocationTypes.entries()" :key="locationType" :value="key.toString()" aria-role="listitem">
+            <t-dropdown-item v-for="[key, locationType] of LocationTypes.entries()" :key="locationType" :value="key.toString()">
               <div class="media">
                 {{ locationType }}
               </div>
@@ -142,11 +139,10 @@
           <t-dropdown
             v-model="selectedAgencies"
             :width="300"
-            aria-role="list"
             multiple
             trigger-label="Agencies"
           >
-            <t-dropdown-item v-for="(agency, key) of agencies" :key="key" :value="key" aria-role="listitem">
+            <t-dropdown-item v-for="(agency, key) of agencies" :key="key" :value="key">
               <div class="media">
                 {{ key }} {{ agency }}
               </div>
@@ -178,7 +174,7 @@ import StationMixin from './station-mixin.vue'
 import { LocationTypes } from '../basemaps'
 
 function intersection (setA: Set<string>, setB: Iterable<string>): Set<string> {
-  const _intersection = new Set()
+  const _intersection: Set<string> = new Set()
   for (const elem of setB) {
     if (setA.has(elem)) {
       _intersection.add(elem)
@@ -348,12 +344,12 @@ export default defineComponent({
       return filteredStops.filter((stop) => {
         if (stop.location_type === 1) {
           let rss = stop.route_stops || []
-          if (stop.external_reference && stop.external_reference.target_active_stop) {
+          if (stop.external_reference && stop.external_reference.target_active_stop && stop.external_reference.target_active_stop.route_stops) {
             rss = stop.external_reference.target_active_stop.route_stops
           }
-          const stopAgencies = []
+          const stopAgencies: string[] = []
           for (const rs of rss) {
-            if (rs.route && rs.route.agency) {
+            if (rs.route?.agency?.agency_id) {
               stopAgencies.push(rs.route.agency.agency_id)
             }
           }

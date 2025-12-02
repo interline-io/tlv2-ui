@@ -108,7 +108,7 @@
                   stationKey: stationKey,
                 }"
                 :query="{
-                  selectedPathway: spw.id?.toString() || undefined,
+                  selectedPathway: (spw.id?.toString() || '') as string,
                 }"
               />
               <tl-apps-stations-pathway-editor
@@ -135,7 +135,7 @@
                   stationKey: stationKey,
                 }"
                 :query="{
-                  selectedStop: ss.id?.toString() || undefined,
+                  selectedStop: (ss.id?.toString() || '') as string,
                 }"
               />
               <tl-apps-stations-stop-editor
@@ -157,10 +157,9 @@
                 <t-dropdown
                   v-model="selectedLevel"
                   selectable
-                  aria-role="list"
-                  :trigger-label="levelIndex[selectedLevel] ? levelIndex[selectedLevel].level_name : 'None'"
+                  :trigger-label="(selectedLevel !== null && levelIndex[selectedLevel]) ? levelIndex[selectedLevel]!.level_name : 'None'"
                 >
-                  <t-dropdown-item v-for="level of station.levels" :key="level.id" :value="level.id" aria-role="listitem">
+                  <t-dropdown-item v-for="level of station.levels" :key="level.id" :value="level.id">
                     <h3>{{ level.level_name }}</h3>
                     <small> {{ level.stops.length }} nodes</small>
                   </t-dropdown-item>
@@ -173,7 +172,7 @@
               <template #trigger>
                 Find Route
               </template>
-              <tl-apps-stations-path-viewer :path="selectedPath" />
+              <tl-apps-stations-path-viewer :path="(selectedPath || []) as any" />
             </t-card>
           </template>
 
@@ -187,12 +186,11 @@
             <t-dropdown
               v-model="selectedLevels"
               :width="300"
-              aria-role="list"
               trigger-label="Levels"
               multiple
               selectable
             >
-              <t-dropdown-item v-for="level of sortedStationLevels" :key="level.id" :value="mapLevelKeyFn(level)" aria-role="listitem">
+              <t-dropdown-item v-for="level of sortedStationLevels" :key="level.id" :value="mapLevelKeyFn(level)">
                 <div class="media">
                   <div class="media-left">
                     {{ level.level_index == null ? '&nbsp;&nbsp;&nbsp;' : level.level_index }}
@@ -491,7 +489,7 @@ export default defineComponent({
           this.selectedStops = []
           return
         }
-        this.selectedStops = [this.selectedStops[0], cur]
+        this.selectedStops = [this.selectedStops[0]!, cur]
         console.log('selectStop: find-route set selectedStops to', this.selectedStops)
         return
       }
@@ -523,6 +521,7 @@ export default defineComponent({
         return
       }
       const cur = this.pathwayIndex[pwid]
+      if (!cur) return
       const prev = this.selectedPathways.length > 0 ? this.selectedPathways[this.selectedPathways.length - 1] : null
       this.selectedStops = []
       if (prev === cur) {

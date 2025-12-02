@@ -35,7 +35,7 @@
                   stationKey: stationKey,
                 }"
                 :query="{
-                  selectedPathway: p.match('[0-9]+')?.[0] || undefined,
+                  selectedPathway: (p.match('[0-9]+')?.[0] || '') as string,
                 }"
               />
               <tl-apps-stations-pathway-editor
@@ -53,7 +53,7 @@
                   stationKey: stationKey,
                 }"
                 :query="{
-                  selectedStop: s.match('[0-9]+')?.[0] || undefined,
+                  selectedStop: (s.match('[0-9]+')?.[0] || '') as string,
                 }"
               />
               <tl-apps-stations-stop-editor

@@ -45,7 +45,7 @@ export default defineComponent({
             }
           })
         })
-        .catch(this.setError)
+        .catch((this as any).setError)
     },
     cancelHandler () {
       navigateTo({
