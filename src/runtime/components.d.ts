@@ -55,6 +55,7 @@ declare module 'vue' {
     TlAppsTransfersBreadcrumbs: typeof import('./components/apps/transfers/breadcrumbs.vue')['default']
     TlAppsTransfersDataGrid: typeof import('./components/apps/transfers/data-grid.vue')['default']
     TlAppsTransfersFeedVersionTimeSelector: typeof import('./components/apps/transfers/feed-version-time-selector.vue')['default']
+    TlAppsTransfersFeedVersionsReadonly: typeof import('./components/apps/transfers/feed-versions-readonly.vue')['default']
     TlAppsTransfersPagesComparison: typeof import('./components/apps/transfers/pages/comparison.vue')['default']
     TlAppsTransfersPagesMaps: typeof import('./components/apps/transfers/pages/maps.vue')['default']
     TlAppsTransfersPagesRoutes: typeof import('./components/apps/transfers/pages/routes.vue')['default']

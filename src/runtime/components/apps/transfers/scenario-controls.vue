@@ -8,7 +8,19 @@
     </t-notification>
 
     <!-- Feed version/service date/time-of-day selector -->
+    <tl-apps-transfers-feed-versions-readonly
+      v-if="readOnlyFeedVersions"
+      :selected-feed-versions="selectedFeedVersions"
+      :feed-version-options="feedVersionOptions"
+      :time-of-day="scenario?.timeOfDay"
+      :show-time-of-day="showTimeOfDay"
+      :show-all-day-option="showAllDay"
+      :disabled="disabled"
+      @update:service-date="handleServiceDateUpdate"
+      @update:time-of-day="emitSetTimeOfDay"
+    />
     <tl-apps-transfers-feed-version-time-selector
+      v-else
       :model-value="feedVersionSelections"
       :time-of-day="scenario?.timeOfDay"
       :feed-version-options="mappedFeedVersionOptions"
@@ -196,6 +208,7 @@ interface Props {
   enableProfiles?: boolean
   showTrips?: boolean
   loading?: boolean
+  readOnlyFeedVersions?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -211,7 +224,8 @@ const props = withDefaults(defineProps<Props>(), {
   showTransfers: true,
   enableProfiles: false,
   showTrips: false,
-  loading: false
+  loading: false,
+  readOnlyFeedVersions: false
 })
 
 const emit = defineEmits({
@@ -369,6 +383,19 @@ function handleFeedVersionSelectionsChanged (selections: Array<{ id: number, ser
     id: s.id,
     serviceDate: s.serviceDate
   }))
+}
+
+// Handle service date updates from the read-only component
+function handleServiceDateUpdate (idx: number, serviceDate: string) {
+  const fv = selectedFeedVersions.value[idx]
+  if (fv) {
+    emit('setSelectedFeedVersion', idx, fv.id, serviceDate)
+    // Update local state
+    selectedFeedVersions.value[idx] = new SelectedFeedVersion({
+      id: fv.id,
+      serviceDate: serviceDate
+    })
+  }
 }
 </script>
 

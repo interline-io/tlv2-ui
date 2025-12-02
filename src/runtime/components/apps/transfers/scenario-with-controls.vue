@@ -15,6 +15,7 @@
       :show-transfers="showTransferControls"
       :enable-profiles="displayProfiles"
       :show-trips="showTripControls"
+      :read-only-feed-versions="readOnlyFeedVersions"
       @set-exclude-incoming-trips="handleSetExcludeIncomingTrips"
       @set-exclude-outgoing-trips="handleSetExcludeOutgoingTrips"
       @transfer-scoring-breakpoints-changed="handleSetTransferScoringBreakpoints"
@@ -72,6 +73,12 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const route = useRoute()
+const runtimeConfig = useRuntimeConfig()
+
+// Use read-only feed selector if configured in module options
+const readOnlyFeedVersions = computed(() => {
+  return runtimeConfig.public.tlv2?.transferAnalystReadOnlyFeedSelector === true
+})
 const mixpanel = useMixpanel()
 
 // State

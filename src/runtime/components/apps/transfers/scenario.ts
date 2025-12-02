@@ -778,6 +778,7 @@ export class FeedVersionOption {
   displayName: string
   start_date?: string
   end_date?: string
+  sha1?: string
 
   constructor (v: FeedVersionOptionData) {
     const fv = new FeedVersion(v.feedVersion)
@@ -791,6 +792,7 @@ export class FeedVersionOption {
     this.displayName = feedVersionDisplayName(v.feedVersion)
     this.start_date = fv.earliest_calendar_date
     this.end_date = fv.latest_calendar_date
+    this.sha1 = v.feedVersion.sha1
   }
 }
 

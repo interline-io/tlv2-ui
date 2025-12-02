@@ -28,6 +28,8 @@ export interface ModuleOptions {
   auth0Scope?: string
   auth0RedirectUri?: string
   auth0LogoutUri?: string
+  // Transfer Analyst options
+  transferAnalystReadOnlyFeedSelector?: boolean
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -61,7 +63,8 @@ export default defineNuxtModule<ModuleOptions>({
     auth0Audience: undefined,
     auth0Scope: undefined,
     auth0RedirectUri: undefined,
-    auth0LogoutUri: undefined
+    auth0LogoutUri: undefined,
+    transferAnalystReadOnlyFeedSelector: false
   },
   async setup (options, nuxt) {
     // Create resolver to resolve relative paths
@@ -106,6 +109,7 @@ export default defineNuxtModule<ModuleOptions>({
         auth0LogoutUri: options.auth0LogoutUri,
         auth0Audience: options.auth0Audience,
         auth0Scope: options.auth0Scope,
+        transferAnalystReadOnlyFeedSelector: options.transferAnalystReadOnlyFeedSelector,
       }
     }))
 
