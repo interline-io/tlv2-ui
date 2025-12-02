@@ -120,15 +120,7 @@
             </t-card>
           </template>
           <template v-else-if="selectMode === 'edit-node'">
-            <t-card v-for="ss of selectedStops" :key="ss.id" class="card">
-              <template #header>
-                <p class="card-header-title">
-                  Edit Node
-                </p>
-                <t-button v-if="selectedStops.length > 0 || selectedPathways.length > 0" class="card-header-icon m-2" variant="primary" size="small" outlined @click="unselectAll">
-                  Unselect
-                </t-button>
-              </template>
+            <t-card v-for="ss of selectedStops" :key="ss.id" class="card" label="Edit Node">
               <tl-apps-stations-mode-switch
                 :params="{
                   feedKey: feedKey,
