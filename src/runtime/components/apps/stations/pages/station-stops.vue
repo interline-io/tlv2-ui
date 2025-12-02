@@ -92,13 +92,8 @@
             aria-role="list"
             selectable
             multiple
+            trigger-label="Levels"
           >
-            <template #trigger="{ toggle }">
-              <button class="button" type="button" @click="toggle">
-                Levels &nbsp;
-                <t-icon icon="menu-down" />
-              </button>
-            </template>
             <t-dropdown-item v-for="level of station.levels" :key="level.id" :value="level.id" aria-role="listitem">
               <div class="media">
                 <div class="media-left">
@@ -121,13 +116,8 @@
             :width="300"
             aria-role="list"
             multiple
+            trigger-label="Sources"
           >
-            <template #trigger="{ toggle }">
-              <button class="button" type="button" @click="toggle">
-                Sources &nbsp;
-                <t-icon icon="menu-down" />
-              </button>
-            </template>
             <t-dropdown-item v-for="(sourceType, key) of SourceTypes" :key="sourceType" :value="key" aria-role="listitem">
               <div class="media">
                 {{ sourceType }}
@@ -139,14 +129,9 @@
             v-model="selectedLocationTypes"
             :width="300"
             aria-role="list"
+            trigger-label="Location Types"
             multiple
           >
-            <template #trigger="{ toggle }">
-              <button class="button" type="button" @click="toggle">
-                Location Types &nbsp;
-                <t-icon icon="menu-down" />
-              </button>
-            </template>
             <t-dropdown-item v-for="[key, locationType] of LocationTypes.entries()" :key="locationType" :value="key.toString()" aria-role="listitem">
               <div class="media">
                 {{ locationType }}
@@ -159,13 +144,8 @@
             :width="300"
             aria-role="list"
             multiple
+            trigger-label="Agencies"
           >
-            <template #trigger="{ toggle }">
-              <button class="button" type="button" @click="toggle">
-                Agencies &nbsp;
-                <t-icon icon="menu-down" />
-              </button>
-            </template>
             <t-dropdown-item v-for="(agency, key) of agencies" :key="key" :value="key" aria-role="listitem">
               <div class="media">
                 {{ key }} {{ agency }}

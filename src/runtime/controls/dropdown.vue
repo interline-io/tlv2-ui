@@ -39,13 +39,12 @@
   </div>
 </template>
 
-<script setup lang="ts" generic="T = any">
+<script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount, provide } from 'vue'
 
 /**
  * Dropdown component using Bulma dropdown structure.
  * Supports single and multiple selection with v-model.
- * Type-safe with generic support for different value types.
  *
  * @component t-dropdown
  * @example
@@ -60,10 +59,9 @@ import { ref, computed, onMounted, onBeforeUnmount, provide } from 'vue'
 
 interface Props {
   /**
-   * Selected value(s) - use with v-model.
-   * Type T for single selection, T[] for multiple selection.
+   * Selected value(s) - use with v-model
    */
-  modelValue?: T | T[]
+  modelValue?: any | any[]
 
   /**
    * Enable selection behavior (closes on item click)
@@ -139,9 +137,9 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  'update:modelValue': [value: T | T[]]
-  'change': [value: T | T[]]
-  'select': [value: T]
+  'update:modelValue': [value: any]
+  'change': [value: any]
+  'select': [value: any]
   'open': []
   'close': []
 }>()
@@ -186,7 +184,7 @@ function close () {
   }
 }
 
-function handleItemClick (value: T) {
+function handleItemClick (value: any) {
   // Always emit select event for any item click
   emit('select', value)
 
@@ -199,7 +197,7 @@ function handleItemClick (value: T) {
   }
 
   if (props.multiple) {
-    const currentValues = Array.isArray(props.modelValue) ? [...props.modelValue as T[]] : []
+    const currentValues = Array.isArray(props.modelValue) ? [...props.modelValue] : []
     const index = currentValues.indexOf(value)
 
     if (index >= 0) {
@@ -252,32 +250,15 @@ provide('dropdown', {
 defineExpose({ open, close, toggle })
 </script>
 
-<style lang="scss" scoped>
-@use "bulma/sass/utilities/initial-variables" as *;
-@use "bulma/sass/utilities/derived-variables" as *;
-
+<style scoped>
 .t-dropdown {
   display: inline-flex;
   position: relative;
   vertical-align: top;
+}
 
-  &.is-active .t-dropdown-menu {
-    display: block;
-  }
-
-  &.is-top-left .t-dropdown-menu,
-  &.is-top-right .t-dropdown-menu {
-    bottom: 100%;
-    padding-bottom: 4px;
-    padding-top: initial;
-    top: auto;
-  }
-
-  &.is-bottom-right .t-dropdown-menu,
-  &.is-top-right .t-dropdown-menu {
-    left: auto;
-    right: 0;
-  }
+.t-dropdown.is-active .t-dropdown-menu {
+  display: block;
 }
 
 .t-dropdown-menu {
@@ -290,10 +271,24 @@ defineExpose({ open, close, toggle })
   z-index: 20;
 }
 
+.t-dropdown.is-top-left .t-dropdown-menu,
+.t-dropdown.is-top-right .t-dropdown-menu {
+  bottom: 100%;
+  padding-bottom: 4px;
+  padding-top: initial;
+  top: auto;
+}
+
+.t-dropdown.is-bottom-right .t-dropdown-menu,
+.t-dropdown.is-top-right .t-dropdown-menu {
+  left: auto;
+  right: 0;
+}
+
 .t-dropdown-content {
-  background-color: $white;
-  border-radius: $radius;
-  box-shadow: 0 0.5em 1em -0.125em rgba($black, 0.1), 0 0px 0 1px rgba($black, 0.02);
+  background-color: white;
+  border-radius: 4px;
+  box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1), 0 0px 0 1px rgba(10, 10, 10, 0.02);
   padding: 0.5rem 0;
 }
 </style>

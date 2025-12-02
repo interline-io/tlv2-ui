@@ -166,7 +166,7 @@
         <p class="mb-3">
           Selected items: <strong>{{ multipleSelection.length > 0 ? multipleSelection.join(', ') : 'None' }}</strong>
         </p>
-        <t-dropdown v-model:model-value="multipleSelection as any" selectable multiple inline trigger-label="Select Multiple" trigger-variant="primary">
+        <t-dropdown v-model="multipleSelection as string[]" selectable multiple inline trigger-label="Select Multiple" trigger-variant="primary">
           <t-dropdown-item value="cat">
             🐱 Cat
           </t-dropdown-item>

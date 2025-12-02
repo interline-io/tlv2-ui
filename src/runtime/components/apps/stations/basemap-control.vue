@@ -4,14 +4,9 @@
       :model-value="modelValue"
       aria-role="list"
       selectable
+      trigger-label="Basemap"
       @update:model-value="$emit('update:modelValue', $event)"
     >
-      <template #trigger="{ toggle }">
-        <button class="button" type="button" @click="toggle">
-          Basemap &nbsp;
-          <t-icon icon="menu-down" />
-        </button>
-      </template>
       <t-dropdown-item
         v-for="(bm, key) in basemapLayers"
         :key="key"

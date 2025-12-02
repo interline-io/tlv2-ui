@@ -56,18 +56,8 @@
             selectable
             :scrollable="true"
             :max-height="200"
+            :trigger-label="parentStop ? parentStop.stop_name : 'None'"
           >
-            <template #trigger="{ toggle }">
-              <button class="button stop-label" type="button" @click="toggle">
-                <template v-if="parentStop">
-                  {{ parentStop.stop_name }} &nbsp;
-                </template>
-                <template v-else>
-                  None
-                </template>
-                <t-icon icon="menu-down" />
-              </button>
-            </template>
             <t-dropdown-item :value="station.stop.id" aria-role="listitem">
               <h3>{{ station.stop.stop_name }}</h3>
               <small> Station </small>

@@ -159,13 +159,8 @@
                   v-model="selectedLevel"
                   selectable
                   aria-role="list"
+                  :trigger-label="levelIndex[selectedLevel] ? levelIndex[selectedLevel].level_name : 'None'"
                 >
-                  <template #trigger="{ toggle }">
-                    <button class="button" type="button" @click="toggle">
-                      {{ levelIndex[selectedLevel] ? levelIndex[selectedLevel].level_name : 'None' }} &nbsp;
-                      <t-icon icon="menu-down" />
-                    </button>
-                  </template>
                   <t-dropdown-item v-for="level of station.levels" :key="level.id" :value="level.id" aria-role="listitem">
                     <h3>{{ level.level_name }}</h3>
                     <small> {{ level.stops.length }} nodes</small>
@@ -194,15 +189,10 @@
               v-model="selectedLevels"
               :width="300"
               aria-role="list"
+              trigger-label="Levels"
               multiple
               selectable
             >
-              <template #trigger="{ toggle }">
-                <button class="button" type="button" @click="toggle">
-                  Levels &nbsp;
-                  <t-icon icon="menu-down" />
-                </button>
-              </template>
               <t-dropdown-item v-for="level of sortedStationLevels" :key="level.id" :value="mapLevelKeyFn(level)" aria-role="listitem">
                 <div class="media">
                   <div class="media-left">
