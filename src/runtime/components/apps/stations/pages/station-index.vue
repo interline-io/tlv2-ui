@@ -50,7 +50,7 @@
         No levels
       </div>
       <div>
-        <tl-apps-stations-station-levels-viewer-sorter :levels="station.levels" :station="station">
+        <tl-apps-stations-station-levels-viewer-sorter :station="station">
           <template #bottom-button-bar>
             <tl-link
               route-key="apps-stations-feedKey-feedVersionKey-stations-stationKey-levels-new"

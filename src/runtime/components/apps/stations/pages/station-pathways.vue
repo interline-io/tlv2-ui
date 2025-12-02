@@ -108,7 +108,7 @@
                   stationKey: stationKey,
                 }"
                 :query="{
-                  selectedPathway: spw.id,
+                  selectedPathway: spw.id?.toString() || undefined,
                 }"
               />
               <tl-apps-stations-pathway-editor
@@ -135,7 +135,7 @@
                   stationKey: stationKey,
                 }"
                 :query="{
-                  selectedStop: ss.id,
+                  selectedStop: ss.id?.toString() || undefined,
                 }"
               />
               <tl-apps-stations-stop-editor
@@ -144,7 +144,6 @@
                 :stop-associations-enabled="stopAssociationsEnabled"
                 @delete="deleteStopHandler"
                 @update="updateStopHandler"
-                @delete-association="deleteAssociationHandler"
                 @select-pathway="selectPathway"
               />
             </t-card>
@@ -296,16 +295,23 @@ export default defineComponent({
   },
   computed: {
     selectedPath (): PathwayEdge[] | null {
-      if (this.selectMode !== 'find-route' || this.selectedStops.length < 2) {
+      if (this.selectMode !== 'find-route' || this.selectedStops.length < 2 || !this.station) {
         return null
       }
-      const p = this.station.findRoute(this.selectedStops[0].id, this.selectedStops[1].id)
+      const stop0Id = this.selectedStops[0]?.id
+      const stop1Id = this.selectedStops[1]?.id
+      if (!stop0Id || !stop1Id) return null
+      const p = (this.station as any).findRoute(stop0Id, stop1Id)
+      if (!p) return null
       const edges: PathwayEdge[] = []
       for (const edge of p.edges || []) {
-        edges.push({
-          cost: 0,
-          pathway: this.pathwayIndex[edge.pathway_id]
-        })
+        const pathway = edge.pathway_id ? this.pathwayIndex[edge.pathway_id] : undefined
+        if (edge.pathway_id && pathway) {
+          edges.push({
+            cost: 0,
+            pathway
+          })
+        }
       }
       return edges
     },
@@ -323,19 +329,22 @@ export default defineComponent({
     },
     levelIndex (): Record<number, Level> {
       const si: Record<number, Level> = {}
+      if (!this.station) return si
       for (const level of this.station.levels) {
         si[level.id!] = level
       }
       return si
     },
     pathwayIndex (): Record<number, Pathway> {
-      const pwi: Record<number, Pathway> = {}
+      const si: Record<number, Pathway> = {}
+      if (!this.station) return si
       for (const pw of this.station.pathways) {
-        pwi[pw.id!] = pw
+        si[pw.id!] = pw
       }
-      return pwi
+      return si
     },
     sortedStationLevels (): Level[] {
+      if (!this.station) return []
       return this.station.levels.slice(0).sort(
         (a, b) => (b.level_index != null ? b.level_index : -Infinity) - (a.level_index != null ? a.level_index : -Infinity)
       )
@@ -372,8 +381,10 @@ export default defineComponent({
     mapLevelKeyFn,
     // stops
     createStopHandler (node: Stop) {
+      if (!this.station) return
       let newStopId = 0
-      this.station.createStop((this.$apollo as any), node)
+      const station = this.station as any
+      station.createStop((this.$apollo as any), node)
         .then((d: any) => {
           newStopId = d?.data?.stop_create?.id
           return this.refetch()
@@ -385,13 +396,17 @@ export default defineComponent({
         .catch(this.setError)
     },
     updateStopHandler (node: Stop) {
-      this.station.updateStop((this.$apollo as any), node)
+      if (!this.station) return
+      const station = this.station as any
+      station.updateStop((this.$apollo as any), node)
         .then(() => { return this.refetch() })
         .then(() => { this.selectStop(node.id!) })
         .catch(this.setError)
     },
     deleteStopHandler (node: Stop) {
-      return this.station.deleteStop((this.$apollo as any), node)
+      if (!this.station) return
+      const station = this.station as any
+      return station.deleteStop((this.$apollo as any), node)
         .then(() => { return this.refetch() })
         .then(() => { this.selectStop(null) })
         .catch(this.setError)
@@ -409,10 +424,14 @@ export default defineComponent({
     },
     // node associations
     deleteAssociationHandler (node: Stop) {
-      this.station.deleteAssociation((this.$apollo as any), node)
-        .then(() => { return this.refetch() })
-        .then(() => { this.selectStop(null) })
-        .catch(this.setError)
+      if (!this.station) return
+      const station = this.station as any
+      const result = station.deleteAssociation((this.$apollo as any), node)
+      if (result && result.then) {
+        result.then(() => { return this.refetch() })
+          .then(() => { this.selectStop(null) })
+          .catch(this.setError)
+      }
     },
     // pathways
     newPathway (): Pathway {
@@ -420,19 +439,23 @@ export default defineComponent({
         // other fields will be defaults
         from_stop_id: this.selectedSource!.id,
         to_stop_id: this.selectedStop!.id,
-        from_stop: this.selectedSource,
-        to_stop: this.selectedStop,
+        from_stop: this.selectedSource || undefined,
+        to_stop: this.selectedStop || undefined,
         pathway_id: `${this.selectedSource!.id}-${this.selectedStop!.id}-${Date.now()}`
       }).setDefaults()
     },
     createPathwayHandler (pw: Pathway) {
-      this.station.createPathway((this.$apollo as any), pw)
+      if (!this.station) return
+      const station = this.station as any
+      station.createPathway((this.$apollo as any), pw)
         .then(() => { return this.refetch() })
         .then(() => { this.selectPathway(null) })
         .catch(this.setError) // todo: select
     },
     updatePathwayHandler (pw: Pathway) {
-      this.station.updatePathway((this.$apollo as any), pw)
+      if (!this.station) return
+      const station = this.station as any
+      station.updatePathway((this.$apollo as any), pw)
         .then(() => { return this.refetch() })
         .then(() => { this.selectPathway(null) })
         .catch(this.setError)
@@ -516,26 +539,26 @@ export default defineComponent({
             type: 'Point',
             coordinates: [ll.lng, ll.lat]
           },
-          level: { id: this.selectedLevel }
+          level: { id: this.selectedLevel || undefined }
         }).setDefaults()
         this.createStopHandler(stop)
       }
     },
     selectStopsWithAssociations () {
-      this.selectedStops = this.station.stops.filter((s) => { return s.external_reference?.target_stop_id })
+      this.selectedStops = (this.station as any)?.stops?.filter((s) => { return s.external_reference?.target_stop_id })
       this.selectMode = 'select'
     },
     selectStopsPlatformsWithoutAssociations () {
-      this.selectedStops = this.station.stops.filter((s) => { return s.location_type === 0 && !s.external_reference })
+      this.selectedStops = (this.station as any)?.stops?.filter((s) => { return s.location_type === 0 && !s.external_reference })
       this.selectMode = 'select'
     },
     selectStopsEntrancesWithoutAssociations () {
-      this.selectedStops = this.station.stops.filter((s) => { return s.location_type === 2 && !s.external_reference })
+      this.selectedStops = (this.station as any)?.stops?.filter((s) => { return s.location_type === 2 && !s.external_reference })
       this.selectMode = 'select'
     },
     selectStopsWithPairedPathways () {
       const pairedPathways = new Map()
-      this.selectedStops = this.station.stops.filter((s) => {
+      this.selectedStops = (this.station as any)?.stops?.filter((s) => {
         const pwKeys = []
         for (const pw of s.pathways_from_stop) {
           pwKeys.push(`${pw.from_stop.id}-${pw.to_stop.id}`)
@@ -555,14 +578,14 @@ export default defineComponent({
       this.selectMode = 'select'
     },
     selectLocationTypes (stype: number) {
-      this.selectedStops = this.station.stops.filter((s) => { return s.location_type === stype })
+      this.selectedStops = (this.station as any)?.stops?.filter((s) => { return s.location_type === stype })
     },
     selectPathwayModes (stype: number) {
-      this.selectedPathways = this.station.pathways.filter((s) => { return s.pathway_mode === stype })
+      this.selectedPathways = (this.station as any)?.pathways?.filter((s) => { return s.pathway_mode === stype })
     },
     selectPathwaysWithPairs () {
       const pwPairs = new Map()
-      this.selectedPathways = this.station.pathways.filter((s) => {
+      this.selectedPathways = (this.station as any)?.pathways?.filter((s) => {
         const pwKeys = [
           `${s.from_stop.id}-${s.to_stop.id}`,
           `${s.to_stop.id}-${s.from_stop.id}`
@@ -579,10 +602,10 @@ export default defineComponent({
       this.selectMode = 'select'
     },
     selectPathwaysOneway () {
-      this.selectedPathways = this.station.pathways.filter((s) => { return !s.is_bidirectional })
+      this.selectedPathways = (this.station as any)?.pathways?.filter((s) => { return !s.is_bidirectional })
     },
     selectPathwaysBidirectional () {
-      this.selectedPathways = this.station.pathways.filter((s) => { return s.is_bidirectional })
+      this.selectedPathways = (this.station as any)?.pathways?.filter((s) => { return s.is_bidirectional })
     },
     unselectAll () {
       this.selectedStops = []
@@ -592,7 +615,8 @@ export default defineComponent({
     },
     downloadGeojson () {
       const allFeatures = []
-      allFeatures.push(...this.station.levels.map((s) => {
+      const levels = (this.station as any)?.levels || []
+      allFeatures.push(...levels.map((s: any) => {
         return {
           type: 'Feature',
           id: s.id,
@@ -605,7 +629,8 @@ export default defineComponent({
           geometry: s.geometry
         }
       }))
-      allFeatures.push(...this.station.pathways.map((s) => {
+      const pathways = (this.station as any)?.pathways || []
+      allFeatures.push(...pathways.map((s: any) => {
         return {
           type: 'Feature',
           id: s.id,
@@ -618,7 +643,6 @@ export default defineComponent({
             stair_count: s.stair_count,
             is_bidirectional: s.is_bidirectional,
             length: s.length,
-            min_slope: s.min_slope,
             max_slope: s.max_slope,
             from_id: s.from_stop.id,
             from_stop_id: String(s.from_stop.stop_id),
@@ -634,13 +658,14 @@ export default defineComponent({
           geometry: {
             type: 'LineString',
             coordinates: [
-              s.from_stop.geometry.coordinates,
-              s.to_stop.geometry.coordinates
+              s.from_stop.geometry?.coordinates || [0, 0],
+              s.to_stop.geometry?.coordinates || [0, 0]
             ]
           }
         }
       }))
-      allFeatures.push(...this.station.stops.map((s) => {
+      const stops = (this.station as any)?.stops || []
+      allFeatures.push(...stops.map((s: any) => {
         return {
           type: 'Feature',
           id: s.id,
@@ -664,7 +689,7 @@ export default defineComponent({
       a.download = 'station.geojson'
       a.href = window.URL.createObjectURL(blob)
       a.dataset.downloadurl = ['text/json', a.download, a.href].join(':')
-      e.initEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null)
+      e.initEvent('click', true, false)
       a.dispatchEvent(e)
     }
   }

@@ -32,7 +32,8 @@ export default defineComponent({
   methods: {
     updateStationHandler (station: Station) {
       if (!this.station) return
-      this.station.updateStation((this.$apollo as any), station.stop)
+      const stationObj = this.station as any
+      stationObj.updateStation((this.$apollo as any), station.stop)
         .then(() => {
           navigateTo({
             name: this.resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),
@@ -46,7 +47,7 @@ export default defineComponent({
         .catch(this.setError)
     },
     deleteStationCheck (station: Station) {
-      this.$buefy.dialog.confirm({
+      (this.$buefy as any).dialog.confirm({
         message: `Do you want to delete the station named <strong>${station.stop.stop_name}</strong>?`,
         cancelText: 'No',
         confirmText: 'Yes',
@@ -57,7 +58,8 @@ export default defineComponent({
     },
     deleteStationHandler (station: Station) {
       if (!this.station) return
-      this.station.deleteStation((this.$apollo as any), station)
+      const stationObj = this.station as any
+      stationObj.deleteStation((this.$apollo as any), station)
         .then(() => {
           navigateTo({
             name: this.resolve('apps-stations-feedKey-feedVersionKey-stations'),

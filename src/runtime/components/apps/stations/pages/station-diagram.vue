@@ -35,7 +35,7 @@
                   stationKey: stationKey,
                 }"
                 :query="{
-                  selectedPathway: p.match('[0-9]+')[0],
+                  selectedPathway: p.match('[0-9]+')?.[0],
                 }"
               />
               <tl-apps-stations-pathway-editor
@@ -53,12 +53,12 @@
                   stationKey: stationKey,
                 }"
                 :query="{
-                  selectedStop: s.match('[0-9]+')[0],
+                  selectedStop: s.match('[0-9]+')?.[0],
                 }"
               />
               <tl-apps-stations-stop-editor
                 :station="station"
-                :value="getElementById(s)"
+                :value="getElementById(s) as any"
                 read-only
                 current-mode="diagram"
                 @select-pathway="selectPathway"
@@ -128,16 +128,17 @@ export default defineComponent({
   },
   computed: {
     sortedLevels (): Level[] {
+      if (!this.station) return []
       return [...this.station.levels].sort((a, b) => { return (a.level_index! > b.level_index!) ? 1 : -1 })
     },
     cytoscapeElements (): any[] {
       const levelColors = schemeRdGy[5]
       const stopColors = schemeDark2
-      const arr = []
+      const arr: any[] = []
       if (this.station) {
         this.sortedLevels.forEach((l) => {
           const levelId = `l-${l.id}`
-          const levelColor = levelColors[l.level_index] || '#ccc'
+          const levelColor = (levelColors && l.level_index !== undefined) ? levelColors[l.level_index] : '#ccc'
           arr.push({
             group: 'nodes',
             data: {
@@ -147,6 +148,7 @@ export default defineComponent({
             },
             selectable: false
           })
+          if (!this.station) return
           this.station.stops.forEach((s) => {
             if (s.level?.id === l.id) {
               const stopId = `s-${s.id}`
@@ -164,6 +166,7 @@ export default defineComponent({
             }
           })
         })
+        if (!this.station) return arr
         this.station.pathways.forEach((p) => {
           const fromStopId = `s-${p.from_stop.id}`
           const toStopId = `s-${p.to_stop.id}`
@@ -208,21 +211,21 @@ export default defineComponent({
         elements: this.cytoscapeElements,
         style: cytoscapeConfig.style
       })
-      cytoscape.use(fcose, {
-        // fixedNodeConstraint
-      })
+      cytoscape.use(fcose as any)
       nextTick(() => {
         cy.layout(cytoscapeConfig.layout).run()
-        cy.fit(null, 200)
+        cy.fit(undefined, 200)
         cy.on('select', 'node', this.elementSelected)
         cy.on('unselect', 'node', this.elementUnselected)
         cy.on('select', 'edge', this.elementSelected)
         cy.on('unselect', 'edge', this.elementUnselected)
         if (this.$route.query.selectedStop) {
-          this.selectStop(this.$route.query.selectedStop, false)
+          const stopId = Array.isArray(this.$route.query.selectedStop) ? this.$route.query.selectedStop[0] : this.$route.query.selectedStop
+          this.selectStop(Number(stopId), false)
         }
         if (this.$route.query.selectedPathway) {
-          this.selectPathway(this.$route.query.selectedPathway, false)
+          const pathwayId = Array.isArray(this.$route.query.selectedPathway) ? this.$route.query.selectedPathway[0] : this.$route.query.selectedPathway
+          this.selectPathway(Number(pathwayId), false)
         }
       })
     },
@@ -237,17 +240,18 @@ export default defineComponent({
     clearSelectedElements () {
       this.selectedElements = []
       navigateTo({ path: this.$route.path, query: { selectedStop: null, selectedPathway: null } })
-      this.$refs.cy.instance.filter(':selected').forEach((element: any) => element.unselect())
+      const cyRef = this.$refs.cy as any
+      cyRef?.instance.filter(':selected').forEach((element: any) => element.unselect())
     },
     getElementById (elementId: string): Stop | Pathway | Level | undefined {
       const match = elementId.match('[0-9]+')
-      if (!match) return undefined
+      if (!match || !this.station) return undefined
       const id = Number(match[0])
-      if (elementId.startsWith('s')) {
+      if (elementId.startsWith('s-')) {
         return this.station.stops.find(s => s.id === id)
-      } else if (elementId.startsWith('p')) {
+      } else if (elementId.startsWith('p-')) {
         return this.station.pathways.find(p => p.id === id)
-      } else if (elementId.startsWith('l')) {
+      } else if (elementId.startsWith('l-')) {
         return this.station.levels.find(l => l.id === id)
       }
     },
@@ -261,7 +265,8 @@ export default defineComponent({
       this.selectElement(`p-${id}`)
     },
     selectElement (elementId: string) {
-      this.$refs.cy.instance.filter(':unselected').forEach((element: any) => {
+      const cyRef = this.$refs.cy as any
+      cyRef?.instance.filter(':unselected').forEach((element: any) => {
         if (element.id() === elementId) {
           element.select()
         }

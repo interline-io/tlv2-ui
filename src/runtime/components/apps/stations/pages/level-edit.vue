@@ -33,6 +33,7 @@ export default defineComponent({
   computed: {
     level (): Level | null {
       const levels = this.station?.levels
+      if (!levels) return null
       for (const level of levels) {
         if (level.level_id === this.levelKey) {
           return level
@@ -44,7 +45,8 @@ export default defineComponent({
   methods: {
     updateLevelHandler (level: Level) {
       if (!this.station) return
-      this.station.updateLevel((this.$apollo as any), level)
+      const station = this.station as any
+      station.updateLevel((this.$apollo as any), level)
         .then(() => {
           navigateTo({
             name: this.resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),
@@ -57,11 +59,10 @@ export default defineComponent({
         })
         .catch(this.setError)
     },
-    deleteLevelHandler (levelId: string) {
+    deleteLevelHandler (level: Level) {
       if (!this.station) return
-      const level = this.station.levels?.find(l => l.id === Number.parseInt(levelId))
-      if (!level) return
-      this.station.deleteLevel((this.$apollo as any), level)
+      const station = this.station as any
+      station.deleteLevel((this.$apollo as any), level)
         .then(() => {
           navigateTo({
             name: this.resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),

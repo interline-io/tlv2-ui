@@ -31,7 +31,8 @@ export default defineComponent({
   methods: {
     createLevelHandler (level: Level) {
       if (!this.station) return
-      this.station.createLevel((this.$apollo as any), level).then(() => {
+      const station = this.station as any
+      station.createLevel((this.$apollo as any), level).then(() => {
         navigateTo({
           name: this.resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),
           params: {
