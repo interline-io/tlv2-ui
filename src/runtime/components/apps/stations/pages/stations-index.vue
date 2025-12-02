@@ -34,7 +34,7 @@
       v-if="typeof feedVersion !== 'string' && feedVersion?.id"
       :feed-version-ids="[feedVersion.id]"
       :location-type="1"
-      :client="client"
+      :client="clientId"
     >
       <template #stopName="slotProps">
         <tl-link
@@ -48,11 +48,21 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-import FeedMixin from './feed-mixin.vue'
+<script setup lang="ts">
+import { toRefs } from 'vue'
+import { useFeed } from '../composables/useFeed'
 
-export default defineComponent({
-  mixins: [FeedMixin]
+const props = defineProps<{
+  feedKey: string
+  feedVersionKey: string
+  clientId?: string
+}>()
+
+const { feedKey, feedVersionKey, clientId } = toRefs(props)
+
+const { feedVersion } = useFeed({
+  feedKey,
+  feedVersionKey,
+  clientId: clientId.value
 })
 </script>

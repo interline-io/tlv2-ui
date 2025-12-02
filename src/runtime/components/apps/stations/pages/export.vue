@@ -31,17 +31,27 @@
         :feed-version-id="typeof feedVersion !== 'string' ? feedVersion?.id : feedVersionKey"
         :feed-key="feedKey"
         :feed-version-key="feedVersionKey"
-        :client="client"
+        :client="clientId"
       />
     </div>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-import FeedMixin from './feed-mixin.vue'
+<script setup lang="ts">
+import { toRefs } from 'vue'
+import { useFeed } from '../composables/useFeed'
 
-export default defineComponent({
-  mixins: [FeedMixin]
+const props = defineProps<{
+  feedKey: string
+  feedVersionKey: string
+  clientId?: string
+}>()
+
+const { feedKey, feedVersionKey, clientId } = toRefs(props)
+
+const { feedVersion } = useFeed({
+  feedKey,
+  feedVersionKey,
+  clientId: clientId.value
 })
 </script>

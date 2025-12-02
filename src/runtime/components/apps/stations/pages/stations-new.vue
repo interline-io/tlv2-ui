@@ -12,52 +12,63 @@
   </div>
 </template>
 
-<script lang="ts">
-// Note: this uses FeedMixin, not station mixin.
-import { defineComponent } from 'vue'
+<script setup lang="ts">
+import { toRefs, getCurrentInstance } from 'vue'
 import { navigateTo } from '#imports'
 import { Station, Stop } from '../station'
-import FeedMixin from './feed-mixin.vue'
+import { useFeed } from '../composables/useFeed'
 import { useRouteResolver } from '../../../../composables/useRouteResolver'
 
-export default defineComponent({
-  mixins: [FeedMixin],
-  setup () {
-    const { resolve } = useRouteResolver()
-    return { resolve }
-  },
-  methods: {
-    newStation () {
-      const fvId = typeof this.feedVersion !== 'string' ? this.feedVersion?.id : undefined
-      const newStop = new Stop({ feed_version: { id: fvId } })
-      const newStation = new Station(newStop).setDefaults()
-      return newStation
-    },
-    createStationHandler (station: Station) {
-      const apollo = this.$apollo as any
-      // @ts-expect-error - Vue Apollo global injection
-      station.createStation(apollo, station.stop)
-        .then(() => {
-          navigateTo({
-            name: this.resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),
-            params: {
-              feedKey: this.feedKey,
-              feedVersionKey: this.feedVersionKey,
-              stationKey: station.stop.stop_id
-            }
-          })
-        })
-        .catch((this as any).setError)
-    },
-    cancelHandler () {
+const props = defineProps<{
+  feedKey: string
+  feedVersionKey: string
+  clientId?: string
+}>()
+
+const { feedKey, feedVersionKey, clientId } = toRefs(props)
+
+const { resolve } = useRouteResolver()
+const instance = getCurrentInstance()
+
+const { feedVersion } = useFeed({
+  feedKey,
+  feedVersionKey,
+  clientId: clientId.value
+})
+
+const newStation = () => {
+  const fvId = typeof feedVersion.value !== 'string' ? feedVersion.value?.id : undefined
+  const newStop = new Stop({ feed_version: { id: fvId } })
+  const newStation = new Station(newStop).setDefaults()
+  return newStation
+}
+
+const createStationHandler = (station: Station) => {
+  const apollo = instance?.appContext.config.globalProperties.$apollo as any
+  // @ts-expect-error - Vue Apollo global injection
+  station.createStation(apollo, station.stop)
+    .then(() => {
       navigateTo({
-        name: this.resolve('apps-stations-feedKey-feedVersionKey-stations'),
+        name: resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),
         params: {
-          feedKey: this.feedKey,
-          feedVersionKey: this.feedVersionKey
+          feedKey: feedKey.value,
+          feedVersionKey: feedVersionKey.value,
+          stationKey: station.stop.stop_id
         }
       })
+    })
+    .catch((err: Error) => {
+      console.error('Error creating station:', err)
+    })
+}
+
+const cancelHandler = () => {
+  navigateTo({
+    name: resolve('apps-stations-feedKey-feedVersionKey-stations'),
+    params: {
+      feedKey: feedKey.value,
+      feedVersionKey: feedVersionKey.value
     }
-  }
-})
+  })
+}
 </script>
