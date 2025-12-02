@@ -980,15 +980,26 @@ function makeTripTree (pkey: string, deps: StopTimeEvent[], groups: string[]): T
         tn.key = dep.trip.route.agency.agency_id
         tn.name = dep.trip.route.agency.agency_name
         break
-      case 'route':
+      case 'route': {
         tn.key = dep.trip.route.route_id
-        tn.name = dep.trip.route.route_short_name + ': ' + dep.trip.route.route_long_name
+        const shortName = dep.trip.route.route_short_name
+        const longName = dep.trip.route.route_long_name
+        if (shortName && longName) {
+          tn.name = `${shortName}: ${longName}`
+        } else if (shortName) {
+          tn.name = shortName
+        } else if (longName) {
+          tn.name = longName
+        } else {
+          tn.name = dep.trip.route.route_id || 'Unnamed route'
+        }
         tn.opts = {
           routeCategory: dep.trip.route.route_attribute?.category,
           routeSubcategory: dep.trip.route.route_attribute?.subcategory,
           showCategory: false
         }
         break
+      }
       case 'direction_id':
         tn.key = String(dep.trip.direction_id)
         tn.name = (dep.trip.direction_id === 0) ? 'Direction: inbound' : 'Direction: outbound'
