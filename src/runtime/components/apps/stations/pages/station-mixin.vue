@@ -97,8 +97,8 @@ export default defineComponent({
           return
         }
         const childIds = (initialStop.children || []).map(s => s.id).filter((id): id is number => id !== undefined)
-        this.stopList = [initialStop.id, ...childIds]
-        this.$apollo.queries.stationStopsQuery.refetch({ stop_ids: this.stopList })
+        this.stopList = [initialStop.id, ...childIds];
+        (this.$apollo as any).queries.stationStopsQuery.refetch({ stop_ids: this.stopList })
       }
     },
     stationStopsQuery: {
@@ -127,8 +127,8 @@ export default defineComponent({
           // console.log('READY!')
           this.ready = true
         } else {
-          this.stopList = newStops
-          this.$apollo.queries.stationStopsQuery.refetch({ stop_ids: this.stopList })
+          this.stopList = newStops;
+          (this.$apollo as any).queries.stationStopsQuery.refetch({ stop_ids: this.stopList })
         }
       }
     }

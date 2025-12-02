@@ -20,7 +20,7 @@
           <t-card>
             <template #trigger>
               Select
-              <t-button v-if="selectedElements.length > 0" class="is-pulled-right m-2" variant="primary is-small" outlined @click="clearSelectedElements">
+              <t-button v-if="selectedElements.length > 0" class="is-pulled-right m-2" variant="primary" size="small" outlined @click="clearSelectedElements">
                 Unselect All
               </t-button>
             </template>

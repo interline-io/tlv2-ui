@@ -33,7 +33,7 @@
               <div class="mb-2">
                 <p class="label">
                   {{ selectedStops.length }} stops selected
-                  <t-button v-if="selectedStops.length > 0" class="is-pulled-right m-2" variant="primary is-small" outlined @click="unselectAll">
+                  <t-button v-if="selectedStops.length > 0" class="is-pulled-right m-2" variant="primary" size="small" outlined @click="unselectAll">
                     Unselect All
                   </t-button>
                 </p>
@@ -55,7 +55,7 @@
               <div class="mb-2">
                 <p class="label">
                   {{ selectedPathways.length }} pathways selected
-                  <t-button v-if="selectedPathways.length > 0" class="is-pulled-right m-2" variant="primary is-small" outlined @click="unselectAll">
+                  <t-button v-if="selectedPathways.length > 0" class="is-pulled-right m-2" variant="primary" size="small" outlined @click="unselectAll">
                     Unselect All
                   </t-button>
                 </p>
@@ -124,7 +124,7 @@
             <t-card v-for="ss of selectedStops" :key="ss.id" class="card">
               <template #trigger>
                 Edit Node
-                <t-button v-if="selectedStops.length > 0 || selectedPathways.length > 0" class="is-pulled-right m-2" variant="primary is-small" outlined @click="unselectAll">
+                <t-button v-if="selectedStops.length > 0 || selectedPathways.length > 0" class="is-pulled-right m-2" variant="primary" size="small" outlined @click="unselectAll">
                   Unselect
                 </t-button>
               </template>
@@ -210,8 +210,8 @@
             <tl-apps-stations-basemap-control v-model="basemap" />
           </t-field>
           <t-field>
-            <t-button icon-left="download" @click="downloadGeojson">
-              GeoJSON
+            <t-button @click="downloadGeojson">
+              Download GeoJSON
             </t-button>
           </t-field>
           <t-field>
@@ -244,7 +244,7 @@
         </t-field>
 
         <tl-pathway-map
-          :center="station.geometry.coordinates"
+          :center="station.geometry?.coordinates as [number, number]"
           :station="station"
           :basemap="basemap"
           :selected-stops="selectedStops"
@@ -373,7 +373,7 @@ export default defineComponent({
     // stops
     createStopHandler (node: Stop) {
       let newStopId = 0
-      this.station.createStop(this.$apollo, node)
+      this.station.createStop((this.$apollo as any), node)
         .then((d: any) => {
           newStopId = d?.data?.stop_create?.id
           return this.refetch()
@@ -385,13 +385,13 @@ export default defineComponent({
         .catch(this.setError)
     },
     updateStopHandler (node: Stop) {
-      this.station.updateStop(this.$apollo, node)
+      this.station.updateStop((this.$apollo as any), node)
         .then(() => { return this.refetch() })
         .then(() => { this.selectStop(node.id!) })
         .catch(this.setError)
     },
     deleteStopHandler (node: Stop) {
-      return this.station.deleteStop(this.$apollo, node)
+      return this.station.deleteStop((this.$apollo as any), node)
         .then(() => { return this.refetch() })
         .then(() => { this.selectStop(null) })
         .catch(this.setError)
@@ -409,7 +409,7 @@ export default defineComponent({
     },
     // node associations
     deleteAssociationHandler (node: Stop) {
-      this.station.deleteAssociation(this.$apollo, node)
+      this.station.deleteAssociation((this.$apollo as any), node)
         .then(() => { return this.refetch() })
         .then(() => { this.selectStop(null) })
         .catch(this.setError)
@@ -426,20 +426,20 @@ export default defineComponent({
       }).setDefaults()
     },
     createPathwayHandler (pw: Pathway) {
-      this.station.createPathway(this.$apollo, pw)
+      this.station.createPathway((this.$apollo as any), pw)
         .then(() => { return this.refetch() })
         .then(() => { this.selectPathway(null) })
         .catch(this.setError) // todo: select
     },
     updatePathwayHandler (pw: Pathway) {
-      this.station.updatePathway(this.$apollo, pw)
+      this.station.updatePathway((this.$apollo as any), pw)
         .then(() => { return this.refetch() })
         .then(() => { this.selectPathway(null) })
         .catch(this.setError)
     },
     deletePathwayHandler (pw: Pathway) {
       this.selectPathway(null)
-      this.station.deletePathway(this.$apollo, pw)
+      this.station.deletePathway((this.$apollo as any), pw)
         .then(() => { return this.refetch() })
         .then(() => { this.selectPathway(null) })
         .catch(this.setError)

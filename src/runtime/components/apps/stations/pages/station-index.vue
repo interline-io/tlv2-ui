@@ -21,8 +21,8 @@
         <div class="is-pulled-right">
           <tl-apps-stations-level-map
             :zoom="12"
-            :points="[station.geometry]"
-            :center="station.geometry.coordinates"
+            :points="[station.geometry!]"
+            :center="station.geometry?.coordinates as [number, number]"
             :show-attribution="false"
           />
         </div>

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="feedVersion && feedVersion.id">
+  <div v-if="typeof feedVersion !== 'string' && feedVersion?.id">
     <slot name="title">
       <tl-title title="New Station" />
     </slot>
@@ -28,12 +28,13 @@ export default defineComponent({
   },
   methods: {
     newStation () {
-      const newStop = new Stop({ feed_version: { id: this.feedVersion.id } })
+      const fvId = typeof this.feedVersion !== 'string' ? this.feedVersion?.id : undefined
+      const newStop = new Stop({ feed_version: { id: fvId } })
       const newStation = new Station(newStop).setDefaults()
       return newStation
     },
     createStationHandler (station: Station) {
-      station.createStation(this.$apollo, station.stop)
+      station.createStation((this.$apollo as any), station.stop)
         .then(() => {
           navigateTo({
             name: this.resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),

@@ -9,7 +9,7 @@
     <tl-apps-stations-level-editor
       :station="station"
       :value="level"
-      :center="station.geometry.coordinates"
+      :center="station.geometry?.coordinates as [number, number]"
       @update="updateLevelHandler"
       @delete="deleteLevelHandler"
       @cancel="cancelHandler"
@@ -43,7 +43,8 @@ export default defineComponent({
   },
   methods: {
     updateLevelHandler (level: Level) {
-      this.station.updateLevel(this.$apollo, level)
+      if (!this.station) return
+      this.station.updateLevel((this.$apollo as any), level)
         .then(() => {
           navigateTo({
             name: this.resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),
@@ -57,7 +58,10 @@ export default defineComponent({
         .catch(this.setError)
     },
     deleteLevelHandler (levelId: string) {
-      this.station.deleteLevel(this.$apollo, levelId)
+      if (!this.station) return
+      const level = this.station.levels?.find(l => l.id === Number.parseInt(levelId))
+      if (!level) return
+      this.station.deleteLevel((this.$apollo as any), level)
         .then(() => {
           navigateTo({
             name: this.resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),

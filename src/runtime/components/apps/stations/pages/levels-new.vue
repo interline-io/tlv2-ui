@@ -8,7 +8,7 @@
 
     <tl-apps-stations-level-editor
       :station="station"
-      :center="station.geometry.coordinates"
+      :center="station.geometry?.coordinates as [number, number]"
       @create="createLevelHandler"
       @cancel="cancelHandler"
     />
@@ -30,7 +30,8 @@ export default defineComponent({
   },
   methods: {
     createLevelHandler (level: Level) {
-      this.station.createLevel(this.$apollo, level).then(() => {
+      if (!this.station) return
+      this.station.createLevel((this.$apollo as any), level).then(() => {
         navigateTo({
           name: this.resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),
           params: {

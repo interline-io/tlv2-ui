@@ -155,7 +155,7 @@
         </t-field>
         <tl-pathway-map
           :editable="true"
-          :center="station.geometry.coordinates"
+          :center="station.geometry?.coordinates as [number, number]"
           :other-stops="filteredStops"
           :basemap="basemap"
           :station="stationFiltered"
@@ -448,7 +448,7 @@ export default defineComponent({
   },
   methods: {
     importStopHandler (ent: Stop) {
-      this.station.importStop(this.$apollo, ent)
+      this.station.importStop((this.$apollo as any), ent)
         .then(() => { return this.refetch() })
         .then((data: any) => { this.selectStop(data.id) })
         .catch(this.setError)

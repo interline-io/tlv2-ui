@@ -181,7 +181,7 @@ export default defineComponent({
   methods: {
     fetchMore (after: number) {
       // console.log('fetchMore after:', after)
-      this.$apollo.queries.stops.fetchMore({
+      (this.$apollo as any).queries.stops.fetchMore({
         variables: {
           feed_onestop_id: this.feedKey,
           limit: 100,

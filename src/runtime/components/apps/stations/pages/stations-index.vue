@@ -31,7 +31,7 @@
       Or select an existing station in this feed version:
     </p>
     <tl-apps-stations-stop-table
-      v-if="feedVersion?.id"
+      v-if="typeof feedVersion !== 'string' && feedVersion?.id"
       :feed-version-ids="[feedVersion.id]"
       :location-type="1"
       :client="client"

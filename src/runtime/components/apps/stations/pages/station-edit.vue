@@ -7,7 +7,7 @@
     </slot>
 
     <tl-apps-stations-station-editor
-      :center="station.geometry.coordinates"
+      :center="station.geometry?.coordinates as [number, number]"
       :value="station"
       @update="updateStationHandler"
       @delete="deleteStationHandler"
@@ -31,7 +31,8 @@ export default defineComponent({
   },
   methods: {
     updateStationHandler (station: Station) {
-      this.station.updateStation(this.$apollo, station.stop)
+      if (!this.station) return
+      this.station.updateStation((this.$apollo as any), station.stop)
         .then(() => {
           navigateTo({
             name: this.resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),
@@ -55,7 +56,8 @@ export default defineComponent({
       })
     },
     deleteStationHandler (station: Station) {
-      this.station.deleteStation(this.$apollo, station)
+      if (!this.station) return
+      this.station.deleteStation((this.$apollo as any), station)
         .then(() => {
           navigateTo({
             name: this.resolve('apps-stations-feedKey-feedVersionKey-stations'),
