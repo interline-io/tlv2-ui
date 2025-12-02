@@ -3,7 +3,7 @@ import { gql } from 'graphql-tag'
 import { useQuery, useApolloClient } from '@vue/apollo-composable'
 import { useToastNotification } from '../../../../composables/useToastNotification'
 import type { Level, Pathway } from '../station'
-import { Stop, Station, FeedVersion, stationQuery, stationStopQuery, mapLevelKeyFn } from '../station'
+import { Stop, Station, stationQuery, stationStopQuery, mapLevelKeyFn } from '../station'
 import type { FeedQueryResponse, StationQueryResponse, StopsQueryResponse } from '../types'
 
 const currentFeedsQuery = gql`
