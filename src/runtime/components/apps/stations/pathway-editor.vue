@@ -27,8 +27,8 @@
         </t-field>
 
         <t-field label="Mode">
-          <t-select v-model="pathway.pathway_mode" :disabled="readOnly">
-            <option v-for="[mode, label] in PathwayModes" :key="mode" :value="mode">
+          <t-select v-model="pathwayModeStr" :disabled="readOnly">
+            <option v-for="[mode, label] in PathwayModes" :key="mode" :value="String(mode)">
               {{ label }}
             </option>
           </t-select>
@@ -55,12 +55,10 @@
           <t-field>
             <t-input
               v-model="pathway.length"
-              number
               type="number"
               min="0"
               step="0.01"
               :disabled="readOnly"
-              controls-position="compact"
             />
           </t-field>
         </t-field>
@@ -69,11 +67,9 @@
           <t-field>
             <t-input
               v-model="pathway.traversal_time"
-              number
               type="number"
               min="0"
               :disabled="readOnly"
-              controls-position="compact"
             />
           </t-field>
         </t-field>
@@ -82,9 +78,7 @@
           <t-field>
             <t-input
               v-model="pathway.stair_count"
-              number
               type="number"
-              controls-position="compact"
               :disabled="readOnly"
             />
           </t-field>
@@ -94,10 +88,8 @@
           <t-field>
             <t-input
               v-model="pathway.max_slope"
-              number
               type="number"
               step="0.01"
-              controls-position="compact"
               :disabled="readOnly"
             />
           </t-field>
@@ -107,11 +99,9 @@
           <t-field>
             <t-input
               v-model="pathway.min_width"
-              number
               min="0"
               step="0.01"
               type="number"
-              controls-position="compact"
               :disabled="readOnly"
             />
           </t-field>
@@ -131,20 +121,22 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue'
 import { haversinePosition } from '../../../geom'
 import { PathwayModes } from './basemaps'
 import { Pathway } from './station'
+import type { PathwayData, StationData } from './types'
 
-export default {
+export default defineComponent({
   props: {
     station: {
-      type: Object,
-      default () { return {} }
+      type: Object as PropType<StationData>,
+      default: () => ({} as StationData)
     },
     value: {
-      type: Object,
-      default () { return {} }
+      type: Object as PropType<PathwayData>,
+      default: () => ({} as PathwayData)
     },
     readOnly: {
       type: Boolean,
@@ -160,18 +152,28 @@ export default {
     }
   },
   computed: {
-    stopLength () {
-      return haversinePosition(
-        this.pathway.from_stop.geometry.coordinates,
-        this.pathway.to_stop.geometry.coordinates
-      ).toFixed(2)
+    pathwayModeStr: {
+      get (): string {
+        return String(this.pathway.pathway_mode ?? '')
+      },
+      set (value: string) {
+        this.pathway.pathway_mode = value ? Number.parseInt(value, 10) : undefined
+      }
     },
-    stopTraversalTime () {
-      return this.stopLength * 1.30
+    stopLength (): string {
+      const fromCoords = this.pathway.from_stop?.geometry?.coordinates
+      const toCoords = this.pathway.to_stop?.geometry?.coordinates
+      if (!fromCoords || !toCoords) {
+        return '0.00'
+      }
+      return haversinePosition(fromCoords, toCoords).toFixed(2)
+    },
+    stopTraversalTime (): number {
+      return Number.parseFloat(this.stopLength) * 1.30
     }
   },
   watch: {
-    'pathway.pathway_mode' (value) {
+    'pathway.pathway_mode' (value: number) {
       if (value === 7) {
         this.pathway.is_bidirectional = 0
       } else {
@@ -179,7 +181,7 @@ export default {
       }
     }
   }
-}
+})
 </script>
 
 <style scoped>

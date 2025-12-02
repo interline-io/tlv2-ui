@@ -1,7 +1,9 @@
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
 import { gql } from 'graphql-tag'
 import { Stop, Station, stationQuery, stationStopQuery, mapLevelKeyFn } from '../station'
 import { useToastNotification } from '../../../../composables/useToastNotification'
+import type { FeedQueryResponse, StationQueryResponse, StopsQueryResponse } from '../types'
 
 const currentFeeds = gql`
 query currentFeeds ($feed_onestop_id: String, $feed_version_ids: [Int!]) {
@@ -30,7 +32,7 @@ query currentFeeds ($feed_onestop_id: String, $feed_version_ids: [Int!]) {
   }
 }`
 
-function symmetricDifference (setA, setB) {
+function symmetricDifference<T> (setA: Set<T>, setB: Set<T>): Set<T> {
   const _difference = new Set(setA)
   for (const elem of setB) {
     if (_difference.has(elem)) {
@@ -42,7 +44,7 @@ function symmetricDifference (setA, setB) {
   return _difference
 }
 
-export default {
+export default defineComponent({
   props: {
     feedKey: { type: String, default: '' },
     feedVersionKey: { type: String, default: '' },
@@ -59,7 +61,7 @@ export default {
       client: 'stationEditor',
       query: currentFeeds,
       fetchPolicy: 'network-only',
-      error (e) {
+      error (e: Error) {
         this.error(e)
       },
       variables () {
@@ -80,18 +82,22 @@ export default {
           stop_id: this.stationKey
         }
       },
-      update (data) {
+      update (data: StationQueryResponse) {
         if (data.feed_versions.length === 0) {
           return
         }
         const fv = data.feed_versions[0]
-        if (fv.stops.length === 0) {
+        if (!fv || fv.stops.length === 0) {
           return
         }
         // console.log('station query result:', data.stops)
         this.station = new Station(fv.stops[0])
         const initialStop = new Stop(fv.stops[0])
-        this.stopList = [initialStop.id, ...initialStop.children.map((s) => { return s.id })]
+        if (!initialStop.id) {
+          return
+        }
+        const childIds = (initialStop.children || []).map(s => s.id).filter((id): id is number => id !== undefined)
+        this.stopList = [initialStop.id, ...childIds]
         this.$apollo.queries.stationStopsQuery.refetch({ stop_ids: this.stopList })
       }
     },
@@ -105,12 +111,18 @@ export default {
           stop_ids: []
         }
       },
-      update (data) {
+      update (data: StopsQueryResponse) {
+        if (!this.station) {
+          return
+        }
         const a = new Set(this.stopList)
         const newStops = this.station.addStops(data.stops.map((s) => { return new Stop(s) }))
         const b = new Set(newStops)
-        a.add(this.station.stop.id)
-        b.add(this.station.stop.id)
+        const stationStopId = this.station.stop?.id
+        if (stationStopId !== undefined) {
+          a.add(stationStopId)
+          b.add(stationStopId)
+        }
         if (symmetricDifference(a, b).size === 0) {
           // console.log('READY!')
           this.ready = true
@@ -125,77 +137,84 @@ export default {
     return {
       // TODO: Remove after upgrading components to Vue Composition API
       ready: false,
-      station: null,
-      stations: [],
-      stopList: [],
-      selectedAgenciesShadow: null,
-      selectedLevelShadow: null,
-      selectedLevelsShadow: null,
+      station: null as Station | null,
+      stations: [] as FeedQueryResponse['feed_versions'][0]['stations'],
+      stopList: [] as number[],
+      selectedAgenciesShadow: null as string[] | null,
+      selectedLevelShadow: null as number | null,
+      selectedLevelsShadow: null as string[] | null,
+      feeds: [] as FeedQueryResponse[],
     }
   },
   computed: {
-    feed () {
-      return this.feeds?.length > 0 ? this.feeds[0] : null
+    feed (): FeedQueryResponse | null {
+      if (this.feeds && this.feeds.length > 0) {
+        return this.feeds[0] ?? null
+      }
+      return null
     },
-    feedName () {
+    feedName (): string {
       return this.feed?.name || this.feed?.onestop_id || this.feedKey
     },
-    stationName () {
+    stationName (): string | undefined {
       return this.station?.stop?.stop_name
     },
-    feedVersion () {
-      return this.feed?.feed_versions?.length > 0 ? this.feed.feed_versions[0] : null
+    feedVersion (): FeedQueryResponse['feed_versions'][0] | null | undefined {
+      if (!this.feed?.feed_versions || this.feed.feed_versions.length === 0) {
+        return null
+      }
+      return this.feed.feed_versions[0]
     },
-    feedVersionName () {
+    feedVersionName (): string {
       return String(this.feedVersion?.id || this.feedVersionKey || '').substr(0, 8)
     },
-    stopAssociationsEnabled () {
+    stopAssociationsEnabled (): boolean {
       return (this.feedVersion?.agencies || []).length === 0
     },
     selectedAgencies: {
-      get () {
+      get (): string[] {
         if (this.selectedAgenciesShadow != null) {
           return this.selectedAgenciesShadow
         }
-        const allAgencies = new Map()
+        const allAgencies = new Map<string, boolean>()
         for (const stop of this.station?.stops || []) {
           for (const rs of stop.route_stops || []) {
             if (rs.agency) {
-              allAgencies.set(rs.agency.agency_id, true)
+              allAgencies.set(rs.agency.agency_id!, true)
             }
           }
         }
         return Array.from(allAgencies.keys())
       },
-      set (v) {
+      set (v: string[]) {
         this.selectedAgenciesShadow = v
       }
     },
     selectedLevel: {
-      get () {
+      get (): number | null {
         if (this.selectedLevelShadow != null) {
           return this.selectedLevelShadow
         }
         return this.station?.levels[0]?.id || null
       },
-      set (v) {
+      set (v: number | null) {
         this.selectedLevelShadow = v
       }
     },
     selectedLevels: {
-      get () {
+      get (): string[] {
         if (this.selectedLevelsShadow != null) {
           return this.selectedLevelsShadow
         }
         return this.station?.levels?.map(mapLevelKeyFn) || []
       },
-      set (v) {
+      set (v: string[]) {
         this.selectedLevelsShadow = v
       }
     },
   },
   methods: {
-    handleError (response) {
+    handleError (response: Response): Promise<unknown> {
       if (!response.ok) {
         console.log('request failed', response)
         throw new Error(response.statusText)
@@ -204,17 +223,18 @@ export default {
         return response.json()
       }
     },
-    setError (e) {
+    setError (e: Error | string) {
       this.error(e)
     },
-    error (error) {
-      const msg = error.message ? error.message : JSON.stringify(error)
+    error (error: Error | string) {
+      const msg = typeof error === 'string' ? error : (error.message || JSON.stringify(error))
       this.showToast(`Error: ${msg}`, 'danger')
     },
-    refetch () {
+    refetch (): Promise<unknown> {
       console.log('refetch')
-      return this.$apollo.queries.stationQuery.refetch()
+      // Apollo is injected at runtime and not part of component type definition
+      return (this as any).$apollo.queries.stationQuery.refetch()
     }
   }
-}
+})
 </script>

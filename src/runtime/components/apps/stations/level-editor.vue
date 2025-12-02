@@ -26,8 +26,6 @@
         <t-input
           v-model="level.level_index"
           type="number"
-          number
-          controls-position="compact"
         />
       </div>
       <p class="help">
@@ -128,52 +126,57 @@
         v-model="geojsonGeometry"
         :variant="geojsonError ? 'danger' : 'primary'"
         expanded
-        rows="20"
+        :rows="20"
         :style="{ 'max-height': '50vh' }"
       />
-      <t-button class="is-pulled-right" :disabled="!!geojsonError" :variant="geojsonError ? 'danger' : 'primary'" @click="showGeojsonError = false">
+      <t-button class="is-pulled-right" :disabled="!!geojsonError" :variant="geojsonError ? 'danger' : 'primary'" @click="showGeojsonEditor = false">
         {{ geojsonError ? geojsonError : 'OK' }}
       </t-button>
     </t-modal>
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue'
+import type { MultiPolygon, Feature, FeatureCollection, Polygon } from 'geojson'
 import { Level } from './station'
+import type { LevelData, StationData } from './types'
+
+type Coordinates = number[] | Coordinates[]
 
 // Helper to recursively strip Z/M dimensions from coordinates
-const stripZandM = (coords) => {
+const stripZandM = (coords: Coordinates): number[] | number[][] | number[][][] => {
   if (Array.isArray(coords[0])) {
-    return coords.map(stripZandM)
+    return (coords as Coordinates[]).map(stripZandM) as number[][] | number[][][]
   }
-  return coords.slice(0, 2)
+  return (coords as number[]).slice(0, 2)
 }
 
-const convertToMultiPolygon = (parsed) => {
-  const coords = []
+const convertToMultiPolygon = (parsed: FeatureCollection | Feature | Polygon | MultiPolygon): MultiPolygon => {
+  const coords: number[][][][] = []
   if (parsed.type === 'FeatureCollection') {
-    for (const feat of parsed.features) {
+    for (const feat of (parsed as FeatureCollection).features) {
       if (feat.geometry.type === 'Polygon') {
-        coords.push(stripZandM(feat.geometry.coordinates))
+        coords.push(stripZandM(feat.geometry.coordinates) as number[][][])
       } else if (feat.geometry.type === 'MultiPolygon') {
         for (const poly of feat.geometry.coordinates) {
-          coords.push(stripZandM(poly))
+          coords.push(stripZandM(poly) as number[][][])
         }
       }
     }
   } else if (parsed.type === 'Feature') {
-    if (parsed.geometry.type === 'Polygon') {
-      coords.push(stripZandM(parsed.geometry.coordinates))
-    } else if (parsed.geometry.type === 'MultiPolygon') {
-      for (const poly of parsed.geometry.coordinates) {
-        coords.push(stripZandM(poly))
+    if ((parsed as Feature).geometry.type === 'Polygon') {
+      coords.push(stripZandM((parsed as Feature<Polygon>).geometry.coordinates) as number[][][])
+    } else if ((parsed as Feature).geometry.type === 'MultiPolygon') {
+      for (const poly of (parsed as Feature<MultiPolygon>).geometry.coordinates) {
+        coords.push(stripZandM(poly) as number[][][])
       }
     }
   } else if (parsed.type === 'Polygon') {
-    coords.push(stripZandM(parsed.coordinates))
+    coords.push(stripZandM((parsed as Polygon).coordinates) as number[][][])
   } else if (parsed.type === 'MultiPolygon') {
-    for (const poly of parsed.coordinates) {
-      coords.push(stripZandM(poly))
+    for (const poly of (parsed as MultiPolygon).coordinates) {
+      coords.push(stripZandM(poly) as number[][][])
     }
   } else {
     throw new Error('GeoJSON must be a Polygon or MultiPolygon')
@@ -184,25 +187,19 @@ const convertToMultiPolygon = (parsed) => {
   }
 }
 
-export default {
+export default defineComponent({
   props: {
     center: {
-      type: Array,
-      default () { return [0, 0] }
+      type: Array as unknown as PropType<[number, number]>,
+      default: () => [0, 0] as [number, number]
     },
     station: {
-      type: Object,
-      default () {
-        return {
-          geometry: null,
-          id: null,
-          feed_version_id: null
-        }
-      }
+      type: Object as PropType<StationData>,
+      required: true
     },
     value: {
-      type: Object,
-      default () { return {} }
+      type: Object as PropType<LevelData>,
+      default: () => ({} as LevelData)
     }
   },
   emits: ['update', 'delete', 'create', 'cancel'],
@@ -211,16 +208,16 @@ export default {
       level: new Level(this.value).setDefaults(),
       basemap: 'carto',
       showGeojsonEditor: false,
-      geojsonError: null,
+      geojsonError: null as string | null,
       geojsonGeometryBuffer: ''
     }
   },
   computed: {
     geojsonGeometry: {
-      get () {
+      get (): string {
         return this.geojsonGeometryBuffer || JSON.stringify(this.geometry, null, 2)
       },
-      set (value) {
+      set (value: string) {
         this.geojsonGeometryBuffer = value
         let parsed = null
         try {
@@ -232,10 +229,10 @@ export default {
         this.setGeometry(parsed)
       }
     },
-    geometry () {
-      return this.level.geometry
+    geometry (): MultiPolygon | null {
+      return this.level.geometry ?? null
     },
-    editFeatures () {
+    editFeatures (): Feature[] {
       if (!this.geometry) { return [] }
       return [
         {
@@ -245,32 +242,32 @@ export default {
         }
       ]
     },
-    valid () {
-      return this.level.level_name
+    valid (): boolean {
+      return !!(this.level.level_name
         && this.level.level_name.length > 0
         && this.level.level_index !== null
         && this.level.level_id
-        && this.level.level_id.length > 0
+        && this.level.level_id.length > 0)
     }
   },
   watch: {
-    'level.level_name' (value) {
-      if (value && value.length > 0 && !this.level.id) {
+    'level.level_name' (value: string) {
+      if (value && value.length > 0 && !this.level.id && this.station.stop) {
         const autoname = value.toLowerCase().replace(/\s/g, '-')
         this.level.level_id = `${this.station.stop.stop_id}-${autoname}`
       }
     }
   },
   methods: {
-    setGeometry (e) {
+    setGeometry (e: FeatureCollection | Feature | Polygon | MultiPolygon) {
       try {
         const mp = convertToMultiPolygon(e)
         this.level.geometry = mp
         this.geojsonError = null
-      } catch (e) {
-        this.geojsonError = e.message || e.toString()
+      } catch (err) {
+        this.geojsonError = err instanceof Error ? err.message : String(err)
       }
     }
   }
-}
+})
 </script>

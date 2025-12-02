@@ -1,6 +1,7 @@
 import { useRuntimeConfig } from '#imports'
+import type { BasemapLayer, PathwayModeIcon } from './types'
 
-export function getBasemapLayers () {
+export function getBasemapLayers (): Record<string, BasemapLayer> {
   const config = useRuntimeConfig()
   return {
     carto: {
@@ -41,7 +42,7 @@ export function getBasemapLayers () {
   }
 }
 
-export const PathwayModeIcons = {
+export const PathwayModeIcons: Record<number, PathwayModeIcon> = {
   1: {
     icon: 'walkway',
     label: 'Walkway',
@@ -73,14 +74,14 @@ export const PathwayModeIcons = {
   }
 }
 
-export const PeliasIcons = {
+export const PeliasIcons: Record<string, PathwayModeIcon> = {
   marker: {
     icon: 'marker',
     label: 'marker'
   }
 }
 
-export const PathwayModes = new Map([
+export const PathwayModes = new Map<number, string>([
   [1, 'Walkway'],
   [2, 'Stairs'],
   [3, 'Moving sidewalk'],
@@ -90,7 +91,7 @@ export const PathwayModes = new Map([
   [7, 'Exit gate']
 ])
 
-export const LocationTypes = new Map([
+export const LocationTypes = new Map<number, string>([
   [0, 'Platform'],
   [1, 'Station'],
   [2, 'Entrance/Exit'],

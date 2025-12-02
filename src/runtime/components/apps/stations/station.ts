@@ -1,6 +1,17 @@
-/* eslint-disable */
 import { gql } from 'graphql-tag'
+import type { Point, MultiPolygon } from 'geojson'
 import { RoutingGraph } from './graph'
+import type {
+  FeedVersionData,
+  FeedInfo,
+  StopData,
+  PathwayData,
+  LevelData,
+  RouteStopData,
+  StopExternalReferenceData,
+  RouteResult,
+  ValidationPath
+} from './types'
 
 export const stationQuery = gql`
 fragment level on Level {
@@ -189,11 +200,11 @@ query stationStopQuery($stop_ids: [Int!]!) {
   }
 }`
 
-export function mapLevelKeyFn (level) {
+export function mapLevelKeyFn (level: LevelData): string {
   return `mapLevelKey-${level.id || 'unassigned'}`
 }
 
-function def (v, d) {
+function def<T> (v: T | null | undefined, d: T): T {
   if (v == null) {
     return d
   }
@@ -201,7 +212,7 @@ function def (v, d) {
 }
 
 // Helper function to build route keys with prefix
-export function getRouteKeys (prefix = 'editor') {
+export function getRouteKeys (prefix = 'editor'): Record<string, string> {
   return {
     levels: `${prefix}-feedKey-feedVersionKey-stations-stationKey`,
     stops: `${prefix}-feedKey-feedVersionKey-stations-stationKey-stops`,
@@ -211,12 +222,22 @@ export function getRouteKeys (prefix = 'editor') {
 }
 
 export class FeedVersion {
-  constructor (fv) {
+  id?: number
+  fetched_at?: string
+  name?: string
+  sha1?: string
+  file?: string
+  earliest_calendar_date?: string
+  latest_calendar_date?: string
+  feed: FeedInfo
+
+  constructor (fv?: FeedVersionData) {
     fv = fv || {}
     this.id = fv.id
     this.fetched_at = fv.fetched_at
     this.name = fv.name
     this.sha1 = fv.sha1
+    this.file = fv.file
     this.earliest_calendar_date = fv.earliest_calendar_date
     this.latest_calendar_date = fv.latest_calendar_date
     this.feed = {}
@@ -228,7 +249,29 @@ export class FeedVersion {
 }
 
 export class Stop {
-  constructor (stop) {
+  id?: number
+  stop_id?: string
+  stop_name?: string
+  stop_code?: string
+  platform_code?: string
+  stop_timezone?: string
+  zone_id?: string
+  wheelchair_boarding?: number
+  stop_desc?: string
+  stop_url?: string
+  geometry?: Point
+  location_type?: number
+  route_stops: RouteStopData[]
+  parent: Partial<Stop>
+  children: Stop[]
+  level: Level
+  levels: Level[]
+  pathways_from_stop: Pathway[]
+  pathways_to_stop: Pathway[]
+  feed_version: FeedVersion
+  external_reference?: StopExternalReferenceData
+
+  constructor (stop?: StopData) {
     stop = stop || {}
     this.id = stop.id
     this.stop_id = stop.stop_id
@@ -246,7 +289,7 @@ export class Stop {
 
     // objects
     this.route_stops = stop.route_stops || []
-    this.parent = { id: null }
+    this.parent = { id: undefined }
     if (stop.parent) {
       this.parent = new Stop(stop.parent)
     }
@@ -259,7 +302,7 @@ export class Stop {
     if (stop.level) {
       this.level = new Level(stop.level)
     } else {
-      this.level = new Level({ id: null, level_name: 'Unassigned' })
+      this.level = new Level({ level_name: 'Unassigned' })
     }
 
     // Child levels
@@ -279,11 +322,13 @@ export class Stop {
     this.external_reference = stop.external_reference
   }
 
-  setCoords (lon, lat) {
-    this.geometry.coordinates = [lon, lat]
+  setCoords (lon: number, lat: number): void {
+    if (this.geometry) {
+      this.geometry.coordinates = [lon, lat]
+    }
   }
 
-  setDefaults () {
+  setDefaults (): this {
     this.stop_id = def(this.stop_id, String(Date.now()))
     this.stop_name = def(this.stop_name, '')
     this.stop_code = def(this.stop_code, '')
@@ -297,7 +342,7 @@ export class Stop {
     return this
   }
 
-  value () {
+  value (): Record<string, unknown> {
     return {
       id: this.id,
       stop_id: this.stop_id,
@@ -311,8 +356,8 @@ export class Stop {
       stop_desc: this.stop_desc,
       geometry: this.geometry,
       location_type: this.location_type,
-      parent: this.parent?.id > 0 ? { id: this.parent.id } : { id: null },
-      level: this.level?.id > 0 ? { id: this.level.id } : { id: null },
+      parent: this.parent?.id ? { id: this.parent.id } : { id: null },
+      level: this.level?.id ? { id: this.level.id } : { id: null },
       feed_version: { id: this.feed_version.id },
       external_reference: this.external_reference
         ? {
@@ -325,7 +370,22 @@ export class Stop {
 }
 
 export class Pathway {
-  constructor (pw) {
+  id?: number
+  length?: number
+  pathway_id?: string
+  pathway_mode?: number
+  max_slope?: number
+  min_width?: number
+  signposted_as?: string
+  reverse_signposted_as?: string
+  stair_count?: number
+  traversal_time?: number
+  is_bidirectional?: number
+  from_stop: Stop
+  to_stop: Stop
+  feed_version: Partial<FeedVersion>
+
+  constructor (pw?: PathwayData) {
     pw = pw || {}
     this.id = pw.id
     this.length = pw.length
@@ -341,25 +401,21 @@ export class Pathway {
     // objects
     this.from_stop = new Stop(pw.from_stop)
     this.to_stop = new Stop(pw.to_stop)
-    this.feed_version = new FeedVersion(pw.from_stop.feed_version)
+    this.feed_version = new FeedVersion(pw.from_stop?.feed_version)
   }
 
-  setDefaults () {
-    this.feed_version = { id: def(this.feed_version.id, this.from_stop.feed_version.id) } // fix
-    this.length = this.length
+  setDefaults (): this {
+    this.feed_version = { id: def(this.feed_version.id, this.from_stop.feed_version.id) }
+    // length, max_slope, min_width, stair_count, traversal_time are optional - keep as-is
     this.pathway_id = def(this.pathway_id, String(Date.now()))
     this.pathway_mode = def(this.pathway_mode, 1)
-    this.max_slope = this.max_slope
-    this.min_width = this.min_width
     this.signposted_as = def(this.signposted_as, '')
     this.reverse_signposted_as = def(this.reverse_signposted_as, '')
-    this.stair_count = this.stair_count
-    this.traversal_time = this.traversal_time
     this.is_bidirectional = def(this.is_bidirectional, 1)
     return this
   }
 
-  value () {
+  value (): Record<string, unknown> {
     return {
       id: this.id,
       length: this.length,
@@ -380,7 +436,16 @@ export class Pathway {
 }
 
 export class Level {
-  constructor (lvl) {
+  id?: number
+  level_id?: string
+  level_index?: number
+  level_name?: string
+  geometry?: MultiPolygon
+  feed_version: Partial<FeedVersion>
+  parent: Partial<Stop>
+  stops: Stop[]
+
+  constructor (lvl?: LevelData) {
     lvl = lvl || {}
     this.id = lvl.id
     this.level_id = lvl.level_id
@@ -396,14 +461,14 @@ export class Level {
     }
   }
 
-  setDefaults () {
+  setDefaults (): this {
     this.level_index = def(this.level_index, 0.0)
     this.level_name = def(this.level_name, String(Date.now()))
     this.level_id = def(this.level_id, String(Date.now()))
     return this
   }
 
-  value () {
+  value (): Record<string, unknown> {
     return {
       id: this.id,
       level_id: this.level_id,
@@ -417,8 +482,15 @@ export class Level {
 }
 
 export class Station {
-  constructor (stop) {
-    this.client = 'stationEditor',
+  client: string
+  graph: RoutingGraph | null
+  stop: Stop
+  pathways: Pathway[]
+  stops: Stop[]
+  levels: Level[]
+
+  constructor (stop?: StopData) {
+    this.client = 'stationEditor'
     this.graph = null
     this.stop = new Stop(stop)
     this.pathways = []
@@ -428,21 +500,21 @@ export class Station {
       this.levels.push(new Level(level))
     }
     // Only add an Unassigned level if one doesn't already exist
-    const hasUnassigned = this.levels.some(level => level.level_name === 'Unassigned' && level.level_index == null)
+    const hasUnassigned = this.levels.some(level => level.level_name === 'Unassigned' && level.level_index === null)
     if (!hasUnassigned) {
       this.levels.push(new Level({ level_name: 'Unassigned' }))
     }
   }
 
-  get id () {
+  get id (): number | undefined {
     return this.stop.id
   }
 
-  get geometry () {
+  get geometry (): Point | undefined {
     return this.stop.geometry
   }
 
-  setDefaults () {
+  setDefaults (): this {
     this.stop.location_type = 1
     this.stop.stop_name = def(this.stop.stop_name, String(Date.now()))
     this.stop.stop_id = def(this.stop.stop_id, String(Date.now()))
@@ -450,7 +522,7 @@ export class Station {
     return this
   }
 
-  getStop (stopId) {
+  getStop (stopId: number): Stop | null {
     for (const stop of this.stops) {
       if (stop.id === stopId) {
         return stop
@@ -459,64 +531,86 @@ export class Station {
     return null
   }
 
-  findRoute (start, goal) {
+  findRoute (start: number, goal: number): RouteResult | undefined {
     if (this.stops.length === 0) {
       return
     }
     if (!this.graph) {
-      this.graph = new RoutingGraph(this.stops, null)
+      this.graph = new RoutingGraph(this.stops)
     }
     return this.graph.aStar(start, goal)
   }
 
-  validatePathsToStops (source, targets) {
-    const paths = []
+  validatePathsToStops (source: Stop, targets: Stop[]): ValidationPath[] {
+    const paths: ValidationPath[] = []
+    if (!source.id) {
+      return paths
+    }
     for (const target of targets) {
+      if (!target.id) {
+        continue
+      }
       const route = this.findRoute(source.id, target.id)
       if (!route || route.path.length === 0) {
-        paths.push({ target, error: `no route between ${source.stop_name} (${source.id}) and ${target.stop_name} (${target.id})`, distance: route.distance })
+        paths.push({ target, error: `no route between ${source.stop_name} (${source.id}) and ${target.stop_name} (${target.id})`, distance: route?.distance || 0 })
       } else {
-        paths.push({ target, info: `OK: route between ${source.stop_name} (${source.id}) and ${target.stop_name} (${target.id})`, distance: route.distance })
+        paths.push({ target, info: `OK: route between ${source.stop_name} (${source.id}) and ${target.stop_name} (${target.id})`, distance: route.distance || 0 })
       }
     }
     return paths.sort((a, b) => { return b.distance - a.distance })
   }
 
-  addStops (stops) {
+  addStops (stops: Stop[]): number[] {
     // Add these stops/levels to the station and return a list of new stops to fetch.
-    const currentStops = new Map()
-    currentStops.set(this.stop.id, this.stop)
+    const currentStops = new Map<number, Stop>()
+    if (this.stop.id) {
+      currentStops.set(this.stop.id, this.stop)
+    }
     for (const i of this.stops) {
-      currentStops.set(i.id, i)
+      if (i.id) {
+        currentStops.set(i.id, i)
+      }
     }
     for (const i of stops) {
-      currentStops.set(i.id, i)
+      if (i.id) {
+        currentStops.set(i.id, i)
+      }
     }
-    const pwIndex = new Map()
-    const checkStops = new Set()
+    const pwIndex = new Map<number, Pathway>()
+    const checkStops = new Set<number>()
     for (const c of this.stop.children || []) {
-      checkStops.add(c.id)
+      if (c.id) {
+        checkStops.add(c.id)
+      }
     }
     for (const stop of stops) {
       if (stop.parent?.id) {
         checkStops.add(stop.parent.id)
       }
       for (const pw of stop.pathways_from_stop || []) {
-        pwIndex.set(pw.id, pw)
-        checkStops.add(pw.to_stop.id)
+        if (pw.id && pw.to_stop.id) {
+          pwIndex.set(pw.id, pw)
+          checkStops.add(pw.to_stop.id)
+        }
       }
       for (const pw of stop.pathways_to_stop || []) {
-        pwIndex.set(pw.id, pw)
-        checkStops.add(pw.from_stop.id)
+        if (pw.id && pw.from_stop.id) {
+          pwIndex.set(pw.id, pw)
+          checkStops.add(pw.from_stop.id)
+        }
       }
       for (const c of stop.children || []) {
-        checkStops.add(c.id)
+        if (c.id) {
+          checkStops.add(c.id)
+        }
       }
       for (const s of stop.level?.stops || []) {
-        checkStops.add(s.id)
+        if (s.id) {
+          checkStops.add(s.id)
+        }
       }
     }
-    const toFetch = new Set()
+    const toFetch = new Set<number>()
     for (const i of checkStops) {
       toFetch.add(i)
     }
@@ -524,11 +618,13 @@ export class Station {
       toFetch.add(i)
     }
     // remove self
-    currentStops.delete(this.stop.id)
-    toFetch.delete(this.stop.id)
+    if (this.stop.id) {
+      currentStops.delete(this.stop.id)
+      toFetch.delete(this.stop.id)
+    }
     const newStops = Array.from(currentStops.values())
     // update levels
-    const lvls = new Map()
+    const lvls = new Map<number | string, Level>()
     for (const lvl of this.levels || []) {
       // Normalize null/undefined to a consistent key for unassigned levels
       const levelKey = lvl.id ?? 'unassigned'
@@ -539,7 +635,10 @@ export class Station {
       // Normalize null/undefined to a consistent key for unassigned levels
       const levelKey = lvl?.id ?? 'unassigned'
       if (lvl && lvls.has(levelKey)) {
-        lvl = lvls.get(levelKey)
+        const existingLevel = lvls.get(levelKey)
+        if (existingLevel) {
+          lvl = existingLevel
+        }
       } else {
         lvl = new Level(lvl)
       }
@@ -556,55 +655,55 @@ export class Station {
 
   // Mutations
 
-  error (msg) {
+  error (msg: string): void {
     console.log('station error:', msg)
   }
 
   // STATION
-  createStation ($apollo, ent) {
+  createStation ($apollo: unknown, ent: Stop): unknown {
     return this.createStop($apollo, ent)
   }
 
-  updateStation ($apollo, ent) {
+  updateStation ($apollo: unknown, ent: Stop): unknown {
     return this.updateStop($apollo, ent)
   }
 
-  deleteStation ($apollo, ent) {
+  deleteStation ($apollo: unknown, ent: Station): unknown {
     return this.deleteStop($apollo, ent.stop)
   }
 
   // LEVELS
-  createLevel ($apollo, ent) {
+  createLevel ($apollo: unknown, ent: Level): unknown {
     ent.feed_version = { id: this.stop.feed_version.id }
     ent.parent = { id: this.stop.id }
     ent.setDefaults()
     const vars = { set: ent.value() }
     console.log('create level:', vars)
     const q = gql`mutation ($set: LevelSetInput!) {level_create(set:$set) {id}}`
-    return $apollo.mutate({
+    return (($apollo as any).mutate)({
       mutation: q,
       variables: vars,
       client: this.client,
     })
   }
 
-  updateLevel ($apollo, ent) {
+  updateLevel ($apollo: unknown, ent: Level): unknown {
     ent.feed_version = { id: this.stop.feed_version.id }
     ent.parent = { id: this.stop.id }
     const vars = { set: ent.value() }
     console.log('update level:', vars)
     const q = gql`mutation ($set: LevelSetInput!) {level_update(set:$set) {id}}`
-    return $apollo.mutate({
+    return (($apollo as any).mutate)({
       mutation: q,
       variables: vars,
       client: this.client,
     })
   }
 
-  deleteLevel ($apollo, ent) {
+  deleteLevel ($apollo: unknown, ent: Level): unknown {
     console.log('delete level:', ent)
     const q = gql`mutation ($id: Int!) {level_delete(id:$id) {id}}`
-    return $apollo.mutate({
+    return (($apollo as any).mutate)({
       mutation: q,
       variables: { id: ent.id },
       client: this.client
@@ -612,34 +711,34 @@ export class Station {
   }
 
   // PATHWAYS
-  createPathway ($apollo, ent) {
+  createPathway ($apollo: unknown, ent: Pathway): unknown {
     ent.feed_version = { id: this.stop.feed_version.id }
     ent.setDefaults()
     const vars = { set: ent.value() }
     console.log('create pathway:', vars)
     const q = gql`mutation ($set: PathwaySetInput!) {pathway_create(set:$set) {id}}`
-    return $apollo.mutate({
+    return (($apollo as any).mutate)({
       mutation: q,
       variables: vars,
       client: this.client
     })
   }
 
-  updatePathway ($apollo, ent) {
+  updatePathway ($apollo: unknown, ent: Pathway): unknown {
     const vars = { set: ent.value() }
     console.log('update pathway:', vars)
     const q = gql`mutation ($set: PathwaySetInput!) {pathway_update(set:$set) {id}}`
-    return $apollo.mutate({
+    return (($apollo as any).mutate)({
       mutation: q,
       variables: vars,
       client: this.client
     })
   }
 
-  deletePathway ($apollo, pw) {
+  deletePathway ($apollo: unknown, pw: Pathway): unknown {
     console.log('delete pathway:', pw.value())
     const q = gql`mutation ($id: Int!) {pathway_delete(id:$id) {id}}`
-    return $apollo.mutate({
+    return (($apollo as any).mutate)({
       mutation: q,
       variables: { id: pw.id },
       client: this.client
@@ -647,41 +746,41 @@ export class Station {
   }
 
   // STOPS
-  createStop ($apollo, ent) {
+  createStop ($apollo: unknown, ent: Stop): unknown {
     console.log('create stop raw:', ent)
-    if (!this.feed_version?.id) {
-      ent.feed_version = { id: this.stop.feed_version.id }
+    if (!ent.feed_version?.id) {
+      ent.feed_version = new FeedVersion({ id: this.stop.feed_version.id })
       ent.parent = { id: this.stop.id }
     }
     ent.setDefaults()
     const vars = { set: ent.value() }
     console.log('create stop:', vars)
     const q = gql`mutation ($set: StopSetInput!) {stop_create(set:$set) {id}}`
-    return $apollo.mutate({
+    return (($apollo as any).mutate)({
       mutation: q,
       variables: vars,
       client: this.client,
     })
   }
 
-  updateStop ($apollo, ent) {
+  updateStop ($apollo: unknown, ent: Stop): unknown {
     if (ent.id === this.stop.id) {
-      ent.parent = { id: null }
+      ent.parent = { id: undefined }
     }
     const vars = { set: ent.value() }
     console.log('update stop:', vars)
     const q = gql`mutation ($set: StopSetInput!) {stop_update(set:$set) {id}}`
-    return $apollo.mutate({
+    return (($apollo as any).mutate)({
       mutation: q,
       variables: vars,
       client: this.client,
     })
   }
 
-  deleteStop ($apollo, ent) {
+  deleteStop ($apollo: unknown, ent: Stop): unknown {
     console.log('delete stop:', ent.value())
     const q = gql`mutation ($id: Int!) {stop_delete(id:$id) {id}}`
-    return $apollo.mutate({
+    return (($apollo as any).mutate)({
       mutation: q,
       variables: { id: ent.id },
       client: this.client
@@ -689,7 +788,7 @@ export class Station {
   }
 
   // Associations
-  importStop ($apollo, ent) {
+  importStop ($apollo: unknown, ent: Stop): unknown {
     const sourceFeed = ent.feed_version?.feed?.onestop_id
     const stop = new Stop({
       feed_version: { id: this.stop.feed_version.id },
@@ -710,8 +809,7 @@ export class Station {
     return this.createStop($apollo, stop)
   }
 
-  deleteAssociation ($apollo, ent) {
-    _ = $apollo
-    _ = ent
+  deleteAssociation (_$apollo: unknown, _ent: unknown): void {
+    // Placeholder for future implementation
   }
 }

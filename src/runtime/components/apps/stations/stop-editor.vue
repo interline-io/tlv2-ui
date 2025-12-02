@@ -26,8 +26,8 @@
         </t-field>
 
         <t-field label="Location Type">
-          <t-select v-model="entity.location_type" :disabled="readOnly">
-            <option v-for="[type, label] of LocationTypes.entries()" :key="type" :value="type">
+          <t-select v-model="locationTypeStr" :disabled="readOnly">
+            <option v-for="[type, label] of LocationTypes.entries()" :key="type" :value="String(type)">
               {{ label }}
             </option>
           </t-select>
@@ -42,8 +42,8 @@
 
       <div class="column is-one-half">
         <t-field label="Level">
-          <t-select v-model="entity.level.id" :disabled="readOnly">
-            <option v-for="level of station.levels" :key="level.id" :value="level.id">
+          <t-select v-model="levelIdStr" :disabled="readOnly">
+            <option v-for="level of station.levels" :key="level.id" :value="String(level.id)">
               {{ level.level_name }}
             </option>
           </t-select>
@@ -52,21 +52,20 @@
         <t-field v-if="(entity.location_type === 4 || (entity.parent && entity.parent?.id !== station.id))" label="Parent">
           <t-dropdown
             v-model="entity.parent.id"
-            aria-role="list"
             selectable
-            :scrollable="true"
-            :max-height="200"
             :trigger-label="parentStop ? parentStop.stop_name : 'None'"
           >
-            <t-dropdown-item :value="station.stop.id" aria-role="listitem">
+            <!-- eslint-disable vue/attribute-hyphenation -->
+            <t-dropdown-item v-if="station.stop" :value="station.stop.id" :ariaRole="'listitem'">
               <h3>{{ station.stop.stop_name }}</h3>
               <small> Station </small>
             </t-dropdown-item>
             <!-- Stops can be "lost" if parent is unset completely. Don't allow this in UI -->
-            <!-- <t-dropdown-item :value="-1" aria-role="listitem">
+            <!-- <t-dropdown-item :value="-1" :ariaRole="'listitem'">
               <h3>No parent</h3>
             </t-dropdown-item> -->
-            <t-dropdown-item v-for="ss of platformStops" :key="ss.id" :value="ss.id" aria-role="listitem" :disabled="ss.id === entity.id">
+            <t-dropdown-item v-for="ss of platformStops" :key="ss.id" :value="ss.id" :ariaRole="'listitem'" :disabled="ss.id === entity.id">
+              <!-- eslint-enable vue/attribute-hyphenation -->
               <h3>{{ ss.stop_name }}</h3>
               <small> Platform: {{ routeSummary(ss) }}</small>
             </t-dropdown-item>
@@ -86,10 +85,10 @@
           </t-field>
 
           <!-- Edit target -->
-          <t-field label="Target Feed">
+          <t-field v-if="entity.external_reference" label="Target Feed">
             <t-input v-model="entity.external_reference.target_feed_onestop_id" />
           </t-field>
-          <t-field label="Target Stop">
+          <t-field v-if="entity.external_reference" label="Target Stop">
             <t-input v-model="entity.external_reference.target_stop_id" />
           </t-field>
           <span v-if="!readOnly" class="button stop-label" @click="deleteAssociation">Remove association</span><br><br>
@@ -105,7 +104,7 @@
       <ul>
         <li v-for="pw of pathwaysFromStop" :key="pw.id">
           <span class="button" :title="pw.pathway_id" @click="$emit('select-pathway', pw.id)">
-            <span class="tl-path-icon"><img :src="pathwayIcon(pw.pathway_mode).url" :title="pathwayIcon(pw.pathway_mode).label"></span>
+            <span class="tl-path-icon"><img :src="pathwayIcon(pw.pathway_mode ?? 0).url" :title="pathwayIcon(pw.pathway_mode ?? 0).label"></span>
             <span v-if="pw.is_bidirectional === 1">
               ↔
             </span>
@@ -121,7 +120,7 @@
       <ul>
         <li v-for="pw of pathwaysToStop" :key="pw.id">
           <span class="button" :title="pw.pathway_id" @click="$emit('select-pathway', pw.id)">
-            <span class="tl-path-icon"><img :src="pathwayIcon(pw.pathway_mode).url" :title="pathwayIcon(pw.pathway_mode).label"></span>
+            <span class="tl-path-icon"><img :src="pathwayIcon(pw.pathway_mode ?? 0).url" :title="pathwayIcon(pw.pathway_mode ?? 0).label"></span>
             <span v-if="pw.is_bidirectional === 1">
               ↔
             </span>
@@ -137,8 +136,8 @@
     <!-- Show target routes -->
     <t-field v-if="targetActiveStop" label="Routes (Associated)">
       <ul>
-        <li v-for="rt of targetActiveStop.route_stops" :key="rt.route.id">
-          {{ rt.route.agency.agency_id }}:{{ rt.route.route_short_name || rt.route.route_long_name }}
+        <li v-for="rt of targetActiveStop.route_stops" :key="rt.route?.id">
+          {{ rt.route?.agency?.agency_id }}:{{ rt.route?.route_short_name || rt.route?.route_long_name }}
         </li>
       </ul>
     </t-field>
@@ -146,8 +145,8 @@
     <!-- Associated routes viewer -->
     <t-field v-if="value.route_stops?.length" label="Routes (Direct)">
       <ul>
-        <li v-for="rt of value.route_stops || []" :key="rt.route.id">
-          {{ rt.route.agency.agency_id }}:{{ rt.route.route_short_name || rt.route.route_long_name }}
+        <li v-for="rt of value.route_stops || []" :key="rt.route?.id">
+          {{ rt.route?.agency?.agency_id }}:{{ rt.route?.route_short_name || rt.route?.route_long_name }}
         </li>
       </ul>
     </t-field>
@@ -164,19 +163,38 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue'
+import type { Point } from 'geojson'
 import { LocationTypes, PathwayModeIcons } from './basemaps'
 import { Stop } from './station'
+import type { StopData, StationData, RouteStopData } from './types'
 
-export default {
+interface EntityData {
+  id?: number
+  stop_id?: string
+  stop_name?: string
+  platform_code?: string
+  location_type?: number
+  geometry?: Point
+  wheelchair_boarding?: number
+  parent: { id?: number }
+  level: { id?: number }
+  external_reference?: {
+    target_feed_onestop_id?: string
+    target_stop_id?: string
+  }
+}
+
+export default defineComponent({
   props: {
     value: {
-      type: Object,
-      default () { return {} }
+      type: Object as PropType<StopData>,
+      default: () => ({} as StopData)
     },
     station: {
-      type: Object,
-      default () { return null }
+      type: Object as PropType<StationData>,
+      required: true
     },
     readOnly: {
       type: Boolean,
@@ -190,14 +208,14 @@ export default {
     },
     currentMode: {
       type: String,
-      reqiored: false,
+      required: false,
       default: 'pathways'
     }
   },
   emits: ['select-pathway', 'create-association', 'update', 'delete', 'create'],
   data () {
     const stopCopy = new Stop(this.value).setDefaults()
-    const entity = {
+    const entity: EntityData = {
       id: stopCopy.id,
       stop_id: stopCopy.stop_id,
       stop_name: stopCopy.stop_name,
@@ -209,13 +227,13 @@ export default {
       level: { id: stopCopy.level?.id },
       external_reference: stopCopy.external_reference
         ? {
-            target_feed_onestop_id: stopCopy.external_reference?.target_feed_onestop_id || null,
-            target_stop_id: stopCopy.external_reference?.target_stop_id || null,
+            target_feed_onestop_id: stopCopy.external_reference?.target_feed_onestop_id,
+            target_stop_id: stopCopy.external_reference?.target_stop_id,
           }
-        : null
+        : undefined
     }
     return {
-      showStopAssociations: stopCopy.external_reference ? true : false,
+      showStopAssociations: !!stopCopy.external_reference,
       targetActiveStop: stopCopy.external_reference?.target_active_stop || null,
       pathwaysFromStop: stopCopy.pathways_from_stop || [],
       pathwaysToStop: stopCopy.pathways_to_stop || [],
@@ -224,12 +242,28 @@ export default {
     }
   },
   computed: {
-    platformStops () {
+    locationTypeStr: {
+      get (): string {
+        return String(this.entity.location_type ?? '')
+      },
+      set (value: string) {
+        this.entity.location_type = value ? Number.parseInt(value, 10) : undefined
+      }
+    },
+    levelIdStr: {
+      get (): string {
+        return String(this.entity.level.id ?? '')
+      },
+      set (value: string) {
+        this.entity.level.id = value ? Number.parseInt(value, 10) : undefined
+      }
+    },
+    platformStops (): StopData[] {
       return this.station.stops.filter((s) => { return s.location_type === 0 })
     },
-    parentStop () {
+    parentStop (): StopData | null {
       if (this.entity.parent?.id === this.station.id) {
-        return this.station.stop
+        return this.station.stop!
       }
       for (const s of this.station.stops) {
         if (s.id === this.entity.parent?.id) {
@@ -238,19 +272,23 @@ export default {
       }
       return null
     },
-    coordinates () {
-      return `${this.entity.geometry.coordinates[0].toFixed(5)}, ${this.entity.geometry.coordinates[1].toFixed(5)}`
+    coordinates (): string {
+      const coords = this.entity.geometry?.coordinates
+      if (!coords || coords.length < 2 || coords[0] === undefined || coords[1] === undefined) {
+        return '0.00000, 0.00000'
+      }
+      return `${coords[0].toFixed(5)}, ${coords[1].toFixed(5)}`
     }
   },
   methods: {
     updateStop () {
-      this.$emit('update', new Stop(this.entity))
+      this.$emit('update', new Stop(this.entity as unknown as StopData))
     },
     createStop () {
-      this.$emit('create', new Stop(this.entity))
+      this.$emit('create', new Stop(this.entity as unknown as StopData))
     },
     deleteStop () {
-      this.$emit('delete', new Stop(this.entity))
+      this.$emit('delete', new Stop(this.entity as unknown as StopData))
     },
     createAssociation () {
       this.entity.external_reference = {
@@ -261,22 +299,22 @@ export default {
     },
     deleteAssociation () {
       this.showStopAssociations = false
-      this.entity.external_reference = { target_feed_onestop_id: null, target_stop_id: null }
+      this.entity.external_reference = undefined
     },
-    pathwayIcon (mode) {
+    pathwayIcon (mode: number): { url: string, label: string } {
       const m = PathwayModeIcons[mode]
       if (!m) {
         return { url: '', label: '' }
       }
       return { url: `/icons/${m.altIcon ? m.altIcon : m.icon}.png`, label: m.label }
     },
-    routeSummary (ss) {
+    routeSummary (ss: StopData): string {
       return (ss?.external_reference?.target_active_stop?.route_stops || [])
-        .map((rs) => { return `${rs.route.agency.agency_id}:${rs.route.route_short_name || rs.route.route_long_name}` })
+        .map((rs: RouteStopData) => { return `${rs.route!.agency!.agency_id}:${rs.route!.route_short_name || rs.route!.route_long_name}` })
         .join(', ')
     }
   }
-}
+})
 </script>
 
 <style>

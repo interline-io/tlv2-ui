@@ -1,6 +1,8 @@
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
 import { gql } from 'graphql-tag'
 import { useToastNotification } from '../../../../composables/useToastNotification'
+import type { FeedQueryResponse } from '../types'
 
 const currentFeeds = gql`
 query currentFeeds ($feed_onestop_id: String, $feed_version_ids: [Int!]) {
@@ -25,7 +27,7 @@ query currentFeeds ($feed_onestop_id: String, $feed_version_ids: [Int!]) {
 }
 `
 
-export default {
+export default defineComponent({
   props: {
     feedKey: { type: String, default: null },
     feedVersionKey: { type: String, default: null },
@@ -40,7 +42,7 @@ export default {
       client: 'stationEditor',
       query: currentFeeds,
       fetchPolicy: 'cache-and-network',
-      error (e) {
+      error (e: Error) {
         this.error(e)
       },
       variables () {
@@ -54,31 +56,34 @@ export default {
   data () {
     return {
       // TODO: Remove after upgrading components to Vue Composition API
-      feeds: []
+      feeds: [] as FeedQueryResponse[]
     }
   },
   computed: {
-    feedVersion () {
-      return this.feed && this.feed.feed_versions ? this.feed.feed_versions[0] : this.feedVersionKey
+    feedVersion (): FeedQueryResponse['feed_versions'][0] | string | null {
+      if (this.feed?.feed_versions && this.feed.feed_versions.length > 0) {
+        return this.feed.feed_versions[0] ?? this.feedVersionKey
+      }
+      return this.feedVersionKey
     },
-    feed () {
+    feed (): FeedQueryResponse | null | undefined {
       return (this.feeds && this.feeds.length === 1) ? this.feeds[0] : null
     },
-    feedName () {
+    feedName (): string | null {
       return this.feed ? (this.feed.name || this.feed.onestop_id) : this.feedKey
     },
-    feedVersionName () {
-      return String(this.feedVersion?.id || this.feedVersionKey || '').substr(0, 8)
+    feedVersionName (): string {
+      return String((typeof this.feedVersion === 'string' ? null : this.feedVersion?.id) || this.feedVersionKey || '').substr(0, 8)
     },
-    stations () {
-      return this.feedVersion ? this.feedVersion.stations : null
+    stations (): FeedQueryResponse['feed_versions'][0]['stations'] | null {
+      return (typeof this.feedVersion !== 'string' && this.feedVersion) ? this.feedVersion.stations : null
     }
   },
   methods: {
-    error (error) {
-      const msg = error.message ? error.message : JSON.stringify(error)
+    error (error: Error | string) {
+      const msg = typeof error === 'string' ? error : (error.message || JSON.stringify(error))
       this.showToast(`Error: ${msg}`, 'danger')
     }
   }
-}
+})
 </script>

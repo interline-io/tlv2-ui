@@ -91,29 +91,36 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue'
+import type { Feature } from 'geojson'
 import { Station } from './station'
+import type { StationData } from './types'
 
-export default {
+interface MapChangeEvent {
+  features: Feature[]
+}
+
+export default defineComponent({
   props: {
     center: {
-      type: Array,
-      default () { return [-122.431297, 37.773972] }
+      type: Array as unknown as PropType<[number, number]>,
+      default: () => [-122.431297, 37.773972] as [number, number]
     },
     value: {
-      type: Object,
-      default () { return {} }
+      type: Object as PropType<StationData>,
+      default: () => ({})
     }
   },
   emits: ['update', 'delete', 'create', 'cancel'],
   data () {
     return {
       station: new Station(this.value.stop),
-      basemap: 'carto'
+      basemap: 'carto' as string
     }
   },
   computed: {
-    editFeatures () {
+    editFeatures (): Feature[] {
       if (!this.station.stop.geometry) { return [] }
       return [
         {
@@ -123,29 +130,29 @@ export default {
         }
       ]
     },
-    valid () {
-      return this.station.stop.geometry
+    valid (): boolean {
+      return !!(this.station.stop.geometry
         && this.station.stop.stop_name
         && this.station.stop.stop_name.length > 0
         && this.station.stop.stop_id
-        && this.station.stop.stop_id.length > 0
+        && this.station.stop.stop_id.length > 0)
     }
   },
   watch: {
-    'station.stop.stop_name' (value) {
+    'station.stop.stop_name' (value: string) {
       if (value.length > 0 && this.station.id == null) {
         this.station.stop.stop_id = value.toLowerCase().replace(/\s/g, '-')
       }
     }
   },
   methods: {
-    setGeometry (e) {
+    setGeometry (e: MapChangeEvent) {
       if (e.features.length !== 1) {
-        this.station.stop.geometry = null
+        this.station.stop.geometry = undefined
         return
       }
-      this.station.stop.geometry = e.features[0].geometry
+      this.station.stop.geometry = e.features[0]!.geometry as any
     }
   }
-}
+})
 </script>

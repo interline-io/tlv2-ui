@@ -1,15 +1,16 @@
 import { haversinePosition } from '../../../geom'
+import type { PathwayData, StopData, ProfileFunction, RouteResult } from './types'
 
 export const DefaultWalkingSpeed = 1.3
 export const MinEdge = 0.0001
 
-export function DefaultDistance (_pw, d, speed) {
+export function DefaultDistance (_pw: PathwayData, d: number, speed?: number): number {
   speed = DefaultWalkingSpeed
   const t = (d / speed)
   return t
 }
 
-export function DefaultCost (pw, d, speed) {
+export function DefaultCost (pw: PathwayData, d: number, speed?: number): number {
   speed = DefaultWalkingSpeed
   let t = (d / speed)
   if (pw.pathway_mode === 1) {
@@ -38,7 +39,7 @@ export function DefaultCost (pw, d, speed) {
   return t
 }
 
-export function WheelchairProfile (pw, d) {
+export function WheelchairProfile (pw: PathwayData, d: number): number {
   const speed = 0.7
   if (pw.pathway_mode === 2) {
     return 0.0
@@ -48,12 +49,12 @@ export function WheelchairProfile (pw, d) {
   return DefaultCost(pw, d, speed)
 }
 
-export const Profiles = {
-  'Pathways: Default' (pw, d) { return DefaultCost(pw, d, DefaultWalkingSpeed) },
-  'Pathways: No Stairs' (pw, d) {
+export const Profiles: Record<string, ProfileFunction> = {
+  'Pathways: Default' (pw: PathwayData, d: number) { return DefaultCost(pw, d, DefaultWalkingSpeed) },
+  'Pathways: No Stairs' (pw: PathwayData, d: number) {
     return (pw.pathway_mode === 2) ? 0 : DefaultCost(pw, d, DefaultWalkingSpeed)
   },
-  'Pathways: No Stairs/Escalator' (pw, d) {
+  'Pathways: No Stairs/Escalator' (pw: PathwayData, d: number) {
     return (pw.pathway_mode === 2 || pw.pathway_mode === 4) ? 0 : DefaultCost(pw, d, DefaultWalkingSpeed)
   },
   'Pathways: Wheelchair': WheelchairProfile
@@ -61,30 +62,48 @@ export const Profiles = {
 }
 
 export class RoutingGraph {
-  constructor (stops, profile) {
+  adjacency: number[][]
+  heuristic: number[][]
+  distances: number[][]
+  pwids: (number | undefined)[][]
+  stopsById: Map<number, StopData>
+  pwsById: Map<number, PathwayData>
+  stopIndex: Record<number, number>
+
+  constructor (stops: StopData[], profile?: ProfileFunction) {
     profile = DefaultDistance
     this.adjacency = []
     this.heuristic = []
-    this.distances = {}
+    this.distances = []
+    this.pwids = []
     // Stops and pathways by ID
-    const stopsById = new Map()
-    const pwsById = new Map()
+    const stopsById = new Map<number, StopData>()
+    const pwsById = new Map<number, PathwayData>()
     for (const stop of stops) {
-      stopsById.set(stop.id, stop)
-      for (const pw of stop.pathways_from_stop) {
-        pwsById.set(pw.id, pw)
+      if (stop.id) {
+        stopsById.set(stop.id, stop)
       }
-      for (const pw of stop.pathways_to_stop) {
-        pwsById.set(pw.id, pw)
+      for (const pw of stop.pathways_from_stop || []) {
+        if (pw.id) {
+          pwsById.set(pw.id, pw)
+        }
+      }
+      for (const pw of stop.pathways_to_stop || []) {
+        if (pw.id) {
+          pwsById.set(pw.id, pw)
+        }
       }
     }
     this.stopsById = stopsById
     this.pwsById = pwsById
     // Stop index order
     const allStops = Array.from(stopsById.values())
-    const sids = {}
+    const sids: Record<number, number> = {}
     for (let i = 0; i < allStops.length; i++) {
-      sids[allStops[i].id] = i
+      const stop = allStops[i]
+      if (stop?.id) {
+        sids[stop.id] = i
+      }
     }
     this.stopIndex = sids
     // console.log('stop Index:', sids)
@@ -92,7 +111,7 @@ export class RoutingGraph {
     this.buildGraph(allStops, profile)
   }
 
-  aStar (start, goal) {
+  aStar (start: number, goal: number): RouteResult {
     // const startStop = this.stopsById.get(start)
     // const goalStop = this.stopsById.get(goal)
     const startIndex = this.stopIndex[start]
@@ -100,7 +119,8 @@ export class RoutingGraph {
     if (startIndex == null || goalIndex == null) {
       return {
         error: 'unknown stop',
-        path: []
+        path: [],
+        distance: null
       }
     }
     // console.log('start:', start, 'startIndex:', startIndex, 'goal:', goal, 'goalIndex:', goalIndex)
@@ -113,30 +133,37 @@ export class RoutingGraph {
     // }
     d.edges = []
     for (let i = 0; i < d.path.length - 1; i++) {
-      const pwid = this.pwids[d.path[i]][d.path[i + 1]]
-      const cost = this.distances[d.path[i]][d.path[i + 1]]
-      // console.log('pwid:', pwid)
-      if (pwid) {
-        d.edges.push({
-          pathway_id: pwid,
-          cost
-        })
+      const fromIdx = d.path[i]
+      const toIdx = d.path[i + 1]
+      if (fromIdx !== undefined && toIdx !== undefined) {
+        const fromPwids = this.pwids[fromIdx]
+        const fromDistances = this.distances[fromIdx]
+        if (fromPwids && fromDistances) {
+          const pwid = fromPwids[toIdx]
+          const cost = fromDistances[toIdx]
+          if (pwid !== undefined && cost !== undefined) {
+            d.edges.push({
+              pathway_id: pwid,
+              cost
+            })
+          }
+        }
       }
     }
     return d
   }
 
-  buildGraph (stops, profile) {
-    if (!stops || stops.length === 0 || !profile || profile === '') {
+  buildGraph (stops: StopData[], profile: ProfileFunction): void {
+    if (!stops || stops.length === 0 || !profile) {
       return
     }
     if (stops.length === 0) {
       return
     }
-    const g = [] // adjacency matrix
-    const h = [] // heuristic values
-    const distances = [] // distances
-    const pwids = []
+    const g: number[][] = [] // adjacency matrix
+    const h: number[][] = [] // heuristic values
+    const distances: number[][] = [] // distances
+    const pwids: (number | undefined)[][] = []
 
     // init heuristic
     for (let i = 0; i < stops.length; i++) {
@@ -148,30 +175,32 @@ export class RoutingGraph {
       for (let j = 0; j < stops.length; j++) {
         const toStop = stops[j]
         const d = haversinePosition(
-          fromStop.geometry.coordinates,
-          toStop.geometry.coordinates
+          fromStop?.geometry?.coordinates || [0, 0],
+          toStop?.geometry?.coordinates || [0, 0]
         )
-        distances[i].push(d)
-        g[i].push(0) // init with 0
-        h[i].push(d / 5) // assume maximum possible speed of 5m/s
+        distances[i]!.push(d)
+        g[i]!.push(0) // init with 0
+        h[i]!.push(d / 5) // assume maximum possible speed of 5m/s
       }
     }
 
     for (let fromIndex = 0; fromIndex < stops.length; fromIndex++) {
       const stop = stops[fromIndex]
-      if (stop.parent?.id && stop.location_type === 4) {
+      if (stop?.parent?.id && stop.location_type === 4) {
         const toIndex = this.stopIndex[stop.parent.id]
-        // console.log('connecting boarding', fromIndex, 'idx to parent ', toIndex, ' idx')
-        g[fromIndex][toIndex] = MinEdge
-        // g[toIndex][fromIndex] = MinEdge
+        if (toIndex !== undefined) {
+          // console.log('connecting boarding', fromIndex, 'idx to parent ', toIndex, ' idx')
+          g[fromIndex]![toIndex] = MinEdge
+          // g[toIndex][fromIndex] = MinEdge
+        }
       }
     }
 
     // init pathway edges
     for (const pw of this.pwsById.values()) {
       // console.log('processing pathway:', pw.pathway_id, pw.id, 'mode:', pw.pathway_mode, PathwayModes.get(pw.pathway_mode), 'from:', pw.from_stop.id, 'to:', pw.to_stop.id)
-      const fromStop = this.stopsById.get(pw.from_stop.id)
-      const toStop = this.stopsById.get(pw.to_stop.id)
+      const fromStop = pw.from_stop?.id ? this.stopsById.get(pw.from_stop.id) : undefined
+      const toStop = pw.to_stop?.id ? this.stopsById.get(pw.to_stop.id) : undefined
       if (!fromStop) {
         // console.log('    skipping pw, unknown from_stop', pw.from_stop.id)
         continue
@@ -182,25 +211,51 @@ export class RoutingGraph {
         continue
       }
 
+      if (!fromStop.id || !toStop.id) {
+        continue
+      }
       const fromIndex = this.stopIndex[fromStop.id]
       const toIndex = this.stopIndex[toStop.id]
-      let d = distances[fromIndex][toIndex]
+      if (fromIndex === undefined || toIndex === undefined) {
+        continue
+      }
+      const fromDistances = distances[fromIndex]
+      const fromGraph = g[fromIndex]
+      const fromPwids = pwids[fromIndex]
+      if (!fromDistances || !fromGraph || !fromPwids) {
+        continue
+      }
+      let d = fromDistances[toIndex]
+      if (d === undefined) {
+        continue
+      }
       if (d <= MinEdge) {
         d = MinEdge
       }
       const pathwayCost = profile(pw, d)
-      const graphCost = g[fromIndex][toIndex]
+      const graphCost = fromGraph[toIndex]
+      if (graphCost === undefined) {
+        continue
+      }
       if (pathwayCost < graphCost || graphCost === 0) {
         // console.log('    setting:', fromIndex, toIndex, 'cost:', pathwayCost.toFixed(0), 'dist', d.toFixed(0))
-        g[fromIndex][toIndex] = pathwayCost
-        pwids[fromIndex][toIndex] = pw.id
+        fromGraph[toIndex] = pathwayCost
+        fromPwids[toIndex] = pw.id
       }
-      if (pw.is_bidirectional > 0) {
-        const graphCostReverse = g[toIndex][fromIndex]
+      if (pw.is_bidirectional && pw.is_bidirectional > 0) {
+        const toGraph = g[toIndex]
+        const toPwids = pwids[toIndex]
+        if (!toGraph || !toPwids) {
+          continue
+        }
+        const graphCostReverse = toGraph[fromIndex]
+        if (graphCostReverse === undefined) {
+          continue
+        }
         if (pathwayCost < graphCostReverse || graphCostReverse === 0) {
           // console.log('    setting reverse:', toIndex, fromIndex, 'cost:', pathwayCost.toFixed(0), 'dist', d.toFixed(0))
-          g[toIndex][fromIndex] = pathwayCost
-          pwids[toIndex][fromIndex] = pw.id
+          toGraph[fromIndex] = pathwayCost
+          toPwids[fromIndex] = pw.id
         }
       } else {
         // console.log('    not bidirectional')
@@ -226,25 +281,25 @@ export class RoutingGraph {
  * @param goal the node we're searching for
  * @return The shortest distance to the goal node. Can be easily modified to return the path.
  */
-const aStar = function (graph, heuristic, start, goal) {
+const aStar = function (graph: number[][], heuristic: number[][], start: number, goal: number): RouteResult {
   // This contains the distances from the start node to all other nodes
-  const distances = []
+  const distances: number[] = []
   // Initializing with a distance of "Infinity"
   for (let i = 0; i < graph.length; i++) { distances.push(Number.MAX_VALUE) }
   // The distance from the start node to itself is of course 0
   distances[start] = 0
   // The current paths
-  const paths = []
+  const paths: (number | null)[] = []
   for (let i = 0; i < graph.length; i++) { paths.push(null) }
 
   // This contains the priorities with which to visit the nodes, calculated using the heuristic.
-  const priorities = []
+  const priorities: number[] = []
   // Initializing with a priority of "Infinity"
   for (let i = 0; i < graph.length; i++) { priorities[i] = Number.MAX_VALUE }
   // start node has a priority equal to straight line distance to goal. It will be the first to be expanded.
-  priorities[start] = heuristic[start][goal]
+  priorities[start] = heuristic[start]![goal]!
   // This contains whether a node was already visited
-  const visited = []
+  const visited: boolean[] = []
 
   // While there are nodes left to visit...
   while (true) {
@@ -253,8 +308,8 @@ const aStar = function (graph, heuristic, start, goal) {
     let lowestPriorityIndex = -1
     for (let i = 0; i < priorities.length; i++) {
       // ... by going through all nodes that haven't been visited yet
-      if (priorities[i] < lowestPriority && !visited[i]) {
-        lowestPriority = priorities[i]
+      if (priorities[i]! < lowestPriority && !visited[i]) {
+        lowestPriority = priorities[i]!
         lowestPriorityIndex = i
       }
     }
@@ -267,23 +322,23 @@ const aStar = function (graph, heuristic, start, goal) {
       let a = goal
       const path = [a]
       while (a !== start) {
-        a = paths[a]
+        a = paths[a]!
         path.push(a)
       }
-      return { distance: distances[lowestPriorityIndex], path: path.reverse() }
+      return { distance: distances[lowestPriorityIndex]!, path: path.reverse() }
     }
 
     // console.log('Visiting node ' + lowestPriorityIndex + ' with currently lowest priority of ' + lowestPriority)
 
     // ...then, for all neighboring nodes that haven't been visited yet....
-    for (let i = 0; i < graph[lowestPriorityIndex].length; i++) {
-      if (graph[lowestPriorityIndex][i] !== 0 && !visited[i]) {
+    for (let i = 0; i < graph[lowestPriorityIndex]!.length; i++) {
+      if (graph[lowestPriorityIndex]![i] !== 0 && !visited[i]) {
         // ...if the path over this edge is shorter...
-        if (distances[lowestPriorityIndex] + graph[lowestPriorityIndex][i] < distances[i]) {
+        if (distances[lowestPriorityIndex]! + graph[lowestPriorityIndex]![i]! < distances[i]!) {
           // ...save this path as new shortest path
-          distances[i] = distances[lowestPriorityIndex] + graph[lowestPriorityIndex][i]
+          distances[i] = distances[lowestPriorityIndex]! + graph[lowestPriorityIndex]![i]!
           // ...and set the priority with which we should continue with this node
-          priorities[i] = distances[i] + heuristic[i][goal]
+          priorities[i] = distances[i]! + heuristic[i]![goal]!
           // console.log('Updating distance of node ' + i + ' to ' + distances[i] + ' and priority to ' + priorities[i])
           paths[i] = lowestPriorityIndex
         }
