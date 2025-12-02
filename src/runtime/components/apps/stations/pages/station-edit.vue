@@ -16,71 +16,88 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
+import { toRefs } from 'vue'
 import { navigateTo } from '#imports'
+import { useApolloClient } from '@vue/apollo-composable'
 import type { Station } from '../station'
-import StationMixin from './station-mixin.vue'
+import { useStation } from '../composables/useStation'
 import { useRouteResolver } from '../../../../composables/useRouteResolver'
 
-export default defineComponent({
-  mixins: [StationMixin],
-  setup () {
-    const { resolve } = useRouteResolver()
-    return { resolve }
-  },
-  methods: {
-    updateStationHandler (station: Station) {
-      if (!this.station) return
-      const stationObj = this.station as any
-      stationObj.updateStation((this.$apollo as any), station.stop)
-        .then(() => {
-          navigateTo({
-            name: this.resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),
-            params: {
-              feedKey: this.feedKey,
-              feedVersionKey: this.feedVersionKey,
-              stationKey: station.stop.stop_id
-            }
-          })
-        })
-        .catch(this.setError)
-    },
-    deleteStationCheck (station: Station) {
-      (this.$buefy as any).dialog.confirm({
-        message: `Do you want to delete the station named <strong>${station.stop.stop_name}</strong>?`,
-        cancelText: 'No',
-        confirmText: 'Yes',
-        onConfirm: () => {
-          this.deleteStationHandler(station)
-        }
-      })
-    },
-    deleteStationHandler (station: Station) {
-      if (!this.station) return
-      const stationObj = this.station as any
-      stationObj.deleteStation((this.$apollo as any), station)
-        .then(() => {
-          navigateTo({
-            name: this.resolve('apps-stations-feedKey-feedVersionKey-stations'),
-            params: {
-              feedKey: this.feedKey,
-              feedVersionKey: this.feedVersionKey
-            }
-          })
-        })
-        .catch(this.setError)
-    },
-    cancelHandler () {
-      navigateTo({
-        name: this.resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),
-        params: {
-          feedKey: this.feedKey,
-          feedVersionKey: this.feedVersionKey,
-          stationKey: this.stationKey
-        }
-      })
-    }
-  }
+const props = defineProps<{
+  feedKey: string
+  feedVersionKey: string
+  stationKey: string
+  clientId?: string
+}>()
+
+const { feedKey, feedVersionKey, stationKey, clientId } = toRefs(props)
+
+const { resolve } = useRouteResolver()
+const { resolveClient } = useApolloClient()
+
+const {
+  station,
+  stationName,
+  handleError
+} = useStation({
+  feedKey,
+  feedVersionKey,
+  stationKey,
+  clientId: clientId?.value
 })
+
+const updateStationHandler = (updatedStation: Station) => {
+  if (!station.value) return
+  const apollo = resolveClient(clientId?.value)
+  if (!apollo) {
+    handleError('Apollo client not available')
+    return
+  }
+  const stationObj = station.value as any
+  stationObj.updateStation(apollo, updatedStation.stop)
+    .then(() => {
+      navigateTo({
+        name: resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),
+        params: {
+          feedKey: feedKey.value,
+          feedVersionKey: feedVersionKey.value,
+          stationKey: updatedStation.stop.stop_id
+        }
+      })
+    })
+    .catch(handleError)
+}
+
+const deleteStationHandler = (stationToDelete: Station) => {
+  if (!station.value) return
+  const apollo = resolveClient(clientId?.value)
+  if (!apollo) {
+    handleError('Apollo client not available')
+    return
+  }
+  const stationObj = station.value as any
+  stationObj.deleteStation(apollo, stationToDelete)
+    .then(() => {
+      navigateTo({
+        name: resolve('apps-stations-feedKey-feedVersionKey-stations'),
+        params: {
+          feedKey: feedKey.value,
+          feedVersionKey: feedVersionKey.value
+        }
+      })
+    })
+    .catch(handleError)
+}
+
+const cancelHandler = () => {
+  navigateTo({
+    name: resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),
+    params: {
+      feedKey: feedKey.value,
+      feedVersionKey: feedVersionKey.value,
+      stationKey: stationKey.value
+    }
+  })
+}
 </script>

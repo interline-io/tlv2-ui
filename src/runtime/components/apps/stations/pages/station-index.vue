@@ -40,7 +40,7 @@
       :stop-associations-enabled="stopAssociationsEnabled"
     />
 
-    <t-loading v-if="$apollo.loading" :active="true" />
+    <t-loading v-if="loading" :active="true" />
     <div v-else>
       <h4 class="title is-4 is-clearfix">
         Levels
@@ -66,12 +66,29 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-import StationMixin from './station-mixin.vue'
+<script setup lang="ts">
+import { toRefs } from 'vue'
+import { useStation } from '../composables/useStation'
 
-export default defineComponent({
-  mixins: [StationMixin]
+const props = defineProps<{
+  feedKey: string
+  feedVersionKey: string
+  stationKey: string
+  clientId?: string
+}>()
+
+const { feedKey, feedVersionKey, stationKey, clientId } = toRefs(props)
+
+const {
+  station,
+  stationName,
+  stopAssociationsEnabled,
+  loading
+} = useStation({
+  feedKey,
+  feedVersionKey,
+  stationKey,
+  clientId: clientId?.value
 })
 </script>
 

@@ -13,8 +13,9 @@
 </template>
 
 <script setup lang="ts">
-import { toRefs, getCurrentInstance } from 'vue'
+import { toRefs } from 'vue'
 import { navigateTo } from '#imports'
+import { useApolloClient } from '@vue/apollo-composable'
 import { Station, Stop } from '../station'
 import { useFeed } from '../composables/useFeed'
 import { useRouteResolver } from '../../../../composables/useRouteResolver'
@@ -28,7 +29,7 @@ const props = defineProps<{
 const { feedKey, feedVersionKey, clientId } = toRefs(props)
 
 const { resolve } = useRouteResolver()
-const instance = getCurrentInstance()
+const { resolveClient } = useApolloClient()
 
 const { feedVersion } = useFeed({
   feedKey,
@@ -44,7 +45,11 @@ const newStation = () => {
 }
 
 const createStationHandler = (station: Station) => {
-  const apollo = instance?.appContext.config.globalProperties.$apollo as any
+  const apollo = resolveClient(clientId?.value)
+  if (!apollo) {
+    console.error('Apollo client not available')
+    return
+  }
   // @ts-expect-error - Vue Apollo global injection
   station.createStation(apollo, station.stop)
     .then(() => {

@@ -1,5 +1,6 @@
 import { gql } from 'graphql-tag'
 import type { Point, MultiPolygon } from 'geojson'
+import type { ApolloClient, NormalizedCacheObject } from '@apollo/client/core/index.js'
 import { RoutingGraph } from '../../../pathways/graph'
 import type {
   FeedVersionData,
@@ -660,20 +661,20 @@ export class Station {
   }
 
   // STATION
-  createStation ($apollo: unknown, ent: Stop): unknown {
+  createStation ($apollo: ApolloClient<NormalizedCacheObject>, ent: Stop): unknown {
     return this.createStop($apollo, ent)
   }
 
-  updateStation ($apollo: unknown, ent: Stop): unknown {
+  updateStation ($apollo: ApolloClient<NormalizedCacheObject>, ent: Stop): unknown {
     return this.updateStop($apollo, ent)
   }
 
-  deleteStation ($apollo: unknown, ent: Station): unknown {
+  deleteStation ($apollo: ApolloClient<NormalizedCacheObject>, ent: Station): unknown {
     return this.deleteStop($apollo, ent.stop)
   }
 
   // LEVELS
-  createLevel ($apollo: unknown, ent: Level): unknown {
+  createLevel ($apollo: ApolloClient<NormalizedCacheObject>, ent: Level): unknown {
     ent.feed_version = { id: this.stop.feed_version.id }
     ent.parent = { id: this.stop.id }
     ent.setDefaults()
@@ -687,7 +688,7 @@ export class Station {
     })
   }
 
-  updateLevel ($apollo: unknown, ent: Level): unknown {
+  updateLevel ($apollo: ApolloClient<NormalizedCacheObject>, ent: Level): unknown {
     ent.feed_version = { id: this.stop.feed_version.id }
     ent.parent = { id: this.stop.id }
     const vars = { set: ent.value() }
@@ -700,7 +701,7 @@ export class Station {
     })
   }
 
-  deleteLevel ($apollo: unknown, ent: Level): unknown {
+  deleteLevel ($apollo: ApolloClient<NormalizedCacheObject>, ent: Level): unknown {
     console.log('delete level:', ent)
     const q = gql`mutation ($id: Int!) {level_delete(id:$id) {id}}`
     return (($apollo as any).mutate)({
@@ -711,7 +712,7 @@ export class Station {
   }
 
   // PATHWAYS
-  createPathway ($apollo: unknown, ent: Pathway): unknown {
+  createPathway ($apollo: ApolloClient<NormalizedCacheObject>, ent: Pathway): unknown {
     ent.feed_version = { id: this.stop.feed_version.id }
     ent.setDefaults()
     const vars = { set: ent.value() }
@@ -724,7 +725,7 @@ export class Station {
     })
   }
 
-  updatePathway ($apollo: unknown, ent: Pathway): unknown {
+  updatePathway ($apollo: ApolloClient<NormalizedCacheObject>, ent: Pathway): unknown {
     const vars = { set: ent.value() }
     console.log('update pathway:', vars)
     const q = gql`mutation ($set: PathwaySetInput!) {pathway_update(set:$set) {id}}`
@@ -735,7 +736,7 @@ export class Station {
     })
   }
 
-  deletePathway ($apollo: unknown, pw: Pathway): unknown {
+  deletePathway ($apollo: ApolloClient<NormalizedCacheObject>, pw: Pathway): unknown {
     console.log('delete pathway:', pw.value())
     const q = gql`mutation ($id: Int!) {pathway_delete(id:$id) {id}}`
     return (($apollo as any).mutate)({
@@ -746,7 +747,7 @@ export class Station {
   }
 
   // STOPS
-  createStop ($apollo: unknown, ent: Stop): unknown {
+  createStop ($apollo: ApolloClient<NormalizedCacheObject>, ent: Stop): unknown {
     console.log('create stop raw:', ent)
     if (!ent.feed_version?.id) {
       ent.feed_version = new FeedVersion({ id: this.stop.feed_version.id })
@@ -763,7 +764,7 @@ export class Station {
     })
   }
 
-  updateStop ($apollo: unknown, ent: Stop): unknown {
+  updateStop ($apollo: ApolloClient<NormalizedCacheObject>, ent: Stop): unknown {
     if (ent.id === this.stop.id) {
       ent.parent = { id: undefined }
     }
@@ -777,7 +778,7 @@ export class Station {
     })
   }
 
-  deleteStop ($apollo: unknown, ent: Stop): unknown {
+  deleteStop ($apollo: ApolloClient<NormalizedCacheObject>, ent: Stop): unknown {
     console.log('delete stop:', ent.value())
     const q = gql`mutation ($id: Int!) {stop_delete(id:$id) {id}}`
     return (($apollo as any).mutate)({
@@ -788,7 +789,7 @@ export class Station {
   }
 
   // Associations
-  importStop ($apollo: unknown, ent: Stop): unknown {
+  importStop ($apollo: ApolloClient<NormalizedCacheObject>, ent: Stop): unknown {
     const sourceFeed = ent.feed_version?.feed?.onestop_id
     const stop = new Stop({
       feed_version: { id: this.stop.feed_version.id },
@@ -809,7 +810,7 @@ export class Station {
     return this.createStop($apollo, stop)
   }
 
-  deleteAssociation (_$apollo: unknown, _ent: unknown): void {
+  deleteAssociation (_$apollo: ApolloClient<NormalizedCacheObject>, _ent: unknown): void {
     // Placeholder for future implementation
   }
 }
