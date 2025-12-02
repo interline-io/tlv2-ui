@@ -76,6 +76,7 @@ declare module 'vue' {
     TlDownloadJson: typeof import('./components/download-json.vue')['default']
     TlLink: typeof import('./components/link.vue')['default']
     TlLoginGate: typeof import('./components/login-gate.vue')['default']
+    TlPathwayMap: typeof import('./components/pathway-map.vue')['default']
     TlRouteCategoryAbbr: typeof import('./components/route-category-abbr.vue')['default']
     TlRouteCategory: typeof import('./components/route-category.vue')['default']
     TlRouteIcon: typeof import('./components/route-icon.vue')['default']

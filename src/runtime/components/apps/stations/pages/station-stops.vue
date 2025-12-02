@@ -153,7 +153,8 @@
             </t-dropdown-item>
           </t-dropdown>
         </t-field>
-        <tl-apps-stations-pathway-map
+        <tl-pathway-map
+          :editable="true"
           :center="station.geometry.coordinates"
           :other-stops="filteredStops"
           :basemap="basemap"

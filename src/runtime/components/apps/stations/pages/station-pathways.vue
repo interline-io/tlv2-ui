@@ -243,13 +243,14 @@
           </t-field>
         </t-field>
 
-        <tl-apps-stations-pathway-map
+        <tl-pathway-map
           :center="station.geometry.coordinates"
           :station="station"
           :basemap="basemap"
           :selected-stops="selectedStops"
           :selected-pathways="selectMode === 'find-route' && selectedPath ? selectedPath.map((s) => { return s.pathway }) : selectedPathways"
           :selected-levels="selectedLevels"
+          :editable="true"
           @select-stop="selectStop"
           @select-pathway="selectPathway"
           @select-point="selectPoint"
