@@ -166,6 +166,7 @@ interface StopTimeData {
   scheduled_arrival_time_str: string
   scheduled_departure_time_str: string
   stop_sequence: number
+  stop_headsign?: string
   stop: StopTimeStopData
   trip: TripData
 }
@@ -373,6 +374,7 @@ export const scenarioStopStopTimesQuery = gql`
     scheduled_arrival_time_str: arrival_time
     scheduled_departure_time_str: departure_time
     stop_sequence
+    stop_headsign
     stop {
       id
       stop_id
@@ -1123,7 +1125,7 @@ function depfn (
     trip: {
       id: st.trip.id,
       trip_id: st.trip.trip_id,
-      trip_headsign: st.trip.trip_headsign,
+      trip_headsign: st.trip.trip_headsign || st.stop_headsign,
       direction_id: st.trip.direction_id,
       feed_version: afv,
       route: {
