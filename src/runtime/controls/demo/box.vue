@@ -41,9 +41,6 @@ defineProps<Props>()
 @use "bulma/sass/utilities/derived-variables" as *;
 
 .t-demo-example {
-  background: var(--bulma-primary-on-scheme);
-  p {
-  color: #ff0000;
-}
+    background-color: $primary;
 }
 </style>

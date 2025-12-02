@@ -80,7 +80,10 @@ function handleChange () {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@use "bulma/sass/utilities/initial-variables" as *;
+@use "bulma/sass/utilities/derived-variables" as *;
+
 .t-radio {
   cursor: pointer;
   padding-top: 0.25rem;
@@ -89,125 +92,121 @@ function handleChange () {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-}
 
-.t-radio input[type="radio"] {
-  flex-shrink: 0;
-}
+  input[type="radio"] {
+    flex-shrink: 0;
+    appearance: none;
+    -webkit-appearance: none;
+    width: 1.125rem;
+    height: 1.125rem;
+    border: 2px solid $grey-light;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.15s ease-in-out;
 
-.t-radio.is-disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
+    &:hover {
+      border-color: $grey;
+    }
 
-/* Enhanced radio button styling with padding */
-.t-radio input[type="radio"] {
-  appearance: none;
-  -webkit-appearance: none;
-  width: 1.125rem;
-  height: 1.125rem;
-  border: 2px solid #dbdbdb;
-  border-radius: 50%;
-  cursor: pointer;
-  position: relative;
-  transition: all 0.15s ease-in-out;
-}
+    &:checked {
+      border-color: $primary;
+      background-color: transparent;
 
-.t-radio input[type="radio"]:hover {
-  border-color: #b5b5b5;
-}
+      &::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: $primary;
+        transform: translate(-50%, -50%);
+      }
+    }
+  }
 
-.t-radio input[type="radio"]:checked {
-  border-color: #00d1b2;
-  background-color: transparent;
-}
+  &.is-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 
-.t-radio input[type="radio"]:checked::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: #00d1b2;
-  transform: translate(-50%, -50%);
-}
+  /* Variant colors for radio */
+  &.is-primary input[type="radio"]:checked {
+    border-color: $primary;
 
-/* Variant colors for radio */
-.t-radio.is-primary input[type="radio"]:checked {
-  border-color: #00d1b2;
-}
+    &::after {
+      background-color: $primary;
+    }
+  }
 
-.t-radio.is-primary input[type="radio"]:checked::after {
-  background-color: #00d1b2;
-}
+  &.is-link input[type="radio"]:checked {
+    border-color: $link;
 
-.t-radio.is-link input[type="radio"]:checked {
-  border-color: #485fc7;
-}
+    &::after {
+      background-color: $link;
+    }
+  }
 
-.t-radio.is-link input[type="radio"]:checked::after {
-  background-color: #485fc7;
-}
+  &.is-info input[type="radio"]:checked {
+    border-color: $info;
 
-.t-radio.is-info input[type="radio"]:checked {
-  border-color: #3e8ed0;
-}
+    &::after {
+      background-color: $info;
+    }
+  }
 
-.t-radio.is-info input[type="radio"]:checked::after {
-  background-color: #3e8ed0;
-}
+  &.is-success input[type="radio"]:checked {
+    border-color: $success;
 
-.t-radio.is-success input[type="radio"]:checked {
-  border-color: #48c78e;
-}
+    &::after {
+      background-color: $success;
+    }
+  }
 
-.t-radio.is-success input[type="radio"]:checked::after {
-  background-color: #48c78e;
-}
+  &.is-warning input[type="radio"]:checked {
+    border-color: $warning;
 
-.t-radio.is-warning input[type="radio"]:checked {
-  border-color: #ffe08a;
-}
+    &::after {
+      background-color: $warning;
+    }
+  }
 
-.t-radio.is-warning input[type="radio"]:checked::after {
-  background-color: #ffe08a;
-}
+  &.is-danger input[type="radio"]:checked {
+    border-color: $danger;
 
-.t-radio.is-danger input[type="radio"]:checked {
-  border-color: #f14668;
-}
+    &::after {
+      background-color: $danger;
+    }
+  }
 
-.t-radio.is-danger input[type="radio"]:checked::after {
-  background-color: #f14668;
-}
+  /* Size variants */
+  &.is-small {
+    font-size: $size-small;
 
-/* Size variants */
-.t-radio.is-small {
-  font-size: 0.75rem;
-}
+    input[type="radio"] {
+      width: 0.875rem;
+      height: 0.875rem;
+    }
+  }
 
-.t-radio.is-small input[type="radio"] {
-  width: 0.875rem;
-  height: 0.875rem;
-}
+  &.is-medium {
+    font-size: $size-medium;
 
-.t-radio.is-medium {
-  font-size: 1.25rem;
-}
+    input[type="radio"] {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+  }
 
-.t-radio.is-medium input[type="radio"] {
-  width: 1.25rem;
-  height: 1.25rem;
-}
+  &.is-large {
+    font-size: $size-large;
 
-.t-radio.is-large {
-  font-size: 1.5rem;
-}
-
-.t-radio.is-large input[type="radio"] {
-  width: 1.5rem;
-  height: 1.5rem;
+    input[type="radio"] {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+  }
 }
 </style>

@@ -134,27 +134,37 @@ onBeforeUnmount(() => {
 })
 </script>
 
-<style scoped>
-.t-modal .modal-card {
-  width: 800px;
-  max-width: 90vw;
-}
-.t-modal .modal-card.t-modal-small {
-  width: 480px;
-}
-.t-modal .modal-card.t-modal-medium {
-  width: 800px;
-}
-.t-modal .modal-card.t-modal-large {
-  width: 1200px;
-}
-.t-modal .modal-card.t-modal-fullscreen {
-  width: calc(100vw - 40px);
-  height: calc(100vh - 40px);
-  max-height: calc(100vh - 40px);
-  margin: 20px;
-}
-.t-modal .modal-card-foot {
-  justify-content: flex-end;
+<style lang="scss" scoped>
+@use "bulma/sass/utilities/initial-variables" as *;
+@use "bulma/sass/utilities/derived-variables" as *;
+
+.t-modal {
+  .modal-card {
+    width: 800px;
+    max-width: 90vw;
+
+    &.t-modal-small {
+      width: 480px;
+    }
+
+    &.t-modal-medium {
+      width: 800px;
+    }
+
+    &.t-modal-large {
+      width: 1200px;
+    }
+
+    &.t-modal-fullscreen {
+      width: calc(100vw - 40px);
+      height: calc(100vh - 40px);
+      max-height: calc(100vh - 40px);
+      margin: 20px;
+    }
+  }
+
+  .modal-card-foot {
+    justify-content: flex-end;
+  }
 }
 </style>

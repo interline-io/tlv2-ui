@@ -25,21 +25,24 @@ function handleClick () {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@use "bulma/sass/utilities/initial-variables" as *;
+@use "bulma/sass/utilities/derived-variables" as *;
+
 .t-slider-tick {
   flex: 0 0 auto;
   text-align: center;
   white-space: nowrap;
-  font-size: 0.75rem;
-  color: #7a7a7a;
-}
+  font-size: $size-small;
+  color: $grey;
 
-.t-slider-tick.is-clickable {
-  cursor: pointer;
-  user-select: none;
-}
+  &.is-clickable {
+    cursor: pointer;
+    user-select: none;
 
-.t-slider-tick.is-clickable:hover {
-  color: #485fc7;
+    &:hover {
+      color: $link;
+    }
+  }
 }
 </style>

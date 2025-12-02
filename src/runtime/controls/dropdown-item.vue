@@ -13,12 +13,13 @@
   </a>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" generic="T = any">
 import { inject, computed } from 'vue'
 
 /**
  * Dropdown item component - must be used within t-dropdown.
  * Represents a single selectable option in a dropdown menu.
+ * Type-safe with generic support matching parent dropdown's type.
  *
  * @component t-dropdown-item
  * @example
@@ -29,9 +30,10 @@ import { inject, computed } from 'vue'
 
 interface Props {
   /**
-   * Value associated with this item (used for selection)
+   * Value associated with this item (used for selection).
+   * Type should match the parent t-dropdown's generic type.
    */
-  value?: any
+  value?: T
 
   /**
    * Disable this item (cannot be selected)
@@ -63,7 +65,13 @@ const props = withDefaults(defineProps<Props>(), {
   ariaRole: 'listitem'
 })
 
-const dropdown = inject<any>('dropdown', null)
+interface DropdownContext<T> {
+  handleItemClick: (value: T) => void
+  isMultiple: boolean
+  selectedValue: { value: T | T[] | undefined }
+}
+
+const dropdown = inject<DropdownContext<T> | null>('dropdown', null)
 
 const isSelected = computed(() => {
   if (!dropdown) return props.active
@@ -71,7 +79,7 @@ const isSelected = computed(() => {
   const selectedValue = dropdown.selectedValue?.value
 
   if (dropdown.isMultiple) {
-    return Array.isArray(selectedValue) && selectedValue.includes(props.value)
+    return Array.isArray(selectedValue) && props.value !== undefined && selectedValue.includes(props.value)
   }
 
   return selectedValue === props.value

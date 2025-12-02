@@ -39,12 +39,13 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" generic="T = any">
 import { ref, computed, onMounted, onBeforeUnmount, provide } from 'vue'
 
 /**
  * Dropdown component using Bulma dropdown structure.
  * Supports single and multiple selection with v-model.
+ * Type-safe with generic support for different value types.
  *
  * @component t-dropdown
  * @example
@@ -59,9 +60,10 @@ import { ref, computed, onMounted, onBeforeUnmount, provide } from 'vue'
 
 interface Props {
   /**
-   * Selected value(s) - use with v-model
+   * Selected value(s) - use with v-model.
+   * Type T for single selection, T[] for multiple selection.
    */
-  modelValue?: any | any[]
+  modelValue?: T | T[]
 
   /**
    * Enable selection behavior (closes on item click)
@@ -137,9 +139,9 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  'update:modelValue': [value: any]
-  'change': [value: any]
-  'select': [value: any]
+  'update:modelValue': [value: T | T[]]
+  'change': [value: T | T[]]
+  'select': [value: T]
   'open': []
   'close': []
 }>()
@@ -184,7 +186,7 @@ function close () {
   }
 }
 
-function handleItemClick (value: any) {
+function handleItemClick (value: T) {
   // Always emit select event for any item click
   emit('select', value)
 
@@ -197,7 +199,7 @@ function handleItemClick (value: any) {
   }
 
   if (props.multiple) {
-    const currentValues = Array.isArray(props.modelValue) ? [...props.modelValue] : []
+    const currentValues = Array.isArray(props.modelValue) ? [...props.modelValue as T[]] : []
     const index = currentValues.indexOf(value)
 
     if (index >= 0) {

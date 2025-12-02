@@ -22,6 +22,7 @@ export const navigationGroups: NavGroup[] = [
       { name: 'Input', path: '/controls/input', icon: 'form-textbox' },
       { name: 'Textarea', path: '/controls/textarea', icon: 'text' },
       { name: 'Select', path: '/controls/select', icon: 'form-select' },
+      { name: 'Datepicker', path: '/controls/datepicker', icon: 'calendar' },
       { name: 'Field', path: '/controls/field', icon: 'form-textbox-password' },
       { name: 'Slider', path: '/controls/slider', icon: 'tune' }
     ]

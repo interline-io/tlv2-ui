@@ -162,6 +162,26 @@
         </t-dropdown>
       </t-demo-box>
 
+      <t-demo-box label="Multiple Selection (Array Model)">
+        <p class="mb-3">
+          Selected items: <strong>{{ multipleSelection.length > 0 ? multipleSelection.join(', ') : 'None' }}</strong>
+        </p>
+        <t-dropdown v-model:model-value="multipleSelection as any" selectable multiple inline trigger-label="Select Multiple" trigger-variant="primary">
+          <t-dropdown-item value="cat">
+            🐱 Cat
+          </t-dropdown-item>
+          <t-dropdown-item value="dog">
+            🐶 Dog
+          </t-dropdown-item>
+          <t-dropdown-item value="rabbit">
+            🐰 Rabbit
+          </t-dropdown-item>
+          <t-dropdown-item value="mouse">
+            🐭 Mouse
+          </t-dropdown-item>
+        </t-dropdown>
+      </t-demo-box>
+
       <t-demo-box label="Example: Interactive Actions" example>
         <p class="mb-3">
           Selected action: <strong>{{ selectedAction || 'None' }}</strong>
@@ -273,6 +293,40 @@
           </t-dropdown-item>
         </t-dropdown>
       </t-demo-box>
+
+      <t-demo-box label="Single Selection with v-model">
+        <p class="mb-3">
+          Selected option: <strong>{{ singleSelection || 'None' }}</strong>
+        </p>
+        <t-dropdown v-model:model-value="singleSelection as any" selectable trigger-label="Select Option" trigger-variant="link">
+          <t-dropdown-item value="option1">
+            Option 1
+          </t-dropdown-item>
+          <t-dropdown-item value="option2">
+            Option 2
+          </t-dropdown-item>
+          <t-dropdown-item value="option3">
+            Option 3
+          </t-dropdown-item>
+        </t-dropdown>
+      </t-demo-box>
+
+      <t-demo-box label="Example: Numeric Values" example>
+        <p class="mb-3">
+          Selected user ID: <strong>{{ selectedUserId || 'None' }}</strong>
+        </p>
+        <t-dropdown v-model:model-value="selectedUserId as any" selectable trigger-label="Select User" trigger-variant="info">
+          <t-dropdown-item :value="1">
+            👤 John Doe (ID: 1)
+          </t-dropdown-item>
+          <t-dropdown-item :value="2">
+            👤 Jane Smith (ID: 2)
+          </t-dropdown-item>
+          <t-dropdown-item :value="3">
+            👤 Bob Johnson (ID: 3)
+          </t-dropdown-item>
+        </t-dropdown>
+      </t-demo-box>
     </section>
   </div>
 </template>
@@ -287,6 +341,9 @@ const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 
 const selectedAction = ref('')
 const currentLanguage = ref('English')
+const singleSelection = ref<string | undefined>(undefined)
+const multipleSelection = ref<string[]>(['cat', 'rabbit'])
+const selectedUserId = ref<number | undefined>(undefined)
 
 const handleSelect = (value: string) => {
   selectedAction.value = value

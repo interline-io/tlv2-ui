@@ -2,7 +2,7 @@
   <article :class="msgClass">
     <div
       v-if="title || collapsible || closable"
-      class="message-header"
+      class="message-header t-message-header"
       :class="{ 'is-clickable': collapsible }"
       @click="collapsible && toggleCollapsed()"
     >
@@ -24,7 +24,7 @@
       :class="collapsible ? 't-collapsible-content' : ''"
     >
       <template v-if="hasIcon">
-        <div class="media message-body">
+        <div class="media message-body t-message-body">
           <t-icon :icon="getIcon" size="large" class="media-left" />
           <div class="media-content">
             <slot />
@@ -32,7 +32,7 @@
         </div>
       </template>
       <template v-else>
-        <div class="message-body">
+        <div class="message-body t-message-body">
           <slot />
         </div>
       </template>
@@ -95,9 +95,9 @@ const hasIcon = computed<boolean>(() => props.showIcon)
 
 const msgClass = computed<string>(() => {
   if (props.variant) {
-    return `message mb-4 is-${props.variant}`
+    return `message t-message mb-4 is-${props.variant}`
   }
-  return 'message mb-4'
+  return 'message t-message mb-4'
 })
 
 // Watchers
@@ -116,25 +116,28 @@ const handleClose = (): void => {
 }
 </script>
 
-<style scoped>
-/* Collapsible styles */
-.message-header.is-clickable {
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    transition: background-color 0.2s ease;
-}
+<style lang="scss" scoped>
+@use "bulma/sass/utilities/initial-variables" as *;
+@use "bulma/sass/utilities/derived-variables" as *;
 
-.t-message-header.is-clickable:hover {
+/* Collapsible styles */
+.t-message-header.is-clickable {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background-color 0.2s ease;
+
+  &:hover {
     opacity: 0.8;
+  }
 }
 
 .t-collapse-icon {
-    transition: transform 0.2s ease;
+  transition: transform 0.2s ease;
 }
 
 .t-collapsible-content {
-    transition: all 0.2s ease;
+  transition: all 0.2s ease;
 }
 </style>

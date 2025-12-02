@@ -209,18 +209,21 @@ function handleChange (event: Event) {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@use "bulma/sass/utilities/initial-variables" as *;
+@use "bulma/sass/utilities/derived-variables" as *;
+
 /* Make select expand to fill container by default, like input */
 .t-select {
   width: 100%;
-}
 
-.t-select select {
-  width: 100%;
-}
+  select {
+    width: 100%;
+  }
 
-/* Ensure multiple select displays properly with specified size */
-.t-select.is-multiple select {
-  height: auto;
+  /* Ensure multiple select displays properly with specified size */
+  &.is-multiple select {
+    height: auto;
+  }
 }
 </style>
