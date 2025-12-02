@@ -17,74 +17,87 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
+import { computed, toRefs } from 'vue'
 import { navigateTo } from '#imports'
+import { useApolloClient } from '@vue/apollo-composable'
 import type { Level } from '../station'
-import StationMixin from './station-mixin.vue'
+import { useStation } from '../composables/useStation'
 import { useRouteResolver } from '../../../../composables/useRouteResolver'
 
-export default defineComponent({
-  mixins: [StationMixin],
-  setup () {
-    const { resolve } = useRouteResolver()
-    return { resolve }
-  },
-  computed: {
-    level (): Level | null {
-      const levels = this.station?.levels
-      if (!levels) return null
-      for (const level of levels) {
-        if (level.level_id === this.levelKey) {
-          return level
-        }
-      }
-      return null
-    }
-  },
-  methods: {
-    updateLevelHandler (level: Level) {
-      if (!this.station) return
-      const station = this.station as any
-      station.updateLevel((this.$apollo as any), level)
-        .then(() => {
-          navigateTo({
-            name: this.resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),
-            params: {
-              feedKey: this.feedKey,
-              feedVersionKey: this.feedVersionKey,
-              stationKey: this.stationKey
-            }
-          })
-        })
-        .catch(this.setError)
-    },
-    deleteLevelHandler (level: Level) {
-      if (!this.station) return
-      const station = this.station as any
-      station.deleteLevel((this.$apollo as any), level)
-        .then(() => {
-          navigateTo({
-            name: this.resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),
-            params: {
-              feedKey: this.feedKey,
-              feedVersionKey: this.feedVersionKey,
-              stationKey: this.stationKey
-            }
-          })
-        })
-        .catch(this.setError)
-    },
-    cancelHandler () {
-      navigateTo({
-        name: this.resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),
-        params: {
-          feedKey: this.feedKey,
-          feedVersionKey: this.feedVersionKey,
-          stationKey: this.stationKey
-        }
-      })
+const props = defineProps<{
+  feedKey: string
+  feedVersionKey: string
+  stationKey: string
+  levelKey: string
+  clientId?: string
+}>()
+
+const { feedKey, feedVersionKey, stationKey, clientId } = toRefs(props)
+
+const {
+  station,
+  handleError
+} = useStation({ feedKey, feedVersionKey, stationKey, clientId: clientId?.value })
+
+const { resolveClient } = useApolloClient()
+const { resolve } = useRouteResolver()
+
+// Computed properties
+const level = computed((): Level | null => {
+  const levels = station.value?.levels
+  if (!levels) return null
+  for (const lv of levels) {
+    if (lv.level_id === props.levelKey) {
+      return lv
     }
   }
+  return null
 })
+
+// Methods
+function updateLevelHandler (level: Level) {
+  if (!station.value) return
+  const apollo = resolveClient(clientId?.value)
+  ;(station.value.updateLevel(apollo, level) as Promise<any>)
+    .then(() => {
+      navigateTo({
+        name: resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),
+        params: {
+          feedKey: feedKey.value,
+          feedVersionKey: feedVersionKey.value,
+          stationKey: stationKey.value
+        }
+      })
+    })
+    .catch(handleError)
+}
+
+function deleteLevelHandler (level: Level) {
+  if (!station.value) return
+  const apollo = resolveClient(clientId?.value)
+  ;(station.value.deleteLevel(apollo, level) as Promise<any>)
+    .then(() => {
+      navigateTo({
+        name: resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),
+        params: {
+          feedKey: feedKey.value,
+          feedVersionKey: feedVersionKey.value,
+          stationKey: stationKey.value
+        }
+      })
+    })
+    .catch(handleError)
+}
+
+function cancelHandler () {
+  navigateTo({
+    name: resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),
+    params: {
+      feedKey: feedKey.value,
+      feedVersionKey: feedVersionKey.value,
+      stationKey: stationKey.value
+    }
+  })
+}
 </script>

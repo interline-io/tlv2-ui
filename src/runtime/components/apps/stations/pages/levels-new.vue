@@ -15,44 +15,57 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
+import { toRefs } from 'vue'
 import { navigateTo } from '#imports'
+import { useApolloClient } from '@vue/apollo-composable'
 import type { Level } from '../station'
-import StationMixin from './station-mixin.vue'
+import { useStation } from '../composables/useStation'
 import { useRouteResolver } from '../../../../composables/useRouteResolver'
 
-export default defineComponent({
-  mixins: [StationMixin],
-  setup () {
-    const { resolve } = useRouteResolver()
-    return { resolve }
-  },
-  methods: {
-    createLevelHandler (level: Level) {
-      if (!this.station) return
-      const station = this.station as any
-      station.createLevel((this.$apollo as any), level).then(() => {
-        navigateTo({
-          name: this.resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),
-          params: {
-            feedKey: this.feedKey,
-            feedVersionKey: this.feedVersionKey,
-            stationKey: this.stationKey
-          }
-        })
-      }).catch(this.setError)
-    },
-    cancelHandler () {
+const props = defineProps<{
+  feedKey: string
+  feedVersionKey: string
+  stationKey: string
+  clientId?: string
+}>()
+
+const { feedKey, feedVersionKey, stationKey, clientId } = toRefs(props)
+
+const {
+  station,
+  handleError
+} = useStation({ feedKey, feedVersionKey, stationKey, clientId: clientId?.value })
+
+const { resolveClient } = useApolloClient()
+const { resolve } = useRouteResolver()
+
+// Methods
+function createLevelHandler (level: Level) {
+  if (!station.value) return
+  const apollo = resolveClient(clientId?.value)
+  ;(station.value.createLevel(apollo, level) as Promise<any>)
+    .then(() => {
       navigateTo({
-        name: this.resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),
+        name: resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),
         params: {
-          feedKey: this.feedKey,
-          feedVersionKey: this.feedVersionKey,
-          stationKey: this.stationKey
+          feedKey: feedKey.value,
+          feedVersionKey: feedVersionKey.value,
+          stationKey: stationKey.value
         }
       })
+    })
+    .catch(handleError)
+}
+
+function cancelHandler () {
+  navigateTo({
+    name: resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),
+    params: {
+      feedKey: feedKey.value,
+      feedVersionKey: feedVersionKey.value,
+      stationKey: stationKey.value
     }
-  }
-})
+  })
+}
 </script>

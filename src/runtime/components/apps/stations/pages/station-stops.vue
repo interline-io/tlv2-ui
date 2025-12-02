@@ -165,13 +165,35 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-import { navigateTo } from '#imports'
+<script setup lang="ts">
+import { computed, ref, toRefs, watch } from 'vue'
+import { navigateTo, useRoute } from '#imports'
 import { gql } from 'graphql-tag'
+import { useQuery, useApolloClient } from '@vue/apollo-composable'
 import { Stop } from '../station'
-import StationMixin from './station-mixin.vue'
+import { useStation } from '../composables/useStation'
 import { LocationTypes } from '../basemaps'
+
+const props = defineProps<{
+  feedKey: string
+  feedVersionKey: string
+  stationKey: string
+  clientId?: string
+}>()
+
+const { feedKey, feedVersionKey, stationKey, clientId } = toRefs(props)
+
+const {
+  station,
+  stationName,
+  stopAssociationsEnabled,
+  selectedAgencies: stationSelectedAgencies,
+  handleError,
+  refetch
+} = useStation({ feedKey, feedVersionKey, stationKey, clientId: clientId?.value })
+
+const { resolveClient } = useApolloClient()
+const route = useRoute()
 
 function intersection (setA: Set<string>, setB: Iterable<string>): Set<string> {
   const _intersection: Set<string> = new Set()
@@ -183,7 +205,6 @@ function intersection (setA: Set<string>, setB: Iterable<string>): Set<string> {
   return _intersection
 }
 
-// TODO
 const nearbyStopsQuery = gql`
   query nearbyStopsQuery($lon:Float!, $lat:Float!) {
     stops(
@@ -252,223 +273,225 @@ const nearbyStopsQuery = gql`
       }
     }
   }
-  `
+`
 
-export default defineComponent({
-  mixins: [StationMixin],
-  props: {
-    client: { type: String, default: 'default' }
-  },
-  apollo: {
-    nearbyStopsQuery: {
-      client: 'stationEditor',
-      query: nearbyStopsQuery,
-      skip () { return !this.station }, // run after stations
-      error (e) {
-        this.error(e)
-      },
-      variables () {
-        return {
-          lon: this.station.geometry.coordinates[0],
-          lat: this.station.geometry.coordinates[1]
-        }
-      },
-      update (data: any) {
-        this.nearbyStops = (data.stops || []).map((s: any) => { return new Stop(s) })
-      }
-    }
-  },
-  data () {
-    return {
-      nearbyStops: [] as Stop[],
-      selectMode: 'select',
-      basemap: 'carto',
-      LocationTypes,
-      selectedLocationTypes: ['0', '2'], // must be stringy
-      selectedSources: ['nearby', 'station'],
-      SourceTypes: {
-        station: 'Associated Stops',
-        nearby: 'Unassociated Stops'
-      }
-    }
-  },
-  computed: {
-    filteredStops () {
-      // Get nearby stops that are NOT associated with the station and NOT in the excluded feed list.
-      // Also apply agency selection.
-      if (!this.station) {
-        return []
-      }
-      if (!this.selectedSources.includes('nearby')) {
-        return []
-      }
+// Reactive data
+const nearbyStops = ref<Stop[]>([])
+const basemap = ref('carto')
+const selectedLocationTypes = ref(['0', '2']) // must be stringy
+const selectedSources = ref(['nearby', 'station'])
+const selectedAgenciesShadow = ref<string[] | null>(null)
 
-      // Exclude specified feeds and stops that are already associated with the station
-      const station = this.station
-      const excludeFeeds = new Set(['RG', 'historic', 'mtc'])
-      const excludeStops = new Set()
-      const associatedStops = station.stops.filter((s) => {
-        return s.external_reference?.target_active_stop
-      })
-      for (const stop of associatedStops) {
-        const key = `${stop.external_reference?.target_feed_onestop_id}:${stop.external_reference?.target_stop_id}`
-        excludeStops.add(key)
-      }
+const SourceTypes = {
+  station: 'Associated Stops',
+  nearby: 'Unassociated Stops'
+}
 
-      const filteredStops = this.nearbyStops.filter((stop) => {
-        // Exclude stops that are already imported into the station
-        const key = `${stop.feed_version?.feed?.onestop_id}:${stop.stop_id}`
-        if (excludeStops.has(key)) {
-          return false
-        }
-        // Exclude stops that are already associated with the station
-        if (stop.parent?.id === station.id) {
-          return false
-        }
-        // Exclude stops that are in the same feed version as the station
-        if (stop.feed_version?.id === station.stop?.feed_version?.id) {
-          return false
-        }
-        // Exclude stops that are in the excluded feeds
-        if (stop.feed_version?.feed?.onestop_id && excludeFeeds.has(stop.feed_version.feed.onestop_id)) {
-          return false
-        }
-        // Exclude stations
-        if (stop.location_type === 1) {
-          return false
-        }
-        return true
-      })
+// Query nearby stops
+const nearbyStopsEnabled = computed(() => {
+  return !!(station.value && station.value.geometry)
+})
 
-      const check = new Set(this.selectedAgencies)
-      return filteredStops.filter((stop) => {
-        if (stop.location_type === 1) {
-          let rss = stop.route_stops || []
-          if (stop.external_reference && stop.external_reference.target_active_stop && stop.external_reference.target_active_stop.route_stops) {
-            rss = stop.external_reference.target_active_stop.route_stops
-          }
-          const stopAgencies: string[] = []
-          for (const rs of rss) {
-            if (rs.route?.agency?.agency_id) {
-              stopAgencies.push(rs.route.agency.agency_id)
-            }
-          }
-          if (intersection(check, stopAgencies).size === 0) {
-            return false
-          }
-        }
-        return this.selectedLocationTypes.includes(stop.location_type?.toString() || '')
-      })
-    },
-    stationFiltered () {
-      if (!this.station) {
-        return { id: 0, geometry: null, levels: [], pathways: [], stops: [] }
-      }
-      const station = this.station
-      return {
-        id: station.id,
-        geometry: station.geometry,
-        levels: station.levels,
-        pathways: [],
-        stops: !this.selectedSources.includes('station')
-          ? []
-          : station.stops.filter((s) => {
-              const target = s.external_reference?.target_active_stop
-              return target && this.selectedLocationTypes.includes(target.location_type?.toString() || '')
-            })
-      }
-    },
-    selectedAgencies: {
-      // We need to override selectedAgencies to incorporate nearby stops
-      get () {
-        if (this.selectedAgenciesShadow != null) {
-          return this.selectedAgenciesShadow
-        }
-        const allAgencies = new Map()
-        for (const stop of this.station?.stops || []) {
-          for (const rs of stop.route_stops || []) {
-            if (rs.route?.agency?.agency_id) {
-              allAgencies.set(rs.route.agency.agency_id, true)
-            }
-          }
-        }
-        for (const stop of this.nearbyStops || []) {
-          for (const rs of stop.route_stops || []) {
-            if (rs.route?.agency?.agency_id) {
-              allAgencies.set(rs.route.agency.agency_id, true)
-            }
-          }
-        }
-        return Array.from(allAgencies.keys())
-      },
-      set (v: any) {
-        this.selectedAgenciesShadow = v || []
-      }
-    },
-    agencies (): Record<string, string> {
-      const ret: Record<string, string> = {}
-      if (!this.station) return ret
-      for (const stop of this.station.stops) {
-        if (stop.external_reference && stop.external_reference.target_active_stop && stop.external_reference.target_active_stop.route_stops) {
-          for (const rs of stop.external_reference.target_active_stop.route_stops || []) {
-            if (rs.route?.agency?.agency_id) {
-              ret[rs.route.agency.agency_id] = rs.route.agency.agency_name || ''
-            }
-          }
-        }
-      }
-      for (const stop of this.nearbyStops || []) {
-        for (const rs of stop.route_stops || []) {
-          if (rs.route?.agency?.agency_id) {
-            ret[rs.route.agency.agency_id] = rs.route.agency.agency_name || ''
-          }
-        }
-      }
-      return ret
-    },
-    selectedStops (): Stop[] {
-      if (this.selectedStop) { return [this.selectedStop] }
-      return []
-    },
-    selectedStop (): Stop | null {
-      if (!this.station) {
-        return null
-      }
-      const s = this.$route.query.selectedStop
-      if (!s || Array.isArray(s)) {
-        return null
-      }
-      const si = Number.parseInt(s as string)
-      for (const stop of this.station.stops) {
-        if (stop.id === si) {
-          return stop
-        }
-      }
-      for (const stop of this.nearbyStops) {
-        if (stop.id === si) {
-          return stop
-        }
-      }
-      return null
-    }
-  },
-  methods: {
-    importStopHandler (ent: Stop) {
-      if (!this.station) return
-      const apollo = this.$apollo as any
-      // @ts-expect-error - Vue Apollo global injection
-      this.station.importStop(apollo, ent)
-        .then(() => { return this.refetch() })
-        .then((data: any) => { this.selectStop(data.id) })
-        .catch(this.setError)
-    },
-    selectStop (stopid: number) {
-      navigateTo({
-        query: { ...this.$route.query, selectedStop: stopid }
-      })
-    }
+const { result: nearbyStopsResult, onError: onNearbyStopsError } = useQuery(
+  nearbyStopsQuery,
+  () => ({
+    lon: station.value?.geometry?.coordinates[0] || 0,
+    lat: station.value?.geometry?.coordinates[1] || 0
+  }),
+  () => ({
+    ...(clientId?.value && { clientId: clientId.value }),
+    enabled: nearbyStopsEnabled.value,
+    fetchPolicy: 'cache-and-network'
+  })
+)
+
+onNearbyStopsError((error) => {
+  handleError(error)
+})
+
+watch(nearbyStopsResult, (data) => {
+  if (data?.stops) {
+    nearbyStops.value = data.stops.map((s: any) => new Stop(s))
   }
 })
+
+// Computed properties
+const filteredStops = computed(() => {
+  if (!station.value) {
+    return []
+  }
+  if (!selectedSources.value.includes('nearby')) {
+    return []
+  }
+
+  const excludeFeeds = new Set(['RG', 'historic', 'mtc'])
+  const excludeStops = new Set()
+  const associatedStops = station.value.stops.filter((s) => {
+    return s.external_reference?.target_active_stop
+  })
+  for (const stop of associatedStops) {
+    const key = `${stop.external_reference?.target_feed_onestop_id}:${stop.external_reference?.target_stop_id}`
+    excludeStops.add(key)
+  }
+
+  const filtered = nearbyStops.value.filter((stop) => {
+    const key = `${stop.feed_version?.feed?.onestop_id}:${stop.stop_id}`
+    if (excludeStops.has(key)) {
+      return false
+    }
+    if (stop.parent?.id === station.value!.id) {
+      return false
+    }
+    if (stop.feed_version?.id === station.value!.stop?.feed_version?.id) {
+      return false
+    }
+    if (stop.feed_version?.feed?.onestop_id && excludeFeeds.has(stop.feed_version.feed.onestop_id)) {
+      return false
+    }
+    if (stop.location_type === 1) {
+      return false
+    }
+    return true
+  })
+
+  const check = new Set(selectedAgencies.value)
+  return filtered.filter((stop) => {
+    if (stop.location_type === 1) {
+      let rss = stop.route_stops || []
+      if (stop.external_reference && stop.external_reference.target_active_stop && stop.external_reference.target_active_stop.route_stops) {
+        rss = stop.external_reference.target_active_stop.route_stops
+      }
+      const stopAgencies: string[] = []
+      for (const rs of rss) {
+        if (rs.route?.agency?.agency_id) {
+          stopAgencies.push(rs.route.agency.agency_id)
+        }
+      }
+      if (intersection(check, stopAgencies).size === 0) {
+        return false
+      }
+    }
+    return selectedLocationTypes.value.includes(stop.location_type?.toString() || '')
+  })
+})
+
+const stationFiltered = computed(() => {
+  if (!station.value) {
+    return { id: 0, geometry: null, levels: [], pathways: [], stops: [] }
+  }
+  return {
+    id: station.value.id,
+    geometry: station.value.geometry,
+    levels: station.value.levels,
+    pathways: [],
+    stops: !selectedSources.value.includes('station')
+      ? []
+      : station.value.stops.filter((s) => {
+          const target = s.external_reference?.target_active_stop
+          return target && selectedLocationTypes.value.includes(target.location_type?.toString() || '')
+        })
+  }
+})
+
+const selectedAgencies = computed({
+  get () {
+    if (selectedAgenciesShadow.value != null) {
+      return selectedAgenciesShadow.value
+    }
+    const allAgencies = new Map()
+    for (const stop of station.value?.stops || []) {
+      for (const rs of stop.route_stops || []) {
+        if (rs.route?.agency?.agency_id) {
+          allAgencies.set(rs.route.agency.agency_id, true)
+        }
+      }
+    }
+    for (const stop of nearbyStops.value || []) {
+      for (const rs of stop.route_stops || []) {
+        if (rs.route?.agency?.agency_id) {
+          allAgencies.set(rs.route.agency.agency_id, true)
+        }
+      }
+    }
+    return Array.from(allAgencies.keys())
+  },
+  set (v: string[]) {
+    selectedAgenciesShadow.value = v || []
+  }
+})
+
+const agencies = computed(() => {
+  const ret: Record<string, string> = {}
+  if (!station.value) return ret
+  for (const stop of station.value.stops) {
+    if (stop.external_reference && stop.external_reference.target_active_stop && stop.external_reference.target_active_stop.route_stops) {
+      for (const rs of stop.external_reference.target_active_stop.route_stops || []) {
+        if (rs.route?.agency?.agency_id) {
+          ret[rs.route.agency.agency_id] = rs.route.agency.agency_name || ''
+        }
+      }
+    }
+  }
+  for (const stop of nearbyStops.value || []) {
+    for (const rs of stop.route_stops || []) {
+      if (rs.route?.agency?.agency_id) {
+        ret[rs.route.agency.agency_id] = rs.route.agency.agency_name || ''
+      }
+    }
+  }
+  return ret
+})
+
+const selectedStop = computed(() => {
+  if (!station.value) {
+    return null
+  }
+  const s = route.query.selectedStop
+  if (!s || Array.isArray(s)) {
+    return null
+  }
+  const si = Number.parseInt(s as string)
+  for (const stop of station.value.stops) {
+    if (stop.id === si) {
+      return stop
+    }
+  }
+  for (const stop of nearbyStops.value) {
+    if (stop.id === si) {
+      return stop
+    }
+  }
+  return null
+})
+
+const selectedStops = computed(() => {
+  if (selectedStop.value) {
+    return [selectedStop.value]
+  }
+  return []
+})
+
+const selectedLevels = stationSelectedAgencies
+
+// Methods
+function importStopHandler (ent: Stop) {
+  if (!station.value) return
+  const apollo = resolveClient(clientId?.value)
+  ;(station.value.importStop(apollo, ent) as Promise<any>)
+    .then(() => refetch())
+    .then(() => {
+      if (ent.id) {
+        selectStop(ent.id)
+      }
+    })
+    .catch(handleError)
+}
+
+function selectStop (stopid: number) {
+  navigateTo({
+    query: { ...route.query, selectedStop: stopid }
+  })
+}
 </script>
 
   <style scoped>
