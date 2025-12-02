@@ -32,6 +32,8 @@
                 class="feed-link-icon"
                 title="View feed version"
                 @click.stop
+                @keydown.enter.stop
+                @keydown.space.stop
               >
                 <t-icon icon="open-in-new" size="small" />
               </a>
@@ -40,7 +42,7 @@
           <template v-else>
             {{ node.name }}
           </template>
-          <tl-route-category v-if="node.opts.routeCategory" :show-category="node.opts.showCategory" :category="node.opts.routeCategory" :subcategory="node.opts.routeSubcategory" />
+          <tl-route-category v-if="node.opts?.routeCategory" :show-category="node.opts?.showCategory" :category="node.opts?.routeCategory" :subcategory="node.opts?.routeSubcategory" />
         </span>
       </t-checkbox>
     </div>
@@ -213,13 +215,6 @@ function toggleExpand (): void {
   color: #666;
   font-weight: normal;
   white-space: nowrap;
-}
-
-.feed-version-links {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  flex-shrink: 0;
 }
 
 .feed-link-icon {

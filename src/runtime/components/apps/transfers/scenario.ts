@@ -1042,9 +1042,13 @@ function makeTripTree (pkey: string, deps: StopTimeEvent[], groups: string[]): T
         } else {
           tn.name = dep.trip.route.route_id || 'Unnamed route'
         }
+        tn.opts = {
+          routeCategory: dep.trip.route.route_attribute?.category,
+          routeSubcategory: dep.trip.route.route_attribute?.subcategory,
+          showCategory: false
+        }
         break
       }
-        break
       case 'direction_id':
         tn.key = String(dep.trip.direction_id)
         tn.name = (dep.trip.direction_id === 0) ? 'Direction: inbound' : 'Direction: outbound'
