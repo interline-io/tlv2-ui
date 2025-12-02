@@ -1,7 +1,7 @@
 import type { NuxtApp } from 'nuxt/app'
 import { defineNuxtPlugin } from 'nuxt/app'
 import { destr } from 'destr'
-import { provideApolloClients, useApolloClient } from '@vue/apollo-composable'
+import { provideApolloClients } from '@vue/apollo-composable'
 import type { NormalizedCacheObject } from '@apollo/client/core/index.js'
 import { ApolloClient, InMemoryCache } from '@apollo/client/core/index.js'
 import { setContext } from '@apollo/client/link/context'
