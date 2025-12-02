@@ -1,6 +1,6 @@
 import { gql } from 'graphql-tag'
 import type { Point, MultiPolygon } from 'geojson'
-import { RoutingGraph } from './graph'
+import { RoutingGraph } from '../../../pathways/graph'
 import type {
   FeedVersionData,
   FeedInfo,
