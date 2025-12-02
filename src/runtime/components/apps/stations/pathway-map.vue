@@ -10,7 +10,8 @@
 import { Map as MaplibreMap } from 'maplibre-gl'
 import type { LngLat, MapLayerMouseEvent, PointLike } from 'maplibre-gl'
 import { nextTick, ref, watch, onMounted } from 'vue'
-import { PathwayModeIcons, getBasemapLayers } from './basemaps'
+import { useBasemapLayers } from '../../../composables/useBasemapLayers'
+import { PathwayModeIcons } from '../../../pathways/pathway-icons'
 import type { Station, Stop, Pathway, Level } from './station'
 import type { Feature, FeatureCollection, Point, LineString, MultiPolygon } from 'geojson'
 
@@ -507,13 +508,15 @@ function drawPathways () {
   }
 }
 
+const { basemapLayers } = useBasemapLayers()
+
 function initMap () {
   if (map.value) {
     return
   }
   const sources: Record<string, any> = {}
   const layers: any[] = []
-  for (const [k, v] of Object.entries(getBasemapLayers())) {
+  for (const [k, v] of Object.entries(basemapLayers.value)) {
     sources[k] = v.source
     layers.push({ id: k, source: k, ...v.layer })
   }

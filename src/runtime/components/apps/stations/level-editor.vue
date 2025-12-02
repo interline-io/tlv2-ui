@@ -198,7 +198,7 @@ const props = withDefaults(defineProps<Props>(), {
   value: () => ({} as LevelData)
 })
 
-const emit = defineEmits<{
+const _emit = defineEmits<{
   update: [level: Level]
   delete: [level: Level]
   create: [level: Level]

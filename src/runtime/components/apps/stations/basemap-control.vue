@@ -18,8 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { getBasemapLayers } from './basemaps'
-import type { BasemapLayer } from './types'
+import { useBasemapLayers } from '../../../composables/useBasemapLayers'
 
 interface Props {
   modelValue?: string
@@ -33,5 +32,5 @@ defineEmits<{
   'update:modelValue': [value: string]
 }>()
 
-const basemapLayers = getBasemapLayers() as Record<string, BasemapLayer>
+const { basemapLayers } = useBasemapLayers()
 </script>

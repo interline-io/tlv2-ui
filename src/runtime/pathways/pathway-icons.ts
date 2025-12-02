@@ -42,3 +42,16 @@ export const PathwayModeIcons: Record<number, PathwayModeIcon> = {
     label: 'Exit gate'
   }
 }
+
+/**
+ * Mapping of GTFS pathway modes to their labels
+ */
+export const PathwayModes = new Map<number, string>([
+  [1, 'Walkway'],
+  [2, 'Stairs'],
+  [3, 'Moving sidewalk'],
+  [4, 'Escalator'],
+  [5, 'Elevator'],
+  [6, 'Fare gate'],
+  [7, 'Exit gate']
+])

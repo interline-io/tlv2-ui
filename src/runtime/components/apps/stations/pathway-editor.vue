@@ -124,7 +124,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { haversinePosition } from '../../../geom'
-import { PathwayModes } from './basemaps'
+import { PathwayModes } from '../../../pathways/pathway-icons'
 import { Pathway } from './station'
 import type { PathwayData, StationData } from './types'
 
@@ -167,7 +167,7 @@ const stopLength = computed((): string => {
   return haversinePosition(fromCoords, toCoords).toFixed(2)
 })
 
-const stopTraversalTime = computed((): number => {
+const _stopTraversalTime = computed((): number => {
   return Number.parseFloat(stopLength.value) * 1.30
 })
 

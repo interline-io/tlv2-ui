@@ -153,7 +153,8 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { PathwayModes, LocationTypes } from './basemaps'
+import { PathwayModes } from '../../../pathways/pathway-icons'
+import { LocationTypes } from './basemaps'
 import type { Station, Stop, Pathway } from './station'
 import type { ValidationPath } from './types'
 
@@ -235,7 +236,7 @@ const errorCount = computed((): { stops: number, pathways: number } => {
   return count
 })
 
-const levels = computed((): Array<typeof props.station.levels[0]> => {
+const _levels = computed((): Array<typeof props.station.levels[0]> => {
   return props.station ? props.station.levels : []
 })
 
@@ -249,7 +250,6 @@ const pathways = computed((): Pathway[] => {
   return pws
 })
 
-
 function routeSummary (stop: Stop): string {
   if (stop && stop.external_reference && stop.external_reference.target_active_stop && stop.external_reference.target_active_stop.route_stops) {
     return stop.external_reference.target_active_stop.route_stops
@@ -260,74 +260,74 @@ function routeSummary (stop: Stop): string {
   return ''
 }
 
-function validateConnectivity (_station: Station): ValidationError[] {
+function _validateConnectivity (_station: Station): ValidationError[] {
   // TODO: "Unreachable location in a station"
   // TODO: "Missing reciprocal pathways"
   return []
 }
 
 function validateStop (stop: Stop): ValidationError[] {
-      const fromPathways = stop.pathways_from_stop || []
-      const toPathways = stop.pathways_to_stop || []
-      const targetStop = stop.external_reference?.target_active_stop || null
-      const errs: ValidationError[] = []
-      if (stop.location_type === 0 && !targetStop) {
-        // errs.push({
-        //   message: 'Platform (location_type = 0) must have a stop association'
-        // })
-      }
-      if (targetStop && targetStop.location_type !== stop.location_type) {
-        errs.push({
-          message: `Stop must have the same location_type as the target stop (location_type = ${targetStop.location_type})`
-        })
-      }
-      // if (stop.location_type === 2 && !stop.external_reference?.target_active_stop) {
-      //   errs.push({
-      //     message: 'Entrance (location_type = 2) must have a stop association'
-      //   })
-      // }
-      if (stop.location_type === 1 && (fromPathways.length > 0 || toPathways.length > 0)) {
-        errs.push({
-          message: 'Pathways cannot use Station (location_type = 1)'
-        })
-      }
-      if (stop.parent?.id && stop.parent.id === stop.id) {
-        errs.push({
-          message: 'Cannot have self as parent_station'
-        })
-      }
-      if (stop.location_type !== 4 && stop.parent?.id && stop.parent.location_type !== 1) {
-        errs.push({
-          message: 'The parent_station must be a Station (location_type = 1)'
-        })
-      }
-      if (
-        (stop.location_type === 4 && stop.parent === null) || (stop.location_type === 4 && stop.parent && stop.parent.location_type !== 0)
-      ) {
-        errs.push({
-          message: 'Boarding areas require a Platform (location_type = 0) as a parent_station'
-        })
-      }
-      if (stop.external_reference && stop.external_reference.target_active_stop === null) {
-        errs.push({
-          message: `Cannot resolve reference to stop ${stop.external_reference.target_feed_onestop_id}:${stop.external_reference.target_stop_id}`
-        })
-      }
-      if (stop.location_type !== 1 && stop.location_type !== 0 && (stop.pathways_from_stop || []).length === 0 && (stop.pathways_to_stop || []).length === 0) {
-        errs.push({
-          message: 'All non-platform stops require at least one connecting pathway'
-        })
-      }
-      if (stop.location_type === 3 && (fromPathways.length + toPathways.length < 2)) {
-        errs.push({
-          message: 'Dangling generic node - must be able to transit through node to another node'
-        })
-      }
-      if (stop.location_type === 0 && (fromPathways.length + toPathways.length > 1)) {
-        errs.push({
-          message: 'Do not transit through platforms'
-        })
-      }
+  const fromPathways = stop.pathways_from_stop || []
+  const toPathways = stop.pathways_to_stop || []
+  const targetStop = stop.external_reference?.target_active_stop || null
+  const errs: ValidationError[] = []
+  if (stop.location_type === 0 && !targetStop) {
+    // errs.push({
+    //   message: 'Platform (location_type = 0) must have a stop association'
+    // })
+  }
+  if (targetStop && targetStop.location_type !== stop.location_type) {
+    errs.push({
+      message: `Stop must have the same location_type as the target stop (location_type = ${targetStop.location_type})`
+    })
+  }
+  // if (stop.location_type === 2 && !stop.external_reference?.target_active_stop) {
+  //   errs.push({
+  //     message: 'Entrance (location_type = 2) must have a stop association'
+  //   })
+  // }
+  if (stop.location_type === 1 && (fromPathways.length > 0 || toPathways.length > 0)) {
+    errs.push({
+      message: 'Pathways cannot use Station (location_type = 1)'
+    })
+  }
+  if (stop.parent?.id && stop.parent.id === stop.id) {
+    errs.push({
+      message: 'Cannot have self as parent_station'
+    })
+  }
+  if (stop.location_type !== 4 && stop.parent?.id && stop.parent.location_type !== 1) {
+    errs.push({
+      message: 'The parent_station must be a Station (location_type = 1)'
+    })
+  }
+  if (
+    (stop.location_type === 4 && stop.parent === null) || (stop.location_type === 4 && stop.parent && stop.parent.location_type !== 0)
+  ) {
+    errs.push({
+      message: 'Boarding areas require a Platform (location_type = 0) as a parent_station'
+    })
+  }
+  if (stop.external_reference && stop.external_reference.target_active_stop === null) {
+    errs.push({
+      message: `Cannot resolve reference to stop ${stop.external_reference.target_feed_onestop_id}:${stop.external_reference.target_stop_id}`
+    })
+  }
+  if (stop.location_type !== 1 && stop.location_type !== 0 && (stop.pathways_from_stop || []).length === 0 && (stop.pathways_to_stop || []).length === 0) {
+    errs.push({
+      message: 'All non-platform stops require at least one connecting pathway'
+    })
+  }
+  if (stop.location_type === 3 && (fromPathways.length + toPathways.length < 2)) {
+    errs.push({
+      message: 'Dangling generic node - must be able to transit through node to another node'
+    })
+  }
+  if (stop.location_type === 0 && (fromPathways.length + toPathways.length > 1)) {
+    errs.push({
+      message: 'Do not transit through platforms'
+    })
+  }
   return errs
 }
 

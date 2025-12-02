@@ -7,7 +7,8 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import { Map as MaplibreMap, AttributionControl } from 'maplibre-gl'
-import { getBasemapLayers, PeliasIcons } from './basemaps'
+import { useBasemapLayers } from '../../../composables/useBasemapLayers'
+import { PeliasIcons } from './basemaps'
 import MapboxDraw from '@mapbox/mapbox-gl-draw'
 import type { Feature, Point, LineString, Polygon, MultiPolygon } from 'geojson'
 
@@ -92,12 +93,14 @@ function changed () {
   }
 }
 
+const { basemapLayers } = useBasemapLayers()
+
 function initMap () {
   if (!mapelem.value) return
 
   const sources: Record<string, any> = {}
   const layers: any[] = []
-  for (const [k, v] of Object.entries(getBasemapLayers())) {
+  for (const [k, v] of Object.entries(basemapLayers.value)) {
     sources[k] = v.source
     layers.push({ id: k, source: k, ...v.layer })
   }

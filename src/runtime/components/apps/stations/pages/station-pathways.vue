@@ -261,7 +261,8 @@
 </template>
 
 <script>
-import { PathwayModes, LocationTypes } from '../basemaps'
+import { PathwayModes } from '../../../../pathways/pathway-icons'
+import { LocationTypes } from '../basemaps'
 import { Stop, Pathway, mapLevelKeyFn } from '../station'
 import StationMixin from './station-mixin'
 

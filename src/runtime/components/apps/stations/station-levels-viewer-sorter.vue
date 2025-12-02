@@ -71,7 +71,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const groupedSortedStationLevels = computed(() => {
   if (!props.station) return []
-  
+
   const m: Map<number, Level[]> = new Map()
   for (const lvl of props.station.levels) {
     const idx = lvl.level_index

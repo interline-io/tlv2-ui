@@ -36,7 +36,8 @@
 </template>
 
 <script setup lang="ts">
-import { PathwayModeIcons, LocationTypes } from './basemaps'
+import { PathwayModeIcons } from '../../../pathways/pathway-icons'
+import { LocationTypes } from './basemaps'
 import type { PathwayData, StopData } from './types'
 
 interface PathEdge {

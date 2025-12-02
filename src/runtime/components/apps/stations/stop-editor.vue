@@ -166,7 +166,8 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import type { Point } from 'geojson'
-import { LocationTypes, PathwayModeIcons } from './basemaps'
+import { PathwayModeIcons } from '../../../pathways/pathway-icons'
+import { LocationTypes } from './basemaps'
 import { Stop } from './station'
 import type { StopData, StationData, RouteStopData } from './types'
 
