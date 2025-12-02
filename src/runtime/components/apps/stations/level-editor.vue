@@ -65,8 +65,8 @@
         width="100%"
         height="500px"
         :editable-features="editFeatures"
-        :polygons="station.levels.filter((s) => { return s.geometry && s.level_id !== level.level_id }).map((s) => { return s.geometry })"
-        :points="station.stops.map((s) => { return s.geometry })"
+        :polygons="station.levels.filter((s) => { return s.geometry && s.level_id !== level.level_id }).map((s) => { return s.geometry! })"
+        :points="station.stops.filter((s) => { return s.geometry }).map((s) => { return s.geometry! })"
         :opacity="0.1"
         :search="true"
         @changed="setGeometry"
@@ -136,8 +136,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, type PropType } from 'vue'
+<script setup lang="ts">
+import { ref, computed, watch } from 'vue'
 import type { MultiPolygon, Feature, FeatureCollection, Polygon } from 'geojson'
 import { Level } from './station'
 import type { LevelData, StationData } from './types'
@@ -187,87 +187,84 @@ const convertToMultiPolygon = (parsed: FeatureCollection | Feature | Polygon | M
   }
 }
 
-export default defineComponent({
-  props: {
-    center: {
-      type: Array as unknown as PropType<[number, number]>,
-      default: () => [0, 0] as [number, number]
-    },
-    station: {
-      type: Object as PropType<StationData>,
-      required: true
-    },
-    value: {
-      type: Object as PropType<LevelData>,
-      default: () => ({} as LevelData)
-    }
+interface Props {
+  center?: [number, number]
+  station: StationData
+  value?: LevelData
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  center: () => [0, 0],
+  value: () => ({} as LevelData)
+})
+
+const emit = defineEmits<{
+  update: [level: Level]
+  delete: [level: Level]
+  create: [level: Level]
+  cancel: []
+}>()
+
+const level = ref(new Level(props.value).setDefaults())
+const basemap = ref('carto')
+const showGeojsonEditor = ref(false)
+const geojsonError = ref<string | null>(null)
+const geojsonGeometryBuffer = ref('')
+
+const geometry = computed((): MultiPolygon | null => {
+  return level.value.geometry ?? null
+})
+
+const geojsonGeometry = computed({
+  get (): string {
+    return geojsonGeometryBuffer.value || JSON.stringify(geometry.value, null, 2)
   },
-  emits: ['update', 'delete', 'create', 'cancel'],
-  data () {
-    return {
-      level: new Level(this.value).setDefaults(),
-      basemap: 'carto',
-      showGeojsonEditor: false,
-      geojsonError: null as string | null,
-      geojsonGeometryBuffer: ''
+  set (value: string) {
+    geojsonGeometryBuffer.value = value
+    let parsed = null
+    try {
+      parsed = JSON.parse(value)
+    } catch {
+      geojsonError.value = 'Invalid JSON'
+      return
     }
-  },
-  computed: {
-    geojsonGeometry: {
-      get (): string {
-        return this.geojsonGeometryBuffer || JSON.stringify(this.geometry, null, 2)
-      },
-      set (value: string) {
-        this.geojsonGeometryBuffer = value
-        let parsed = null
-        try {
-          parsed = JSON.parse(value)
-        } catch {
-          this.geojsonError = 'Invalid JSON'
-          return
-        }
-        this.setGeometry(parsed)
-      }
-    },
-    geometry (): MultiPolygon | null {
-      return this.level.geometry ?? null
-    },
-    editFeatures (): Feature[] {
-      if (!this.geometry) { return [] }
-      return [
-        {
-          type: 'Feature',
-          properties: {},
-          geometry: this.geometry
-        }
-      ]
-    },
-    valid (): boolean {
-      return !!(this.level.level_name
-        && this.level.level_name.length > 0
-        && this.level.level_index !== null
-        && this.level.level_id
-        && this.level.level_id.length > 0)
+    setGeometry(parsed)
+  }
+})
+
+const editFeatures = computed((): Feature[] => {
+  if (!geometry.value) { return [] }
+  return [
+    {
+      type: 'Feature',
+      properties: {},
+      geometry: geometry.value
     }
-  },
-  watch: {
-    'level.level_name' (value: string) {
-      if (value && value.length > 0 && !this.level.id && this.station.stop) {
-        const autoname = value.toLowerCase().replace(/\s/g, '-')
-        this.level.level_id = `${this.station.stop.stop_id}-${autoname}`
-      }
-    }
-  },
-  methods: {
-    setGeometry (e: FeatureCollection | Feature | Polygon | MultiPolygon) {
-      try {
-        const mp = convertToMultiPolygon(e)
-        this.level.geometry = mp
-        this.geojsonError = null
-      } catch (err) {
-        this.geojsonError = err instanceof Error ? err.message : String(err)
-      }
-    }
+  ]
+})
+
+const valid = computed((): boolean => {
+  return !!(level.value.level_name
+    && level.value.level_name.length > 0
+    && level.value.level_index !== null
+    && level.value.level_id
+    && level.value.level_id.length > 0)
+})
+
+function setGeometry (e: FeatureCollection | Feature | Polygon | MultiPolygon) {
+  try {
+    const mp = convertToMultiPolygon(e)
+    level.value.geometry = mp
+    geojsonError.value = null
+  } catch (err) {
+    geojsonError.value = err instanceof Error ? err.message : String(err)
+  }
+}
+
+watch(() => level.value.level_name, (value: string | undefined) => {
+  if (value && value.length > 0 && !level.value.id && props.station.stop) {
+    const autoname = value.toLowerCase().replace(/\s/g, '-')
+    level.value.level_id = `${props.station.stop.stop_id}-${autoname}`
   }
 })
 </script>

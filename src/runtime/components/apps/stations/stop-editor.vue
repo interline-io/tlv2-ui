@@ -103,7 +103,7 @@
     <t-field v-if="pathwaysFromStop.length > 0" label="Pathways (From)">
       <ul>
         <li v-for="pw of pathwaysFromStop" :key="pw.id">
-          <span class="button" :title="pw.pathway_id" @click="$emit('select-pathway', pw.id)">
+          <span class="button" :title="pw.pathway_id" @click="emit('selectPathway', pw.id!)">
             <span class="tl-path-icon"><img :src="pathwayIcon(pw.pathway_mode ?? 0).url" :title="pathwayIcon(pw.pathway_mode ?? 0).label"></span>
             <span v-if="pw.is_bidirectional === 1">
               ↔
@@ -119,7 +119,7 @@
     <t-field v-if="pathwaysToStop.length" label="Pathways (To)">
       <ul>
         <li v-for="pw of pathwaysToStop" :key="pw.id">
-          <span class="button" :title="pw.pathway_id" @click="$emit('select-pathway', pw.id)">
+          <span class="button" :title="pw.pathway_id" @click="emit('selectPathway', pw.id!)">
             <span class="tl-path-icon"><img :src="pathwayIcon(pw.pathway_mode ?? 0).url" :title="pathwayIcon(pw.pathway_mode ?? 0).label"></span>
             <span v-if="pw.is_bidirectional === 1">
               ↔
@@ -163,8 +163,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, type PropType } from 'vue'
+<script setup lang="ts">
+import { ref, computed } from 'vue'
 import type { Point } from 'geojson'
 import { LocationTypes, PathwayModeIcons } from './basemaps'
 import { Stop } from './station'
@@ -186,135 +186,133 @@ interface EntityData {
   }
 }
 
-export default defineComponent({
-  props: {
-    value: {
-      type: Object as PropType<StopData>,
-      default: () => ({} as StopData)
-    },
-    station: {
-      type: Object as PropType<StationData>,
-      required: true
-    },
-    readOnly: {
-      type: Boolean,
-      required: false,
-      default: false
-    },
-    stopAssociationsEnabled: {
-      type: Boolean,
-      required: false,
-      default: false
-    },
-    currentMode: {
-      type: String,
-      required: false,
-      default: 'pathways'
-    }
+interface Props {
+  value?: StopData
+  station: StationData
+  readOnly?: boolean
+  stopAssociationsEnabled?: boolean
+  currentMode?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  value: () => ({} as StopData),
+  readOnly: false,
+  stopAssociationsEnabled: false,
+  currentMode: 'pathways'
+})
+
+const emit = defineEmits<{
+  selectPathway: [id: number]
+  createAssociation: []
+  update: [stop: Stop]
+  delete: [stop: Stop]
+  create: [stop: Stop]
+}>()
+
+const stopCopy = new Stop(props.value).setDefaults()
+const entity = ref<EntityData>({
+  id: stopCopy.id,
+  stop_id: stopCopy.stop_id,
+  stop_name: stopCopy.stop_name,
+  platform_code: stopCopy.platform_code,
+  location_type: stopCopy.location_type,
+  geometry: stopCopy.geometry,
+  wheelchair_boarding: stopCopy.wheelchair_boarding,
+  parent: { id: stopCopy.parent?.id },
+  level: { id: stopCopy.level?.id },
+  external_reference: stopCopy.external_reference
+    ? {
+        target_feed_onestop_id: stopCopy.external_reference?.target_feed_onestop_id,
+        target_stop_id: stopCopy.external_reference?.target_stop_id,
+      }
+    : undefined
+})
+
+const showStopAssociations = ref(!!stopCopy.external_reference)
+const targetActiveStop = ref(stopCopy.external_reference?.target_active_stop || null)
+const pathwaysFromStop = ref(stopCopy.pathways_from_stop || [])
+const pathwaysToStop = ref(stopCopy.pathways_to_stop || [])
+
+const locationTypeStr = computed({
+  get (): string {
+    return String(entity.value.location_type ?? '')
   },
-  emits: ['select-pathway', 'create-association', 'update', 'delete', 'create'],
-  data () {
-    const stopCopy = new Stop(this.value).setDefaults()
-    const entity: EntityData = {
-      id: stopCopy.id,
-      stop_id: stopCopy.stop_id,
-      stop_name: stopCopy.stop_name,
-      platform_code: stopCopy.platform_code,
-      location_type: stopCopy.location_type,
-      geometry: stopCopy.geometry,
-      wheelchair_boarding: stopCopy.wheelchair_boarding,
-      parent: { id: stopCopy.parent?.id },
-      level: { id: stopCopy.level?.id },
-      external_reference: stopCopy.external_reference
-        ? {
-            target_feed_onestop_id: stopCopy.external_reference?.target_feed_onestop_id,
-            target_stop_id: stopCopy.external_reference?.target_stop_id,
-          }
-        : undefined
-    }
-    return {
-      showStopAssociations: !!stopCopy.external_reference,
-      targetActiveStop: stopCopy.external_reference?.target_active_stop || null,
-      pathwaysFromStop: stopCopy.pathways_from_stop || [],
-      pathwaysToStop: stopCopy.pathways_to_stop || [],
-      entity: entity,
-      LocationTypes,
-    }
-  },
-  computed: {
-    locationTypeStr: {
-      get (): string {
-        return String(this.entity.location_type ?? '')
-      },
-      set (value: string) {
-        this.entity.location_type = value ? Number.parseInt(value, 10) : undefined
-      }
-    },
-    levelIdStr: {
-      get (): string {
-        return String(this.entity.level.id ?? '')
-      },
-      set (value: string) {
-        this.entity.level.id = value ? Number.parseInt(value, 10) : undefined
-      }
-    },
-    platformStops (): StopData[] {
-      return this.station.stops.filter((s) => { return s.location_type === 0 })
-    },
-    parentStop (): StopData | null {
-      if (this.entity.parent?.id === this.station.id) {
-        return this.station.stop!
-      }
-      for (const s of this.station.stops) {
-        if (s.id === this.entity.parent?.id) {
-          return s
-        }
-      }
-      return null
-    },
-    coordinates (): string {
-      const coords = this.entity.geometry?.coordinates
-      if (!coords || coords.length < 2 || coords[0] === undefined || coords[1] === undefined) {
-        return '0.00000, 0.00000'
-      }
-      return `${coords[0].toFixed(5)}, ${coords[1].toFixed(5)}`
-    }
-  },
-  methods: {
-    updateStop () {
-      this.$emit('update', new Stop(this.entity as unknown as StopData))
-    },
-    createStop () {
-      this.$emit('create', new Stop(this.entity as unknown as StopData))
-    },
-    deleteStop () {
-      this.$emit('delete', new Stop(this.entity as unknown as StopData))
-    },
-    createAssociation () {
-      this.entity.external_reference = {
-        target_feed_onestop_id: '',
-        target_stop_id: ''
-      }
-      this.showStopAssociations = true
-    },
-    deleteAssociation () {
-      this.showStopAssociations = false
-      this.entity.external_reference = undefined
-    },
-    pathwayIcon (mode: number): { url: string, label: string } {
-      const m = PathwayModeIcons[mode]
-      if (!m) {
-        return { url: '', label: '' }
-      }
-      return { url: `/icons/${m.altIcon ? m.altIcon : m.icon}.png`, label: m.label }
-    },
-    routeSummary (ss: StopData): string {
-      return (ss?.external_reference?.target_active_stop?.route_stops || [])
-        .map((rs: RouteStopData) => { return `${rs.route!.agency!.agency_id}:${rs.route!.route_short_name || rs.route!.route_long_name}` })
-        .join(', ')
-    }
+  set (value: string) {
+    entity.value.location_type = value ? Number.parseInt(value, 10) : undefined
   }
 })
+
+const levelIdStr = computed({
+  get (): string {
+    return String(entity.value.level.id ?? '')
+  },
+  set (value: string) {
+    entity.value.level.id = value ? Number.parseInt(value, 10) : undefined
+  }
+})
+
+const platformStops = computed((): StopData[] => {
+  return props.station.stops.filter((s) => { return s.location_type === 0 })
+})
+
+const parentStop = computed((): StopData | null => {
+  if (entity.value.parent?.id === props.station.id) {
+    return props.station.stop!
+  }
+  for (const s of props.station.stops) {
+    if (s.id === entity.value.parent?.id) {
+      return s
+    }
+  }
+  return null
+})
+
+const _coordinates = computed((): string => {
+  const coords = entity.value.geometry?.coordinates
+  if (!coords || coords.length < 2 || coords[0] === undefined || coords[1] === undefined) {
+    return '0.00000, 0.00000'
+  }
+  return `${coords[0].toFixed(5)}, ${coords[1].toFixed(5)}`
+})
+
+function updateStop () {
+  emit('update', new Stop(entity.value as unknown as StopData))
+}
+
+function createStop () {
+  emit('create', new Stop(entity.value as unknown as StopData))
+}
+
+function deleteStop () {
+  emit('delete', new Stop(entity.value as unknown as StopData))
+}
+
+function createAssociation () {
+  entity.value.external_reference = {
+    target_feed_onestop_id: '',
+    target_stop_id: ''
+  }
+  showStopAssociations.value = true
+}
+
+function deleteAssociation () {
+  showStopAssociations.value = false
+  entity.value.external_reference = undefined
+}
+
+function pathwayIcon (mode: number): { url: string, label: string } {
+  const m = PathwayModeIcons[mode]
+  if (!m) {
+    return { url: '', label: '' }
+  }
+  return { url: `/icons/${m.altIcon ? m.altIcon : m.icon}.png`, label: m.label }
+}
+
+function routeSummary (ss: StopData): string {
+  return (ss?.external_reference?.target_active_stop?.route_stops || [])
+    .map((rs: RouteStopData) => { return `${rs.route!.agency!.agency_id}:${rs.route!.route_short_name || rs.route!.route_long_name}` })
+    .join(', ')
+}
 </script>
 
 <style>

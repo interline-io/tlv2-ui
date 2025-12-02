@@ -91,8 +91,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, type PropType } from 'vue'
+<script setup lang="ts">
+import { ref, computed, watch } from 'vue'
 import type { Feature } from 'geojson'
 import { Station } from './station'
 import type { StationData } from './types'
@@ -101,58 +101,56 @@ interface MapChangeEvent {
   features: Feature[]
 }
 
-export default defineComponent({
-  props: {
-    center: {
-      type: Array as unknown as PropType<[number, number]>,
-      default: () => [-122.431297, 37.773972] as [number, number]
-    },
-    value: {
-      type: Object as PropType<StationData>,
-      default: () => ({})
+interface Props {
+  center?: [number, number]
+  value?: StationData
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  center: () => [-122.431297, 37.773972] as [number, number],
+  value: () => ({ levels: [], stops: [] } as StationData)
+})
+
+defineEmits<{
+  update: [station: Station]
+  delete: [station: Station]
+  create: [station: Station]
+  cancel: []
+}>()
+
+const station = ref(new Station(props.value.stop))
+const basemap = ref('carto')
+
+const editFeatures = computed((): Feature[] => {
+  if (!station.value.stop.geometry) { return [] }
+  return [
+    {
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: station.value.stop.geometry.coordinates },
+      properties: {}
     }
-  },
-  emits: ['update', 'delete', 'create', 'cancel'],
-  data () {
-    return {
-      station: new Station(this.value.stop),
-      basemap: 'carto' as string
-    }
-  },
-  computed: {
-    editFeatures (): Feature[] {
-      if (!this.station.stop.geometry) { return [] }
-      return [
-        {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: this.station.stop.geometry.coordinates },
-          properties: {}
-        }
-      ]
-    },
-    valid (): boolean {
-      return !!(this.station.stop.geometry
-        && this.station.stop.stop_name
-        && this.station.stop.stop_name.length > 0
-        && this.station.stop.stop_id
-        && this.station.stop.stop_id.length > 0)
-    }
-  },
-  watch: {
-    'station.stop.stop_name' (value: string) {
-      if (value.length > 0 && this.station.id == null) {
-        this.station.stop.stop_id = value.toLowerCase().replace(/\s/g, '-')
-      }
-    }
-  },
-  methods: {
-    setGeometry (e: MapChangeEvent) {
-      if (e.features.length !== 1) {
-        this.station.stop.geometry = undefined
-        return
-      }
-      this.station.stop.geometry = e.features[0]!.geometry as any
-    }
+  ]
+})
+
+const valid = computed((): boolean => {
+  return !!(station.value.stop.geometry
+    && station.value.stop.stop_name
+    && station.value.stop.stop_name.length > 0
+    && station.value.stop.stop_id
+    && station.value.stop.stop_id.length > 0)
+})
+
+watch(() => station.value.stop.stop_name, (value) => {
+  if (value && value.length > 0 && station.value.id == null) {
+    station.value.stop.stop_id = value.toLowerCase().replace(/\s/g, '-')
   }
 })
+
+function setGeometry (e: MapChangeEvent) {
+  if (e.features.length !== 1) {
+    station.value.stop.geometry = undefined
+    return
+  }
+  station.value.stop.geometry = e.features[0]!.geometry as any
+}
 </script>

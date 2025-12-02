@@ -17,20 +17,21 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
 import { getBasemapLayers } from './basemaps'
 import type { BasemapLayer } from './types'
 
-export default defineComponent({
-  props: {
-    modelValue: { type: String, default: 'carto' }
-  },
-  emits: ['update:modelValue'],
-  data () {
-    return {
-      basemapLayers: getBasemapLayers() as Record<string, BasemapLayer>
-    }
-  }
+interface Props {
+  modelValue?: string
+}
+
+withDefaults(defineProps<Props>(), {
+  modelValue: 'carto'
 })
+
+defineEmits<{
+  'update:modelValue': [value: string]
+}>()
+
+const basemapLayers = getBasemapLayers() as Record<string, BasemapLayer>
 </script>

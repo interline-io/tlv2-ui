@@ -35,8 +35,7 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, type PropType } from 'vue'
+<script setup lang="ts">
 import { PathwayModeIcons, LocationTypes } from './basemaps'
 import type { PathwayData, StopData } from './types'
 
@@ -44,43 +43,38 @@ interface PathEdge {
   pathway: PathwayData
 }
 
-export default defineComponent({
-  props: {
-    path: {
-      type: Array as PropType<PathEdge[]>,
-      default: () => []
-    }
-  },
-  data () {
-    return {
-      LocationTypes
-    }
-  },
-  methods: {
-    stopName (node: StopData): string {
-      if (node.stop_name === 'Node' && node.location_type === 3) {
-        return ''
-      }
-      return node.stop_name || ''
-    },
-    locationType (lt?: number): string | undefined {
-      if (lt === undefined) {
-        return undefined
-      }
-      return LocationTypes.get(lt)
-    },
-    pathwayIcon (mode?: number): { url: string, label: string } {
-      if (mode === undefined) {
-        return { url: '', label: '' }
-      }
-      const m = PathwayModeIcons[mode]
-      if (!m) {
-        return { url: '', label: '' }
-      }
-      return { url: `/icons/${m.altIcon ? m.altIcon : m.icon}.png`, label: m.label }
-    }
-  }
+interface Props {
+  path?: PathEdge[]
+}
+
+withDefaults(defineProps<Props>(), {
+  path: () => []
 })
+
+function stopName (node: StopData): string {
+  if (node.stop_name === 'Node' && node.location_type === 3) {
+    return ''
+  }
+  return node.stop_name || ''
+}
+
+function locationType (lt?: number): string | undefined {
+  if (lt === undefined) {
+    return undefined
+  }
+  return LocationTypes.get(lt)
+}
+
+function pathwayIcon (mode?: number): { url: string, label: string } {
+  if (mode === undefined) {
+    return { url: '', label: '' }
+  }
+  const m = PathwayModeIcons[mode]
+  if (!m) {
+    return { url: '', label: '' }
+  }
+  return { url: `/icons/${m.altIcon ? m.altIcon : m.icon}.png`, label: m.label }
+}
 </script>
 
 <style scoped>

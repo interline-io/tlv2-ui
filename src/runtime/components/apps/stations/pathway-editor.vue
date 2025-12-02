@@ -7,7 +7,7 @@
           <t-input v-else v-model="pathway.pathway_id" />
         </t-field>
         <t-field label="From">
-          <span class="button stop-label" @click="$emit('select-stop', pathway.from_stop.id)">
+          <span class="button stop-label" @click="emit('selectStop', pathway.from_stop.id!)">
             <template v-if="pathway.from_stop.stop_name">
               {{ pathway.from_stop.stop_name }}</template>
             <template v-else>
@@ -17,7 +17,7 @@
           </span>
         </t-field>
         <t-field label="To">
-          <span class="button stop-label" @click="$emit('select-stop', pathway.to_stop.id)">
+          <span class="button stop-label" @click="emit('selectStop', pathway.to_stop.id!)">
             <template v-if="pathway.to_stop.stop_name">
               {{ pathway.to_stop.stop_name }}</template>
             <template v-else>
@@ -111,75 +111,71 @@
 
     <template v-if="!readOnly">
       <div v-if="pathway.id" class="buttons">
-        <span class="button is-primary" @click="$emit('update', pathway)">Save Pathway</span>
-        <span class="button is-danger" @click="$emit('delete', pathway)">Delete Pathway</span>
+        <span class="button is-primary" @click="emit('update', pathway)">Save Pathway</span>
+        <span class="button is-danger" @click="emit('delete', pathway)">Delete Pathway</span>
       </div>
       <div v-else class="buttons">
-        <span class="button is-primary" @click="$emit('create', pathway)">Add Pathway</span>
+        <span class="button is-primary" @click="emit('create', pathway)">Add Pathway</span>
       </div>
     </template>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, type PropType } from 'vue'
+<script setup lang="ts">
+import { ref, computed, watch } from 'vue'
 import { haversinePosition } from '../../../geom'
 import { PathwayModes } from './basemaps'
 import { Pathway } from './station'
 import type { PathwayData, StationData } from './types'
 
-export default defineComponent({
-  props: {
-    station: {
-      type: Object as PropType<StationData>,
-      default: () => ({} as StationData)
-    },
-    value: {
-      type: Object as PropType<PathwayData>,
-      default: () => ({} as PathwayData)
-    },
-    readOnly: {
-      type: Boolean,
-      required: false,
-      default: false
-    }
+interface Props {
+  station?: StationData
+  value?: PathwayData
+  readOnly?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  station: () => ({} as StationData),
+  value: () => ({} as PathwayData),
+  readOnly: false
+})
+
+const emit = defineEmits<{
+  selectStop: [id: number]
+  update: [pathway: Pathway]
+  delete: [pathway: Pathway]
+  create: [pathway: Pathway]
+}>()
+
+const pathway = ref(new Pathway(props.value).setDefaults())
+
+const pathwayModeStr = computed({
+  get (): string {
+    return String(pathway.value.pathway_mode ?? '')
   },
-  emits: ['select-stop', 'update', 'delete', 'create'],
-  data () {
-    return {
-      pathway: new Pathway(this.value).setDefaults(),
-      PathwayModes
-    }
-  },
-  computed: {
-    pathwayModeStr: {
-      get (): string {
-        return String(this.pathway.pathway_mode ?? '')
-      },
-      set (value: string) {
-        this.pathway.pathway_mode = value ? Number.parseInt(value, 10) : undefined
-      }
-    },
-    stopLength (): string {
-      const fromCoords = this.pathway.from_stop?.geometry?.coordinates
-      const toCoords = this.pathway.to_stop?.geometry?.coordinates
-      if (!fromCoords || !toCoords) {
-        return '0.00'
-      }
-      return haversinePosition(fromCoords, toCoords).toFixed(2)
-    },
-    stopTraversalTime (): number {
-      return Number.parseFloat(this.stopLength) * 1.30
-    }
-  },
-  watch: {
-    'pathway.pathway_mode' (value: number) {
-      if (value === 7) {
-        this.pathway.is_bidirectional = 0
-      } else {
-        this.pathway.is_bidirectional = 1
-      }
-    }
+  set (value: string) {
+    pathway.value.pathway_mode = value ? Number.parseInt(value, 10) : undefined
+  }
+})
+
+const stopLength = computed((): string => {
+  const fromCoords = pathway.value.from_stop?.geometry?.coordinates
+  const toCoords = pathway.value.to_stop?.geometry?.coordinates
+  if (!fromCoords || !toCoords) {
+    return '0.00'
+  }
+  return haversinePosition(fromCoords, toCoords).toFixed(2)
+})
+
+const stopTraversalTime = computed((): number => {
+  return Number.parseFloat(stopLength.value) * 1.30
+})
+
+watch(() => pathway.value.pathway_mode, (value: number | undefined) => {
+  if (value === 7) {
+    pathway.value.is_bidirectional = 0
+  } else {
+    pathway.value.is_bidirectional = 1
   }
 })
 </script>

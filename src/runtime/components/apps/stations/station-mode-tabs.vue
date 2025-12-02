@@ -39,66 +39,55 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, type PropType } from 'vue'
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { useRouteResolver } from '../../../composables/useRouteResolver'
 import type { Station } from './station'
 
-export default defineComponent({
-  props: {
-    station: {
-      type: Object as PropType<Station | null>,
-      default: null
-    },
-    feedKey: {
-      type: String,
-      default: null
-    },
-    stopAssociationsEnabled: {
-      type: Boolean,
-      default: false
-    },
-    feedVersionKey: {
-      type: String,
-      default: null
-    },
-    stationKey: {
-      type: String,
-      default: null
-    }
-  },
-  setup () {
-    const { resolve } = useRouteResolver()
-    return { resolve }
-  },
-  data () {
-    return {
-      routeKeys: {
-        levels: 'apps-stations-feedKey-feedVersionKey-stations-stationKey',
-        stops: 'apps-stations-feedKey-feedVersionKey-stations-stationKey-stops',
-        pathways: 'apps-stations-feedKey-feedVersionKey-stations-stationKey-pathways',
-        diagram: 'apps-stations-feedKey-feedVersionKey-stations-stationKey-diagram'
-      }
-    }
-  },
-  computed: {
-    pathwaysModeEnabled (): boolean {
-      return true
-      // return (this.station && this.station.stops && this.station.stops.length > 0)
-    },
-    currentRoute (): string | undefined {
-      const name = this.$route.name
-      return typeof name === 'string' ? name : undefined
-    },
-    activeTab (): string {
-      for (const [k, r] of Object.entries(this.routeKeys)) {
-        if (this.currentRoute === this.resolve(r)) {
-          return k
-        }
-      }
-      return ''
+interface Props {
+  station?: Station | null
+  feedKey?: string | null
+  stopAssociationsEnabled?: boolean
+  feedVersionKey?: string | null
+  stationKey?: string | null
+}
+
+withDefaults(defineProps<Props>(), {
+  station: null,
+  feedKey: null,
+  stopAssociationsEnabled: false,
+  feedVersionKey: null,
+  stationKey: null
+})
+
+const { resolve } = useRouteResolver()
+const route = useRoute()
+
+const routeKeys = {
+  levels: 'apps-stations-feedKey-feedVersionKey-stations-stationKey',
+  stops: 'apps-stations-feedKey-feedVersionKey-stations-stationKey-stops',
+  pathways: 'apps-stations-feedKey-feedVersionKey-stations-stationKey-pathways',
+  diagram: 'apps-stations-feedKey-feedVersionKey-stations-stationKey-diagram'
+}
+
+const pathwaysModeEnabled = computed((): boolean => {
+  return true
+  // return (station.value && station.value.stops && station.value.stops.length > 0)
+})
+
+const currentRoute = computed((): string | undefined => {
+  const name = route.name
+  return typeof name === 'string' ? name : undefined
+})
+
+const activeTab = computed((): string => {
+  for (const [k, r] of Object.entries(routeKeys)) {
+    if (currentRoute.value === resolve(r)) {
+      return k
     }
   }
+  return ''
 })
 </script>
 
