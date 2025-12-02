@@ -31,12 +31,14 @@
             </template>
             <div>
               <div class="mb-2">
-                <p class="label">
-                  {{ selectedStops.length }} stops selected
-                  <t-button v-if="selectedStops.length > 0" class="is-pulled-right m-2" variant="primary" size="small" outlined @click="unselectAll">
+                <div class="is-flex is-justify-content-space-between is-align-items-center mb-2">
+                  <p class="label mb-0">
+                    {{ selectedStops.length }} stops selected
+                  </p>
+                  <t-button :style="{ visibility: selectedStops.length > 0 ? 'visible' : 'hidden' }" variant="primary" size="small" outlined @click="unselectAll">
                     Unselect All
                   </t-button>
-                </p>
+                </div>
                 <t-field label="Select Stops">
                   <div class="buttons has-addons">
                     <a v-for="pwm of LocationTypes" :key="pwm[0]" class="button is-small" @click="selectLocationTypes(pwm[0])">{{ pwm[1] }}</a>
@@ -53,12 +55,14 @@
                 </t-field>
               </div>
               <div class="mb-2">
-                <p class="label">
-                  {{ selectedPathways.length }} pathways selected
-                  <t-button v-if="selectedPathways.length > 0" class="is-pulled-right m-2" variant="primary" size="small" outlined @click="unselectAll">
+                <div class="is-flex is-justify-content-space-between is-align-items-center mb-2">
+                  <p class="label mb-0">
+                    {{ selectedPathways.length }} pathways selected
+                  </p>
+                  <t-button :style="{ visibility: selectedPathways.length > 0 ? 'visible' : 'hidden' }" variant="primary" size="small" outlined @click="unselectAll">
                     Unselect All
                   </t-button>
-                </p>
+                </div>
                 <t-field label="Select Pathways">
                   <div class="buttons has-addons">
                     <a v-for="pwm of PathwayModes" :key="pwm[0]" class="button is-small" @click="selectPathwayModes(pwm[0])">{{ pwm[1] }}</a>
@@ -261,7 +265,6 @@
 <script setup lang="ts">
 import { computed, ref, toRefs, watch } from 'vue'
 import { useRoute } from '#imports'
-import { useApolloClient } from '@vue/apollo-composable'
 import type { LngLat } from 'maplibre-gl'
 import { PathwayModes } from '../../../../pathways/pathway-icons'
 import { LocationTypes } from '../basemaps'
@@ -296,10 +299,14 @@ const {
   stopAssociationsEnabled,
   selectedLevels,
   handleError,
-  refetch
+  createStop,
+  updateStop,
+  deleteStop,
+  createPathway,
+  updatePathway,
+  deletePathway
 } = useStation({ feedKey, feedVersionKey, stationKey, clientId: clientId?.value })
 
-const { resolveClient } = useApolloClient()
 const route = useRoute()
 
 // Reactive data
@@ -411,7 +418,10 @@ watch(selectedLevels, () => {
     selectedStops.value = []
     selectedPathways.value = []
   }
-  selectMode.value = 'select'
+  // Don't reset mode when adding/editing nodes or pathways - user may be selecting a level for the new entity
+  if (selectMode.value !== 'add-node' && selectMode.value !== 'add-pathway') {
+    selectMode.value = 'select'
+  }
 })
 
 watch(selectMode, (mode) => {
@@ -425,11 +435,9 @@ watch(selectMode, (mode) => {
 function createStopHandler (node: Stop) {
   if (!station.value) return
   let newStopId = 0
-  const apollo = resolveClient(clientId?.value)
-  ;(station.value.createStop(apollo, node) as Promise<any>)
+  createStop(node)
     .then((d: any) => {
       newStopId = d?.data?.stop_create?.id
-      return refetch()
     })
     .then(() => {
       // NextTick does not seem to be sufficient here, so we use setTimeout
@@ -440,18 +448,14 @@ function createStopHandler (node: Stop) {
 
 function updateStopHandler (node: Stop) {
   if (!station.value) return
-  const apollo = resolveClient(clientId?.value)
-  ;(station.value.updateStop(apollo, node) as Promise<any>)
-    .then(() => refetch())
+  updateStop(node)
     .then(() => { selectStop(node.id!) })
     .catch(handleError)
 }
 
 function deleteStopHandler (node: Stop) {
   if (!station.value) return
-  const apollo = resolveClient(clientId?.value)
-  return (station.value.deleteStop(apollo, node) as Promise<any>)
-    .then(() => refetch())
+  return deleteStop(node)
     .then(() => { selectStop(null) })
     .catch(handleError)
 }
@@ -490,28 +494,22 @@ function newPathway (): Pathway {
 
 function createPathwayHandler (pw: Pathway) {
   if (!station.value) return
-  const apollo = resolveClient(clientId?.value)
-  ;(station.value.createPathway(apollo, pw) as Promise<any>)
-    .then(() => refetch())
+  createPathway(pw)
     .then(() => { selectPathway(null) })
     .catch(handleError)
 }
 
 function updatePathwayHandler (pw: Pathway) {
   if (!station.value) return
-  const apollo = resolveClient(clientId?.value)
-  ;(station.value.updatePathway(apollo, pw) as Promise<any>)
-    .then(() => refetch())
+  updatePathway(pw)
     .then(() => { selectPathway(null) })
     .catch(handleError)
 }
 
 function deletePathwayHandler (pw: Pathway) {
   if (!station.value) return
-  const apollo = resolveClient(clientId?.value)
   selectPathway(null)
-  ;(station.value.deletePathway(apollo, pw) as Promise<any>)
-    .then(() => refetch())
+  deletePathway(pw)
     .then(() => { selectPathway(null) })
     .catch(handleError)
 }

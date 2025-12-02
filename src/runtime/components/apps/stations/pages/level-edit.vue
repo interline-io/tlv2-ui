@@ -20,7 +20,6 @@
 <script setup lang="ts">
 import { computed, toRefs } from 'vue'
 import { navigateTo } from '#imports'
-import { useApolloClient } from '@vue/apollo-composable'
 import type { Level } from '../station'
 import { useStation } from '../composables/useStation'
 import { useRouteResolver } from '../../../../composables/useRouteResolver'
@@ -37,10 +36,11 @@ const { feedKey, feedVersionKey, stationKey, clientId } = toRefs(props)
 
 const {
   station,
-  handleError
+  handleError,
+  updateLevel,
+  deleteLevel
 } = useStation({ feedKey, feedVersionKey, stationKey, clientId: clientId?.value })
 
-const { resolveClient } = useApolloClient()
 const { resolve } = useRouteResolver()
 
 // Computed properties
@@ -58,8 +58,7 @@ const level = computed((): Level | null => {
 // Methods
 function updateLevelHandler (level: Level) {
   if (!station.value) return
-  const apollo = resolveClient(clientId?.value)
-  ;(station.value.updateLevel(apollo, level) as Promise<any>)
+  updateLevel(level)
     .then(() => {
       navigateTo({
         name: resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),
@@ -75,8 +74,7 @@ function updateLevelHandler (level: Level) {
 
 function deleteLevelHandler (level: Level) {
   if (!station.value) return
-  const apollo = resolveClient(clientId?.value)
-  ;(station.value.deleteLevel(apollo, level) as Promise<any>)
+  deleteLevel(level)
     .then(() => {
       navigateTo({
         name: resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),

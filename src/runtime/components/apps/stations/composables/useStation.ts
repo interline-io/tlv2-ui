@@ -1,8 +1,9 @@
 import { ref, computed, watch, type Ref } from 'vue'
 import { gql } from 'graphql-tag'
-import { useQuery } from '@vue/apollo-composable'
+import { useQuery, useApolloClient } from '@vue/apollo-composable'
 import { useToastNotification } from '../../../../composables/useToastNotification'
-import { Stop, Station, stationQuery, stationStopQuery, mapLevelKeyFn } from '../station'
+import type { Level, Pathway } from '../station'
+import { Stop, Station, FeedVersion, stationQuery, stationStopQuery, mapLevelKeyFn } from '../station'
 import type { FeedQueryResponse, StationQueryResponse, StopsQueryResponse } from '../types'
 
 const currentFeedsQuery = gql`
@@ -234,8 +235,212 @@ export function useStation (options: UseStationOptions) {
     return feedsLoading.value || stationLoading.value || stopsLoading.value
   })
 
-  const refetch = () => {
-    return refetchStation()
+  const refetch = async () => {
+    await refetchStation()
+    // Refetch stops if we have a station with stops to reload
+    if (station.value && stopList.value.length > 0) {
+      await refetchStops()
+    }
+  }
+
+  // GraphQL Mutations
+  const levelCreateMutation = gql`
+    mutation($set: LevelSetInput!) {
+      level_create(set: $set) { id }
+    }
+  `
+
+  const levelUpdateMutation = gql`
+    mutation($set: LevelSetInput!) {
+      level_update(set: $set) { id }
+    }
+  `
+
+  const levelDeleteMutation = gql`
+    mutation($id: Int!) {
+      level_delete(id: $id) { id }
+    }
+  `
+
+  const pathwayCreateMutation = gql`
+    mutation($set: PathwaySetInput!) {
+      pathway_create(set: $set) { id }
+    }
+  `
+
+  const pathwayUpdateMutation = gql`
+    mutation($set: PathwaySetInput!) {
+      pathway_update(set: $set) { id }
+    }
+  `
+
+  const pathwayDeleteMutation = gql`
+    mutation($id: Int!) {
+      pathway_delete(id: $id) { id }
+    }
+  `
+
+  const stopCreateMutation = gql`
+    mutation($set: StopSetInput!) {
+      stop_create(set: $set) { id }
+    }
+  `
+
+  const stopUpdateMutation = gql`
+    mutation($set: StopSetInput!) {
+      stop_update(set: $set) { id }
+    }
+  `
+
+  const stopDeleteMutation = gql`
+    mutation($id: Int!) {
+      stop_delete(id: $id) { id }
+    }
+  `
+
+  // Apollo Client for mutations
+  const { resolveClient } = useApolloClient()
+  const executeMutation = async (mutation: any, variables: Record<string, unknown>): Promise<any> => {
+    const apollo = resolveClient(clientId)
+    const result = await apollo.mutate({
+      mutation,
+      variables,
+      context: { clientName: options.clientId }
+    })
+    await refetch()
+    return result
+  }
+
+  // Level mutations
+  const createLevel = async (ent: Level): Promise<any> => {
+    if (!feedVersion.value) {
+      throw new Error('Feed version not available')
+    }
+    if (!station.value) {
+      throw new Error('Station not available')
+    }
+    ent.feed_version = { id: feedVersion.value.id }
+    ent.parent = { id: station.value.id }
+    const v = ent.value()
+    const vars = { set: v }
+    return executeMutation(levelCreateMutation, vars)
+  }
+
+  const updateLevel = async (ent: Level): Promise<any> => {
+    if (!ent.id) {
+      throw new Error('Level ID required for update')
+    }
+    if (!feedVersion.value) {
+      throw new Error('Feed version not available')
+    }
+    if (!station.value) {
+      throw new Error('Station not available')
+    }
+    const v = ent.value()
+    v.parent = { id: station.value.id }
+    const vars = { set: v }
+    return executeMutation(levelUpdateMutation, vars)
+  }
+
+  const deleteLevel = async (ent: Level): Promise<any> => {
+    if (!ent.id) {
+      throw new Error('Level ID required for delete')
+    }
+    return executeMutation(levelDeleteMutation, { id: ent.id })
+  }
+
+  // Pathway mutations
+  const createPathway = async (ent: Pathway): Promise<any> => {
+    if (!feedVersion.value) {
+      throw new Error('Feed version not available')
+    }
+    ent.feed_version = { id: feedVersion.value.id }
+    const v = ent.value()
+    const vars = { set: v }
+    return executeMutation(pathwayCreateMutation, vars)
+  }
+
+  const updatePathway = async (ent: Pathway): Promise<any> => {
+    if (!ent.id) {
+      throw new Error('Pathway ID required for update')
+    }
+    if (!feedVersion.value) {
+      throw new Error('Feed version not available')
+    }
+    const v = ent.value()
+    const vars = { set: v }
+    return executeMutation(pathwayUpdateMutation, vars)
+  }
+
+  const deletePathway = async (ent: Pathway): Promise<any> => {
+    if (!ent.id) {
+      throw new Error('Pathway ID required for delete')
+    }
+    return executeMutation(pathwayDeleteMutation, { id: ent.id })
+  }
+
+  // Stop mutations
+  const createStop = async (ent: Stop): Promise<any> => {
+    if (!feedVersion.value) {
+      throw new Error('Feed version not available')
+    }
+    if (!station.value) {
+      throw new Error('Station not available')
+    }
+    ent.feed_version.id = feedVersion.value.id
+    ent.parent = { id: station.value.id }
+    const v = ent.value()
+    const vars = { set: v }
+    return executeMutation(stopCreateMutation, vars)
+  }
+
+  const updateStop = async (ent: Stop): Promise<any> => {
+    if (!ent.id) {
+      throw new Error('Stop ID required for update')
+    }
+    if (!feedVersion.value) {
+      throw new Error('Feed version not available')
+    }
+    if (!station.value) {
+      throw new Error('Station not available')
+    }
+    const v = ent.value()
+    v.parent = { id: station.value.id }
+    const vars = { set: v }
+    return executeMutation(stopUpdateMutation, vars)
+  }
+
+  const deleteStop = async (ent: Stop): Promise<any> => {
+    if (!ent.id) {
+      throw new Error('Stop ID required for delete')
+    }
+    return executeMutation(stopDeleteMutation, { id: ent.id })
+  }
+
+  const importStop = async (ent: Stop): Promise<any> => {
+    if (!station.value) {
+      throw new Error('Station not available')
+    }
+    if (!feedVersion.value) {
+      throw new Error('Feed version not available')
+    }
+    const sourceFeed = ent.feed_version?.feed?.onestop_id
+    const stop = new Stop({
+      feed_version: { id: feedVersion.value.id },
+      parent: { id: station.value.id },
+      stop_id: `import-${sourceFeed}-${ent.stop_id}`,
+      level: { id: ent.level.id },
+      stop_name: ent.stop_name,
+      stop_code: ent.stop_code,
+      platform_code: ent.platform_code,
+      location_type: ent.location_type,
+      geometry: ent.geometry,
+      external_reference: {
+        target_feed_onestop_id: sourceFeed,
+        target_stop_id: ent.stop_id
+      }
+    })
+    return createStop(stop)
   }
 
   return {
@@ -258,6 +463,22 @@ export function useStation (options: UseStationOptions) {
 
     // Methods
     handleError,
-    refetch
+    refetch,
+
+    // Level mutations
+    createLevel,
+    updateLevel,
+    deleteLevel,
+
+    // Pathway mutations
+    createPathway,
+    updatePathway,
+    deletePathway,
+
+    // Stop mutations
+    createStop,
+    updateStop,
+    deleteStop,
+    importStop
   }
 }

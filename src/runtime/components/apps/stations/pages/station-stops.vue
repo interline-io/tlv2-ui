@@ -169,7 +169,7 @@
 import { computed, ref, toRefs, watch } from 'vue'
 import { navigateTo, useRoute } from '#imports'
 import { gql } from 'graphql-tag'
-import { useQuery, useApolloClient } from '@vue/apollo-composable'
+import { useQuery } from '@vue/apollo-composable'
 import { Stop } from '../station'
 import { useStation } from '../composables/useStation'
 import { LocationTypes } from '../basemaps'
@@ -189,10 +189,9 @@ const {
   stopAssociationsEnabled,
   selectedAgencies: stationSelectedAgencies,
   handleError,
-  refetch
+  importStop
 } = useStation({ feedKey, feedVersionKey, stationKey, clientId: clientId?.value })
 
-const { resolveClient } = useApolloClient()
 const route = useRoute()
 
 function intersection (setA: Set<string>, setB: Iterable<string>): Set<string> {
@@ -476,9 +475,7 @@ const selectedLevels = stationSelectedAgencies
 // Methods
 function importStopHandler (ent: Stop) {
   if (!station.value) return
-  const apollo = resolveClient(clientId?.value)
-  ;(station.value.importStop(apollo, ent) as Promise<any>)
-    .then(() => refetch())
+  importStop(ent)
     .then(() => {
       if (ent.id) {
         selectStop(ent.id)
