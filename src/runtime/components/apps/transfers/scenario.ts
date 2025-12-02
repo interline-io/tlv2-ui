@@ -899,12 +899,42 @@ export function NewScenarioResult (
 // Filter Departures
 // ============================================================================
 
+/**
+ * Check if any route attributes exist in the stop time events
+ */
+function hasRouteAttributes (stopTimeEvents: StopTimeEvent[]): boolean {
+  for (const ste of stopTimeEvents) {
+    const attr = ste.trip.route.route_attribute
+    if (attr && (attr.category !== undefined || attr.subcategory !== undefined || attr.running_way !== undefined)) {
+      return true
+    }
+  }
+  return false
+}
+
+/**
+ * Filter trip filter groups to remove route attribute levels if they don't exist
+ */
+function filterTripFilterGroups (groups: string[], stopTimeEvents: StopTimeEvent[]): string[] {
+  const hasAttributes = hasRouteAttributes(stopTimeEvents)
+  if (hasAttributes) {
+    return groups
+  }
+  // Remove route attribute levels if no attributes exist
+  return groups.filter(g =>
+    g !== 'route_category'
+    && g !== 'route_subcategory'
+    && g !== 'route_running_way'
+  )
+}
+
 export function filterDepartures (
   scenario: Scenario,
   tripFilter: string[],
   stopTimeEvents: StopTimeEvent[]
 ): FilterDeparturesResult {
-  const tree = makeTripTree('', stopTimeEvents, scenario.tripFilterGroups)
+  const filteredGroups = filterTripFilterGroups(scenario.tripFilterGroups, stopTimeEvents)
+  const tree = makeTripTree('', stopTimeEvents, filteredGroups)
   const deps = tree.selectAll().setUnselected(tripFilter).setIndet().getSelectedDeps().map((s: any) => s.trip.id)
   const includeTrips = new Set(deps)
 
