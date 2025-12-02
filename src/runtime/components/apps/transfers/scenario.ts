@@ -672,6 +672,46 @@ export function feedVersionDisplayName (fv: FeedVersionData): string {
   return displayName
 }
 
+export function feedVersionDisplayParts (fv: FeedVersionData | ProcessedFeedVersion): {
+  primary: string
+  secondary: string
+} {
+  if (!('feed' in fv) || !fv.feed) {
+    const date = 'fetched_at' in fv && fv.fetched_at ? dayjs(fv.fetched_at).format('MMMM D, YYYY') : 'Unknown'
+    return { primary: date, secondary: '' }
+  }
+  const feedKey = fv.feed.onestop_id
+  // Check if FeedVersionData (has feed.name) or ProcessedFeedVersion (doesn't have feed.name)
+  const feedName = ('name' in fv.feed && fv.feed.name) ? fv.feed.name : feedKey
+  const date = 'fetched_at' in fv && fv.fetched_at ? dayjs(fv.fetched_at).format('MMMM D, YYYY') : ''
+  const sha1 = 'sha1' in fv && fv.sha1 ? fv.sha1.substring(0, 8) : ''
+  const versionName = ('name' in fv && fv.name) ? fv.name : sha1
+
+  if (feedKey === 'historic') {
+    const month = 'fetched_at' in fv && fv.fetched_at ? fv.fetched_at.substring(0, 7) : ''
+    return { primary: 'Historic RG', secondary: month }
+  } else if (feedKey === 'RG') {
+    return { primary: 'Daily RG', secondary: date }
+  }
+
+  const parts: string[] = []
+  // Only show onestop_id if it's different from the feed name
+  if (feedName !== feedKey) {
+    parts.push(feedKey)
+  }
+  if (versionName && versionName !== feedName) {
+    parts.push(versionName)
+  }
+  if (date) {
+    parts.push(date)
+  }
+
+  return {
+    primary: feedName,
+    secondary: parts.join(' • ')
+  }
+}
+
 export function feedVersionDefaultDate (fv: FeedVersionData): string | null {
   if (!fv.fetched_at || !fv.feed) {
     return null
@@ -971,23 +1011,39 @@ function makeTripTree (pkey: string, deps: StopTimeEvent[], groups: string[]): T
     } = {}
 
     switch (group) {
-      case 'feed_version':
+      case 'feed_version': {
+        const displayParts = feedVersionDisplayParts(dep.trip.feed_version)
         tn.key = String(dep.trip.feed_version.id)
-        tn.name = feedVersionDisplayName(dep.trip.feed_version)
-        tn.opts = { style: 'bold' }
+        tn.name = displayParts.primary
+        tn.opts = {
+          style: 'bold',
+          feedVersionPrimary: displayParts.primary,
+          feedVersionSecondary: displayParts.secondary,
+          feedOnestopId: dep.trip.feed_version.feed.onestop_id,
+          feedVersionSha1: dep.trip.feed_version.sha1,
+          isFeedVersion: true
+        }
         break
+      }
       case 'agency':
         tn.key = dep.trip.route.agency.agency_id
         tn.name = dep.trip.route.agency.agency_name
         break
-      case 'route':
+      case 'route': {
         tn.key = dep.trip.route.route_id
-        tn.name = dep.trip.route.route_short_name + ': ' + dep.trip.route.route_long_name
-        tn.opts = {
-          routeCategory: dep.trip.route.route_attribute?.category,
-          routeSubcategory: dep.trip.route.route_attribute?.subcategory,
-          showCategory: false
+        const shortName = dep.trip.route.route_short_name || ''
+        const longName = dep.trip.route.route_long_name || ''
+        if (shortName && longName) {
+          tn.name = `${shortName}: ${longName}`
+        } else if (shortName) {
+          tn.name = shortName
+        } else if (longName) {
+          tn.name = longName
+        } else {
+          tn.name = dep.trip.route.route_id || 'Unnamed route'
         }
+        break
+      }
         break
       case 'direction_id':
         tn.key = String(dep.trip.direction_id)
