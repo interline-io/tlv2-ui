@@ -455,7 +455,9 @@ export default defineComponent({
   methods: {
     importStopHandler (ent: Stop) {
       if (!this.station) return
-      this.station.importStop((this.$apollo as any), ent)
+      const apollo = this.$apollo as any
+      // @ts-expect-error - Vue Apollo global injection
+      this.station.importStop(apollo, ent)
         .then(() => { return this.refetch() })
         .then((data: any) => { this.selectStop(data.id) })
         .catch(this.setError)

@@ -459,8 +459,10 @@ export default defineComponent({
     },
     deletePathwayHandler (pw: Pathway) {
       if (!this.station) return
+      const apollo = this.$apollo as any
       this.selectPathway(null)
-      this.station.deletePathway((this.$apollo as any), pw)
+      // @ts-expect-error - Vue Apollo global injection
+      this.station.deletePathway(apollo, pw)
         .then(() => { return this.refetch() })
         .then(() => { this.selectPathway(null) })
         .catch(this.setError)

@@ -34,7 +34,9 @@ export default defineComponent({
       return newStation
     },
     createStationHandler (station: Station) {
-      station.createStation((this.$apollo as any), station.stop)
+      const apollo = this.$apollo as any
+      // @ts-expect-error - Vue Apollo global injection
+      station.createStation(apollo, station.stop)
         .then(() => {
           navigateTo({
             name: this.resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),
