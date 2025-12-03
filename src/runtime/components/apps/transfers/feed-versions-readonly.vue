@@ -127,7 +127,8 @@ const feedVersions = computed(() => {
 
   return props.selectedFeedVersions.map((sfv) => {
     const fvo = fvMap.get(sfv.id)
-    const displayName = fvo?.displayName || `Feed Version ${sfv.id}`
+    // Show "Loading..." if feed version options haven't loaded yet
+    const displayName = fvo?.displayName || (props.feedVersionOptions.length === 0 ? 'Loading names...' : `Feed Version ${sfv.id}`)
 
     // Extract feed name from displayName
     // Format is typically: "Feed Name: versionName (date)" or "Daily RG for date"
