@@ -817,7 +817,7 @@ export class Scenario {
     v = v || {}
     this.selectedFeedVersions = (v.selectedFeedVersions || []).map(s => new SelectedFeedVersion(s))
     this.allowFuzzyMatching = true
-    this.timeOfDay = v.timeOfDay || '05:00-07:00'
+    this.timeOfDay = v.timeOfDay || 'all'
     this.excludeIncomingTrips = v.excludeIncomingTrips || []
     this.excludeOutgoingTrips = v.excludeOutgoingTrips || []
     this.tripFilterGroups = v.tripFilterGroups || ['feed_version', 'route_category', 'agency', 'route', 'trip_headsign']
@@ -1512,7 +1512,7 @@ export function parseScenarioFromUrl (
 
   return NewScenario({
     selectedFeedVersions: fvos,
-    timeOfDay: (query.timeOfDay as string) || '05:00-07:00',
+    timeOfDay: (query.timeOfDay as string) || 'all',
     profileName: query.profileName as string | undefined,
     transferScoringBreakpoints: tsbp,
     useStopObservations,

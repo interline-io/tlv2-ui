@@ -129,20 +129,25 @@ watch(dataError, (e) => {
 })
 
 const feedVersionOptions = computed<FeedVersionOption[]>(() => {
-  if (!station.value) return []
-
+  // Build hasStops/hasDepartures maps if station data is available
+  // These are optional metadata - we can still show feed versions without them
   const fvHasStops = new Map()
-  for (const stop of station.value.stops) {
-    fvHasStops.set(stop.feed_version.id, true)
-  }
   const fvHasDepartures = new Map()
-  if (scenarioResult.value) {
-    for (const d of scenarioResult.value.outgoingDepartures) {
-      fvHasDepartures.set(d.trip.feed_version.id, true)
+  let defaultHasStops = true
+  let defaultHasDepartures = true
+
+  if (station.value) {
+    for (const stop of station.value.stops) {
+      fvHasStops.set(stop.feed_version.id, true)
     }
+    if (scenarioResult.value) {
+      for (const d of scenarioResult.value.outgoingDepartures) {
+        fvHasDepartures.set(d.trip.feed_version.id, true)
+      }
+    }
+    defaultHasStops = (station.value.stops.length === 0)
+    defaultHasDepartures = (station.value.stops.length === 0)
   }
-  const defaultHasStops = (station.value.stops.length === 0)
-  const defaultHasDepartures = (station.value.stops.length === 0)
 
   // sort and filter - most recent first
   const fvs = feedVersions.value.slice(0).sort((a: any, b: any) => {
