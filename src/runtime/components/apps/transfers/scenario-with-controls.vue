@@ -16,7 +16,7 @@
       :enable-profiles="displayProfiles"
       :show-trips="showTripControls"
       :read-only-feed-versions="readOnlyFeedVersions"
-      :show-time-source-control="showTimeSourceControl"
+      :gtfs-realtime-stop-observations-available="gtfsRealtimeStopObservationsAvailable"
       @set-exclude-incoming-trips="handleSetExcludeIncomingTrips"
       @set-exclude-outgoing-trips="handleSetExcludeOutgoingTrips"
       @transfer-scoring-breakpoints-changed="handleSetTransferScoringBreakpoints"
@@ -82,8 +82,8 @@ const readOnlyFeedVersions = computed(() => {
   return tlv2Config?.transferAnalystReadOnlyFeedSelector === true
 })
 
-// Show time source selector (relevant when GTFS Realtime stop observations are available) - defaults to true
-const showTimeSourceControl = computed(() => {
+// Whether GTFS Realtime stop observations are available - defaults to true
+const gtfsRealtimeStopObservationsAvailable = computed(() => {
   return tlv2Config?.transferAnalystGtfsRealtimeStopObservations !== false
 })
 const mixpanel = useMixpanel()

@@ -58,61 +58,69 @@
       class="columns is-clearfix block"
     >
       <div class="column is-one-third">
-        <t-field
-          label="Walking Profile (Beta)"
-          :message="enableProfiles ? undefined : 'Profiles may not be available for this station and/or feed version'"
-        >
-          <t-select
-            v-model="profileName"
-            :disabled="!enableProfiles"
+        <div class="box">
+          <t-field
+            label="Walking Profile (Beta)"
+            :message="enableProfiles ? undefined : 'GTFS-Pathways data not found in this station area'"
           >
-            <option :value="null">
-              Straight-line
-            </option>
-            <option
-              v-for="(p, i) of profiles"
-              :key="i"
-              :value="i"
+            <t-select
+              v-model="profileName"
+              :disabled="!enableProfiles"
             >
-              {{ i }}
-            </option>
-          </t-select>
-        </t-field>
-        <t-field v-if="showTimeSourceControl" label="Time Source">
-          <template #message>
-            <p v-if="station == null || loading " />
+              <option :value="null">
+                Straight-line
+              </option>
+              <option
+                v-for="(p, i) of profiles"
+                :key="i"
+                :value="i"
+              >
+                {{ i }}
+              </option>
+            </t-select>
+          </t-field>
+          <div class="mt-4">
+            <a class="is-size-7" @click="showAdvancedOptions = !showAdvancedOptions">
+              <t-icon :icon="showAdvancedOptions ? 'chevron-down' : 'chevron-right'" size="small" /> Advanced options
+            </a>
+          </div>
+          <div v-if="showAdvancedOptions" class="mt-3">
+            <t-field label="Time Source" :message="gtfsRealtimeStopObservationsAvailable ? undefined : 'GTFS Realtime stop observations not available'">
+              <t-select
+                v-model="useStopObservations"
+                :disabled="!gtfsRealtimeStopObservationsAvailable"
+              >
+                <option value="true">
+                  Static GTFS &amp; GTFS Realtime schedules
+                </option>
+                <option value="false">
+                  Static GTFS schedule only
+                </option>
+              </t-select>
+            </t-field>
             <p
-              v-else-if="scenario?.useStopObservations && !hasAtLeastOneStopObservation"
+              v-if="gtfsRealtimeStopObservationsAvailable && scenario?.useStopObservations && !hasAtLeastOneStopObservation && station != null && !loading"
               class="help is-danger"
             >
               No real-time observations found on {{ scenario?.selectedFeedVersions?.[0]?.serviceDate }} between {{ scenario?.timeOfDay }}
             </p>
-          </template>
-          <t-select
-            v-model="useStopObservations"
-          >
-            <option value="true">
-              Static GTFS &amp; GTFS Realtime schedules
-            </option>
-            <option value="false">
-              Static GTFS schedule only
-            </option>
-          </t-select>
-        </t-field>
+            <t-checkbox
+              :model-value="(scenario?.hideSubsequentTransfers || 0) > 0"
+              @update:model-value="(value) => hideSubsequentTransfersChanged(Array.isArray(value) ? false : value)"
+            >
+              Hide subsequent transfers to the same route &amp; headsign
+            </t-checkbox>
+          </div>
+        </div>
       </div>
       <div class="column is-two-thirds">
-        <tl-apps-transfers-time-scoring-control
-          :transfer-scoring-breakpoints="scenario?.transferScoringBreakpoints || []"
-          @changed="transferScoringBreakpointsChanged"
-        />
-        <t-field label="Options">
-          <t-checkbox
-            :model-value="(scenario?.hideSubsequentTransfers || 0) > 0"
-            @update:model-value="(value) => hideSubsequentTransfersChanged(Array.isArray(value) ? false : value)"
-          >
-            Hide subsequent transfers to the same route &amp; headsign
-          </t-checkbox>
-        </t-field>
+        <div class="box">
+          <label class="label">Transfer Time Scoring</label>
+          <tl-apps-transfers-time-scoring-control
+            :transfer-scoring-breakpoints="scenario?.transferScoringBreakpoints || []"
+            @changed="transferScoringBreakpointsChanged"
+          />
+        </div>
       </div>
     </div>
 
@@ -209,7 +217,7 @@ interface Props {
   showTrips?: boolean
   loading?: boolean
   readOnlyFeedVersions?: boolean
-  showTimeSourceControl?: boolean
+  gtfsRealtimeStopObservationsAvailable?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -227,7 +235,7 @@ const props = withDefaults(defineProps<Props>(), {
   showTrips: false,
   loading: false,
   readOnlyFeedVersions: false,
-  showTimeSourceControl: true
+  gtfsRealtimeStopObservationsAvailable: true
 })
 
 const emit = defineEmits({
@@ -246,8 +254,14 @@ const profiles = Profiles
 const selectedFeedVersions = ref<SelectedFeedVersion[]>(props.scenario?.selectedFeedVersions?.slice(0) || [])
 const _enableStopObservations = ref(true)
 const error = ref<string | null>(null)
+const showAdvancedOptions = ref(false)
 const profileName = ref<string | null>(props.scenario?.profileName || null)
-const useStopObservations = ref<string>(String(props.scenario?.useStopObservations))
+// If GTFS-RT stop observations not available, force to static only
+const useStopObservations = ref<string>(
+  props.gtfsRealtimeStopObservationsAvailable
+    ? String(props.scenario?.useStopObservations)
+    : 'false'
+)
 
 watch(() => props.scenario?.selectedFeedVersions, (newVal) => {
   if (newVal) {
@@ -264,7 +278,10 @@ watch(profileName, (newVal) => {
 })
 
 watch(() => props.scenario?.useStopObservations, (newVal) => {
-  useStopObservations.value = String(newVal)
+  // Only update if GTFS-RT is available, otherwise keep as static only
+  if (props.gtfsRealtimeStopObservationsAvailable) {
+    useStopObservations.value = String(newVal)
+  }
 })
 
 watch(useStopObservations, (newVal) => {
