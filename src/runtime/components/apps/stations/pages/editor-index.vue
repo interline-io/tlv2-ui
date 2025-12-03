@@ -41,13 +41,17 @@
   </div>
 </template>
 
-<script>
-import FeedMixin from './feed-mixin'
+<script setup lang="ts">
+import { toRefs } from 'vue'
+import { useFeed } from '../composables/useFeed'
 
-export default {
-  mixins: [FeedMixin],
-  head: {
-    title: 'Editor'
-  }
-}
+const props = defineProps<{
+  clientId?: string
+}>()
+
+const { clientId } = toRefs(props)
+
+const { feeds } = useFeed({
+  clientId: clientId?.value
+})
 </script>

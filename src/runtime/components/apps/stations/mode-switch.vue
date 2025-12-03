@@ -26,43 +26,36 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { useRouteResolver } from '../../../composables/useRouteResolver'
 
-export default {
-  props: {
-    params: {
-      type: Object,
-      default: () => {}
-    },
-    query: {
-      type: Object,
-      default: () => {}
-    }
-  },
-  setup () {
-    const { resolve } = useRouteResolver()
-    return { resolve }
-  },
-  data () {
-    return {
-      routeKeys: {
-        pathways: 'apps-stations-feedKey-feedVersionKey-stations-stationKey-pathways',
-        diagram: 'apps-stations-feedKey-feedVersionKey-stations-stationKey-diagram'
-      }
-    }
-  },
-  computed: {
-    selectedMode () {
-      // TODO: pass this in?
-      const currentRoute = this.$route.name
-      for (const [k, r] of Object.entries(this.routeKeys)) {
-        if (currentRoute === this.resolve(r)) {
-          return k
-        }
-      }
-      return ''
+interface Props {
+  params?: Record<string, string>
+  query?: Record<string, string>
+}
+
+withDefaults(defineProps<Props>(), {
+  params: () => ({}),
+  query: () => ({})
+})
+
+const { resolve } = useRouteResolver()
+const route = useRoute()
+
+const routeKeys = {
+  pathways: 'apps-stations-feedKey-feedVersionKey-stations-stationKey-pathways',
+  diagram: 'apps-stations-feedKey-feedVersionKey-stations-stationKey-diagram'
+}
+
+const selectedMode = computed((): string => {
+  const currentRoute = route.name
+  for (const [k, r] of Object.entries(routeKeys)) {
+    if (currentRoute === resolve(r)) {
+      return k
     }
   }
-}
+  return ''
+})
 </script>

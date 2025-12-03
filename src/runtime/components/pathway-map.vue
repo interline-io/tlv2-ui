@@ -10,12 +10,12 @@
 import { Map as MaplibreMap } from 'maplibre-gl'
 import type { LngLat, MapLayerMouseEvent, PointLike } from 'maplibre-gl'
 import { nextTick, ref, watch, onMounted } from 'vue'
-import { useBasemapLayers } from '../../../composables/useBasemapLayers'
-import { PathwayModeIcons } from '../../../pathways/pathway-icons'
-import type { Station, Stop, Pathway, Level } from './station'
+import { useBasemapLayers } from '../composables/useBasemapLayers'
+import { PathwayModeIcons } from '../pathways/pathway-icons'
+import type { MapStation, MapStop, MapPathway, MapLevel } from '../pathways/types'
 import type { Feature, FeatureCollection, Point, LineString, MultiPolygon } from 'geojson'
 
-function mapLevelKeyFn (level: Level | null | undefined): string {
+function mapLevelKeyFn (level: MapLevel | null | undefined): string {
   return `mapLevelKey-${level?.id || 'unassigned'}`
 }
 
@@ -38,18 +38,19 @@ const LEVEL_COLORS = [
 ]
 
 interface Props {
-  station?: Station | null
+  station?: MapStation | null
   basemap?: string
   zoom?: number
   center?: [number, number]
-  otherStops?: Stop[]
+  otherStops?: MapStop[]
   routes?: Feature[]
-  selectedStops?: Stop[]
-  selectedPathways?: Pathway[]
+  selectedStops?: MapStop[]
+  selectedPathways?: MapPathway[]
   selectedLevels?: string[]
   selectedPathwayTransitionTypes?: string
   selectedAgencies?: Array<{ id: number }> | null
   search?: boolean
+  editable?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -64,7 +65,8 @@ const props = withDefaults(defineProps<Props>(), {
   selectedLevels: () => [],
   selectedPathwayTransitionTypes: 'all',
   selectedAgencies: null,
-  search: false
+  search: false,
+  editable: true
 })
 
 const emit = defineEmits<{
@@ -442,7 +444,7 @@ function drawPathways () {
   }
 
   // Add midpoints
-  const midpoints: Feature<Point>[] = (props.station.pathways || []).map((s: Pathway): Feature<Point> => {
+  const midpoints: Feature<Point>[] = (props.station.pathways || []).map((s): Feature<Point> => {
     return {
       type: 'Feature',
       id: s.id,
@@ -470,7 +472,7 @@ function drawPathways () {
   }
 
   // Add pathways
-  const features: Feature<LineString>[] = (props.station.pathways || []).map((s: Pathway): Feature<LineString> => {
+  const features: Feature<LineString>[] = (props.station.pathways || []).map((s): Feature<LineString> => {
     return {
       type: 'Feature',
       id: s.id,
@@ -598,55 +600,60 @@ function drawMap () {
       emit('select-pathway', feature.id)
     }
   })
-  map.value.on('mousedown', (e: MapLayerMouseEvent) => {
-    if (!map.value || !props.station) return
-    // Get the top most stop
-    const features = map.value.queryRenderedFeatures(e.point)
-      .filter((f: any) => f.source === 'stops' || f.source === 'pathways')
-    if (features.length === 0) {
-      return
-    }
-    const feature = features[0]
-    if (!feature || feature.source !== 'stops') {
-      return
-    }
-    // Prevent the default map drag behavior.
-    e.preventDefault()
-    const dragStartPoint = e.point
-    // Get reference to update geometry
-    let dragStop: Stop | null = null
-    for (const stop of props.station.stops) {
-      if (stop.id === feature.id) {
-        dragStop = stop
-      }
-    }
-    if (!dragStop) {
-      return
-    }
-    if (!props.selectedStops.map(s => s.id).includes(dragStop.id)) {
-      return
-    }
-    const mouseMove = (e: MapLayerMouseEvent) => {
-      const d = distance(dragStartPoint, e.point)
-      if (d < 10) {
+
+  // Only enable drag editing when editable is true
+  if (props.editable) {
+    map.value.on('mousedown', (e: MapLayerMouseEvent) => {
+      if (!map.value || !props.station) return
+      // Get the top most stop
+      const features = map.value.queryRenderedFeatures(e.point)
+        .filter((f: any) => f.source === 'stops' || f.source === 'pathways')
+      if (features.length === 0) {
         return
       }
-      if (dragStop && dragStop.geometry) {
-        dragStop.geometry.coordinates = [e.lngLat.lng, e.lngLat.lat]
-        drawStops()
-        drawPathways()
+      const feature = features[0]
+      if (!feature || feature.source !== 'stops') {
+        return
       }
-    }
-    map.value.on('mousemove', mouseMove)
-    map.value.once('mouseup', (e: MapLayerMouseEvent) => {
-      const dragEndPoint = e.point
-      const d = distance(dragStartPoint, dragEndPoint)
-      if (d > 10 && dragStop && typeof dragStop.id === 'number') {
-        emit('move-stop-save', dragStop.id, e.lngLat)
+      // Prevent the default map drag behavior.
+      e.preventDefault()
+      const dragStartPoint = e.point
+      // Get reference to update geometry
+      let dragStop: MapStop | null = null
+      for (const stop of props.station.stops) {
+        if (stop.id === feature.id) {
+          dragStop = stop
+        }
       }
-      map.value?.off('mousemove', mouseMove)
+      if (!dragStop) {
+        return
+      }
+      if (!props.selectedStops.map(s => s.id).includes(dragStop.id)) {
+        return
+      }
+      const mouseMove = (e: MapLayerMouseEvent) => {
+        const d = distance(dragStartPoint, e.point)
+        if (d < 10) {
+          return
+        }
+        if (dragStop && dragStop.geometry) {
+          dragStop.geometry.coordinates = [e.lngLat.lng, e.lngLat.lat]
+          drawStops()
+          drawPathways()
+        }
+      }
+      map.value.on('mousemove', mouseMove)
+      map.value.once('mouseup', (e: MapLayerMouseEvent) => {
+        const dragEndPoint = e.point
+        const d = distance(dragStartPoint, dragEndPoint)
+        if (d > 10 && dragStop && typeof dragStop.id === 'number') {
+          emit('move-stop-save', dragStop.id, e.lngLat)
+        }
+        map.value?.off('mousemove', mouseMove)
+      })
     })
-  })
+  }
+
   // Redraw
   ready.value = true
   redraw()

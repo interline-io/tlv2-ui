@@ -55,4 +55,12 @@ declare module '#imports' {
   export function useAuthHeaders (): Promise<Record<string, string>>
 }
 
+// Add type declarations for Vue Apollo
+declare module 'vue' {
+  interface ComponentCustomProperties {
+    $apollo: any
+    $buefy: any
+  }
+}
+
 export {}

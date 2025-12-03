@@ -56,23 +56,6 @@
         </div>
       </t-demo-box>
 
-      <t-demo-box label="With Icons">
-        <div class="buttons">
-          <t-button variant="primary">
-            <t-icon icon="check" />
-            <span>Save</span>
-          </t-button>
-          <t-button variant="danger">
-            <t-icon icon="delete" />
-            <span>Delete</span>
-          </t-button>
-          <t-button variant="info">
-            <span>Download</span>
-            <t-icon icon="download" />
-          </t-button>
-        </div>
-      </t-demo-box>
-
       <t-demo-box label="Icon Only">
         <div class="buttons">
           <t-button variant="primary">
@@ -89,6 +72,23 @@
           </t-button>
           <t-button variant="danger">
             <t-icon icon="close" />
+          </t-button>
+        </div>
+      </t-demo-box>
+
+      <t-demo-box label="Icon Props (icon-left / icon-right)">
+        <div class="buttons">
+          <t-button variant="primary" icon-left="check">
+            Save
+          </t-button>
+          <t-button variant="danger" icon-left="delete">
+            Delete
+          </t-button>
+          <t-button variant="info" icon-right="download">
+            Download
+          </t-button>
+          <t-button variant="success" icon-left="upload" icon-right="check">
+            Upload & Verify
           </t-button>
         </div>
       </t-demo-box>

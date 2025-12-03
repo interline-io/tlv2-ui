@@ -7,7 +7,7 @@
           <t-input v-else v-model="pathway.pathway_id" />
         </t-field>
         <t-field label="From">
-          <span class="button stop-label" @click="$emit('select-stop', pathway.from_stop.id)">
+          <span class="button stop-label" @click="emit('selectStop', pathway.from_stop.id!)">
             <template v-if="pathway.from_stop.stop_name">
               {{ pathway.from_stop.stop_name }}</template>
             <template v-else>
@@ -17,7 +17,7 @@
           </span>
         </t-field>
         <t-field label="To">
-          <span class="button stop-label" @click="$emit('select-stop', pathway.to_stop.id)">
+          <span class="button stop-label" @click="emit('selectStop', pathway.to_stop.id!)">
             <template v-if="pathway.to_stop.stop_name">
               {{ pathway.to_stop.stop_name }}</template>
             <template v-else>
@@ -27,8 +27,8 @@
         </t-field>
 
         <t-field label="Mode">
-          <t-select v-model="pathway.pathway_mode" :disabled="readOnly">
-            <option v-for="[mode, label] in PathwayModes" :key="mode" :value="mode">
+          <t-select v-model="pathwayModeStr" :disabled="readOnly">
+            <option v-for="[mode, label] in PathwayModes" :key="mode" :value="String(mode)">
               {{ label }}
             </option>
           </t-select>
@@ -55,12 +55,10 @@
           <t-field>
             <t-input
               v-model="pathway.length"
-              number
               type="number"
               min="0"
               step="0.01"
               :disabled="readOnly"
-              controls-position="compact"
             />
           </t-field>
         </t-field>
@@ -69,11 +67,9 @@
           <t-field>
             <t-input
               v-model="pathway.traversal_time"
-              number
               type="number"
               min="0"
               :disabled="readOnly"
-              controls-position="compact"
             />
           </t-field>
         </t-field>
@@ -82,9 +78,7 @@
           <t-field>
             <t-input
               v-model="pathway.stair_count"
-              number
               type="number"
-              controls-position="compact"
               :disabled="readOnly"
             />
           </t-field>
@@ -94,10 +88,8 @@
           <t-field>
             <t-input
               v-model="pathway.max_slope"
-              number
               type="number"
               step="0.01"
-              controls-position="compact"
               :disabled="readOnly"
             />
           </t-field>
@@ -107,11 +99,9 @@
           <t-field>
             <t-input
               v-model="pathway.min_width"
-              number
               min="0"
               step="0.01"
               type="number"
-              controls-position="compact"
               :disabled="readOnly"
             />
           </t-field>
@@ -121,65 +111,73 @@
 
     <template v-if="!readOnly">
       <div v-if="pathway.id" class="buttons">
-        <span class="button is-primary" @click="$emit('update', pathway)">Save Pathway</span>
-        <span class="button is-danger" @click="$emit('delete', pathway)">Delete Pathway</span>
+        <span class="button is-primary" @click="emit('update', pathway)">Save Pathway</span>
+        <span class="button is-danger" @click="emit('delete', pathway)">Delete Pathway</span>
       </div>
       <div v-else class="buttons">
-        <span class="button is-primary" @click="$emit('create', pathway)">Add Pathway</span>
+        <span class="button is-primary" @click="emit('create', pathway)">Add Pathway</span>
       </div>
     </template>
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed, watch } from 'vue'
 import { haversinePosition } from '../../../geom'
-import { PathwayModes } from './basemaps'
+import { PathwayModes } from '../../../pathways/pathway-icons'
 import { Pathway } from './station'
+import type { PathwayData, StationData } from './types'
 
-export default {
-  props: {
-    station: {
-      type: Object,
-      default () { return {} }
-    },
-    value: {
-      type: Object,
-      default () { return {} }
-    },
-    readOnly: {
-      type: Boolean,
-      required: false,
-      default: false
-    }
-  },
-  emits: ['select-stop', 'update', 'delete', 'create'],
-  data () {
-    return {
-      pathway: new Pathway(this.value).setDefaults(),
-      PathwayModes
-    }
-  },
-  computed: {
-    stopLength () {
-      return haversinePosition(
-        this.pathway.from_stop.geometry.coordinates,
-        this.pathway.to_stop.geometry.coordinates
-      ).toFixed(2)
-    },
-    stopTraversalTime () {
-      return this.stopLength * 1.30
-    }
-  },
-  watch: {
-    'pathway.pathway_mode' (value) {
-      if (value === 7) {
-        this.pathway.is_bidirectional = 0
-      } else {
-        this.pathway.is_bidirectional = 1
-      }
-    }
-  }
+interface Props {
+  station?: StationData
+  value?: PathwayData
+  readOnly?: boolean
 }
+
+const props = withDefaults(defineProps<Props>(), {
+  station: () => ({} as StationData),
+  value: () => ({} as PathwayData),
+  readOnly: false
+})
+
+const emit = defineEmits<{
+  selectStop: [id: number]
+  update: [pathway: Pathway]
+  delete: [pathway: Pathway]
+  create: [pathway: Pathway]
+}>()
+
+const pathway = ref(new Pathway(props.value).setDefaults())
+
+const pathwayModeStr = computed({
+  get (): string {
+    return String(pathway.value.pathway_mode ?? '')
+  },
+  set (value: string) {
+    pathway.value.pathway_mode = value ? Number.parseInt(value, 10) : undefined
+  }
+})
+
+const stopLength = computed((): string => {
+  const fromCoords = pathway.value.from_stop?.geometry?.coordinates
+  const toCoords = pathway.value.to_stop?.geometry?.coordinates
+  if (!fromCoords || !toCoords) {
+    return '0.00'
+  }
+  return haversinePosition(fromCoords, toCoords).toFixed(2)
+})
+
+const _stopTraversalTime = computed((): number => {
+  return Number.parseFloat(stopLength.value) * 1.30
+})
+
+watch(() => pathway.value.pathway_mode, (value: number | undefined) => {
+  if (value === 7) {
+    pathway.value.is_bidirectional = 0
+  } else {
+    pathway.value.is_bidirectional = 1
+  }
+})
 </script>
 
 <style scoped>

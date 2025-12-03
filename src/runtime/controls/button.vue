@@ -11,7 +11,15 @@
       <span v-if="loading" class="icon">
         <i class="mdi mdi-loading mdi-spin" />
       </span>
-      <slot />
+      <span v-if="iconLeft && !loading" class="icon is-small">
+        <t-icon :icon="iconLeft" />
+      </span>
+      <span v-if="$slots.default">
+        <slot />
+      </span>
+      <span v-if="iconRight && !loading" class="icon is-small">
+        <t-icon :icon="iconRight" />
+      </span>
     </button>
   </div>
 </template>
@@ -99,6 +107,18 @@ interface Props {
    * @default 'button'
    */
   type?: 'button' | 'submit' | 'reset'
+
+  /**
+   * Icon to display on the left side of the button.
+   * @default undefined
+   */
+  iconLeft?: string
+
+  /**
+   * Icon to display on the right side of the button.
+   * @default undefined
+   */
+  iconRight?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -110,7 +130,9 @@ const props = withDefaults(defineProps<Props>(), {
   inverted: false,
   fullwidth: false,
   rounded: false,
-  type: 'button'
+  type: 'button',
+  iconLeft: undefined,
+  iconRight: undefined
 })
 
 const buttonClasses = computed(() => {

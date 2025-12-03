@@ -1,11 +1,11 @@
 <template>
   <div
     ref="dropdownRef"
-    class="t-dropdown"
+    class="dropdown"
     :class="dropdownClass"
   >
     <div
-      class="t-dropdown-trigger"
+      class="dropdown-trigger"
       @click="toggle"
     >
       <slot name="trigger" :toggle="toggle">
@@ -28,11 +28,11 @@
     </div>
     <div
       :id="`dropdown-menu-${uid}`"
-      class="t-dropdown-menu"
+      class="dropdown-menu"
       role="menu"
       :style="menuStyle"
     >
-      <div class="t-dropdown-content">
+      <div class="dropdown-content">
         <slot :close="close" />
       </div>
     </div>
@@ -117,6 +117,11 @@ interface Props {
   triggerVariant?: import('./types').DropdownTriggerVariant
 
   /**
+   * Color variant inherited by dropdown items
+   */
+  variant?: import('./types').DropdownTriggerVariant
+
+  /**
    * Open dropdown on hover instead of click
    */
   hoverable?: boolean
@@ -133,6 +138,7 @@ const props = withDefaults(defineProps<Props>(), {
   triggerIcon: 'menu-down',
   triggerIconLeft: undefined,
   triggerVariant: undefined,
+  variant: undefined,
   hoverable: false
 })
 
@@ -244,51 +250,16 @@ onBeforeUnmount(() => {
 provide('dropdown', {
   handleItemClick,
   isMultiple: props.multiple,
-  selectedValue: computed(() => props.modelValue)
+  selectedValue: computed(() => props.modelValue),
+  variant: computed(() => props.variant)
 })
 
 defineExpose({ open, close, toggle })
 </script>
 
 <style scoped>
-.t-dropdown {
-  display: inline-flex;
-  position: relative;
-  vertical-align: top;
-}
-
-.t-dropdown.is-active .t-dropdown-menu {
-  display: block;
-}
-
-.t-dropdown-menu {
-  display: none;
-  left: 0;
+/* Bulma provides all dropdown styling */
+.dropdown-menu {
   min-width: 12rem;
-  padding-top: 4px;
-  position: absolute;
-  top: 100%;
-  z-index: 20;
-}
-
-.t-dropdown.is-top-left .t-dropdown-menu,
-.t-dropdown.is-top-right .t-dropdown-menu {
-  bottom: 100%;
-  padding-bottom: 4px;
-  padding-top: initial;
-  top: auto;
-}
-
-.t-dropdown.is-bottom-right .t-dropdown-menu,
-.t-dropdown.is-top-right .t-dropdown-menu {
-  left: auto;
-  right: 0;
-}
-
-.t-dropdown-content {
-  background-color: white;
-  border-radius: 4px;
-  box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1), 0 0px 0 1px rgba(10, 10, 10, 0.02);
-  padding: 0.5rem 0;
 }
 </style>

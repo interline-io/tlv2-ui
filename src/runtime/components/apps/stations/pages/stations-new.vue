@@ -1,5 +1,5 @@
 <template>
-  <div v-if="feedVersion && feedVersion.id">
+  <div v-if="typeof feedVersion !== 'string' && feedVersion?.id">
     <slot name="title">
       <tl-title title="New Station" />
     </slot>
@@ -12,51 +12,66 @@
   </div>
 </template>
 
-<script>
-// Note: this uses FeedMixin, not station mixin.
+<script setup lang="ts">
+import { ref, toRefs } from 'vue'
 import { navigateTo } from '#imports'
 import { Station, Stop } from '../station'
-import FeedMixin from './feed-mixin'
+import { useFeed } from '../composables/useFeed'
+import { useStation } from '../composables/useStation'
 import { useRouteResolver } from '../../../../composables/useRouteResolver'
 
-export default {
-  mixins: [FeedMixin],
-  setup () {
-    const { resolve } = useRouteResolver()
-    return { resolve }
-  },
-  head: {
-    title: 'Editor: New Station'
-  },
-  methods: {
-    newStation () {
-      const newStop = new Stop({ feed_version: { id: this.feedVersion.id } })
-      const newStation = new Station(newStop).setDefaults()
-      return newStation
-    },
-    createStationHandler (station) {
-      station.createStation(this.$apollo, station.stop)
-        .then(() => {
-          navigateTo({
-            name: this.resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),
-            params: {
-              feedKey: this.feedKey,
-              feedVersionKey: this.feedVersionKey,
-              stationKey: station.stop.stop_id
-            }
-          })
-        })
-        .catch(this.setError)
-    },
-    cancelHandler () {
+const props = defineProps<{
+  feedKey: string
+  feedVersionKey: string
+  clientId?: string
+}>()
+
+const { feedKey, feedVersionKey, clientId } = toRefs(props)
+
+const { resolve } = useRouteResolver()
+
+const { feedVersion } = useFeed({
+  feedKey,
+  feedVersionKey,
+  clientId: clientId.value
+})
+
+const { createStation, handleError } = useStation({
+  feedKey,
+  feedVersionKey,
+  stationKey: ref('new'),
+  clientId: clientId.value
+})
+
+const newStation = () => {
+  const fvId = typeof feedVersion.value !== 'string' ? feedVersion.value?.id : undefined
+  const newStop = new Stop({ feed_version: { id: fvId } })
+  const newStation = new Station(newStop).setDefaults()
+  return newStation
+}
+
+const createStationHandler = (station: Station) => {
+  createStation(station.stop)
+    .then(() => {
       navigateTo({
-        name: this.resolve('apps-stations-feedKey-feedVersionKey-stations'),
+        name: resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),
         params: {
-          feedKey: this.feedKey,
-          feedVersionKey: this.feedVersionKey
+          feedKey: feedKey.value,
+          feedVersionKey: feedVersionKey.value,
+          stationKey: station.stop.stop_id
         }
       })
+    })
+    .catch(handleError)
+}
+
+const cancelHandler = () => {
+  navigateTo({
+    name: resolve('apps-stations-feedKey-feedVersionKey-stations'),
+    params: {
+      feedKey: feedKey.value,
+      feedVersionKey: feedVersionKey.value
     }
-  }
+  })
 }
 </script>
