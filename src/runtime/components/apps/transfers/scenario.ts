@@ -778,6 +778,7 @@ export class FeedVersionOption {
   displayName: string
   start_date?: string
   end_date?: string
+  sha1?: string
 
   constructor (v: FeedVersionOptionData) {
     const fv = new FeedVersion(v.feedVersion)
@@ -791,6 +792,7 @@ export class FeedVersionOption {
     this.displayName = feedVersionDisplayName(v.feedVersion)
     this.start_date = fv.earliest_calendar_date
     this.end_date = fv.latest_calendar_date
+    this.sha1 = v.feedVersion.sha1
   }
 }
 
@@ -843,6 +845,7 @@ export class ScenarioResult {
   filteredIncomingArrivals: StopTimeEvent[]
   filteredOutgoingDepartures: StopTimeEvent[]
   transferGroups: TransferGroup[]
+  hasRouteAttributes: boolean
 
   constructor (v?: ScenarioResultData) {
     v = v || {}
@@ -853,6 +856,7 @@ export class ScenarioResult {
     this.filteredIncomingArrivals = []
     this.filteredOutgoingDepartures = []
     this.transferGroups = []
+    this.hasRouteAttributes = false
   }
 }
 
@@ -892,6 +896,7 @@ export function NewScenarioResult (
   result.filteredIncomingArrivals = filteredArrivals.stopTimeEvents
   result.filteredOutgoingDepartures = filteredDepartures.stopTimeEvents
   result.transferGroups = tgs
+  result.hasRouteAttributes = hasRouteAttributes(ste.incomingArrivals) || hasRouteAttributes(ste.outgoingDepartures)
   return result
 }
 
@@ -1291,7 +1296,7 @@ function calculateTransfers (
       schedule_relationship: incomingTrip.schedule_relationship,
       route_key: route.id,
       route_id: route.route_id,
-      route_name: route.route_short_name,
+      route_name: route.route_short_name || route.route_long_name,
       route,
       stop_key: incomingTrip.stop.id,
       stop_id: incomingTrip.stop.stop_id,
@@ -1389,7 +1394,7 @@ function calculateTransfers (
         agency_id: outgoingRoute.agency.agency_id,
         agency_name: outgoingRoute.agency.agency_name,
         route_id: outgoingRoute.route_id,
-        route_name: outgoingRoute.route_short_name,
+        route_name: outgoingRoute.route_short_name || outgoingRoute.route_long_name,
         route: outgoingRoute,
         stop_key: outgoingTrip.stop.id,
         stop_id: outgoingTrip.stop.stop_id,

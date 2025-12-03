@@ -15,6 +15,8 @@
       :show-transfers="showTransferControls"
       :enable-profiles="displayProfiles"
       :show-trips="showTripControls"
+      :read-only-feed-versions="readOnlyFeedVersions"
+      :gtfs-realtime-stop-observations-available="gtfsRealtimeStopObservationsAvailable"
       @set-exclude-incoming-trips="handleSetExcludeIncomingTrips"
       @set-exclude-outgoing-trips="handleSetExcludeOutgoingTrips"
       @transfer-scoring-breakpoints-changed="handleSetTransferScoringBreakpoints"
@@ -45,7 +47,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, toRef } from 'vue'
-import { navigateTo, useRoute } from '#imports'
+import { navigateTo, useRoute, useRuntimeConfig } from '#imports'
 import { useMixpanel } from '../../../composables/useMixpanel'
 import { useScenarioData } from './useScenarioData'
 import { useFeedVersions } from './useFeedVersions'
@@ -72,6 +74,18 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const route = useRoute()
+const runtimeConfig = useRuntimeConfig()
+const tlv2Config = runtimeConfig.public.tlv2 as Record<string, any> | undefined
+
+// Use read-only feed selector if configured in module options
+const readOnlyFeedVersions = computed(() => {
+  return tlv2Config?.transferAnalystReadOnlyFeedSelector === true
+})
+
+// Whether GTFS Realtime stop observations are available - defaults to true
+const gtfsRealtimeStopObservationsAvailable = computed(() => {
+  return tlv2Config?.transferAnalystGtfsRealtimeStopObservations !== false
+})
 const mixpanel = useMixpanel()
 
 // State

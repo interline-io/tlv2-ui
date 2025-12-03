@@ -107,9 +107,9 @@
         </t-button>
       </div>
     </div>
-    <div v-else class="control">
+    <div v-else class="mt-4 has-text-right">
       <t-button
-        class="is-pulled-right is-primary is-small"
+        class="is-small is-primary is-outlined"
         @click.prevent="modify"
       >
         Modify breakpoints

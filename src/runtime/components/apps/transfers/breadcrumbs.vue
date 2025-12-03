@@ -73,7 +73,8 @@ const reports: Record<string, Report> = {
   'apps-transfers-stationKey-routes': { name: 'Routes', disabled: false },
   'apps-transfers-stationKey-transfers': { name: 'Transfers — Individual', disabled: false },
   'apps-transfers-stationKey-transfersummary': { name: 'Transfers - Summary', disabled: false },
-  'apps-transfers-stationKey-transferscomparison': { name: 'Transfers - Overview of Different Service Conditions', disabled: true }
+  // TODO: fix this report, assuming MTC still needs it
+  // 'apps-transfers-stationKey-transferscomparison': { name: 'Transfers - Overview of Different Service Conditions', disabled: true }
 }
 // ...existing code...
 
