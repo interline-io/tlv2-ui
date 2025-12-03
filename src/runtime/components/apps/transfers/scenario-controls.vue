@@ -78,7 +78,7 @@
             </option>
           </t-select>
         </t-field>
-        <t-field label="Time Source">
+        <t-field v-if="showTimeSourceControl" label="Time Source">
           <template #message>
             <p v-if="station == null || loading " />
             <p
@@ -209,6 +209,7 @@ interface Props {
   showTrips?: boolean
   loading?: boolean
   readOnlyFeedVersions?: boolean
+  showTimeSourceControl?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -225,7 +226,8 @@ const props = withDefaults(defineProps<Props>(), {
   enableProfiles: false,
   showTrips: false,
   loading: false,
-  readOnlyFeedVersions: false
+  readOnlyFeedVersions: false,
+  showTimeSourceControl: true
 })
 
 const emit = defineEmits({

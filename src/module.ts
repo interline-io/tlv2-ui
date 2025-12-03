@@ -30,6 +30,7 @@ export interface ModuleOptions {
   auth0LogoutUri?: string
   // Transfer Analyst options
   transferAnalystReadOnlyFeedSelector?: boolean
+  transferAnalystGtfsRealtimeStopObservations?: boolean
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -64,7 +65,8 @@ export default defineNuxtModule<ModuleOptions>({
     auth0Scope: undefined,
     auth0RedirectUri: undefined,
     auth0LogoutUri: undefined,
-    transferAnalystReadOnlyFeedSelector: false
+    transferAnalystReadOnlyFeedSelector: false,
+    transferAnalystGtfsRealtimeStopObservations: true
   },
   async setup (options, nuxt) {
     // Create resolver to resolve relative paths
@@ -110,6 +112,7 @@ export default defineNuxtModule<ModuleOptions>({
         auth0Audience: options.auth0Audience,
         auth0Scope: options.auth0Scope,
         transferAnalystReadOnlyFeedSelector: options.transferAnalystReadOnlyFeedSelector,
+        transferAnalystGtfsRealtimeStopObservations: options.transferAnalystGtfsRealtimeStopObservations,
       }
     }))
 

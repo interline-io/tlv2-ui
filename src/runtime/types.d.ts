@@ -40,6 +40,8 @@ declare module 'nuxt/schema' {
       auth0LogoutUri?: string
       auth0Audience?: string
       auth0Scope?: string
+      transferAnalystReadOnlyFeedSelector?: boolean
+      transferAnalystGtfsRealtimeStopObservations?: boolean
     }
   }
 }
