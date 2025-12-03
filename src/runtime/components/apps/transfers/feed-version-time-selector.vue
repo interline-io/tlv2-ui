@@ -191,7 +191,7 @@ const props = withDefaults(defineProps<Props>(), {
   showAllDayOption: true,
   allowMultiple: true,
   showUploadLink: true,
-  timeOfDay: '07:00-09:00'
+  timeOfDay: 'all'
 })
 
 const emit = defineEmits<{

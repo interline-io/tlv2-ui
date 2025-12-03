@@ -91,7 +91,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  timeOfDay: '07:00-09:00',
+  timeOfDay: 'all',
   showTimeOfDay: true,
   showAllDayOption: true,
   disabled: false
