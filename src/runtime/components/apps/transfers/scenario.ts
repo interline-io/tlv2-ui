@@ -845,6 +845,7 @@ export class ScenarioResult {
   filteredIncomingArrivals: StopTimeEvent[]
   filteredOutgoingDepartures: StopTimeEvent[]
   transferGroups: TransferGroup[]
+  hasRouteAttributes: boolean
 
   constructor (v?: ScenarioResultData) {
     v = v || {}
@@ -855,6 +856,7 @@ export class ScenarioResult {
     this.filteredIncomingArrivals = []
     this.filteredOutgoingDepartures = []
     this.transferGroups = []
+    this.hasRouteAttributes = false
   }
 }
 
@@ -894,6 +896,7 @@ export function NewScenarioResult (
   result.filteredIncomingArrivals = filteredArrivals.stopTimeEvents
   result.filteredOutgoingDepartures = filteredDepartures.stopTimeEvents
   result.transferGroups = tgs
+  result.hasRouteAttributes = hasRouteAttributes(ste.incomingArrivals) || hasRouteAttributes(ste.outgoingDepartures)
   return result
 }
 

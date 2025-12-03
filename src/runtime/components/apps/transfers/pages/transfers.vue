@@ -44,7 +44,7 @@
                 <th>
                   <div>Route</div>
                 </th>
-                <th>
+                <th v-if="scenarioResult.hasRouteAttributes">
                   <div>Category / Sub-category</div>
                 </th>
                 <th>
@@ -92,7 +92,7 @@
                 <td>Incoming</td>
                 <td>{{ tripGroup.agency_name }}</td>
                 <td>{{ tripGroup.route_name }}</td>
-                <td>
+                <td v-if="scenarioResult.hasRouteAttributes">
                   <tl-route-category-abbr
                     :key="tripGroup.route?.id"
                     :category="tripGroup.route?.route_attribute?.category"
@@ -153,7 +153,7 @@
                   <td />
                   <td>{{ toTrip.agency_name }}</td>
                   <td>{{ toTrip.route_name }}</td>
-                  <td>
+                  <td v-if="scenarioResult.hasRouteAttributes">
                     <tl-route-category-abbr
                       :key="tripGroup.route?.id"
                       :category="toTrip.route?.route_attribute?.category"
