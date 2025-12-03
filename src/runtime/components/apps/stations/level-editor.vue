@@ -88,20 +88,23 @@
         <div class="level-right">
           <template v-if="level.id">
             <div class="level-item">
+              <t-tooltip :text="deleteTooltip">
+                <t-button
+                  class="button is-danger"
+                  :disabled="hasAssociatedStops"
+                  @click="showDeleteModal = true"
+                >
+                  Delete
+                </t-button>
+              </t-tooltip>
+            </div>
+            <div class="level-item ml-3">
               <t-button
                 class="button is-primary"
                 :disabled="!valid"
                 @click="$emit('update', level)"
               >
                 Save
-              </t-button>
-            </div>
-            <div class="level-item">
-              <t-button
-                class="button is-danger"
-                @click="$emit('delete', level)"
-              >
-                Delete
               </t-button>
             </div>
           </template>
@@ -119,6 +122,28 @@
         </div>
       </div>
     </div>
+
+    <!-- Delete Confirmation Modal -->
+    <t-modal
+      v-model="showDeleteModal"
+      title="Delete Level"
+    >
+      <p class="mb-4">
+        Are you sure you want to delete this level? This action cannot be undone.
+      </p>
+      <div class="buttons is-pulled-right">
+        <t-button @click="showDeleteModal = false">
+          Cancel
+        </t-button>
+        <t-button
+          variant="danger"
+          @click="confirmDelete"
+        >
+          Delete Level
+        </t-button>
+      </div>
+    </t-modal>
+
     <t-modal
       v-model="showGeojsonEditor"
       title="Edit GeoJSON"
@@ -193,11 +218,13 @@ interface Props {
   center?: [number, number]
   station: StationData
   value?: LevelData
+  hasAssociatedStops?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   center: () => [0, 0],
-  value: () => ({} as LevelData)
+  value: () => ({} as LevelData),
+  hasAssociatedStops: false
 })
 
 const _emit = defineEmits<{
@@ -213,6 +240,7 @@ const showGeojsonEditor = ref(false)
 const geojsonError = ref<string | null>(null)
 const geojsonGeometryBuffer = ref('')
 const mapKey = ref(0)
+const showDeleteModal = ref(false)
 
 const geometry = computed((): MultiPolygon | null => {
   return level.value.geometry ?? null
@@ -257,6 +285,13 @@ const valid = computed((): boolean => {
     && level.value.level_id.length > 0)
 })
 
+const deleteTooltip = computed((): string => {
+  if (props.hasAssociatedStops) {
+    return 'This level has associated stops and cannot be deleted. First disassociate all stops/nodes from this level using the Draw Pathways tab.'
+  }
+  return 'Delete this level (confirmation required)'
+})
+
 function setGeometry (e: FeatureCollection | Feature | Polygon | MultiPolygon) {
   try {
     const mp = convertToMultiPolygon(e)
@@ -272,6 +307,11 @@ function onCloseGeojsonEditor (isOpen: boolean) {
     // Clear the buffer when closing the editor
     geojsonGeometryBuffer.value = ''
   }
+}
+
+function confirmDelete () {
+  showDeleteModal.value = false
+  _emit('delete', level.value)
 }
 
 watch(() => level.value.level_name, (value: string | undefined) => {

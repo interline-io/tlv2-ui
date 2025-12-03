@@ -10,6 +10,7 @@
       :station="station"
       :value="level"
       :center="station.geometry?.coordinates as [number, number]"
+      :has-associated-stops="hasAssociatedStops"
       @update="updateLevelHandler"
       @delete="deleteLevelHandler"
       @cancel="cancelHandler"
@@ -23,6 +24,7 @@ import { navigateTo } from '#imports'
 import type { Level } from '../station'
 import { useStation } from '../composables/useStation'
 import { useRouteResolver } from '../../../../composables/useRouteResolver'
+import { useToastNotification } from '../../../../composables/useToastNotification'
 
 const props = defineProps<{
   feedKey: string
@@ -55,6 +57,10 @@ const level = computed((): Level | null => {
   return null
 })
 
+const hasAssociatedStops = computed((): boolean => {
+  return (level.value?.stops?.length || 0) > 0
+})
+
 // Methods
 function updateLevelHandler (level: Level) {
   if (!station.value) return
@@ -74,8 +80,10 @@ function updateLevelHandler (level: Level) {
 
 function deleteLevelHandler (level: Level) {
   if (!station.value) return
+  const { showToast } = useToastNotification()
   deleteLevel(level)
     .then(() => {
+      showToast('Level deleted successfully', 'success', 3000)
       navigateTo({
         name: resolve('apps-stations-feedKey-feedVersionKey-stations-stationKey'),
         params: {

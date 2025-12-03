@@ -110,11 +110,11 @@
     </div>
 
     <template v-if="!readOnly">
-      <div v-if="pathway.id" class="buttons">
-        <span class="button is-primary" @click="emit('update', pathway)">Save Pathway</span>
+      <div v-if="pathway.id" class="buttons is-justify-content-flex-end">
         <span class="button is-danger" @click="emit('delete', pathway)">Delete Pathway</span>
+        <span class="button is-primary ml-3" @click="emit('update', pathway)">Save Pathway</span>
       </div>
-      <div v-else class="buttons">
+      <div v-else class="buttons is-justify-content-flex-end">
         <span class="button is-primary" @click="emit('create', pathway)">Add Pathway</span>
       </div>
     </template>

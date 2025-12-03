@@ -152,12 +152,24 @@
     </t-field>
 
     <template v-if="!readOnly">
-      <div v-if="entity.id" class="buttons">
-        <span class="button is-primary" @click="updateStop">Save stop</span>
-        <span class="button is-danger" @click="deleteStop">Delete stop</span>
+      <div v-if="entity.id" class="buttons is-justify-content-flex-end">
+        <t-tooltip :text="deleteTooltip">
+          <t-button
+            class="button is-danger"
+            :disabled="hasAssociatedPathways"
+            @click="deleteStop"
+          >
+            Delete stop
+          </t-button>
+        </t-tooltip>
+        <t-button class="button is-primary ml-3" @click="updateStop">
+          Save stop
+        </t-button>
       </div>
-      <div v-else class="buttons">
-        <span class="button is-primary" @click="createStop">Add stop</span>
+      <div v-else class="buttons is-justify-content-flex-end">
+        <t-button class="button is-primary" @click="createStop">
+          Add stop
+        </t-button>
       </div>
     </template>
   </div>
@@ -266,6 +278,17 @@ const parentStop = computed((): StopData | null => {
     }
   }
   return null
+})
+
+const hasAssociatedPathways = computed((): boolean => {
+  return pathwaysFromStop.value.length > 0 || pathwaysToStop.value.length > 0
+})
+
+const deleteTooltip = computed((): string => {
+  if (hasAssociatedPathways.value) {
+    return 'This stop has associated pathways and cannot be deleted. First remove all pathways connected to this stop.'
+  }
+  return 'Delete this stop'
 })
 
 const _coordinates = computed((): string => {

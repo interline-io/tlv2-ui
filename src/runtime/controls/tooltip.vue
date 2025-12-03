@@ -1,13 +1,21 @@
 <template>
-  <span class="t-tooltip" :class="`is-tooltip-${position}`" v-bind="{ 'data-tooltip': text }">
+  <span
+    ref="tooltipRef"
+    class="t-tooltip"
+    :class="`is-tooltip-${effectivePosition}`"
+    v-bind="{ 'data-tooltip': text }"
+    @mouseenter="adjustPosition"
+  >
     <slot />
   </span>
 </template>
 
 <script setup lang="ts">
+import { ref, computed } from 'vue'
+
 /**
- * Pure CSS tooltip component.
- * Displays tooltip text on hover using CSS pseudo-elements.
+ * Pure CSS tooltip component with smart positioning.
+ * Displays tooltip text on hover and automatically adjusts position to stay within viewport.
  *
  * @component t-tooltip
  * @example
@@ -29,9 +37,87 @@ interface Props {
   position?: 'top' | 'bottom' | 'left' | 'right'
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   position: 'top'
 })
+
+const tooltipRef = ref<HTMLElement | null>(null)
+const adjustedPosition = ref<string | null>(null)
+
+const effectivePosition = computed(() => {
+  return adjustedPosition.value || props.position
+})
+
+function adjustPosition () {
+  if (!tooltipRef.value) return
+
+  // Reset to original position first
+  adjustedPosition.value = null
+
+  // Wait for next frame to get proper dimensions
+  requestAnimationFrame(() => {
+    if (!tooltipRef.value) return
+
+    const rect = tooltipRef.value.getBoundingClientRect()
+    const tooltipWidth = 300 // max-width of tooltip
+    const tooltipHeight = 100 // estimated max height
+    const margin = 20 // safety margin
+
+    let newPosition = props.position
+
+    // Check horizontal clipping
+    if (props.position === 'top' || props.position === 'bottom') {
+      const tooltipLeft = rect.left + rect.width / 2 - tooltipWidth / 2
+      const tooltipRight = rect.left + rect.width / 2 + tooltipWidth / 2
+
+      if (tooltipLeft < margin) {
+        // Would clip on left, try right position
+        if (rect.right + tooltipWidth + margin < window.innerWidth) {
+          newPosition = 'right'
+        } else if (props.position === 'top') {
+          newPosition = 'bottom'
+        } else {
+          newPosition = 'top'
+        }
+      } else if (tooltipRight > window.innerWidth - margin) {
+        // Would clip on right, try left position
+        if (rect.left - tooltipWidth - margin > 0) {
+          newPosition = 'left'
+        } else if (props.position === 'top') {
+          newPosition = 'bottom'
+        } else {
+          newPosition = 'top'
+        }
+      }
+    }
+
+    // Check vertical clipping
+    if (props.position === 'top') {
+      if (rect.top - tooltipHeight < margin) {
+        newPosition = 'bottom'
+      }
+    } else if (props.position === 'bottom') {
+      if (rect.bottom + tooltipHeight > window.innerHeight - margin) {
+        newPosition = 'top'
+      }
+    }
+
+    // Check left/right positions
+    if (props.position === 'left') {
+      if (rect.left - tooltipWidth < margin) {
+        newPosition = 'right'
+      }
+    } else if (props.position === 'right') {
+      if (rect.right + tooltipWidth > window.innerWidth - margin) {
+        newPosition = 'left'
+      }
+    }
+
+    if (newPosition !== props.position) {
+      adjustedPosition.value = newPosition
+    }
+  })
+}
 </script>
 
 <style lang="scss" scoped>
