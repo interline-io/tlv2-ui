@@ -4,7 +4,7 @@ import { gql } from 'graphql-tag'
 import { TreeNode } from '../../../lib/tree'
 import { useRouteCategories } from '../../../composables/useRouteCategories'
 import { toSeconds, windowToSeconds } from '../../../lib/time-format'
-import { NewGraph, Profiles, type Graph, type CostFunction } from './graph'
+import { NewGraph, Profiles, type Graph, type CostFunction } from '../../../pathways/graph'
 import { FeedVersion, type Stop } from './station'
 
 const { routeSubcategoriesTree, routeRunningWaysTree } = useRouteCategories()

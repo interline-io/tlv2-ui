@@ -19,7 +19,7 @@
         <p>
           <strong>Version ID:</strong> {{ feedVersionKey }}
         </p>
-        <p v-if="feedVersion?.sha1">
+        <p v-if="typeof feedVersion !== 'string' && feedVersion?.sha1">
           <strong>SHA1:</strong> <code>{{ feedVersion.sha1 }}</code>
         </p>
       </div>
@@ -27,23 +27,31 @@
       <hr>
 
       <tl-apps-stations-gtfs-export-download
-        :feed-version-sha1="feedVersion?.sha1"
-        :feed-version-id="feedVersion?.id || feedVersionKey"
+        :feed-version-sha1="typeof feedVersion !== 'string' ? feedVersion?.sha1 : undefined"
+        :feed-version-id="typeof feedVersion !== 'string' ? feedVersion?.id : feedVersionKey"
         :feed-key="feedKey"
         :feed-version-key="feedVersionKey"
-        :client="client"
+        :client="clientId"
       />
     </div>
   </div>
 </template>
 
-<script>
-import FeedMixin from './feed-mixin'
+<script setup lang="ts">
+import { toRefs } from 'vue'
+import { useFeed } from '../composables/useFeed'
 
-export default {
-  mixins: [FeedMixin],
-  head: {
-    title: 'Export GTFS'
-  }
-}
+const props = defineProps<{
+  feedKey: string
+  feedVersionKey: string
+  clientId?: string
+}>()
+
+const { feedKey, feedVersionKey, clientId } = toRefs(props)
+
+const { feedVersion } = useFeed({
+  feedKey,
+  feedVersionKey,
+  clientId: clientId.value
+})
 </script>

@@ -21,8 +21,8 @@
         <div class="is-pulled-right">
           <tl-apps-stations-level-map
             :zoom="12"
-            :points="[station.geometry]"
-            :center="station.geometry.coordinates"
+            :points="[station.geometry!]"
+            :center="station.geometry?.coordinates as [number, number]"
             :show-attribution="false"
           />
         </div>
@@ -40,7 +40,7 @@
       :stop-associations-enabled="stopAssociationsEnabled"
     />
 
-    <t-loading v-if="$apollo.loading" :active="true" />
+    <t-loading v-if="loading" :active="true" />
     <div v-else>
       <h4 class="title is-4 is-clearfix">
         Levels
@@ -50,7 +50,7 @@
         No levels
       </div>
       <div>
-        <tl-apps-stations-station-levels-viewer-sorter :levels="station.levels" :station="station">
+        <tl-apps-stations-station-levels-viewer-sorter :station="station">
           <template #bottom-button-bar>
             <tl-link
               route-key="apps-stations-feedKey-feedVersionKey-stations-stationKey-levels-new"
@@ -66,12 +66,30 @@
   </div>
 </template>
 
-<script>
-import StationMixin from './station-mixin'
+<script setup lang="ts">
+import { toRefs } from 'vue'
+import { useStation } from '../composables/useStation'
 
-export default {
-  mixins: [StationMixin]
-}
+const props = defineProps<{
+  feedKey: string
+  feedVersionKey: string
+  stationKey: string
+  clientId?: string
+}>()
+
+const { feedKey, feedVersionKey, stationKey, clientId } = toRefs(props)
+
+const {
+  station,
+  stationName,
+  stopAssociationsEnabled,
+  loading
+} = useStation({
+  feedKey,
+  feedVersionKey,
+  stationKey,
+  clientId: clientId?.value
+})
 </script>
 
   <style scoped>

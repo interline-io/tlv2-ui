@@ -1,13 +1,14 @@
 <template>
   <hr
     v-if="separator"
-    class="t-dropdown-divider"
+    class="dropdown-divider"
   >
   <a
     v-else
     :class="itemClass"
-    :role="ariaRole"
-    @click="handleClick"
+    :aria-disabled="props.disabled"
+    :role="props.ariaRole"
+    @click.stop="handleClick"
   >
     <slot />
   </a>
@@ -55,6 +56,11 @@ interface Props {
    * @default 'listitem'
    */
   ariaRole?: string
+
+  /**
+   * Color variant for this item (overrides parent dropdown variant)
+   */
+  variant?: import('./types').DropdownTriggerVariant
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -62,13 +68,15 @@ const props = withDefaults(defineProps<Props>(), {
   disabled: false,
   active: false,
   separator: false,
-  ariaRole: 'listitem'
+  ariaRole: 'listitem',
+  variant: undefined
 })
 
 interface DropdownContext<T> {
   handleItemClick: (value: T) => void
   isMultiple: boolean
   selectedValue: { value: T | T[] | undefined }
+  variant?: { value: import('./types').DropdownTriggerVariant | undefined }
 }
 
 const dropdown = inject<DropdownContext<T> | null>('dropdown', null)
@@ -86,9 +94,9 @@ const isSelected = computed(() => {
 })
 
 const itemClass = computed(() => ({
-  't-dropdown-item': true,
+  'dropdown-item': true,
   'is-active': isSelected.value,
-  'is-disabled': props.disabled
+  'is-disabled': props.disabled,
 }))
 
 function handleClick (event: MouseEvent) {
@@ -104,42 +112,8 @@ function handleClick (event: MouseEvent) {
 </script>
 
 <style lang="scss" scoped>
-@use "bulma/sass/utilities/initial-variables" as *;
-@use "bulma/sass/utilities/derived-variables" as *;
-
-.t-dropdown-item {
-  color: $text;
-  display: block;
-  font-size: $size-small;
-  line-height: 1.5;
-  padding: 0.375rem 1rem;
-  position: relative;
-  cursor: pointer;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: none;
-
-  &:hover:not(.is-disabled) {
-    background-color: lighten($link, 20%);
-    color: $white;
-  }
-
-  &.is-active {
-    background-color: $link;
-    color: $white;
-  }
-
-  &.is-disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-  }
-}
-
-.t-dropdown-divider {
-  background-color: $background;
-  border: none;
-  display: block;
-  height: 1px;
-  margin: 0.5rem 0;
+.dropdown-item.is-disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 </style>

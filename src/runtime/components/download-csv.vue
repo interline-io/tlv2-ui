@@ -1,57 +1,52 @@
 <template>
-  <div>
-    <button :disabled="disabled" class="button" style="margin-right:10px" @click="saveFile">
-      <t-icon icon="download" /> <span>{{ buttonText }}</span>
-    </button>
-  </div>
+  <t-button :disabled="disabled" :icon-left="iconLeft" :icon-right="iconRight" @click="saveFile">
+    {{ label }}
+  </t-button>
 </template>
 
 <script setup lang="ts">
 import { stringify } from 'csv-stringify/browser/esm/sync'
+import { useDownload } from '../composables/useDownload'
 
 interface Props {
-  buttonText?: string
+  label?: string
   disabled?: boolean
   filename?: string
   data?: Record<string, any>[]
+  iconLeft?: string
+  iconRight?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  buttonText: 'Download table as CSV',
+  label: 'Download table as CSV',
   disabled: false,
   filename: 'export',
-  data: () => []
+  data: () => [],
+  iconLeft: 'download',
+  iconRight: undefined
 })
 
-function sanitizeFilename (filename: string): string {
-  return filename.replace(/[^\w.-]/g, '_')
-}
+const { download } = useDownload()
 
-function dataToBlob (csvData: Record<string, any>[]): Blob {
+function csvDataToString (csvData: Record<string, any>[]): string {
   const keys: Record<string, string> = {}
   if (csvData.length > 0 && csvData[0]) {
     for (const k of Object.keys(csvData[0])) {
       keys[k] = k
     }
   }
-  const data = stringify(
-    csvData,
-    {
-      header: true,
-      columns: keys
-    })
-  const blob = new Blob([data], { type: 'application/csv' })
-  return blob
+  return stringify(csvData, {
+    header: true,
+    columns: keys
+  })
 }
 
-async function saveFile (): Promise<void> {
-  const blob = await dataToBlob(props.data)
-  const e = document.createEvent('MouseEvents')
-  const a = document.createElement('a')
-  a.download = sanitizeFilename(props.filename + '.csv')
-  a.href = window.URL.createObjectURL(blob)
-  a.dataset.downloadurl = ['text/csv', a.download, a.href].join(':')
-  e.initEvent('click', true, false)
-  a.dispatchEvent(e)
+function saveFile (): void {
+  const csvString = csvDataToString(props.data)
+  download({
+    filename: props.filename + '.csv',
+    data: csvString,
+    mimeType: 'text/csv'
+  })
 }
 </script>

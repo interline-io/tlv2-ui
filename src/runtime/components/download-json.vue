@@ -1,38 +1,37 @@
 <template>
-  <div>
-    <button :disabled="disabled" class="button" style="margin-right:10px" @click="saveFile">
-      <t-icon icon="download" /> <span>{{ buttonText }}</span>
-    </button>
-  </div>
+  <t-button :disabled="disabled" :icon-left="iconLeft" :icon-right="iconRight" @click="saveFile">
+    {{ label }}
+  </t-button>
 </template>
 
 <script setup lang="ts">
+import { useDownload } from '../composables/useDownload'
+
 interface Props {
-  buttonText?: string
+  label?: string
   disabled?: boolean
   filename?: string
   data?: string
+  iconLeft?: string
+  iconRight?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  buttonText: 'Download',
+  label: 'Download',
   disabled: false,
   filename: 'export',
-  data: ''
+  data: '',
+  iconLeft: 'download',
+  iconRight: undefined
 })
 
-function sanitizeFilename (filename: string): string {
-  return filename.replace(/[^\w.-]/g, '_')
-}
+const { download } = useDownload()
 
 function saveFile (): void {
-  const blob = new Blob([props.data], { type: 'application/json' })
-  const e = document.createEvent('MouseEvents')
-  const a = document.createElement('a')
-  a.download = sanitizeFilename(props.filename + '.json')
-  a.href = window.URL.createObjectURL(blob)
-  a.dataset.downloadurl = ['text/json', a.download, a.href].join(':')
-  e.initEvent('click', true, false)
-  a.dispatchEvent(e)
+  download({
+    filename: props.filename + '.json',
+    data: props.data,
+    mimeType: 'application/json'
+  })
 }
 </script>

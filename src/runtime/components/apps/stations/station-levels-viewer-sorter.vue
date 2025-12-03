@@ -57,28 +57,34 @@
   </div>
 </template>
 
-<script lang="ts">
-export default {
-  props: {
-    station: { type: Object, default () { return {} } }
-  },
-  computed: {
-    groupedSortedStationLevels () {
-      const m: Map<number, any[]> = new Map()
-      for (const lvl of this.station.levels) {
-        const idx = lvl.level_index
-        if (idx == null) {
-          continue
-        }
-        const a = m.get(idx) || []
-        a.push(lvl)
-        m.set(idx, a)
-      }
-      const keys = [...m.keys()].sort((a, b) => b - a)
-      const ret = keys.map(s => (m.get(s) || []))
-      ret.push(this.station.levels.filter((s: any) => (s.level_index == null)))
-      return ret
-    }
-  }
+<script setup lang="ts">
+import { computed } from 'vue'
+import type { Station, Level } from './station'
+
+interface Props {
+  station?: Station
 }
+
+const props = withDefaults(defineProps<Props>(), {
+  station: undefined
+})
+
+const groupedSortedStationLevels = computed(() => {
+  if (!props.station) return []
+
+  const m: Map<number, Level[]> = new Map()
+  for (const lvl of props.station.levels) {
+    const idx = lvl.level_index
+    if (idx == null) {
+      continue
+    }
+    const a = m.get(idx) || []
+    a.push(lvl)
+    m.set(idx, a)
+  }
+  const keys = [...m.keys()].sort((a, b) => b - a)
+  const ret = keys.map(s => (m.get(s) || []))
+  ret.push(props.station.levels.filter((s: Level) => (s.level_index == null)))
+  return ret
+})
 </script>
