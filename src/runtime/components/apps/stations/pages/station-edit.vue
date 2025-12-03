@@ -9,6 +9,7 @@
     <tl-apps-stations-station-editor
       :center="station.geometry?.coordinates as [number, number]"
       :value="station"
+      :has-associated-content="hasAssociatedContent"
       @update="updateStationHandler"
       @delete="deleteStationHandler"
       @cancel="cancelHandler"
@@ -17,11 +18,12 @@
 </template>
 
 <script setup lang="ts">
-import { toRefs } from 'vue'
+import { computed, toRefs } from 'vue'
 import { navigateTo } from '#imports'
 import type { Station } from '../station'
 import { useStation } from '../composables/useStation'
 import { useRouteResolver } from '../../../../composables/useRouteResolver'
+import { useToastNotification } from '../../../../composables/useToastNotification'
 
 const props = defineProps<{
   feedKey: string
@@ -47,6 +49,12 @@ const {
   clientId: clientId?.value
 })
 
+const hasAssociatedContent = computed((): boolean => {
+  const hasLevels = (station.value?.levels?.length || 0) > 0
+  const hasStops = (station.value?.stops?.length || 0) > 0
+  return hasLevels || hasStops
+})
+
 const updateStationHandler = (updatedStation: Station) => {
   if (!station.value) return
   updateStation(updatedStation.stop)
@@ -65,8 +73,10 @@ const updateStationHandler = (updatedStation: Station) => {
 
 const deleteStationHandler = (stationToDelete: Station) => {
   if (!station.value) return
+  const { showToast } = useToastNotification()
   deleteStation(stationToDelete.stop)
     .then(() => {
+      showToast('Station deleted successfully', 'success', 3000)
       navigateTo({
         name: resolve('apps-stations-feedKey-feedVersionKey-stations'),
         params: {
