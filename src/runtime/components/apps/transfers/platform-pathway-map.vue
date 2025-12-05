@@ -449,6 +449,3 @@ function initMap () {
 }
 </script>
 
-<style>
-@import 'maplibre-gl/dist/maplibre-gl';
-</style>

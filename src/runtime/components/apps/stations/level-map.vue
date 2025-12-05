@@ -270,7 +270,3 @@ onMounted(() => {
   position: relative;
 }
 </style>
-
-<style>
-@import 'maplibre-gl/dist/maplibre-gl.css';
-</style>

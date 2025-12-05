@@ -745,7 +745,3 @@ onMounted(() => {
   height: 800px;
 }
 </style>
-
-<style>
-@import 'maplibre-gl/dist/maplibre-gl.css';
-</style>

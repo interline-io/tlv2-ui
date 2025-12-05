@@ -302,7 +302,3 @@ onBeforeUnmount(() => {
   cursor: nwse-resize;
 }
 </style>
-
-<style>
-@import 'maplibre-gl/dist/maplibre-gl.css';
-</style>

@@ -228,7 +228,3 @@ onBeforeUnmount(() => {
   width: 100%;
 }
 </style>
-
-<style>
-@import 'maplibre-gl/dist/maplibre-gl.css';
-</style>

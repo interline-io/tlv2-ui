@@ -239,7 +239,3 @@ function getMarkerSVG (): string {
   padding: 4px 8px;
 }
 </style>
-
-<style>
-@import 'maplibre-gl/dist/maplibre-gl.css';
-</style>
