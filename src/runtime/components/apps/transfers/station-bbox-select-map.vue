@@ -32,10 +32,16 @@ import { useBasemapLayers } from '../../../composables/useBasemapLayers'
 
 interface Props {
   modelValue?: string | null
+  /** Initial map center as [longitude, latitude]. Defaults to Oakland, CA. */
+  center?: [number, number]
+  /** Initial zoom level. Defaults to 15. */
+  zoom?: number
 }
 
-withDefaults(defineProps<Props>(), {
-  modelValue: null
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: null,
+  center: () => [-122.2711, 37.8044],
+  zoom: 15
 })
 
 const emit = defineEmits<{
@@ -46,8 +52,6 @@ const emit = defineEmits<{
 const mapContainer = ref<HTMLElement>()
 const selectionBox = ref<HTMLElement>()
 const map = ref<MapLibreMap | null>(null)
-const zoom = 15
-const center: [number, number] = [-122.2711, 37.8044]
 
 // Selection box dimensions (in pixels)
 const boxWidth = ref(200)
@@ -69,8 +73,8 @@ function initMap (): void {
 
   const mapValue = new MapLibreMap({
     container: mapContainer.value,
-    center: center as LngLatLike,
-    zoom,
+    center: props.center as LngLatLike,
+    zoom: props.zoom,
     style: {
       version: 8,
       sources: {
