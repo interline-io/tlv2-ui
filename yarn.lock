@@ -407,6 +407,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@bomb.sh/tab@npm:^0.0.9":
+  version: 0.0.9
+  resolution: "@bomb.sh/tab@npm:0.0.9"
+  peerDependencies:
+    cac: ^6.7.14
+    citty: ^0.1.6
+    commander: ^13.1.0
+  peerDependenciesMeta:
+    cac:
+      optional: true
+    citty:
+      optional: true
+    commander:
+      optional: true
+  bin:
+    tab: dist/bin/cli.js
+  checksum: 10/ea1163422c04b26a684bff2b7b20aff39dbedf5b75d6c755b423270fcf0883bd95e44690ab66f0cf411ef58870465efc0088462784c2fbf098f09e0f6c9990ee
+  languageName: node
+  linkType: hard
+
 "@clack/core@npm:0.5.0":
   version: 0.5.0
   resolution: "@clack/core@npm:0.5.0"
@@ -414,6 +434,27 @@ __metadata:
     picocolors: "npm:^1.0.0"
     sisteransi: "npm:^1.0.5"
   checksum: 10/6f351fcf813f581b75df8e3d49f8264152492e3be6211e7157ff62a6c145517ea6c32eb821e9e8af306198ac0179623c349c6b21b63b8f85a5219bf53a3e08fa
+  languageName: node
+  linkType: hard
+
+"@clack/core@npm:1.0.0-alpha.7":
+  version: 1.0.0-alpha.7
+  resolution: "@clack/core@npm:1.0.0-alpha.7"
+  dependencies:
+    picocolors: "npm:^1.0.0"
+    sisteransi: "npm:^1.0.5"
+  checksum: 10/5dc7107f57f25698c5c409149b5749b41ee9bf08587a8d88273063566ca8ed533ec64db6fe740369c15ce4fd4a31b4608d6b559d76b2a708d79503dfb0da3913
+  languageName: node
+  linkType: hard
+
+"@clack/prompts@npm:1.0.0-alpha.7":
+  version: 1.0.0-alpha.7
+  resolution: "@clack/prompts@npm:1.0.0-alpha.7"
+  dependencies:
+    "@clack/core": "npm:1.0.0-alpha.7"
+    picocolors: "npm:^1.0.0"
+    sisteransi: "npm:^1.0.5"
+  checksum: 10/2b856ec1da038ae91ec86dcadc8f27a2160a52c59d5ddb5dc01c8725ccc229fa39f481056337185bf380b62fa3d501e65dbb29ad4e35fea29ce7a1b8726ef252
   languageName: node
   linkType: hard
 
@@ -1762,7 +1803,47 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nuxt/cli@npm:3.30.0, @nuxt/cli@npm:^3.29.3":
+"@nuxt/cli@npm:3.31.1":
+  version: 3.31.1
+  resolution: "@nuxt/cli@npm:3.31.1"
+  dependencies:
+    "@bomb.sh/tab": "npm:^0.0.9"
+    "@clack/prompts": "npm:1.0.0-alpha.7"
+    c12: "npm:^3.3.2"
+    citty: "npm:^0.1.6"
+    confbox: "npm:^0.2.2"
+    consola: "npm:^3.4.2"
+    copy-paste: "npm:^2.2.0"
+    debug: "npm:^4.4.3"
+    defu: "npm:^6.1.4"
+    exsolve: "npm:^1.0.8"
+    fuse.js: "npm:^7.1.0"
+    giget: "npm:^2.0.0"
+    jiti: "npm:^2.6.1"
+    listhen: "npm:^1.9.0"
+    nypm: "npm:^0.6.2"
+    ofetch: "npm:^1.5.1"
+    ohash: "npm:^2.0.11"
+    pathe: "npm:^2.0.3"
+    perfect-debounce: "npm:^2.0.0"
+    pkg-types: "npm:^2.3.0"
+    scule: "npm:^1.3.0"
+    semver: "npm:^7.7.3"
+    srvx: "npm:^0.9.7"
+    std-env: "npm:^3.10.0"
+    tinyexec: "npm:^1.0.2"
+    ufo: "npm:^1.6.1"
+    youch: "npm:^4.1.0-beta.13"
+  bin:
+    nuxi: bin/nuxi.mjs
+    nuxi-ng: bin/nuxi.mjs
+    nuxt: bin/nuxi.mjs
+    nuxt-cli: bin/nuxi.mjs
+  checksum: 10/b405aad893116bb5a296d2369ccb38101865456b43b78a3e532cf13f21d80ecda24c00ec5a1e670e06bf4670e0572b2502c7c6bf91e8942d74fc31afdd63eee4
+  languageName: node
+  linkType: hard
+
+"@nuxt/cli@npm:^3.29.3":
   version: 3.30.0
   resolution: "@nuxt/cli@npm:3.30.0"
   dependencies:
@@ -6003,6 +6084,31 @@ __metadata:
   languageName: node
   linkType: hard
 
+"c12@npm:^3.3.2":
+  version: 3.3.2
+  resolution: "c12@npm:3.3.2"
+  dependencies:
+    chokidar: "npm:^4.0.3"
+    confbox: "npm:^0.2.2"
+    defu: "npm:^6.1.4"
+    dotenv: "npm:^17.2.3"
+    exsolve: "npm:^1.0.8"
+    giget: "npm:^2.0.0"
+    jiti: "npm:^2.6.1"
+    ohash: "npm:^2.0.11"
+    pathe: "npm:^2.0.3"
+    perfect-debounce: "npm:^2.0.0"
+    pkg-types: "npm:^2.3.0"
+    rc9: "npm:^2.1.2"
+  peerDependencies:
+    magicast: "*"
+  peerDependenciesMeta:
+    magicast:
+      optional: true
+  checksum: 10/bcc428b0dfd7a0605681b613158408460875820492a2277cfda98c9cc9d4510de1dd273c12ff4b6a36ed1a0e1900b7bd6a11d72c06d61f0ec400735f61871553
+  languageName: node
+  linkType: hard
+
 "cac@npm:^6.7.14":
   version: 6.7.14
   resolution: "cac@npm:6.7.14"
@@ -8428,6 +8534,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"exsolve@npm:^1.0.8":
+  version: 1.0.8
+  resolution: "exsolve@npm:1.0.8"
+  checksum: 10/e7e8eac048af9f6856628a46df15529ab37428bdb5f7bc5b7824614383223de1aff60ebe85f44d9c8d4ee218d98c71df1a3e2d336f7d022a4dccd97a0651ec5b
+  languageName: node
+  linkType: hard
+
 "extract-files@npm:^13.0.0":
   version: 13.0.0
   resolution: "extract-files@npm:13.0.0"
@@ -8945,8 +9058,8 @@ __metadata:
   linkType: hard
 
 "glob@npm:^10.0.0, glob@npm:^10.2.2, glob@npm:^10.4.2, glob@npm:^10.4.5":
-  version: 10.4.5
-  resolution: "glob@npm:10.4.5"
+  version: 10.5.0
+  resolution: "glob@npm:10.5.0"
   dependencies:
     foreground-child: "npm:^3.1.0"
     jackspeak: "npm:^3.1.2"
@@ -8956,7 +9069,7 @@ __metadata:
     path-scurry: "npm:^1.11.1"
   bin:
     glob: dist/esm/bin.mjs
-  checksum: 10/698dfe11828b7efd0514cd11e573eaed26b2dff611f0400907281ce3eab0c1e56143ef9b35adc7c77ecc71fba74717b510c7c223d34ca8a98ec81777b293d4ac
+  checksum: 10/ab3bccfefcc0afaedbd1f480cd0c4a2c0e322eb3f0aa7ceaa31b3f00b825069f17cf0f1fc8b6f256795074b903f37c0ade37ddda6a176aa57f1c2bbfe7240653
   languageName: node
   linkType: hard
 
@@ -9107,14 +9220,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"happy-dom@npm:18.0.1":
-  version: 18.0.1
-  resolution: "happy-dom@npm:18.0.1"
+"happy-dom@npm:20.0.11":
+  version: 20.0.11
+  resolution: "happy-dom@npm:20.0.11"
   dependencies:
     "@types/node": "npm:^20.0.0"
     "@types/whatwg-mimetype": "npm:^3.0.2"
     whatwg-mimetype: "npm:^3.0.0"
-  checksum: 10/27f6638d7b8bc67f97ddde7f004e47785ae1487e14065d7c6119adbb9ba7d8a53935d5714d37d9f60efef7f9b180a41c2b7fbbdffcea57b6d04060360a1a1d03
+  checksum: 10/0f2cd2a2c394a79ce3ff15b5c00edd4071a5c5ece14f3ee810b954a1c3ee826a3920be37a349c7dc1b5bd3cd49b550f5e6291aa7e109ee4a27c3f6476f4b5d91
   languageName: node
   linkType: hard
 
@@ -9972,13 +10085,13 @@ __metadata:
   linkType: hard
 
 "js-yaml@npm:^4.1.0":
-  version: 4.1.0
-  resolution: "js-yaml@npm:4.1.0"
+  version: 4.1.1
+  resolution: "js-yaml@npm:4.1.1"
   dependencies:
     argparse: "npm:^2.0.1"
   bin:
     js-yaml: bin/js-yaml.js
-  checksum: 10/c138a34a3fd0d08ebaf71273ad4465569a483b8a639e0b118ff65698d257c2791d3199e3f303631f2cb98213fa7b5f5d6a4621fd0fff819421b990d30d967140
+  checksum: 10/a52d0519f0f4ef5b4adc1cde466cb54c50d56e2b4a983b9d5c9c0f2f99462047007a6274d7e95617a21d3c91fde3ee6115536ed70991cd645ba8521058b78f77
   languageName: node
   linkType: hard
 
@@ -11159,9 +11272,9 @@ __metadata:
   linkType: hard
 
 "node-forge@npm:^1.3.1":
-  version: 1.3.1
-  resolution: "node-forge@npm:1.3.1"
-  checksum: 10/05bab6868633bf9ad4c3b1dd50ec501c22ffd69f556cdf169a00998ca1d03e8107a6032ba013852f202035372021b845603aeccd7dfcb58cdb7430013b3daa8d
+  version: 1.3.3
+  resolution: "node-forge@npm:1.3.3"
+  checksum: 10/f41c31b9296771a4b8c955d58417471712f54f324603a35f8e6cbac19d5e6eaaf5fd5fd14584dfedecbf46a05438ded6eee60a5f2f0822fc5061aaa073cfc75d
   languageName: node
   linkType: hard
 
@@ -13968,6 +14081,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"srvx@npm:^0.9.7":
+  version: 0.9.7
+  resolution: "srvx@npm:0.9.7"
+  bin:
+    srvx: bin/srvx.mjs
+  checksum: 10/6b411209679752de315df730b8b1a64e6fdf94760816e0ef2078fb03946ed50e6fba34846ce5af2305c3813d19fc9c66cb970f1f5b3d6b65258fca5083f8c034
+  languageName: node
+  linkType: hard
+
 "ssri@npm:^12.0.0":
   version: 12.0.0
   resolution: "ssri@npm:12.0.0"
@@ -14440,6 +14562,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tinyexec@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "tinyexec@npm:1.0.2"
+  checksum: 10/cb709ed4240e873d3816e67f851d445f5676e0ae3a52931a60ff571d93d388da09108c8057b62351766133ee05ff3159dd56c3a0fbd39a5933c6639ce8771405
+  languageName: node
+  linkType: hard
+
 "tinyglobby@npm:^0.2.12, tinyglobby@npm:^0.2.14":
   version: 0.2.14
   resolution: "tinyglobby@npm:0.2.14"
@@ -14522,7 +14651,7 @@ __metadata:
     "@mapbox/mapbox-gl-draw": "npm:1.4.3"
     "@maplibre/maplibre-gl-geocoder": "npm:1.9.0"
     "@mdi/font": "npm:7.4.47"
-    "@nuxt/cli": "npm:3.30.0"
+    "@nuxt/cli": "npm:3.31.1"
     "@nuxt/devtools": "npm:3.0.1"
     "@nuxt/eslint": "npm:1.10.0"
     "@nuxt/eslint-config": "npm:1.10.0"
@@ -14568,7 +14697,7 @@ __metadata:
     graphql: "npm:16.10.0"
     graphql-tag: "npm:2.12.6"
     h3: "npm:1.15.1"
-    happy-dom: "npm:18.0.1"
+    happy-dom: "npm:20.0.11"
     jsdom: "npm:26.1.0"
     maplibre-gl: "npm:5.2.0"
     mixpanel-browser: "npm:2.61.2"
@@ -16834,6 +16963,19 @@ __metadata:
     cookie-es: "npm:^2.0.0"
     youch-core: "npm:^0.3.3"
   checksum: 10/b1780cb3741f64eb033ad9ca2b06c9d4125bcb55cb9f4bcaefd2f42537f376307ab7c61a530079b2e6be55437f528d7e8de7b5ee58d8046109fb847b4e533bd5
+  languageName: node
+  linkType: hard
+
+"youch@npm:^4.1.0-beta.13":
+  version: 4.1.0-beta.13
+  resolution: "youch@npm:4.1.0-beta.13"
+  dependencies:
+    "@poppinss/colors": "npm:^4.1.5"
+    "@poppinss/dumper": "npm:^0.6.5"
+    "@speed-highlight/core": "npm:^1.2.9"
+    cookie-es: "npm:^2.0.0"
+    youch-core: "npm:^0.3.3"
+  checksum: 10/4bc9fdf6fea9ae53324d9dc093042c7c3d3d135a4e2a677df06077a19872d0238bb67476d104c80c0b768c756714f5000c2686249c35f1e8681f2509e3aa1148
   languageName: node
   linkType: hard
 
