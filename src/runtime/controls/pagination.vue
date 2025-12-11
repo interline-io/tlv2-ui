@@ -127,10 +127,14 @@ const props = withDefaults(defineProps<Props>(), {
 
 const current = defineModel<number>('current', { default: 1 })
 
-const pageCount = computed(() => Math.ceil(props.total / props.perPage))
+const pageCount = computed(() => {
+  // Guard against edge cases
+  if (props.total <= 0 || props.perPage <= 0) return 0
+  return Math.ceil(props.total / props.perPage)
+})
 
 const isFirst = computed(() => current.value <= 1)
-const isLast = computed(() => current.value >= pageCount.value)
+const isLast = computed(() => pageCount.value === 0 || current.value >= pageCount.value)
 
 const hasFirst = computed(() => current.value >= props.rangeBefore + 2)
 const hasFirstEllipsis = computed(() => current.value >= props.rangeBefore + 4)

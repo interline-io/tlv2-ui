@@ -113,14 +113,18 @@ export const TaginputSizes = CoreSizes
 export type TaginputSize = typeof TaginputSizes[number]
 
 /**
- * Option type for taginput items.
+ * Base option type for taginput items.
  * @template T - The type of the value (string or number)
  */
-export interface TagOption<T extends string | number = string> {
+export interface TagOptionBase<T extends string | number = string> {
   /** Unique value identifier */
   value: T
   /** Display label */
   label: string
-  /** Allow additional properties */
-  [key: string]: unknown
 }
+
+/**
+ * Option type for taginput items with optional additional properties.
+ * @template T - The type of the value (string or number)
+ */
+export type TagOption<T extends string | number = string> = TagOptionBase<T> & Record<string, unknown>

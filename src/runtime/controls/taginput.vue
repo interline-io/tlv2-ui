@@ -17,8 +17,9 @@
           class="tags has-addons"
           role="listitem"
         >
-          <a
+          <button
             v-if="!disabled && !readonly && closable"
+            type="button"
             class="tag is-delete"
             :class="tagClasses"
             :aria-label="`Remove ${tag.label}`"
@@ -89,21 +90,24 @@
 
         <!-- Options list -->
         <div class="t-taginput-dropdown-content">
-          <a
+          <div
             v-for="(option, index) in filteredOptions"
             :id="`${componentId}-option-${index}`"
             :key="option.value"
             class="t-taginput-dropdown-item"
             :class="{ 'is-active': index === highlightedIndex }"
             role="option"
+            tabindex="0"
             :aria-selected="modelValue?.includes(option.value) || false"
             @mousedown.prevent="selectOption(option)"
             @mouseenter="highlightedIndex = index"
+            @keydown.enter.prevent="selectOption(option)"
+            @keydown.space.prevent="selectOption(option)"
           >
             <slot name="option" :option="option">
               {{ option.label }}
             </slot>
-          </a>
+          </div>
           <div v-if="filteredOptions.length === 0 && $slots.empty" class="t-taginput-dropdown-item is-empty">
             <slot name="empty" />
           </div>
@@ -357,17 +361,13 @@ const tagClasses = computed(() => {
   }
 
   // Bump up tag size by one level for better readability
-  // default -> medium, small -> normal, etc.
+  // small -> normal, normal/medium/default -> medium, large -> large
   if (props.size === 'small') {
     classes.push('is-normal')
-  } else if (props.size === 'normal') {
-    classes.push('is-medium')
-  } else if (props.size === 'medium') {
-    classes.push('is-medium')
   } else if (props.size === 'large') {
     classes.push('is-large')
   } else {
-    // Default to medium
+    // Default, 'normal', and 'medium' all map to 'is-medium'
     classes.push('is-medium')
   }
 
@@ -424,7 +424,7 @@ function handleKeydown (event: KeyboardEvent) {
       highlightedIndex.value = -1
       break
     case 'Backspace':
-      if (searchText.value === '' && modelValue.value.length > 0) {
+      if (searchText.value === '' && modelValue.value.length > 0 && props.closable) {
         const lastTag = selectedTags.value[selectedTags.value.length - 1]
         if (lastTag) {
           removeTag(lastTag)

@@ -44,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 
 /**
  * Card component - a flexible content container.
@@ -95,15 +95,20 @@ const emit = defineEmits<{
   'update:open': [value: boolean]
 }>()
 
-const isOpen = ref(props.open)
+// Use internal state that syncs with prop for proper v-model support
+const internalOpen = ref(props.open)
 
+// Sync internal state when prop changes
 watch(() => props.open, (value) => {
-  isOpen.value = value
+  internalOpen.value = value
 })
 
+// Computed to read current state
+const isOpen = computed(() => internalOpen.value)
+
 function toggle () {
-  isOpen.value = !isOpen.value
-  emit('update:open', isOpen.value)
+  internalOpen.value = !internalOpen.value
+  emit('update:open', internalOpen.value)
 }
 </script>
 
