@@ -4,7 +4,7 @@ import { gql } from 'graphql-tag'
 import { TreeNode } from '../../../lib/tree'
 import { useRouteCategories } from '../../../composables/useRouteCategories'
 import { toSeconds, windowToSeconds } from '../../../lib/time-format'
-import { NewGraph, Profiles, type Graph, type CostFunction } from './graph'
+import { NewGraph, Profiles, type Graph, type CostFunction } from '../../../pathways/graph'
 import { FeedVersion, type Stop } from './station'
 
 const { routeSubcategoriesTree, routeRunningWaysTree } = useRouteCategories()
@@ -166,6 +166,7 @@ interface StopTimeData {
   scheduled_arrival_time_str: string
   scheduled_departure_time_str: string
   stop_sequence: number
+  stop_headsign?: string
   stop: StopTimeStopData
   trip: TripData
 }
@@ -373,6 +374,7 @@ export const scenarioStopStopTimesQuery = gql`
     scheduled_arrival_time_str: arrival_time
     scheduled_departure_time_str: departure_time
     stop_sequence
+    stop_headsign
     stop {
       id
       stop_id
@@ -776,6 +778,7 @@ export class FeedVersionOption {
   displayName: string
   start_date?: string
   end_date?: string
+  sha1?: string
 
   constructor (v: FeedVersionOptionData) {
     const fv = new FeedVersion(v.feedVersion)
@@ -789,6 +792,7 @@ export class FeedVersionOption {
     this.displayName = feedVersionDisplayName(v.feedVersion)
     this.start_date = fv.earliest_calendar_date
     this.end_date = fv.latest_calendar_date
+    this.sha1 = v.feedVersion.sha1
   }
 }
 
@@ -813,11 +817,11 @@ export class Scenario {
     v = v || {}
     this.selectedFeedVersions = (v.selectedFeedVersions || []).map(s => new SelectedFeedVersion(s))
     this.allowFuzzyMatching = true
-    this.timeOfDay = v.timeOfDay || '05:00-07:00'
+    this.timeOfDay = v.timeOfDay || 'all'
     this.excludeIncomingTrips = v.excludeIncomingTrips || []
     this.excludeOutgoingTrips = v.excludeOutgoingTrips || []
     this.tripFilterGroups = v.tripFilterGroups || ['feed_version', 'route_category', 'agency', 'route', 'trip_headsign']
-    this.profileName = v.profileName || null
+    this.profileName = v.profileName || 'Straight-line'
     this.useStopObservations = v.useStopObservations
     this.transferScoringBreakpoints = (v.transferScoringBreakpoints || [-5 * 60, 0, 6 * 60, 10 * 60, 20 * 60]).slice(0)
     this.transferOverrides = v.transferOverrides || new TransferOverrides()
@@ -841,6 +845,7 @@ export class ScenarioResult {
   filteredIncomingArrivals: StopTimeEvent[]
   filteredOutgoingDepartures: StopTimeEvent[]
   transferGroups: TransferGroup[]
+  hasRouteAttributes: boolean
 
   constructor (v?: ScenarioResultData) {
     v = v || {}
@@ -851,6 +856,7 @@ export class ScenarioResult {
     this.filteredIncomingArrivals = []
     this.filteredOutgoingDepartures = []
     this.transferGroups = []
+    this.hasRouteAttributes = false
   }
 }
 
@@ -890,6 +896,7 @@ export function NewScenarioResult (
   result.filteredIncomingArrivals = filteredArrivals.stopTimeEvents
   result.filteredOutgoingDepartures = filteredDepartures.stopTimeEvents
   result.transferGroups = tgs
+  result.hasRouteAttributes = hasRouteAttributes(ste.incomingArrivals) || hasRouteAttributes(ste.outgoingDepartures)
   return result
 }
 
@@ -897,12 +904,42 @@ export function NewScenarioResult (
 // Filter Departures
 // ============================================================================
 
+/**
+ * Check if any route attributes exist in the stop time events
+ */
+function hasRouteAttributes (stopTimeEvents: StopTimeEvent[]): boolean {
+  for (const ste of stopTimeEvents) {
+    const attr = ste.trip.route.route_attribute
+    if (attr && (attr.category !== undefined || attr.subcategory !== undefined || attr.running_way !== undefined)) {
+      return true
+    }
+  }
+  return false
+}
+
+/**
+ * Filter trip filter groups to remove route attribute levels if they don't exist
+ */
+function filterTripFilterGroups (groups: string[], stopTimeEvents: StopTimeEvent[]): string[] {
+  const hasAttributes = hasRouteAttributes(stopTimeEvents)
+  if (hasAttributes) {
+    return groups
+  }
+  // Remove route attribute levels if no attributes exist
+  return groups.filter(g =>
+    g !== 'route_category'
+    && g !== 'route_subcategory'
+    && g !== 'route_running_way'
+  )
+}
+
 export function filterDepartures (
   scenario: Scenario,
   tripFilter: string[],
   stopTimeEvents: StopTimeEvent[]
 ): FilterDeparturesResult {
-  const tree = makeTripTree('', stopTimeEvents, scenario.tripFilterGroups)
+  const filteredGroups = filterTripFilterGroups(scenario.tripFilterGroups, stopTimeEvents)
+  const tree = makeTripTree('', stopTimeEvents, filteredGroups)
   const deps = tree.selectAll().setUnselected(tripFilter).setIndet().getSelectedDeps().map((s: any) => s.trip.id)
   const includeTrips = new Set(deps)
 
@@ -948,15 +985,26 @@ function makeTripTree (pkey: string, deps: StopTimeEvent[], groups: string[]): T
         tn.key = dep.trip.route.agency.agency_id
         tn.name = dep.trip.route.agency.agency_name
         break
-      case 'route':
+      case 'route': {
         tn.key = dep.trip.route.route_id
-        tn.name = dep.trip.route.route_short_name + ': ' + dep.trip.route.route_long_name
+        const shortName = dep.trip.route.route_short_name
+        const longName = dep.trip.route.route_long_name
+        if (shortName && longName) {
+          tn.name = `${shortName}: ${longName}`
+        } else if (shortName) {
+          tn.name = shortName
+        } else if (longName) {
+          tn.name = longName
+        } else {
+          tn.name = dep.trip.route.route_id || 'Unnamed route'
+        }
         tn.opts = {
           routeCategory: dep.trip.route.route_attribute?.category,
           routeSubcategory: dep.trip.route.route_attribute?.subcategory,
           showCategory: false
         }
         break
+      }
       case 'direction_id':
         tn.key = String(dep.trip.direction_id)
         tn.name = (dep.trip.direction_id === 0) ? 'Direction: inbound' : 'Direction: outbound'
@@ -1123,7 +1171,7 @@ function depfn (
     trip: {
       id: st.trip.id,
       trip_id: st.trip.trip_id,
-      trip_headsign: st.trip.trip_headsign,
+      trip_headsign: st.trip.trip_headsign || st.stop_headsign,
       direction_id: st.trip.direction_id,
       feed_version: afv,
       route: {
@@ -1248,7 +1296,7 @@ function calculateTransfers (
       schedule_relationship: incomingTrip.schedule_relationship,
       route_key: route.id,
       route_id: route.route_id,
-      route_name: route.route_short_name,
+      route_name: route.route_short_name || route.route_long_name,
       route,
       stop_key: incomingTrip.stop.id,
       stop_id: incomingTrip.stop.stop_id,
@@ -1346,7 +1394,7 @@ function calculateTransfers (
         agency_id: outgoingRoute.agency.agency_id,
         agency_name: outgoingRoute.agency.agency_name,
         route_id: outgoingRoute.route_id,
-        route_name: outgoingRoute.route_short_name,
+        route_name: outgoingRoute.route_short_name || outgoingRoute.route_long_name,
         route: outgoingRoute,
         stop_key: outgoingTrip.stop.id,
         stop_id: outgoingTrip.stop.stop_id,
@@ -1464,7 +1512,7 @@ export function parseScenarioFromUrl (
 
   return NewScenario({
     selectedFeedVersions: fvos,
-    timeOfDay: (query.timeOfDay as string) || '05:00-07:00',
+    timeOfDay: (query.timeOfDay as string) || 'all',
     profileName: query.profileName as string | undefined,
     transferScoringBreakpoints: tsbp,
     useStopObservations,

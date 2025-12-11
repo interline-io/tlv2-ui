@@ -1,35 +1,39 @@
 <template>
-  <button class="button mr-2" @click="saveFile">
+  <t-button :icon-left="iconLeft" :icon-right="iconRight" @click="saveFile">
     {{ label }}
-  </button>
+  </t-button>
 </template>
 
 <script setup lang="ts">
 import type { Feature, FeatureCollection } from 'geojson'
 import { useDownload } from '../composables/useDownload'
 
-// Props
 const props = withDefaults(defineProps<{
   features?: Feature[]
   filename?: string
   label?: string
+  iconLeft?: string
+  iconRight?: string
 }>(), {
   features: () => [],
-  filename: 'export',
-  label: 'Download'
+  filename: 'export.geojson',
+  label: 'Download',
+  iconLeft: 'download',
+  iconRight: undefined
 })
 
-// Methods
-const { downloadFile, getFilename } = useDownload()
+const { download } = useDownload()
 
 const saveFile = () => {
-  const data = JSON.stringify({
+  const geojson: FeatureCollection = {
     type: 'FeatureCollection',
     features: props.features
-  } as FeatureCollection)
+  }
 
-  const blob = new Blob([data], { type: 'application/json' })
-  const filename = getFilename(props.filename.replace(/\.geojson$/, ''), 'geojson')
-  downloadFile(blob, filename)
+  download({
+    filename: props.filename + '.geojson',
+    data: JSON.stringify(geojson),
+    mimeType: 'application/json'
+  })
 }
 </script>

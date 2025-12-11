@@ -1,15 +1,15 @@
 <template>
   <div>
-    <tl-loading v-model:active="loading" :full-page="false" />
-    <o-notification
+    <t-loading :active="loading" :full-page="false" />
+    <t-notification
       v-if="error"
       variant="danger"
     >
       {{ error }}
-    </o-notification>
+    </t-notification>
     <div v-else-if="tenant && filterAction && !tenant.actions[filterAction]" />
     <div v-else-if="tenant">
-      <o-field
+      <t-field
         label="Name"
         horizontal
       >
@@ -18,20 +18,20 @@
           :can-edit="tenant.actions.can_edit"
           @save="saveName"
         />
-      </o-field>
+      </t-field>
 
-      <o-field
+      <t-field
         label="Groups"
         horizontal
       >
-        <o-button
+        <t-button
           v-if="tenant.actions.can_create_org"
-          icon-left="plus"
           size="small"
           @click="createGroup"
         >
-          Create group
-        </o-button>
+          <t-icon icon="plus" />
+          <span>Create group</span>
+        </t-button>
         <div class="field">
           <div class="field is-grouped is-grouped-multiline">
             <tl-apps-admin-group-item
@@ -41,13 +41,13 @@
             />
           </div>
         </div>
-      </o-field>
+      </t-field>
 
-      <o-field label="Your permissions" horizontal>
+      <t-field label="Your permissions" horizontal>
         <div :title="`You are logged in as ${user.name} (${user.email})`">
           <tl-apps-admin-perm-list :actions="tenant.actions" />
         </div>
-      </o-field>
+      </t-field>
 
       <tl-apps-admin-entrel-list
         v-if="tenant.actions.can_edit_members || tenant.users.admins?.length > 0"

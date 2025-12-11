@@ -27,7 +27,21 @@ export default defineConfig({
             'src/**/*.{test,spec}.ts',
             'test/node/**/*.{test,spec}.ts',
           ],
+          exclude: [
+            '**/controls/**/*.{test,spec}.ts',
+          ],
           environment: 'node',
+        },
+      },
+      {
+        plugins: [vue()],
+        resolve: { alias },
+        test: {
+          name: 'controls',
+          include: [
+            'src/runtime/controls/**/*.{test,spec}.ts',
+          ],
+          environment: 'jsdom',
         },
       },
       {

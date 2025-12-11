@@ -1,8 +1,7 @@
 import type { NuxtApp } from 'nuxt/app'
 import { defineNuxtPlugin } from 'nuxt/app'
 import { destr } from 'destr'
-import { ApolloClients, provideApolloClients } from '@vue/apollo-composable'
-import { createApolloProvider } from '@vue/apollo-option'
+import { provideApolloClients } from '@vue/apollo-composable'
 import type { NormalizedCacheObject } from '@apollo/client/core/index.js'
 import { ApolloClient, InMemoryCache } from '@apollo/client/core/index.js'
 import { setContext } from '@apollo/client/link/context'
@@ -64,15 +63,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     defaultClient.cache.restore(cacheState)
   }
 
-  // Options API
-  const apolloProvider = createApolloProvider({
-    defaultClient,
-    clients: { ...apolloClients }
-  })
-  nuxtApp.vueApp.use(apolloProvider)
-
   // Composition API
-  nuxtApp.vueApp.provide(ApolloClients, { ...apolloClients })
   provideApolloClients({ ...apolloClients })
 
   // Extract cache on server after rendering

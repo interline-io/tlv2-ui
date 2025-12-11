@@ -1,33 +1,37 @@
 <template>
-  <div>
-    <button :disabled="disabled" class="button" style="margin-right:10px" @click="saveFile">
-      <o-icon icon="download" /> <span>{{ buttonText }}</span>
-    </button>
-  </div>
+  <t-button :disabled="disabled" :icon-left="iconLeft" :icon-right="iconRight" @click="saveFile">
+    {{ label }}
+  </t-button>
 </template>
 
 <script setup lang="ts">
 import { useDownload } from '../composables/useDownload'
 
 interface Props {
-  buttonText?: string
+  label?: string
   disabled?: boolean
   filename?: string
   data?: string
+  iconLeft?: string
+  iconRight?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  buttonText: 'Download',
+  label: 'Download',
   disabled: false,
   filename: 'export',
-  data: ''
+  data: '',
+  iconLeft: 'download',
+  iconRight: undefined
 })
 
-const { downloadFile, getFilename } = useDownload()
+const { download } = useDownload()
 
 function saveFile (): void {
-  const blob = new Blob([props.data], { type: 'application/json' })
-  const filename = getFilename(props.filename, 'json')
-  downloadFile(blob, filename)
+  download({
+    filename: props.filename + '.json',
+    data: props.data,
+    mimeType: 'application/json'
+  })
 }
 </script>

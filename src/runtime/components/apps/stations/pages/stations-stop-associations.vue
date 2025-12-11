@@ -4,103 +4,82 @@
       <tl-title title="Stop ID Associations" />
     </slot>
 
-    <tl-loading v-model:active="$apollo.loading" :is-full-page="false" />
-    <o-table
+    <t-loading :active="loading" :full-page="false" />
+    <t-table
       :data="stopsWithRefs"
       narrowed
       striped
+      hoverable
       :default-sort="['target_stops', 'asc']"
     >
-      <o-table-column
-        v-slot="props"
-        sortable
-        field="stop.parent.stop_name"
-        label="Station"
-      >
-        <template v-if="props.row.parent">
+      <template #columns>
+        <t-table-column field="stop.parent.stop_name" label="Station" sortable />
+        <t-table-column field="target_feed_onestop_id" label="Target feed Onestop ID" sortable />
+        <t-table-column field="target_stop_id" label="Target stop ID" sortable />
+        <t-table-column field="target_stops" label="Stop ID association found?" sortable />
+        <t-table-column field="location_type" label="Target location type" sortable />
+        <t-table-column label="Routes serving stop" />
+        <t-table-column label="Actions" />
+      </template>
+
+      <template #default="{ row }">
+        <td>
           <tl-link
+            v-if="row.parent"
             route-key="apps-stations-feedKey-feedVersionKey-stations-stationKey"
-            :to="{ params: { feedKey, feedVersionKey, stationKey: props.row.parent.stop_id } }"
+            :to="{ params: { feedKey, feedVersionKey, stationKey: row.parent.stop_id } }"
           >
-            {{ props.row.parent.stop_name }}
+            {{ row.parent.stop_name }}
           </tl-link>
-        </template>
-      </o-table-column>
-
-      <o-table-column
-        v-slot="props"
-        sortable
-        field="target_feed_onestop_id"
-        label="Target feed Onestop ID"
-      >
-        <code>{{ props.row.external_reference.target_feed_onestop_id }}</code>
-      </o-table-column>
-      <o-table-column
-        v-slot="props"
-        sortable
-        field="target_stop_id"
-        label="Target stop ID"
-      >
-        <code>{{ props.row.external_reference.target_stop_id }}</code>
-      </o-table-column>
-      <o-table-column
-        v-slot="props"
-        field="target_stops"
-        label="Stop ID association found?"
-        sortable
-      >
-        <span v-if="props.row.external_reference.target_active_stop">
-          <span class="icon"><i class="mdi mdi-check mdi-24px" /></span>
-        </span><span v-else>
-          <span class="icon has-text-warning"><i class="mdi mdi-alert mdi-24px" /></span>
-        </span>
-      </o-table-column>
-
-      <o-table-column
-        v-slot="props"
-        field="location_type"
-        label="Target location type"
-        sortable
-      >
-        <span v-if="props.row.external_reference?.target_active_stop">
-          <span class="icon">{{ props.row.external_reference?.target_active_stop?.location_type }}</span>
-        </span><span v-else>
-          <span class="icon has-text-warning"><i class="mdi mdi-alert mdi-24px" /></span>
-        </span>
-      </o-table-column>
-
-      <o-table-column
-        v-slot="props"
-        label="Routes serving stop"
-      >
-        <span v-if="props.row.external_reference.target_active_stop && props.row.external_reference.target_active_stop.route_stops">
-          <ul>
-            <li v-for="rs of props.row.external_reference.target_active_stop.route_stops" :key="rs.route.id">
-              {{ rs.route.agency.agency_name }}: {{ rs.route.route_short_name || rs.route.route_long_name }}
-            </li>
-          </ul>
-        </span>
-      </o-table-column>
-      <o-table-column
-        v-slot="props"
-        label="Actions"
-      >
-        <template v-if="props.row.parent">
+        </td>
+        <td>
+          <code>{{ row.external_reference.target_feed_onestop_id }}</code>
+        </td>
+        <td>
+          <code>{{ row.external_reference.target_stop_id }}</code>
+        </td>
+        <td>
+          <span v-if="row.external_reference.target_active_stop">
+            <span class="icon"><i class="mdi mdi-check mdi-24px" /></span>
+          </span><span v-else>
+            <span class="icon has-text-warning"><i class="mdi mdi-alert mdi-24px" /></span>
+          </span>
+        </td>
+        <td>
+          <span v-if="row.external_reference?.target_active_stop">
+            <span class="icon">{{ row.external_reference?.target_active_stop?.location_type }}</span>
+          </span><span v-else>
+            <span class="icon has-text-warning"><i class="mdi mdi-alert mdi-24px" /></span>
+          </span>
+        </td>
+        <td>
+          <span v-if="row.external_reference.target_active_stop && row.external_reference.target_active_stop.route_stops">
+            <ul>
+              <li v-for="rs of row.external_reference.target_active_stop.route_stops" :key="rs.route.id">
+                {{ rs.route.agency.agency_name }}: {{ rs.route.route_short_name || rs.route.route_long_name }}
+              </li>
+            </ul>
+          </span>
+        </td>
+        <td>
           <tl-link
+            v-if="row.parent"
             route-key="apps-stations-feedKey-feedVersionKey-stations-stationKey-pathways"
-            :to="{ params: { feedKey, feedVersionKey, stationKey: props.row.parent.stop_id }, query: { selectedStop: props.row.id } }"
+            :to="{ params: { feedKey, feedVersionKey, stationKey: row.parent.stop_id }, query: { selectedStop: row.id } }"
           >
             Re-assign stop
           </tl-link>
-        </template>
-      </o-table-column>
-    </o-table>
+        </td>
+      </template>
+    </t-table>
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, toRefs, onMounted } from 'vue'
 import { gql } from 'graphql-tag'
-import FeedMixin from './feed-mixin'
+import { useQuery } from '@vue/apollo-composable'
+import type { Stop } from '../station'
 
 const q = gql`
   query ($feed_onestop_id: String!, $after: Int!) {
@@ -141,92 +120,76 @@ const q = gql`
       }
     }
   }
-  `
+`
 
-export default {
-  mixins: [FeedMixin],
-  props: {
-    client: { type: String, default: 'default' }
-  },
-  setup () {
-    const { resolve } = useRouteResolver()
-    return { resolve }
-  },
-  data () {
-    return {
-      stops: []
+const props = defineProps<{
+  feedKey: string
+  feedVersionKey: string
+  clientId?: string
+}>()
+
+const { feedKey, feedVersionKey, clientId } = toRefs(props)
+
+// Query for stops with external references
+const { result, loading, fetchMore: apolloFetchMore } = useQuery(
+  q,
+  () => ({
+    feed_onestop_id: feedKey.value,
+    limit: 0,
+    after: 0
+  }),
+  () => ({
+    clientId: clientId.value,
+    fetchPolicy: 'cache-and-network'
+  })
+)
+
+const stops = computed(() => result.value?.stops || [])
+
+const stopsWithRefs = computed(() => {
+  const ret: Stop[] = []
+  for (const stop of stops.value) {
+    if (!stop.external_reference || !stop) {
+      continue
     }
-  },
-  apollo: {
-    stops: {
-      client: 'stationEditor',
-      query: q,
-      variables () {
-        return {
-          feed_onestop_id: this.feedKey,
-          limit: 0,
-          after: 0
-        }
-      }
-    }
-  },
-  computed: {
-    lastStopId () {
-      return this.stops.length > 0 ? this.stops[this.stops.length - 1].id : 0
-    },
-    stopsWithRefs () {
-      const ret = []
-      for (const stop of this.stops) {
-        if (!stop.external_reference || !stop) {
-          continue
-        }
-        ret.push(stop)
-      }
-      return ret.sort((a, b) => {
-        const nameA = (a.parent ? a.parent.stop_name : 'zzz') + a.stop_id
-        const nameB = (b.parent ? b.parent.stop_name : 'zzz') + b.stop_id
-        if (nameA < nameB) {
-          return -1
-        }
-        if (nameA > nameB) {
-          return 1
-        }
-        return 0
-      })
-    }
-  },
-  mounted () {
-    this.fetchMore(0)
-  },
-  methods: {
-    fetchMore (after) {
-      // console.log('fetchMore after:', after)
-      this.$apollo.queries.stops.fetchMore({
-        variables: {
-          feed_onestop_id: this.feedKey,
-          limit: 100,
-          // feed_version_file: this.feedVersionKey,
-          after
-        },
-        updateQuery: (previousResult, { fetchMoreResult }) => {
-          const newTags = fetchMoreResult.stops
-          if (newTags.length === 0) {
-            return
-          }
-          const newAfter = newTags[newTags.length - 1].id
-          let result = []
-          if (after === 0) {
-            result = newTags
-          } else {
-            result = [...previousResult.stops, ...newTags]
-          }
-          this.fetchMore(newAfter)
-          return {
-            stops: result
-          }
-        }
-      })
-    }
+    ret.push(stop)
   }
+  return ret.sort((a, b) => {
+    const nameA = (a.parent ? a.parent.stop_name : 'zzz') + (a.stop_id || '')
+    const nameB = (b.parent ? b.parent.stop_name : 'zzz') + (b.stop_id || '')
+    if (nameA < nameB) {
+      return -1
+    }
+    if (nameA > nameB) {
+      return 1
+    }
+    return 0
+  })
+})
+
+const fetchMore = (after: number) => {
+  apolloFetchMore({
+    variables: {
+      feed_onestop_id: feedKey.value,
+      limit: 100,
+      after
+    },
+    updateQuery: (previousResult: any, { fetchMoreResult }: any) => {
+      const newTags = fetchMoreResult.stops
+      if (newTags.length === 0) {
+        return previousResult
+      }
+      const newAfter = newTags[newTags.length - 1].id
+      const result = after === 0 ? newTags : [...previousResult.stops, ...newTags]
+      fetchMore(newAfter)
+      return {
+        stops: result
+      }
+    }
+  })
 }
+
+onMounted(() => {
+  fetchMore(0)
+})
 </script>

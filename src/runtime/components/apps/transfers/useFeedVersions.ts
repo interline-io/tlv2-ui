@@ -1,4 +1,4 @@
-import { ref, computed, watch, type Ref } from 'vue'
+import { computed, type Ref } from 'vue'
 import { useQuery } from '@vue/apollo-composable'
 import {
   analystFeedQuery,
@@ -10,9 +10,7 @@ import {
 import type { StationHub } from './types'
 
 export function useFeedVersions (stationArea: Ref<StationHub>) {
-  const feedVersions = ref<FeedVersionData[]>([])
-  const activeFeedVersionIds = ref<number[]>([])
-  const error = ref<Error | null>(null)
+  const error = computed<Error | null>(() => feedError.value || null)
 
   const { result: feedResult, loading: feedLoading, error: feedError } = useQuery<AnalystFeedQueryResponse>(analystFeedQuery,
     () => ({
@@ -23,17 +21,27 @@ export function useFeedVersions (stationArea: Ref<StationHub>) {
     })
   )
 
-  watch(() => stationArea.value, () => {
-    feedVersions.value = []
-    activeFeedVersionIds.value = []
+  // Derive feedVersions directly from query result - no intermediate ref needed
+  const feedVersions = computed<FeedVersionData[]>(() => {
+    const data = feedResult.value
+    if (!data) return []
+    const fvs: FeedVersionData[] = []
+    for (const feed of data.feeds) {
+      for (const fv of feed.feed_versions) {
+        if (fv.feed_version_gtfs_import?.success === true) {
+          fvs.push(fv)
+        }
+      }
+    }
+    return fvs
   })
 
-  watch(feedResult, (data) => {
-    if (!data) return
-    const feeds = data.feeds
-    const fvs: FeedVersionData[] = []
+  // Derive active feed version IDs from query result
+  const activeFeedVersionIds = computed<number[]>(() => {
+    const data = feedResult.value
+    if (!data) return []
     const activeIds: number[] = []
-    for (const feed of feeds) {
+    for (const feed of data.feeds) {
       if (feed.feed_state?.feed_version?.id) {
         // Note: The 'stops' field is not strictly typed in FeedData yet, but exists in the query
         const fv = feed.feed_state.feed_version as any
@@ -41,18 +49,8 @@ export function useFeedVersions (stationArea: Ref<StationHub>) {
           activeIds.push(fv.id)
         }
       }
-      for (const fv of feed.feed_versions) {
-        if (fv.feed_version_gtfs_import?.success === true) {
-          fvs.push(fv)
-        }
-      }
     }
-    feedVersions.value = fvs
-    activeFeedVersionIds.value = activeIds
-  })
-
-  watch(feedError, (e) => {
-    if (e) error.value = e
+    return activeIds
   })
 
   const defaultSelectedFeedVersions = computed<SelectedFeedVersion[]>(() => {

@@ -15,6 +15,8 @@
       :show-transfers="showTransferControls"
       :enable-profiles="displayProfiles"
       :show-trips="showTripControls"
+      :read-only-feed-versions="readOnlyFeedVersions"
+      :gtfs-realtime-stop-observations-available="gtfsRealtimeStopObservationsAvailable"
       @set-exclude-incoming-trips="handleSetExcludeIncomingTrips"
       @set-exclude-outgoing-trips="handleSetExcludeOutgoingTrips"
       @transfer-scoring-breakpoints-changed="handleSetTransferScoringBreakpoints"
@@ -25,12 +27,12 @@
       @set-hide-subsequent-transfers="handleSetHideSubsequentTransfers"
       @error="handleSetError"
     />
-    <o-notification
+    <t-notification
       v-if="error"
       variant="danger"
     >
       Error loading data: {{ error.message }}
-    </o-notification>
+    </t-notification>
     <slot
       v-else
       :scenario="scenario"
@@ -45,7 +47,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, toRef } from 'vue'
-import { navigateTo, useRoute } from '#imports'
+import { navigateTo, useRoute, useRuntimeConfig } from '#imports'
 import { useMixpanel } from '../../../composables/useMixpanel'
 import { useScenarioData } from './useScenarioData'
 import { useFeedVersions } from './useFeedVersions'
@@ -72,6 +74,18 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const route = useRoute()
+const runtimeConfig = useRuntimeConfig()
+const tlv2Config = runtimeConfig.public.tlv2 as Record<string, any> | undefined
+
+// Use read-only feed selector if configured in module options
+const readOnlyFeedVersions = computed(() => {
+  return tlv2Config?.transferAnalystReadOnlyFeedSelector === true
+})
+
+// Whether GTFS Realtime stop observations are available - defaults to true
+const gtfsRealtimeStopObservationsAvailable = computed(() => {
+  return tlv2Config?.transferAnalystGtfsRealtimeStopObservations !== false
+})
 const mixpanel = useMixpanel()
 
 // State
@@ -115,20 +129,25 @@ watch(dataError, (e) => {
 })
 
 const feedVersionOptions = computed<FeedVersionOption[]>(() => {
-  if (!station.value) return []
-
+  // Build hasStops/hasDepartures maps if station data is available
+  // These are optional metadata - we can still show feed versions without them
   const fvHasStops = new Map()
-  for (const stop of station.value.stops) {
-    fvHasStops.set(stop.feed_version.id, true)
-  }
   const fvHasDepartures = new Map()
-  if (scenarioResult.value) {
-    for (const d of scenarioResult.value.outgoingDepartures) {
-      fvHasDepartures.set(d.trip.feed_version.id, true)
+  let defaultHasStops = true
+  let defaultHasDepartures = true
+
+  if (station.value) {
+    for (const stop of station.value.stops) {
+      fvHasStops.set(stop.feed_version.id, true)
     }
+    if (scenarioResult.value) {
+      for (const d of scenarioResult.value.outgoingDepartures) {
+        fvHasDepartures.set(d.trip.feed_version.id, true)
+      }
+    }
+    defaultHasStops = (station.value.stops.length === 0)
+    defaultHasDepartures = (station.value.stops.length === 0)
   }
-  const defaultHasStops = (station.value.stops.length === 0)
-  const defaultHasDepartures = (station.value.stops.length === 0)
 
   // sort and filter - most recent first
   const fvs = feedVersions.value.slice(0).sort((a: any, b: any) => {

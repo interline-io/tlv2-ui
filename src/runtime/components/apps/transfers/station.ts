@@ -4,7 +4,7 @@
 
 import type { Point } from 'geojson'
 import { haversinePosition } from '../../../geom'
-import type { Graph } from './graph'
+import type { Graph } from '../../../pathways/graph'
 
 /**
  * Basic feed information

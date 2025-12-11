@@ -17,12 +17,12 @@
     <div v-if="ready" class="columns">
       <div class="column is-narrow">
         <div class="block tl-apps-stations-info">
-          <tl-card>
+          <t-card>
             <template #trigger>
               Select
-              <o-button v-if="selectedElements.length > 0" class="is-pulled-right m-2" variant="primary is-small" outlined @click="clearSelectedElements">
+              <t-button v-if="selectedElements.length > 0" class="is-pulled-right m-2" variant="primary" size="small" outlined @click="clearSelectedElements">
                 Unselect All
-              </o-button>
+              </t-button>
             </template>
             <p v-if="selectedElements.length === 0" class="notification">
               Click to select a stop node or a pathway edge. Hold down the Ctrl or Shift keys to select multiple.
@@ -35,7 +35,7 @@
                   stationKey: stationKey,
                 }"
                 :query="{
-                  selectedPathway: p.match('[0-9]+')[0],
+                  selectedPathway: (p.match('[0-9]+')?.[0] || '') as string,
                 }"
               />
               <tl-apps-stations-pathway-editor
@@ -53,18 +53,18 @@
                   stationKey: stationKey,
                 }"
                 :query="{
-                  selectedStop: s.match('[0-9]+')[0],
+                  selectedStop: (s.match('[0-9]+')?.[0] || '') as string,
                 }"
               />
               <tl-apps-stations-stop-editor
                 :station="station"
-                :value="getElementById(s)"
+                :value="getElementById(s) as any"
                 read-only
                 current-mode="diagram"
                 @select-pathway="selectPathway"
               />
             </div>
-          </tl-card>
+          </t-card>
         </div>
       </div>
       <div class="column">
@@ -74,13 +74,32 @@
   </div>
 </template>
 
-<script>
-import { navigateTo } from '#imports'
+<script setup lang="ts">
+import { computed, nextTick, ref, toRefs, watch } from 'vue'
+import { navigateTo, useRoute } from '#imports'
 import { schemeRdGy, schemeDark2 } from 'd3-scale-chromatic'
-import { nextTick } from 'vue'
-import StationMixin from './station-mixin'
+import type { Level, Stop, Pathway } from '../station'
+import { useStation } from '../composables/useStation'
 import cytoscape from 'cytoscape'
 import fcose from 'cytoscape-fcose'
+
+const props = defineProps<{
+  feedKey: string
+  feedVersionKey: string
+  stationKey: string
+  clientId?: string
+}>()
+
+const { feedKey, feedVersionKey, stationKey, clientId } = toRefs(props)
+
+const {
+  ready,
+  station,
+  stationName,
+  stopAssociationsEnabled
+} = useStation({ feedKey, feedVersionKey, stationKey, clientId: clientId?.value })
+
+const route = useRoute()
 
 const cytoscapeConfig = {
   style: [
@@ -95,7 +114,7 @@ const cytoscapeConfig = {
       style: {
         'curve-style': 'bezier',
         'target-arrow-shape': 'triangle',
-        'source-arrow-shape': edge => edge.data.bidirectional ? 'triangle' : null,
+        'source-arrow-shape': (edge: any) => edge.data.bidirectional ? 'triangle' : null,
         'width': 3,
         'line-color': 'data(lineColor)',
         'target-arrow-color': '#ccc'
@@ -115,154 +134,163 @@ const cytoscapeConfig = {
   }
 }
 
-export default {
-  mixins: [StationMixin],
-  query: ['selectedPathway', 'selectedStop'],
-  data () {
-    return {
-      id: undefined,
-      selectedElements: [],
-      cy: null
-    }
-  },
-  computed: {
-    sortedLevels () {
-      return [...this.station.levels].sort((a, b) => { return (a.level_index > b.level_index) })
-    },
-    cytoscapeElements () {
-      const levelColors = schemeRdGy[5]
-      const stopColors = schemeDark2
-      const arr = []
-      if (this.station) {
-        this.sortedLevels.forEach((l) => {
-          const levelId = `l-${l.id}`
-          const levelColor = levelColors[l.level_index] || '#ccc'
+// Reactive data
+const selectedElements = ref<string[]>([])
+const cy = ref<any>(null)
+
+// Computed properties
+const sortedLevels = computed((): Level[] => {
+  if (!station.value) return []
+  return [...station.value.levels].sort((a, b) => { return (a.level_index! > b.level_index!) ? 1 : -1 })
+})
+
+const cytoscapeElements = computed((): any[] => {
+  const levelColors = schemeRdGy[5]
+  const stopColors = schemeDark2
+  const arr: any[] = []
+  if (station.value) {
+    sortedLevels.value.forEach((l) => {
+      const levelId = `l-${l.id}`
+      const levelColor = (levelColors && l.level_index !== undefined) ? levelColors[l.level_index] : '#ccc'
+      arr.push({
+        group: 'nodes',
+        data: {
+          id: levelId,
+          name: l.level_name,
+          bgcolor: levelColor
+        },
+        selectable: false
+      })
+      if (!station.value) return
+      station.value.stops.forEach((s) => {
+        if (s.level?.id === l.id) {
+          const stopId = `s-${s.id}`
+          const stopName = s.stop_name || s.stop_id
+          const stopColor = stopColors[Number(s.location_type)]
           arr.push({
             group: 'nodes',
             data: {
-              id: levelId,
-              name: l.level_name,
-              bgcolor: levelColor
-            },
-            selectable: false
-          })
-          this.station.stops.forEach((s) => {
-            if (s.level?.id === l.id) {
-              const stopId = `s-${s.id}`
-              const stopName = s.stop_name || s.stop_id
-              const stopColor = stopColors[Number(s.location_type)]
-              arr.push({
-                group: 'nodes',
-                data: {
-                  id: stopId,
-                  parent: levelId,
-                  name: stopName,
-                  bgcolor: stopColor
-                }
-              })
+              id: stopId,
+              parent: levelId,
+              name: stopName,
+              bgcolor: stopColor
             }
           })
-        })
-        this.station.pathways.forEach((p) => {
-          const fromStopId = `s-${p.from_stop.id}`
-          const toStopId = `s-${p.to_stop.id}`
-          const pathwayColor = '#999'
-          arr.push({
-            group: 'edges',
-            data: {
-              id: `p-${p.id}`,
-              source: fromStopId,
-              target: toStopId,
-              bidirectional: (p.is_bidirectional === 1),
-              lineColor: pathwayColor
-            }
-          })
-        })
-      }
-      return arr
-    },
-    selectedStops () {
-      return this.selectedElements.filter(id => id.startsWith('s'))
-    },
-    selectedPathways () {
-      return this.selectedElements.filter(id => id.startsWith('p'))
-    }
-  },
-  watch: {
-    ready () {
-      if (this.ready) {
-        nextTick(() => { this.cytoscapeInit() })
-      }
-    }
-  },
-  methods: {
-    cytoscapeInit () {
-      if (this.cytoscapeElements.length === 0) {
-        console.log('cytoscape not ready')
-        return
-      }
-      console.log('cytoscape init')
-      const cy = cytoscape({
-        container: document.getElementById('cy'),
-        elements: this.cytoscapeElements,
-        style: cytoscapeConfig.style
-      })
-      cytoscape.use(fcose, {
-        // fixedNodeConstraint
-      })
-      nextTick(() => {
-        cy.layout(cytoscapeConfig.layout).run()
-        cy.fit(null, 200)
-        cy.on('select', 'node', this.elementSelected)
-        cy.on('unselect', 'node', this.elementUnselected)
-        cy.on('select', 'edge', this.elementSelected)
-        cy.on('unselect', 'edge', this.elementUnselected)
-        if (this.$route.query.selectedStop) {
-          this.selectStop(this.$route.query.selectedStop, false)
-        }
-        if (this.$route.query.selectedPathway) {
-          this.selectPathway(this.$route.query.selectedPathway, false)
         }
       })
-    },
-    elementSelected (event) {
-      this.selectedElements = Array.from(new Set(this.selectedElements).add(event.target.id()))
-    },
-    elementUnselected (event) {
-      this.selectedElements = Array.from(new Set(this.selectedElements).delete(event.target.id()))
-    },
-    clearSelectedElements () {
-      this.selectedElements = []
-      navigateTo({ path: this.$route.path, query: { selectedStop: null, selectedPathway: null } })
-      this.$refs.cy.instance.filter(':selected').forEach(element => element.unselect())
-    },
-    getElementById (elementId) {
-      const id = Number(elementId.match('[0-9]+')[0])
-      if (elementId.startsWith('s')) {
-        return this.station.stops.find(s => s.id === id)
-      } else if (elementId.startsWith('p')) {
-        return this.station.pathways.find(p => p.id === id)
-      } else if (elementId.startsWith('l')) {
-        return this.station.levels.find(l => l.id === id)
-      }
-    },
-    selectStop (id, clearSelectedElements = true) {
-      if (clearSelectedElements) { this.clearSelectedElements() }
-      this.selectElement(`s-${id}`)
-    },
-    selectPathway (id, clearSelectedElements = true) {
-      if (clearSelectedElements) { this.clearSelectedElements() }
-      this.clearSelectedElements()
-      this.selectElement(`p-${id}`)
-    },
-    selectElement (elementId) {
-      this.$refs.cy.instance.filter(':unselected').forEach((element) => {
-        if (element.id() === elementId) {
-          element.select()
+    })
+    if (!station.value) return arr
+    station.value.pathways.forEach((p) => {
+      const fromStopId = `s-${p.from_stop.id}`
+      const toStopId = `s-${p.to_stop.id}`
+      const pathwayColor = '#999'
+      arr.push({
+        group: 'edges',
+        data: {
+          id: `p-${p.id}`,
+          source: fromStopId,
+          target: toStopId,
+          bidirectional: (p.is_bidirectional === 1),
+          lineColor: pathwayColor
         }
       })
-    }
+    })
   }
+  return arr
+})
+
+const selectedStops = computed((): string[] => {
+  return selectedElements.value.filter(id => id.startsWith('s'))
+})
+
+const selectedPathways = computed((): string[] => {
+  return selectedElements.value.filter(id => id.startsWith('p'))
+})
+
+// Watch ready state
+watch(ready, (isReady) => {
+  if (isReady) {
+    nextTick(() => { cytoscapeInit() })
+  }
+})
+
+// Methods
+function cytoscapeInit (): void {
+  if (cytoscapeElements.value.length === 0) {
+    console.log('cytoscape not ready')
+    return
+  }
+  console.log('cytoscape init')
+  const cyInstance = cytoscape({
+    container: document.getElementById('cy'),
+    elements: cytoscapeElements.value,
+    style: cytoscapeConfig.style
+  })
+  cytoscape.use(fcose as any)
+  cy.value = cyInstance
+  nextTick(() => {
+    cyInstance.layout(cytoscapeConfig.layout).run()
+    cyInstance.fit(undefined, 200)
+    cyInstance.on('select', 'node', elementSelected)
+    cyInstance.on('unselect', 'node', elementUnselected)
+    cyInstance.on('select', 'edge', elementSelected)
+    cyInstance.on('unselect', 'edge', elementUnselected)
+    if (route.query.selectedStop) {
+      const stopId = Array.isArray(route.query.selectedStop) ? route.query.selectedStop[0] : route.query.selectedStop
+      selectStop(Number(stopId), false)
+    }
+    if (route.query.selectedPathway) {
+      const pathwayId = Array.isArray(route.query.selectedPathway) ? route.query.selectedPathway[0] : route.query.selectedPathway
+      selectPathway(Number(pathwayId), false)
+    }
+  })
+}
+
+function elementSelected (event: any) {
+  selectedElements.value = Array.from(new Set(selectedElements.value).add(event.target.id()))
+}
+
+function elementUnselected (event: any) {
+  const set = new Set(selectedElements.value)
+  set.delete(event.target.id())
+  selectedElements.value = Array.from(set)
+}
+
+function clearSelectedElements () {
+  selectedElements.value = []
+  navigateTo({ path: route.path, query: { selectedStop: null, selectedPathway: null } })
+  cy.value?.filter(':selected').forEach((element: any) => element.unselect())
+}
+
+function getElementById (elementId: string): Stop | Pathway | Level | undefined {
+  const match = elementId.match('[0-9]+')
+  if (!match || !station.value) return undefined
+  const id = Number(match[0])
+  if (elementId.startsWith('s-')) {
+    return station.value.stops.find(s => s.id === id)
+  } else if (elementId.startsWith('p-')) {
+    return station.value.pathways.find(p => p.id === id)
+  } else if (elementId.startsWith('l-')) {
+    return station.value.levels.find(l => l.id === id)
+  }
+}
+
+function selectStop (id: number, shouldClear = true) {
+  if (shouldClear) { clearSelectedElements() }
+  selectElement(`s-${id}`)
+}
+
+function selectPathway (id: number, shouldClear = true) {
+  if (shouldClear) { clearSelectedElements() }
+  selectElement(`p-${id}`)
+}
+
+function selectElement (elementId: string) {
+  cy.value?.filter(':unselected').forEach((element: any) => {
+    if (element.id() === elementId) {
+      element.select()
+    }
+  })
 }
 </script>
 

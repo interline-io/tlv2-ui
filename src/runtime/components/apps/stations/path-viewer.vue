@@ -1,8 +1,8 @@
 <template>
   <div>
-    <tl-msg v-if="!path.length" variant="warning">
+    <t-msg v-if="!path.length" variant="warning">
       No pathways found for this path.
-    </tl-msg>
+    </t-msg>
 
     <table v-else class="table shaded is-narrow tl-path-table" cellpadding="0" cellspacing="0">
       <thead>
@@ -18,12 +18,16 @@
             <span class="tl-path-icon"><img :src="pathwayIcon(edge.pathway.pathway_mode).url" :title="pathwayIcon(edge.pathway.pathway_mode).label"></span>
           </td>
           <td>
-            {{ stopName(edge.pathway.from_stop) }}
-            ({{ locationType(edge.pathway.from_stop.location_type) }})
+            <template v-if="edge.pathway.from_stop">
+              {{ stopName(edge.pathway.from_stop) }}
+              ({{ locationType(edge.pathway.from_stop.location_type) }})
+            </template>
           </td>
           <td>
-            {{ stopName(edge.pathway.to_stop) }}
-            ({{ locationType(edge.pathway.to_stop.location_type) }})
+            <template v-if="edge.pathway.to_stop">
+              {{ stopName(edge.pathway.to_stop) }}
+              ({{ locationType(edge.pathway.to_stop.location_type) }})
+            </template>
           </td>
         </tr>
       </tbody>
@@ -31,41 +35,46 @@
   </div>
 </template>
 
-<script>
-import { PathwayModeIcons, LocationTypes } from './basemaps'
+<script setup lang="ts">
+import { PathwayModeIcons } from '../../../pathways/pathway-icons'
+import { LocationTypes } from './basemaps'
+import type { PathwayData, StopData } from './types'
 
-export default {
-  props: {
-    path: {
-      type: Array, default () { return [] }
-    }
-  },
-  data () {
-    return {
-      LocationTypes
-    }
-  },
-  methods: {
-    stopName (node) {
-      if (node.stop_name === 'Node' && node.location_type === 3) {
-        return ''
-      }
-      return node.stop_name
-    },
-    locationType (lt) {
-    //   if (lt === 3) {
-    //     return ''
-    //   }
-      return LocationTypes.get(lt)
-    },
-    pathwayIcon (mode) {
-      const m = PathwayModeIcons[mode]
-      if (!m) {
-        return { url: '', label: '' }
-      }
-      return { url: `/icons/${m.altIcon ? m.altIcon : m.icon}.png`, label: m.label }
-    }
+interface PathEdge {
+  pathway: PathwayData
+}
+
+interface Props {
+  path?: PathEdge[]
+}
+
+withDefaults(defineProps<Props>(), {
+  path: () => []
+})
+
+function stopName (node: StopData): string {
+  if (node.stop_name === 'Node' && node.location_type === 3) {
+    return ''
   }
+  return node.stop_name || ''
+}
+
+function locationType (lt?: number): string | undefined {
+  if (lt === undefined) {
+    return undefined
+  }
+  return LocationTypes.get(lt)
+}
+
+function pathwayIcon (mode?: number): { url: string, label: string } {
+  if (mode === undefined) {
+    return { url: '', label: '' }
+  }
+  const m = PathwayModeIcons[mode]
+  if (!m) {
+    return { url: '', label: '' }
+  }
+  return { url: `/icons/${m.altIcon ? m.altIcon : m.icon}.png`, label: m.label }
 }
 </script>
 

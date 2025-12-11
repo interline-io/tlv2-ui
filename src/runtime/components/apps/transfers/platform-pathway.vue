@@ -1,8 +1,8 @@
 <template>
   <div>
-    <o-notification variant="warning">
+    <t-notification variant="warning">
       For <strong>debugging</strong> purposes only. Directionality of a step may be reversed. Errors may be present.
-    </o-notification>
+    </t-notification>
 
     <tl-apps-transfers-platform-pathway-map
       :station="station"
@@ -53,7 +53,7 @@
 import centroid from '@turf/centroid'
 import type { FeatureCollection, Feature, Point } from 'geojson'
 import type { Station, Pathway } from './station'
-import { PathwayModeIcons } from './pathway-icons'
+import { PathwayModeIcons } from '../../../pathways/pathway-icons'
 import { computed } from 'vue'
 
 interface Edge {

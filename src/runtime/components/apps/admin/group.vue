@@ -1,15 +1,15 @@
 <template>
   <div>
-    <tl-loading v-model:active="loading" :full-page="false" />
-    <o-notification
+    <t-loading :active="loading" :full-page="false" />
+    <t-notification
       v-if="error"
       variant="danger"
     >
       Error: {{ error }}
-    </o-notification>
+    </t-notification>
     <div v-else-if="group">
       <div>
-        <o-field
+        <t-field
           label="Group name"
           horizontal
         >
@@ -18,9 +18,9 @@
             :can-edit="editable && group.actions.can_edit"
             @save="saveName"
           />
-        </o-field>
+        </t-field>
 
-        <o-field
+        <t-field
           v-if="showTenant"
           label="Parent"
           horizontal
@@ -38,93 +38,93 @@
               >
                 View tenant
               </tl-link>
-              <o-button
+              <t-button
                 v-if="editable && group.actions.can_set_tenant"
                 size="small"
                 @click="showAssignTenant = true"
               >
                 Set tenant
-              </o-button>
+              </t-button>
+
+              <t-field
+                v-if="showFeeds"
+                label="Feeds"
+                horizontal
+              >
+                <div class="field">
+                  <div class="field is-grouped is-grouped-multiline">
+                    <tl-apps-admin-feed-item
+                      v-for="v of group.feeds || []"
+                      :key="v.id"
+                      :value="v"
+                    />
+                  </div>
+                </div>
+              </t-field>
+
+              <t-field v-if="showActions" label="Your permissions" horizontal>
+                <div :title="`You are logged in as ${user.name} (${user.email})`">
+                  <tl-apps-admin-perm-list :actions="group.actions" />
+                </div>
+              </t-field>
+
+              <div v-if="showMembers">
+                <tl-apps-admin-entrel-list
+                  v-if="(editable && group.actions.can_edit_members) || group.users.managers?.length > 0"
+                  text="Managers"
+                  action-text="Add a group manager"
+                  :action-info="permLevels('manager')"
+                  :entrels="group.users.managers"
+                  :can-add="editable && group.actions.can_edit_members"
+                  :can-remove="editable && group.actions.can_edit_members"
+                  @add-permissions="addPermissions('manager', $event)"
+                  @remove-permissions="removePermissions('manager', $event)"
+                />
+
+                <tl-apps-admin-entrel-list
+                  v-if="(editable && group.actions.can_edit_members) || group.users.editors?.length > 0"
+                  text="Editors"
+                  action-text="Add a group editor"
+                  :action-info="permLevels('editor')"
+                  :entrels="group.users.editors"
+                  :can-add="editable && group.actions.can_edit_members"
+                  :can-remove="editable && group.actions.can_edit_members"
+                  :show-tenants="true"
+                  @add-permissions="addPermissions('editor', $event)"
+                  @remove-permissions="removePermissions('editor', $event)"
+                />
+
+                <tl-apps-admin-entrel-list
+                  v-if="(editable && group.actions.can_edit_members) || group.users.viewers?.length > 0"
+                  text="Viewers"
+                  action-text="Add a group viewer"
+                  :action-info="permLevels('viewer')"
+                  :entrels="group.users.viewers"
+                  :can-add="editable && group.actions.can_edit_members"
+                  :can-remove="editable && group.actions.can_edit_members"
+                  :show-tenants="true"
+                  @add-permissions="addPermissions('viewer', $event)"
+                  @remove-permissions="removePermissions('viewer', $event)"
+                />
+
+                <t-field label="" horizontal>
+                  * Admin users in parent {{ group.tenant?.name }} are also group managers (not shown)
+                </t-field>
+              </div>
+
+              <t-modal
+                v-model="showAssignTenant"
+                title="Set tenant"
+              >
+                <tl-apps-admin-entrel-search
+                  :show-users="false"
+                  :show-tenants="true"
+                  @select="showAssignTenant = false; setTenant($event)"
+                />
+              </t-modal>
             </template>
           </tl-apps-admin-input>
-        </o-field>
-
-        <o-field
-          v-if="showFeeds"
-          label="Feeds"
-          horizontal
-        >
-          <div class="field">
-            <div class="field is-grouped is-grouped-multiline">
-              <tl-apps-admin-feed-item
-                v-for="v of group.feeds || []"
-                :key="v.id"
-                :value="v"
-              />
-            </div>
-          </div>
-        </o-field>
-
-        <o-field v-if="showActions" label="Your permissions" horizontal>
-          <div :title="`You are logged in as ${user.name} (${user.email})`">
-            <tl-apps-admin-perm-list :actions="group.actions" />
-          </div>
-        </o-field>
-
-        <div v-if="showMembers">
-          <tl-apps-admin-entrel-list
-            v-if="(editable && group.actions.can_edit_members) || group.users.managers?.length > 0"
-            text="Managers"
-            action-text="Add a group manager"
-            :action-info="permLevels('manager')"
-            :entrels="group.users.managers"
-            :can-add="editable && group.actions.can_edit_members"
-            :can-remove="editable && group.actions.can_edit_members"
-            @add-permissions="addPermissions('manager', $event)"
-            @remove-permissions="removePermissions('manager', $event)"
-          />
-
-          <tl-apps-admin-entrel-list
-            v-if="(editable && group.actions.can_edit_members) || group.users.editors?.length > 0"
-            text="Editors"
-            action-text="Add a group editor"
-            :action-info="permLevels('editor')"
-            :entrels="group.users.editors"
-            :can-add="editable && group.actions.can_edit_members"
-            :can-remove="editable && group.actions.can_edit_members"
-            :show-tenants="true"
-            @add-permissions="addPermissions('editor', $event)"
-            @remove-permissions="removePermissions('editor', $event)"
-          />
-
-          <tl-apps-admin-entrel-list
-            v-if="(editable && group.actions.can_edit_members) || group.users.viewers?.length > 0"
-            text="Viewers"
-            action-text="Add a group viewer"
-            :action-info="permLevels('viewer')"
-            :entrels="group.users.viewers"
-            :can-add="editable && group.actions.can_edit_members"
-            :can-remove="editable && group.actions.can_edit_members"
-            :show-tenants="true"
-            @add-permissions="addPermissions('viewer', $event)"
-            @remove-permissions="removePermissions('viewer', $event)"
-          />
-
-          <o-field label="" horizontal>
-            * Admin users in parent {{ group.tenant?.name }} are also group managers (not shown)
-          </o-field>
-        </div>
-
-        <tl-modal
-          v-model="showAssignTenant"
-          title="Set tenant"
-        >
-          <tl-apps-admin-entrel-search
-            :show-users="false"
-            :show-tenants="true"
-            @select="showAssignTenant = false; setTenant($event)"
-          />
-        </tl-modal>
+        </t-field>
       </div>
     </div>
   </div>
