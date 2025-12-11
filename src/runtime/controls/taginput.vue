@@ -3,6 +3,7 @@
     class="t-taginput"
     :class="containerClasses"
     role="combobox"
+    :aria-label="placeholder || 'Tag input'"
     :aria-expanded="showDropdown"
     :aria-haspopup="'listbox'"
     :aria-owns="listboxId"
@@ -35,7 +36,13 @@
         {{ emptyText }}
       </span>
       <!-- Counter for max tags -->
-      <span v-if="maxTags !== undefined" class="t-taginput-counter" :class="{ 'is-max': isMaxReached }">
+      <span
+        v-if="maxTags !== undefined"
+        :id="counterId"
+        class="t-taginput-counter"
+        :class="{ 'is-max': isMaxReached }"
+        aria-live="polite"
+      >
         {{ counterText }}
       </span>
     </div>
@@ -56,6 +63,7 @@
           role="searchbox"
           :aria-controls="listboxId"
           :aria-activedescendant="highlightedIndex >= 0 ? `${componentId}-option-${highlightedIndex}` : undefined"
+          :aria-describedby="maxTags !== undefined ? counterId : undefined"
           @focus="handleFocus"
           @blur="handleBlur"
           @keydown="handleKeydown"
@@ -87,7 +95,7 @@
             class="t-taginput-dropdown-item"
             :class="{ 'is-active': index === highlightedIndex }"
             role="option"
-            :aria-selected="false"
+            :aria-selected="modelValue?.includes(option.value) || false"
             @mousedown.prevent="selectOption(option)"
             @mouseenter="highlightedIndex = index"
           >
@@ -106,7 +114,7 @@
 
 <script setup lang="ts" generic="T extends string | number = string">
 import { computed, ref, watch, useSlots } from 'vue'
-import type { TaginputVariant, TaginputSize } from './types'
+import type { TaginputVariant, TaginputSize, TagOption as TagOptionBase } from './types'
 
 /**
  * Tag input component with autocomplete dropdown.
@@ -124,16 +132,9 @@ defineOptions({
 })
 
 /**
- * Option type for taginput items.
+ * Option type for taginput items, parameterized by this component's generic T.
  */
-interface TagOption {
-  /** Unique value identifier */
-  value: T
-  /** Display label */
-  label: string
-  /** Allow additional properties */
-  [key: string]: unknown
-}
+type TagOption = TagOptionBase<T>
 
 interface Props {
   /**
@@ -257,6 +258,7 @@ const highlightedIndex = ref(-1)
 // Unique ID for ARIA attributes
 const componentId = `taginput-${Math.random().toString(36).substring(2, 9)}`
 const listboxId = `${componentId}-listbox`
+const counterId = `${componentId}-counter`
 
 // Check if max tags limit is reached
 const isMaxReached = computed(() => {
@@ -508,8 +510,8 @@ defineExpose({
   color: var(--bulma-text-weak);
 
   &.is-max {
-    color: var(--bulma-warning);
-    font-weight: 500;
+    color: var(--bulma-danger);
+    font-weight: 600;
   }
 }
 
