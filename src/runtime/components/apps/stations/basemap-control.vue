@@ -3,7 +3,7 @@
     <t-dropdown
       :model-value="modelValue"
       selectable
-      trigger-label="Basemap"
+      label="Basemap"
       @update:model-value="$emit('update:modelValue', $event)"
     >
       <t-dropdown-item

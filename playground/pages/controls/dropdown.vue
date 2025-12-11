@@ -9,7 +9,7 @@
       </p>
 
       <t-demo-box label="Basic Dropdown">
-        <t-dropdown trigger-label="Actions">
+        <t-dropdown label="Actions">
           <t-dropdown-item value="edit">
             <t-icon icon="pencil" />
             <span>Edit</span>
@@ -27,7 +27,7 @@
 
       <t-demo-box label="Trigger Variants">
         <div class="buttons">
-          <t-dropdown v-for="variant in triggerVariants" :key="variant" :trigger-variant="variant" :trigger-label="capitalize(variant)">
+          <t-dropdown v-for="variant in triggerVariants" :key="variant" :button-variant="variant" :label="capitalize(variant)">
             <t-dropdown-item value="1">
               Option 1
             </t-dropdown-item>
@@ -45,7 +45,7 @@
         <p class="mb-3">
           Hover over the button to open the dropdown
         </p>
-        <t-dropdown hoverable trigger-label="Hover me" trigger-variant="info">
+        <t-dropdown hoverable label="Hover me" button-variant="info">
           <t-dropdown-item value="option1">
             Option 1
           </t-dropdown-item>
@@ -59,7 +59,7 @@
       </t-demo-box>
 
       <t-demo-box label="With Icons">
-        <t-dropdown trigger-label="My Account" trigger-icon-left="account-circle">
+        <t-dropdown label="My Account" icon-left="account-circle">
           <t-dropdown-item value="profile">
             <t-icon icon="account" />
             <span>Profile</span>
@@ -82,7 +82,7 @@
 
       <t-demo-box label="Dropdown Positions">
         <div class="buttons">
-          <t-dropdown trigger-label="Bottom Left (Default)">
+          <t-dropdown label="Bottom Left (Default)">
             <t-dropdown-item value="1">
               Item 1
             </t-dropdown-item>
@@ -91,7 +91,7 @@
             </t-dropdown-item>
           </t-dropdown>
 
-          <t-dropdown position="bottom-right" trigger-label="Bottom Right">
+          <t-dropdown position="bottom-right" label="Bottom Right">
             <t-dropdown-item value="1">
               Item 1
             </t-dropdown-item>
@@ -100,7 +100,7 @@
             </t-dropdown-item>
           </t-dropdown>
 
-          <t-dropdown position="top-left" trigger-label="Top Left">
+          <t-dropdown position="top-left" label="Top Left">
             <t-dropdown-item value="1">
               Item 1
             </t-dropdown-item>
@@ -109,7 +109,7 @@
             </t-dropdown-item>
           </t-dropdown>
 
-          <t-dropdown position="top-right" trigger-label="Top Right">
+          <t-dropdown position="top-right" label="Top Right">
             <t-dropdown-item value="1">
               Item 1
             </t-dropdown-item>
@@ -121,7 +121,7 @@
       </t-demo-box>
 
       <t-demo-box label="With Disabled Items">
-        <t-dropdown trigger-label="File">
+        <t-dropdown label="File">
           <t-dropdown-item value="new">
             <t-icon icon="file-plus" />
             <span>New</span>
@@ -166,7 +166,7 @@
         <p class="mb-3">
           Selected items: <strong>{{ multipleSelection.length > 0 ? multipleSelection.join(', ') : 'None' }}</strong>
         </p>
-        <t-dropdown v-model="multipleSelection as string[]" selectable multiple inline trigger-label="Select Multiple" trigger-variant="primary">
+        <t-dropdown v-model="multipleSelection as string[]" selectable multiple inline label="Select Multiple" button-variant="primary">
           <t-dropdown-item value="cat">
             🐱 Cat
           </t-dropdown-item>
@@ -298,7 +298,7 @@
         <p class="mb-3">
           Selected option: <strong>{{ singleSelection || 'None' }}</strong>
         </p>
-        <t-dropdown v-model:model-value="singleSelection as any" selectable trigger-label="Select Option" trigger-variant="link">
+        <t-dropdown v-model:model-value="singleSelection as any" selectable label="Select Option" button-variant="link">
           <t-dropdown-item value="option1">
             Option 1
           </t-dropdown-item>
@@ -315,7 +315,7 @@
         <p class="mb-3">
           Selected user ID: <strong>{{ selectedUserId || 'None' }}</strong>
         </p>
-        <t-dropdown v-model:model-value="selectedUserId as any" selectable trigger-label="Select User" trigger-variant="info">
+        <t-dropdown v-model:model-value="selectedUserId as any" selectable label="Select User" button-variant="info">
           <t-dropdown-item :value="1">
             👤 John Doe (ID: 1)
           </t-dropdown-item>
@@ -334,6 +334,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { DropdownTriggerVariants } from '../../../src/runtime/controls/types'
+import TDemoBox from '../../components/t-demo-box.vue'
 
 const triggerVariants = DropdownTriggerVariants
 

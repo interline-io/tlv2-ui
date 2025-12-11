@@ -92,6 +92,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { InputVariants, InputSizes, InputTypes } from '../../../src/runtime/controls/types'
+import TDemoBox from '../../components/t-demo-box.vue'
 
 const variants = InputVariants
 const sizes = InputSizes

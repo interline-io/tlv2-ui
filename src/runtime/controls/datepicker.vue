@@ -558,6 +558,7 @@ defineExpose({ close, focus: () => inputRef.value?.focus() })
 </script>
 
 <style lang="scss" scoped>
+@use "sass:color";
 @use "bulma/sass/utilities/initial-variables" as *;
 @use "bulma/sass/utilities/derived-variables" as *;
 
@@ -630,7 +631,7 @@ defineExpose({ close, focus: () => inputRef.value?.focus() })
     border-color: $primary;
 
     &:hover {
-      background: darken($primary, 5%);
+      background: color.adjust($primary, $lightness: -5%);
     }
   }
 

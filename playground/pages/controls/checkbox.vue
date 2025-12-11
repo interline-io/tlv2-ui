@@ -168,6 +168,7 @@
 <script setup lang="ts">
 import { ref, computed, reactive } from 'vue'
 import { CoreVariants, CheckboxSizes } from '../../../src/runtime/controls/types'
+import TDemoBox from '../../components/t-demo-box.vue'
 
 const variants = CoreVariants
 const sizes = CheckboxSizes

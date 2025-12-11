@@ -263,6 +263,7 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
 import { SelectVariants, SelectSizes } from '../../../src/runtime/controls/types'
+import TDemoBox from '../../components/t-demo-box.vue'
 
 const variants = SelectVariants
 const sizes = SelectSizes

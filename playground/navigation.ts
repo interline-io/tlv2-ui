@@ -22,6 +22,7 @@ export const navigationGroups: NavGroup[] = [
       { name: 'Input', path: '/controls/input', icon: 'form-textbox' },
       { name: 'Textarea', path: '/controls/textarea', icon: 'text' },
       { name: 'Select', path: '/controls/select', icon: 'form-select' },
+      { name: 'Taginput', path: '/controls/taginput', icon: 'tag-multiple' },
       { name: 'Datepicker', path: '/controls/datepicker', icon: 'calendar' },
       { name: 'Field', path: '/controls/field', icon: 'form-textbox-password' },
       { name: 'Slider', path: '/controls/slider', icon: 'tune' }
@@ -42,6 +43,7 @@ export const navigationGroups: NavGroup[] = [
     variant: 'success',
     items: [
       { name: 'Table', path: '/controls/table', icon: 'table' },
+      { name: 'Pagination', path: '/controls/pagination', icon: 'page-first' },
       { name: 'Tag', path: '/controls/tag', icon: 'tag' },
       { name: 'Notification', path: '/controls/notification', icon: 'bell' },
       { name: 'Message', path: '/controls/msg', icon: 'message' }
