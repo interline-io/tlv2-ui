@@ -53,7 +53,7 @@
           <t-dropdown
             v-model="entity.parent.id"
             selectable
-            :trigger-label="parentStop ? parentStop.stop_name : 'None'"
+            :label="parentStop ? parentStop.stop_name : 'None'"
           >
             <!-- eslint-disable vue/attribute-hyphenation -->
             <t-dropdown-item v-if="station.stop" :value="station.stop.id" :ariaRole="'listitem'">

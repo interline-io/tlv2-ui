@@ -218,6 +218,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import TDemoBox from '../../components/t-demo-box.vue'
 
 // Basic usage
 const singleDate = ref<Date>()

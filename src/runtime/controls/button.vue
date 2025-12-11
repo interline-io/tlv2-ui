@@ -14,8 +14,8 @@
       <span v-if="iconLeft && !loading" class="icon is-small">
         <t-icon :icon="iconLeft" />
       </span>
-      <span v-if="$slots.default">
-        <slot />
+      <span v-if="$slots.default || label">
+        <slot>{{ label }}</slot>
       </span>
       <span v-if="iconRight && !loading" class="icon is-small">
         <t-icon :icon="iconRight" />
@@ -119,6 +119,11 @@ interface Props {
    * @default undefined
    */
   iconRight?: string
+
+  /**
+   * Button label text (alternative to using default slot).
+   */
+  label?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -132,7 +137,8 @@ const props = withDefaults(defineProps<Props>(), {
   rounded: false,
   type: 'button',
   iconLeft: undefined,
-  iconRight: undefined
+  iconRight: undefined,
+  label: undefined
 })
 
 const buttonClasses = computed(() => {

@@ -10,7 +10,7 @@
     :role="props.ariaRole"
     @click.stop="handleClick"
   >
-    <slot />
+    <slot>{{ label }}</slot>
   </a>
 </template>
 
@@ -35,6 +35,11 @@ interface Props {
    * Type should match the parent t-dropdown's generic type.
    */
   value?: T
+
+  /**
+   * Label text (alternative to using default slot).
+   */
+  label?: string
 
   /**
    * Disable this item (cannot be selected)
@@ -65,6 +70,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   value: undefined,
+  label: undefined,
   disabled: false,
   active: false,
   separator: false,
