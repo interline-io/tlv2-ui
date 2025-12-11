@@ -8,7 +8,7 @@
       :value="nativeValue"
       @change="handleChange"
     >
-    <slot />
+    <slot>{{ label }}</slot>
   </label>
 </template>
 
@@ -40,6 +40,8 @@ interface Props {
   variant?: RadioVariant
   /** Size of the radio button */
   size?: RadioSize
+  /** Label text (alternative to using default slot) */
+  label?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -48,7 +50,8 @@ const props = withDefaults(defineProps<Props>(), {
   name: undefined,
   disabled: false,
   variant: undefined,
-  size: undefined
+  size: undefined,
+  label: undefined
 })
 
 const emit = defineEmits<{

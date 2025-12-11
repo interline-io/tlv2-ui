@@ -153,6 +153,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { TextareaVariants, TextareaSizes } from '../../../src/runtime/controls/types'
+import TDemoBox from '../../components/t-demo-box.vue'
 
 const variants = TextareaVariants
 const sizes = TextareaSizes

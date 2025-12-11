@@ -10,7 +10,7 @@
     :class="tagClasses"
     @click="handleClick"
   >
-    <slot />
+    <slot>{{ label }}</slot>
     <button
       v-if="closable"
       type="button"
@@ -25,6 +25,11 @@ import { computed } from 'vue'
 import type { TagVariant, TagSize } from './types'
 
 interface Props {
+  /**
+   * Tag label text (alternative to using default slot).
+   */
+  label?: string
+
   /**
    * Color variant of the tag.
    */
@@ -57,6 +62,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  label: undefined,
   variant: undefined,
   size: undefined,
   rounded: false,

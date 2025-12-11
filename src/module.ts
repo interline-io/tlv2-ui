@@ -119,6 +119,7 @@ export default defineNuxtModule<ModuleOptions>({
     // Setup CSS
     nuxt.options.css.push(resolveRuntimeModule('assets/main.css'))
     nuxt.options.css.push('@mdi/font/css/materialdesignicons.css')
+    nuxt.options.css.push('maplibre-gl/dist/maplibre-gl.css')
 
     // Setup plugins (run in order added)
     addPlugin(resolveRuntimeModule('plugins/apollo'))

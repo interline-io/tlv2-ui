@@ -91,7 +91,7 @@
             :width="300"
             selectable
             multiple
-            trigger-label="Levels"
+            label="Levels"
           >
             <t-dropdown-item v-for="level of station.levels" :key="level.id" :value="level.id">
               <div class="media">
@@ -114,7 +114,7 @@
             v-model="selectedSources"
             :width="300"
             multiple
-            trigger-label="Sources"
+            label="Sources"
           >
             <t-dropdown-item v-for="(sourceType, key) of SourceTypes" :key="sourceType" :value="key">
               <div class="media">
@@ -126,7 +126,7 @@
           <t-dropdown
             v-model="selectedLocationTypes"
             :width="300"
-            trigger-label="Location Types"
+            label="Location Types"
             multiple
           >
             <t-dropdown-item v-for="[key, locationType] of LocationTypes.entries()" :key="locationType" :value="key.toString()">
@@ -140,7 +140,7 @@
             v-model="selectedAgencies"
             :width="300"
             multiple
-            trigger-label="Agencies"
+            label="Agencies"
           >
             <t-dropdown-item v-for="(agency, key) of agencies" :key="key" :value="key">
               <div class="media">

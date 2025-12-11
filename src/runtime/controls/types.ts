@@ -97,3 +97,34 @@ export type DropdownTriggerVariant = typeof DropdownTriggerVariants[number]
 // Msg extends core variants with dark
 export const MsgVariants = [...CoreVariants, 'dark'] as const
 export type MsgVariant = typeof MsgVariants[number]
+
+// Pagination uses core sizes and positions
+export const PaginationSizes = CoreSizes
+export type PaginationSize = typeof PaginationSizes[number]
+
+export const PaginationPositions = ['left', 'centered', 'right'] as const
+export type PaginationPosition = typeof PaginationPositions[number]
+
+// Taginput uses tag variants for styling and input sizes
+export const TaginputVariants = TagVariants
+export type TaginputVariant = typeof TaginputVariants[number]
+
+export const TaginputSizes = CoreSizes
+export type TaginputSize = typeof TaginputSizes[number]
+
+/**
+ * Base option type for taginput items.
+ * @template T - The type of the value (string or number)
+ */
+export interface TagOptionBase<T extends string | number = string> {
+  /** Unique value identifier */
+  value: T
+  /** Display label */
+  label: string
+}
+
+/**
+ * Option type for taginput items with optional additional properties.
+ * @template T - The type of the value (string or number)
+ */
+export type TagOption<T extends string | number = string> = TagOptionBase<T> & Record<string, unknown>

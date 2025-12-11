@@ -10,6 +10,7 @@
     "dev:build": "nuxi build playground",
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
     "generate:types": "tsx scripts/generate-component-types.ts",
+    "check": "yarn lint --fix && yarn nuxt typecheck && yarn test",
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest watch",

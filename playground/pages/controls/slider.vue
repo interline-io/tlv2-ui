@@ -119,6 +119,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { SliderSizes, SliderVariants } from '../../../src/runtime/controls/types'
+import TDemoBox from '../../components/t-demo-box.vue'
 
 const sizes = SliderSizes
 const variants = SliderVariants

@@ -219,6 +219,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
+import TDemoBox from '../../components/t-demo-box.vue'
 
 const basicSearch = ref<string | null>('')
 const navbarSearch = ref<string | null>('')

@@ -163,7 +163,7 @@
                 <t-dropdown
                   v-model="selectedLevel"
                   selectable
-                  :trigger-label="(selectedLevel !== null && levelIndex[selectedLevel]) ? levelIndex[selectedLevel]!.level_name : 'None'"
+                  :label="(selectedLevel !== null && levelIndex[selectedLevel]) ? levelIndex[selectedLevel]!.level_name : 'None'"
                 >
                   <t-dropdown-item v-for="level of station.levels" :key="level.id" :value="level.id">
                     <h3>{{ level.level_name }}</h3>
@@ -188,7 +188,7 @@
           <t-dropdown
             v-model="selectedLevels"
             :width="300"
-            trigger-label="Levels"
+            label="Levels"
             multiple
             selectable
             variant="primary"
