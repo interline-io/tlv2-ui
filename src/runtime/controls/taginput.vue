@@ -79,6 +79,7 @@
         :id="listboxId"
         class="t-taginput-dropdown"
         role="listbox"
+        aria-multiselectable="true"
         :aria-label="placeholder || 'Select options'"
       >
         <!-- Header slot -->

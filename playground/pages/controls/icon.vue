@@ -9,10 +9,7 @@
       </p>
 
       <!-- Basic Icons -->
-      <h2 class="title is-3">
-        Basic Icons
-      </h2>
-      <div class="box">
+      <t-demo-box label="Basic Icons">
         <div class="is-flex is-align-items-center" style="gap: 1rem;">
           <t-icon icon="home" />
           <t-icon icon="account" />
@@ -23,13 +20,10 @@
           <t-icon icon="star" />
           <t-icon icon="check" />
         </div>
-      </div>
+      </t-demo-box>
 
       <!-- Sizes -->
-      <h2 class="title is-3">
-        Sizes
-      </h2>
-      <div class="box">
+      <t-demo-box label="Sizes">
         <div class="is-flex is-align-items-center" style="gap: 1rem;">
           <t-icon icon="home" size="small" />
           <t-icon icon="home" />
@@ -39,13 +33,10 @@
         <p class="has-text-grey mt-3">
           Sizes: small, normal (default), medium, large
         </p>
-      </div>
+      </t-demo-box>
 
       <!-- Colors -->
-      <h2 class="title is-3">
-        Colors
-      </h2>
-      <div class="box">
+      <t-demo-box label="Colors">
         <div class="is-flex is-align-items-center" style="gap: 1rem;">
           <t-icon icon="heart" class="has-text-primary" />
           <t-icon icon="heart" class="has-text-info" />
@@ -57,13 +48,10 @@
         <p class="has-text-grey mt-3">
           Use Bulma color helper classes to change icon colors
         </p>
-      </div>
+      </t-demo-box>
 
       <!-- Common Icons -->
-      <h2 class="title is-3">
-        Common Icons
-      </h2>
-      <div class="box">
+      <t-demo-box label="Common Icons">
         <div class="columns is-multiline">
           <div class="column is-one-quarter">
             <div class="is-flex is-align-items-center">
@@ -162,13 +150,10 @@
             </div>
           </div>
         </div>
-      </div>
+      </t-demo-box>
 
       <!-- With Buttons -->
-      <h2 class="title is-3">
-        Icons in Buttons
-      </h2>
-      <div class="box">
+      <t-demo-box label="Icons in Buttons">
         <div class="buttons">
           <t-button variant="primary">
             <t-icon icon="plus" />
@@ -198,13 +183,10 @@
             <t-icon icon="dots-vertical" />
           </t-button>
         </div>
-      </div>
+      </t-demo-box>
 
       <!-- Navigation Icons -->
-      <h2 class="title is-3">
-        Navigation Icons
-      </h2>
-      <div class="box">
+      <t-demo-box label="Navigation Icons">
         <div class="columns is-multiline">
           <div class="column is-one-quarter">
             <div class="is-flex is-align-items-center">
@@ -255,13 +237,10 @@
             </div>
           </div>
         </div>
-      </div>
+      </t-demo-box>
 
       <!-- Status Icons -->
-      <h2 class="title is-3">
-        Status Icons
-      </h2>
-      <div class="box">
+      <t-demo-box label="Status Icons">
         <div class="columns is-multiline">
           <div class="column is-one-quarter">
             <div class="is-flex is-align-items-center">
@@ -288,13 +267,10 @@
             </div>
           </div>
         </div>
-      </div>
+      </t-demo-box>
 
       <!-- File Type Icons -->
-      <h2 class="title is-3">
-        File Type Icons
-      </h2>
-      <div class="box">
+      <t-demo-box label="File Type Icons">
         <div class="columns is-multiline">
           <div class="column is-one-quarter">
             <div class="is-flex is-align-items-center">
@@ -345,13 +321,10 @@
             </div>
           </div>
         </div>
-      </div>
+      </t-demo-box>
 
       <!-- Social Media Icons -->
-      <h2 class="title is-3">
-        Social Media Icons
-      </h2>
-      <div class="box">
+      <t-demo-box label="Social Media Icons">
         <div class="buttons">
           <t-button>
             <t-icon icon="facebook" />
@@ -372,13 +345,10 @@
             <t-icon icon="youtube" />
           </t-button>
         </div>
-      </div>
+      </t-demo-box>
 
       <!-- Icon Reference -->
-      <h2 class="title is-3">
-        Icon Reference
-      </h2>
-      <div class="box">
+      <t-demo-box label="Icon Reference">
         <div class="notification is-info is-light">
           <p>
             <strong>Material Design Icons</strong>
@@ -393,7 +363,7 @@
             </a>
           </p>
         </div>
-      </div>
+      </t-demo-box>
     </section>
   </div>
 </template>

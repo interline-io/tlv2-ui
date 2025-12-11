@@ -4,6 +4,7 @@
       type="button"
       class="pagination-previous"
       :disabled="isFirst"
+      :aria-disabled="isFirst"
       @click="changePage(current - 1)"
     >
       <t-icon icon="chevron-left" />
@@ -12,6 +13,7 @@
       type="button"
       class="pagination-next"
       :disabled="isLast"
+      :aria-disabled="isLast"
       @click="changePage(current + 1)"
     >
       <t-icon icon="chevron-right" />
