@@ -399,4 +399,5 @@
 </template>
 
 <script setup lang="ts">
+import TDemoBox from '../../components/t-demo-box.vue'
 </script>

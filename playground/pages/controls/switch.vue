@@ -217,6 +217,7 @@
 <script setup lang="ts">
 import { ref, reactive, type Ref } from 'vue'
 import { SwitchVariants, SwitchSizes } from '../../../src/runtime/controls/types'
+import TDemoBox from '../../components/t-demo-box.vue'
 
 const variants = SwitchVariants
 const sizes = SwitchSizes

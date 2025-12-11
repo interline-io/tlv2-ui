@@ -295,6 +295,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { TagVariants, TagSizes } from '../../../src/runtime/controls/types'
+import TDemoBox from '../../components/t-demo-box.vue'
 
 const variants = TagVariants
 const sizes = TagSizes

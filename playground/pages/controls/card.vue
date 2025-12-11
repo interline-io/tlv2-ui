@@ -287,6 +287,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import TDemoBox from '../../components/t-demo-box.vue'
 
 const cardOpen = ref(true)
 </script>

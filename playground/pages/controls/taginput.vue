@@ -184,6 +184,11 @@
         </p>
       </t-demo-box>
 
+      <!-- Example: Async API Integration -->
+      <t-demo-box label="Example: Async API Integration" example>
+        <TaginputAsyncDemo />
+      </t-demo-box>
+
       <!-- Example: Form Integration -->
       <t-demo-box label="Example: Form Integration" example>
         <form @submit.prevent="handleSubmit">
@@ -231,6 +236,8 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
 import { TaginputVariants, TaginputSizes } from '../../../src/runtime/controls/types'
+import TaginputAsyncDemo from '../../components/taginput-async-demo.vue'
+import TDemoBox from '../../components/t-demo-box.vue'
 
 const variants = TaginputVariants
 const sizes = TaginputSizes

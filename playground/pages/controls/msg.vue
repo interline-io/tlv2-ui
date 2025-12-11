@@ -229,6 +229,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { MsgVariants } from '../../../src/runtime/controls/types'
+import TDemoBox from '../../components/t-demo-box.vue'
 
 const variants = MsgVariants
 

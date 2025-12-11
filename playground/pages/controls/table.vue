@@ -146,6 +146,8 @@
 </template>
 
 <script setup lang="ts">
+import TDemoBox from '../../components/t-demo-box.vue'
+
 const basicData = [
   { name: 'Alice Johnson', age: 28, city: 'New York' },
   { name: 'Bob Smith', age: 35, city: 'San Francisco' },

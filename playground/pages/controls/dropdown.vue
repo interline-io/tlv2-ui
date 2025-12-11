@@ -334,6 +334,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { DropdownTriggerVariants } from '../../../src/runtime/controls/types'
+import TDemoBox from '../../components/t-demo-box.vue'
 
 const triggerVariants = DropdownTriggerVariants
 
