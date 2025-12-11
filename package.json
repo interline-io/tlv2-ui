@@ -5,7 +5,7 @@
   "license": "SEE LICENSE IN LICENSE.md",
   "type": "module",
   "scripts": {
-    "prepack": "nuxt-module-build prepare && nuxt-module-build build",
+    "prepack": "pnpm run generate:types && nuxt-module-build prepare && nuxt-module-build build",
     "dev": "pnpm run dev:prepare && nuxi dev playground",
     "dev:build": "nuxi build playground",
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
