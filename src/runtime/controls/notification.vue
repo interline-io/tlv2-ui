@@ -1,7 +1,7 @@
 <template>
   <div class="notification" :class="notificationClasses">
     <button v-if="closeable" class="delete" @click="handleClose" />
-    <slot />
+    <slot>{{ message }}</slot>
   </div>
 </template>
 
@@ -29,6 +29,11 @@ interface Props {
   variant?: NotificationVariant
 
   /**
+   * Message text (alternative to using default slot).
+   */
+  message?: string
+
+  /**
    * Show close button and allow user to dismiss.
    * @default false
    */
@@ -43,6 +48,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   variant: 'info',
+  message: undefined,
   closeable: false,
   light: false
 })

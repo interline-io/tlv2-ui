@@ -5,7 +5,7 @@
       <div class="modal-card" :class="modalCardClasses">
         <header class="modal-card-head">
           <p class="modal-card-title">
-            {{ title }}
+            <slot name="title">{{ title }}</slot>
           </p>
           <button
             v-if="closable"
