@@ -53,6 +53,10 @@ export default defineNuxtConfig({
 | `auth0Scope` | `string` | - | Auth0 scope |
 | `auth0RedirectUri` | `string` | - | Auth0 redirect URI |
 | `auth0LogoutUri` | `string` | - | Auth0 logout URI |
+| `safelinkUtmSource` | `string` | - | UTM source parameter for generated safelinks |
+| `routes` | `Partial<Record<Tlv2RouteKey, string>>` | - | Custom route overrides for TLV2 routes |
+| `transferAnalystReadOnlyFeedSelector` | `boolean` | `false` | Enable read-only mode for feed selector in Transfer Analyst |
+| `transferAnalystGtfsRealtimeStopObservations` | `boolean` | `false` | Enable GTFS-realtime stop observations in Transfer Analyst |
 
 ## Exports
 
