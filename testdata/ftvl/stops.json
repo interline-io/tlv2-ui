@@ -1,0 +1,4204 @@
+{
+  "data": {
+    "stops": [
+      {
+        "id": 6409861,
+        "stop_id": "1639527504761",
+        "stop_name": "Main entrance",
+        "location_type": 2,
+        "stop_code": "",
+        "stop_timezone": "",
+        "zone_id": "",
+        "wheelchair_boarding": 0,
+        "stop_desc": "",
+        "platform_code": null,
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-122.224475000198, 37.7750637858359]
+        },
+        "feed_version": {
+          "id": 834,
+          "feed": {
+            "id": 1,
+            "onestop_id": "mtc",
+            "__typename": "Feed"
+          },
+          "__typename": "FeedVersion"
+        },
+        "level": {
+          "id": 23045,
+          "level_id": "fruitvale-test-ground",
+          "level_name": "ground",
+          "level_index": 0,
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [-122.22452881754273, 37.77521595765734],
+                [-122.2246810031315, 37.7750457903514],
+                [-122.22393121071849, 37.77461450249855],
+                [-122.22379387250442, 37.77480520832199],
+                [-122.22452881754273, 37.77521595765734]
+              ]
+            ]
+          },
+          "__typename": "Level"
+        },
+        "parent": {
+          "id": 6409860,
+          "stop_id": "fruitvale-test",
+          "stop_name": "Fruitvale Test",
+          "location_type": 1,
+          "level": null,
+          "feed_version": {
+            "id": 834,
+            "feed": {
+              "id": 1,
+              "onestop_id": "mtc",
+              "__typename": "Feed"
+            },
+            "__typename": "FeedVersion"
+          },
+          "__typename": "Stop"
+        },
+        "children": null,
+        "pathways_to_stop": [
+          {
+            "id": 429081,
+            "pathway_id": "6409875-6409861-1639527991928",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409875,
+              "stop_id": "1639527989830",
+              "stop_name": "Node",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22492786292479, 37.77529521863585]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23046, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409861,
+              "stop_id": "1639527504761",
+              "stop_name": "Main entrance",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.224475000198, 37.7750637858359]
+              },
+              "location_type": 2,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          }
+        ],
+        "pathways_from_stop": [
+          {
+            "id": 429066,
+            "pathway_id": "6409861-6409862-1639527601558",
+            "is_bidirectional": 1,
+            "pathway_mode": 6,
+            "from_stop": {
+              "id": 6409861,
+              "stop_id": "1639527504761",
+              "stop_name": "Main entrance",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.224475000198, 37.7750637858359]
+              },
+              "location_type": 2,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409862,
+              "stop_id": "1639527534033",
+              "stop_name": "Paid fare area",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22423712746343, 37.77493215746479]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          }
+        ],
+        "stop_ext": null,
+        "__typename": "Stop"
+      },
+      {
+        "id": 6409862,
+        "stop_id": "1639527534033",
+        "stop_name": "Paid fare area",
+        "location_type": 3,
+        "stop_code": "",
+        "stop_timezone": "",
+        "zone_id": "",
+        "wheelchair_boarding": 0,
+        "stop_desc": "",
+        "platform_code": null,
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-122.22423712746343, 37.77493215746479]
+        },
+        "feed_version": {
+          "id": 834,
+          "feed": {
+            "id": 1,
+            "onestop_id": "mtc",
+            "__typename": "Feed"
+          },
+          "__typename": "FeedVersion"
+        },
+        "level": {
+          "id": 23045,
+          "level_id": "fruitvale-test-ground",
+          "level_name": "ground",
+          "level_index": 0,
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [-122.22452881754273, 37.77521595765734],
+                [-122.2246810031315, 37.7750457903514],
+                [-122.22393121071849, 37.77461450249855],
+                [-122.22379387250442, 37.77480520832199],
+                [-122.22452881754273, 37.77521595765734]
+              ]
+            ]
+          },
+          "__typename": "Level"
+        },
+        "parent": {
+          "id": 6409860,
+          "stop_id": "fruitvale-test",
+          "stop_name": "Fruitvale Test",
+          "location_type": 1,
+          "level": null,
+          "feed_version": {
+            "id": 834,
+            "feed": {
+              "id": 1,
+              "onestop_id": "mtc",
+              "__typename": "Feed"
+            },
+            "__typename": "FeedVersion"
+          },
+          "__typename": "Stop"
+        },
+        "children": null,
+        "pathways_to_stop": [
+          {
+            "id": 429066,
+            "pathway_id": "6409861-6409862-1639527601558",
+            "is_bidirectional": 1,
+            "pathway_mode": 6,
+            "from_stop": {
+              "id": 6409861,
+              "stop_id": "1639527504761",
+              "stop_name": "Main entrance",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.224475000198, 37.7750637858359]
+              },
+              "location_type": 2,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409862,
+              "stop_id": "1639527534033",
+              "stop_name": "Paid fare area",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22423712746343, 37.77493215746479]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          },
+          {
+            "id": 429092,
+            "pathway_id": "6409883-6409862-1639531034861",
+            "is_bidirectional": 0,
+            "pathway_mode": 6,
+            "from_stop": {
+              "id": 6409883,
+              "stop_id": "1639530972901",
+              "stop_name": "Test node for one-way pathway",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22450024044232, 37.77527192494239]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409862,
+              "stop_id": "1639527534033",
+              "stop_name": "Paid fare area",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22423712746343, 37.77493215746479]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          }
+        ],
+        "pathways_from_stop": [
+          {
+            "id": 429070,
+            "pathway_id": "6409862-6409865-1639527615569",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409862,
+              "stop_id": "1639527534033",
+              "stop_name": "Paid fare area",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22423712746343, 37.77493215746479]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409865,
+              "stop_id": "1639527576900",
+              "stop_name": "SB stairs",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.224395929245, 37.7749048773731]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          },
+          {
+            "id": 429067,
+            "pathway_id": "6409862-6409866-1639527605398",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409862,
+              "stop_id": "1639527534033",
+              "stop_name": "Paid fare area",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22423712746343, 37.77493215746479]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409866,
+              "stop_id": "1639527585726",
+              "stop_name": "NB stairs",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.224269969539, 37.7750619834208]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          },
+          {
+            "id": 429068,
+            "pathway_id": "6409862-6409863-1639527608787",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409862,
+              "stop_id": "1639527534033",
+              "stop_name": "Paid fare area",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22423712746343, 37.77493215746479]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409863,
+              "stop_id": "1639527547070",
+              "stop_name": "NB elevator",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22420693178915, 37.77504868151442]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          },
+          {
+            "id": 429069,
+            "pathway_id": "6409862-6409864-1639527612421",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409862,
+              "stop_id": "1639527534033",
+              "stop_name": "Paid fare area",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22423712746343, 37.77493215746479]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409864,
+              "stop_id": "1639527565339",
+              "stop_name": "SB elevator",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22437723723402, 37.77486487063857]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          },
+          {
+            "id": 429076,
+            "pathway_id": "6409862-6409871-1639527907622",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409862,
+              "stop_id": "1639527534033",
+              "stop_name": "Paid fare area",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22423712746343, 37.77493215746479]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409871,
+              "stop_id": "1639527890936",
+              "stop_name": "Node",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22404478886992, 37.77492134651742]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          },
+          {
+            "id": 429077,
+            "pathway_id": "6409862-6409872-1639527916388",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409862,
+              "stop_id": "1639527534033",
+              "stop_name": "Paid fare area",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22423712746343, 37.77493215746479]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409872,
+              "stop_id": "1639527894368",
+              "stop_name": "Node",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22416005470632, 37.774775953763]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          }
+        ],
+        "stop_ext": null,
+        "__typename": "Stop"
+      },
+      {
+        "id": 6409863,
+        "stop_id": "1639527547070",
+        "stop_name": "NB elevator",
+        "location_type": 3,
+        "stop_code": "",
+        "stop_timezone": "",
+        "zone_id": "",
+        "wheelchair_boarding": 0,
+        "stop_desc": "",
+        "platform_code": null,
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-122.22420693178915, 37.77504868151442]
+        },
+        "feed_version": {
+          "id": 834,
+          "feed": {
+            "id": 1,
+            "onestop_id": "mtc",
+            "__typename": "Feed"
+          },
+          "__typename": "FeedVersion"
+        },
+        "level": {
+          "id": 23045,
+          "level_id": "fruitvale-test-ground",
+          "level_name": "ground",
+          "level_index": 0,
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [-122.22452881754273, 37.77521595765734],
+                [-122.2246810031315, 37.7750457903514],
+                [-122.22393121071849, 37.77461450249855],
+                [-122.22379387250442, 37.77480520832199],
+                [-122.22452881754273, 37.77521595765734]
+              ]
+            ]
+          },
+          "__typename": "Level"
+        },
+        "parent": {
+          "id": 6409860,
+          "stop_id": "fruitvale-test",
+          "stop_name": "Fruitvale Test",
+          "location_type": 1,
+          "level": null,
+          "feed_version": {
+            "id": 834,
+            "feed": {
+              "id": 1,
+              "onestop_id": "mtc",
+              "__typename": "Feed"
+            },
+            "__typename": "FeedVersion"
+          },
+          "__typename": "Stop"
+        },
+        "children": null,
+        "pathways_to_stop": [
+          {
+            "id": 429068,
+            "pathway_id": "6409862-6409863-1639527608787",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409862,
+              "stop_id": "1639527534033",
+              "stop_name": "Paid fare area",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22423712746343, 37.77493215746479]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409863,
+              "stop_id": "1639527547070",
+              "stop_name": "NB elevator",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22420693178915, 37.77504868151442]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          },
+          {
+            "id": 429073,
+            "pathway_id": "6409868-6409863-1639527743885",
+            "is_bidirectional": 1,
+            "pathway_mode": 5,
+            "from_stop": {
+              "id": 6409868,
+              "stop_id": "1639527666801",
+              "stop_name": "NB elevator (platform)",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22420693178915, 37.77504832629329]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409863,
+              "stop_id": "1639527547070",
+              "stop_name": "NB elevator",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22420693178915, 37.77504868151442]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          }
+        ],
+        "pathways_from_stop": [],
+        "stop_ext": null,
+        "__typename": "Stop"
+      },
+      {
+        "id": 6409864,
+        "stop_id": "1639527565339",
+        "stop_name": "SB elevator",
+        "location_type": 3,
+        "stop_code": "",
+        "stop_timezone": "",
+        "zone_id": "",
+        "wheelchair_boarding": 0,
+        "stop_desc": "",
+        "platform_code": null,
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-122.22437723723402, 37.77486487063857]
+        },
+        "feed_version": {
+          "id": 834,
+          "feed": {
+            "id": 1,
+            "onestop_id": "mtc",
+            "__typename": "Feed"
+          },
+          "__typename": "FeedVersion"
+        },
+        "level": {
+          "id": 23045,
+          "level_id": "fruitvale-test-ground",
+          "level_name": "ground",
+          "level_index": 0,
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [-122.22452881754273, 37.77521595765734],
+                [-122.2246810031315, 37.7750457903514],
+                [-122.22393121071849, 37.77461450249855],
+                [-122.22379387250442, 37.77480520832199],
+                [-122.22452881754273, 37.77521595765734]
+              ]
+            ]
+          },
+          "__typename": "Level"
+        },
+        "parent": {
+          "id": 6409860,
+          "stop_id": "fruitvale-test",
+          "stop_name": "Fruitvale Test",
+          "location_type": 1,
+          "level": null,
+          "feed_version": {
+            "id": 834,
+            "feed": {
+              "id": 1,
+              "onestop_id": "mtc",
+              "__typename": "Feed"
+            },
+            "__typename": "FeedVersion"
+          },
+          "__typename": "Stop"
+        },
+        "children": null,
+        "pathways_to_stop": [
+          {
+            "id": 429069,
+            "pathway_id": "6409862-6409864-1639527612421",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409862,
+              "stop_id": "1639527534033",
+              "stop_name": "Paid fare area",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22423712746343, 37.77493215746479]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409864,
+              "stop_id": "1639527565339",
+              "stop_name": "SB elevator",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22437723723402, 37.77486487063857]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          },
+          {
+            "id": 429072,
+            "pathway_id": "6409867-6409864-1639527716044",
+            "is_bidirectional": 1,
+            "pathway_mode": 5,
+            "from_stop": {
+              "id": 6409867,
+              "stop_id": "1639527643709",
+              "stop_name": "SB elevator (platform)",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22437681653096, 37.774864205571575]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409864,
+              "stop_id": "1639527565339",
+              "stop_name": "SB elevator",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22437723723402, 37.77486487063857]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          }
+        ],
+        "pathways_from_stop": [],
+        "stop_ext": null,
+        "__typename": "Stop"
+      },
+      {
+        "id": 6409865,
+        "stop_id": "1639527576900",
+        "stop_name": "SB stairs",
+        "location_type": 3,
+        "stop_code": "",
+        "stop_timezone": "",
+        "zone_id": "",
+        "wheelchair_boarding": 0,
+        "stop_desc": "",
+        "platform_code": null,
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-122.224395929245, 37.7749048773731]
+        },
+        "feed_version": {
+          "id": 834,
+          "feed": {
+            "id": 1,
+            "onestop_id": "mtc",
+            "__typename": "Feed"
+          },
+          "__typename": "FeedVersion"
+        },
+        "level": {
+          "id": 23045,
+          "level_id": "fruitvale-test-ground",
+          "level_name": "ground",
+          "level_index": 0,
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [-122.22452881754273, 37.77521595765734],
+                [-122.2246810031315, 37.7750457903514],
+                [-122.22393121071849, 37.77461450249855],
+                [-122.22379387250442, 37.77480520832199],
+                [-122.22452881754273, 37.77521595765734]
+              ]
+            ]
+          },
+          "__typename": "Level"
+        },
+        "parent": {
+          "id": 6409860,
+          "stop_id": "fruitvale-test",
+          "stop_name": "Fruitvale Test",
+          "location_type": 1,
+          "level": null,
+          "feed_version": {
+            "id": 834,
+            "feed": {
+              "id": 1,
+              "onestop_id": "mtc",
+              "__typename": "Feed"
+            },
+            "__typename": "FeedVersion"
+          },
+          "__typename": "Stop"
+        },
+        "children": null,
+        "pathways_to_stop": [
+          {
+            "id": 429070,
+            "pathway_id": "6409862-6409865-1639527615569",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409862,
+              "stop_id": "1639527534033",
+              "stop_name": "Paid fare area",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22423712746343, 37.77493215746479]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409865,
+              "stop_id": "1639527576900",
+              "stop_name": "SB stairs",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.224395929245, 37.7749048773731]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          }
+        ],
+        "pathways_from_stop": [
+          {
+            "id": 429075,
+            "pathway_id": "6409865-6409870-1639527798997",
+            "is_bidirectional": 1,
+            "pathway_mode": 2,
+            "from_stop": {
+              "id": 6409865,
+              "stop_id": "1639527576900",
+              "stop_name": "SB stairs",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.224395929245, 37.7749048773731]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409870,
+              "stop_id": "1639527773339",
+              "stop_name": "SB stairs (platform)",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22447549653512, 37.77494953327955]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          }
+        ],
+        "stop_ext": null,
+        "__typename": "Stop"
+      },
+      {
+        "id": 6409866,
+        "stop_id": "1639527585726",
+        "stop_name": "NB stairs",
+        "location_type": 3,
+        "stop_code": "",
+        "stop_timezone": "",
+        "zone_id": "",
+        "wheelchair_boarding": 0,
+        "stop_desc": "",
+        "platform_code": null,
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-122.224269969539, 37.7750619834208]
+        },
+        "feed_version": {
+          "id": 834,
+          "feed": {
+            "id": 1,
+            "onestop_id": "mtc",
+            "__typename": "Feed"
+          },
+          "__typename": "FeedVersion"
+        },
+        "level": {
+          "id": 23045,
+          "level_id": "fruitvale-test-ground",
+          "level_name": "ground",
+          "level_index": 0,
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [-122.22452881754273, 37.77521595765734],
+                [-122.2246810031315, 37.7750457903514],
+                [-122.22393121071849, 37.77461450249855],
+                [-122.22379387250442, 37.77480520832199],
+                [-122.22452881754273, 37.77521595765734]
+              ]
+            ]
+          },
+          "__typename": "Level"
+        },
+        "parent": {
+          "id": 6409860,
+          "stop_id": "fruitvale-test",
+          "stop_name": "Fruitvale Test",
+          "location_type": 1,
+          "level": null,
+          "feed_version": {
+            "id": 834,
+            "feed": {
+              "id": 1,
+              "onestop_id": "mtc",
+              "__typename": "Feed"
+            },
+            "__typename": "FeedVersion"
+          },
+          "__typename": "Stop"
+        },
+        "children": null,
+        "pathways_to_stop": [
+          {
+            "id": 429067,
+            "pathway_id": "6409862-6409866-1639527605398",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409862,
+              "stop_id": "1639527534033",
+              "stop_name": "Paid fare area",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22423712746343, 37.77493215746479]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409866,
+              "stop_id": "1639527585726",
+              "stop_name": "NB stairs",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.224269969539, 37.7750619834208]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          }
+        ],
+        "pathways_from_stop": [
+          {
+            "id": 429074,
+            "pathway_id": "6409866-6409869-1639527792742",
+            "is_bidirectional": 1,
+            "pathway_mode": 2,
+            "from_stop": {
+              "id": 6409866,
+              "stop_id": "1639527585726",
+              "stop_name": "NB stairs",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.224269969539, 37.7750619834208]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409869,
+              "stop_id": "1639527768248",
+              "stop_name": "NB stairs (platform)",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.224342581191, 37.7751037522905]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          }
+        ],
+        "stop_ext": null,
+        "__typename": "Stop"
+      },
+      {
+        "id": 6409867,
+        "stop_id": "1639527643709",
+        "stop_name": "SB elevator (platform)",
+        "location_type": 3,
+        "stop_code": "",
+        "stop_timezone": "",
+        "zone_id": "",
+        "wheelchair_boarding": 0,
+        "stop_desc": "",
+        "platform_code": null,
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-122.22437681653096, 37.774864205571575]
+        },
+        "feed_version": {
+          "id": 834,
+          "feed": {
+            "id": 1,
+            "onestop_id": "mtc",
+            "__typename": "Feed"
+          },
+          "__typename": "FeedVersion"
+        },
+        "level": {
+          "id": 23047,
+          "level_id": "fruitvale-test-platform",
+          "level_name": "platform",
+          "level_index": 0,
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [-122.22507116190127, 37.77548678334273],
+                [-122.22516772142569, 37.775374419863184],
+                [-122.22464748908932, 37.77507770170473],
+                [-122.22465017129831, 37.77505014071447],
+                [-122.22370066930691, 37.77450527902934],
+                [-122.22367384721656, 37.77452223976543],
+                [-122.22316154529506, 37.77422754643136],
+                [-122.22306230356116, 37.774333551362616],
+                [-122.2235826521101, 37.77463036436315],
+                [-122.22357460548312, 37.77466216568537],
+                [-122.22451606084759, 37.77520278606933],
+                [-122.22455629398237, 37.77519218570741],
+                [-122.22507116190127, 37.77548678334273]
+              ]
+            ]
+          },
+          "__typename": "Level"
+        },
+        "parent": {
+          "id": 6409860,
+          "stop_id": "fruitvale-test",
+          "stop_name": "Fruitvale Test",
+          "location_type": 1,
+          "level": null,
+          "feed_version": {
+            "id": 834,
+            "feed": {
+              "id": 1,
+              "onestop_id": "mtc",
+              "__typename": "Feed"
+            },
+            "__typename": "FeedVersion"
+          },
+          "__typename": "Stop"
+        },
+        "children": null,
+        "pathways_to_stop": [
+          {
+            "id": 429089,
+            "pathway_id": "6409880-6409867-1639528103718",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409880,
+              "stop_id": "1639528098249",
+              "stop_name": "SB platform",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.2242470342141, 37.77486547839361]
+              },
+              "location_type": 0,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409867,
+              "stop_id": "1639527643709",
+              "stop_name": "SB elevator (platform)",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22437681653096, 37.774864205571575]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          }
+        ],
+        "pathways_from_stop": [
+          {
+            "id": 429072,
+            "pathway_id": "6409867-6409864-1639527716044",
+            "is_bidirectional": 1,
+            "pathway_mode": 5,
+            "from_stop": {
+              "id": 6409867,
+              "stop_id": "1639527643709",
+              "stop_name": "SB elevator (platform)",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22437681653096, 37.774864205571575]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409864,
+              "stop_id": "1639527565339",
+              "stop_name": "SB elevator",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22437723723402, 37.77486487063857]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          }
+        ],
+        "stop_ext": null,
+        "__typename": "Stop"
+      },
+      {
+        "id": 6409868,
+        "stop_id": "1639527666801",
+        "stop_name": "NB elevator (platform)",
+        "location_type": 3,
+        "stop_code": "",
+        "stop_timezone": "",
+        "zone_id": "",
+        "wheelchair_boarding": 0,
+        "stop_desc": "",
+        "platform_code": null,
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-122.22420693178915, 37.77504832629329]
+        },
+        "feed_version": {
+          "id": 834,
+          "feed": {
+            "id": 1,
+            "onestop_id": "mtc",
+            "__typename": "Feed"
+          },
+          "__typename": "FeedVersion"
+        },
+        "level": {
+          "id": 23047,
+          "level_id": "fruitvale-test-platform",
+          "level_name": "platform",
+          "level_index": 0,
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [-122.22507116190127, 37.77548678334273],
+                [-122.22516772142569, 37.775374419863184],
+                [-122.22464748908932, 37.77507770170473],
+                [-122.22465017129831, 37.77505014071447],
+                [-122.22370066930691, 37.77450527902934],
+                [-122.22367384721656, 37.77452223976543],
+                [-122.22316154529506, 37.77422754643136],
+                [-122.22306230356116, 37.774333551362616],
+                [-122.2235826521101, 37.77463036436315],
+                [-122.22357460548312, 37.77466216568537],
+                [-122.22451606084759, 37.77520278606933],
+                [-122.22455629398237, 37.77519218570741],
+                [-122.22507116190127, 37.77548678334273]
+              ]
+            ]
+          },
+          "__typename": "Level"
+        },
+        "parent": {
+          "id": 6409860,
+          "stop_id": "fruitvale-test",
+          "stop_name": "Fruitvale Test",
+          "location_type": 1,
+          "level": null,
+          "feed_version": {
+            "id": 834,
+            "feed": {
+              "id": 1,
+              "onestop_id": "mtc",
+              "__typename": "Feed"
+            },
+            "__typename": "FeedVersion"
+          },
+          "__typename": "Stop"
+        },
+        "children": null,
+        "pathways_to_stop": [
+          {
+            "id": 429086,
+            "pathway_id": "6409879-6409868-1639528086596",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409879,
+              "stop_id": "1639528066052",
+              "stop_name": "NB platform",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22415500453357, 37.774957443406905]
+              },
+              "location_type": 0,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409868,
+              "stop_id": "1639527666801",
+              "stop_name": "NB elevator (platform)",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22420693178915, 37.77504832629329]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          }
+        ],
+        "pathways_from_stop": [
+          {
+            "id": 429073,
+            "pathway_id": "6409868-6409863-1639527743885",
+            "is_bidirectional": 1,
+            "pathway_mode": 5,
+            "from_stop": {
+              "id": 6409868,
+              "stop_id": "1639527666801",
+              "stop_name": "NB elevator (platform)",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22420693178915, 37.77504832629329]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409863,
+              "stop_id": "1639527547070",
+              "stop_name": "NB elevator",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22420693178915, 37.77504868151442]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          }
+        ],
+        "stop_ext": null,
+        "__typename": "Stop"
+      },
+      {
+        "id": 6409869,
+        "stop_id": "1639527768248",
+        "stop_name": "NB stairs (platform)",
+        "location_type": 3,
+        "stop_code": "",
+        "stop_timezone": "",
+        "zone_id": "",
+        "wheelchair_boarding": 0,
+        "stop_desc": "",
+        "platform_code": null,
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-122.224342581191, 37.7751037522905]
+        },
+        "feed_version": {
+          "id": 834,
+          "feed": {
+            "id": 1,
+            "onestop_id": "mtc",
+            "__typename": "Feed"
+          },
+          "__typename": "FeedVersion"
+        },
+        "level": {
+          "id": 23047,
+          "level_id": "fruitvale-test-platform",
+          "level_name": "platform",
+          "level_index": 0,
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [-122.22507116190127, 37.77548678334273],
+                [-122.22516772142569, 37.775374419863184],
+                [-122.22464748908932, 37.77507770170473],
+                [-122.22465017129831, 37.77505014071447],
+                [-122.22370066930691, 37.77450527902934],
+                [-122.22367384721656, 37.77452223976543],
+                [-122.22316154529506, 37.77422754643136],
+                [-122.22306230356116, 37.774333551362616],
+                [-122.2235826521101, 37.77463036436315],
+                [-122.22357460548312, 37.77466216568537],
+                [-122.22451606084759, 37.77520278606933],
+                [-122.22455629398237, 37.77519218570741],
+                [-122.22507116190127, 37.77548678334273]
+              ]
+            ]
+          },
+          "__typename": "Level"
+        },
+        "parent": {
+          "id": 6409860,
+          "stop_id": "fruitvale-test",
+          "stop_name": "Fruitvale Test",
+          "location_type": 1,
+          "level": null,
+          "feed_version": {
+            "id": 834,
+            "feed": {
+              "id": 1,
+              "onestop_id": "mtc",
+              "__typename": "Feed"
+            },
+            "__typename": "FeedVersion"
+          },
+          "__typename": "Stop"
+        },
+        "children": null,
+        "pathways_to_stop": [
+          {
+            "id": 429074,
+            "pathway_id": "6409866-6409869-1639527792742",
+            "is_bidirectional": 1,
+            "pathway_mode": 2,
+            "from_stop": {
+              "id": 6409866,
+              "stop_id": "1639527585726",
+              "stop_name": "NB stairs",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.224269969539, 37.7750619834208]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409869,
+              "stop_id": "1639527768248",
+              "stop_name": "NB stairs (platform)",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.224342581191, 37.7751037522905]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          },
+          {
+            "id": 429085,
+            "pathway_id": "6409879-6409869-1639528082883",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409879,
+              "stop_id": "1639528066052",
+              "stop_name": "NB platform",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22415500453357, 37.774957443406905]
+              },
+              "location_type": 0,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409869,
+              "stop_id": "1639527768248",
+              "stop_name": "NB stairs (platform)",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.224342581191, 37.7751037522905]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          }
+        ],
+        "pathways_from_stop": [],
+        "stop_ext": null,
+        "__typename": "Stop"
+      },
+      {
+        "id": 6409870,
+        "stop_id": "1639527773339",
+        "stop_name": "SB stairs (platform)",
+        "location_type": 3,
+        "stop_code": "",
+        "stop_timezone": "",
+        "zone_id": "",
+        "wheelchair_boarding": 0,
+        "stop_desc": "",
+        "platform_code": null,
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-122.22447549653512, 37.77494953327955]
+        },
+        "feed_version": {
+          "id": 834,
+          "feed": {
+            "id": 1,
+            "onestop_id": "mtc",
+            "__typename": "Feed"
+          },
+          "__typename": "FeedVersion"
+        },
+        "level": {
+          "id": 23047,
+          "level_id": "fruitvale-test-platform",
+          "level_name": "platform",
+          "level_index": 0,
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [-122.22507116190127, 37.77548678334273],
+                [-122.22516772142569, 37.775374419863184],
+                [-122.22464748908932, 37.77507770170473],
+                [-122.22465017129831, 37.77505014071447],
+                [-122.22370066930691, 37.77450527902934],
+                [-122.22367384721656, 37.77452223976543],
+                [-122.22316154529506, 37.77422754643136],
+                [-122.22306230356116, 37.774333551362616],
+                [-122.2235826521101, 37.77463036436315],
+                [-122.22357460548312, 37.77466216568537],
+                [-122.22451606084759, 37.77520278606933],
+                [-122.22455629398237, 37.77519218570741],
+                [-122.22507116190127, 37.77548678334273]
+              ]
+            ]
+          },
+          "__typename": "Level"
+        },
+        "parent": {
+          "id": 6409860,
+          "stop_id": "fruitvale-test",
+          "stop_name": "Fruitvale Test",
+          "location_type": 1,
+          "level": null,
+          "feed_version": {
+            "id": 834,
+            "feed": {
+              "id": 1,
+              "onestop_id": "mtc",
+              "__typename": "Feed"
+            },
+            "__typename": "FeedVersion"
+          },
+          "__typename": "Stop"
+        },
+        "children": null,
+        "pathways_to_stop": [
+          {
+            "id": 429075,
+            "pathway_id": "6409865-6409870-1639527798997",
+            "is_bidirectional": 1,
+            "pathway_mode": 2,
+            "from_stop": {
+              "id": 6409865,
+              "stop_id": "1639527576900",
+              "stop_name": "SB stairs",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.224395929245, 37.7749048773731]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409870,
+              "stop_id": "1639527773339",
+              "stop_name": "SB stairs (platform)",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22447549653512, 37.77494953327955]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          },
+          {
+            "id": 429088,
+            "pathway_id": "6409880-6409870-1639528100084",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409880,
+              "stop_id": "1639528098249",
+              "stop_name": "SB platform",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.2242470342141, 37.77486547839361]
+              },
+              "location_type": 0,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409870,
+              "stop_id": "1639527773339",
+              "stop_name": "SB stairs (platform)",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22447549653512, 37.77494953327955]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          }
+        ],
+        "pathways_from_stop": [],
+        "stop_ext": null,
+        "__typename": "Stop"
+      },
+      {
+        "id": 6409871,
+        "stop_id": "1639527890936",
+        "stop_name": "Node",
+        "location_type": 3,
+        "stop_code": "",
+        "stop_timezone": "",
+        "zone_id": "",
+        "wheelchair_boarding": 0,
+        "stop_desc": "",
+        "platform_code": null,
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-122.22404478886992, 37.77492134651742]
+        },
+        "feed_version": {
+          "id": 834,
+          "feed": {
+            "id": 1,
+            "onestop_id": "mtc",
+            "__typename": "Feed"
+          },
+          "__typename": "FeedVersion"
+        },
+        "level": {
+          "id": 23045,
+          "level_id": "fruitvale-test-ground",
+          "level_name": "ground",
+          "level_index": 0,
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [-122.22452881754273, 37.77521595765734],
+                [-122.2246810031315, 37.7750457903514],
+                [-122.22393121071849, 37.77461450249855],
+                [-122.22379387250442, 37.77480520832199],
+                [-122.22452881754273, 37.77521595765734]
+              ]
+            ]
+          },
+          "__typename": "Level"
+        },
+        "parent": {
+          "id": 6409860,
+          "stop_id": "fruitvale-test",
+          "stop_name": "Fruitvale Test",
+          "location_type": 1,
+          "level": null,
+          "feed_version": {
+            "id": 834,
+            "feed": {
+              "id": 1,
+              "onestop_id": "mtc",
+              "__typename": "Feed"
+            },
+            "__typename": "FeedVersion"
+          },
+          "__typename": "Stop"
+        },
+        "children": null,
+        "pathways_to_stop": [
+          {
+            "id": 429076,
+            "pathway_id": "6409862-6409871-1639527907622",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409862,
+              "stop_id": "1639527534033",
+              "stop_name": "Paid fare area",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22423712746343, 37.77493215746479]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409871,
+              "stop_id": "1639527890936",
+              "stop_name": "Node",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22404478886992, 37.77492134651742]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          }
+        ],
+        "pathways_from_stop": [
+          {
+            "id": 429080,
+            "pathway_id": "6409871-6409873-1639527956509",
+            "is_bidirectional": 1,
+            "pathway_mode": 4,
+            "from_stop": {
+              "id": 6409871,
+              "stop_id": "1639527890936",
+              "stop_name": "Node",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22404478886992, 37.77492134651742]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409873,
+              "stop_id": "1639527935424",
+              "stop_name": "Node",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22393755905796, 37.774860719647975]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          }
+        ],
+        "stop_ext": null,
+        "__typename": "Stop"
+      },
+      {
+        "id": 6409872,
+        "stop_id": "1639527894368",
+        "stop_name": "Node",
+        "location_type": 3,
+        "stop_code": "",
+        "stop_timezone": "",
+        "zone_id": "",
+        "wheelchair_boarding": 0,
+        "stop_desc": "",
+        "platform_code": null,
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-122.22416005470632, 37.774775953763]
+        },
+        "feed_version": {
+          "id": 834,
+          "feed": {
+            "id": 1,
+            "onestop_id": "mtc",
+            "__typename": "Feed"
+          },
+          "__typename": "FeedVersion"
+        },
+        "level": {
+          "id": 23045,
+          "level_id": "fruitvale-test-ground",
+          "level_name": "ground",
+          "level_index": 0,
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [-122.22452881754273, 37.77521595765734],
+                [-122.2246810031315, 37.7750457903514],
+                [-122.22393121071849, 37.77461450249855],
+                [-122.22379387250442, 37.77480520832199],
+                [-122.22452881754273, 37.77521595765734]
+              ]
+            ]
+          },
+          "__typename": "Level"
+        },
+        "parent": {
+          "id": 6409860,
+          "stop_id": "fruitvale-test",
+          "stop_name": "Fruitvale Test",
+          "location_type": 1,
+          "level": null,
+          "feed_version": {
+            "id": 834,
+            "feed": {
+              "id": 1,
+              "onestop_id": "mtc",
+              "__typename": "Feed"
+            },
+            "__typename": "FeedVersion"
+          },
+          "__typename": "Stop"
+        },
+        "children": null,
+        "pathways_to_stop": [
+          {
+            "id": 429078,
+            "pathway_id": "6409874-6409872-1639527939620",
+            "is_bidirectional": 1,
+            "pathway_mode": 4,
+            "from_stop": {
+              "id": 6409874,
+              "stop_id": "1639527938101",
+              "stop_name": "Node",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22406364221959, 37.77471913442777]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409872,
+              "stop_id": "1639527894368",
+              "stop_name": "Node",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22416005470632, 37.774775953763]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          },
+          {
+            "id": 429077,
+            "pathway_id": "6409862-6409872-1639527916388",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409862,
+              "stop_id": "1639527534033",
+              "stop_name": "Paid fare area",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22423712746343, 37.77493215746479]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409872,
+              "stop_id": "1639527894368",
+              "stop_name": "Node",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22416005470632, 37.774775953763]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          }
+        ],
+        "pathways_from_stop": [],
+        "stop_ext": null,
+        "__typename": "Stop"
+      },
+      {
+        "id": 6409873,
+        "stop_id": "1639527935424",
+        "stop_name": "Node",
+        "location_type": 3,
+        "stop_code": "",
+        "stop_timezone": "",
+        "zone_id": "",
+        "wheelchair_boarding": 0,
+        "stop_desc": "",
+        "platform_code": null,
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-122.22393755905796, 37.774860719647975]
+        },
+        "feed_version": {
+          "id": 834,
+          "feed": {
+            "id": 1,
+            "onestop_id": "mtc",
+            "__typename": "Feed"
+          },
+          "__typename": "FeedVersion"
+        },
+        "level": {
+          "id": 23047,
+          "level_id": "fruitvale-test-platform",
+          "level_name": "platform",
+          "level_index": 0,
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [-122.22507116190127, 37.77548678334273],
+                [-122.22516772142569, 37.775374419863184],
+                [-122.22464748908932, 37.77507770170473],
+                [-122.22465017129831, 37.77505014071447],
+                [-122.22370066930691, 37.77450527902934],
+                [-122.22367384721656, 37.77452223976543],
+                [-122.22316154529506, 37.77422754643136],
+                [-122.22306230356116, 37.774333551362616],
+                [-122.2235826521101, 37.77463036436315],
+                [-122.22357460548312, 37.77466216568537],
+                [-122.22451606084759, 37.77520278606933],
+                [-122.22455629398237, 37.77519218570741],
+                [-122.22507116190127, 37.77548678334273]
+              ]
+            ]
+          },
+          "__typename": "Level"
+        },
+        "parent": {
+          "id": 6409860,
+          "stop_id": "fruitvale-test",
+          "stop_name": "Fruitvale Test",
+          "location_type": 1,
+          "level": null,
+          "feed_version": {
+            "id": 834,
+            "feed": {
+              "id": 1,
+              "onestop_id": "mtc",
+              "__typename": "Feed"
+            },
+            "__typename": "FeedVersion"
+          },
+          "__typename": "Stop"
+        },
+        "children": null,
+        "pathways_to_stop": [
+          {
+            "id": 429080,
+            "pathway_id": "6409871-6409873-1639527956509",
+            "is_bidirectional": 1,
+            "pathway_mode": 4,
+            "from_stop": {
+              "id": 6409871,
+              "stop_id": "1639527890936",
+              "stop_name": "Node",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22404478886992, 37.77492134651742]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409873,
+              "stop_id": "1639527935424",
+              "stop_name": "Node",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22393755905796, 37.774860719647975]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          },
+          {
+            "id": 429087,
+            "pathway_id": "6409879-6409873-1639528091438",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409879,
+              "stop_id": "1639528066052",
+              "stop_name": "NB platform",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22415500453357, 37.774957443406905]
+              },
+              "location_type": 0,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409873,
+              "stop_id": "1639527935424",
+              "stop_name": "Node",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22393755905796, 37.774860719647975]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          }
+        ],
+        "pathways_from_stop": [],
+        "stop_ext": null,
+        "__typename": "Stop"
+      },
+      {
+        "id": 6409874,
+        "stop_id": "1639527938101",
+        "stop_name": "Node",
+        "location_type": 3,
+        "stop_code": "",
+        "stop_timezone": "",
+        "zone_id": "",
+        "wheelchair_boarding": 0,
+        "stop_desc": "",
+        "platform_code": null,
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-122.22406364221959, 37.77471913442777]
+        },
+        "feed_version": {
+          "id": 834,
+          "feed": {
+            "id": 1,
+            "onestop_id": "mtc",
+            "__typename": "Feed"
+          },
+          "__typename": "FeedVersion"
+        },
+        "level": {
+          "id": 23047,
+          "level_id": "fruitvale-test-platform",
+          "level_name": "platform",
+          "level_index": 0,
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [-122.22507116190127, 37.77548678334273],
+                [-122.22516772142569, 37.775374419863184],
+                [-122.22464748908932, 37.77507770170473],
+                [-122.22465017129831, 37.77505014071447],
+                [-122.22370066930691, 37.77450527902934],
+                [-122.22367384721656, 37.77452223976543],
+                [-122.22316154529506, 37.77422754643136],
+                [-122.22306230356116, 37.774333551362616],
+                [-122.2235826521101, 37.77463036436315],
+                [-122.22357460548312, 37.77466216568537],
+                [-122.22451606084759, 37.77520278606933],
+                [-122.22455629398237, 37.77519218570741],
+                [-122.22507116190127, 37.77548678334273]
+              ]
+            ]
+          },
+          "__typename": "Level"
+        },
+        "parent": {
+          "id": 6409860,
+          "stop_id": "fruitvale-test",
+          "stop_name": "Fruitvale Test",
+          "location_type": 1,
+          "level": null,
+          "feed_version": {
+            "id": 834,
+            "feed": {
+              "id": 1,
+              "onestop_id": "mtc",
+              "__typename": "Feed"
+            },
+            "__typename": "FeedVersion"
+          },
+          "__typename": "Stop"
+        },
+        "children": null,
+        "pathways_to_stop": [
+          {
+            "id": 429090,
+            "pathway_id": "6409880-6409874-1639528107481",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409880,
+              "stop_id": "1639528098249",
+              "stop_name": "SB platform",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.2242470342141, 37.77486547839361]
+              },
+              "location_type": 0,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409874,
+              "stop_id": "1639527938101",
+              "stop_name": "Node",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22406364221959, 37.77471913442777]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          }
+        ],
+        "pathways_from_stop": [
+          {
+            "id": 429078,
+            "pathway_id": "6409874-6409872-1639527939620",
+            "is_bidirectional": 1,
+            "pathway_mode": 4,
+            "from_stop": {
+              "id": 6409874,
+              "stop_id": "1639527938101",
+              "stop_name": "Node",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22406364221959, 37.77471913442777]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409872,
+              "stop_id": "1639527894368",
+              "stop_name": "Node",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22416005470632, 37.774775953763]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          }
+        ],
+        "stop_ext": null,
+        "__typename": "Stop"
+      },
+      {
+        "id": 6409875,
+        "stop_id": "1639527989830",
+        "stop_name": "Node",
+        "location_type": 3,
+        "stop_code": "",
+        "stop_timezone": "",
+        "zone_id": "",
+        "wheelchair_boarding": 0,
+        "stop_desc": "",
+        "platform_code": null,
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-122.22492786292479, 37.77529521863585]
+        },
+        "feed_version": {
+          "id": 834,
+          "feed": {
+            "id": 1,
+            "onestop_id": "mtc",
+            "__typename": "Feed"
+          },
+          "__typename": "FeedVersion"
+        },
+        "level": {
+          "id": 23046,
+          "level_id": "fruitvale-test-bus-bays",
+          "level_name": "bus bays",
+          "level_index": 0,
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [-122.2246527372952, 37.77508397007789],
+                [-122.22564783683937, 37.77565426821249],
+                [-122.2259294687862, 37.7753065776796],
+                [-122.2248780428524, 37.77480411956991],
+                [-122.2246527372952, 37.77508397007789]
+              ]
+            ]
+          },
+          "__typename": "Level"
+        },
+        "parent": {
+          "id": 6409860,
+          "stop_id": "fruitvale-test",
+          "stop_name": "Fruitvale Test",
+          "location_type": 1,
+          "level": null,
+          "feed_version": {
+            "id": 834,
+            "feed": {
+              "id": 1,
+              "onestop_id": "mtc",
+              "__typename": "Feed"
+            },
+            "__typename": "FeedVersion"
+          },
+          "__typename": "Stop"
+        },
+        "children": null,
+        "pathways_to_stop": [
+          {
+            "id": 429082,
+            "pathway_id": "6409878-6409875-1639528008719",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409878,
+              "stop_id": "1639528007062",
+              "stop_name": "Bus platform",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.225161025983, 37.775274844137]
+              },
+              "location_type": 0,
+              "platform_code": null,
+              "level": { "id": 23046, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409875,
+              "stop_id": "1639527989830",
+              "stop_name": "Node",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22492786292479, 37.77529521863585]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23046, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          },
+          {
+            "id": 429083,
+            "pathway_id": "6409877-6409875-1639528023925",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409877,
+              "stop_id": "1639528005056",
+              "stop_name": "Bus platform",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.225291081759, 37.7753470809643]
+              },
+              "location_type": 0,
+              "platform_code": null,
+              "level": { "id": 23046, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409875,
+              "stop_id": "1639527989830",
+              "stop_name": "Node",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22492786292479, 37.77529521863585]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23046, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          },
+          {
+            "id": 429093,
+            "pathway_id": "6409876-6409875-1639540204443",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409876,
+              "stop_id": "1639528002379",
+              "stop_name": "Bus platform",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.2254720608116, 37.77545950603964]
+              },
+              "location_type": 0,
+              "platform_code": null,
+              "level": { "id": 23046, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409875,
+              "stop_id": "1639527989830",
+              "stop_name": "Node",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22492786292479, 37.77529521863585]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23046, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          }
+        ],
+        "pathways_from_stop": [
+          {
+            "id": 429081,
+            "pathway_id": "6409875-6409861-1639527991928",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409875,
+              "stop_id": "1639527989830",
+              "stop_name": "Node",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22492786292479, 37.77529521863585]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23046, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409861,
+              "stop_id": "1639527504761",
+              "stop_name": "Main entrance",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.224475000198, 37.7750637858359]
+              },
+              "location_type": 2,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          }
+        ],
+        "stop_ext": null,
+        "__typename": "Stop"
+      },
+      {
+        "id": 6409876,
+        "stop_id": "1639528002379",
+        "stop_name": "Bus platform",
+        "location_type": 0,
+        "stop_code": "",
+        "stop_timezone": "",
+        "zone_id": "",
+        "wheelchair_boarding": 0,
+        "stop_desc": "",
+        "platform_code": null,
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-122.2254720608116, 37.77545950603964]
+        },
+        "feed_version": {
+          "id": 834,
+          "feed": {
+            "id": 1,
+            "onestop_id": "mtc",
+            "__typename": "Feed"
+          },
+          "__typename": "FeedVersion"
+        },
+        "level": {
+          "id": 23046,
+          "level_id": "fruitvale-test-bus-bays",
+          "level_name": "bus bays",
+          "level_index": 0,
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [-122.2246527372952, 37.77508397007789],
+                [-122.22564783683937, 37.77565426821249],
+                [-122.2259294687862, 37.7753065776796],
+                [-122.2248780428524, 37.77480411956991],
+                [-122.2246527372952, 37.77508397007789]
+              ]
+            ]
+          },
+          "__typename": "Level"
+        },
+        "parent": {
+          "id": 6409860,
+          "stop_id": "fruitvale-test",
+          "stop_name": "Fruitvale Test",
+          "location_type": 1,
+          "level": null,
+          "feed_version": {
+            "id": 834,
+            "feed": {
+              "id": 1,
+              "onestop_id": "mtc",
+              "__typename": "Feed"
+            },
+            "__typename": "FeedVersion"
+          },
+          "__typename": "Stop"
+        },
+        "children": null,
+        "pathways_to_stop": [],
+        "pathways_from_stop": [
+          {
+            "id": 429093,
+            "pathway_id": "6409876-6409875-1639540204443",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409876,
+              "stop_id": "1639528002379",
+              "stop_name": "Bus platform",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.2254720608116, 37.77545950603964]
+              },
+              "location_type": 0,
+              "platform_code": null,
+              "level": { "id": 23046, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409875,
+              "stop_id": "1639527989830",
+              "stop_name": "Node",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22492786292479, 37.77529521863585]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23046, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          }
+        ],
+        "stop_ext": null,
+        "__typename": "Stop"
+      },
+      {
+        "id": 6409877,
+        "stop_id": "1639528005056",
+        "stop_name": "Bus platform",
+        "location_type": 0,
+        "stop_code": "",
+        "stop_timezone": "",
+        "zone_id": "",
+        "wheelchair_boarding": 0,
+        "stop_desc": "",
+        "platform_code": null,
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-122.225291081759, 37.7753470809643]
+        },
+        "feed_version": {
+          "id": 834,
+          "feed": {
+            "id": 1,
+            "onestop_id": "mtc",
+            "__typename": "Feed"
+          },
+          "__typename": "FeedVersion"
+        },
+        "level": {
+          "id": 23046,
+          "level_id": "fruitvale-test-bus-bays",
+          "level_name": "bus bays",
+          "level_index": 0,
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [-122.2246527372952, 37.77508397007789],
+                [-122.22564783683937, 37.77565426821249],
+                [-122.2259294687862, 37.7753065776796],
+                [-122.2248780428524, 37.77480411956991],
+                [-122.2246527372952, 37.77508397007789]
+              ]
+            ]
+          },
+          "__typename": "Level"
+        },
+        "parent": {
+          "id": 6409860,
+          "stop_id": "fruitvale-test",
+          "stop_name": "Fruitvale Test",
+          "location_type": 1,
+          "level": null,
+          "feed_version": {
+            "id": 834,
+            "feed": {
+              "id": 1,
+              "onestop_id": "mtc",
+              "__typename": "Feed"
+            },
+            "__typename": "FeedVersion"
+          },
+          "__typename": "Stop"
+        },
+        "children": null,
+        "pathways_to_stop": [],
+        "pathways_from_stop": [
+          {
+            "id": 429083,
+            "pathway_id": "6409877-6409875-1639528023925",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409877,
+              "stop_id": "1639528005056",
+              "stop_name": "Bus platform",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.225291081759, 37.7753470809643]
+              },
+              "location_type": 0,
+              "platform_code": null,
+              "level": { "id": 23046, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409875,
+              "stop_id": "1639527989830",
+              "stop_name": "Node",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22492786292479, 37.77529521863585]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23046, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          }
+        ],
+        "stop_ext": null,
+        "__typename": "Stop"
+      },
+      {
+        "id": 6409878,
+        "stop_id": "1639528007062",
+        "stop_name": "Bus platform",
+        "location_type": 0,
+        "stop_code": "",
+        "stop_timezone": "",
+        "zone_id": "",
+        "wheelchair_boarding": 0,
+        "stop_desc": "",
+        "platform_code": null,
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-122.225161025983, 37.775274844137]
+        },
+        "feed_version": {
+          "id": 834,
+          "feed": {
+            "id": 1,
+            "onestop_id": "mtc",
+            "__typename": "Feed"
+          },
+          "__typename": "FeedVersion"
+        },
+        "level": {
+          "id": 23046,
+          "level_id": "fruitvale-test-bus-bays",
+          "level_name": "bus bays",
+          "level_index": 0,
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [-122.2246527372952, 37.77508397007789],
+                [-122.22564783683937, 37.77565426821249],
+                [-122.2259294687862, 37.7753065776796],
+                [-122.2248780428524, 37.77480411956991],
+                [-122.2246527372952, 37.77508397007789]
+              ]
+            ]
+          },
+          "__typename": "Level"
+        },
+        "parent": {
+          "id": 6409860,
+          "stop_id": "fruitvale-test",
+          "stop_name": "Fruitvale Test",
+          "location_type": 1,
+          "level": null,
+          "feed_version": {
+            "id": 834,
+            "feed": {
+              "id": 1,
+              "onestop_id": "mtc",
+              "__typename": "Feed"
+            },
+            "__typename": "FeedVersion"
+          },
+          "__typename": "Stop"
+        },
+        "children": null,
+        "pathways_to_stop": [],
+        "pathways_from_stop": [
+          {
+            "id": 429082,
+            "pathway_id": "6409878-6409875-1639528008719",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409878,
+              "stop_id": "1639528007062",
+              "stop_name": "Bus platform",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.225161025983, 37.775274844137]
+              },
+              "location_type": 0,
+              "platform_code": null,
+              "level": { "id": 23046, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409875,
+              "stop_id": "1639527989830",
+              "stop_name": "Node",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22492786292479, 37.77529521863585]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23046, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          }
+        ],
+        "stop_ext": null,
+        "__typename": "Stop"
+      },
+      {
+        "id": 6409879,
+        "stop_id": "1639528066052",
+        "stop_name": "NB platform",
+        "location_type": 0,
+        "stop_code": "",
+        "stop_timezone": "",
+        "zone_id": "",
+        "wheelchair_boarding": 0,
+        "stop_desc": "",
+        "platform_code": null,
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-122.22415500453357, 37.774957443406905]
+        },
+        "feed_version": {
+          "id": 834,
+          "feed": {
+            "id": 1,
+            "onestop_id": "mtc",
+            "__typename": "Feed"
+          },
+          "__typename": "FeedVersion"
+        },
+        "level": {
+          "id": 23047,
+          "level_id": "fruitvale-test-platform",
+          "level_name": "platform",
+          "level_index": 0,
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [-122.22507116190127, 37.77548678334273],
+                [-122.22516772142569, 37.775374419863184],
+                [-122.22464748908932, 37.77507770170473],
+                [-122.22465017129831, 37.77505014071447],
+                [-122.22370066930691, 37.77450527902934],
+                [-122.22367384721656, 37.77452223976543],
+                [-122.22316154529506, 37.77422754643136],
+                [-122.22306230356116, 37.774333551362616],
+                [-122.2235826521101, 37.77463036436315],
+                [-122.22357460548312, 37.77466216568537],
+                [-122.22451606084759, 37.77520278606933],
+                [-122.22455629398237, 37.77519218570741],
+                [-122.22507116190127, 37.77548678334273]
+              ]
+            ]
+          },
+          "__typename": "Level"
+        },
+        "parent": {
+          "id": 6409860,
+          "stop_id": "fruitvale-test",
+          "stop_name": "Fruitvale Test",
+          "location_type": 1,
+          "level": null,
+          "feed_version": {
+            "id": 834,
+            "feed": {
+              "id": 1,
+              "onestop_id": "mtc",
+              "__typename": "Feed"
+            },
+            "__typename": "FeedVersion"
+          },
+          "__typename": "Stop"
+        },
+        "children": null,
+        "pathways_to_stop": [],
+        "pathways_from_stop": [
+          {
+            "id": 429085,
+            "pathway_id": "6409879-6409869-1639528082883",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409879,
+              "stop_id": "1639528066052",
+              "stop_name": "NB platform",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22415500453357, 37.774957443406905]
+              },
+              "location_type": 0,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409869,
+              "stop_id": "1639527768248",
+              "stop_name": "NB stairs (platform)",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.224342581191, 37.7751037522905]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          },
+          {
+            "id": 429086,
+            "pathway_id": "6409879-6409868-1639528086596",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409879,
+              "stop_id": "1639528066052",
+              "stop_name": "NB platform",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22415500453357, 37.774957443406905]
+              },
+              "location_type": 0,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409868,
+              "stop_id": "1639527666801",
+              "stop_name": "NB elevator (platform)",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22420693178915, 37.77504832629329]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          },
+          {
+            "id": 429087,
+            "pathway_id": "6409879-6409873-1639528091438",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409879,
+              "stop_id": "1639528066052",
+              "stop_name": "NB platform",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22415500453357, 37.774957443406905]
+              },
+              "location_type": 0,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409873,
+              "stop_id": "1639527935424",
+              "stop_name": "Node",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22393755905796, 37.774860719647975]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          }
+        ],
+        "stop_ext": null,
+        "__typename": "Stop"
+      },
+      {
+        "id": 6409880,
+        "stop_id": "1639528098249",
+        "stop_name": "SB platform",
+        "location_type": 0,
+        "stop_code": "",
+        "stop_timezone": "",
+        "zone_id": "",
+        "wheelchair_boarding": 0,
+        "stop_desc": "",
+        "platform_code": null,
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-122.2242470342141, 37.77486547839361]
+        },
+        "feed_version": {
+          "id": 834,
+          "feed": {
+            "id": 1,
+            "onestop_id": "mtc",
+            "__typename": "Feed"
+          },
+          "__typename": "FeedVersion"
+        },
+        "level": {
+          "id": 23047,
+          "level_id": "fruitvale-test-platform",
+          "level_name": "platform",
+          "level_index": 0,
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [-122.22507116190127, 37.77548678334273],
+                [-122.22516772142569, 37.775374419863184],
+                [-122.22464748908932, 37.77507770170473],
+                [-122.22465017129831, 37.77505014071447],
+                [-122.22370066930691, 37.77450527902934],
+                [-122.22367384721656, 37.77452223976543],
+                [-122.22316154529506, 37.77422754643136],
+                [-122.22306230356116, 37.774333551362616],
+                [-122.2235826521101, 37.77463036436315],
+                [-122.22357460548312, 37.77466216568537],
+                [-122.22451606084759, 37.77520278606933],
+                [-122.22455629398237, 37.77519218570741],
+                [-122.22507116190127, 37.77548678334273]
+              ]
+            ]
+          },
+          "__typename": "Level"
+        },
+        "parent": {
+          "id": 6409860,
+          "stop_id": "fruitvale-test",
+          "stop_name": "Fruitvale Test",
+          "location_type": 1,
+          "level": null,
+          "feed_version": {
+            "id": 834,
+            "feed": {
+              "id": 1,
+              "onestop_id": "mtc",
+              "__typename": "Feed"
+            },
+            "__typename": "FeedVersion"
+          },
+          "__typename": "Stop"
+        },
+        "children": null,
+        "pathways_to_stop": [],
+        "pathways_from_stop": [
+          {
+            "id": 429088,
+            "pathway_id": "6409880-6409870-1639528100084",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409880,
+              "stop_id": "1639528098249",
+              "stop_name": "SB platform",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.2242470342141, 37.77486547839361]
+              },
+              "location_type": 0,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409870,
+              "stop_id": "1639527773339",
+              "stop_name": "SB stairs (platform)",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22447549653512, 37.77494953327955]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          },
+          {
+            "id": 429089,
+            "pathway_id": "6409880-6409867-1639528103718",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409880,
+              "stop_id": "1639528098249",
+              "stop_name": "SB platform",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.2242470342141, 37.77486547839361]
+              },
+              "location_type": 0,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409867,
+              "stop_id": "1639527643709",
+              "stop_name": "SB elevator (platform)",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22437681653096, 37.774864205571575]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          },
+          {
+            "id": 429090,
+            "pathway_id": "6409880-6409874-1639528107481",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409880,
+              "stop_id": "1639528098249",
+              "stop_name": "SB platform",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.2242470342141, 37.77486547839361]
+              },
+              "location_type": 0,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409874,
+              "stop_id": "1639527938101",
+              "stop_name": "Node",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22406364221959, 37.77471913442777]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23047, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          }
+        ],
+        "stop_ext": null,
+        "__typename": "Stop"
+      },
+      {
+        "id": 6409882,
+        "stop_id": "1639530953731",
+        "stop_name": "Test entrance",
+        "location_type": 2,
+        "stop_code": "",
+        "stop_timezone": "",
+        "zone_id": "",
+        "wheelchair_boarding": 0,
+        "stop_desc": "",
+        "platform_code": null,
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-122.22444177260608, 37.77535462383999]
+        },
+        "feed_version": {
+          "id": 834,
+          "feed": {
+            "id": 1,
+            "onestop_id": "mtc",
+            "__typename": "Feed"
+          },
+          "__typename": "FeedVersion"
+        },
+        "level": {
+          "id": 23045,
+          "level_id": "fruitvale-test-ground",
+          "level_name": "ground",
+          "level_index": 0,
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [-122.22452881754273, 37.77521595765734],
+                [-122.2246810031315, 37.7750457903514],
+                [-122.22393121071849, 37.77461450249855],
+                [-122.22379387250442, 37.77480520832199],
+                [-122.22452881754273, 37.77521595765734]
+              ]
+            ]
+          },
+          "__typename": "Level"
+        },
+        "parent": {
+          "id": 6409860,
+          "stop_id": "fruitvale-test",
+          "stop_name": "Fruitvale Test",
+          "location_type": 1,
+          "level": null,
+          "feed_version": {
+            "id": 834,
+            "feed": {
+              "id": 1,
+              "onestop_id": "mtc",
+              "__typename": "Feed"
+            },
+            "__typename": "FeedVersion"
+          },
+          "__typename": "Stop"
+        },
+        "children": null,
+        "pathways_to_stop": [],
+        "pathways_from_stop": [
+          {
+            "id": 429091,
+            "pathway_id": "6409882-6409883-1639531006597",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409882,
+              "stop_id": "1639530953731",
+              "stop_name": "Test entrance",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22444177260608, 37.77535462383999]
+              },
+              "location_type": 2,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409883,
+              "stop_id": "1639530972901",
+              "stop_name": "Test node for one-way pathway",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22450024044232, 37.77527192494239]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          }
+        ],
+        "stop_ext": null,
+        "__typename": "Stop"
+      },
+      {
+        "id": 6409883,
+        "stop_id": "1639530972901",
+        "stop_name": "Test node for one-way pathway",
+        "location_type": 3,
+        "stop_code": "",
+        "stop_timezone": "",
+        "zone_id": "",
+        "wheelchair_boarding": 0,
+        "stop_desc": "",
+        "platform_code": null,
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-122.22450024044232, 37.77527192494239]
+        },
+        "feed_version": {
+          "id": 834,
+          "feed": {
+            "id": 1,
+            "onestop_id": "mtc",
+            "__typename": "Feed"
+          },
+          "__typename": "FeedVersion"
+        },
+        "level": {
+          "id": 23045,
+          "level_id": "fruitvale-test-ground",
+          "level_name": "ground",
+          "level_index": 0,
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [-122.22452881754273, 37.77521595765734],
+                [-122.2246810031315, 37.7750457903514],
+                [-122.22393121071849, 37.77461450249855],
+                [-122.22379387250442, 37.77480520832199],
+                [-122.22452881754273, 37.77521595765734]
+              ]
+            ]
+          },
+          "__typename": "Level"
+        },
+        "parent": {
+          "id": 6409860,
+          "stop_id": "fruitvale-test",
+          "stop_name": "Fruitvale Test",
+          "location_type": 1,
+          "level": null,
+          "feed_version": {
+            "id": 834,
+            "feed": {
+              "id": 1,
+              "onestop_id": "mtc",
+              "__typename": "Feed"
+            },
+            "__typename": "FeedVersion"
+          },
+          "__typename": "Stop"
+        },
+        "children": null,
+        "pathways_to_stop": [
+          {
+            "id": 429091,
+            "pathway_id": "6409882-6409883-1639531006597",
+            "is_bidirectional": 1,
+            "pathway_mode": 1,
+            "from_stop": {
+              "id": 6409882,
+              "stop_id": "1639530953731",
+              "stop_name": "Test entrance",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22444177260608, 37.77535462383999]
+              },
+              "location_type": 2,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409883,
+              "stop_id": "1639530972901",
+              "stop_name": "Test node for one-way pathway",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22450024044232, 37.77527192494239]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          }
+        ],
+        "pathways_from_stop": [
+          {
+            "id": 429092,
+            "pathway_id": "6409883-6409862-1639531034861",
+            "is_bidirectional": 0,
+            "pathway_mode": 6,
+            "from_stop": {
+              "id": 6409883,
+              "stop_id": "1639530972901",
+              "stop_name": "Test node for one-way pathway",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22450024044232, 37.77527192494239]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "to_stop": {
+              "id": 6409862,
+              "stop_id": "1639527534033",
+              "stop_name": "Paid fare area",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-122.22423712746343, 37.77493215746479]
+              },
+              "location_type": 3,
+              "platform_code": null,
+              "level": { "id": 23045, "__typename": "Level" },
+              "parent": { "id": 6409860, "__typename": "Stop" },
+              "feed_version": {
+                "id": 834,
+                "feed": {
+                  "id": 1,
+                  "onestop_id": "mtc",
+                  "__typename": "Feed"
+                },
+                "__typename": "FeedVersion"
+              },
+              "__typename": "Stop"
+            },
+            "__typename": "Pathway"
+          }
+        ],
+        "stop_ext": null,
+        "__typename": "Stop"
+      }
+    ]
+  }
+}

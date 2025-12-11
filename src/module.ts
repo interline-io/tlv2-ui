@@ -1,5 +1,6 @@
-import { defineNuxtModule, addPlugin, createResolver, addImportsDir, addServerHandler, addVitePlugin } from '@nuxt/kit'
+import { defineNuxtModule, addPlugin, createResolver, addImportsDir, addServerHandler, addVitePlugin, addComponentsDir } from '@nuxt/kit'
 import { defu } from 'defu'
+import type { Tlv2RouteKey } from './runtime/route-keys'
 
 // Config handler
 export interface ModuleOptions {
@@ -7,8 +8,8 @@ export interface ModuleOptions {
   bulma: string
   // Link sources
   safelinkUtmSource?: string
-  // Route prefixes
-  editorRoutePrefix?: string
+  // Route resolver
+  routes?: Partial<Record<Tlv2RouteKey, string>>
   // Proxy options
   useProxy: boolean
   proxyBase?: string
@@ -27,6 +28,9 @@ export interface ModuleOptions {
   auth0Scope?: string
   auth0RedirectUri?: string
   auth0LogoutUri?: string
+  // Transfer Analyst options
+  transferAnalystReadOnlyFeedSelector?: boolean
+  transferAnalystGtfsRealtimeStopObservations?: boolean
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -48,7 +52,6 @@ export default defineNuxtModule<ModuleOptions>({
   defaults: {
     bulma: '',
     useProxy: false,
-    editorRoutePrefix: 'editor',
     loginGate: false,
     requireLogin: false,
     safelinkUtmSource: undefined,
@@ -61,7 +64,9 @@ export default defineNuxtModule<ModuleOptions>({
     auth0Audience: undefined,
     auth0Scope: undefined,
     auth0RedirectUri: undefined,
-    auth0LogoutUri: undefined
+    auth0LogoutUri: undefined,
+    transferAnalystReadOnlyFeedSelector: false,
+    transferAnalystGtfsRealtimeStopObservations: true
   },
   async setup (options, nuxt) {
     // Create resolver to resolve relative paths
@@ -99,28 +104,26 @@ export default defineNuxtModule<ModuleOptions>({
         mixpanelApikey: options.mixpanelApikey,
         loginGate: options.loginGate,
         requireLogin: options.requireLogin,
-        editorRoutePrefix: options.editorRoutePrefix,
+        routes: options.routes,
         auth0Domain: options.auth0Domain,
         auth0ClientId: options.auth0ClientId,
         auth0RedirectUri: options.auth0RedirectUri,
         auth0LogoutUri: options.auth0LogoutUri,
         auth0Audience: options.auth0Audience,
         auth0Scope: options.auth0Scope,
+        transferAnalystReadOnlyFeedSelector: options.transferAnalystReadOnlyFeedSelector,
+        transferAnalystGtfsRealtimeStopObservations: options.transferAnalystGtfsRealtimeStopObservations,
       }
     }))
 
     // Setup CSS
-    if (options.bulma) {
-      nuxt.options.css.push(options.bulma) //  || resolveRuntimeModule('assets/bulma.scss')
-    }
     nuxt.options.css.push(resolveRuntimeModule('assets/main.css'))
+    nuxt.options.css.push('@mdi/font/css/materialdesignicons.css')
 
     // Setup plugins (run in order added)
     addPlugin(resolveRuntimeModule('plugins/apollo'))
     addPlugin(resolveRuntimeModule('plugins/mixpanel.client'))
     addPlugin(resolveRuntimeModule('plugins/auth.client'))
-    addPlugin(resolveRuntimeModule('plugins/oruga'))
-    addPlugin(resolveRuntimeModule('plugins/filters'))
     addImportsDir(resolveRuntimeModule('composables'))
 
     // Proxy options
@@ -141,11 +144,16 @@ export default defineNuxtModule<ModuleOptions>({
     })
 
     // Add components
-    nuxt.hook('components:dirs', (dirs) => {
-      dirs.push({
-        path: resolveRuntimeModule('components'),
-        prefix: 'tl'
-      })
+    addComponentsDir({
+      path: resolveRuntimeModule('components'),
+      pathPrefix: true,
+      prefix: 'tl'
+    })
+
+    // Add controls (t-* components)
+    addComponentsDir({
+      path: resolveRuntimeModule('controls'),
+      prefix: 't'
     })
 
     // Nuxt 4: Transpile packages for SSR compatibility
@@ -159,7 +167,6 @@ export default defineNuxtModule<ModuleOptions>({
       '@apollo/client', // GraphQL client with modern JS/TS - needs transpilation for SSR
       'markdown-it', // Markdown parser - ESM package used in SSR
       'markdown-it-anchor', // Markdown-it plugin - must match parent's transpilation
-      '@oruga-ui/oruga-next', // Oruga UI components - contains Vue code needing transpilation
     )
 
     // Add Vite plugin - Nuxt 4 pattern
@@ -182,7 +189,11 @@ export default defineNuxtModule<ModuleOptions>({
           'fast-json-stable-stringify', // Small utility but frequently imported - bundle once
           'maplibre-gl', // Large mapping library - dramatically speeds up dev cold starts
           'mixpanel-browser', // Analytics SDK with dynamic imports - needs pre-bundling
-          'zen-observable' // Observable polyfill used by Apollo - avoid re-discovery
+          'zen-observable', // Observable polyfill used by Apollo - avoid re-discovery
+          'vega', // Needs ESM: Visualization library
+          'vega-lite', // Needs ESM: High-level visualization grammar
+          'vega-embed', // Needs ESM: Embeds Vega visualizations
+          'dayjs', // Needs ESM: Date library
         )
         // Debug log removed: tlv2-ui:vite-config applied
       },

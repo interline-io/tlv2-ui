@@ -1,0 +1,60 @@
+{
+  "data": {
+    "feed_versions": [
+      {
+        "stops": [
+          {
+            "id": 6409860,
+            "stop_id": "fruitvale-test",
+            "stop_name": "Fruitvale Test",
+            "location_type": 1,
+            "geometry": {
+              "type": "Point",
+              "coordinates": [-122.22525287644811, 37.775102019223084]
+            },
+            "children": [
+              { "id": 6409861, "location_type": 2, "__typename": "Stop" },
+              { "id": 6409862, "location_type": 3, "__typename": "Stop" },
+              { "id": 6409863, "location_type": 3, "__typename": "Stop" },
+              { "id": 6409864, "location_type": 3, "__typename": "Stop" },
+              { "id": 6409865, "location_type": 3, "__typename": "Stop" },
+              { "id": 6409866, "location_type": 3, "__typename": "Stop" },
+              { "id": 6409867, "location_type": 3, "__typename": "Stop" },
+              { "id": 6409868, "location_type": 3, "__typename": "Stop" },
+              { "id": 6409869, "location_type": 3, "__typename": "Stop" },
+              { "id": 6409870, "location_type": 3, "__typename": "Stop" },
+              { "id": 6409871, "location_type": 3, "__typename": "Stop" },
+              { "id": 6409872, "location_type": 3, "__typename": "Stop" },
+              { "id": 6409873, "location_type": 3, "__typename": "Stop" },
+              { "id": 6409874, "location_type": 3, "__typename": "Stop" },
+              { "id": 6409875, "location_type": 3, "__typename": "Stop" },
+              { "id": 6409876, "location_type": 0, "__typename": "Stop" },
+              { "id": 6409877, "location_type": 0, "__typename": "Stop" },
+              { "id": 6409878, "location_type": 0, "__typename": "Stop" },
+              { "id": 6409879, "location_type": 0, "__typename": "Stop" },
+              { "id": 6409880, "location_type": 0, "__typename": "Stop" },
+              { "id": 6409882, "location_type": 2, "__typename": "Stop" },
+              { "id": 6409883, "location_type": 3, "__typename": "Stop" }
+            ],
+            "parent": null,
+            "level": null,
+            "feed_version": {
+              "id": 834,
+              "sha1": "",
+              "file": "mtc-sandbox",
+              "feed": {
+                "id": 1,
+                "name": "MTC Stations",
+                "onestop_id": "mtc",
+                "__typename": "Feed"
+              },
+              "__typename": "FeedVersion"
+            },
+            "__typename": "Stop"
+          }
+        ],
+        "__typename": "FeedVersion"
+      }
+    ]
+  }
+}

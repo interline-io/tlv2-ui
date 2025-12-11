@@ -1,0 +1,389 @@
+{
+    "levels": [
+        {
+            "id": "powell-street",
+            "index": 0,
+            "name": "Street",
+            "number_of_platforms": 0,
+            "agencies_serving_platform": [
+                "MUNI",
+                "AC Transit",
+                "Mission Bay Shuttle",
+                "Amtrak"
+            ]
+        },
+        {
+            "id": "powell-concourse",
+            "index": -1,
+            "name": "Concourse",
+            "number_of_platforms": 0,
+            "agencies_serving_platform": []
+        },
+        {
+            "id": "powell-muni-platform",
+            "index": -2,
+            "name": "MUNI Platform",
+            "number_of_platforms": 2,
+            "agencies_serving_platform": [
+                "MUNI"
+            ]
+        },
+        {
+            "id": "powell-bart-platform",
+            "index": -3,
+            "name": "BART Platform",
+            "number_of_platforms": 2,
+            "agencies_serving_platform": [
+                "BART"
+            ]
+        }
+    ],
+    "stops": [
+        {
+            "id": 0,
+            "stop_id": 0,
+            "stop_name": "B1 to Market St & 5th St",
+            "location_type": 2,
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.40825712680815,
+                    37.783718906950725
+                ]
+            }
+        },
+        {
+            "id": 1,
+            "stop_id": 1,
+            "stop_name": "A1 to Powell Street Cable Cars",
+            "location_type": 2,
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.40794062614442,
+                    37.78433789412096
+                ]
+            }
+        },
+        {
+            "id": 2,
+            "stop_id": 2,
+            "stop_name": "B2 to Market St & 5th St",
+            "location_type": 2,
+            "type": "Point",
+            "coordinates": [
+                -122.40742363035679,
+                37.784392479213416
+            ]
+        },
+        {
+            "id": 3,
+            "stop_id": 3,
+            "stop_name": "B3 to Market St & 4th St",
+            "location_type": 2,
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.40623205900192,
+                    37.78521125076273
+                ]
+            }
+        },
+        {
+            "id": 26,
+            "stop_id": 26,
+            "stop_name": "A2 to Market St & Ellis St",
+            "location_type": 2,
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.4064975976944,
+                    37.78541474985691
+                ]
+            }
+        },
+        {
+            "id": 4,
+            "stop_id": 4,
+            "stop_name": "A3 to Ellis & Stockton St.",
+            "location_type": 2,
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.40638494491577,
+                    37.78600404615625
+                ]
+            }
+        },
+        {
+            "id": 5,
+            "stop_id": 5,
+            "stop_name": "B4 to Market & 4th St/Moscone Center",
+            "location_type": 2,
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.40543276071547,
+                    37.785977549121355
+                ]
+            }
+        },
+        {
+            "id": 6,
+            "stop_id": 6,
+            "stop_name": "A4 to Market & 4th St",
+            "location_type": 2,
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.40573719143866,
+                    37.786021004253556
+                ]
+            }
+        },
+        {
+            "id": 7,
+            "stop_id": 7,
+            "stop_name": "Elevator to Market St",
+            "location_type": 2,
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.40637421607971,
+                    37.785516499193854
+                ]
+            }
+        },
+        {
+            "id": 8,
+            "stop_id": 8,
+            "stop_name": "powell-platform-muni-inbound",
+            "location_type": 0
+        },
+        {
+            "id": 9,
+            "stop_id": 9,
+            "stop_name": "powell-platform-muni-outbound",
+            "location_type": 0
+        },
+        {
+            "id": 10,
+            "stop_id": 10,
+            "stop_name": "powell-platform-bart-inbound",
+            "location_type": 0
+        },
+        {
+            "id": 11,
+            "stop_id": 11,
+            "stop_name": "powell-platform-bart-outbound",
+            "location_type": 0
+        },
+        {
+            "id": 12,
+            "stop_id": 12,
+            "stop_name": "powell-level-concourse",
+            "location_type": 3
+        },
+        {
+            "id": 13,
+            "stop_id": 13,
+            "stop_name": "powell-level-muni",
+            "location_type": 3
+        },
+        {
+            "id": 14,
+            "stop_id": 14,
+            "stop_name": "powell-level-bart",
+            "location_type": 3
+        }
+    ],
+    "zero_stops": [],
+    "pathways": [
+        {
+            "id": 15,
+            "pathway_mode": 2,
+            "from_stop_id": 0,
+            "to_stop_id": 12
+        },
+        {
+            "id": 16,
+            "pathway_mode": 2,
+            "from_stop_id": 2,
+            "to_stop_id": 12
+        },
+        {
+            "id": 17,
+            "pathway_mode": 4,
+            "from_stop_id": 2,
+            "to_stop_id": 12
+        },
+        {
+            "id": 18,
+            "pathway_mode": 4,
+            "from_stop_id": 2,
+            "to_stop_id": 12
+        },
+        {
+            "id": 19,
+            "pathway_mode": 2,
+            "from_stop_id": 2,
+            "to_stop_id": 12
+        },
+        {
+            "id": 20,
+            "pathway_mode": 4,
+            "from_stop_id": 2,
+            "to_stop_id": 12
+        },
+        {
+            "id": 21,
+            "pathway_mode": 4,
+            "from_stop_id": 7,
+            "to_stop_id": 12
+        },
+        {
+            "id": 22,
+            "pathway_mode": 2,
+            "from_stop_id": 3,
+            "to_stop_id": 12
+        },
+        {
+            "id": 23,
+            "pathway_mode": 4,
+            "from_stop_id": 3,
+            "to_stop_id": 12
+        },
+        {
+            "id": 24,
+            "pathway_mode": 2,
+            "from_stop_id": 26,
+            "to_stop_id": 12
+        },
+        {
+            "id": 25,
+            "pathway_mode": 4,
+            "from_stop_id": 26,
+            "to_stop_id": 12
+        },
+        {
+            "id": 27,
+            "pathway_mode": 2,
+            "from_stop_id": 4,
+            "to_stop_id": 12
+        },
+        {
+            "id": 28,
+            "pathway_mode": 4,
+            "from_stop_id": 4,
+            "to_stop_id": 12
+        },
+        {
+            "id": 29,
+            "pathway_mode": 2,
+            "from_stop_id": 6,
+            "to_stop_id": 12
+        },
+        {
+            "id": 30,
+            "pathway_mode": 4,
+            "from_stop_id": 6,
+            "to_stop_id": 12
+        },
+        {
+            "id": 31,
+            "pathway_mode": 2,
+            "from_stop_id": 5,
+            "to_stop_id": 12
+        },
+        {
+            "id": 32,
+            "pathway_mode": 4,
+            "from_stop_id": 5,
+            "to_stop_id": 12
+        },
+        {
+            "id": 33,
+            "pathway_mode": 4,
+            "from_stop_id": 12,
+            "to_stop_id": 13
+        },
+        {
+            "id": 34,
+            "pathway_mode": 4,
+            "from_stop_id": 12,
+            "to_stop_id": 14
+        },
+        {
+            "id": 35,
+            "pathway_mode": 2,
+            "from_stop_id": 12,
+            "to_stop_id": 13
+        },
+        {
+            "id": 36,
+            "pathway_mode": 2,
+            "from_stop_id": 12,
+            "to_stop_id": 13
+        },
+        {
+            "id": 37,
+            "pathway_mode": 4,
+            "from_stop_id": 12,
+            "to_stop_id": 13
+        },
+        {
+            "id": 38,
+            "pathway_mode": 4,
+            "from_stop_id": 12,
+            "to_stop_id": 13
+        },
+        {
+            "id": 39,
+            "pathway_mode": 2,
+            "from_stop_id": 12,
+            "to_stop_id": 14
+        },
+        {
+            "id": 40,
+            "pathway_mode": 2,
+            "from_stop_id": 12,
+            "to_stop_id": 14
+        },
+        {
+            "id": 41,
+            "pathway_mode": 4,
+            "from_stop_id": 12,
+            "to_stop_id": 14
+        },
+        {
+            "id": 42,
+            "pathway_mode": 4,
+            "from_stop_id": 12,
+            "to_stop_id": 14
+        },
+        {
+            "id": 43,
+            "pathway_mode": 1,
+            "from_stop_id": 13,
+            "to_stop_id": 8
+        },
+        {
+            "id": 44,
+            "pathway_mode": 1,
+            "from_stop_id": 13,
+            "to_stop_id": 9
+        },
+        {
+            "id": 45,
+            "pathway_mode": 1,
+            "from_stop_id": 14,
+            "to_stop_id": 11
+        },
+        {
+            "id": 46,
+            "pathway_mode": 1,
+            "from_stop_id": 14,
+            "to_stop_id": 10
+        }
+    ]
+}

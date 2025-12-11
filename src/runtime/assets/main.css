@@ -63,3 +63,29 @@ table {
     white-space: nowrap;
     word-wrap: nowrap;
 }
+
+:root {
+  --headway-unknown: #666;
+  --headway-high: #4dac26;
+  --headway-mid: #b8e186;
+  --headway-low: #f1b6da;
+  --headway-very-low: #d01c8b;
+  --headway-black: #000;
+
+  --trip-missed: red;
+  --trip-close: green;
+  --trip-acceptable: yellowgreen;
+  --trip-unacceptable: orange;
+  --trip-not-considered: gray;
+}
+
+.abbr {
+  padding-bottom: 1px;
+  border-bottom: 1px dashed hsl(0, 0%, 71%);
+}
+
+/* Bulma fixes */
+
+.collapse-trigger {
+  width:100%;
+}

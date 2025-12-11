@@ -1,3 +1,6 @@
+import './components.d.ts'
+import type { Tlv2RouteKey } from './route-keys'
+
 declare module 'nuxt/schema' {
   interface RuntimeConfig {
     tlv2: {
@@ -24,6 +27,7 @@ declare module 'nuxt/schema' {
         stationEditor: string
         feedManagement: string
       }
+      routes?: Partial<Record<Tlv2RouteKey, string>>
       protomapsApikey?: string
       nearmapsApikey?: string
       mixpanelApikey?: string
@@ -36,6 +40,8 @@ declare module 'nuxt/schema' {
       auth0LogoutUri?: string
       auth0Audience?: string
       auth0Scope?: string
+      transferAnalystReadOnlyFeedSelector?: boolean
+      transferAnalystGtfsRealtimeStopObservations?: boolean
     }
   }
 }
@@ -49,20 +55,11 @@ declare module '#imports' {
   export function useAuthHeaders (): Promise<Record<string, string>>
 }
 
-// Add type declaration for Oruga UI
-declare module '@oruga-ui/oruga-next/dist/oruga.mjs' {
-  const Oruga: any
-  export default Oruga
-}
-
-// Add type declaration for Vue global properties
+// Add type declarations for Vue Apollo
 declare module 'vue' {
   interface ComponentCustomProperties {
-    $oruga: {
-      notification: {
-        open: (options: any) => void
-      }
-    }
+    $apollo: any
+    $buefy: any
   }
 }
 
