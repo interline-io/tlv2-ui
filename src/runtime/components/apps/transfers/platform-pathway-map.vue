@@ -448,7 +448,3 @@ function initMap () {
   map.value = mapValue as any
 }
 </script>
-
-<style>
-@import 'maplibre-gl/dist/maplibre-gl';
-</style>
