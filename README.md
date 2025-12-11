@@ -145,8 +145,8 @@ yarn prepack
 
 ## Requirements
 
-- Nuxt 4.x
-- Vue 3.5+
+- Nuxt 4.2.0
+- Vue 3.5.22
 - Node.js (see `.nvmrc` if available)
 
 ## License
