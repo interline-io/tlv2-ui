@@ -11,17 +11,17 @@
       <slot name="trigger" :toggle="toggle">
         <button
           class="button"
-          :class="{ [`is-${props.triggerVariant}`]: props.triggerVariant }"
+          :class="{ [`is-${props.buttonVariant}`]: props.buttonVariant }"
           type="button"
           aria-haspopup="true"
           :aria-controls="`dropdown-menu-${uid}`"
         >
-          <span v-if="triggerIconLeft" class="icon is-small">
-            <i :class="`mdi mdi-${triggerIconLeft}`" aria-hidden="true" />
+          <span v-if="iconLeft" class="icon is-small">
+            <i :class="`mdi mdi-${iconLeft}`" aria-hidden="true" />
           </span>
-          <span>{{ triggerLabel }}</span>
-          <span v-if="triggerIcon" class="icon is-small">
-            <i :class="`mdi mdi-${triggerIcon}`" aria-hidden="true" />
+          <span>{{ label }}</span>
+          <span v-if="icon" class="icon is-small">
+            <i :class="`mdi mdi-${icon}`" aria-hidden="true" />
           </span>
         </button>
       </slot>
@@ -98,23 +98,23 @@ interface Props {
   /**
    * Label shown in default trigger button
    */
-  triggerLabel?: string
+  label?: string
 
   /**
    * Icon shown in default trigger button (after label)
    * @default 'menu-down'
    */
-  triggerIcon?: string
+  icon?: string
 
   /**
    * Icon shown before the label in default trigger button
    */
-  triggerIconLeft?: string
+  iconLeft?: string
 
   /**
    * Button variant for default trigger
    */
-  triggerVariant?: import('./types').DropdownTriggerVariant
+  buttonVariant?: import('./types').DropdownTriggerVariant
 
   /**
    * Color variant inherited by dropdown items
@@ -134,10 +134,10 @@ const props = withDefaults(defineProps<Props>(), {
   position: 'bottom-left',
   inline: false,
   ariaRole: 'list',
-  triggerLabel: 'Select',
-  triggerIcon: 'menu-down',
-  triggerIconLeft: undefined,
-  triggerVariant: undefined,
+  label: 'Select',
+  icon: 'menu-down',
+  iconLeft: undefined,
+  buttonVariant: undefined,
   variant: undefined,
   hoverable: false
 })
