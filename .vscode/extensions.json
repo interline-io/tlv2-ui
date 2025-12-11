@@ -1,3 +1,18 @@
 {
-  "recommendations": ["Vue.volar"]
+  "recommendations": [
+    // REQUIRED for Vue 3 + Nuxt 4 + TypeScript
+    "Vue.volar",
+    "dbaeumer.vscode-eslint"
+  ],
+  "unwantedRecommendations": [
+    // CONFLICTS - Do NOT install these
+    // Old Vue 2 extension - incompatible with Vue 3
+    "octref.vetur",
+    // Old Volar extension ID (before it became official)
+    "johnsoncodehk.volar",
+    // Prettier - we use ESLint with stylistic rules for formatting
+    "esbenp.prettier-vscode",
+    // TypeScript Vue Plugin - superseded by Volar
+    "Vue.vscode-typescript-vue-plugin"
+  ]
 }

@@ -1,10 +1,12 @@
 name: Test
 
 on:
-  pull_request:
-    branches: main
   push:
-    branches: main
+    branches:
+      - main
+  pull_request:
+    branches:
+      - "*"
 
 permissions:
   contents: read
@@ -16,7 +18,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
+      with:
+        ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
@@ -25,6 +29,20 @@ jobs:
         
     - name: Install dependencies
       run: yarn install --immutable
+
+    - name: Prepare Nuxt  
+      run: yarn dev:prepare  
+
+    - name: Run linting
+      run: yarn lint
+      
+    - name: Run type checking
+      run: yarn run nuxt typecheck
       
     - name: Run tests
       run: yarn test
+
+    - name: Build for dist
+      run: yarn prepack
+      
+      

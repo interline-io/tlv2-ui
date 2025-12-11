@@ -3,12 +3,12 @@ import { getBasicRouteType } from './routetypes'
 
 export function parseHMS (value: string): number {
   const a = (value || '').split(':').map((s) => {
-    return parseInt(s)
+    return Number.parseInt(s)
   })
   if (a.length !== 3) {
     return -1
   }
-  return a[0] * 3600 + a[1] * 60 + a[2]
+  return (a[0] ?? 0) * 3600 + (a[1] ?? 0) * 60 + (a[2] ?? 0)
 }
 
 export function formatHMS (value: number): string {
@@ -49,9 +49,9 @@ export function formatHM (value: number): string {
 export function median (values: Array<number>): number {
   const half = Math.floor(values.length / 2)
   if (values.length % 2) {
-    return values[half]
+    return values[half] ?? 0
   }
-  return (values[half - 1] + values[half]) / 2.0
+  return ((values[half - 1] ?? 0) + (values[half] ?? 0)) / 2.0
 }
 
 export function formatDuration (seconds: number): string {
@@ -104,16 +104,16 @@ export function joinUnique (values: Array<string>): string {
 }
 
 export function thousands (value: string | number): string {
-  const f = typeof (value) === 'string' ? parseFloat(value) : value
-  if (isNaN(f)) {
+  const f = typeof (value) === 'string' ? Number.parseFloat(value) : value
+  if (Number.isNaN(f)) {
     return '-'
   }
   return Math.ceil(f).toLocaleString()
 }
 
 export function pct (value: string | number): string {
-  const f = typeof (value) === 'string' ? parseFloat(value) : value
-  if (isNaN(f)) {
+  const f = typeof (value) === 'string' ? Number.parseFloat(value) : value
+  if (Number.isNaN(f)) {
     return ''
   }
   return `${(f * 100).toFixed(2)} %`

@@ -1,3 +1,4 @@
+// @ts-expect-error - mixpanel-browser doesn't have types
 import mixpanel from 'mixpanel-browser'
 
 export interface MixpanelUser {
@@ -16,10 +17,10 @@ export interface MixpanelInstance {
 let init = false
 let hasUser = false
 
-export const createMixpanel = (apikey: string, user: MixpanelUser): MixpanelInstance => {
-  if (process.server) {
+export const createMixpanel = (apikey: string | undefined, user: MixpanelUser): MixpanelInstance => {
+  if (import.meta.server) {
     return {
-      track: (msg: string, args: any) => { },
+      track: (_msg: string, _args: any) => { },
       identify: () => {},
       reset: () => {}
     }

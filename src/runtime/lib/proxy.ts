@@ -1,4 +1,5 @@
-import { proxyRequest, getQuery, H3Event } from 'h3'
+import type { H3Event } from 'h3'
+import { proxyRequest, getQuery } from 'h3'
 
 // Use sessions and/or nuxt-csurf to protect this in nuxt.config.ts
 export function proxyHandler (
@@ -34,7 +35,6 @@ export function proxyHandler (
   //   target: target.toString(),
   //   headers: headers
   // })
-
   return proxyRequest(event, target.toString(), {
     fetchOptions: {
       redirect: 'manual'
