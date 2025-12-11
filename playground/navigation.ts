@@ -42,6 +42,7 @@ export const navigationGroups: NavGroup[] = [
     variant: 'success',
     items: [
       { name: 'Table', path: '/controls/table', icon: 'table' },
+      { name: 'Pagination', path: '/controls/pagination', icon: 'page-first' },
       { name: 'Tag', path: '/controls/tag', icon: 'tag' },
       { name: 'Notification', path: '/controls/notification', icon: 'bell' },
       { name: 'Message', path: '/controls/msg', icon: 'message' }

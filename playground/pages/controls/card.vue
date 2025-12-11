@@ -53,6 +53,66 @@
         </t-card>
       </t-demo-box>
 
+      <t-demo-box label="Collapsible Card">
+        <div class="columns">
+          <div class="column">
+            <t-card label="Click to Collapse" collapsible>
+              <div class="content">
+                <p>
+                  This card can be collapsed by clicking the header or the chevron icon.
+                  The content smoothly animates in and out.
+                </p>
+              </div>
+            </t-card>
+          </div>
+          <div class="column">
+            <t-card label="Initially Collapsed" collapsible :open="false">
+              <div class="content">
+                <p>
+                  This card starts in a collapsed state. Click to expand and see the content.
+                </p>
+              </div>
+            </t-card>
+          </div>
+        </div>
+      </t-demo-box>
+
+      <t-demo-box label="Controlled Collapsible Card">
+        <div class="buttons mb-4">
+          <t-button @click="cardOpen = !cardOpen">
+            {{ cardOpen ? 'Close Card' : 'Open Card' }}
+          </t-button>
+        </div>
+        <t-card v-model:open="cardOpen" label="Controlled Card" collapsible>
+          <div class="content">
+            <p>
+              This card's open state is controlled externally via <code>v-model:open</code>.
+              Use the button above to toggle.
+            </p>
+          </div>
+        </t-card>
+      </t-demo-box>
+
+      <t-demo-box label="Collapsible with Footer">
+        <t-card label="Settings" collapsible>
+          <div class="content">
+            <p>
+              When collapsed, both content and footer are hidden.
+            </p>
+            <t-field label="Option 1">
+              <t-checkbox>Enable feature</t-checkbox>
+            </t-field>
+            <t-field label="Option 2">
+              <t-checkbox>Another option</t-checkbox>
+            </t-field>
+          </div>
+          <template #footer>
+            <a href="#" class="card-footer-item">Save</a>
+            <a href="#" class="card-footer-item">Cancel</a>
+          </template>
+        </t-card>
+      </t-demo-box>
+
       <t-demo-box label="Complete Card">
         <t-card>
           <template #header>
@@ -226,4 +286,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+
+const cardOpen = ref(true)
 </script>
