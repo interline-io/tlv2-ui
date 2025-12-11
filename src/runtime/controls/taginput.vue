@@ -1,86 +1,89 @@
 <template>
   <div class="t-taginput" :class="containerClasses">
-    <!-- Selected tags -->
-    <div class="t-taginput-tags">
-      <span
-        v-for="tag in selectedTags"
-        :key="tag.value"
-        class="tag"
-        :class="tagClasses"
-      >
-        <slot name="tag" :tag="tag">
-          {{ tag.label }}
-        </slot>
-        <button
-          v-if="!disabled && closable"
-          type="button"
-          class="delete is-small"
-          aria-label="Remove tag"
-          @click="removeTag(tag)"
-        />
-      </span>
-    </div>
-
-    <!-- Input with icon -->
-    <div class="control" :class="controlClasses">
-      <input
-        ref="inputRef"
-        v-model="searchText"
-        type="text"
-        class="input"
-        :class="inputClasses"
-        :placeholder="placeholder"
-        :disabled="disabled"
-        :readonly="readonly"
-        autocomplete="off"
-        @focus="handleFocus"
-        @blur="handleBlur"
-        @keydown="handleKeydown"
-      >
-      <span v-if="icon" class="icon is-left">
-        <i :class="`mdi mdi-${icon}`" />
-      </span>
-    </div>
-
-    <!-- Dropdown -->
-    <div
-      v-show="showDropdown"
-      class="t-taginput-dropdown"
-    >
-      <!-- Header slot -->
-      <div v-if="$slots.header" class="t-taginput-dropdown-header">
-        <slot name="header" />
+    <!-- Input wrapper with dropdown positioned relative to it (hidden in readonly mode) -->
+    <div v-if="!readonly" class="t-taginput-input-wrapper">
+      <!-- Input with icon -->
+      <div class="control" :class="controlClasses">
+        <input
+          ref="inputRef"
+          v-model="searchText"
+          type="text"
+          class="input"
+          :class="inputClasses"
+          :placeholder="placeholder"
+          :disabled="disabled"
+          autocomplete="off"
+          @focus="handleFocus"
+          @blur="handleBlur"
+          @keydown="handleKeydown"
+        >
+        <span v-if="icon" class="icon is-left">
+          <i :class="`mdi mdi-${icon}`" />
+        </span>
       </div>
 
-      <!-- Options list -->
-      <div class="t-taginput-dropdown-content">
-        <a
-          v-for="(option, index) in filteredOptions"
-          :key="option.value"
-          class="t-taginput-dropdown-item"
-          :class="{ 'is-active': index === highlightedIndex }"
-          @mousedown.prevent="selectOption(option)"
-          @mouseenter="highlightedIndex = index"
-        >
-          <slot name="option" :option="option">
-            {{ option.label }}
-          </slot>
-        </a>
-        <div v-if="filteredOptions.length === 0 && $slots.empty" class="t-taginput-dropdown-item is-empty">
-          <slot name="empty" />
+      <!-- Dropdown -->
+      <div
+        v-show="showDropdown"
+        class="t-taginput-dropdown"
+      >
+        <!-- Header slot -->
+        <div v-if="$slots.header" class="t-taginput-dropdown-header">
+          <slot name="header" />
         </div>
+
+        <!-- Options list -->
+        <div class="t-taginput-dropdown-content">
+          <a
+            v-for="(option, index) in filteredOptions"
+            :key="option.value"
+            class="t-taginput-dropdown-item"
+            :class="{ 'is-active': index === highlightedIndex }"
+            @mousedown.prevent="selectOption(option)"
+            @mouseenter="highlightedIndex = index"
+          >
+            <slot name="option" :option="option">
+              {{ option.label }}
+            </slot>
+          </a>
+          <div v-if="filteredOptions.length === 0 && $slots.empty" class="t-taginput-dropdown-item is-empty">
+            <slot name="empty" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Selected tags (below input) -->
+    <div v-if="selectedTags.length > 0" class="t-taginput-tags">
+      <div
+        v-for="tag in selectedTags"
+        :key="tag.value"
+        class="tags has-addons"
+      >
+        <a
+          v-if="!disabled && !readonly && closable"
+          class="tag is-delete"
+          :class="tagClasses"
+          @click="removeTag(tag)"
+        />
+        <span class="tag" :class="tagClasses">
+          <slot name="tag" :tag="tag">
+            {{ tag.label }}
+          </slot>
+        </span>
       </div>
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends string | number = string">
 import { computed, ref, watch, useSlots } from 'vue'
 import type { TaginputVariant, TaginputSize } from './types'
 
 /**
  * Tag input component with autocomplete dropdown.
  * Allows selecting multiple values displayed as removable tags.
+ * Uses generic type T for value types (defaults to string).
  *
  * @component t-taginput
  * @example
@@ -95,9 +98,9 @@ defineOptions({
 /**
  * Option type for taginput items.
  */
-export interface TagOption {
+interface TagOption {
   /** Unique value identifier */
-  value: string | number
+  value: T
   /** Display label */
   label: string
   /** Allow additional properties */
@@ -199,7 +202,7 @@ const emit = defineEmits<{
 }>()
 
 // v-model for selected values (array of value IDs)
-const modelValue = defineModel<(string | number)[]>({ default: () => [] })
+const modelValue = defineModel<T[]>({ default: () => [] })
 
 // v-model:input for search text
 const searchText = defineModel<string>('input', { default: '' })
@@ -291,8 +294,19 @@ const tagClasses = computed(() => {
     classes.push(`is-${props.variant}`)
   }
 
-  if (props.size) {
-    classes.push(`is-${props.size}`)
+  // Bump up tag size by one level for better readability
+  // default -> medium, small -> normal, etc.
+  if (props.size === 'small') {
+    classes.push('is-normal')
+  } else if (props.size === 'normal') {
+    classes.push('is-medium')
+  } else if (props.size === 'medium') {
+    classes.push('is-medium')
+  } else if (props.size === 'large') {
+    classes.push('is-large')
+  } else {
+    // Default to medium
+    classes.push('is-medium')
   }
 
   if (props.rounded) {
@@ -390,8 +404,6 @@ defineExpose({
 
 <style scoped lang="scss">
 .t-taginput {
-  position: relative;
-
   &.is-fullwidth {
     width: 100%;
   }
@@ -402,14 +414,24 @@ defineExpose({
   }
 }
 
+.t-taginput-input-wrapper {
+  position: relative;
+}
+
 .t-taginput-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem;
-  margin-bottom: 0.25rem;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
 
-  .tag {
-    margin: 0;
+  // Reset Bulma's default margin on .tags
+  .tags {
+    margin-bottom: 0;
+  }
+
+  // Reduce left padding on label tag when following delete button
+  .tag.is-delete + .tag {
+    padding-left: 0.5em;
   }
 }
 
@@ -419,18 +441,18 @@ defineExpose({
   left: 0;
   right: 0;
   z-index: 20;
+  max-height: 300px;
+  overflow-y: auto;
   background: var(--bulma-scheme-main);
   border: 1px solid var(--bulma-border);
   border-radius: var(--bulma-radius);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  max-height: 300px;
-  overflow-y: auto;
 }
 
 .t-taginput-dropdown-header {
   padding: 0.5rem 0.75rem;
-  border-bottom: 1px solid var(--bulma-border);
   background: var(--bulma-scheme-main-bis);
+  border-bottom: 1px solid var(--bulma-border);
 }
 
 .t-taginput-dropdown-content {
@@ -440,8 +462,8 @@ defineExpose({
 .t-taginput-dropdown-item {
   display: block;
   padding: 0.5rem 0.75rem;
-  cursor: pointer;
   color: var(--bulma-text);
+  cursor: pointer;
 
   &:hover,
   &.is-active {
@@ -449,8 +471,8 @@ defineExpose({
   }
 
   &.is-empty {
-    cursor: default;
     color: var(--bulma-text-weak);
+    cursor: default;
 
     &:hover {
       background: transparent;
