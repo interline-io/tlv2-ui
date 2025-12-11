@@ -5,7 +5,6 @@ export const ignoreFiles = {
   ignores: [
     '.nuxt/**',
     '.output/**',
-    '.yarn/**',
     '**/.nuxt',
     'dist/**',
     'node_modules/**',

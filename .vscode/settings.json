@@ -58,8 +58,6 @@
   // Search Exclusions
   // ============================================
   "search.exclude": {
-    "**/yarn.lock": true,
-    "**/.yarn": true,
     "**/node_modules": true,
     "**/.git": true,
     "**/dist": true,
