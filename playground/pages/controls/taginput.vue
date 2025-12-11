@@ -113,6 +113,20 @@
         </p>
       </t-demo-box>
 
+      <!-- Max Tags -->
+      <t-demo-box label="Max Tags Limit">
+        <t-taginput
+          v-model="maxTagsSelected"
+          :options="fruitOptions"
+          placeholder="Select up to 3 fruits..."
+          :max-tags="3"
+          open-on-focus
+        />
+        <p class="has-text-grey mt-3">
+          Limited to 3 selections. Counter shows progress and input hides when max is reached.
+        </p>
+      </t-demo-box>
+
       <!-- Not Closable -->
       <t-demo-box label="Non-closable Tags">
         <t-taginput
@@ -279,6 +293,7 @@ const roundedSelected = ref<string[]>(['cherry'])
 const fullwidthSelected = ref<string[]>([])
 const disabledSelected = ref<string[]>(['apple', 'banana'])
 const readonlySelected = ref<string[]>(['apple', 'cherry', 'grape'])
+const maxTagsSelected = ref<string[]>(['apple'])
 const notClosableSelected = ref<string[]>(['apple'])
 const customSelected = ref<number[]>([1, 3])
 const searchSelected = ref<string[]>([])

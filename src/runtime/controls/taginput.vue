@@ -1,5 +1,45 @@
 <template>
-  <div class="t-taginput" :class="containerClasses">
+  <div
+    class="t-taginput"
+    :class="containerClasses"
+    role="combobox"
+    :aria-expanded="showDropdown"
+    :aria-haspopup="'listbox'"
+    :aria-owns="listboxId"
+  >
+    <!-- Selected tags (above input) -->
+    <div class="t-taginput-tags" role="list" aria-label="Selected tags">
+      <template v-if="selectedTags.length > 0">
+        <div
+          v-for="tag in selectedTags"
+          :key="tag.value"
+          class="tags has-addons"
+          role="listitem"
+        >
+          <a
+            v-if="!disabled && !readonly && closable"
+            class="tag is-delete"
+            :class="tagClasses"
+            :aria-label="`Remove ${tag.label}`"
+            @click="removeTag(tag)"
+          />
+          <span class="tag" :class="tagClasses">
+            <slot name="tag" :tag="tag">
+              {{ tag.label }}
+            </slot>
+          </span>
+        </div>
+      </template>
+      <!-- Placeholder to reserve vertical space when no tags selected -->
+      <span v-else class="t-taginput-placeholder">
+        {{ emptyText }}
+      </span>
+      <!-- Counter for max tags -->
+      <span v-if="maxTags !== undefined" class="t-taginput-counter" :class="{ 'is-max': isMaxReached }">
+        {{ counterText }}
+      </span>
+    </div>
+
     <!-- Input wrapper with dropdown positioned relative to it (hidden in readonly mode) -->
     <div v-if="!readonly" class="t-taginput-input-wrapper">
       <!-- Input with icon -->
@@ -10,22 +50,28 @@
           type="text"
           class="input"
           :class="inputClasses"
-          :placeholder="placeholder"
-          :disabled="disabled"
+          :placeholder="isMaxReached ? 'Maximum reached' : placeholder"
+          :disabled="disabled || isMaxReached"
           autocomplete="off"
+          role="searchbox"
+          :aria-controls="listboxId"
+          :aria-activedescendant="highlightedIndex >= 0 ? `${componentId}-option-${highlightedIndex}` : undefined"
           @focus="handleFocus"
           @blur="handleBlur"
           @keydown="handleKeydown"
         >
         <span v-if="icon" class="icon is-left">
-          <i :class="`mdi mdi-${icon}`" />
+          <i :class="`mdi mdi-${icon}`" aria-hidden="true" />
         </span>
       </div>
 
       <!-- Dropdown -->
       <div
         v-show="showDropdown"
+        :id="listboxId"
         class="t-taginput-dropdown"
+        role="listbox"
+        :aria-label="placeholder || 'Select options'"
       >
         <!-- Header slot -->
         <div v-if="$slots.header" class="t-taginput-dropdown-header">
@@ -36,9 +82,12 @@
         <div class="t-taginput-dropdown-content">
           <a
             v-for="(option, index) in filteredOptions"
+            :id="`${componentId}-option-${index}`"
             :key="option.value"
             class="t-taginput-dropdown-item"
             :class="{ 'is-active': index === highlightedIndex }"
+            role="option"
+            :aria-selected="false"
             @mousedown.prevent="selectOption(option)"
             @mouseenter="highlightedIndex = index"
           >
@@ -50,27 +99,6 @@
             <slot name="empty" />
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- Selected tags (below input) -->
-    <div v-if="selectedTags.length > 0" class="t-taginput-tags">
-      <div
-        v-for="tag in selectedTags"
-        :key="tag.value"
-        class="tags has-addons"
-      >
-        <a
-          v-if="!disabled && !readonly && closable"
-          class="tag is-delete"
-          :class="tagClasses"
-          @click="removeTag(tag)"
-        />
-        <span class="tag" :class="tagClasses">
-          <slot name="tag" :tag="tag">
-            {{ tag.label }}
-          </slot>
-        </span>
       </div>
     </div>
   </div>
@@ -177,6 +205,18 @@ interface Props {
    * @default false
    */
   rounded?: boolean
+
+  /**
+   * Text to display when no tags are selected.
+   * @default 'None selected'
+   */
+  emptyText?: string
+
+  /**
+   * Maximum number of tags that can be selected.
+   * When undefined, there is no limit.
+   */
+  maxTags?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -191,7 +231,9 @@ const props = withDefaults(defineProps<Props>(), {
   variant: 'info',
   size: undefined,
   closable: true,
-  rounded: false
+  rounded: false,
+  emptyText: 'None selected',
+  maxTags: undefined
 })
 
 const emit = defineEmits<{
@@ -211,6 +253,23 @@ const slots = useSlots()
 const inputRef = ref<HTMLInputElement | null>(null)
 const isOpen = ref(false)
 const highlightedIndex = ref(-1)
+
+// Unique ID for ARIA attributes
+const componentId = `taginput-${Math.random().toString(36).substring(2, 9)}`
+const listboxId = `${componentId}-listbox`
+
+// Check if max tags limit is reached
+const isMaxReached = computed(() => {
+  if (props.maxTags === undefined) return false
+  return (modelValue.value?.length || 0) >= props.maxTags
+})
+
+// Counter text for max tags
+const counterText = computed(() => {
+  if (props.maxTags === undefined) return ''
+  const current = modelValue.value?.length || 0
+  return `${current} / ${props.maxTags} selected`
+})
 
 // Compute selected tags with labels from options
 const selectedTags = computed(() => {
@@ -422,7 +481,9 @@ defineExpose({
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  min-height: 2em; // Reserve space for tags
+  align-items: center;
 
   // Reset Bulma's default margin on .tags
   .tags {
@@ -432,6 +493,23 @@ defineExpose({
   // Reduce left padding on label tag when following delete button
   .tag.is-delete + .tag {
     padding-left: 0.5em;
+  }
+}
+
+.t-taginput-placeholder {
+  color: var(--bulma-text-weak);
+  font-style: italic;
+  line-height: 2em; // Match tag height
+}
+
+.t-taginput-counter {
+  margin-left: auto;
+  font-size: 0.875rem;
+  color: var(--bulma-text-weak);
+
+  &.is-max {
+    color: var(--bulma-warning);
+    font-weight: 500;
   }
 }
 
