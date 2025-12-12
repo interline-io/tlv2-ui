@@ -59,11 +59,18 @@ const variantClass = computed(() => {
 
 const iconClass = computed(() => {
   const classes = ['mdi', `mdi-${props.icon}`]
-  // Add MDI size classes to match Bulma container sizes
-  if (props.size === 'medium') {
-    classes.push('mdi-24px')
-  } else if (props.size === 'large') {
+  // Add MDI size classes to match Bulma container sizes.
+  // MDI default is ~18px which works for 'small'.
+  // Each size needs explicit MDI sizing to fill the Bulma container properly.
+  if (props.size === 'small') {
+    // Small uses default MDI size (~18px)
+  } else if (props.size === 'medium') {
     classes.push('mdi-36px')
+  } else if (props.size === 'large') {
+    classes.push('mdi-48px')
+  } else {
+    // Normal/default size
+    classes.push('mdi-24px')
   }
   return classes
 })
