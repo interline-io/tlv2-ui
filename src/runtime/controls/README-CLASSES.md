@@ -176,7 +176,7 @@ This ensures:
 | `card` | `t-card` | Collapsible behavior |
 | `checkbox` | `t-checkbox` | Custom checkbox appearance, variants |
 | `dropdown` | `t-dropdown` | Custom menu width |
-| `icon` | (use Bulma `icon` directly) | No customization needed |
+| `icon` | (no `t-icon` class; use Bulma `icon` only) | No customization needed |  
 | `modal` | `t-modal` | Custom sizing |
 | `pagination` | `t-pagination` | Custom cursor styles |
 | `select` | `t-select` | Full-width behavior |

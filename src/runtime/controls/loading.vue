@@ -39,7 +39,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  active: true,
+  active: false,
   fullPage: false,
   canCancel: false
 })

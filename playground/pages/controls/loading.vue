@@ -10,13 +10,13 @@
 
       <t-demo-box label="Basic Loading Spinner">
         <div class="has-text-centered">
-          <t-loading />
+          <t-loading :active="true" />
         </div>
       </t-demo-box>
 
       <t-demo-box label="Inline Loading">
         <p class="is-flex is-align-items-center">
-          <t-loading />
+          <t-loading :active="true" />
           <span class="ml-3">Loading data...</span>
         </p>
       </t-demo-box>
@@ -24,7 +24,7 @@
       <t-demo-box label="Loading Overlay">
         <div style="position: relative; min-height: 200px;">
           <div v-if="overlayLoading" class="loading-overlay">
-            <t-loading />
+            <t-loading :active="true" />
           </div>
           <div :class="{ 'is-invisible': overlayLoading }">
             <h3 class="subtitle">
@@ -72,7 +72,7 @@
         </t-button>
         <div v-if="dataLoading" class="mt-3">
           <div class="is-flex is-align-items-center">
-            <t-loading />
+            <t-loading :active="true" />
             <span class="ml-3">Loading data...</span>
           </div>
         </div>

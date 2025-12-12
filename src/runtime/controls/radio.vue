@@ -136,7 +136,7 @@ function handleChange () {
   }
 
   /* Variant colors for radio */
-  @each $name, $color in ("link": $link, "info": $info, "success": $success, "warning": $warning, "danger": $danger) {
+  @each $name, $color in ("primary": $primary, "link": $link, "info": $info, "success": $success, "warning": $warning, "danger": $danger) {
     &.is-#{$name} input[type="radio"]:checked {
       border-color: $color;
 

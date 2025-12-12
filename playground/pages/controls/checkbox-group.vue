@@ -231,7 +231,7 @@ function resetDemo () {
 const routeTypeOptions = ['metro', 'bus', 'rail', 'ferry', 'cable_car']
 const selectedRouteTypes = ref<string[] | null>(null)
 
-// Traditional mode (no nullMeansAll)
+// Traditional mode (nullMeansNone: true)
 const traditionalSelection = ref<string[] | null>(null)
 
 // Customization demos
