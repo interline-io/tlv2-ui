@@ -1,5 +1,5 @@
 <template>
-  <div class="control t-control" :class="controlClasses">
+  <div class="control" :class="controlClasses">
     <div
       class="select t-select"
       :class="selectClasses"
@@ -210,9 +210,6 @@ function handleChange (event: Event) {
 </script>
 
 <style lang="scss" scoped>
-@use "bulma/sass/utilities/initial-variables" as *;
-@use "bulma/sass/utilities/derived-variables" as *;
-
 /* Make select expand to fill container by default, like input */
 .t-select {
   width: 100%;

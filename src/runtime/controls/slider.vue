@@ -152,197 +152,146 @@ provide('sliderSetValue', setValue)
 .t-slider-wrapper {
   position: relative;
   width: 100%;
-}
 
-.t-slider {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 0.5rem;
-  border-radius: $radius-rounded;
-  background: $grey-lighter;
-  outline: none;
-  margin: 1rem 0;
-
-  &::-webkit-slider-thumb {
+  .t-slider {
     -webkit-appearance: none;
     appearance: none;
-    width: 1rem;
-    height: 1rem;
-    border-radius: 50%;
-    background: $link;
-    cursor: pointer;
-    border: 1px solid $link;
-  }
-
-  &::-moz-range-thumb {
-    width: 1rem;
-    height: 1rem;
-    border-radius: 50%;
-    background: $link;
-    cursor: pointer;
-    border: 1px solid $link;
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+    width: 100%;
+    height: 0.5rem;
+    border-radius: $radius-rounded;
+    background: $grey-lighter;
+    outline: none;
+    margin: 1rem 0;
 
     &::-webkit-slider-thumb {
-      cursor: not-allowed;
-    }
-
-    &::-moz-range-thumb {
-      cursor: not-allowed;
-    }
-  }
-
-  // Size variants
-  &.is-small {
-    height: 0.375rem;
-
-    &::-webkit-slider-thumb {
-      width: 0.75rem;
-      height: 0.75rem;
-    }
-
-    &::-moz-range-thumb {
-      width: 0.75rem;
-      height: 0.75rem;
-    }
-  }
-
-  &.is-medium {
-    height: 0.625rem;
-
-    &::-webkit-slider-thumb {
-      width: 1.25rem;
-      height: 1.25rem;
-    }
-
-    &::-moz-range-thumb {
-      width: 1.25rem;
-      height: 1.25rem;
-    }
-  }
-
-  &.is-large {
-    height: 0.75rem;
-
-    &::-webkit-slider-thumb {
-      width: 1.5rem;
-      height: 1.5rem;
-    }
-
-    &::-moz-range-thumb {
-      width: 1.5rem;
-      height: 1.5rem;
-    }
-  }
-
-  // Color variants
-  &.is-primary {
-    &::-webkit-slider-thumb {
-      background: $primary;
-      border-color: $primary;
-    }
-
-    &::-moz-range-thumb {
-      background: $primary;
-      border-color: $primary;
-    }
-  }
-
-  &.is-link {
-    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 1rem;
+      height: 1rem;
+      border-radius: 50%;
       background: $link;
-      border-color: $link;
+      cursor: pointer;
+      border: 1px solid $link;
     }
 
     &::-moz-range-thumb {
+      width: 1rem;
+      height: 1rem;
+      border-radius: 50%;
       background: $link;
-      border-color: $link;
+      cursor: pointer;
+      border: 1px solid $link;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+
+      &::-webkit-slider-thumb {
+        cursor: not-allowed;
+      }
+
+      &::-moz-range-thumb {
+        cursor: not-allowed;
+      }
+    }
+
+    // Size variants
+    &.is-small {
+      height: 0.375rem;
+
+      &::-webkit-slider-thumb {
+        width: 0.75rem;
+        height: 0.75rem;
+      }
+
+      &::-moz-range-thumb {
+        width: 0.75rem;
+        height: 0.75rem;
+      }
+    }
+
+    &.is-medium {
+      height: 0.625rem;
+
+      &::-webkit-slider-thumb {
+        width: 1.25rem;
+        height: 1.25rem;
+      }
+
+      &::-moz-range-thumb {
+        width: 1.25rem;
+        height: 1.25rem;
+      }
+    }
+
+    &.is-large {
+      height: 0.75rem;
+
+      &::-webkit-slider-thumb {
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+
+      &::-moz-range-thumb {
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+    }
+
+    // Color variants
+    @each $name, $color in (
+      "primary": $primary,
+      "link": $link,
+      "info": $info,
+      "success": $success,
+      "warning": $warning,
+      "danger": $danger
+    ) {
+      &.is-#{$name} {
+        &::-webkit-slider-thumb {
+          background: $color;
+          border-color: $color;
+        }
+
+        &::-moz-range-thumb {
+          background: $color;
+          border-color: $color;
+        }
+      }
     }
   }
 
-  &.is-info {
-    &::-webkit-slider-thumb {
-      background: $info;
-      border-color: $info;
-    }
-
-    &::-moz-range-thumb {
-      background: $info;
-      border-color: $info;
-    }
+  .t-slider-ticks {
+    display: flex;
+    justify-content: space-between;
+    margin-top: -0.5rem;
+    font-size: $size-small;
+    color: $grey;
   }
 
-  &.is-success {
-    &::-webkit-slider-thumb {
-      background: $success;
-      border-color: $success;
-    }
-
-    &::-moz-range-thumb {
-      background: $success;
-      border-color: $success;
-    }
-  }
-
-  &.is-warning {
-    &::-webkit-slider-thumb {
-      background: $warning;
-      border-color: $warning;
-    }
-
-    &::-moz-range-thumb {
-      background: $warning;
-      border-color: $warning;
-    }
-  }
-
-  &.is-danger {
-    &::-webkit-slider-thumb {
-      background: $danger;
-      border-color: $danger;
-    }
-
-    &::-moz-range-thumb {
-      background: $danger;
-      border-color: $danger;
-    }
-  }
-}
-
-.t-slider-ticks {
-  display: flex;
-  justify-content: space-between;
-  margin-top: -0.5rem;
-  font-size: $size-small;
-  color: $grey;
-}
-
-.t-slider-tooltip {
-  position: absolute;
-  top: -2.5rem;
-  transform: translateX(-50%);
-  background: $grey-darker;
-  color: $white;
-  padding: 0.25rem 0.5rem;
-  border-radius: $radius;
-  font-size: $size-small;
-  white-space: nowrap;
-  pointer-events: none;
-  z-index: 10;
-
-  &::after {
-    content: '';
+  .t-slider-tooltip {
     position: absolute;
-    top: 100%;
-    left: 50%;
+    top: -2.5rem;
     transform: translateX(-50%);
-    border: 0.25rem solid transparent;
-    border-top-color: $grey-darker;
+    background: $grey-darker;
+    color: $white;
+    padding: 0.25rem 0.5rem;
+    border-radius: $radius;
+    font-size: $size-small;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 10;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 0.25rem solid transparent;
+      border-top-color: $grey-darker;
+    }
   }
 }
 </style>

@@ -136,51 +136,13 @@ function handleChange () {
   }
 
   /* Variant colors for radio */
-  &.is-primary input[type="radio"]:checked {
-    border-color: $primary;
+  @each $name, $color in ("link": $link, "info": $info, "success": $success, "warning": $warning, "danger": $danger) {
+    &.is-#{$name} input[type="radio"]:checked {
+      border-color: $color;
 
-    &::after {
-      background-color: $primary;
-    }
-  }
-
-  &.is-link input[type="radio"]:checked {
-    border-color: $link;
-
-    &::after {
-      background-color: $link;
-    }
-  }
-
-  &.is-info input[type="radio"]:checked {
-    border-color: $info;
-
-    &::after {
-      background-color: $info;
-    }
-  }
-
-  &.is-success input[type="radio"]:checked {
-    border-color: $success;
-
-    &::after {
-      background-color: $success;
-    }
-  }
-
-  &.is-warning input[type="radio"]:checked {
-    border-color: $warning;
-
-    &::after {
-      background-color: $warning;
-    }
-  }
-
-  &.is-danger input[type="radio"]:checked {
-    border-color: $danger;
-
-    &::after {
-      background-color: $danger;
+      &::after {
+        background-color: $color;
+      }
     }
   }
 

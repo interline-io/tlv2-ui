@@ -474,89 +474,89 @@ defineExpose({
     opacity: 0.5;
     pointer-events: none;
   }
-}
 
-.t-taginput-input-wrapper {
-  position: relative;
-}
-
-.t-taginput-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
-  min-height: 2em; // Reserve space for tags
-  align-items: center;
-
-  // Reset Bulma's default margin on .tags
-  .tags {
-    margin-bottom: 0;
+  .t-taginput-input-wrapper {
+    position: relative;
   }
 
-  // Reduce left padding on label tag when following delete button
-  .tag.is-delete + .tag {
-    padding-left: 0.5em;
-  }
-}
+  .t-taginput-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    min-height: 2em; // Reserve space for tags
+    align-items: center;
 
-.t-taginput-placeholder {
-  color: var(--bulma-text-weak);
-  font-style: italic;
-  line-height: 2em; // Match tag height
-}
+    // Reset Bulma's default margin on .tags
+    .tags {
+      margin-bottom: 0;
+    }
 
-.t-taginput-counter {
-  margin-left: auto;
-  font-size: 0.875rem;
-  color: var(--bulma-text-weak);
-
-  &.is-max {
-    color: var(--bulma-danger);
-    font-weight: 600;
-  }
-}
-
-.t-taginput-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  z-index: 20;
-  max-height: 300px;
-  overflow-y: auto;
-  background: var(--bulma-scheme-main);
-  border: 1px solid var(--bulma-border);
-  border-radius: var(--bulma-radius);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.t-taginput-dropdown-header {
-  padding: 0.5rem 0.75rem;
-  background: var(--bulma-scheme-main-bis);
-  border-bottom: 1px solid var(--bulma-border);
-}
-
-.t-taginput-dropdown-content {
-  padding: 0.25rem 0;
-}
-
-.t-taginput-dropdown-item {
-  display: block;
-  padding: 0.5rem 0.75rem;
-  color: var(--bulma-text);
-  cursor: pointer;
-
-  &:hover,
-  &.is-active {
-    background: var(--bulma-scheme-main-ter);
+    // Reduce left padding on label tag when following delete button
+    .tag.is-delete + .tag {
+      padding-left: 0.5em;
+    }
   }
 
-  &.is-empty {
+  .t-taginput-placeholder {
     color: var(--bulma-text-weak);
-    cursor: default;
+    font-style: italic;
+    line-height: 2em; // Match tag height
+  }
 
-    &:hover {
-      background: transparent;
+  .t-taginput-counter {
+    margin-left: auto;
+    font-size: 0.875rem;
+    color: var(--bulma-text-weak);
+
+    &.is-max {
+      color: var(--bulma-danger);
+      font-weight: 600;
+    }
+  }
+
+  .t-taginput-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    max-height: 300px;
+    overflow-y: auto;
+    background: var(--bulma-scheme-main);
+    border: 1px solid var(--bulma-border);
+    border-radius: var(--bulma-radius);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .t-taginput-dropdown-header {
+    padding: 0.5rem 0.75rem;
+    background: var(--bulma-scheme-main-bis);
+    border-bottom: 1px solid var(--bulma-border);
+  }
+
+  .t-taginput-dropdown-content {
+    padding: 0.25rem 0;
+  }
+
+  .t-taginput-dropdown-item {
+    display: block;
+    padding: 0.5rem 0.75rem;
+    color: var(--bulma-text);
+    cursor: pointer;
+
+    &:hover,
+    &.is-active {
+      background: var(--bulma-scheme-main-ter);
+    }
+
+    &.is-empty {
+      color: var(--bulma-text-weak);
+      cursor: default;
+
+      &:hover {
+        background: transparent;
+      }
     }
   }
 }

@@ -2,7 +2,7 @@
   <div v-if="active" class="t-loading" :class="{ 'is-full-page': fullPage }">
     <div class="t-loading-background" :class="{ 'is-full-page': fullPage }" @click="handleCancel" />
     <div class="t-loading-icon">
-      <div class="loader" />
+      <div class="t-loading-spinner" />
     </div>
   </div>
 </template>
@@ -39,7 +39,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  active: false,
+  active: true,
   fullPage: false,
   canCancel: false
 })
@@ -99,8 +99,7 @@ function handleCancel () {
   z-index: 1;
 }
 
-/* Bulma loader styles */
-.loader {
+.t-loading-spinner {
   animation: spinAround 500ms infinite linear;
   border: 2px solid $grey-light;
   border-radius: $radius-rounded;

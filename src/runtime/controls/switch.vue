@@ -6,8 +6,8 @@
       :disabled="disabled"
       @change="handleChange"
     >
-    <span class="check t-check" />
-    <span v-if="$slots.default || label" class="control-label t-control-label">
+    <span class="check" />
+    <span v-if="$slots.default || label" class="control-label">
       <slot>{{ label }}</slot>
     </span>
   </label>
@@ -153,7 +153,7 @@ function handleChange (event: Event) {
     z-index: -1;
   }
 
-  .t-check {
+  .check {
     display: flex;
     align-items: center;
     flex-shrink: 0;
@@ -178,7 +178,7 @@ function handleChange (event: Event) {
     }
   }
 
-  input[type="checkbox"]:checked + .t-check {
+  input[type="checkbox"]:checked + .check {
     background: $link;
 
     &::before {
@@ -186,7 +186,7 @@ function handleChange (event: Event) {
     }
   }
 
-  .t-control-label {
+  .control-label {
     padding-left: 0.5em;
   }
 
@@ -204,36 +204,14 @@ function handleChange (event: Event) {
   }
 
   // Color variants
-  &.is-primary input[type="checkbox"]:checked + .t-check {
-    background: $primary;
-  }
-
-  &.is-link input[type="checkbox"]:checked + .t-check {
-    background: $link;
-  }
-
-  &.is-info input[type="checkbox"]:checked + .t-check {
-    background: $info;
-  }
-
-  &.is-success input[type="checkbox"]:checked + .t-check {
-    background: $success;
-  }
-
-  &.is-warning input[type="checkbox"]:checked + .t-check {
-    background: $warning;
-  }
-
-  &.is-danger input[type="checkbox"]:checked + .t-check {
-    background: $danger;
-  }
-
-  &.is-dark input[type="checkbox"]:checked + .t-check {
-    background: $dark;
+  @each $name, $color in ("primary": $primary, "link": $link, "info": $info, "success": $success, "warning": $warning, "danger": $danger, "dark": $dark) {
+    &.is-#{$name} input[type="checkbox"]:checked + .check {
+      background: $color;
+    }
   }
 
   // Rounded switch style
-  &.is-rounded .t-check {
+  &.is-rounded .check {
     border-radius: $radius;
 
     &::before {
