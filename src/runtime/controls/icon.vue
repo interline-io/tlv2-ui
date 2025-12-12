@@ -1,6 +1,6 @@
 <template>
-  <span class="t-icon" :class="[sizeClass, variantClass]" @click="handleClick">
-    <i :class="`mdi mdi-${icon}`" />
+  <span class="icon" :class="[sizeClass, variantClass]" @click="handleClick">
+    <i :class="iconClass" />
   </span>
 </template>
 
@@ -8,7 +8,7 @@
 import { computed } from 'vue'
 
 /**
- * Icon component using Material Design Icons (MDI).
+ * Icon component using Material Design Icons (MDI) with Bulma's icon container.
  *
  * @component t-icon
  * @example
@@ -56,48 +56,15 @@ const variantClass = computed(() => {
   if (!props.variant) return ''
   return `has-text-${props.variant}`
 })
+
+const iconClass = computed(() => {
+  const classes = ['mdi', `mdi-${props.icon}`]
+  // Add MDI size classes to match Bulma container sizes
+  if (props.size === 'medium') {
+    classes.push('mdi-24px')
+  } else if (props.size === 'large') {
+    classes.push('mdi-36px')
+  }
+  return classes
+})
 </script>
-
-<style lang="scss" scoped>
-@use "bulma/sass/utilities/initial-variables" as *;
-@use "bulma/sass/utilities/derived-variables" as *;
-
-.t-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 1.5rem;
-  width: 1.5rem;
-
-  i {
-    font-size: 1.5rem;
-  }
-
-  &.is-small {
-    height: 1rem;
-    width: 1rem;
-
-    i {
-      font-size: 1rem;
-    }
-  }
-
-  &.is-medium {
-    height: 2rem;
-    width: 2rem;
-
-    i {
-      font-size: 2rem;
-    }
-  }
-
-  &.is-large {
-    height: 3rem;
-    width: 3rem;
-
-    i {
-      font-size: 3rem;
-    }
-  }
-}
-</style>
