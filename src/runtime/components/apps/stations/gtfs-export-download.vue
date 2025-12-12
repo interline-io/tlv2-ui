@@ -4,11 +4,10 @@
       {{ error }}
     </t-msg>
     <div v-else>
-      <!-- Collapsible Advanced Transformations -->
+      <!-- Expandable Advanced Transformations -->
       <t-msg
         title="Advanced Transformations"
-        :collapsible="true"
-        :collapsed="true"
+        expandable
       >
         <!-- <div class="field">
           <label class="label">Additional Feed Versions to Merge</label>

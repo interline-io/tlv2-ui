@@ -118,6 +118,12 @@ function handleClick (event: MouseEvent) {
 </script>
 
 <style lang="scss" scoped>
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .dropdown-item.is-disabled {
   cursor: not-allowed;
   opacity: 0.5;

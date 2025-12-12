@@ -11,15 +11,15 @@
       <t-demo-box label="Basic Dropdown">
         <t-dropdown label="Actions">
           <t-dropdown-item value="edit">
-            <t-icon icon="pencil" />
+            <t-icon icon="pencil" size="small" />
             <span>Edit</span>
           </t-dropdown-item>
           <t-dropdown-item value="duplicate">
-            <t-icon icon="content-copy" />
+            <t-icon icon="content-copy" size="small" />
             <span>Duplicate</span>
           </t-dropdown-item>
           <t-dropdown-item value="delete">
-            <t-icon icon="delete" />
+            <t-icon icon="delete" size="small" />
             <span>Delete</span>
           </t-dropdown-item>
         </t-dropdown>
@@ -61,20 +61,20 @@
       <t-demo-box label="With Icons">
         <t-dropdown label="My Account" icon-left="account-circle">
           <t-dropdown-item value="profile">
-            <t-icon icon="account" />
+            <t-icon icon="account" size="small" />
             <span>Profile</span>
           </t-dropdown-item>
           <t-dropdown-item value="settings">
-            <t-icon icon="cog" />
+            <t-icon icon="cog" size="small" />
             <span>Settings</span>
           </t-dropdown-item>
           <t-dropdown-item separator />
           <t-dropdown-item value="help">
-            <t-icon icon="help-circle" />
+            <t-icon icon="help-circle" size="small" />
             <span>Help</span>
           </t-dropdown-item>
           <t-dropdown-item value="logout">
-            <t-icon icon="logout" />
+            <t-icon icon="logout" size="small" />
             <span>Logout</span>
           </t-dropdown-item>
         </t-dropdown>
@@ -123,20 +123,20 @@
       <t-demo-box label="With Disabled Items">
         <t-dropdown label="File">
           <t-dropdown-item value="new">
-            <t-icon icon="file-plus" />
+            <t-icon icon="file-plus" size="small" />
             <span>New</span>
           </t-dropdown-item>
           <t-dropdown-item value="open">
-            <t-icon icon="folder-open" />
+            <t-icon icon="folder-open" size="small" />
             <span>Open</span>
           </t-dropdown-item>
           <t-dropdown-item value="save" disabled>
-            <t-icon icon="content-save" />
+            <t-icon icon="content-save" size="small" />
             <span>Save (disabled)</span>
           </t-dropdown-item>
           <t-dropdown-item separator />
           <t-dropdown-item value="export">
-            <t-icon icon="export" />
+            <t-icon icon="export" size="small" />
             <span>Export</span>
           </t-dropdown-item>
         </t-dropdown>
@@ -147,7 +147,7 @@
           <template #trigger>
             <a class="navbar-item">
               <span>More</span>
-              <t-icon icon="menu-down" />
+              <t-icon icon="menu-down" size="small" />
             </a>
           </template>
           <t-dropdown-item value="docs">
@@ -190,24 +190,24 @@
           <template #trigger>
             <t-button variant="primary">
               <span>Choose Action</span>
-              <t-icon icon="menu-down" />
+              <t-icon icon="menu-down" size="small" />
             </t-button>
           </template>
           <t-dropdown-item value="save">
-            <t-icon icon="content-save" />
+            <t-icon icon="content-save" size="small" />
             <span>Save</span>
           </t-dropdown-item>
           <t-dropdown-item value="export">
-            <t-icon icon="export" />
+            <t-icon icon="export" size="small" />
             <span>Export</span>
           </t-dropdown-item>
           <t-dropdown-item value="print">
-            <t-icon icon="printer" />
+            <t-icon icon="printer" size="small" />
             <span>Print</span>
           </t-dropdown-item>
           <t-dropdown-item separator />
           <t-dropdown-item value="share">
-            <t-icon icon="share-variant" />
+            <t-icon icon="share-variant" size="small" />
             <span>Share</span>
           </t-dropdown-item>
         </t-dropdown>
@@ -217,7 +217,7 @@
         <t-dropdown>
           <template #trigger>
             <t-button variant="info">
-              <t-icon icon="bell" />
+              <t-icon icon="bell" size="small" />
               <span class="tag is-danger is-rounded">
                 3
               </span>
@@ -271,9 +271,9 @@
         <t-dropdown @select="handleLanguageSelect">
           <template #trigger>
             <t-button>
-              <t-icon icon="translate" />
+              <t-icon icon="translate" size="small" />
               <span>{{ currentLanguage }}</span>
-              <t-icon icon="menu-down" />
+              <t-icon icon="menu-down" size="small" />
             </t-button>
           </template>
           <t-dropdown-item value="English">
