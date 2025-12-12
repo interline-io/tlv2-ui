@@ -53,23 +53,23 @@
         </t-card>
       </t-demo-box>
 
-      <t-demo-box label="Collapsible Card">
+      <t-demo-box label="Expandable Card">
         <div class="columns">
           <div class="column">
-            <t-card label="Click to Collapse" collapsible>
+            <t-card label="Click to Expand" expandable>
               <div class="content">
                 <p>
-                  This card can be collapsed by clicking the header or the chevron icon.
+                  This card can be expanded by clicking the header or the chevron icon.
                   The content smoothly animates in and out.
                 </p>
               </div>
             </t-card>
           </div>
           <div class="column">
-            <t-card label="Initially Collapsed" collapsible :open="false">
+            <t-card label="Initially Expanded" expandable :open="true">
               <div class="content">
                 <p>
-                  This card starts in a collapsed state. Click to expand and see the content.
+                  This card starts in an expanded state. Click to collapse.
                 </p>
               </div>
             </t-card>
@@ -77,13 +77,13 @@
         </div>
       </t-demo-box>
 
-      <t-demo-box label="Controlled Collapsible Card">
+      <t-demo-box label="Controlled Expandable Card">
         <div class="buttons mb-4">
           <t-button @click="cardOpen = !cardOpen">
             {{ cardOpen ? 'Close Card' : 'Open Card' }}
           </t-button>
         </div>
-        <t-card v-model:open="cardOpen" label="Controlled Card" collapsible>
+        <t-card v-model:open="cardOpen" label="Controlled Card" expandable>
           <div class="content">
             <p>
               This card's open state is controlled externally via <code>v-model:open</code>.
@@ -93,8 +93,8 @@
         </t-card>
       </t-demo-box>
 
-      <t-demo-box label="Collapsible with Footer">
-        <t-card label="Settings" collapsible>
+      <t-demo-box label="Expandable with Footer">
+        <t-card label="Settings" expandable>
           <div class="content">
             <p>
               When collapsed, both content and footer are hidden.

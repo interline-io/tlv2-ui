@@ -38,15 +38,15 @@
       <!-- Colors -->
       <t-demo-box label="Colors">
         <div class="is-flex is-align-items-center" style="gap: 1rem;">
-          <t-icon icon="heart" class="has-text-primary" />
-          <t-icon icon="heart" class="has-text-info" />
-          <t-icon icon="heart" class="has-text-success" />
-          <t-icon icon="heart" class="has-text-warning" />
-          <t-icon icon="heart" class="has-text-danger" />
-          <t-icon icon="heart" class="has-text-dark" />
+          <t-icon icon="heart" variant="primary" />
+          <t-icon icon="heart" variant="info" />
+          <t-icon icon="heart" variant="success" />
+          <t-icon icon="heart" variant="warning" />
+          <t-icon icon="heart" variant="danger" />
+          <t-icon icon="heart" variant="dark" />
         </div>
         <p class="has-text-grey mt-3">
-          Use Bulma color helper classes to change icon colors
+          Use the <code>variant</code> prop to change icon colors
         </p>
       </t-demo-box>
 

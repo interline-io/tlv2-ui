@@ -84,6 +84,27 @@
         </t-button>
       </t-demo-box>
 
+      <t-demo-box label="Expandable Messages">
+        <t-msg expandable title="Click to expand">
+          This content is hidden by default. Click the header to reveal it.
+          You can use this for FAQ sections, additional details, or collapsible information.
+        </t-msg>
+        <t-msg expandable :open="true" title="Initially expanded" variant="info">
+          This message starts expanded. Click the header to collapse it.
+        </t-msg>
+        <t-msg v-model:open="msgOpen" expandable title="Controlled state" variant="success">
+          <p>This message's state is controlled externally via <code>v-model:open</code>.</p>
+          <p class="mt-2">
+            Current state: <strong>{{ msgOpen ? 'Open' : 'Closed' }}</strong>
+          </p>
+        </t-msg>
+        <div class="buttons mt-3">
+          <t-button size="small" @click="msgOpen = !msgOpen">
+            Toggle Controlled Message
+          </t-button>
+        </div>
+      </t-demo-box>
+
       <t-demo-box label="Example: System Messages" example>
         <t-msg variant="warning">
           <template #header>
@@ -239,6 +260,8 @@ const messages = ref({
   tips: true,
   announcement: true
 })
+
+const msgOpen = ref(false)
 
 const allMessagesVisible = computed(() => {
   return messages.value.tips || messages.value.announcement
