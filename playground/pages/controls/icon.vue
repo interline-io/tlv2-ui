@@ -156,31 +156,31 @@
       <t-demo-box label="Icons in Buttons">
         <div class="buttons">
           <t-button variant="primary">
-            <t-icon icon="plus" />
+            <t-icon icon="plus" size="small" />
             <span>Add</span>
           </t-button>
           <t-button variant="info">
-            <t-icon icon="pencil" />
+            <t-icon icon="pencil" size="small" />
             <span>Edit</span>
           </t-button>
           <t-button variant="danger">
-            <t-icon icon="delete" />
+            <t-icon icon="delete" size="small" />
             <span>Delete</span>
           </t-button>
           <t-button>
-            <t-icon icon="download" />
+            <t-icon icon="download" size="small" />
             <span>Download</span>
           </t-button>
         </div>
         <div class="buttons">
           <t-button variant="primary">
-            <t-icon icon="content-save" />
+            <t-icon icon="content-save" size="small" />
           </t-button>
           <t-button variant="info">
-            <t-icon icon="share-variant" />
+            <t-icon icon="share-variant" size="small" />
           </t-button>
           <t-button>
-            <t-icon icon="dots-vertical" />
+            <t-icon icon="dots-vertical" size="small" />
           </t-button>
         </div>
       </t-demo-box>
@@ -327,22 +327,22 @@
       <t-demo-box label="Social Media Icons">
         <div class="buttons">
           <t-button>
-            <t-icon icon="facebook" />
+            <t-icon icon="facebook" size="small" />
           </t-button>
           <t-button>
-            <t-icon icon="twitter" />
+            <t-icon icon="twitter" size="small" />
           </t-button>
           <t-button>
-            <t-icon icon="instagram" />
+            <t-icon icon="instagram" size="small" />
           </t-button>
           <t-button>
-            <t-icon icon="linkedin" />
+            <t-icon icon="linkedin" size="small" />
           </t-button>
           <t-button>
-            <t-icon icon="github" />
+            <t-icon icon="github" size="small" />
           </t-button>
           <t-button>
-            <t-icon icon="youtube" />
+            <t-icon icon="youtube" size="small" />
           </t-button>
         </div>
       </t-demo-box>
