@@ -19,7 +19,7 @@
         </li>
       </ul>
     </div>
-    <div class="tab-content t-tab-content">
+    <div class="t-tab-content">
       <slot />
     </div>
   </div>
@@ -115,10 +115,7 @@ watch(() => props.modelValue, () => {
 </script>
 
 <style lang="scss">
-@use "bulma/sass/utilities/initial-variables" as *;
-@use "bulma/sass/utilities/derived-variables" as *;
-
-/* Override .content ul styles for tabs */
+/* Override .content ul styles for tabs - must be unscoped */
 .content .t-tabs ul {
   margin-left: 0;
   margin-inline-start: 0;

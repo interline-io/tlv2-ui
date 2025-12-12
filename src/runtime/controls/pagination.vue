@@ -1,5 +1,5 @@
 <template>
-  <nav class="pagination" :class="paginationClasses" role="navigation" aria-label="pagination">
+  <nav class="pagination t-pagination" :class="paginationClasses" role="navigation" aria-label="pagination">
     <button
       type="button"
       class="pagination-previous"
@@ -181,16 +181,17 @@ function changePage (page: number) {
 }
 </script>
 
-<style scoped>
-.pagination-previous,
-.pagination-next,
-.pagination-link {
-  cursor: pointer;
-}
+<style lang="scss" scoped>
+.t-pagination {
+  .pagination-previous,
+  .pagination-next,
+  .pagination-link {
+    cursor: pointer;
 
-.pagination-previous:disabled,
-.pagination-next:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+  }
 }
 </style>

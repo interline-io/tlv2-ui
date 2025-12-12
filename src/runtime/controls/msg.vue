@@ -2,7 +2,7 @@
   <article :class="msgClass">
     <div
       v-if="title || collapsible || closable"
-      class="message-header t-message-header"
+      class="message-header"
       :class="{ 'is-clickable': collapsible }"
       @click="collapsible && toggleCollapsed()"
     >
@@ -24,7 +24,7 @@
       :class="collapsible ? 't-collapsible-content' : ''"
     >
       <template v-if="hasIcon">
-        <div class="media message-body t-message-body">
+        <div class="media message-body">
           <t-icon :icon="getIcon" size="large" class="media-left" />
           <div class="media-content">
             <slot />
@@ -32,7 +32,7 @@
         </div>
       </template>
       <template v-else>
-        <div class="message-body t-message-body">
+        <div class="message-body">
           <slot />
         </div>
       </template>
@@ -116,28 +116,29 @@ const handleClose = (): void => {
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped lang="scss">
 @use "bulma/sass/utilities/initial-variables" as *;
 @use "bulma/sass/utilities/derived-variables" as *;
 
-/* Collapsible styles */
-.t-message-header.is-clickable {
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  transition: background-color 0.2s ease;
+.t-message {
+  .message-header.is-clickable {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background-color 0.2s ease;
 
-  &:hover {
-    opacity: 0.8;
+    &:hover {
+      opacity: 0.8;
+    }
   }
-}
 
-.t-collapse-icon {
-  transition: transform 0.2s ease;
-}
+  .t-collapse-icon {
+    transition: transform 0.2s ease;
+  }
 
-.t-collapsible-content {
-  transition: all 0.2s ease;
+  .t-collapsible-content {
+    transition: all 0.2s ease;
+  }
 }
 </style>

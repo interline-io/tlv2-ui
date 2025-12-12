@@ -1,7 +1,7 @@
 <template>
   <div
     ref="dropdownRef"
-    class="dropdown"
+    class="dropdown t-dropdown"
     :class="dropdownClass"
   >
     <div
@@ -257,9 +257,9 @@ provide('dropdown', {
 defineExpose({ open, close, toggle })
 </script>
 
-<style scoped>
-/* Bulma provides all dropdown styling */
-.dropdown-menu {
+<style scoped lang="scss">
+/* Custom overrides using t-dropdown class */
+.t-dropdown .dropdown-menu {
   min-width: 12rem;
 }
 </style>

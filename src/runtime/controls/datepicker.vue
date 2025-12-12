@@ -29,7 +29,7 @@
         <header class="t-datepicker-header">
           <button
             type="button"
-            class="button is-small t-button"
+            class="button is-small"
             :aria-label="ariaPreviousLabel"
             @click="previousMonth"
           >
@@ -68,7 +68,7 @@
 
           <button
             type="button"
-            class="button is-small t-button"
+            class="button is-small"
             :aria-label="ariaNextLabel"
             @click="nextMonth"
           >

@@ -1,5 +1,5 @@
 <template>
-  <label class="t-checkbox" :class="checkboxClasses">
+  <label class="checkbox t-checkbox" :class="checkboxClasses">
     <input
       ref="inputRef"
       type="checkbox"
@@ -219,30 +219,21 @@ onMounted(updateIndeterminate)
   }
 
   /* Variant colors for checkbox */
-  &.is-primary input[type="checkbox"]:checked,
-  &.is-primary input[type="checkbox"]:indeterminate {
-    border-color: $primary;
-    background-color: $primary;
+  @each $name, $color in (
+    "primary": $primary,
+    "link": $link,
+    "info": $info,
+    "success": $success,
+    "danger": $danger
+  ) {
+    &.is-#{$name} input[type="checkbox"]:checked,
+    &.is-#{$name} input[type="checkbox"]:indeterminate {
+      border-color: $color;
+      background-color: $color;
+    }
   }
 
-  &.is-link input[type="checkbox"]:checked,
-  &.is-link input[type="checkbox"]:indeterminate {
-    border-color: $link;
-    background-color: $link;
-  }
-
-  &.is-info input[type="checkbox"]:checked,
-  &.is-info input[type="checkbox"]:indeterminate {
-    border-color: $info;
-    background-color: $info;
-  }
-
-  &.is-success input[type="checkbox"]:checked,
-  &.is-success input[type="checkbox"]:indeterminate {
-    border-color: $success;
-    background-color: $success;
-  }
-
+  /* Warning variant needs dark checkmark for contrast */
   &.is-warning input[type="checkbox"]:checked,
   &.is-warning input[type="checkbox"]:indeterminate {
     border-color: $warning;
@@ -252,12 +243,6 @@ onMounted(updateIndeterminate)
       border-color: rgba($black, 0.7);
       background-color: rgba($black, 0.7);
     }
-  }
-
-  &.is-danger input[type="checkbox"]:checked,
-  &.is-danger input[type="checkbox"]:indeterminate {
-    border-color: $danger;
-    background-color: $danger;
   }
 
   /* Size variants */
