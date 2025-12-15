@@ -59,7 +59,7 @@
             <t-card label="Click to Expand" expandable>
               <div class="content">
                 <p>
-                  This card can be expanded by clicking the header or the chevron icon.
+                  This card is initially closed. Click the header or the chevron icon to expand it.
                   The content smoothly animates in and out.
                 </p>
               </div>

@@ -10,7 +10,7 @@
       <t-icon
         v-if="expandable"
         :icon="isOpen ? 'chevron-up' : 'chevron-down'"
-        class="t-collapse-icon"
+        class="t-expand-icon"
       />
       <button
         v-if="closable"
@@ -133,7 +133,7 @@ const handleClose = (): void => {
     }
   }
 
-  .t-collapse-icon {
+  .t-expand-icon {
     transition: transform 0.2s ease;
   }
 
