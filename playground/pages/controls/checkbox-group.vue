@@ -5,20 +5,20 @@
         Checkbox Group Component
       </h1>
       <p class="subtitle">
-        Checkbox group with "null means all" semantic for async-loaded options
+        Checkbox group with "undefined means all" semantic for async-loaded options
       </p>
 
       <t-msg variant="info" class="mb-5">
         <p>
           This component solves the common problem of checkbox groups backed by async-loaded options,
-          where <code>null</code> means "all selected" and <code>[]</code> means "none selected".
+          where <code>undefined</code> means "all selected" and <code>[]</code> means "none selected".
           See the component's JSDoc for detailed documentation.
         </p>
       </t-msg>
 
-      <t-demo-box label="Basic Usage (null means all by default)">
+      <t-demo-box label="Basic Usage (undefined means all by default)">
         <p class="mb-3">
-          This demonstrates the key feature: <code>null</code> means "all selected" until the user interacts.
+          This demonstrates the key feature: <code>undefined</code> means "all selected" until the user interacts.
           An empty array <code>[]</code> means "none selected".
         </p>
         <t-checkbox-group
@@ -30,14 +30,14 @@
         <div class="mt-4 p-3 has-background-light">
           <p><strong>Raw modelValue:</strong> <code>{{ JSON.stringify(selectedFruits) }}</code></p>
           <p class="mt-2">
-            <span v-if="selectedFruits === null" class="tag is-info">null = All selected (uninitialized)</span>
+            <span v-if="selectedFruits === undefined" class="tag is-info">undefined = All selected (uninitialized)</span>
             <span v-else-if="selectedFruits.length === 0" class="tag is-warning">[] = None selected</span>
             <span v-else class="tag is-success">Specific items: {{ selectedFruits.join(', ') }}</span>
           </p>
         </div>
         <div class="mt-3 buttons">
-          <t-button size="small" @click="selectedFruits = null">
-            Reset to null
+          <t-button size="small" @click="selectedFruits = undefined">
+            Reset to undefined
           </t-button>
           <t-button size="small" @click="selectedFruits = []">
             Set to []
@@ -51,7 +51,7 @@
       <t-demo-box label="Simulated Async Loading + Custom Option Rendering">
         <p class="mb-3">
           This simulates the common pattern: options load after a delay, but selection state
-          is preserved correctly. <code>null</code> means "all agencies selected" before AND after load.
+          is preserved correctly. <code>undefined</code> means "all agencies selected" before AND after load.
         </p>
         <p class="mb-3">
           <strong>Custom rendering:</strong> Uses the <code>#option</code> slot to display both the agency name
@@ -82,8 +82,8 @@
         <div class="mt-4 p-3 has-background-light">
           <p><strong>selectedAgencies:</strong> <code>{{ JSON.stringify(selectedAgencies) }}</code></p>
           <p class="mt-2">
-            <span v-if="selectedAgencies === null" class="tag is-info">
-              null = All agencies (even those not loaded yet!)
+            <span v-if="selectedAgencies === undefined" class="tag is-info">
+              undefined = All agencies (even those not loaded yet!)
             </span>
             <span v-else-if="selectedAgencies.length === 0" class="tag is-warning">
               [] = No agencies selected
@@ -108,15 +108,15 @@
         </div>
       </t-demo-box>
 
-      <t-demo-box label="Traditional mode: null-means-none">
+      <t-demo-box label="Traditional mode: undefined-means-none">
         <p class="mb-3">
-          When <code>null-means-none</code> is set, the component behaves traditionally:
-          <code>null</code> is treated as empty selection.
+          When <code>undefined-means-none</code> is set, the component behaves traditionally:
+          <code>undefined</code> is treated as empty selection.
         </p>
         <t-checkbox-group
           v-model="traditionalSelection"
           :options="['Option A', 'Option B', 'Option C']"
-          null-means-none
+          undefined-means-none
         />
         <div class="mt-4 p-3 has-background-light">
           <p><strong>traditionalSelection:</strong> <code>{{ JSON.stringify(traditionalSelection) }}</code></p>
@@ -164,7 +164,7 @@
       <t-demo-box label="Edge Case: Deselect All One-by-One">
         <p class="mb-3">
           This demonstrates the fix for the bug where deselecting the last item would reset to "all selected".
-          Try deselecting all items one by one - it should result in <code>[]</code>, not <code>null</code>.
+          Try deselecting all items one by one - it should result in <code>[]</code>, not <code>undefined</code>.
         </p>
         <t-checkbox-group
           v-model="edgeCaseSelection"
@@ -172,12 +172,12 @@
         />
         <div class="mt-4 p-3 has-background-light">
           <p><strong>edgeCaseSelection:</strong> <code>{{ JSON.stringify(edgeCaseSelection) }}</code></p>
-          <p v-if="edgeCaseSelection !== null && edgeCaseSelection.length === 0" class="has-text-success mt-2">
-            ✓ Correctly shows [] (empty array), not null!
+          <p v-if="edgeCaseSelection !== undefined && edgeCaseSelection.length === 0" class="has-text-success mt-2">
+            ✓ Correctly shows [] (empty array), not undefined!
           </p>
         </div>
-        <t-button class="mt-2" size="small" @click="edgeCaseSelection = null">
-          Reset to null
+        <t-button class="mt-2" size="small" @click="edgeCaseSelection = undefined">
+          Reset to undefined
         </t-button>
       </t-demo-box>
     </section>
@@ -197,7 +197,7 @@ const fruitOptions = [
   { id: 'orange', name: 'Orange' },
   { id: 'grape', name: 'Grape' }
 ]
-const selectedFruits = ref<string[] | null>(null)
+const selectedFruits = ref<string[] | undefined>(undefined)
 
 // Async loading demo
 interface Agency {
@@ -205,7 +205,7 @@ interface Agency {
   name: string
 }
 const agencies = ref<Agency[]>([])
-const selectedAgencies = ref<string[] | null>(null)
+const selectedAgencies = ref<string[] | undefined>(undefined)
 const loadingAgencies = ref(false)
 
 async function loadAgencies () {
@@ -224,21 +224,21 @@ async function loadAgencies () {
 
 function resetDemo () {
   agencies.value = []
-  selectedAgencies.value = null
+  selectedAgencies.value = undefined
 }
 
 // Simple string options
 const routeTypeOptions = ['metro', 'bus', 'rail', 'ferry', 'cable_car']
-const selectedRouteTypes = ref<string[] | null>(null)
+const selectedRouteTypes = ref<string[] | undefined>(undefined)
 
-// Traditional mode (nullMeansNone: true)
-const traditionalSelection = ref<string[] | null>(null)
+// Traditional mode (undefinedMeansNone: true)
+const traditionalSelection = ref<string[] | undefined>(undefined)
 
 // Customization demos
-const customDemo1 = ref<string[] | null>(null)
-const customDemo2 = ref<string[] | null>(null)
-const customDemo3 = ref<string[] | null>(['Locked'])
+const customDemo1 = ref<string[] | undefined>(undefined)
+const customDemo2 = ref<string[] | undefined>(undefined)
+const customDemo3 = ref<string[] | undefined>(['Locked'])
 
 // Edge case demo
-const edgeCaseSelection = ref<string[] | null>(null)
+const edgeCaseSelection = ref<string[] | undefined>(undefined)
 </script>
