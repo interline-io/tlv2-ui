@@ -82,13 +82,13 @@ import TField from './field.vue'
  *
  * ## Key semantics (default behavior)
  *
- * | modelValue | Meaning |
- * |------------|-------------------------------------------|
- * | `null`     | All options selected (uninitialized)      |
- * | `[]`       | None selected (user deselected all)       |
- * | `['a','b']`| Specific items selected                   |
+ * | modelValue  | Meaning |
+ * |-------------|-------------------------------------------|
+ * | `undefined` | All options selected (uninitialized)      |
+ * | `[]`        | None selected (user deselected all)       |
+ * | `['a','b']` | Specific items selected                   |
  *
- * Set `nullMeansNone` to `true` for traditional behavior where `null` = none selected.
+ * Set `undefinedMeansNone` to `true` for traditional behavior where `undefined` = none selected.
  *
  * @component t-checkbox-group
  * @example
@@ -108,22 +108,22 @@ import TField from './field.vue'
  * />
  *
  * @example
- * <!-- Traditional behavior: null means none selected -->
+ * <!-- Traditional behavior: undefined means none selected -->
  * <t-checkbox-group
  *   v-model="selection"
  *   :options="items"
- *   null-means-none
+ *   undefined-means-none
  * />
  */
 
 interface Props {
   /**
    * Selected values (v-model).
-   * - `null`/`undefined`: all selected when nullMeansNone is false (default)
+   * - `undefined`: all selected when undefinedMeansNone is false (default)
    * - `[]`: none selected (user explicitly deselected all)
    * - `['a', 'b']`: specific items selected
    */
-  modelValue?: V[] | null
+  modelValue?: V[]
 
   /**
    * Available options to display as checkboxes.
@@ -132,12 +132,12 @@ interface Props {
   options: O[]
 
   /**
-   * When true, null/undefined modelValue means NO options are selected.
-   * By default (false), null means ALL options are selected - useful for
+   * When true, undefined modelValue means NO options are selected.
+   * By default (false), undefined means ALL options are selected - useful for
    * async-loaded option lists where you want "select all" as the default.
    * @default false
    */
-  nullMeansNone?: boolean
+  undefinedMeansNone?: boolean
 
   /**
    * Field name to use as the option's value when options are objects.
@@ -199,8 +199,8 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  modelValue: null,
-  nullMeansNone: false,
+  modelValue: undefined,
+  undefinedMeansNone: false,
   valueField: 'value',
   labelField: 'label',
   disabledField: 'disabled',
@@ -216,9 +216,9 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   /**
    * Emitted when selection changes.
-   * Will emit `null` only when nullMeansNone is false and all options are selected.
+   * Will emit `undefined` only when undefinedMeansNone is false and all options are selected.
    */
-  'update:modelValue': [value: V[] | null]
+  'update:modelValue': [value: V[] | undefined]
 }>()
 
 // Get all option values
@@ -228,8 +228,8 @@ const allOptionValues = computed(() => {
 
 // Determine which values are currently selected
 const effectiveSelectedValues = computed((): V[] => {
-  // If null/undefined and not nullMeansNone, treat as all selected
-  if (props.modelValue == null && !props.nullMeansNone) {
+  // If undefined and not undefinedMeansNone, treat as all selected
+  if (props.modelValue === undefined && !props.undefinedMeansNone) {
     return allOptionValues.value
   }
   // Otherwise use the actual value (could be empty array)
@@ -315,9 +315,9 @@ function handleOptionChange (option: O, checked: boolean) {
 }
 
 function handleSelectAll () {
-  // Select all - emit null if !nullMeansNone, otherwise emit all values
-  if (!props.nullMeansNone) {
-    emit('update:modelValue', null)
+  // Select all - emit undefined if !undefinedMeansNone, otherwise emit all values
+  if (!props.undefinedMeansNone) {
+    emit('update:modelValue', undefined)
   } else {
     emit('update:modelValue', [...allOptionValues.value])
   }
@@ -329,15 +329,15 @@ function handleSelectNone () {
 }
 
 function emitValue (selected: V[]) {
-  // If !nullMeansNone and all options are selected, emit null
-  if (!props.nullMeansNone) {
+  // If !undefinedMeansNone and all options are selected, emit undefined
+  if (!props.undefinedMeansNone) {
     const allValues = allOptionValues.value
     const allSelected = allValues.length > 0
       && allValues.every(v => selected.includes(v))
       && selected.every(v => allValues.includes(v))
 
     if (allSelected) {
-      emit('update:modelValue', null)
+      emit('update:modelValue', undefined)
       return
     }
   }

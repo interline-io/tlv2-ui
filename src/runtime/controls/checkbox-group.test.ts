@@ -13,13 +13,13 @@ function getCheckboxAt (wrapper: ReturnType<typeof mountComponent>, index: numbe
 }
 
 describe('TCheckboxGroup', () => {
-  describe('null means all semantic (default)', () => {
-    it('treats null as all selected by default', () => {
+  describe('undefined means all semantic (default)', () => {
+    it('treats undefined as all selected by default', () => {
       const wrapper = mountComponent(TCheckboxGroup, {
         props: {
-          modelValue: null,
+          modelValue: undefined,
           options: ['a', 'b', 'c']
-          // nullMeansNone defaults to false, so null = all selected
+          // undefinedMeansNone defaults to false, so undefined = all selected
         }
       })
 
@@ -31,12 +31,12 @@ describe('TCheckboxGroup', () => {
       expect(getCheckboxAt(wrapper, 2).checked).toBe(true)
     })
 
-    it('treats null as none selected when nullMeansNone is true', () => {
+    it('treats undefined as none selected when undefinedMeansNone is true', () => {
       const wrapper = mountComponent(TCheckboxGroup, {
         props: {
-          modelValue: null,
+          modelValue: undefined,
           options: ['a', 'b', 'c'],
-          nullMeansNone: true
+          undefinedMeansNone: true
         }
       })
 
@@ -45,12 +45,12 @@ describe('TCheckboxGroup', () => {
       expect(getCheckboxAt(wrapper, 2).checked).toBe(false)
     })
 
-    it('emits null when all options are selected (default behavior)', async () => {
+    it('emits undefined when all options are selected (default behavior)', async () => {
       const wrapper = mountComponent(TCheckboxGroup, {
         props: {
           modelValue: ['a', 'b'],
           options: ['a', 'b', 'c']
-          // nullMeansNone defaults to false
+          // undefinedMeansNone defaults to false
         }
       })
 
@@ -61,11 +61,11 @@ describe('TCheckboxGroup', () => {
       await thirdOption!.setValue(true)
 
       expect(wrapper.emitted('update:modelValue')).toBeTruthy()
-      expect(wrapper.emitted('update:modelValue')![0]).toEqual([null])
+      expect(wrapper.emitted('update:modelValue')![0]).toEqual([undefined])
     })
   })
 
-  describe('empty array vs null distinction', () => {
+  describe('empty array vs undefined distinction', () => {
     it('emits empty array when deselecting all options one by one', async () => {
       const wrapper = mountComponent(TCheckboxGroup, {
         props: {
@@ -87,7 +87,7 @@ describe('TCheckboxGroup', () => {
     it('emits empty array when using Select None button', async () => {
       const wrapper = mountComponent(TCheckboxGroup, {
         props: {
-          modelValue: null,
+          modelValue: undefined,
           options: ['a', 'b', 'c']
           // hideSelectAll defaults to false, so buttons are shown
         }
@@ -128,7 +128,7 @@ describe('TCheckboxGroup', () => {
     it('highlights Select All button when all options are selected', () => {
       const wrapper = mountComponent(TCheckboxGroup, {
         props: {
-          modelValue: null, // null means all selected
+          modelValue: undefined, // undefined means all selected
           options: ['a', 'b', 'c']
         }
       })
@@ -168,7 +168,7 @@ describe('TCheckboxGroup', () => {
     it('shows empty label when no options provided', () => {
       const wrapper = mountComponent(TCheckboxGroup, {
         props: {
-          modelValue: null,
+          modelValue: undefined,
           options: [],
           emptyLabel: 'No items available'
         }
