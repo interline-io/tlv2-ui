@@ -80,7 +80,7 @@ const {
   defaultSelectedFeedVersions,
   loading: feedLoading,
   error: feedError
-} = useFeedVersions(toRef(props, 'stationArea'))
+} = useFeedVersions(props.stationArea?.geometry)
 
 const error = ref<Error | null>(null)
 
