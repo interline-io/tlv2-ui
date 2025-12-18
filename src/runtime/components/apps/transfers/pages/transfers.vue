@@ -8,6 +8,7 @@
 
     <tl-apps-transfers-scenario-with-controls
       :station-area="props.stationArea"
+      :feed-versions-options="props.feedVersionsOptions"
       :show-transfer-controls="true"
       :show-trip-controls="true"
     >
@@ -337,10 +338,13 @@
 import { ref } from 'vue'
 import { secondsToDuration, secondsToString } from '../../../../lib/time-format'
 import type { StationHub } from '../types'
+import type { UseFeedVersionsOptions } from '../useFeedVersions'
 import { navigateTo, useRoute } from '#app'
 
 interface Props {
   stationArea: StationHub
+  /** Optional filter to customize which feed versions are selected by default */
+  feedVersionsOptions?: UseFeedVersionsOptions
 }
 
 const props = defineProps<Props>()

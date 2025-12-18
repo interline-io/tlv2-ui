@@ -8,6 +8,7 @@
 
     <tl-apps-transfers-scenario-with-controls
       :station-area="props.stationArea"
+      :feed-versions-options="props.feedVersionsOptions"
       :show-transfer-controls="true"
       :show-trip-controls="true"
     >
@@ -35,9 +36,12 @@
 <script setup lang="ts">
 import { useRoute } from '#app'
 import type { StationHub } from '../types'
+import type { UseFeedVersionsOptions } from '../useFeedVersions'
 
 interface Props {
   stationArea: StationHub
+  /** Optional filter to customize which feed versions are selected by default */
+  feedVersionsOptions?: UseFeedVersionsOptions
 }
 
 const props = defineProps<Props>()

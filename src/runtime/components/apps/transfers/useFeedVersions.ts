@@ -31,7 +31,7 @@ export interface FeedVersionCandidate {
 export interface FeedVersionSelection extends FeedVersionCandidate {
   /**
    * Service date for this feed version (YYYY-MM-DD format).
-   * Use \`feedVersionDefaultDate()\` helper if you want the standard default.
+   * Use `feedVersionDefaultDate()` helper if you want the standard default.
    */
   serviceDate: string
 }
@@ -40,7 +40,7 @@ export interface FeedVersionSelection extends FeedVersionCandidate {
  * Filter function that receives ALL feed version candidates and returns the subset
  * to use as defaults. The filter is fully responsible for:
  * - Selecting which feed versions to include
- * - Providing a serviceDate for each selection (use \`feedVersionDefaultDate()\` helper for standard default)
+ * - Providing a serviceDate for each selection (use `feedVersionDefaultDate()` helper for standard default)
  *
  * This design allows complex selection logic that needs full context, such as:
  * - "Pick one active version per agency"
@@ -109,17 +109,17 @@ export function allActiveForFeeds (onestopIds: string[]): FeedVersionFilter {
  * ## How Default Feed Version Selection Works:
  *
  * 1. **Query feeds by geometry**: Fetches all feeds that intersect with the provided
- *    geometry using the \`analystFeedQuery\` GraphQL query.
+ *    geometry using the `analystFeedQuery` GraphQL query.
  *
  * 2. **Collect importable feed versions**: All feed versions with a successful GTFS import
- *    (\`feed_version_gtfs_import.success === true\`) are added to the \`feedVersions\` list.
+ *    (`feed_version_gtfs_import.success === true`) are added to the `feedVersions` list.
  *
- * 3. **Build candidates with context**: Each feed version is wrapped with an \`isActive\` flag,
- *    determined by whether the feed version ID matches the feed's \`feed_state.feed_version.id\`.
+ * 3. **Build candidates with context**: Each feed version is wrapped with an `isActive` flag,
+ *    determined by whether the feed version ID matches the feed's `feed_state.feed_version.id`.
  *
  * 4. **Apply filter**: The filter function receives ALL candidates and returns the subset
  *    to use as defaults with their service dates. The filter is fully responsible for selection
- *    and service date assignment - there are no fallbacks. The default filter is \`allActive\`.
+ *    and service date assignment - there are no fallbacks. The default filter is `allActive`.
  *
  * @param geometry - GeoJSON geometry to query feeds by spatial intersection (Point, Polygon, etc.)
  * @param options - Optional configuration, including a custom filter function

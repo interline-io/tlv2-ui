@@ -8,6 +8,7 @@
 
     <tl-apps-transfers-scenario-with-controls
       :station-area="props.stationArea"
+      :feed-versions-options="props.feedVersionsOptions"
     >
       <template #default="{ scenario, scenarioResult, station }">
         <t-tabs v-model="activeTab">
@@ -51,11 +52,14 @@ import centroid from '@turf/centroid'
 import { ref, computed, watch } from 'vue'
 import { windowToSeconds, secondsToString } from '../../../../lib/time-format'
 import type { StationHub } from '../types'
+import type { UseFeedVersionsOptions } from '../useFeedVersions'
 import { departureStats } from '../../../../lib/departure-stats'
 import { navigateTo, useRoute } from '#app'
 
 interface Props {
   stationArea: StationHub
+  /** Optional filter to customize which feed versions are selected by default */
+  feedVersionsOptions?: UseFeedVersionsOptions
 }
 
 const props = defineProps<Props>()
