@@ -30,14 +30,11 @@
     <p class="content">
       Or select an existing station in this feed version:
     </p>
-    <tl-stop-table
-      v-if="feedVersion?.id"
+    <tl-apps-stations-stop-table
+      v-if="typeof feedVersion !== 'string' && feedVersion?.id"
       :feed-version-ids="[feedVersion.id]"
       :location-type="1"
-      :show-links="false"
-      :client="client"
-      :limit="1000"
-      :show-selected-route-type="false"
+      :client="clientId"
     >
       <template #stopName="slotProps">
         <tl-link
@@ -47,20 +44,25 @@
           {{ slotProps.stop.stop_name }}
         </tl-link>
       </template>
-    </tl-stop-table>
-    <!-- <div v-for="station in stations" :key="station.id" class="box is-clearfix">
-      <div class="is-pulled-right" />
-    </div> -->
+    </tl-apps-stations-stop-table>
   </div>
 </template>
 
-<script>
-import FeedMixin from './feed-mixin'
+<script setup lang="ts">
+import { toRefs } from 'vue'
+import { useFeed } from '../composables/useFeed'
 
-export default {
-  mixins: [FeedMixin],
-  head: {
-    title: 'Editor: Stations'
-  }
-}
+const props = defineProps<{
+  feedKey: string
+  feedVersionKey: string
+  clientId?: string
+}>()
+
+const { feedKey, feedVersionKey, clientId } = toRefs(props)
+
+const { feedVersion } = useFeed({
+  feedKey,
+  feedVersionKey,
+  clientId: clientId.value
+})
 </script>

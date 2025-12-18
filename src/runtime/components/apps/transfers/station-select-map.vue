@@ -47,10 +47,16 @@ function findNearestFeature (features: any[], mouseCoord: [number, number]): any
 
 interface Props {
   stationHubs?: StationHub[]
+  /** Initial map center as [longitude, latitude]. Defaults to Oakland, CA. */
+  center?: [number, number]
+  /** Initial zoom level. Defaults to 12. */
+  zoom?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  stationHubs: () => []
+  stationHubs: () => [],
+  center: () => [-122.28, 37.78],
+  zoom: 12
 })
 
 const emit = defineEmits<{
@@ -59,8 +65,6 @@ const emit = defineEmits<{
 
 const mapContainer = ref<HTMLElement>()
 const map = ref<MapLibreMap | null>(null)
-const zoom = 12
-const center: [number, number] = [-122.28, 37.78]
 
 function initMap (): void {
   if (!mapContainer.value) return
@@ -70,8 +74,8 @@ function initMap (): void {
 
   const mapValue = new MapLibreMap({
     container: mapContainer.value,
-    center: center as LngLatLike,
-    zoom,
+    center: props.center as LngLatLike,
+    zoom: props.zoom,
     style: {
       version: 8,
       sources: {
@@ -223,8 +227,4 @@ onBeforeUnmount(() => {
   height: 100%;
   width: 100%;
 }
-</style>
-
-<style>
-@import 'maplibre-gl/dist/maplibre-gl.css';
 </style>

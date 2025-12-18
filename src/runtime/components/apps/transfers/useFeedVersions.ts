@@ -1,4 +1,4 @@
-import { ref, computed, watch, toValue, type MaybeRefOrGetter } from 'vue'
+import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useQuery } from '@vue/apollo-composable'
 import {
   analystFeedQuery,
@@ -31,7 +31,7 @@ export interface FeedVersionCandidate {
 export interface FeedVersionSelection extends FeedVersionCandidate {
   /**
    * Service date for this feed version (YYYY-MM-DD format).
-   * Use `feedVersionDefaultDate()` helper if you want the standard default.
+   * Use \`feedVersionDefaultDate()\` helper if you want the standard default.
    */
   serviceDate: string
 }
@@ -40,7 +40,7 @@ export interface FeedVersionSelection extends FeedVersionCandidate {
  * Filter function that receives ALL feed version candidates and returns the subset
  * to use as defaults. The filter is fully responsible for:
  * - Selecting which feed versions to include
- * - Providing a serviceDate for each selection (use `feedVersionDefaultDate()` helper for standard default)
+ * - Providing a serviceDate for each selection (use \`feedVersionDefaultDate()\` helper for standard default)
  *
  * This design allows complex selection logic that needs full context, such as:
  * - "Pick one active version per agency"
@@ -109,17 +109,17 @@ export function allActiveForFeeds (onestopIds: string[]): FeedVersionFilter {
  * ## How Default Feed Version Selection Works:
  *
  * 1. **Query feeds by geometry**: Fetches all feeds that intersect with the provided
- *    geometry using the `analystFeedQuery` GraphQL query.
+ *    geometry using the \`analystFeedQuery\` GraphQL query.
  *
  * 2. **Collect importable feed versions**: All feed versions with a successful GTFS import
- *    (`feed_version_gtfs_import.success === true`) are added to the `feedVersions` list.
+ *    (\`feed_version_gtfs_import.success === true\`) are added to the \`feedVersions\` list.
  *
- * 3. **Build candidates with context**: Each feed version is wrapped with an `isActive` flag,
- *    determined by whether the feed version ID matches the feed's `feed_state.feed_version.id`.
+ * 3. **Build candidates with context**: Each feed version is wrapped with an \`isActive\` flag,
+ *    determined by whether the feed version ID matches the feed's \`feed_state.feed_version.id\`.
  *
  * 4. **Apply filter**: The filter function receives ALL candidates and returns the subset
  *    to use as defaults with their service dates. The filter is fully responsible for selection
- *    and service date assignment - there are no fallbacks. The default filter is `allActive`.
+ *    and service date assignment - there are no fallbacks. The default filter is \`allActive\`.
  *
  * @param geometry - GeoJSON geometry to query feeds by spatial intersection (Point, Polygon, etc.)
  * @param options - Optional configuration, including a custom filter function
@@ -139,45 +139,41 @@ export function useFeedVersions (
   geometry: GeoJSON.Geometry | null | undefined,
   options?: MaybeRefOrGetter<UseFeedVersionsOptions>
 ) {
-  const feedVersions = ref<FeedVersionData[]>([])
-  const error = ref<Error | null>(null)
-
   const { result: feedResult, loading: feedLoading, error: feedError } = useQuery<AnalystFeedQueryResponse>(
     analystFeedQuery,
     { geometry },
     { enabled: !!geometry }
   )
 
-  // Track which feed version IDs are active (the currently published version for each feed)
-  const activeFeedVersionIds = ref<Set<number>>(new Set())
+  // Derive error from query
+  const error = computed<Error | null>(() => feedError.value || null)
 
-  watch(feedResult, (data) => {
-    if (!data) return
+  // Derive feedVersions directly from query result - no intermediate ref needed
+  const feedVersions = computed<FeedVersionData[]>(() => {
+    const data = feedResult.value
+    if (!data) return []
     const fvs: FeedVersionData[] = []
-    const activeIds = new Set<number>()
     for (const feed of data.feeds) {
-      // Track active feed version ID from feed_state
-      if (feed.feed_state?.feed_version?.id) {
-        activeIds.add(feed.feed_state.feed_version.id)
-      }
       for (const fv of feed.feed_versions) {
         if (fv.feed_version_gtfs_import?.success === true) {
           fvs.push(fv)
         }
       }
     }
-    feedVersions.value = fvs
-    activeFeedVersionIds.value = activeIds
-    console.debug('[useFeedVersions] Loaded feed versions:', fvs.length, fvs.map(fv => ({
-      id: fv.id,
-      onestop_id: fv.feed?.onestop_id,
-      fetched_at: fv.fetched_at
-    })))
-    console.debug('[useFeedVersions] Active feed version IDs:', [...activeIds])
+    return fvs
   })
 
-  watch(feedError, (e) => {
-    if (e) error.value = e
+  // Derive active feed version IDs from query result
+  const activeFeedVersionIds = computed<Set<number>>(() => {
+    const data = feedResult.value
+    if (!data) return new Set()
+    const activeIds = new Set<number>()
+    for (const feed of data.feeds) {
+      if (feed.feed_state?.feed_version?.id) {
+        activeIds.add(feed.feed_state.feed_version.id)
+      }
+    }
+    return activeIds
   })
 
   /**

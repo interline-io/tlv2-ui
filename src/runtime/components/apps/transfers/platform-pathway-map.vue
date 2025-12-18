@@ -11,7 +11,7 @@ import { Map as MaplibreMap, FullscreenControl, NavigationControl } from 'maplib
 import type { Feature } from 'geojson'
 import { useBasemapLayers } from '../../../composables/useBasemapLayers'
 import type { Station, Pathway } from './station'
-import { PathwayModeIcons } from './pathway-icons'
+import { PathwayModeIcons } from '../../../pathways/pathway-icons'
 import { onMounted, ref, watch } from 'vue'
 
 const LEVEL_COLORS = [
@@ -448,7 +448,3 @@ function initMap () {
   map.value = mapValue as any
 }
 </script>
-
-<style>
-@import 'maplibre-gl/dist/maplibre-gl';
-</style>

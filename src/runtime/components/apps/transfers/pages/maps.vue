@@ -10,10 +10,11 @@
       :station-area="props.stationArea"
     >
       <template #default="{ scenario, scenarioResult, station }">
-        <o-tabs :model-value="activeTab" @update:model-value="activeTab = $event ?? 1">
-          <o-tab-item label="Platforms">
+        <t-tabs v-model="activeTab">
+          <t-tab-item label="Platforms" value="Platforms">
             <div id="map-wrap" class="mb-4">
               <tl-apps-transfers-platform-map
+                :key="`map-${activeTab}`"
                 :stops="getStopsWithService(scenario, scenarioResult, station)"
                 :station-area="props.stationArea"
                 :center="mapCenter"
@@ -21,9 +22,9 @@
               />
             </div>
 
-            <o-notification v-if="getTableData(scenario, scenarioResult, station).length === 0" variant="warning">
+            <t-notification v-if="getTableData(scenario, scenarioResult, station).length === 0" variant="warning">
               <span>No trips match the current location and filters.</span>
-            </o-notification>
+            </t-notification>
             <div v-else>
               <tl-apps-transfers-data-grid
                 :grid-data="getTableData(scenario, scenarioResult, station)"
@@ -31,15 +32,15 @@
                 default-sort-key="first_departure"
               />
             </div>
-          </o-tab-item>
-          <o-tab-item v-for="map in maps" :key="map.url" :label="map.name">
+          </t-tab-item>
+          <t-tab-item v-for="map in maps" :key="map.url" :label="map.name" :value="map.url">
             <img :src="map.img" :alt="map.name">
             <div class="notification is-info">
               <strong>Alternative</strong>: Open as a
               <a :href="map.pdf" target="_blank">PDF file</a>.
             </div>
-          </o-tab-item>
-        </o-tabs>
+          </t-tab-item>
+        </t-tabs>
       </template>
     </tl-apps-transfers-scenario-with-controls>
   </div>
@@ -48,9 +49,9 @@
 <script setup lang="ts">
 import centroid from '@turf/centroid'
 import { ref, computed, watch } from 'vue'
-import { windowToSeconds, secondsToString } from '../../../utils/time-format'
+import { windowToSeconds, secondsToString } from '../../../../lib/time-format'
 import type { StationHub } from '../types'
-import { departureStats } from '../../../../components/utils/departure-stats'
+import { departureStats } from '../../../../lib/departure-stats'
 import { navigateTo, useRoute } from '#app'
 
 interface Props {
@@ -60,7 +61,7 @@ interface Props {
 const props = defineProps<Props>()
 const route = useRoute()
 
-const activeTab = ref(Number(route.query.activeTab) || 1)
+const activeTab = ref<string | number>(route.query.activeTab?.toString() || 'Platforms')
 
 const platformsGridColumns = [
   { key: 'stop_name', text: 'Stop' },

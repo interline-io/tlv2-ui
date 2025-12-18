@@ -1,14 +1,26 @@
 <template>
   <div class="mb-4">
-    <o-notification
+    <t-notification
       v-if="error"
       variant="danger"
     >
       Error: {{ error }}
-    </o-notification>
+    </t-notification>
 
     <!-- Feed version/service date/time-of-day selector -->
-    <tl-feed-version-time-selector
+    <tl-apps-transfers-feed-versions-readonly
+      v-if="readOnlyFeedVersions"
+      :selected-feed-versions="selectedFeedVersions"
+      :feed-version-options="feedVersionOptions"
+      :time-of-day="scenario?.timeOfDay"
+      :show-time-of-day="showTimeOfDay"
+      :show-all-day-option="showAllDay"
+      :disabled="disabled"
+      @update:service-date="handleServiceDateUpdate"
+      @update:time-of-day="emitSetTimeOfDay"
+    />
+    <tl-apps-transfers-feed-version-time-selector
+      v-else
       :model-value="feedVersionSelections"
       :time-of-day="scenario?.timeOfDay"
       :feed-version-options="mappedFeedVersionOptions"
@@ -39,23 +51,21 @@
           No departures on {{ scenario?.selectedFeedVersions?.[idx]?.serviceDate }} between {{ scenario?.timeOfDay }}
         </p>
       </template>
-    </tl-feed-version-time-selector>
+    </tl-apps-transfers-feed-version-time-selector>
 
     <div
       v-if="showTransfers"
       class="columns is-clearfix block"
     >
       <div class="column is-one-third">
-        <div class="control">
-          <o-field
+        <div class="box">
+          <t-field
             label="Walking Profile (Beta)"
-            grouped
-            :message="enableProfiles ? undefined : 'Profiles may not be available for this station and/or feed version'"
+            :message="enableProfiles ? undefined : 'GTFS-Pathways data not found in this station area'"
           >
-            <o-select
-              :model-value="scenario?.profileName"
+            <t-select
+              v-model="profileName"
               :disabled="!enableProfiles"
-              @update:model-value="emitSetProfileName"
             >
               <option :value="null">
                 Straight-line
@@ -67,52 +77,50 @@
               >
                 {{ i }}
               </option>
-            </o-select>
-          </o-field>
-        </div>
-        <div class="control">
-          <o-field>
-            <template #message>
-              <p v-if="station == null || loading " />
-              <p
-                v-else-if="scenario?.useStopObservations && !hasAtLeastOneStopObservation"
-                class="help is-danger"
+            </t-select>
+          </t-field>
+          <div class="mt-4">
+            <a class="is-size-7" @click="showAdvancedOptions = !showAdvancedOptions">
+              <t-icon :icon="showAdvancedOptions ? 'chevron-down' : 'chevron-right'" size="small" /> Advanced options
+            </a>
+          </div>
+          <div v-if="showAdvancedOptions" class="mt-3">
+            <t-field label="Time Source" :message="gtfsRealtimeStopObservationsAvailable ? undefined : 'GTFS Realtime stop observations not available'">
+              <t-select
+                v-model="useStopObservations"
+                :disabled="!gtfsRealtimeStopObservationsAvailable"
               >
-                No real-time observations found on {{ scenario?.selectedFeedVersions?.[0]?.serviceDate }} between {{ scenario?.timeOfDay }}
-              </p>
-            </template>
-            <template #label>
-              Time Source
-            </template>
-            <o-select
-              :model-value="scenario?.useStopObservations"
-              @update:model-value="emitSetUseStopObservations"
+                <option value="true">
+                  Static GTFS &amp; GTFS Realtime schedules
+                </option>
+                <option value="false">
+                  Static GTFS schedule only
+                </option>
+              </t-select>
+            </t-field>
+            <p
+              v-if="gtfsRealtimeStopObservationsAvailable && scenario?.useStopObservations && !hasAtLeastOneStopObservation && station != null && !loading"
+              class="help is-danger"
             >
-              <option value="true">
-                Static GTFS &amp; GTFS Realtime schedules
-              </option>
-              <option value="false">
-                Static GTFS schedule only
-              </option>
-            </o-select>
-          </o-field>
+              No real-time observations found on {{ scenario?.selectedFeedVersions?.[0]?.serviceDate }} between {{ scenario?.timeOfDay }}
+            </p>
+            <t-checkbox
+              :model-value="(scenario?.hideSubsequentTransfers || 0) > 0"
+              @update:model-value="(value) => hideSubsequentTransfersChanged(Array.isArray(value) ? false : value)"
+            >
+              Hide subsequent transfers to the same route &amp; headsign
+            </t-checkbox>
+          </div>
         </div>
       </div>
       <div class="column is-two-thirds">
-        <tl-apps-transfers-time-scoring-control
-          :transfer-scoring-breakpoints="scenario?.transferScoringBreakpoints || []"
-          @changed="transferScoringBreakpointsChanged"
-        />
-        <o-field label="Options">
-          <!-- @vue-skip -->
-          <o-checkbox
-            style="padding-top:8px;"
-            :model-value="(scenario?.hideSubsequentTransfers || 0) > 0"
-            @update:model-value="hideSubsequentTransfersChanged"
-          >
-            Hide subsequent transfers to the same route &amp; headsign
-          </o-checkbox>
-        </o-field>
+        <div class="box">
+          <label class="label">Transfer Time Scoring</label>
+          <tl-apps-transfers-time-scoring-control
+            :transfer-scoring-breakpoints="scenario?.transferScoringBreakpoints || []"
+            @changed="transferScoringBreakpointsChanged"
+          />
+        </div>
       </div>
     </div>
 
@@ -125,22 +133,16 @@
           <div class="message-header">
             <p>Incoming trips</p>
             <div class="field has-addons">
-              <p class="control">
-                <o-button
-                  size="small"
-                  @click="setExcludeIncomingTrips(false, '*')"
-                >
+              <div class="control">
+                <t-button size="small" @click="setExcludeIncomingTrips(false, '*')">
                   None
-                </o-button>
-              </p>
-              <p class="control">
-                <o-button
-                  size="small"
-                  @click="setExcludeIncomingTrips(true, '*')"
-                >
+                </t-button>
+              </div>
+              <div class="control">
+                <t-button size="small" @click="setExcludeIncomingTrips(true, '*')">
                   All
-                </o-button>
-              </p>
+                </t-button>
+              </div>
             </div>
           </div>
           <div class="message-body">
@@ -160,22 +162,16 @@
           <div class="message-header">
             <p>Outgoing trips</p>
             <div class="field has-addons">
-              <p class="control">
-                <o-button
-                  size="small"
-                  @click="setExcludeOutgoingTrips(false, '*')"
-                >
+              <div class="control">
+                <t-button size="small" @click="setExcludeOutgoingTrips(false, '*')">
                   None
-                </o-button>
-              </p>
-              <p class="control">
-                <o-button
-                  size="small"
-                  @click="setExcludeOutgoingTrips(true, '*')"
-                >
+                </t-button>
+              </div>
+              <div class="control">
+                <t-button size="small" @click="setExcludeOutgoingTrips(true, '*')">
                   All
-                </o-button>
-              </p>
+                </t-button>
+              </div>
             </div>
           </div>
           <div class="message-body">
@@ -202,7 +198,7 @@ import {
 import type { Scenario, ScenarioResult,
   FeedVersionOption } from './scenario'
 import type { Station } from './station'
-import { Profiles } from './graph'
+import { Profiles } from '../../../pathways/graph'
 import { computed, ref, watch } from 'vue'
 import { useMixpanel } from '../../../composables/useMixpanel'
 
@@ -220,6 +216,8 @@ interface Props {
   enableProfiles?: boolean
   showTrips?: boolean
   loading?: boolean
+  readOnlyFeedVersions?: boolean
+  gtfsRealtimeStopObservationsAvailable?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -235,7 +233,9 @@ const props = withDefaults(defineProps<Props>(), {
   showTransfers: true,
   enableProfiles: false,
   showTrips: false,
-  loading: false
+  loading: false,
+  readOnlyFeedVersions: false,
+  gtfsRealtimeStopObservationsAvailable: true
 })
 
 const emit = defineEmits({
@@ -254,12 +254,39 @@ const profiles = Profiles
 const selectedFeedVersions = ref<SelectedFeedVersion[]>(props.scenario?.selectedFeedVersions?.slice(0) || [])
 const _enableStopObservations = ref(true)
 const error = ref<string | null>(null)
+const showAdvancedOptions = ref(false)
+const profileName = ref<string | null>(props.scenario?.profileName || null)
+// If GTFS-RT stop observations not available, force to static only
+const useStopObservations = ref<string>(
+  props.gtfsRealtimeStopObservationsAvailable
+    ? String(props.scenario?.useStopObservations)
+    : 'false'
+)
 
 watch(() => props.scenario?.selectedFeedVersions, (newVal) => {
   if (newVal) {
     selectedFeedVersions.value = newVal.slice(0)
   }
 }, { deep: true, immediate: true })
+
+watch(() => props.scenario?.profileName, (newVal) => {
+  profileName.value = newVal || null
+})
+
+watch(profileName, (newVal) => {
+  emit('setProfileName', newVal)
+})
+
+watch(() => props.scenario?.useStopObservations, (newVal) => {
+  // Only update if GTFS-RT is available, otherwise keep as static only
+  if (props.gtfsRealtimeStopObservationsAvailable) {
+    useStopObservations.value = String(newVal)
+  }
+})
+
+watch(useStopObservations, (newVal) => {
+  emit('setUseStopObservations', newVal === 'true')
+})
 
 const hasAtLeastOneStopObservation = computed(() => {
   if (!props.scenarioResult?.outgoingDepartures) return false
@@ -356,18 +383,6 @@ function emitSetTimeOfDay (value: string | undefined) {
   }
 }
 
-function emitSetProfileName (value: string | null | undefined) {
-  if (value !== undefined) {
-    emit('setProfileName', value)
-  }
-}
-
-function emitSetUseStopObservations (value: boolean | undefined) {
-  if (value !== undefined) {
-    emit('setUseStopObservations', value)
-  }
-}
-
 function transferScoringBreakpointsChanged (v: number[]) {
   emit('transferScoringBreakpointsChanged', v)
   useMixpanel().track('Modify analyst report: Transfer scoring breakpoints changed', {
@@ -387,6 +402,19 @@ function handleFeedVersionSelectionsChanged (selections: Array<{ id: number, ser
     id: s.id,
     serviceDate: s.serviceDate
   }))
+}
+
+// Handle service date updates from the read-only component
+function handleServiceDateUpdate (idx: number, serviceDate: string) {
+  const fv = selectedFeedVersions.value[idx]
+  if (fv) {
+    emit('setSelectedFeedVersion', idx, fv.id, serviceDate)
+    // Update local state
+    selectedFeedVersions.value[idx] = new SelectedFeedVersion({
+      id: fv.id,
+      serviceDate: serviceDate
+    })
+  }
 }
 </script>
 

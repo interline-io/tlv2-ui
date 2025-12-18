@@ -10,7 +10,7 @@ import {
   type ScenarioStopStopTimesQueryResponse,
   type AnalystStopQueryResponse
 } from './scenario'
-import { windowToSeconds } from '../../utils/time-format'
+import { windowToSeconds } from '../../../lib/time-format'
 import type { StationHub } from './types'
 import {
   Station,

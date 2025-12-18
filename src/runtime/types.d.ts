@@ -1,5 +1,4 @@
 import './components.d.ts'
-import './oruga.d.ts'
 import type { Tlv2RouteKey } from './route-keys'
 
 declare module 'nuxt/schema' {
@@ -41,6 +40,8 @@ declare module 'nuxt/schema' {
       auth0LogoutUri?: string
       auth0Audience?: string
       auth0Scope?: string
+      transferAnalystReadOnlyFeedSelector?: boolean
+      transferAnalystGtfsRealtimeStopObservations?: boolean
     }
   }
 }
@@ -52,6 +53,14 @@ declare module '#imports' {
     headerName: string
   }
   export function useAuthHeaders (): Promise<Record<string, string>>
+}
+
+// Add type declarations for Vue Apollo
+declare module 'vue' {
+  interface ComponentCustomProperties {
+    $apollo: any
+    $buefy: any
+  }
 }
 
 export {}

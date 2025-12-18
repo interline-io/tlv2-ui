@@ -6,10 +6,10 @@
       v-if="showCsv"
       class="is-pulled-right"
     >
-      <tl-csv-download :data="csvData" />
+      <tl-download-csv :data="csvData" />
     </div>
 
-    <tl-angle-table>
+    <tl-apps-transfers-angle-table>
       <thead>
         <tr>
           <th
@@ -64,13 +64,13 @@
           <slot :entry="entry" />
         </tr>
       </tbody>
-    </tl-angle-table>
+    </tl-apps-transfers-angle-table>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { secondsToDuration, secondsToString } from '../../utils/time-format'
+import { secondsToDuration, secondsToString } from '../../../lib/time-format'
 
 interface ColumnDef {
   key: string

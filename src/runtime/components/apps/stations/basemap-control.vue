@@ -1,41 +1,36 @@
 <template>
   <div>
-    <o-dropdown
-      :value="modelValue"
-      aria-role="list"
+    <t-dropdown
+      :model-value="modelValue"
       selectable
+      label="Basemap"
       @update:model-value="$emit('update:modelValue', $event)"
     >
-      <template #trigger>
-        <button class="button" type="button">
-          Basemap &nbsp;
-          <o-icon icon="menu-down" />
-        </button>
-      </template>
-      <o-dropdown-item
+      <t-dropdown-item
         v-for="(bm, key) in basemapLayers"
         :key="key"
         :value="key"
-        aria-role="listitem"
       >
         {{ bm.label }}
-      </o-dropdown-item>
-    </o-dropdown>
+      </t-dropdown-item>
+    </t-dropdown>
   </div>
 </template>
 
-<script>
-import { getBasemapLayers } from './basemaps'
+<script setup lang="ts">
+import { useBasemapLayers } from '../../../composables/useBasemapLayers'
 
-export default {
-  props: {
-    modelValue: { type: String, default: 'carto' }
-  },
-  emits: ['update:modelValue'],
-  data () {
-    return {
-      basemapLayers: getBasemapLayers()
-    }
-  }
+interface Props {
+  modelValue?: string
 }
+
+withDefaults(defineProps<Props>(), {
+  modelValue: 'carto'
+})
+
+defineEmits<{
+  'update:modelValue': [value: string]
+}>()
+
+const { basemapLayers } = useBasemapLayers()
 </script>

@@ -21,13 +21,13 @@
     </div>
 
     <div class="field">
-      <o-field label="Location">
+      <t-field label="Location">
         <span v-if="!station.stop.geometry" class="is-pulled-right">Draw a point by clicking on map</span>
         <span v-else class="is-pulled-right">Click the point twice to enable dragging</span>
-      </o-field>
-      <o-field>
+      </t-field>
+      <t-field>
         <tl-apps-stations-basemap-control v-model="basemap" />
-      </o-field>
+      </t-field>
 
       <tl-apps-stations-level-map
         :basemap="basemap"
@@ -46,106 +46,150 @@
       <div class="level mt-5">
         <div class="level-left">
           <div class="level-item">
-            <o-button
+            <t-button
               class="button is-outlined"
               @click="$emit('cancel')"
             >
               Cancel
-            </o-button>
+            </t-button>
           </div>
         </div>
         <div class="level-right">
           <template v-if="station.id">
             <div class="level-item">
-              <o-button
+              <t-tooltip :text="deleteTooltip">
+                <t-button
+                  class="button is-danger"
+                  :disabled="hasAssociatedContent"
+                  @click="showDeleteModal = true"
+                >
+                  Delete
+                </t-button>
+              </t-tooltip>
+            </div>
+            <div class="level-item ml-5">
+              <t-button
                 class="button is-primary"
                 :disabled="!valid"
                 @click="$emit('update', station)"
               >
                 Save
-              </o-button>
-            </div>
-            <div class="level-item">
-              <o-button
-                class="button is-danger"
-                @click="$emit('delete', station)"
-              >
-                Delete
-              </o-button>
+              </t-button>
             </div>
           </template>
           <template v-else>
             <div class="level-item">
-              <o-button
+              <t-button
                 class="button is-primary"
                 :disabled="!valid"
                 @click="$emit('create', station)"
               >
                 Create Station
-              </o-button>
+              </t-button>
             </div>
           </template>
         </div>
       </div>
     </div>
+
+    <!-- Delete Confirmation Modal -->
+    <t-modal
+      v-model="showDeleteModal"
+      title="Delete Station"
+    >
+      <p class="mb-4">
+        Are you sure you want to delete the station <strong>{{ station.stop.stop_name }}</strong>? This action cannot be undone.
+      </p>
+      <div class="buttons is-pulled-right">
+        <t-button @click="showDeleteModal = false">
+          Cancel
+        </t-button>
+        <t-button
+          variant="danger"
+          @click="confirmDelete"
+        >
+          Delete Station
+        </t-button>
+      </div>
+    </t-modal>
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed, watch } from 'vue'
+import type { Feature } from 'geojson'
 import { Station } from './station'
+import type { StationData } from './types'
 
-export default {
-  props: {
-    center: {
-      type: Array,
-      default () { return [-122.431297, 37.773972] }
-    },
-    value: {
-      type: Object,
-      default () { return {} }
+interface MapChangeEvent {
+  features: Feature[]
+}
+
+interface Props {
+  center?: [number, number]
+  value?: StationData
+  hasAssociatedContent?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  center: () => [-122.431297, 37.773972] as [number, number],
+  value: () => ({ levels: [], stops: [] } as StationData),
+  hasAssociatedContent: false
+})
+
+const _emit = defineEmits<{
+  update: [station: Station]
+  delete: [station: Station]
+  create: [station: Station]
+  cancel: []
+}>()
+
+const station = ref(new Station(props.value.stop))
+const basemap = ref('carto')
+const showDeleteModal = ref(false)
+
+const editFeatures = computed((): Feature[] => {
+  if (!station.value.stop.geometry) { return [] }
+  return [
+    {
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: station.value.stop.geometry.coordinates },
+      properties: {}
     }
-  },
-  emits: ['update', 'delete', 'create', 'cancel'],
-  data () {
-    return {
-      station: new Station(this.value.stop),
-      basemap: 'carto'
-    }
-  },
-  computed: {
-    editFeatures () {
-      if (!this.station.stop.geometry) { return [] }
-      return [
-        {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: this.station.stop.geometry.coordinates },
-          properties: {}
-        }
-      ]
-    },
-    valid () {
-      return this.station.stop.geometry
-        && this.station.stop.stop_name
-        && this.station.stop.stop_name.length > 0
-        && this.station.stop.stop_id
-        && this.station.stop.stop_id.length > 0
-    }
-  },
-  watch: {
-    'station.stop.stop_name' (value) {
-      if (value.length > 0 && this.station.id == null) {
-        this.station.stop.stop_id = value.toLowerCase().replace(/\s/g, '-')
-      }
-    }
-  },
-  methods: {
-    setGeometry (e) {
-      if (e.features.length !== 1) {
-        this.station.stop.geometry = null
-        return
-      }
-      this.station.stop.geometry = e.features[0].geometry
-    }
+  ]
+})
+
+const valid = computed((): boolean => {
+  return !!(station.value.stop.geometry
+    && station.value.stop.stop_name
+    && station.value.stop.stop_name.length > 0
+    && station.value.stop.stop_id
+    && station.value.stop.stop_id.length > 0)
+})
+
+const deleteTooltip = computed((): string => {
+  if (props.hasAssociatedContent) {
+    return 'This station has associated levels or stops and cannot be deleted. First remove all levels and stop associations from this station.'
   }
+  return 'Delete this station (confirmation required)'
+})
+
+watch(() => station.value.stop.stop_name, (value) => {
+  if (value && value.length > 0 && station.value.id == null) {
+    station.value.stop.stop_id = value.toLowerCase().replace(/\s/g, '-')
+  }
+})
+
+function setGeometry (e: MapChangeEvent) {
+  if (e.features.length !== 1) {
+    station.value.stop.geometry = undefined
+    return
+  }
+  station.value.stop.geometry = e.features[0]!.geometry as any
+}
+
+function confirmDelete () {
+  showDeleteModal.value = false
+  _emit('delete', station.value)
 }
 </script>

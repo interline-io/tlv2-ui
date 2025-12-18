@@ -10,9 +10,9 @@
       :station-area="props.stationArea"
     >
       <template #default="{ scenario, scenarioResult }">
-        <o-notification v-if="getRoutesWithServiceRows(scenario, scenarioResult).length === 0" variant="warning">
-          <span>No trips match the current location and filters.</span>
-        </o-notification>
+        <t-notification v-if="getRoutesWithServiceRows(scenario, scenarioResult).length === 0" variant="warning">
+          <span>No incoming trips match the current location and filters.</span>
+        </t-notification>
         <div v-else>
           <tl-apps-transfers-data-grid
             :grid-data="getRoutesWithServiceRows(scenario, scenarioResult)"
@@ -27,9 +27,9 @@
 
 <script setup lang="ts">
 import { useRoute } from '#app'
-import { windowToSeconds } from '../../../utils/time-format'
+import { windowToSeconds } from '../../../../lib/time-format'
 import type { StationHub } from '../types'
-import { departureStats } from '../../../../components/utils/departure-stats'
+import { departureStats } from '../../../../lib/departure-stats'
 
 interface Props {
   stationArea: StationHub

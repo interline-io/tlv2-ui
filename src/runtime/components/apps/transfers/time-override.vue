@@ -1,8 +1,10 @@
 <template>
   <div>
-    <tl-loading v-if="loading" />
+    <t-loading v-if="loading" :active="true" />
     <div v-else-if="error">
-      <tl-msg-error>{{ error }}</tl-msg-error>
+      <t-msg variant="danger">
+        {{ error }}
+      </t-msg>
     </div>
     <div v-else>
       <table class="table property-list tl-props">
@@ -10,9 +12,9 @@
           <tr :key="fromStopKey">
             <td>From Stop</td>
             <td>
-              <o-radio v-model="fromStopCopy" :native-value="from.id" name="fromStopCopy">
+              <t-radio v-model="fromStopCopy" :native-value="from.id" name="fromStopCopy">
                 {{ from.stop_name }} (id: {{ from.stop_id }})
-              </o-radio>
+              </t-radio>
               <ul>
                 <li class="served-by">
                   <i>Served by:</i>
@@ -26,13 +28,13 @@
           <tr :key="toStopKey">
             <td>To Stop</td>
             <td>
-              <o-radio v-model="toStopCopy" native-value="*" name="toStopCopy">
+              <t-radio v-model="toStopCopy" native-value="*" name="toStopCopy">
                 All Stops
-              </o-radio>
+              </t-radio>
               <br>
-              <o-radio v-model="toStopCopy" :native-value="to.id" name="toStopCopy">
+              <t-radio v-model="toStopCopy" :native-value="to.id" name="toStopCopy">
                 {{ to.stop_name }} (id: {{ to.stop_id }})
-              </o-radio>
+              </t-radio>
               <ul>
                 <li class="served-by">
                   <i>Served by:</i>
@@ -48,35 +50,32 @@
             <td style="width:500px">
               {{ secondsToDuration(timeCopy) }}
               <br>
-              <o-slider
+              <t-slider
                 :model-value="timeCopy ?? undefined"
                 size="medium"
                 :min="0"
                 :max="600"
                 @update:model-value="timeCopy = $event ?? null"
               >
-                <template
+                <t-slider-tick
                   v-for="val in [0, 60, 120, 180, 240, 300, 360, 420, 480, 540, 600]"
                   :key="val"
+                  :value="val"
                 >
-                  <o-slider-tick
-                    :value="val"
-                  >
-                    {{ secondsToDuration(val) }}
-                  </o-slider-tick>
-                </template>
-              </o-slider>
+                  {{ secondsToDuration(val) }}
+                </t-slider-tick>
+              </t-slider>
             </td>
           </tr>
         </tbody>
       </table>
 
-      <o-button
+      <t-button
         class="is-primary is-pulled-right"
         @click="setTime"
       >
         Save
-      </o-button>
+      </t-button>
     </div>
   </div>
 </template>
@@ -85,7 +84,7 @@
 import { ref, computed } from 'vue'
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
-import { secondsToDuration } from '../../utils/time-format'
+import { secondsToDuration } from '../../../lib/time-format'
 
 interface Stop {
   id: number
