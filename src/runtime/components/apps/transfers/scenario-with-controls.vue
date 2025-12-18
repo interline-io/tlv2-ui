@@ -65,7 +65,6 @@ interface Props {
   showControls?: boolean
   showTransferControls?: boolean
   showTripControls?: boolean
-  /** Optional filter to customize which feed versions are selected by default */
   feedVersionsOptions?: UseFeedVersionsOptions
 }
 

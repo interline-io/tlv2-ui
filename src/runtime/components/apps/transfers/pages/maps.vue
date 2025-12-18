@@ -58,7 +58,6 @@ import { navigateTo, useRoute } from '#app'
 
 interface Props {
   stationArea: StationHub
-  /** Optional filter to customize which feed versions are selected by default */
   feedVersionsOptions?: UseFeedVersionsOptions
 }
 
