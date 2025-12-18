@@ -79,7 +79,7 @@
             <tbody v-if="scenarioResult.transferGroups.length === 0">
               <tr class="incomingRow">
                 <td />
-                <td colspan="100">
+                <td :colspan="getTableColspan(scenario, scenarioResult)">
                   <em>No incoming trips match the current filters</em>
                 </td>
               </tr>
@@ -131,17 +131,19 @@
                 <td />
                 <td v-if="scenario?.useStopObservations && hasAtLeastOneStopObservation(scenarioResult)" />
               </tr>
-              <tr v-if="(tripGroup as any).length === 0">
-                <td />
-                <td colspan="4">
-                  <em>No departures match the current filters</em>
-                </td>
-              </tr>
               <template v-if="tripGroup.schedule_relationship === 'CANCELED'">
                 <tr>
                   <td />
-                  <td colspan="4">
+                  <td :colspan="getTableColspan(scenario, scenarioResult)">
                     <span class="has-text-danger is-italic">Incoming trip was canceled.</span>
+                  </td>
+                </tr>
+              </template>
+              <template v-else-if="!tripGroup.transfers || tripGroup.transfers.length === 0">
+                <tr>
+                  <td />
+                  <td :colspan="getTableColspan(scenario, scenarioResult)">
+                    <em>No outgoing trips available with the current filters for this incoming trip</em>
                   </td>
                 </tr>
               </template>
@@ -270,7 +272,7 @@
                 </tr>
                 <tr v-if="tripGroup.hidden_transfers.length > 0">
                   <td />
-                  <td colspan="4">
+                  <td :colspan="getTableColspan(scenario, scenarioResult)">
                     <strong>... and {{ tripGroup.hidden_transfers.length }} subsequent transfer{{ tripGroup.hidden_transfers.length > 1 ? 's' : '' }} to
                       {{ tripGroup.hidden_transfers.map((t) => { return `${t.route_name}: ${t.trip_headsign}` }).join(', ') }} not displayed.
                     </strong>
@@ -369,6 +371,15 @@ function hasAtLeastOneStopObservation (scenarioResult: any) {
     }
   }
   return false
+}
+
+// Calculates table colspan: base 8 columns + Category (+1 if hasRouteAttributes) + second Wait (+1 if stop observations)
+function getTableColspan (scenario: any, scenarioResult: any) {
+  if (!scenario || !scenarioResult) return 8
+  const baseCols = 8
+  const categoryCol = scenarioResult.hasRouteAttributes ? 1 : 0
+  const stopObsCol = scenario?.useStopObservations && hasAtLeastOneStopObservation(scenarioResult) ? 1 : 0
+  return baseCols + categoryCol + stopObsCol
 }
 
 function getCsvData (scenarioResult: any) {
