@@ -139,7 +139,7 @@
                   </td>
                 </tr>
               </template>
-              <template v-else-if="!tripGroup.transfers || tripGroup.transfers.length === 0">
+              <template v-else-if="tripGroup.transfers.length === 0">
                 <tr>
                   <td />
                   <td :colspan="getTableColspan(scenario, scenarioResult)">
@@ -339,6 +339,7 @@
 import { ref } from 'vue'
 import { secondsToDuration, secondsToString } from '../../../../lib/time-format'
 import type { StationHub } from '../types'
+import type { Scenario, ScenarioResult } from '../scenario'
 import { navigateTo, useRoute } from '#app'
 
 interface Props {
@@ -363,8 +364,7 @@ const overrideToStop = ref<any>(null)
 const overrideValue = ref(0)
 
 // These will be provided by slot props - just placeholders for reactive computeds that use them
-function hasAtLeastOneStopObservation (scenarioResult: any) {
-  if (!scenarioResult) return false
+function hasAtLeastOneStopObservation (scenarioResult: ScenarioResult): boolean {
   for (const d of scenarioResult.outgoingDepartures) {
     if (d.observed_arrival_time) {
       return true
@@ -374,17 +374,48 @@ function hasAtLeastOneStopObservation (scenarioResult: any) {
 }
 
 // Calculates table colspan: base 8 columns + Category (+1 if hasRouteAttributes) + second Wait (+1 if stop observations)
-function getTableColspan (scenario: any, scenarioResult: any) {
-  if (!scenario || !scenarioResult) return 8
+function getTableColspan (scenario: Scenario, scenarioResult: ScenarioResult): number {
   const baseCols = 8
   const categoryCol = scenarioResult.hasRouteAttributes ? 1 : 0
-  const stopObsCol = scenario?.useStopObservations && hasAtLeastOneStopObservation(scenarioResult) ? 1 : 0
+  const stopObsCol = scenario.useStopObservations && hasAtLeastOneStopObservation(scenarioResult) ? 1 : 0
   return baseCols + categoryCol + stopObsCol
 }
 
-function getCsvData (scenarioResult: any) {
-  if (!scenarioResult) return []
-  const rows: any[] = []
+interface CsvRow {
+  from_agency_id: string
+  from_agency_name: string
+  from_route_id: string
+  from_route_name?: string
+  from_stop_id: string
+  from_stop_name: string
+  from_trip_id: string
+  from_trip_headsign?: string
+  from_schedule_relationship: string | null
+  from_scheduled_arrival_time: number
+  from_observed_arrival_time: number | null
+  from_scheduled_arrival_time_str: string
+  from_observed_arrival_time_str: string
+  from_group_count: number
+  to_agency_id?: string
+  to_agency_name?: string
+  to_route_id?: string
+  to_route_name?: string
+  to_stop_id?: string
+  to_stop_name?: string
+  to_trip_id?: string
+  to_trip_headsign?: string
+  to_schedule_relationship?: string | null
+  to_scheduled_departure_time?: number
+  to_observed_departure_time?: number | null
+  to_scheduled_departure_time_str?: string
+  to_observed_departure_time_str?: string
+  transfer_walking_time?: number
+  scheduled_buffer_time?: number
+  observed_buffer_time?: number | null
+}
+
+function getCsvData (scenarioResult: ScenarioResult): CsvRow[] {
+  const rows: CsvRow[] = []
   for (const tg of scenarioResult.transferGroups) {
     const baseRow = {
       from_agency_id: tg.agency_id,
@@ -402,7 +433,7 @@ function getCsvData (scenarioResult: any) {
       from_scheduled_arrival_time_str: secondsToString(tg.scheduled_arrival_time),
       from_observed_arrival_time_str: secondsToString(tg.observed_arrival_time),
 
-      from_group_count: ((tg as any).length)
+      from_group_count: tg.transfers.length
     }
     for (const dep of tg.transfers) {
       const depRow = Object.assign({}, baseRow, {
@@ -427,7 +458,7 @@ function getCsvData (scenarioResult: any) {
       })
       rows.push(depRow)
     }
-    if ((tg as any).length === 0) {
+    if (tg.transfers.length === 0) {
       rows.push(baseRow)
     }
   }
