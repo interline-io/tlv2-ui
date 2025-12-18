@@ -3,12 +3,12 @@
     class="field"
     :class="fieldClasses"
   >
-    <label v-if="label && !horizontal" class="label">
+    <label v-if="(label || $slots.label) && !horizontal" class="label">
       <slot name="label">{{ label }}</slot>
     </label>
 
     <div v-if="horizontal" class="field-label" :class="labelSizeClass">
-      <label v-if="label" class="label">
+      <label v-if="label || $slots.label" class="label">
         <slot name="label">{{ label }}</slot>
       </label>
     </div>

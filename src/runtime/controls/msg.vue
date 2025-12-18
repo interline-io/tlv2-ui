@@ -1,16 +1,16 @@
 <template>
   <article :class="msgClass">
     <div
-      v-if="title || collapsible || closable"
+      v-if="title || expandable || closable"
       class="message-header"
-      :class="{ 'is-clickable': collapsible }"
-      @click="collapsible && toggleCollapsed()"
+      :class="{ 'is-clickable': expandable }"
+      @click="expandable && toggle()"
     >
       <span>{{ title || defaultTitle }}</span>
       <t-icon
-        v-if="collapsible"
-        :icon="isCollapsed ? 'chevron-down' : 'chevron-up'"
-        class="t-collapse-icon"
+        v-if="expandable"
+        :icon="isOpen ? 'chevron-up' : 'chevron-down'"
+        class="t-expand-icon"
       />
       <button
         v-if="closable"
@@ -20,8 +20,8 @@
       />
     </div>
     <div
-      v-if="!collapsible || !isCollapsed"
-      :class="collapsible ? 't-collapsible-content' : ''"
+      v-if="!expandable || isOpen"
+      :class="expandable ? 't-expandable-content' : ''"
     >
       <template v-if="hasIcon">
         <div class="media message-body">
@@ -53,8 +53,8 @@ const props = withDefaults(defineProps<{
   title?: string | null
   icon?: string | null
   showIcon?: boolean
-  collapsible?: boolean
-  collapsed?: boolean
+  expandable?: boolean
+  open?: boolean
   closable?: boolean
   defaultTitle?: string
 }>(), {
@@ -62,20 +62,20 @@ const props = withDefaults(defineProps<{
   title: null,
   icon: null,
   showIcon: false,
-  collapsible: false,
-  collapsed: false,
+  expandable: false,
+  open: false,
   closable: false,
   defaultTitle: 'Information'
 })
 
 // Emits
 const emit = defineEmits<{
-  toggle: [isCollapsed: boolean]
-  close: []
+  'update:open': [value: boolean]
+  'close': []
 }>()
 
 // Reactive state
-const isCollapsed = ref<boolean>(props.collapsed)
+const isOpen = ref<boolean>(props.open)
 
 // Computed properties
 const getIcon = computed<string>(() => {
@@ -101,14 +101,14 @@ const msgClass = computed<string>(() => {
 })
 
 // Watchers
-watch(() => props.collapsed, (newVal: boolean) => {
-  isCollapsed.value = newVal
+watch(() => props.open, (newVal: boolean) => {
+  isOpen.value = newVal
 }, { immediate: true })
 
 // Methods
-const toggleCollapsed = (): void => {
-  isCollapsed.value = !isCollapsed.value
-  emit('toggle', isCollapsed.value)
+const toggle = (): void => {
+  isOpen.value = !isOpen.value
+  emit('update:open', isOpen.value)
 }
 
 const handleClose = (): void => {
@@ -133,11 +133,11 @@ const handleClose = (): void => {
     }
   }
 
-  .t-collapse-icon {
+  .t-expand-icon {
     transition: transform 0.2s ease;
   }
 
-  .t-collapsible-content {
+  .t-expandable-content {
     transition: all 0.2s ease;
   }
 }
