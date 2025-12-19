@@ -187,8 +187,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import TDemoBox from '../../components/t-demo-box.vue'
-import TCheckboxGroup from '../../../src/runtime/controls/checkbox-group.vue'
-import TButton from '../../../src/runtime/controls/button.vue'
+import TCheckboxGroup from '../../../../src/runtime/controls/checkbox-group.vue'
+import TButton from '../../../../src/runtime/controls/button.vue'
 
 // Basic demo
 const fruitOptions = [

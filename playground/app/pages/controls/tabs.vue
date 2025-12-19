@@ -243,7 +243,7 @@
 
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
-import { TabsSizes, TabsPositions, TabsTypes } from '../../../src/runtime/controls/types'
+import { TabsSizes, TabsPositions, TabsTypes } from '../../../../src/runtime/controls/types'
 import TDemoBox from '../../components/t-demo-box.vue'
 
 const sizes = TabsSizes

@@ -158,7 +158,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { NotificationVariants } from '../../../src/runtime/controls/types'
+import { NotificationVariants } from '../../../../src/runtime/controls/types'
 import TDemoBox from '../../components/t-demo-box.vue'
 
 const variants = NotificationVariants

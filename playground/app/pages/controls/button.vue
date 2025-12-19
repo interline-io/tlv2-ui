@@ -144,7 +144,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { CoreVariants, ButtonVariants, ButtonSizes } from '../../../src/runtime/controls/types'
+import { CoreVariants, ButtonVariants, ButtonSizes } from '../../../../src/runtime/controls/types'
 import TDemoBox from '../../components/t-demo-box.vue'
 
 const coreVariants = CoreVariants

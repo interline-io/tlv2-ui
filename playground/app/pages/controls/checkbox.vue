@@ -21,7 +21,7 @@
 
       <t-demo-box label="Multiple Checkboxes">
         <t-field>
-          <t-checkbox v-model="option1">
+          <t-checkbox v-model="option1" variant="primary">
             Option 1
           </t-checkbox>
         </t-field>
@@ -167,7 +167,7 @@
 
 <script setup lang="ts">
 import { ref, computed, reactive } from 'vue'
-import { CoreVariants, CheckboxSizes } from '../../../src/runtime/controls/types'
+import { CoreVariants, CheckboxSizes } from '../../../../src/runtime/controls/types'
 import TDemoBox from '../../components/t-demo-box.vue'
 
 const variants = CoreVariants

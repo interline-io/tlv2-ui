@@ -38,13 +38,13 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { navigationGroups } from './navigation'
+import { navigationGroups } from '../navigation'
 
 const route = useRoute()
 </script>
 
 <style lang="scss">
-$primary: #8c67ef;
+$primary: #ff0000;
 $link: $primary;
 
 @use "bulma/sass" with (

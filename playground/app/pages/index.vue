@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { navigationGroups } from '../navigation'
+import { navigationGroups } from '../../navigation'
 </script>
 
 <template>
