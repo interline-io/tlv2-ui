@@ -115,7 +115,6 @@
       </div>
       <div class="column is-two-thirds">
         <div class="box">
-          <label class="label">Transfer Time Scoring</label>
           <tl-apps-transfers-time-scoring-control
             :transfer-scoring-breakpoints="scenario?.transferScoringBreakpoints || []"
             @changed="transferScoringBreakpointsChanged"
