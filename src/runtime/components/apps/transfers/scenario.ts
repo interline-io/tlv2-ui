@@ -586,7 +586,7 @@ interface PathwayEdge {
   cost: number
 }
 
-interface Transfer {
+export interface Transfer {
   id: number
   trip_key: number
   trip_id: string
@@ -615,7 +615,7 @@ interface Transfer {
   observed_buffer_time: number | null
 }
 
-interface TransferGroup {
+export interface TransferGroup {
   id: number
   trip_key: number
   trip_id: string
