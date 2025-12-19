@@ -308,7 +308,7 @@
     </tl-apps-transfers-scenario-with-controls>
   </div>
 
-  <t-modal v-model="showMap">
+  <t-modal v-model="showMap" title="Transfer pathways">
     <tl-apps-transfers-platform-pathway
       :station="currentStation"
       :edges="transferEdges"
