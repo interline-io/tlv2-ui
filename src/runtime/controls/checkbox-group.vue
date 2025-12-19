@@ -116,89 +116,34 @@ import TField from './field.vue'
  * />
  */
 
-interface Props {
-  /**
-   * Selected values (v-model).
-   * - `undefined`: all selected when undefinedMeansNone is false (default)
-   * - `[]`: none selected (user explicitly deselected all)
-   * - `['a', 'b']`: specific items selected
-   */
+const props = withDefaults(defineProps<{
+  /** Selected values (v-model). `undefined`: all selected when undefinedMeansNone is false (default), `[]`: none selected, `['a', 'b']`: specific items selected */
   modelValue?: V[]
-
-  /**
-   * Available options to display as checkboxes.
-   * Can be an array of strings/numbers or objects.
-   */
+  /** Available options to display as checkboxes. Can be an array of strings/numbers or objects. */
   options: O[]
-
-  /**
-   * When true, undefined modelValue means NO options are selected.
-   * By default (false), undefined means ALL options are selected - useful for
-   * async-loaded option lists where you want "select all" as the default.
-   * @default false
-   */
+  /** When true, undefined modelValue means NO options are selected. By default (false), undefined means ALL options are selected. @default false */
   undefinedMeansNone?: boolean
-
-  /**
-   * Field name to use as the option's value when options are objects.
-   * @default 'value'
-   */
+  /** Field name to use as the option's value when options are objects. @default 'value' */
   valueField?: string
-
-  /**
-   * Field name to use as the option's display label when options are objects.
-   * @default 'label'
-   */
+  /** Field name to use as the option's display label when options are objects. @default 'label' */
   labelField?: string
-
-  /**
-   * Field name to check if an option is disabled when options are objects.
-   * @default 'disabled'
-   */
+  /** Field name to check if an option is disabled when options are objects. @default 'disabled' */
   disabledField?: string
-
-  /**
-   * Hide the "Select All" checkbox header.
-   * @default false
-   */
+  /** Hide the "Select All" checkbox header. @default false */
   hideSelectAll?: boolean
-
-  /**
-   * Label for the "Select All" button.
-   * @default 'Select All'
-   */
+  /** Label for the "Select All" button. @default 'Select All' */
   selectAllLabel?: string
-
-  /**
-   * Label for the "Select None" button.
-   * @default 'Select None'
-   */
+  /** Label for the "Select None" button. @default 'Select None' */
   selectNoneLabel?: string
-
-  /**
-   * Label shown when options array is empty.
-   * @default 'No options available'
-   */
+  /** Label shown when options array is empty. @default 'No options available' */
   emptyLabel?: string
-
-  /**
-   * Disable all checkboxes.
-   * @default false
-   */
+  /** Disable all checkboxes. @default false */
   disabled?: boolean
-
-  /**
-   * Color variant for all checkboxes.
-   */
+  /** Color variant for all checkboxes. */
   variant?: CheckboxVariant
-
-  /**
-   * Size for all checkboxes.
-   */
+  /** Size for all checkboxes. */
   size?: CheckboxSize
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   modelValue: undefined,
   undefinedMeansNone: false,
   valueField: 'value',

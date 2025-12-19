@@ -19,16 +19,14 @@ import { inject, onMounted, computed, type ComputedRef } from 'vue'
  * ```
  */
 
-interface Props {
+const props = defineProps<{
   /** The label displayed in the tab header */
   label: string
   /** The value used to identify this tab */
   value: T
   /** Optional icon to display */
   icon?: string
-}
-
-const props = defineProps<Props>()
+}>()
 
 const registerTab = inject<(label: string, value: string | number, icon?: string) => void>('registerTab')
 const activeTab = inject<ComputedRef<string | number | undefined>>('activeTab')

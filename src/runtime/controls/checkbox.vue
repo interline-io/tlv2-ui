@@ -26,48 +26,22 @@ import type { CheckboxVariant, CheckboxSize } from './types'
  * <t-checkbox v-model="options" native-value="option1">Option 1</t-checkbox>
  */
 
-interface Props {
-  /**
-   * Checkbox checked state (v-model).
-   * Type is inferred: boolean for single checkbox, array for checkbox groups.
-   */
+const props = withDefaults(defineProps<{
+  /** Checkbox checked state (v-model). Type is inferred: boolean for single checkbox, array for checkbox groups. */
   modelValue?: T
-
-  /**
-   * Value to add/remove from array when used with array binding.
-   * Required when modelValue is an array.
-   */
+  /** Value to add/remove from array when used with array binding. Required when modelValue is an array. */
   nativeValue?: T extends any[] ? T[number] : never
-
-  /**
-   * Disable checkbox interaction.
-   * @default false
-   */
+  /** Disable checkbox interaction. @default false */
   disabled?: boolean
-
-  /**
-   * Show indeterminate state (visual only, for parent checkboxes).
-   * @default false
-   */
+  /** Show indeterminate state (visual only, for parent checkboxes). @default false */
   indeterminate?: boolean
-
-  /**
-   * Label text (alternative to using default slot).
-   */
+  /** Label text (alternative to using default slot). */
   label?: string
-
-  /**
-   * Color variant for the checkbox.
-   */
+  /** Color variant for the checkbox. */
   variant?: CheckboxVariant
-
-  /**
-   * Size of the checkbox.
-   */
+  /** Size of the checkbox. */
   size?: CheckboxSize
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   modelValue: undefined,
   nativeValue: undefined,
   disabled: false,

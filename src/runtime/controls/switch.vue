@@ -28,54 +28,24 @@ import type { SwitchVariant, SwitchSize } from './types'
  * <t-switch v-model="mode" true-value="dark" false-value="light">Dark Mode</t-switch>
  */
 
-interface Props {
-  /**
-   * Switch state (v-model).
-   * Type is inferred from trueValue/falseValue or the bound variable.
-   */
+const props = withDefaults(defineProps<{
+  /** Switch state (v-model). Type is inferred from trueValue/falseValue or the bound variable. */
   modelValue?: T
-
-  /**
-   * Value when switch is on.
-   * @default true
-   */
+  /** Value when switch is on. @default true */
   trueValue?: T
-
-  /**
-   * Value when switch is off.
-   * @default false
-   */
+  /** Value when switch is off. @default false */
   falseValue?: T
-
-  /**
-   * Disable switch interaction.
-   * @default false
-   */
+  /** Disable switch interaction. @default false */
   disabled?: boolean
-
-  /**
-   * Label text (alternative to using default slot).
-   */
+  /** Label text (alternative to using default slot). */
   label?: string
-
-  /**
-   * Switch size.
-   */
+  /** Switch size. */
   size?: SwitchSize
-
-  /**
-   * Color variant for the switch.
-   */
+  /** Color variant for the switch. */
   variant?: SwitchVariant
-
-  /**
-   * Use rounded style for the switch.
-   * @default false
-   */
+  /** Use rounded style for the switch. @default false */
   rounded?: boolean
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   modelValue: undefined,
   trueValue: undefined,
   falseValue: undefined,

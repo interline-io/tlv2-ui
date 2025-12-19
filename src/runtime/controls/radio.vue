@@ -27,7 +27,7 @@ import type { RadioVariant, RadioSize } from './types'
  * <t-radio v-model="count" :native-value="1" name="number">One</t-radio>
  */
 
-interface Props {
+const props = withDefaults(defineProps<{
   /** The v-model value - should match nativeValue when this radio is selected */
   modelValue?: T
   /** The value this radio represents - what gets emitted when selected */
@@ -42,9 +42,7 @@ interface Props {
   size?: RadioSize
   /** Label text (alternative to using default slot) */
   label?: string
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   modelValue: undefined,
   nativeValue: undefined,
   name: undefined,

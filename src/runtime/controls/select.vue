@@ -37,68 +37,28 @@ import type { SelectVariant, SelectSize } from './types'
  * </t-select>
  */
 
-interface Props {
-  /**
-   * The selected value (v-model).
-   * For multiple select, use an array.
-   */
+const props = withDefaults(defineProps<{
+  /** The selected value (v-model). For multiple select, use an array. */
   modelValue?: T
-
-  /**
-   * Select size variant.
-   * @default undefined (normal size)
-   */
+  /** Select size variant. @default undefined (normal size) */
   size?: SelectSize
-
-  /**
-   * Select color variant.
-   */
+  /** Select color variant. */
   variant?: SelectVariant
-
-  /**
-   * Disable the select.
-   * @default false
-   */
+  /** Disable the select. @default false */
   disabled?: boolean
-
-  /**
-   * Make the select full width.
-   * @default false
-   */
+  /** Make the select full width. @default false */
   fullwidth?: boolean
-
-  /**
-   * Round the select corners.
-   * @default false
-   */
+  /** Round the select corners. @default false */
   rounded?: boolean
-
-  /**
-   * Show loading state.
-   * @default false
-   */
+  /** Show loading state. @default false */
   loading?: boolean
-
-  /**
-   * Make the select readonly (not editable).
-   * @default false
-   */
+  /** Make the select readonly (not editable). @default false */
   readonly?: boolean
-
-  /**
-   * MDI icon name for left icon (without mdi- prefix).
-   * @example 'magnify', 'account', 'calendar'
-   */
+  /** MDI icon name for left icon (without mdi- prefix). @example 'magnify', 'account', 'calendar' */
   icon?: string
-
-  /**
-   * Allow multiple selections.
-   * @default false
-   */
+  /** Allow multiple selections. @default false */
   multiple?: boolean
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   modelValue: undefined,
   size: undefined,
   variant: undefined,

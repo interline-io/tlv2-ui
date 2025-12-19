@@ -29,46 +29,22 @@ import { inject, computed } from 'vue'
  * </t-dropdown-item>
  */
 
-interface Props {
-  /**
-   * Value associated with this item (used for selection).
-   * Type should match the parent t-dropdown's generic type.
-   */
+const props = withDefaults(defineProps<{
+  /** Value associated with this item (used for selection). Type should match the parent t-dropdown's generic type. */
   value?: T
-
-  /**
-   * Label text (alternative to using default slot).
-   */
+  /** Label text (alternative to using default slot). */
   label?: string
-
-  /**
-   * Disable this item (cannot be selected)
-   */
+  /** Disable this item (cannot be selected) */
   disabled?: boolean
-
-  /**
-   * Mark this item as active/selected
-   */
+  /** Mark this item as active/selected */
   active?: boolean
-
-  /**
-   * Render as a separator (divider)
-   */
+  /** Render as a separator (divider) */
   separator?: boolean
-
-  /**
-   * ARIA role for accessibility
-   * @default 'listitem'
-   */
+  /** ARIA role for accessibility @default 'listitem' */
   ariaRole?: string
-
-  /**
-   * Color variant for this item (overrides parent dropdown variant)
-   */
+  /** Color variant for this item (overrides parent dropdown variant) */
   variant?: import('./types').DropdownTriggerVariant
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   value: undefined,
   label: undefined,
   disabled: false,

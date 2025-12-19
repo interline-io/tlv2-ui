@@ -45,109 +45,44 @@ import type { InputVariant, InputSize } from './types'
  * <t-input v-model="numberValue" type="number" />
  */
 
-interface Props {
-  /**
-   * Input value (v-model).
-   * Type is inferred from the binding: string for text inputs, number for numeric inputs.
-   * For type="number", bind to a number variable to get automatic number conversion.
-   */
+const props = withDefaults(defineProps<{
+  /** Input value (v-model). Type is inferred from the binding: string for text inputs, number for numeric inputs. For type="number", bind to a number variable to get automatic number conversion. */
   modelValue?: T
-
-  /**
-   * Input type attribute.
-   * @default 'text'
-   */
+  /** Input type attribute. @default 'text' */
   type?: 'text' | 'email' | 'tel' | 'password' | 'url' | 'search' | 'number' | 'date' | 'time' | 'datetime-local' | 'month' | 'week'
-
-  /**
-   * Placeholder text.
-   */
+  /** Placeholder text. */
   placeholder?: string
-
-  /**
-   * Input size variant.
-   */
+  /** Input size variant. */
   size?: InputSize
-
-  /**
-   * Input color variant.
-   */
+  /** Input color variant. */
   variant?: InputVariant
-
-  /**
-   * Disable the input.
-   * @default false
-   */
+  /** Disable the input. @default false */
   disabled?: boolean
-
-  /**
-   * Make input readonly.
-   * @default false
-   */
+  /** Make input readonly. @default false */
   readonly?: boolean
-
-  /**
-   * Show loading state.
-   * @default false
-   */
+  /** Show loading state. @default false */
   loading?: boolean
-
-  /**
-   * Use rounded style.
-   * @default false
-   */
+  /** Use rounded style. @default false */
   rounded?: boolean
-
-  /**
-   * Make input static (non-interactive display).
-   * @default false
-   */
+  /** Make input static (non-interactive display). @default false */
   static?: boolean
-
-  /**
-   * Maximum length attribute.
-   */
+  /** Maximum length attribute. */
   maxlength?: number | string
-
-  /**
-   * Minimum value for number/date inputs.
-   */
+  /** Minimum value for number/date inputs. */
   min?: number | string
-
-  /**
-   * Maximum value for number/date inputs.
-   */
+  /** Maximum value for number/date inputs. */
   max?: number | string
-
-  /**
-   * Step value for number inputs.
-   */
+  /** Step value for number inputs. */
   step?: number | string
-
-  /**
-   * Left icon (MDI icon name without 'mdi-' prefix).
-   */
+  /** Left icon (MDI icon name without 'mdi-' prefix). */
   icon?: string
-
-  /**
-   * Right icon (MDI icon name without 'mdi-' prefix).
-   */
+  /** Right icon (MDI icon name without 'mdi-' prefix). */
   iconRight?: string
-
-  /**
-   * Make right icon clickable.
-   * @default false
-   */
+  /** Make right icon clickable. @default false */
   iconRightClickable?: boolean
-
-  /**
-   * Make input take full width (expanded).
-   * @default false
-   */
+  /** Make input take full width (expanded). @default false */
   expanded?: boolean
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   modelValue: undefined,
   type: 'text',
   placeholder: undefined,
