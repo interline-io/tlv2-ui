@@ -11,7 +11,7 @@ import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
 // Our composables
 import { useApiEndpoint } from '../composables/useApiEndpoint'
 import { useAuthHeaders } from '../composables/useAuthHeaders'
-import { logAuthDebug } from '../lib'
+import { logAuthDebug } from '../lib/util'
 
 // Apollo client factory
 function initApolloClient (nuxtApp: NuxtApp, endpoint: string) {
