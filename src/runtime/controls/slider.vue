@@ -146,9 +146,6 @@ provide('sliderSetValue', setValue)
 </script>
 
 <style lang="scss" scoped>
-@use "bulma/sass/utilities/initial-variables" as *;
-@use "bulma/sass/utilities/derived-variables" as *;
-
 .t-slider-wrapper {
   position: relative;
   width: 100%;
@@ -158,8 +155,8 @@ provide('sliderSetValue', setValue)
     appearance: none;
     width: 100%;
     height: 0.5rem;
-    border-radius: $radius-rounded;
-    background: $grey-lighter;
+    border-radius: var(--bulma-radius-rounded);
+    background: var(--bulma-grey-lighter);
     outline: none;
     margin: 1rem 0;
 
@@ -169,18 +166,18 @@ provide('sliderSetValue', setValue)
       width: 1rem;
       height: 1rem;
       border-radius: 50%;
-      background: $link;
+      background: var(--bulma-grey-dark);
       cursor: pointer;
-      border: 1px solid $link;
+      border: 1px solid var(--bulma-grey-dark);
     }
 
     &::-moz-range-thumb {
       width: 1rem;
       height: 1rem;
       border-radius: 50%;
-      background: $link;
+      background: var(--bulma-grey-dark);
       cursor: pointer;
-      border: 1px solid $link;
+      border: 1px solid var(--bulma-grey-dark);
     }
 
     &:disabled {
@@ -240,23 +237,23 @@ provide('sliderSetValue', setValue)
     }
 
     // Color variants
-    @each $name, $color in (
-      "primary": $primary,
-      "link": $link,
-      "info": $info,
-      "success": $success,
-      "warning": $warning,
-      "danger": $danger
+    @each $name, $var in (
+      "primary": "--bulma-primary",
+      "link": "--bulma-link",
+      "info": "--bulma-info",
+      "success": "--bulma-success",
+      "warning": "--bulma-warning",
+      "danger": "--bulma-danger"
     ) {
       &.is-#{$name} {
         &::-webkit-slider-thumb {
-          background: $color;
-          border-color: $color;
+          background: var(#{$var});
+          border-color: var(#{$var});
         }
 
         &::-moz-range-thumb {
-          background: $color;
-          border-color: $color;
+          background: var(#{$var});
+          border-color: var(#{$var});
         }
       }
     }
@@ -266,19 +263,19 @@ provide('sliderSetValue', setValue)
     display: flex;
     justify-content: space-between;
     margin-top: -0.5rem;
-    font-size: $size-small;
-    color: $grey;
+    font-size: var(--bulma-size-small);
+    color: var(--bulma-grey);
   }
 
   .t-slider-tooltip {
     position: absolute;
     top: -2.5rem;
     transform: translateX(-50%);
-    background: $grey-darker;
-    color: $white;
+    background: var(--bulma-grey-darker);
+    color: var(--bulma-white);
     padding: 0.25rem 0.5rem;
-    border-radius: $radius;
-    font-size: $size-small;
+    border-radius: var(--bulma-radius);
+    font-size: var(--bulma-size-small);
     white-space: nowrap;
     pointer-events: none;
     z-index: 10;
@@ -290,7 +287,7 @@ provide('sliderSetValue', setValue)
       left: 50%;
       transform: translateX(-50%);
       border: 0.25rem solid transparent;
-      border-top-color: $grey-darker;
+      border-top-color: var(--bulma-grey-darker);
     }
   }
 }

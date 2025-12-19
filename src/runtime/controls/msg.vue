@@ -58,7 +58,7 @@ const props = withDefaults(defineProps<{
   closable?: boolean
   defaultTitle?: string
 }>(), {
-  variant: 'info',
+  variant: 'light',
   title: null,
   icon: null,
   showIcon: false,

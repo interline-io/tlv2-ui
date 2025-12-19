@@ -134,178 +134,68 @@ interface CalendarDay {
   selectable: boolean
 }
 
-interface Props {
-  /**
-   * Selected date(s) - use with v-model.
-   * Date for single selection, Date[] for multiple selection.
-   */
+const props = withDefaults(defineProps<{
+  /** Selected date(s) - use with v-model. Date for single selection, Date[] for multiple selection. */
   modelValue?: T
-
-  /**
-   * Allow multiple date selections.
-   * @default false
-   */
+  /** Allow multiple date selections. @default false */
   multiple?: boolean
-
-  /**
-   * Input placeholder text.
-   */
+  /** Input placeholder text. */
   placeholder?: string
-
-  /**
-   * Input size variant.
-   */
+  /** Input size variant. */
   size?: InputSize
-
-  /**
-   * Input color variant.
-   */
+  /** Input color variant. */
   variant?: InputVariant
-
-  /**
-   * Disable the datepicker.
-   * @default false
-   */
+  /** Disable the datepicker. @default false */
   disabled?: boolean
-
-  /**
-   * Make input readonly (calendar still accessible).
-   * @default false
-   */
+  /** Make input readonly (calendar still accessible). @default false */
   readonly?: boolean
-
-  /**
-   * Use rounded input style.
-   * @default false
-   */
+  /** Use rounded input style. @default false */
   rounded?: boolean
-
-  /**
-   * Minimum selectable date.
-   */
+  /** Minimum selectable date. */
   minDate?: Date
-
-  /**
-   * Maximum selectable date.
-   */
+  /** Maximum selectable date. */
   maxDate?: Date
-
-  /**
-   * List of dates that cannot be selected.
-   */
+  /** List of dates that cannot be selected. */
   unselectableDates?: Date[]
-
-  /**
-   * List of dates that can be selected (whitelist).
-   */
+  /** List of dates that can be selected (whitelist). */
   selectableDates?: Date[]
-
-  /**
-   * Days of week that cannot be selected (0-6, Sunday-Saturday).
-   */
+  /** Days of week that cannot be selected (0-6, Sunday-Saturday). */
   unselectableDaysOfWeek?: number[]
-
-  /**
-   * Custom month names.
-   */
+  /** Custom month names. */
   monthNames?: string[]
-
-  /**
-   * Custom day names (short).
-   */
+  /** Custom day names (short). */
   dayNames?: string[]
-
-  /**
-   * First day of week (0-6, Sunday-Saturday).
-   * @default 0
-   */
+  /** First day of week (0-6, Sunday-Saturday). @default 0 */
   firstDayOfWeek?: number
-
-  /**
-   * Left icon (MDI icon name without 'mdi-' prefix).
-   * @default 'calendar'
-   */
+  /** Left icon (MDI icon name without 'mdi-' prefix). @default 'calendar' */
   icon?: string
-
-  /**
-   * Right icon (MDI icon name without 'mdi-' prefix).
-   */
+  /** Right icon (MDI icon name without 'mdi-' prefix). */
   iconRight?: string
-
-  /**
-   * Make right icon clickable.
-   * @default false
-   */
+  /** Make right icon clickable. @default false */
   iconRightClickable?: boolean
-
-  /**
-   * Previous month icon.
-   * @default 'chevron-left'
-   */
+  /** Previous month icon. @default 'chevron-left' */
   iconPrev?: string
-
-  /**
-   * Next month icon.
-   * @default 'chevron-right'
-   */
+  /** Next month icon. @default 'chevron-right' */
   iconNext?: string
-
-  /**
-   * Position of the dropdown.
-   * @default 'bottom-left'
-   */
+  /** Position of the dropdown. @default 'bottom-left' */
   position?: 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right'
-
-  /**
-   * Date format for display.
-   * @default 'yyyy-MM-dd'
-   */
+  /** Date format for display. @default 'yyyy-MM-dd' */
   dateFormat?: string
-
-  /**
-   * Years range for year select [before, after].
-   * @default [-100, 10]
-   */
+  /** Years range for year select [before, after]. @default [-100, 10] */
   yearsRange?: [number, number]
-
-  /**
-   * Open dropdown on input focus.
-   * @default true
-   */
+  /** Open dropdown on input focus. @default true */
   openOnFocus?: boolean
-
-  /**
-   * Close dropdown on date selection.
-   * @default true
-   */
+  /** Close dropdown on date selection. @default true */
   closeOnSelect?: boolean
-
-  /**
-   * Accessibility label for previous button.
-   * @default 'Previous month'
-   */
+  /** Accessibility label for previous button. @default 'Previous month' */
   ariaPreviousLabel?: string
-
-  /**
-   * Accessibility label for next button.
-   * @default 'Next month'
-   */
+  /** Accessibility label for next button. @default 'Next month' */
   ariaNextLabel?: string
-
-  /**
-   * Accessibility label for month select.
-   * @default 'Select month'
-   */
+  /** Accessibility label for month select. @default 'Select month' */
   ariaSelectMonthLabel?: string
-
-  /**
-   * Accessibility label for year select.
-   * @default 'Select year'
-   */
+  /** Accessibility label for year select. @default 'Select year' */
   ariaSelectYearLabel?: string
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   modelValue: undefined,
   multiple: false,
   placeholder: undefined,
@@ -558,10 +448,6 @@ defineExpose({ close, focus: () => inputRef.value?.focus() })
 </script>
 
 <style lang="scss" scoped>
-@use "sass:color";
-@use "bulma/sass/utilities/initial-variables" as *;
-@use "bulma/sass/utilities/derived-variables" as *;
-
 .t-datepicker-calendar {
   min-width: 320px;
   padding: 1rem;
@@ -590,9 +476,9 @@ defineExpose({ close, focus: () => inputRef.value?.focus() })
 
 .t-datepicker-weekday {
   text-align: center;
-  font-size: $size-small;
+  font-size: var(--bulma-size-small);
   font-weight: 600;
-  color: $grey;
+  color: var(--bulma-grey);
   padding: 0.5rem 0;
 }
 
@@ -604,11 +490,11 @@ defineExpose({ close, focus: () => inputRef.value?.focus() })
 
 .t-datepicker-day {
   aspect-ratio: 1;
-  border: 1px solid $grey-lighter;
-  border-radius: $radius;
-  background: $white;
-  color: $text;
-  font-size: $size-normal;
+  border: 1px solid var(--bulma-grey-lighter);
+  border-radius: var(--bulma-radius);
+  background: var(--bulma-white);
+  color: var(--bulma-text);
+  font-size: var(--bulma-size-normal);
   cursor: pointer;
   transition: all 0.15s ease;
   display: flex;
@@ -616,38 +502,38 @@ defineExpose({ close, focus: () => inputRef.value?.focus() })
   justify-content: center;
 
   &:hover:not(:disabled) {
-    background: $grey-lighter;
-    border-color: $grey-light;
+    background: var(--bulma-grey-lighter);
+    border-color: var(--bulma-grey-light);
   }
 
   &.is-today {
-    border-color: $primary;
+    border-color: var(--bulma-primary);
     font-weight: 600;
   }
 
   &.is-selected {
-    background: $primary;
-    color: $white;
-    border-color: $primary;
+    background: var(--bulma-primary);
+    color: var(--bulma-white);
+    border-color: var(--bulma-primary);
 
     &:hover {
-      background: color.adjust($primary, $lightness: -5%);
+      filter: brightness(0.95);
     }
   }
 
   &.is-other-month {
-    color: $grey-light;
+    color: var(--bulma-grey-light);
   }
 
   &.is-unselectable,
   &:disabled {
-    color: $grey-lighter;
+    color: var(--bulma-grey-lighter);
     cursor: not-allowed;
     opacity: 0.5;
 
     &:hover {
-      background: $white;
-      border-color: $grey-lighter;
+      background: var(--bulma-white);
+      border-color: var(--bulma-grey-lighter);
     }
   }
 }
@@ -655,6 +541,6 @@ defineExpose({ close, focus: () => inputRef.value?.focus() })
 .t-datepicker-footer {
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid $grey-lighter;
+  border-top: 1px solid var(--bulma-grey-lighter);
 }
 </style>

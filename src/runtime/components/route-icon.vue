@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { getBasicRouteType } from '../lib/routetypes'
+import { getBasicRouteType } from '../lib/gtfs/routetypes'
 
 type RouteIconType = 'tram' | 'subway' | 'train' | 'bus' | 'ferry' | 'gondola' | ''
 

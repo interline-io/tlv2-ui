@@ -1,4 +1,4 @@
-import { sanitizeFilename } from '../lib/sanitize'
+import { sanitizeFilename } from '../lib/util/sanitize'
 
 export interface DownloadOptions {
   filename: string

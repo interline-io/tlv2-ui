@@ -12,6 +12,7 @@
       <t-checkbox
         :model-value="node.selected"
         :indeterminate="node.indet"
+        variant="primary"
         @update:model-value="select(Array.isArray($event) ? $event[0] : $event, node.key)"
       >
         <span :class="node.opts?.style">
@@ -41,7 +42,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { TreeNode } from '../lib/tree'
+import type { TreeNode } from '../lib/util/tree'
 
 interface Props {
   node?: TreeNode

@@ -21,21 +21,49 @@
       "types": "./dist/types.d.mts",
       "import": "./dist/module.mjs"
     },
-    "./config": {
-      "types": "./dist/runtime/config/index.d.ts",
-      "import": "./dist/runtime/config/index.js"
+    "./lib/auth": {
+      "types": "./dist/runtime/lib/auth/index.d.ts",
+      "import": "./dist/runtime/lib/auth/index.js"
     },
-    "./lib": {
-      "types": "./dist/runtime/lib/index.d.ts",
-      "import": "./dist/runtime/lib/index.js"
+    "./lib/analytics": {
+      "types": "./dist/runtime/lib/analytics/index.d.ts",
+      "import": "./dist/runtime/lib/analytics/index.js"
     },
-    "./geom": {
-      "types": "./dist/runtime/geom/index.d.ts",
-      "import": "./dist/runtime/geom/index.js"
+    "./lib/config": {
+      "types": "./dist/runtime/lib/config/index.d.ts",
+      "import": "./dist/runtime/lib/config/index.js"
     },
-    "./testutil": {
-      "types": "./dist/runtime/testutil/index.d.ts",
-      "import": "./dist/runtime/testutil/index.js"
+    "./lib/geom": {
+      "types": "./dist/runtime/lib/geom/index.d.ts",
+      "import": "./dist/runtime/lib/geom/index.js"
+    },
+    "./lib/gtfs": {
+      "types": "./dist/runtime/lib/gtfs/index.d.ts",
+      "import": "./dist/runtime/lib/gtfs/index.js"
+    },
+    "./lib/pathways": {
+      "types": "./dist/runtime/lib/pathways/index.d.ts",
+      "import": "./dist/runtime/lib/pathways/index.js"
+    },
+    "./lib/testutil": {
+      "types": "./dist/runtime/lib/testutil/index.d.ts",
+      "import": "./dist/runtime/lib/testutil/index.js"
+    },
+    "./lib/util": {
+      "types": "./dist/runtime/lib/util/index.d.ts",
+      "import": "./dist/runtime/lib/util/index.js"
+    },
+    "./apps/admin": {
+      "types": "./dist/runtime/apps/admin/index.d.ts",
+      "import": "./dist/runtime/apps/admin/index.js"
+    },
+    "./apps/stations": {
+      "types": "./dist/runtime/apps/stations/index.d.ts",
+      "import": "./dist/runtime/apps/stations/index.js"
+    },
+    "./apps/transfers": {
+      "types": "./dist/runtime/apps/transfers/index.d.ts",
+      "import": "./dist/runtime/apps/transfers/index.js"
     }
   },
   "main": "./dist/module.mjs",

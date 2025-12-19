@@ -11,8 +11,8 @@ import { Map as MaplibreMap } from 'maplibre-gl'
 import type { LngLat, MapLayerMouseEvent, PointLike } from 'maplibre-gl'
 import { nextTick, ref, watch, onMounted } from 'vue'
 import { useBasemapLayers } from '../composables/useBasemapLayers'
-import { PathwayModeIcons } from '../pathways/pathway-icons'
-import type { MapStation, MapStop, MapPathway, MapLevel } from '../pathways/types'
+import { PathwayModeIcons } from '../lib/pathways/pathway-icons'
+import type { MapStation, MapStop, MapPathway, MapLevel } from '../lib/pathways/types'
 import type { Feature, FeatureCollection, Point, LineString, MultiPolygon } from 'geojson'
 
 function mapLevelKeyFn (level: MapLevel | null | undefined): string {

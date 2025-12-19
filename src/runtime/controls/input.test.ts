@@ -7,7 +7,7 @@ import {
   sizeProps,
   testBulmaClasses,
   testDisabledState
-} from '../testutil/component-helpers'
+} from '../lib/testutil/component-helpers'
 
 describe('TInput', () => {
   it('renders text input by default', () => {

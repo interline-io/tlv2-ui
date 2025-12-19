@@ -7,7 +7,7 @@ import {
   testBulmaClasses,
   testSlotContent,
   testDisabledState
-} from '../testutil/component-helpers'
+} from '../lib/testutil/component-helpers'
 
 describe('TButton', () => {
   it('renders default button', () => {

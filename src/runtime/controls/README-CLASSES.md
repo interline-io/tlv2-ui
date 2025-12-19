@@ -13,14 +13,11 @@ We use a layered approach:
 
 ## Style Block Convention
 
-Always use `<style lang="scss" scoped>` unless there is a specific overriding need:
+Use `<style lang="scss" scoped>` for component styles:
 
 ```vue
 <style lang="scss" scoped>
-@use "bulma/sass/utilities/initial-variables" as *;
-@use "bulma/sass/utilities/derived-variables" as *;
-
-/* Component styles here */
+/* Component styles here - use Bulma CSS custom properties */
 </style>
 ```
 
@@ -219,51 +216,53 @@ Inside scoped styles targeting our `t-` class, we can use Bulma's modifier class
 
 ### Use `@each` Loops for Repetitive Variants
 
-When you have multiple color or size variants, use Sass `@each` loops to avoid repetition:
+When you have multiple color or size variants, use Sass `@each` loops with CSS variable name strings:
 
 ```scss
 .t-slider {
   // Color variants - generates .is-primary, .is-link, etc.
-  @each $name, $color in (
-    "primary": $primary,
-    "link": $link,
-    "info": $info,
-    "success": $success,
-    "warning": $warning,
-    "danger": $danger
+  @each $name, $var in (
+    "primary": "--bulma-primary",
+    "link": "--bulma-link",
+    "info": "--bulma-info",
+    "success": "--bulma-success",
+    "warning": "--bulma-warning",
+    "danger": "--bulma-danger"
   ) {
     &.is-#{$name} {
-      background: $color;
-      border-color: $color;
+      background: var(#{$var});
+      border-color: var(#{$var});
     }
   }
 }
 ```
 
+The `#{$var}` interpolation inserts the string, so `var(#{$var})` becomes `var(--bulma-primary)` etc.
+
 ### When a Variant Needs Special Handling
 
-If one variant needs different styling (e.g., warning needs dark text for contrast), handle it separately:
+If one variant needs different styling (e.g., warning needs dark text for contrast), handle it separately after the loop:
 
 ```scss
 .t-checkbox {
   // Most colors use white checkmark
-  @each $name, $color in (
-    "primary": $primary,
-    "link": $link,
-    "info": $info,
-    "success": $success,
-    "danger": $danger
+  @each $name, $var in (
+    "primary": "--bulma-primary",
+    "link": "--bulma-link",
+    "info": "--bulma-info",
+    "success": "--bulma-success",
+    "danger": "--bulma-danger"
   ) {
     &.is-#{$name} input:checked {
-      background-color: $color;
+      background-color: var(#{$var});
     }
   }
 
   // Warning needs dark checkmark for contrast
   &.is-warning input:checked {
-    background-color: $warning;
+    background-color: var(--bulma-warning);
     &::after {
-      border-color: rgba($black, 0.7);
+      border-color: rgba(0, 0, 0, 0.7);
     }
   }
 }
@@ -271,17 +270,17 @@ If one variant needs different styling (e.g., warning needs dark text for contra
 
 ### Size Variants with `@each`
 
-Sizes can also use loops:
+Sizes can also use loops with tuples for additional values:
 
 ```scss
 .t-checkbox {
-  @each $name, $font-size, $box-size in (
-    ("small", $size-small, 0.875rem),
-    ("medium", $size-medium, 1.25rem),
-    ("large", $size-large, 1.5rem)
+  @each $name, $var, $box-size in (
+    ("small", "--bulma-size-small", 0.875rem),
+    ("medium", "--bulma-size-medium", 1.25rem),
+    ("large", "--bulma-size-large", 1.5rem)
   ) {
     &.is-#{$name} {
-      font-size: $font-size;
+      font-size: var(#{$var});
       input { width: $box-size; height: $box-size; }
     }
   }
@@ -307,7 +306,7 @@ Add both: Bulma class + t- prefixed class
 
 Inside scoped styles for t- class:
   - Use is-* modifiers freely (they're scoped)
-  - Use @each loops for repetitive variants
+  - Use @each loops with CSS variable strings for repetitive variants
 ```
 
 ---
@@ -320,4 +319,4 @@ Inside scoped styles for t- class:
 | Bulma structural classes with no customization | Use directly: `icon`, `media`, `level` |
 | Bulma structural classes with customization | Add both: `modal t-modal`, `button t-button` |
 | Modifier classes in scoped styles | Use `is-*` directly since they're scoped to `t-` class |
-| Repetitive color/size variants | Use Sass `@each` loops |
+| Repetitive color/size variants | Use `@each` loops with CSS variable strings |

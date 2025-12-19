@@ -27,7 +27,7 @@ import type { RadioVariant, RadioSize } from './types'
  * <t-radio v-model="count" :native-value="1" name="number">One</t-radio>
  */
 
-interface Props {
+const props = withDefaults(defineProps<{
   /** The v-model value - should match nativeValue when this radio is selected */
   modelValue?: T
   /** The value this radio represents - what gets emitted when selected */
@@ -42,9 +42,7 @@ interface Props {
   size?: RadioSize
   /** Label text (alternative to using default slot) */
   label?: string
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   modelValue: undefined,
   nativeValue: undefined,
   name: undefined,
@@ -84,9 +82,6 @@ function handleChange () {
 </script>
 
 <style lang="scss" scoped>
-@use "bulma/sass/utilities/initial-variables" as *;
-@use "bulma/sass/utilities/derived-variables" as *;
-
 .t-radio {
   cursor: pointer;
   padding-top: 0.25rem;
@@ -102,18 +97,18 @@ function handleChange () {
     -webkit-appearance: none;
     width: 1.125rem;
     height: 1.125rem;
-    border: 2px solid $grey-light;
+    border: 2px solid var(--bulma-grey-light);
     border-radius: 50%;
     cursor: pointer;
     position: relative;
     transition: all 0.15s ease-in-out;
 
     &:hover {
-      border-color: $grey;
+      border-color: var(--bulma-grey);
     }
 
     &:checked {
-      border-color: $primary;
+      border-color: var(--bulma-grey-dark);
       background-color: transparent;
 
       &::after {
@@ -124,7 +119,7 @@ function handleChange () {
         width: 8px;
         height: 8px;
         border-radius: 50%;
-        background-color: $primary;
+        background-color: var(--bulma-grey-dark);
         transform: translate(-50%, -50%);
       }
     }
@@ -136,41 +131,36 @@ function handleChange () {
   }
 
   /* Variant colors for radio */
-  @each $name, $color in ("primary": $primary, "link": $link, "info": $info, "success": $success, "warning": $warning, "danger": $danger) {
+  @each $name, $var in (
+    "primary": "--bulma-primary",
+    "link": "--bulma-link",
+    "info": "--bulma-info",
+    "success": "--bulma-success",
+    "warning": "--bulma-warning",
+    "danger": "--bulma-danger"
+  ) {
     &.is-#{$name} input[type="radio"]:checked {
-      border-color: $color;
+      border-color: var(#{$var});
 
       &::after {
-        background-color: $color;
+        background-color: var(#{$var});
       }
     }
   }
 
   /* Size variants */
-  &.is-small {
-    font-size: $size-small;
+  @each $name, $var, $box-size in (
+    ("small", "--bulma-size-small", 0.875rem),
+    ("medium", "--bulma-size-medium", 1.25rem),
+    ("large", "--bulma-size-large", 1.5rem)
+  ) {
+    &.is-#{$name} {
+      font-size: var(#{$var});
 
-    input[type="radio"] {
-      width: 0.875rem;
-      height: 0.875rem;
-    }
-  }
-
-  &.is-medium {
-    font-size: $size-medium;
-
-    input[type="radio"] {
-      width: 1.25rem;
-      height: 1.25rem;
-    }
-  }
-
-  &.is-large {
-    font-size: $size-large;
-
-    input[type="radio"] {
-      width: 1.5rem;
-      height: 1.5rem;
+      input[type="radio"] {
+        width: $box-size;
+        height: $box-size;
+      }
     }
   }
 }

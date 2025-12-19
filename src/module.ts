@@ -157,6 +157,13 @@ export default defineNuxtModule<ModuleOptions>({
       prefix: 't'
     })
 
+    // Add apps (TlApps* components)
+    addComponentsDir({
+      path: resolveRuntimeModule('apps'),
+      pathPrefix: true,
+      prefix: 'TlApps'
+    })
+
     // Nuxt 4: Transpile packages for SSR compatibility
     // These packages need transpilation because they:
     // - Ship as ESM but need to work in SSR/Node context
