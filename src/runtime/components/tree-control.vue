@@ -12,6 +12,7 @@
       <t-checkbox
         :model-value="node.selected"
         :indeterminate="node.indet"
+        variant="primary"
         @update:model-value="select(Array.isArray($event) ? $event[0] : $event, node.key)"
       >
         <span :class="node.opts?.style">
