@@ -59,7 +59,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { nameSort } from '../../lib/filters'
+import { nameSort } from '../../lib/util/filters'
 
 const props = withDefaults(defineProps<{
   text?: string

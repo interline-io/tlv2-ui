@@ -35,7 +35,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useAdminFetch } from '../useAdminApi'
-import { nameSort } from '../../../lib/filters'
+import { nameSort } from '../../../lib/util/filters'
 
 interface Tenant {
   id: string

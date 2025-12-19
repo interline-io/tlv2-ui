@@ -80,7 +80,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useUser } from '../../composables/useUser'
-import { nameSort } from '../../lib/filters'
+import { nameSort } from '../../lib/util/filters'
 import { useAdminFetch, fetchAdmin } from './useAdminApi'
 import { useAuthz } from './useAuthz'
 

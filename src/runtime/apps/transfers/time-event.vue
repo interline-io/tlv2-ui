@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { secondsToString } from '../../lib/time-format'
+import { secondsToString } from '../../lib/util/time-format'
 
 interface Props {
   scheduledTime?: number | null

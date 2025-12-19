@@ -1,10 +1,10 @@
 import dayjs from 'dayjs'
-import { haversinePosition, type Point, type Polygon } from '../../geom'
+import { haversinePosition, type Point, type Polygon } from '../../lib/geom'
 import { gql } from 'graphql-tag'
-import { TreeNode } from '../../lib/tree'
+import { TreeNode } from '../../lib/util/tree'
 import { useRouteCategories } from '../../composables/useRouteCategories'
-import { toSeconds, windowToSeconds } from '../../lib/time-format'
-import { NewGraph, Profiles, type Graph, type CostFunction } from '../../pathways/graph'
+import { toSeconds, windowToSeconds } from '../../lib/util/time-format'
+import { NewGraph, Profiles, type Graph, type CostFunction } from '../../lib/pathways/graph'
 import { FeedVersion, type Stop } from './station'
 
 const { routeSubcategoriesTree, routeRunningWaysTree } = useRouteCategories()

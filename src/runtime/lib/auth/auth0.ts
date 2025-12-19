@@ -1,5 +1,5 @@
 import { Auth0Client } from '@auth0/auth0-spa-js'
-import { logAuthDebug } from '../lib/log'
+import { logAuthDebug } from '../util/log'
 
 /// ////////////////////
 // Auth0 client initialization

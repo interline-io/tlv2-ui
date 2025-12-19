@@ -337,7 +337,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { secondsToDuration, secondsToString } from '../../../lib/time-format'
+import { secondsToDuration, secondsToString } from '../../../lib/util/time-format'
 import type { StationHub } from '../types'
 import type { Scenario, ScenarioResult, Transfer } from '../scenario'
 import { navigateTo, useRoute } from '#app'

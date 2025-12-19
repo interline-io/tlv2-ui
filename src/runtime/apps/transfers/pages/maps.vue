@@ -50,10 +50,10 @@
 <script setup lang="ts">
 import centroid from '@turf/centroid'
 import { ref, computed, watch } from 'vue'
-import { windowToSeconds, secondsToString } from '../../../lib/time-format'
+import { windowToSeconds, secondsToString } from '../../../lib/util/time-format'
 import type { StationHub } from '../types'
 import type { UseFeedVersionsOptions } from '../useFeedVersions'
-import { departureStats } from '../../../lib/departure-stats'
+import { departureStats } from '../../../lib/gtfs/departure-stats'
 import { navigateTo, useRoute } from '#app'
 
 interface Props {

@@ -28,10 +28,10 @@
 
 <script setup lang="ts">
 import { useRoute } from '#app'
-import { windowToSeconds } from '../../../lib/time-format'
+import { windowToSeconds } from '../../../lib/util/time-format'
 import type { StationHub } from '../types'
 import type { UseFeedVersionsOptions } from '../useFeedVersions'
-import { departureStats } from '../../../lib/departure-stats'
+import { departureStats } from '../../../lib/gtfs/departure-stats'
 
 interface Props {
   stationArea: StationHub

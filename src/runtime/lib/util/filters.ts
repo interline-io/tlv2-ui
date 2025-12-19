@@ -1,5 +1,5 @@
 import { formatDistanceToNow, parseISO, format } from 'date-fns'
-import { getBasicRouteType } from './routetypes'
+import { getBasicRouteType } from '../gtfs/routetypes'
 
 export function parseHMS (value: string): number {
   const a = (value || '').split(':').map((s) => {

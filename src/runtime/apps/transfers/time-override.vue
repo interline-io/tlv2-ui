@@ -84,7 +84,7 @@
 import { ref, computed } from 'vue'
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
-import { secondsToDuration } from '../../lib/time-format'
+import { secondsToDuration } from '../../lib/util/time-format'
 
 interface Stop {
   id: number

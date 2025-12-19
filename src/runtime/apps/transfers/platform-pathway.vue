@@ -53,7 +53,7 @@
 import centroid from '@turf/centroid'
 import type { FeatureCollection, Feature, Point } from 'geojson'
 import type { Station, Pathway } from './station'
-import { PathwayModeIcons } from '../../pathways/pathway-icons'
+import { PathwayModeIcons } from '../../lib/pathways/pathway-icons'
 import { computed } from 'vue'
 
 interface Edge {

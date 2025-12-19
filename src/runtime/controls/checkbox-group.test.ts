@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import TCheckboxGroup from './checkbox-group.vue'
-import { mountComponent } from '../testutil/component-helpers'
+import { mountComponent } from '../lib/testutil/component-helpers'
 
 // Helper to get checkbox element with proper typing
 function getCheckboxAt (wrapper: ReturnType<typeof mountComponent>, index: number): HTMLInputElement {

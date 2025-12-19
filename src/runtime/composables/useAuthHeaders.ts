@@ -1,7 +1,7 @@
 import { useRuntimeConfig, useCsrf } from '#imports'
-import { checkToken } from '../lib/auth0'
-import { clearUser } from '../auth'
-import { logAuthDebug } from '../lib/log'
+import { checkToken } from '../lib/auth/auth0'
+import { clearUser } from '../lib/auth'
+import { logAuthDebug } from '../lib/util/log'
 
 // JWT
 const useJwt = async () => {

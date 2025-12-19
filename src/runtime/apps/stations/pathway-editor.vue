@@ -123,8 +123,8 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import { haversinePosition } from '../../geom'
-import { PathwayModes } from '../../pathways/pathway-icons'
+import { haversinePosition } from '../../lib/geom'
+import { PathwayModes } from '../../lib/pathways/pathway-icons'
 import { Pathway } from './station'
 import type { PathwayData, StationData } from './types'
 

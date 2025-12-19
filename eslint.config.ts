@@ -1,6 +1,6 @@
 // @ts-check
 import { createConfigForNuxt } from '@nuxt/eslint-config/flat'
-import { stylisticConfig, ignoreFiles, eslintStylisticRules, eslintTypescriptRules } from './src/runtime/config'
+import { stylisticConfig, ignoreFiles, eslintStylisticRules, eslintTypescriptRules } from './src/runtime/lib/config'
 // eslintRules
 
 // Run `npx @eslint/config-inspector` to inspect the resolved config interactively

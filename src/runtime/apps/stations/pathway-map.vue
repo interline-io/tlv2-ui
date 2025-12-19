@@ -11,7 +11,7 @@ import { Map as MaplibreMap } from 'maplibre-gl'
 import type { LngLat, MapLayerMouseEvent, PointLike } from 'maplibre-gl'
 import { nextTick, ref, watch, onMounted } from 'vue'
 import { useBasemapLayers } from '../../composables/useBasemapLayers'
-import { PathwayModeIcons } from '../../pathways/pathway-icons'
+import { PathwayModeIcons } from '../../lib/pathways/pathway-icons'
 import type { Station, Stop, Pathway, Level } from './station'
 import type { Feature, FeatureCollection, Point, LineString, MultiPolygon } from 'geojson'
 

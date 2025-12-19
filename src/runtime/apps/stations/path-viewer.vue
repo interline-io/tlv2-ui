@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { PathwayModeIcons } from '../../pathways/pathway-icons'
+import { PathwayModeIcons } from '../../lib/pathways/pathway-icons'
 import { LocationTypes } from './basemaps'
 import type { PathwayData, StopData } from './types'
 

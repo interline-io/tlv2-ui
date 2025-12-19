@@ -70,7 +70,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { secondsToDuration, secondsToString } from '../../lib/time-format'
+import { secondsToDuration, secondsToString } from '../../lib/util/time-format'
 
 interface ColumnDef {
   key: string

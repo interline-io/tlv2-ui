@@ -163,7 +163,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { PathwayModes } from '../../pathways/pathway-icons'
+import { PathwayModes } from '../../lib/pathways/pathway-icons'
 import { LocationTypes } from './basemaps'
 import type { Station, Stop, Pathway } from './station'
 import type { ValidationPath } from './types'

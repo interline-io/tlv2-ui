@@ -11,7 +11,7 @@ import { Map as MaplibreMap, FullscreenControl, NavigationControl } from 'maplib
 import type { Feature } from 'geojson'
 import { useBasemapLayers } from '../../composables/useBasemapLayers'
 import type { Station, Pathway } from './station'
-import { PathwayModeIcons } from '../../pathways/pathway-icons'
+import { PathwayModeIcons } from '../../lib/pathways/pathway-icons'
 import { onMounted, ref, watch } from 'vue'
 
 const LEVEL_COLORS = [

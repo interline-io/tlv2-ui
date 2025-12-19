@@ -93,7 +93,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
-import { nameSort } from '../../lib/filters'
+import { nameSort } from '../../lib/util/filters'
 import { fetchAdmin } from './useAdminApi'
 
 withDefaults(defineProps<{

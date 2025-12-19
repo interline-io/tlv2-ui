@@ -1,4 +1,6 @@
-export * from './auth0'
-export * from './filters'
-export * from '../geom'
-export * from './log'
+// Re-export from subdirectories for convenience
+export * from './auth'
+export * from './analytics'
+export * from './geom'
+export * from './gtfs'
+export * from './util'

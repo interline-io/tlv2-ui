@@ -1,4 +1,4 @@
-import type { PathwayModeIcon } from '../../pathways/pathway-icons'
+import type { PathwayModeIcon } from '../../lib/pathways/pathway-icons'
 
 export const PeliasIcons: Record<string, PathwayModeIcon> = {
   marker: {
