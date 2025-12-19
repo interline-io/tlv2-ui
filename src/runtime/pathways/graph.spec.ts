@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest'
 
-import { Station } from '../components/apps/transfers/station'
+import { Station } from '../apps/transfers/station'
 import { RoutingGraph } from './graph'
 
 import StopData from '../../../testdata/ftvl/stop.json'
