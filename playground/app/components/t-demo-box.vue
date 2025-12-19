@@ -37,10 +37,7 @@ defineProps<Props>()
 </script>
 
 <style lang="scss" scoped>
-@use "bulma/sass/utilities/initial-variables" as *;
-@use "bulma/sass/utilities/derived-variables" as *;
-
 .t-demo-example {
-    background-color: $primary;
+    background-color: var(--bulma-primary);
 }
 </style>

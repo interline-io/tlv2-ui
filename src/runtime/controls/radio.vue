@@ -84,9 +84,6 @@ function handleChange () {
 </script>
 
 <style lang="scss" scoped>
-@use "bulma/sass/utilities/initial-variables" as *;
-@use "bulma/sass/utilities/derived-variables" as *;
-
 .t-radio {
   cursor: pointer;
   padding-top: 0.25rem;
@@ -102,18 +99,18 @@ function handleChange () {
     -webkit-appearance: none;
     width: 1.125rem;
     height: 1.125rem;
-    border: 2px solid $grey-light;
+    border: 2px solid var(--bulma-grey-light);
     border-radius: 50%;
     cursor: pointer;
     position: relative;
     transition: all 0.15s ease-in-out;
 
     &:hover {
-      border-color: $grey;
+      border-color: var(--bulma-grey);
     }
 
     &:checked {
-      border-color: $primary;
+      border-color: var(--bulma-primary);
       background-color: transparent;
 
       &::after {
@@ -124,7 +121,7 @@ function handleChange () {
         width: 8px;
         height: 8px;
         border-radius: 50%;
-        background-color: $primary;
+        background-color: var(--bulma-primary);
         transform: translate(-50%, -50%);
       }
     }
@@ -136,19 +133,57 @@ function handleChange () {
   }
 
   /* Variant colors for radio */
-  @each $name, $color in ("primary": $primary, "link": $link, "info": $info, "success": $success, "warning": $warning, "danger": $danger) {
-    &.is-#{$name} input[type="radio"]:checked {
-      border-color: $color;
+  &.is-primary input[type="radio"]:checked {
+    border-color: var(--bulma-primary);
 
-      &::after {
-        background-color: $color;
-      }
+    &::after {
+      background-color: var(--bulma-primary);
+    }
+  }
+
+  &.is-link input[type="radio"]:checked {
+    border-color: var(--bulma-link);
+
+    &::after {
+      background-color: var(--bulma-link);
+    }
+  }
+
+  &.is-info input[type="radio"]:checked {
+    border-color: var(--bulma-info);
+
+    &::after {
+      background-color: var(--bulma-info);
+    }
+  }
+
+  &.is-success input[type="radio"]:checked {
+    border-color: var(--bulma-success);
+
+    &::after {
+      background-color: var(--bulma-success);
+    }
+  }
+
+  &.is-warning input[type="radio"]:checked {
+    border-color: var(--bulma-warning);
+
+    &::after {
+      background-color: var(--bulma-warning);
+    }
+  }
+
+  &.is-danger input[type="radio"]:checked {
+    border-color: var(--bulma-danger);
+
+    &::after {
+      background-color: var(--bulma-danger);
     }
   }
 
   /* Size variants */
   &.is-small {
-    font-size: $size-small;
+    font-size: var(--bulma-size-small);
 
     input[type="radio"] {
       width: 0.875rem;
@@ -157,7 +192,7 @@ function handleChange () {
   }
 
   &.is-medium {
-    font-size: $size-medium;
+    font-size: var(--bulma-size-medium);
 
     input[type="radio"] {
       width: 1.25rem;
@@ -166,7 +201,7 @@ function handleChange () {
   }
 
   &.is-large {
-    font-size: $size-large;
+    font-size: var(--bulma-size-large);
 
     input[type="radio"] {
       width: 1.5rem;

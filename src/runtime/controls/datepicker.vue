@@ -558,10 +558,6 @@ defineExpose({ close, focus: () => inputRef.value?.focus() })
 </script>
 
 <style lang="scss" scoped>
-@use "sass:color";
-@use "bulma/sass/utilities/initial-variables" as *;
-@use "bulma/sass/utilities/derived-variables" as *;
-
 .t-datepicker-calendar {
   min-width: 320px;
   padding: 1rem;
@@ -590,9 +586,9 @@ defineExpose({ close, focus: () => inputRef.value?.focus() })
 
 .t-datepicker-weekday {
   text-align: center;
-  font-size: $size-small;
+  font-size: var(--bulma-size-small);
   font-weight: 600;
-  color: $grey;
+  color: var(--bulma-grey);
   padding: 0.5rem 0;
 }
 
@@ -604,11 +600,11 @@ defineExpose({ close, focus: () => inputRef.value?.focus() })
 
 .t-datepicker-day {
   aspect-ratio: 1;
-  border: 1px solid $grey-lighter;
-  border-radius: $radius;
-  background: $white;
-  color: $text;
-  font-size: $size-normal;
+  border: 1px solid var(--bulma-grey-lighter);
+  border-radius: var(--bulma-radius);
+  background: var(--bulma-white);
+  color: var(--bulma-text);
+  font-size: var(--bulma-size-normal);
   cursor: pointer;
   transition: all 0.15s ease;
   display: flex;
@@ -616,38 +612,38 @@ defineExpose({ close, focus: () => inputRef.value?.focus() })
   justify-content: center;
 
   &:hover:not(:disabled) {
-    background: $grey-lighter;
-    border-color: $grey-light;
+    background: var(--bulma-grey-lighter);
+    border-color: var(--bulma-grey-light);
   }
 
   &.is-today {
-    border-color: $primary;
+    border-color: var(--bulma-primary);
     font-weight: 600;
   }
 
   &.is-selected {
-    background: $primary;
-    color: $white;
-    border-color: $primary;
+    background: var(--bulma-primary);
+    color: var(--bulma-white);
+    border-color: var(--bulma-primary);
 
     &:hover {
-      background: color.adjust($primary, $lightness: -5%);
+      filter: brightness(0.95);
     }
   }
 
   &.is-other-month {
-    color: $grey-light;
+    color: var(--bulma-grey-light);
   }
 
   &.is-unselectable,
   &:disabled {
-    color: $grey-lighter;
+    color: var(--bulma-grey-lighter);
     cursor: not-allowed;
     opacity: 0.5;
 
     &:hover {
-      background: $white;
-      border-color: $grey-lighter;
+      background: var(--bulma-white);
+      border-color: var(--bulma-grey-lighter);
     }
   }
 }
@@ -655,6 +651,6 @@ defineExpose({ close, focus: () => inputRef.value?.focus() })
 .t-datepicker-footer {
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid $grey-lighter;
+  border-top: 1px solid var(--bulma-grey-lighter);
 }
 </style>

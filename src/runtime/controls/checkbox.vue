@@ -151,10 +151,7 @@ onMounted(updateIndeterminate)
 </script>
 
 <style lang="scss" scoped>
-@use "bulma/sass/utilities/initial-variables" as *;
-@use "bulma/sass/utilities/derived-variables" as *;
-
-/* Inherits Bulma checkbox styles from global stylesheet */
+/* Uses Bulma CSS custom properties to respect theme configuration */
 .t-checkbox {
   /* Add slight padding for better vertical alignment */
   padding-top: 0.25rem;
@@ -169,19 +166,19 @@ onMounted(updateIndeterminate)
     -webkit-appearance: none;
     width: 1.125rem;
     height: 1.125rem;
-    border: 2px solid $grey-light;
-    border-radius: $radius;
+    border: 2px solid var(--bulma-grey-light);
+    border-radius: var(--bulma-radius);
     cursor: pointer;
     position: relative;
     transition: all 0.15s ease-in-out;
 
     &:hover {
-      border-color: $grey;
+      border-color: var(--bulma-grey);
     }
 
     &:checked {
-      border-color: $primary;
-      background-color: $primary;
+      border-color: var(--bulma-primary);
+      background-color: var(--bulma-primary);
 
       &::after {
         content: '';
@@ -190,15 +187,15 @@ onMounted(updateIndeterminate)
         top: 50%;
         width: 4px;
         height: 8px;
-        border: solid $white;
+        border: solid var(--bulma-white);
         border-width: 0 2px 2px 0;
         transform: translate(-50%, -60%) rotate(45deg);
       }
     }
 
     &:indeterminate {
-      border-color: $primary;
-      background-color: $primary;
+      border-color: var(--bulma-primary);
+      background-color: var(--bulma-primary);
 
       &::after {
         content: '';
@@ -207,7 +204,7 @@ onMounted(updateIndeterminate)
         top: 50%;
         width: 8px;
         height: 2px;
-        background-color: $white;
+        background-color: var(--bulma-white);
         transform: translate(-50%, -50%);
       }
     }
@@ -219,35 +216,51 @@ onMounted(updateIndeterminate)
   }
 
   /* Variant colors for checkbox */
-  @each $name, $color in (
-    "primary": $primary,
-    "link": $link,
-    "info": $info,
-    "success": $success,
-    "danger": $danger
-  ) {
-    &.is-#{$name} input[type="checkbox"]:checked,
-    &.is-#{$name} input[type="checkbox"]:indeterminate {
-      border-color: $color;
-      background-color: $color;
-    }
+  &.is-primary input[type="checkbox"]:checked,
+  &.is-primary input[type="checkbox"]:indeterminate {
+    border-color: var(--bulma-primary);
+    background-color: var(--bulma-primary);
+  }
+
+  &.is-link input[type="checkbox"]:checked,
+  &.is-link input[type="checkbox"]:indeterminate {
+    border-color: var(--bulma-link);
+    background-color: var(--bulma-link);
+  }
+
+  &.is-info input[type="checkbox"]:checked,
+  &.is-info input[type="checkbox"]:indeterminate {
+    border-color: var(--bulma-info);
+    background-color: var(--bulma-info);
+  }
+
+  &.is-success input[type="checkbox"]:checked,
+  &.is-success input[type="checkbox"]:indeterminate {
+    border-color: var(--bulma-success);
+    background-color: var(--bulma-success);
+  }
+
+  &.is-danger input[type="checkbox"]:checked,
+  &.is-danger input[type="checkbox"]:indeterminate {
+    border-color: var(--bulma-danger);
+    background-color: var(--bulma-danger);
   }
 
   /* Warning variant needs dark checkmark for contrast */
   &.is-warning input[type="checkbox"]:checked,
   &.is-warning input[type="checkbox"]:indeterminate {
-    border-color: $warning;
-    background-color: $warning;
+    border-color: var(--bulma-warning);
+    background-color: var(--bulma-warning);
 
     &::after {
-      border-color: rgba($black, 0.7);
-      background-color: rgba($black, 0.7);
+      border-color: rgba(0, 0, 0, 0.7);
+      background-color: rgba(0, 0, 0, 0.7);
     }
   }
 
   /* Size variants */
   &.is-small {
-    font-size: $size-small;
+    font-size: var(--bulma-size-small);
 
     input[type="checkbox"] {
       width: 0.875rem;
@@ -256,7 +269,7 @@ onMounted(updateIndeterminate)
   }
 
   &.is-medium {
-    font-size: $size-medium;
+    font-size: var(--bulma-size-medium);
 
     input[type="checkbox"] {
       width: 1.25rem;
@@ -265,7 +278,7 @@ onMounted(updateIndeterminate)
   }
 
   &.is-large {
-    font-size: $size-large;
+    font-size: var(--bulma-size-large);
 
     input[type="checkbox"] {
       width: 1.5rem;

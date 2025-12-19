@@ -3,8 +3,6 @@ export default defineNuxtConfig({
 
   devtools: { enabled: true },
 
-  css: ['~/assets/main.scss'],
-
   compatibilityDate: '2024-11-01',
 
   typescript: {

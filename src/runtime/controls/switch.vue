@@ -131,9 +131,6 @@ function handleChange (event: Event) {
 </script>
 
 <style lang="scss" scoped>
-@use "bulma/sass/utilities/initial-variables" as *;
-@use "bulma/sass/utilities/derived-variables" as *;
-
 .t-switch {
   cursor: pointer;
   display: inline-flex;
@@ -160,26 +157,26 @@ function handleChange (event: Event) {
     width: 2.75em;
     height: 1.575em;
     padding: 0.2em;
-    background: $grey;
-    border-radius: $radius-rounded;
+    background: var(--bulma-grey);
+    border-radius: var(--bulma-radius-rounded);
     transition: background 150ms ease-out;
     position: relative;
 
     &::before {
       content: "";
       display: block;
-      border-radius: $radius-rounded;
+      border-radius: var(--bulma-radius-rounded);
       width: 1.175em;
       height: 1.175em;
-      background: $white;
-      box-shadow: 0 3px 1px 0 rgba($black, 0.05), 0 2px 2px 0 rgba($black, 0.1), 0 3px 3px 0 rgba($black, 0.05);
+      background: var(--bulma-white);
+      box-shadow: 0 3px 1px 0 rgba(0, 0, 0, 0.05), 0 2px 2px 0 rgba(0, 0, 0, 0.1), 0 3px 3px 0 rgba(0, 0, 0, 0.05);
       transition: transform 150ms ease-out;
       will-change: transform;
     }
   }
 
   input[type="checkbox"]:checked + .check {
-    background: $link;
+    background: var(--bulma-link);
 
     &::before {
       transform: translateX(1.175em);
@@ -192,30 +189,52 @@ function handleChange (event: Event) {
 
   // Size variants
   &.is-small {
-    font-size: $size-small;
+    font-size: var(--bulma-size-small);
   }
 
   &.is-medium {
-    font-size: $size-medium;
+    font-size: var(--bulma-size-medium);
   }
 
   &.is-large {
-    font-size: $size-large;
+    font-size: var(--bulma-size-large);
   }
 
   // Color variants
-  @each $name, $color in ("primary": $primary, "link": $link, "info": $info, "success": $success, "warning": $warning, "danger": $danger, "dark": $dark) {
-    &.is-#{$name} input[type="checkbox"]:checked + .check {
-      background: $color;
-    }
+  &.is-primary input[type="checkbox"]:checked + .check {
+    background: var(--bulma-primary);
+  }
+
+  &.is-link input[type="checkbox"]:checked + .check {
+    background: var(--bulma-link);
+  }
+
+  &.is-info input[type="checkbox"]:checked + .check {
+    background: var(--bulma-info);
+  }
+
+  &.is-success input[type="checkbox"]:checked + .check {
+    background: var(--bulma-success);
+  }
+
+  &.is-warning input[type="checkbox"]:checked + .check {
+    background: var(--bulma-warning);
+  }
+
+  &.is-danger input[type="checkbox"]:checked + .check {
+    background: var(--bulma-danger);
+  }
+
+  &.is-dark input[type="checkbox"]:checked + .check {
+    background: var(--bulma-dark);
   }
 
   // Rounded switch style
   &.is-rounded .check {
-    border-radius: $radius;
+    border-radius: var(--bulma-radius);
 
     &::before {
-      border-radius: $radius-small;
+      border-radius: var(--bulma-radius-small);
     }
   }
 }

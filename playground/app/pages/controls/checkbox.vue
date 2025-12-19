@@ -21,7 +21,7 @@
 
       <t-demo-box label="Multiple Checkboxes">
         <t-field>
-          <t-checkbox v-model="option1" variant="primary">
+          <t-checkbox v-model="option1">
             Option 1
           </t-checkbox>
         </t-field>
