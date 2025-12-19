@@ -44,8 +44,8 @@ const route = useRoute()
 </script>
 
 <style lang="scss">
-$primary: #ff0000;
-$link: $primary;
+$primary: #9e0e84;
+$link: #234d8c;
 
 @use "bulma/sass" with (
     $family-primary: '"Nunito", sans-serif',
