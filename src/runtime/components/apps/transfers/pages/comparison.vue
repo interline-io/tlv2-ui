@@ -8,6 +8,7 @@
 
     <tl-apps-transfers-scenario-with-controls
       :station-area="props.stationArea"
+      :feed-versions-options="props.feedVersionsOptions"
       :show-controls="false"
     >
       <!-- TODO: fix this report and remove the following notice -->
@@ -20,9 +21,11 @@
 
 <script setup lang="ts">
 import type { StationHub } from '../types'
+import type { UseFeedVersionsOptions } from '../useFeedVersions'
 
 interface Props {
   stationArea: StationHub
+  feedVersionsOptions?: UseFeedVersionsOptions
 }
 
 const props = defineProps<Props>()

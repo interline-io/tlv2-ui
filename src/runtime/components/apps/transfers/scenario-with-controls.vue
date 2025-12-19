@@ -50,7 +50,7 @@ import { ref, computed, watch, toRef } from 'vue'
 import { navigateTo, useRoute, useRuntimeConfig } from '#imports'
 import { useMixpanel } from '../../../composables/useMixpanel'
 import { useScenarioData } from './useScenarioData'
-import { useFeedVersions } from './useFeedVersions'
+import { useFeedVersions, type UseFeedVersionsOptions } from './useFeedVersions'
 import {
   SelectedFeedVersion,
   FeedVersionOption,
@@ -65,6 +65,7 @@ interface Props {
   showControls?: boolean
   showTransferControls?: boolean
   showTripControls?: boolean
+  feedVersionsOptions?: UseFeedVersionsOptions
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -94,7 +95,10 @@ const {
   defaultSelectedFeedVersions,
   loading: feedLoading,
   error: feedError
-} = useFeedVersions(toRef(props, 'stationArea'))
+} = useFeedVersions(
+  props.stationArea?.geometry,
+  props.feedVersionsOptions
+)
 
 const error = ref<Error | null>(null)
 

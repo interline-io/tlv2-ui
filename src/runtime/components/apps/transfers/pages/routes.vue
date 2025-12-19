@@ -8,6 +8,7 @@
 
     <tl-apps-transfers-scenario-with-controls
       :station-area="props.stationArea"
+      :feed-versions-options="props.feedVersionsOptions"
     >
       <template #default="{ scenario, scenarioResult }">
         <t-notification v-if="getRoutesWithServiceRows(scenario, scenarioResult).length === 0" variant="warning">
@@ -29,10 +30,12 @@
 import { useRoute } from '#app'
 import { windowToSeconds } from '../../../../lib/time-format'
 import type { StationHub } from '../types'
+import type { UseFeedVersionsOptions } from '../useFeedVersions'
 import { departureStats } from '../../../../lib/departure-stats'
 
 interface Props {
   stationArea: StationHub
+  feedVersionsOptions?: UseFeedVersionsOptions
 }
 
 const props = defineProps<Props>()
