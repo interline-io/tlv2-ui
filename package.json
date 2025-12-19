@@ -21,10 +21,6 @@
       "types": "./dist/types.d.mts",
       "import": "./dist/module.mjs"
     },
-    "./lib": {
-      "types": "./dist/runtime/lib/index.d.ts",
-      "import": "./dist/runtime/lib/index.js"
-    },
     "./lib/auth": {
       "types": "./dist/runtime/lib/auth/index.d.ts",
       "import": "./dist/runtime/lib/auth/index.js"
