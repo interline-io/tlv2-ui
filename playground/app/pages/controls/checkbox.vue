@@ -77,7 +77,6 @@
           <t-checkbox
             v-model="selectAll"
             :indeterminate="indeterminate"
-            variant="primary"
             @update:model-value="handleSelectAll"
           >
             <strong>Select All</strong>

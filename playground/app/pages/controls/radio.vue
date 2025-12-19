@@ -27,7 +27,7 @@
 
       <t-demo-box label="Variants">
         <t-field>
-          <t-radio v-for="variant in variants" :key="variant" v-model="variantDemo" :native-value="variant" :variant="variant">
+          <t-radio v-for="variant in variants" :key="variant" :model-value="true" :native-value="true" :variant="variant">
             {{ capitalize(variant) }}
           </t-radio>
         </t-field>
@@ -35,7 +35,7 @@
 
       <t-demo-box label="Sizes">
         <t-field>
-          <t-radio v-for="size in sizes" :key="size" v-model="sizeDemo" :native-value="size" :size="size">
+          <t-radio v-for="size in sizes" :key="size" :model-value="true" :native-value="true" :size="size">
             {{ capitalize(size) }} radio
           </t-radio>
         </t-field>
@@ -193,8 +193,6 @@ const sizes = RadioSizes
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 
 const basic = ref('option2')
-const variantDemo = ref('success')
-const sizeDemo = ref('normal')
 const disabledDemo = ref('enabled')
 const contentDemo = ref('option1')
 const payment = ref('credit')

@@ -177,8 +177,8 @@ onMounted(updateIndeterminate)
     }
 
     &:checked {
-      border-color: var(--bulma-primary);
-      background-color: var(--bulma-primary);
+      border-color: var(--bulma-grey-dark);
+      background-color: var(--bulma-grey-dark);
 
       &::after {
         content: '';
@@ -194,8 +194,8 @@ onMounted(updateIndeterminate)
     }
 
     &:indeterminate {
-      border-color: var(--bulma-primary);
-      background-color: var(--bulma-primary);
+      border-color: var(--bulma-grey-dark);
+      background-color: var(--bulma-grey-dark);
 
       &::after {
         content: '';

@@ -38,6 +38,6 @@ defineProps<Props>()
 
 <style lang="scss" scoped>
 .t-demo-example {
-    background-color: var(--bulma-primary);
+    background-color: var(--bulma-info);
 }
 </style>

@@ -110,7 +110,7 @@ function handleChange () {
     }
 
     &:checked {
-      border-color: var(--bulma-primary);
+      border-color: var(--bulma-grey-dark);
       background-color: transparent;
 
       &::after {
@@ -121,7 +121,7 @@ function handleChange () {
         width: 8px;
         height: 8px;
         border-radius: 50%;
-        background-color: var(--bulma-primary);
+        background-color: var(--bulma-grey-dark);
         transform: translate(-50%, -50%);
       }
     }

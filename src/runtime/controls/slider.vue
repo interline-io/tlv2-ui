@@ -166,18 +166,18 @@ provide('sliderSetValue', setValue)
       width: 1rem;
       height: 1rem;
       border-radius: 50%;
-      background: var(--bulma-primary);
+      background: var(--bulma-grey-dark);
       cursor: pointer;
-      border: 1px solid var(--bulma-primary);
+      border: 1px solid var(--bulma-grey-dark);
     }
 
     &::-moz-range-thumb {
       width: 1rem;
       height: 1rem;
       border-radius: 50%;
-      background: var(--bulma-primary);
+      background: var(--bulma-grey-dark);
       cursor: pointer;
-      border: 1px solid var(--bulma-primary);
+      border: 1px solid var(--bulma-grey-dark);
     }
 
     &:disabled {

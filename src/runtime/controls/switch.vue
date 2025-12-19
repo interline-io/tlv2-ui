@@ -176,7 +176,7 @@ function handleChange (event: Event) {
   }
 
   input[type="checkbox"]:checked + .check {
-    background: var(--bulma-primary);
+    background: var(--bulma-grey-dark);
 
     &::before {
       transform: translateX(1.175em);

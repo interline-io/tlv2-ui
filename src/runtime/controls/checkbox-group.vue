@@ -6,7 +6,7 @@
         <button
           type="button"
           class="button"
-          :class="{ 'is-primary is-selected': selectAllState === 'all' }"
+          :class="{ [`is-${variant || 'dark'} is-selected`]: selectAllState === 'all' }"
           :disabled="disabled || options.length === 0"
           @click="handleSelectAll"
         >
@@ -17,7 +17,7 @@
         <button
           type="button"
           class="button"
-          :class="{ 'is-primary is-selected': selectAllState === 'none' }"
+          :class="{ [`is-${variant || 'dark'} is-selected`]: selectAllState === 'none' }"
           :disabled="disabled || options.length === 0"
           @click="handleSelectNone"
         >
