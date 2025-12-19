@@ -214,70 +214,48 @@ Inside scoped styles targeting our `t-` class, we can use Bulma's modifier class
 - The `is-*` class is applied to our `t-slider` element, not a Bulma element
 - No global override of Bulma's `.is-primary` class
 
-### Use Explicit Variant Styles
+### Use `@each` Loops for Repetitive Variants
 
-When you have multiple color or size variants, write them out explicitly using Bulma CSS custom properties:
+When you have multiple color or size variants, use Sass `@each` loops with CSS variable name strings:
 
 ```scss
 .t-slider {
-  // Color variants
-  &.is-primary {
-    background: var(--bulma-primary);
-    border-color: var(--bulma-primary);
-  }
-
-  &.is-link {
-    background: var(--bulma-link);
-    border-color: var(--bulma-link);
-  }
-
-  &.is-info {
-    background: var(--bulma-info);
-    border-color: var(--bulma-info);
-  }
-
-  &.is-success {
-    background: var(--bulma-success);
-    border-color: var(--bulma-success);
-  }
-
-  &.is-warning {
-    background: var(--bulma-warning);
-    border-color: var(--bulma-warning);
-  }
-
-  &.is-danger {
-    background: var(--bulma-danger);
-    border-color: var(--bulma-danger);
+  // Color variants - generates .is-primary, .is-link, etc.
+  @each $name, $var in (
+    "primary": "--bulma-primary",
+    "link": "--bulma-link",
+    "info": "--bulma-info",
+    "success": "--bulma-success",
+    "warning": "--bulma-warning",
+    "danger": "--bulma-danger"
+  ) {
+    &.is-#{$name} {
+      background: var(#{$var});
+      border-color: var(#{$var});
+    }
   }
 }
 ```
 
+The `#{$var}` interpolation inserts the string, so `var(#{$var})` becomes `var(--bulma-primary)` etc.
+
 ### When a Variant Needs Special Handling
 
-If one variant needs different styling (e.g., warning needs dark text for contrast), handle it separately:
+If one variant needs different styling (e.g., warning needs dark text for contrast), handle it separately after the loop:
 
 ```scss
 .t-checkbox {
   // Most colors use white checkmark
-  &.is-primary input:checked {
-    background-color: var(--bulma-primary);
-  }
-
-  &.is-link input:checked {
-    background-color: var(--bulma-link);
-  }
-
-  &.is-info input:checked {
-    background-color: var(--bulma-info);
-  }
-
-  &.is-success input:checked {
-    background-color: var(--bulma-success);
-  }
-
-  &.is-danger input:checked {
-    background-color: var(--bulma-danger);
+  @each $name, $var in (
+    "primary": "--bulma-primary",
+    "link": "--bulma-link",
+    "info": "--bulma-info",
+    "success": "--bulma-success",
+    "danger": "--bulma-danger"
+  ) {
+    &.is-#{$name} input:checked {
+      background-color: var(#{$var});
+    }
   }
 
   // Warning needs dark checkmark for contrast
@@ -290,25 +268,21 @@ If one variant needs different styling (e.g., warning needs dark text for contra
 }
 ```
 
-### Size Variants
+### Size Variants with `@each`
 
-Sizes should use Bulma CSS custom properties where applicable:
+Sizes can also use loops with tuples for additional values:
 
 ```scss
 .t-checkbox {
-  &.is-small {
-    font-size: var(--bulma-size-small);
-    input { width: 0.875rem; height: 0.875rem; }
-  }
-
-  &.is-medium {
-    font-size: var(--bulma-size-medium);
-    input { width: 1.25rem; height: 1.25rem; }
-  }
-
-  &.is-large {
-    font-size: var(--bulma-size-large);
-    input { width: 1.5rem; height: 1.5rem; }
+  @each $name, $var, $box-size in (
+    ("small", "--bulma-size-small", 0.875rem),
+    ("medium", "--bulma-size-medium", 1.25rem),
+    ("large", "--bulma-size-large", 1.5rem)
+  ) {
+    &.is-#{$name} {
+      font-size: var(#{$var});
+      input { width: $box-size; height: $box-size; }
+    }
   }
 }
 ```
@@ -332,7 +306,7 @@ Add both: Bulma class + t- prefixed class
 
 Inside scoped styles for t- class:
   - Use is-* modifiers freely (they're scoped)
-  - Use Bulma CSS custom properties (e.g., var(--bulma-primary))
+  - Use @each loops with CSS variable strings for repetitive variants
 ```
 
 ---
@@ -345,4 +319,4 @@ Inside scoped styles for t- class:
 | Bulma structural classes with no customization | Use directly: `icon`, `media`, `level` |
 | Bulma structural classes with customization | Add both: `modal t-modal`, `button t-button` |
 | Modifier classes in scoped styles | Use `is-*` directly since they're scoped to `t-` class |
-| Color/size variants | Use Bulma CSS custom properties: `var(--bulma-primary)`, etc. |
+| Repetitive color/size variants | Use `@each` loops with CSS variable strings |

@@ -176,7 +176,7 @@ function handleChange (event: Event) {
   }
 
   input[type="checkbox"]:checked + .check {
-    background: var(--bulma-link);
+    background: var(--bulma-primary);
 
     &::before {
       transform: translateX(1.175em);
@@ -188,45 +188,29 @@ function handleChange (event: Event) {
   }
 
   // Size variants
-  &.is-small {
-    font-size: var(--bulma-size-small);
-  }
-
-  &.is-medium {
-    font-size: var(--bulma-size-medium);
-  }
-
-  &.is-large {
-    font-size: var(--bulma-size-large);
+  @each $name, $var in (
+    "small": "--bulma-size-small",
+    "medium": "--bulma-size-medium",
+    "large": "--bulma-size-large"
+  ) {
+    &.is-#{$name} {
+      font-size: var(#{$var});
+    }
   }
 
   // Color variants
-  &.is-primary input[type="checkbox"]:checked + .check {
-    background: var(--bulma-primary);
-  }
-
-  &.is-link input[type="checkbox"]:checked + .check {
-    background: var(--bulma-link);
-  }
-
-  &.is-info input[type="checkbox"]:checked + .check {
-    background: var(--bulma-info);
-  }
-
-  &.is-success input[type="checkbox"]:checked + .check {
-    background: var(--bulma-success);
-  }
-
-  &.is-warning input[type="checkbox"]:checked + .check {
-    background: var(--bulma-warning);
-  }
-
-  &.is-danger input[type="checkbox"]:checked + .check {
-    background: var(--bulma-danger);
-  }
-
-  &.is-dark input[type="checkbox"]:checked + .check {
-    background: var(--bulma-dark);
+  @each $name, $var in (
+    "primary": "--bulma-primary",
+    "link": "--bulma-link",
+    "info": "--bulma-info",
+    "success": "--bulma-success",
+    "warning": "--bulma-warning",
+    "danger": "--bulma-danger",
+    "dark": "--bulma-dark"
+  ) {
+    &.is-#{$name} input[type="checkbox"]:checked + .check {
+      background: var(#{$var});
+    }
   }
 
   // Rounded switch style

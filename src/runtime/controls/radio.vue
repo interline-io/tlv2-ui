@@ -133,79 +133,36 @@ function handleChange () {
   }
 
   /* Variant colors for radio */
-  &.is-primary input[type="radio"]:checked {
-    border-color: var(--bulma-primary);
+  @each $name, $var in (
+    "primary": "--bulma-primary",
+    "link": "--bulma-link",
+    "info": "--bulma-info",
+    "success": "--bulma-success",
+    "warning": "--bulma-warning",
+    "danger": "--bulma-danger"
+  ) {
+    &.is-#{$name} input[type="radio"]:checked {
+      border-color: var(#{$var});
 
-    &::after {
-      background-color: var(--bulma-primary);
-    }
-  }
-
-  &.is-link input[type="radio"]:checked {
-    border-color: var(--bulma-link);
-
-    &::after {
-      background-color: var(--bulma-link);
-    }
-  }
-
-  &.is-info input[type="radio"]:checked {
-    border-color: var(--bulma-info);
-
-    &::after {
-      background-color: var(--bulma-info);
-    }
-  }
-
-  &.is-success input[type="radio"]:checked {
-    border-color: var(--bulma-success);
-
-    &::after {
-      background-color: var(--bulma-success);
-    }
-  }
-
-  &.is-warning input[type="radio"]:checked {
-    border-color: var(--bulma-warning);
-
-    &::after {
-      background-color: var(--bulma-warning);
-    }
-  }
-
-  &.is-danger input[type="radio"]:checked {
-    border-color: var(--bulma-danger);
-
-    &::after {
-      background-color: var(--bulma-danger);
+      &::after {
+        background-color: var(#{$var});
+      }
     }
   }
 
   /* Size variants */
-  &.is-small {
-    font-size: var(--bulma-size-small);
+  @each $name, $var, $box-size in (
+    ("small", "--bulma-size-small", 0.875rem),
+    ("medium", "--bulma-size-medium", 1.25rem),
+    ("large", "--bulma-size-large", 1.5rem)
+  ) {
+    &.is-#{$name} {
+      font-size: var(#{$var});
 
-    input[type="radio"] {
-      width: 0.875rem;
-      height: 0.875rem;
-    }
-  }
-
-  &.is-medium {
-    font-size: var(--bulma-size-medium);
-
-    input[type="radio"] {
-      width: 1.25rem;
-      height: 1.25rem;
-    }
-  }
-
-  &.is-large {
-    font-size: var(--bulma-size-large);
-
-    input[type="radio"] {
-      width: 1.5rem;
-      height: 1.5rem;
+      input[type="radio"] {
+        width: $box-size;
+        height: $box-size;
+      }
     }
   }
 }

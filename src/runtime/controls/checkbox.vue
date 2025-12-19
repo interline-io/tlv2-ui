@@ -216,34 +216,18 @@ onMounted(updateIndeterminate)
   }
 
   /* Variant colors for checkbox */
-  &.is-primary input[type="checkbox"]:checked,
-  &.is-primary input[type="checkbox"]:indeterminate {
-    border-color: var(--bulma-primary);
-    background-color: var(--bulma-primary);
-  }
-
-  &.is-link input[type="checkbox"]:checked,
-  &.is-link input[type="checkbox"]:indeterminate {
-    border-color: var(--bulma-link);
-    background-color: var(--bulma-link);
-  }
-
-  &.is-info input[type="checkbox"]:checked,
-  &.is-info input[type="checkbox"]:indeterminate {
-    border-color: var(--bulma-info);
-    background-color: var(--bulma-info);
-  }
-
-  &.is-success input[type="checkbox"]:checked,
-  &.is-success input[type="checkbox"]:indeterminate {
-    border-color: var(--bulma-success);
-    background-color: var(--bulma-success);
-  }
-
-  &.is-danger input[type="checkbox"]:checked,
-  &.is-danger input[type="checkbox"]:indeterminate {
-    border-color: var(--bulma-danger);
-    background-color: var(--bulma-danger);
+  @each $name, $var in (
+    "primary": "--bulma-primary",
+    "link": "--bulma-link",
+    "info": "--bulma-info",
+    "success": "--bulma-success",
+    "danger": "--bulma-danger"
+  ) {
+    &.is-#{$name} input[type="checkbox"]:checked,
+    &.is-#{$name} input[type="checkbox"]:indeterminate {
+      border-color: var(#{$var});
+      background-color: var(#{$var});
+    }
   }
 
   /* Warning variant needs dark checkmark for contrast */
@@ -259,30 +243,18 @@ onMounted(updateIndeterminate)
   }
 
   /* Size variants */
-  &.is-small {
-    font-size: var(--bulma-size-small);
+  @each $name, $var, $box-size in (
+    ("small", "--bulma-size-small", 0.875rem),
+    ("medium", "--bulma-size-medium", 1.25rem),
+    ("large", "--bulma-size-large", 1.5rem)
+  ) {
+    &.is-#{$name} {
+      font-size: var(#{$var});
 
-    input[type="checkbox"] {
-      width: 0.875rem;
-      height: 0.875rem;
-    }
-  }
-
-  &.is-medium {
-    font-size: var(--bulma-size-medium);
-
-    input[type="checkbox"] {
-      width: 1.25rem;
-      height: 1.25rem;
-    }
-  }
-
-  &.is-large {
-    font-size: var(--bulma-size-large);
-
-    input[type="checkbox"] {
-      width: 1.5rem;
-      height: 1.5rem;
+      input[type="checkbox"] {
+        width: $box-size;
+        height: $box-size;
+      }
     }
   }
 }

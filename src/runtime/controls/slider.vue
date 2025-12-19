@@ -166,18 +166,18 @@ provide('sliderSetValue', setValue)
       width: 1rem;
       height: 1rem;
       border-radius: 50%;
-      background: var(--bulma-link);
+      background: var(--bulma-primary);
       cursor: pointer;
-      border: 1px solid var(--bulma-link);
+      border: 1px solid var(--bulma-primary);
     }
 
     &::-moz-range-thumb {
       width: 1rem;
       height: 1rem;
       border-radius: 50%;
-      background: var(--bulma-link);
+      background: var(--bulma-primary);
       cursor: pointer;
-      border: 1px solid var(--bulma-link);
+      border: 1px solid var(--bulma-primary);
     }
 
     &:disabled {
@@ -237,75 +237,24 @@ provide('sliderSetValue', setValue)
     }
 
     // Color variants
-    &.is-primary {
-      &::-webkit-slider-thumb {
-        background: var(--bulma-primary);
-        border-color: var(--bulma-primary);
-      }
+    @each $name, $var in (
+      "primary": "--bulma-primary",
+      "link": "--bulma-link",
+      "info": "--bulma-info",
+      "success": "--bulma-success",
+      "warning": "--bulma-warning",
+      "danger": "--bulma-danger"
+    ) {
+      &.is-#{$name} {
+        &::-webkit-slider-thumb {
+          background: var(#{$var});
+          border-color: var(#{$var});
+        }
 
-      &::-moz-range-thumb {
-        background: var(--bulma-primary);
-        border-color: var(--bulma-primary);
-      }
-    }
-
-    &.is-link {
-      &::-webkit-slider-thumb {
-        background: var(--bulma-link);
-        border-color: var(--bulma-link);
-      }
-
-      &::-moz-range-thumb {
-        background: var(--bulma-link);
-        border-color: var(--bulma-link);
-      }
-    }
-
-    &.is-info {
-      &::-webkit-slider-thumb {
-        background: var(--bulma-info);
-        border-color: var(--bulma-info);
-      }
-
-      &::-moz-range-thumb {
-        background: var(--bulma-info);
-        border-color: var(--bulma-info);
-      }
-    }
-
-    &.is-success {
-      &::-webkit-slider-thumb {
-        background: var(--bulma-success);
-        border-color: var(--bulma-success);
-      }
-
-      &::-moz-range-thumb {
-        background: var(--bulma-success);
-        border-color: var(--bulma-success);
-      }
-    }
-
-    &.is-warning {
-      &::-webkit-slider-thumb {
-        background: var(--bulma-warning);
-        border-color: var(--bulma-warning);
-      }
-
-      &::-moz-range-thumb {
-        background: var(--bulma-warning);
-        border-color: var(--bulma-warning);
-      }
-    }
-
-    &.is-danger {
-      &::-webkit-slider-thumb {
-        background: var(--bulma-danger);
-        border-color: var(--bulma-danger);
-      }
-
-      &::-moz-range-thumb {
-        background: var(--bulma-danger);
-        border-color: var(--bulma-danger);
+        &::-moz-range-thumb {
+          background: var(#{$var});
+          border-color: var(#{$var});
+        }
       }
     }
   }

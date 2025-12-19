@@ -24,7 +24,7 @@ import type { NotificationVariant } from './types'
 interface Props {
   /**
    * Notification color variant using Bulma color classes.
-   * @default 'info'
+   * @default 'light'
    */
   variant?: NotificationVariant
 
@@ -47,7 +47,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  variant: 'info',
+  variant: 'light',
   message: undefined,
   closeable: false,
   light: false

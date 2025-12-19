@@ -95,7 +95,7 @@ export const DropdownTriggerVariants = [...CoreVariants, 'white', 'light', 'dark
 export type DropdownTriggerVariant = typeof DropdownTriggerVariants[number]
 
 // Msg extends core variants with dark
-export const MsgVariants = [...CoreVariants, 'dark'] as const
+export const MsgVariants = [...CoreVariants, 'dark', 'light'] as const
 export type MsgVariant = typeof MsgVariants[number]
 
 // Pagination uses core sizes and positions

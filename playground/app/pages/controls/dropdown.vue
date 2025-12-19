@@ -45,7 +45,7 @@
         <p class="mb-3">
           Hover over the button to open the dropdown
         </p>
-        <t-dropdown hoverable label="Hover me" button-variant="info">
+        <t-dropdown hoverable label="Hover me" button-variant="link">
           <t-dropdown-item value="option1">
             Option 1
           </t-dropdown-item>

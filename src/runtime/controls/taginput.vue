@@ -191,7 +191,6 @@ interface Props {
 
   /**
    * Color variant for the tags.
-   * @default 'info'
    */
   variant?: TaginputVariant
 
@@ -234,7 +233,7 @@ const props = withDefaults(defineProps<Props>(), {
   readonly: false,
   fullwidth: false,
   loading: false,
-  variant: 'info',
+  variant: undefined,
   size: undefined,
   closable: true,
   rounded: false,
