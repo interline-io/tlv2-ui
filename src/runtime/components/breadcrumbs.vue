@@ -7,7 +7,7 @@
           <nuxt-link v-if="p.routeName" :to="{ name: p.routeName, params: p.routeParams }">
             {{ p.text }}
           </nuxt-link>
-          <span v-else>{{ p.text }}</span>
+          <a v-else href="#">{{ p.text }}</a>
         </li>
       </ul>
     </nav>
