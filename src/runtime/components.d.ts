@@ -4,6 +4,7 @@
 // Declare global component types for strict template type checking
 declare module 'vue' {
   export interface GlobalComponents {
+    TlBreadcrumbs: typeof import('./components/breadcrumbs.vue')['default']
     TlDownloadCsv: typeof import('./components/download-csv.vue')['default']
     TlDownloadGeojson: typeof import('./components/download-geojson.vue')['default']
     TlDownloadJson: typeof import('./components/download-json.vue')['default']
