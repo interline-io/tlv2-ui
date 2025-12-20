@@ -7,7 +7,7 @@
           <nuxt-link v-if="p.routeName" :to="{ name: p.routeName, params: p.routeParams }">
             {{ p.text }}
           </nuxt-link>
-          <a v-else href="#">{{ p.text }}</a>
+          <span v-else>{{ p.text }}</span>
         </li>
       </ul>
     </nav>
@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import { useRoute, useRouter } from 'nuxt/app'
 
 interface nameOpts { [index: string]: string }
@@ -64,15 +64,11 @@ const classes = computed(() => {
   return 'breadcrumb ' + (props.boxed ? 'box' : '')
 })
 
-// Override names
-const mergedParams = new Map<string, string>()
-const forceUpdate = ref(0)
-
-// Watch on changes to route and forceUpdate
+// Watch on changes to route
 const curRoute = useRoute()
 const router = useRouter()
 const updateKey = computed(() => {
-  return `${String(curRoute.name)}:${forceUpdate.value}`
+  return String(curRoute.name)
 })
 
 const abbrs: Record<string, string> = {
@@ -138,8 +134,6 @@ function makeNav () {
       text = routeNames[routeId]
     } else if (props.extraRouteNames[routeId]) {
       text = props.extraRouteNames[routeId]
-    } else if (element && mergedParams.get(element)) {
-      text = mergedParams.get(element) || ''
     } else if (routeParams[element]) {
       text = String(routeParams[element])
     } else if (router.hasRoute(routeId)) {
@@ -148,7 +142,7 @@ function makeNav () {
     // Check text length
     const shortenLength = element ? (shorteners[element] || 128) : 128
     if (shortenLength && text.length > shortenLength) {
-      text = text.substr(0, shortenLength) + '…'
+      text = text.slice(0, shortenLength) + '…'
     }
 
     // Get tag
@@ -207,6 +201,6 @@ function makeNav () {
 
 <style scoped>
 nav .tag {
-  margin-left:10px;
+  margin-left: 10px;
 }
 </style>
