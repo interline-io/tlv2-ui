@@ -10,7 +10,7 @@ query currentFeeds ($feed_onestop_id: String, $feed_version_ids: [Int!]) {
     id
     name
     onestop_id
-    feed_versions(limit: 2, where: {ids: $feed_version_ids}) {
+    feed_versions(limit: 10, where: {ids: $feed_version_ids}) {
       file
       sha1
       id
