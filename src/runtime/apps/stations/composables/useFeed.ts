@@ -13,6 +13,8 @@ query currentFeeds ($feed_onestop_id: String, $feed_version_ids: [Int!]) {
     feed_versions(limit: 10, where: {ids: $feed_version_ids}) {
       file
       sha1
+      name
+      description
       id
       stations: stops(limit:1000, where:{location_type:1}) {
         feed_version {
