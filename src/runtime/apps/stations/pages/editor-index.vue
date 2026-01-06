@@ -19,7 +19,7 @@
               {{ feed.name || feed.onestop_id }}
             </td>
             <td>
-              {{ feed_version.sha1 }}
+              {{ feed_version.name || feed_version.sha1 }}
             </td>
             <td>
               <tl-link

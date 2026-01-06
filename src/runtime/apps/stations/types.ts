@@ -202,6 +202,8 @@ export interface FeedQueryResponse {
   feed_versions: Array<{
     id: number
     file?: string
+    name?: string
+    description?: string
     sha1?: string
     agencies?: AgencyData[]
     stations?: Array<{
