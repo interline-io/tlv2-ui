@@ -54,7 +54,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   station: null,
-  basemap: 'carto',
+  basemap: 'protomaps-grayscale',
   zoom: 17,
   center: () => [0, 0],
   otherStops: () => [],

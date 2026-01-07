@@ -8,7 +8,8 @@
 import { ref, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 import { Map as MapLibreMap, NavigationControl, Popup, LngLatBounds } from 'maplibre-gl'
 import type { LngLatLike, MapMouseEvent, GeoJSONSource } from 'maplibre-gl'
-import { useBasemapLayers } from '../../composables/useBasemapLayers'
+import { noLabels, labels } from 'protomaps-themes-base'
+import { useRuntimeConfig } from '#imports'
 import type { StationHub } from './types'
 import { haversinePosition } from '../../lib/geom'
 
@@ -69,19 +70,22 @@ const map = ref<MapLibreMap | null>(null)
 function initMap (): void {
   if (!mapContainer.value) return
 
-  const { basemapLayers } = useBasemapLayers()
-  const basemaps = basemapLayers.value
+  const config = useRuntimeConfig()
+  const protomapsApikey = (config.public.tlv2 as any)?.protomapsApikey
 
   const mapValue = new MapLibreMap({
     container: mapContainer.value,
     center: props.center as LngLatLike,
     zoom: props.zoom,
     style: {
+      glyphs: 'https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf',
       version: 8,
       sources: {
-        'carto': {
-          type: 'raster',
-          tiles: basemaps.carto.source.tiles,
+        'protomaps-base': {
+          type: 'vector',
+          tiles: [`https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf?key=${protomapsApikey}`],
+          maxzoom: 14,
+          attribution: '<a href="https://www.transit.land/terms">Transitland</a> | <a href="https://protomaps.com">Protomaps</a> | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         },
         'station-hubs': {
           type: 'geojson',
@@ -93,12 +97,7 @@ function initMap (): void {
         }
       },
       layers: [
-        {
-          id: 'carto',
-          source: 'carto',
-          type: 'raster',
-          ...basemaps.carto.layer
-        },
+        ...noLabels('protomaps-base', 'grayscale'),
         {
           id: 'station-hubs-fill',
           type: 'fill',
@@ -116,7 +115,8 @@ function initMap (): void {
             'line-color': '#3bb2d0',
             'line-width': 8
           }
-        }
+        },
+        ...labels('protomaps-base', 'grayscale')
       ]
     }
   })

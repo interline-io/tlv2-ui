@@ -28,7 +28,8 @@
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { Map as MapLibreMap, NavigationControl } from 'maplibre-gl'
 import type { LngLatLike } from 'maplibre-gl'
-import { useBasemapLayers } from '../../composables/useBasemapLayers'
+import { noLabels, labels } from 'protomaps-themes-base'
+import { useRuntimeConfig } from '#imports'
 
 interface Props {
   modelValue?: string | null
@@ -68,24 +69,27 @@ const dragStartHeight = ref(0)
 function initMap (): void {
   if (!mapContainer.value) return
 
-  const { basemapLayers } = useBasemapLayers()
-  const basemaps = basemapLayers.value
+  const config = useRuntimeConfig()
+  const protomapsApikey = (config.public.tlv2 as any)?.protomapsApikey
 
   const mapValue = new MapLibreMap({
     container: mapContainer.value,
     center: props.center as LngLatLike,
     zoom: props.zoom,
     style: {
+      glyphs: 'https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf',
       version: 8,
       sources: {
-        carto: basemaps.carto.source
+        'protomaps-base': {
+          type: 'vector',
+          tiles: [`https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf?key=${protomapsApikey}`],
+          maxzoom: 14,
+          attribution: '<a href="https://www.transit.land/terms">Transitland</a> | <a href="https://protomaps.com">Protomaps</a> | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }
       },
       layers: [
-        {
-          id: 'carto',
-          source: 'carto',
-          ...basemaps.carto.layer
-        }
+        ...noLabels('protomaps-base', 'grayscale'),
+        ...labels('protomaps-base', 'grayscale')
       ]
     }
   } as any)

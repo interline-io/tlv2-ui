@@ -48,7 +48,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  basemap: 'carto',
+  basemap: 'protomaps-grayscale',
   width: '100px',
   height: '100px',
   showAttribution: true,

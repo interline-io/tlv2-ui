@@ -314,7 +314,7 @@ const selectMode = ref<SelectMode>('select')
 const selectedPoint = ref<LngLat | null>(null)
 const selectedStops = ref<Stop[]>([])
 const selectedPathways = ref<Pathway[]>([])
-const basemap = ref('carto')
+const basemap = ref('protomaps-grayscale')
 
 // Computed properties
 const selectedPath = computed((): PathwayEdge[] | null => {
