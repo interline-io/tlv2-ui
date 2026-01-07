@@ -1,22 +1,22 @@
 <template>
   <div>
-    <client-only placeholder="Login">
-      <div v-if="notOk">
-        <div v-if="loggedIn">
-          <slot name="roleText">
-            Feature unavailable
-          </slot>
-        </div>
-        <div v-else>
-          <slot name="loginText">
-            Login required
-          </slot>
-        </div>
+    <div v-if="notOk">
+      <div v-if="loggedIn">
+        <slot name="roleText">
+          Feature unavailable
+        </slot>
       </div>
       <div v-else>
-        <slot name="default" />
+        <slot name="loginText">
+          Login required
+        </slot>
       </div>
-    </client-only>
+    </div>
+    <div v-else>
+      <client-only>
+        <slot name="default" />
+      </client-only>
+    </div>
   </div>
 </template>
 
@@ -41,10 +41,9 @@ const { loggedIn } = useUser()
 
 const notOk = computed(() => {
   return useLoginGate({
-    hasRole: props.role,
+    hasRole: props.role ?? undefined,
     hasAnyRole: props.hasAnyRole,
     excludeAnyRole: props.excludeAnyRole
   })
 })
-
 </script>

@@ -7,7 +7,7 @@
       <a v-if="text || sanitizedUrl" class="linker" @click="clipboard">
         <i class="mdi mdi-content-paste" title="Copy to clipboard" role="button" />
       </a>
-      <a v-if="url && sanitizedUrl" target="_blank" :href="linkUrl" class="linker">
+      <a v-if="url && sanitizedUrl" target="_blank" :href="linkUrl ?? undefined" class="linker">
         <i class="mdi mdi-link" title="Open URL" role="button" />
       </a>
     </div>
@@ -15,9 +15,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, getCurrentInstance } from 'vue'
+import { computed } from 'vue'
+import { useRuntimeConfig } from '#imports'
 import { useToastNotification } from '../composables/useToastNotification'
-import { sanitizeUrl } from '../lib/sanitize'
+import { sanitizeUrl } from '../lib/util/sanitize'
 
 // Props
 const props = withDefaults(defineProps<{
@@ -30,9 +31,9 @@ const props = withDefaults(defineProps<{
   maxWidth: '400px'
 })
 
-// Get current Vue instance for accessing app context
-const instance = getCurrentInstance()
-const $config = instance?.appContext.config.globalProperties.$config
+// Get runtime config
+const config = useRuntimeConfig()
+const { showToast } = useToastNotification()
 
 // Computed properties
 const sanitizedUrl = computed((): string | null => {
@@ -43,31 +44,36 @@ const sanitizedUrl = computed((): string | null => {
 const linkUrl = computed((): string | null => {
   // URL with UTM parameters for external links
   const url = sanitizedUrl.value
-  if (url && $config?.public?.tlv2?.safelinkUtmSource) {
+  if (url && config?.public?.tlv2?.safelinkUtmSource) {
     const separator = url.includes('?') ? '&' : '?'
-    return `${url}${separator}utm_source=${encodeURIComponent($config.public.tlv2.safelinkUtmSource)}`
+    return `${url}${separator}utm_source=${encodeURIComponent(config.public.tlv2.safelinkUtmSource)}`
   }
   return url
 })
 
 // Methods
 const clipboard = async (): Promise<void> => {
+  // Guard against SSR - navigator is only available in browser
+  if (typeof navigator === 'undefined' || !navigator.clipboard) {
+    console.warn('Clipboard API not available')
+    return
+  }
+
   // Always copy the clean URL without UTM parameters
   const textToCopy = props.text || sanitizedUrl.value
   if (textToCopy) {
     try {
       await navigator.clipboard.writeText(textToCopy)
-      useToastNotification().showToast('Copied to clipboard')
+      showToast('Copied to clipboard')
     } catch (error) {
       console.error('Failed to copy to clipboard:', error)
-      useToastNotification().showToast('Failed to copy to clipboard')
+      showToast('Failed to copy to clipboard')
     }
   }
 }
 </script>
 
 <style scoped>
-
 .safelink-outer {
   display:inline-block
 }
@@ -109,5 +115,4 @@ const clipboard = async (): Promise<void> => {
     max-width:160px;
   }
 }
-
 </style>

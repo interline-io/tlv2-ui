@@ -4,7 +4,7 @@
       <ul>
         <li v-for="p of makeNav()" :key="p.id" :class="p.class">
           <span v-if="p.tag" class="tag is-small">{{ p.tag }}</span>
-          <nuxt-link v-if="p.routeName" :to="{name:p.routeName, params: p.routeParams}">
+          <nuxt-link v-if="p.routeName" :to="{ name: p.routeName, params: p.routeParams }">
             {{ p.text }}
           </nuxt-link>
           <a v-else href="#">{{ p.text }}</a>
@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import { useRoute, useRouter } from 'nuxt/app'
 
 interface nameOpts { [index: string]: string }
@@ -42,8 +42,8 @@ const shorteners: nameVal = {
 
 const routeTags: nameOpts = {
   'editor-feedKey': 'Feed',
-  'editor-feedKey-feedVersionKey': 'Version',
-  'editor-feedKey-feedVersionKey-stations-stationKey': 'Station',
+  'apps-stations-feedVersionKey': 'Version',
+  'apps-stations-feedKey-feedVersionKey-stations-stationKey': 'Station',
   'feeds-feedKey': 'Feed',
   'feeds-feedKey-versions-feedVersionKey': 'Version',
   'routes-routeKey': 'Route',
@@ -64,14 +64,11 @@ const classes = computed(() => {
   return 'breadcrumb ' + (props.boxed ? 'box' : '')
 })
 
-// Override names
-const mergedParams = new Map<string, string>()
-const forceUpdate = ref(0)
-
-// Watch on changes to route and forceUpdate
+// Watch on changes to route
 const curRoute = useRoute()
+const router = useRouter()
 const updateKey = computed(() => {
-  return `${String(curRoute.name)}:${forceUpdate.value}`
+  return String(curRoute.name)
 })
 
 const abbrs: Record<string, string> = {
@@ -88,23 +85,22 @@ function capitalize (str: string) {
     return abbrs[str]
   }
   return str.length
-    ? str[0].toUpperCase()
+    ? str[0]?.toUpperCase()
     + str.slice(1).toLowerCase()
     : ''
 }
 
 function titleize (str: string) {
   const ret = []
-  for (const s of str.split(/[\s-_]/)) {
+  for (const s of str.split(/[\s\-_]/)) {
     ret.push(capitalize(s))
   }
   return ret.join(' ')
 }
 
 function makeNav () {
-  const router = useRouter()
-  const routePath = useRoute().name
-  const routeParams = useRoute().params
+  const routePath = curRoute.name
+  const routeParams = curRoute.params
   const routeFragments = String(routePath || '').split('-')
   const ret: linkElem[] = []
   const foundParams: Record<string, any> = {}
@@ -121,6 +117,7 @@ function makeNav () {
   }
   for (let i = 0; i < routeFragments.length; i++) {
     const element = routeFragments[i]
+    if (!element) continue
     const routeId = String(routeFragments.slice(0, i + 1).join('-'))
     const slug = routeParams.slug
     let routeName = routeId
@@ -137,17 +134,15 @@ function makeNav () {
       text = routeNames[routeId]
     } else if (props.extraRouteNames[routeId]) {
       text = props.extraRouteNames[routeId]
-    } else if (mergedParams.get(element)) {
-      text = mergedParams.get(element) || ''
     } else if (routeParams[element]) {
       text = String(routeParams[element])
     } else if (router.hasRoute(routeId)) {
       text = capitalize(element)
     }
     // Check text length
-    const shortenLength = shorteners[element] || 128
+    const shortenLength = element ? (shorteners[element] || 128) : 128
     if (shortenLength && text.length > shortenLength) {
-      text = text.substr(0, shortenLength) + '…'
+      text = text.slice(0, shortenLength) + '…'
     }
 
     // Get tag
@@ -158,7 +153,7 @@ function makeNav () {
     }
 
     // Check if route exists
-    if (slug?.length > 0 && router.hasRoute(routeId + '-slug')) {
+    if (slug && Array.isArray(slug) && slug.length > 0 && router.hasRoute(routeId + '-slug')) {
       routeName = routeId + '-slug'
     }
 
@@ -182,7 +177,7 @@ function makeNav () {
       text
     })
 
-    if (slug?.length > 0) {
+    if (slug && Array.isArray(slug) && slug.length > 0) {
       for (const [sli, sl] of Array.from(slug).entries()) {
         if (!sl) {
           continue
@@ -202,11 +197,10 @@ function makeNav () {
   }
   return ret
 }
-
 </script>
 
 <style scoped>
 nav .tag {
-  margin-left:10px;
+  margin-left: 10px;
 }
 </style>

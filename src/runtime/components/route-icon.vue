@@ -1,11 +1,11 @@
 <template>
   <div class="tl-route-icon">
     <span class="tl-route-icon-icon">
-      <o-icon :icon="routeTypeIcon" :title="routeTypeIcon" />
+      <t-icon :icon="routeTypeIcon" />
     </span>
     <span v-if="routeShortName" class="tl-route-icon-short-name">{{ routeShortName }}</span>
     <span v-if="nameIcon" class="tl-route-name-icon">
-      <o-icon :icon="nameIcon" />
+      <t-icon :icon="nameIcon" />
     </span>
     <span v-if="routeLongName && routeShortName != routeLongName">
       {{ routeLongName }}
@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { getBasicRouteType } from '../lib/routetypes'
+import { getBasicRouteType } from '../lib/gtfs/routetypes'
 
 type RouteIconType = 'tram' | 'subway' | 'train' | 'bus' | 'ferry' | 'gondola' | ''
 
@@ -107,4 +107,5 @@ const routeTypeIcon = computed<RouteIconType>(() => {
     position:relative;
     top:3px;
     /* background:green; */
-}</style>
+}
+</style>

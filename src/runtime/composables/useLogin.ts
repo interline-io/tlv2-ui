@@ -1,6 +1,6 @@
 import { navigateTo, useRoute } from '#imports'
-import { getAuthorizeUrl } from '../lib/auth0'
-import { logAuthDebug } from '../lib/log'
+import { getAuthorizeUrl } from '../lib/auth/auth0'
+import { logAuthDebug } from '../lib/util/log'
 
 // Login
 export const useLogin = async (targetUrl: null | string) => {
