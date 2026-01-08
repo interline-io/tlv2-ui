@@ -12,12 +12,12 @@ export { layers, LIGHT, DARK, WHITE, GRAYSCALE, BLACK } from '@protomaps/basemap
 /**
  * Protomaps glyphs URL template for MapLibre styles
  */
-export const PROTOMAPS_GLYPHS_URL = 'https://cdn.protomaps.com/fonts/{fontstack}/{range}.pbf'
+export const PROTOMAPS_GLYPHS_URL = 'https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf'
 
 /**
  * Protomaps sprite URL base for MapLibre styles (append flavor name, e.g. /light)
  */
-export const PROTOMAPS_SPRITE_URL = 'https://cdn.protomaps.com/sprites/v4'
+export const PROTOMAPS_SPRITE_URL = 'https://protomaps.github.io/basemaps-assets/sprites/v4'
 
 /**
  * Layer configuration for map display
