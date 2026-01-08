@@ -10,6 +10,11 @@ import { LIGHT, DARK, WHITE, GRAYSCALE, BLACK } from '@protomaps/basemaps'
 export { layers, LIGHT, DARK, WHITE, GRAYSCALE, BLACK } from '@protomaps/basemaps'
 
 /**
+ * Protomaps glyphs URL template for MapLibre styles
+ */
+export const PROTOMAPS_GLYPHS_URL = 'https://cdn.protomaps.com/fonts/{fontstack}/{range}.pbf'
+
+/**
  * Layer configuration for map display
  */
 export type LayerConfig = Record<string, any>

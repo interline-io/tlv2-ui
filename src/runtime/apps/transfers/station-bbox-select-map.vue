@@ -28,8 +28,7 @@
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { Map as MapLibreMap, NavigationControl } from 'maplibre-gl'
 import type { LngLatLike } from 'maplibre-gl'
-import { layers, GRAYSCALE } from '@protomaps/basemaps'
-import { useRuntimeConfig } from '#imports'
+import { useBasemapLayers, layers, GRAYSCALE, PROTOMAPS_GLYPHS_URL } from '../../composables/useBasemapLayers'
 
 interface Props {
   modelValue?: string | null
@@ -66,26 +65,23 @@ const dragStartY = ref(0)
 const dragStartWidth = ref(0)
 const dragStartHeight = ref(0)
 
+// Get basemap configuration from composable
+const { basemapLayers } = useBasemapLayers()
+
 function initMap (): void {
   if (!mapContainer.value) return
 
-  const config = useRuntimeConfig()
-  const protomapsApikey = (config.public.tlv2 as any)?.protomapsApikey
+  const grayscaleBasemap = basemapLayers.value['protomaps-grayscale']
 
   const mapValue = new MapLibreMap({
     container: mapContainer.value,
     center: props.center as LngLatLike,
     zoom: props.zoom,
     style: {
-      glyphs: 'https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf',
+      glyphs: PROTOMAPS_GLYPHS_URL,
       version: 8,
       sources: {
-        'protomaps-base': {
-          type: 'vector',
-          tiles: [`https://api.protomaps.com/tiles/v4/{z}/{x}/{y}.pbf?key=${protomapsApikey}`],
-          maxzoom: 14,
-          attribution: '<a href="https://www.transit.land/terms">Transitland</a> | <a href="https://protomaps.com">Protomaps</a> | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        }
+        'protomaps-base': grayscaleBasemap.source as any
       },
       layers: layers('protomaps-base', GRAYSCALE)
     }

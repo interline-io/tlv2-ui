@@ -7,7 +7,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import { Map as MaplibreMap, AttributionControl } from 'maplibre-gl'
-import { useBasemapLayers } from '../../composables/useBasemapLayers'
+import { useBasemapLayers, PROTOMAPS_GLYPHS_URL } from '../../composables/useBasemapLayers'
 import { PeliasIcons } from './basemaps'
 import MapboxDraw from '@mapbox/mapbox-gl-draw'
 import { layers } from '@protomaps/basemaps'
@@ -133,7 +133,7 @@ function initMap () {
     attributionControl: false,
     style: {
       version: 8,
-      glyphs: 'https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf',
+      glyphs: PROTOMAPS_GLYPHS_URL,
       sources,
       layers: layerList
     }
