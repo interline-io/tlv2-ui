@@ -53,6 +53,10 @@
       "types": "./dist/runtime/lib/util/index.d.ts",
       "import": "./dist/runtime/lib/util/index.js"
     },
+    "./lib/basemaps": {
+      "types": "./dist/runtime/composables/useBasemapLayers.d.ts",
+      "import": "./dist/runtime/composables/useBasemapLayers.js"
+    },
     "./apps/admin": {
       "types": "./dist/runtime/apps/admin/index.d.ts",
       "import": "./dist/runtime/apps/admin/index.js"
