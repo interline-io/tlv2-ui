@@ -276,7 +276,7 @@ const nearbyStopsQuery = gql`
 
 // Reactive data
 const nearbyStops = ref<Stop[]>([])
-const basemap = ref('carto')
+const basemap = ref('protomaps-grayscale')
 const selectedLocationTypes = ref(['0', '2']) // must be stringy
 const selectedSources = ref(['nearby', 'station'])
 const selectedAgenciesShadow = ref<string[] | null>(null)
