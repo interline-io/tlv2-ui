@@ -117,7 +117,7 @@ function initMap () {
       layerList.push(...protomapsLayers)
     } else {
       // Raster layers (Carto, Nearmap)
-      const layer = { id: k, source: k, ...v.layer }
+      const layer: any = { id: k, source: k, ...v.layer }
       // Set initial visibility for raster layers
       layer.layout = layer.layout || {}
       layer.layout.visibility = k === props.basemap ? 'visible' : 'none'
