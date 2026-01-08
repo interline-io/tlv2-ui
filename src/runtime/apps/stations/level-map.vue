@@ -10,6 +10,7 @@ import { Map as MaplibreMap, AttributionControl } from 'maplibre-gl'
 import { useBasemapLayers } from '../../composables/useBasemapLayers'
 import { PeliasIcons } from './basemaps'
 import MapboxDraw from '@mapbox/mapbox-gl-draw'
+import { layers } from '@protomaps/basemaps'
 import type { Feature, Point, LineString, Polygon, MultiPolygon } from 'geojson'
 
 // https://github.com/maplibre/maplibre-gl-js/issues/2601
@@ -99,10 +100,29 @@ function initMap () {
   if (!mapelem.value) return
 
   const sources: Record<string, any> = {}
-  const layers: any[] = []
+  const layerList: any[] = []
+
   for (const [k, v] of Object.entries(basemapLayers.value)) {
     sources[k] = v.source
-    layers.push({ id: k, source: k, ...v.layer })
+
+    // Handle vector basemaps (Protomaps) differently from raster
+    if ((v.layer as any).isVector && (v.layer as any).flavor) {
+      // Add all Protomaps layers for this flavor
+      const protomapsLayers = layers(k, (v.layer as any).flavor)
+      // Set visibility based on whether this is the active basemap
+      for (const layer of protomapsLayers) {
+        layer.layout = layer.layout || {}
+        layer.layout.visibility = k === props.basemap ? 'visible' : 'none'
+      }
+      layerList.push(...protomapsLayers)
+    } else {
+      // Raster layers (Carto, Nearmap)
+      const layer = { id: k, source: k, ...v.layer }
+      // Set initial visibility for raster layers
+      layer.layout = layer.layout || {}
+      layer.layout.visibility = k === props.basemap ? 'visible' : 'none'
+      layerList.push(layer)
+    }
   }
 
   map.value = new MaplibreMap({
@@ -113,9 +133,9 @@ function initMap () {
     attributionControl: false,
     style: {
       version: 8,
-      glyphs: '/fonts/{fontstack}/{range}.pbf',
+      glyphs: 'https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf',
       sources,
-      layers
+      layers: layerList
     }
   })
 
@@ -252,8 +272,19 @@ function drawMap () {
 // Watchers
 watch(() => props.basemap, (cur, prev) => {
   if (!map.value || !prev) return
-  map.value.setLayoutProperty(prev, 'visibility', 'none')
-  map.value.setLayoutProperty(cur, 'visibility', 'visible')
+
+  // Hide/show all layers for each basemap source
+  const style = map.value.getStyle()
+  if (style?.layers) {
+    for (const layer of style.layers) {
+      // Check if this layer belongs to the previous or current basemap
+      if (layer.source === prev) {
+        map.value.setLayoutProperty(layer.id, 'visibility', 'none')
+      } else if (layer.source === cur) {
+        map.value.setLayoutProperty(layer.id, 'visibility', 'visible')
+      }
+    }
+  }
 })
 
 watch(() => props.lines, () => {

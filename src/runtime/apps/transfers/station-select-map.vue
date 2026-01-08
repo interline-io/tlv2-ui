@@ -8,7 +8,7 @@
 import { ref, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 import { Map as MapLibreMap, NavigationControl, Popup, LngLatBounds } from 'maplibre-gl'
 import type { LngLatLike, MapMouseEvent, GeoJSONSource } from 'maplibre-gl'
-import { noLabels, labels } from 'protomaps-themes-base'
+import { layers, GRAYSCALE } from '@protomaps/basemaps'
 import { useRuntimeConfig } from '#imports'
 import type { StationHub } from './types'
 import { haversinePosition } from '../../lib/geom'
@@ -97,7 +97,7 @@ function initMap (): void {
         }
       },
       layers: [
-        ...noLabels('protomaps-base', 'grayscale'),
+        ...layers('protomaps-base', GRAYSCALE),
         {
           id: 'station-hubs-fill',
           type: 'fill',
@@ -115,8 +115,7 @@ function initMap (): void {
             'line-color': '#3bb2d0',
             'line-width': 8
           }
-        },
-        ...labels('protomaps-base', 'grayscale')
+        }
       ]
     }
   })

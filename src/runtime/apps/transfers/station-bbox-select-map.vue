@@ -28,7 +28,7 @@
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { Map as MapLibreMap, NavigationControl } from 'maplibre-gl'
 import type { LngLatLike } from 'maplibre-gl'
-import { noLabels, labels } from 'protomaps-themes-base'
+import { layers, GRAYSCALE } from '@protomaps/basemaps'
 import { useRuntimeConfig } from '#imports'
 
 interface Props {
@@ -87,10 +87,7 @@ function initMap (): void {
           attribution: '<a href="https://www.transit.land/terms">Transitland</a> | <a href="https://protomaps.com">Protomaps</a> | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }
       },
-      layers: [
-        ...noLabels('protomaps-base', 'grayscale'),
-        ...labels('protomaps-base', 'grayscale')
-      ]
+      layers: layers('protomaps-base', GRAYSCALE)
     }
   } as any)
 

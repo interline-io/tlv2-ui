@@ -4,6 +4,10 @@
 
 import { computed } from 'vue'
 import { useRuntimeConfig } from '#imports'
+import { LIGHT, DARK, WHITE, GRAYSCALE, BLACK } from '@protomaps/basemaps'
+
+// Re-export Protomaps utilities for use in consuming applications
+export { layers, LIGHT, DARK, WHITE, GRAYSCALE, BLACK } from '@protomaps/basemaps'
 
 /**
  * Layer configuration for map display
@@ -61,81 +65,68 @@ export function useBasemapLayers () {
     'protomaps-light': {
       label: 'Protomaps (light)',
       source: {
-        type: 'raster',
-        tiles: [
-          `https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.png?key=${protomapsApikey}&style=light`
-        ],
-        tileSize: 256,
+        type: 'vector',
+        tiles: [`https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf?key=${protomapsApikey}`],
+        maxzoom: 14,
         attribution: '<a href="https://www.transit.land/terms">Transitland</a> | <a href="https://protomaps.com">Protomaps</a> | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
       },
       layer: {
-        type: 'raster',
-        minzoom: 0,
-        maxzoom: 22
+        // For vector sources, we need to add multiple layers, not just one
+        // This will be handled specially in the map initialization
+        isVector: true,
+        flavor: LIGHT
       }
     },
     'protomaps-dark': {
       label: 'Protomaps (dark)',
       source: {
-        type: 'raster',
-        tiles: [
-          `https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.png?key=${protomapsApikey}&style=dark`
-        ],
-        tileSize: 256,
+        type: 'vector',
+        tiles: [`https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf?key=${protomapsApikey}`],
+        maxzoom: 14,
         attribution: '<a href="https://www.transit.land/terms">Transitland</a> | <a href="https://protomaps.com">Protomaps</a> | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
       },
       layer: {
-        type: 'raster',
-        minzoom: 0,
-        maxzoom: 22
+        isVector: true,
+        flavor: DARK
       }
     },
     'protomaps-white': {
       label: 'Protomaps (white)',
       source: {
-        type: 'raster',
-        tiles: [
-          `https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.png?key=${protomapsApikey}&style=white`
-        ],
-        tileSize: 256,
+        type: 'vector',
+        tiles: [`https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf?key=${protomapsApikey}`],
+        maxzoom: 14,
         attribution: '<a href="https://www.transit.land/terms">Transitland</a> | <a href="https://protomaps.com">Protomaps</a> | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
       },
       layer: {
-        type: 'raster',
-        minzoom: 0,
-        maxzoom: 22
+        isVector: true,
+        flavor: WHITE
       }
     },
     'protomaps-grayscale': {
       label: 'Protomaps (grayscale)',
       source: {
-        type: 'raster',
-        tiles: [
-          `https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.png?key=${protomapsApikey}&style=grayscale`
-        ],
-        tileSize: 256,
+        type: 'vector',
+        tiles: [`https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf?key=${protomapsApikey}`],
+        maxzoom: 14,
         attribution: '<a href="https://www.transit.land/terms">Transitland</a> | <a href="https://protomaps.com">Protomaps</a> | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
       },
       layer: {
-        type: 'raster',
-        minzoom: 0,
-        maxzoom: 22
+        isVector: true,
+        flavor: GRAYSCALE
       }
     },
     'protomaps-black': {
       label: 'Protomaps (black)',
       source: {
-        type: 'raster',
-        tiles: [
-          `https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.png?key=${protomapsApikey}&style=black`
-        ],
-        tileSize: 256,
+        type: 'vector',
+        tiles: [`https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf?key=${protomapsApikey}`],
+        maxzoom: 14,
         attribution: '<a href="https://www.transit.land/terms">Transitland</a> | <a href="https://protomaps.com">Protomaps</a> | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
       },
       layer: {
-        type: 'raster',
-        minzoom: 0,
-        maxzoom: 22
+        isVector: true,
+        flavor: BLACK
       }
     },
     'carto': {
