@@ -49,7 +49,7 @@
           </t-select>
         </t-field>
 
-        <t-field v-if="(entity.location_type === 4 || (entity.parent && entity.parent?.id !== station.id))" label="Parent">
+        <t-field v-if="(entity.location_type === 4 || (entity.parent && entity.parent?.id !== station.id))" label="Parent" class="parent-dropdown-field">
           <t-dropdown
             v-model="entity.parent.id"
             selectable
@@ -357,5 +357,12 @@ function routeSummary (ss: StopData): string {
   white-space: nowrap;
   text-overflow: ellipsis;
   justify-content: left;
+}
+/* Allow text wrapping in parent dropdown items for long platform/station names */
+.parent-dropdown-field .t-dropdown-item h3,
+.parent-dropdown-field .t-dropdown-item small {
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 </style>
