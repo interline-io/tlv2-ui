@@ -403,7 +403,12 @@ export function useStation (options: UseStationOptions) {
       throw new Error('Station not available')
     }
     ent.feed_version.id = feedVersion.value.id
-    ent.parent = { id: station.value.id }
+    // Boarding areas (location_type=4) must have a Platform (location_type=0) as parent_station
+    // For all other stop types, parent should be the Station (location_type=1)
+    if (ent.location_type !== 4) {
+      ent.parent = { id: station.value.id }
+    }
+    // If location_type is 4, preserve the parent that was set in the entity (should be a platform)
     const v = ent.value()
     const vars = { set: v }
     return executeMutation(stopCreateMutation, vars)
@@ -420,7 +425,12 @@ export function useStation (options: UseStationOptions) {
       throw new Error('Station not available')
     }
     const v = ent.value()
-    v.parent = { id: station.value.id }
+    // Boarding areas (location_type=4) must have a Platform (location_type=0) as parent_station
+    // For all other stop types, parent should be the Station (location_type=1)
+    if (ent.location_type !== 4) {
+      v.parent = { id: station.value.id }
+    }
+    // If location_type is 4, preserve the parent that was set in the entity (should be a platform)
     const vars = { set: v }
     return executeMutation(stopUpdateMutation, vars)
   }
