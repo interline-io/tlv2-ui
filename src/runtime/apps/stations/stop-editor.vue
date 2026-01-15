@@ -270,7 +270,14 @@ const levelIdStr = computed({
 })
 
 const platformStops = computed((): StopData[] => {
-  return props.station.stops.filter((s) => { return s.location_type === 0 })
+  return props.station.stops
+    .filter(s => s.location_type === 0)
+    .sort((a, b) => {
+      // Sort by stop_name for consistent ordering
+      const nameA = a.stop_name || ''
+      const nameB = b.stop_name || ''
+      return nameA.localeCompare(nameB)
+    })
 })
 
 const parentStop = computed((): StopData | null => {
@@ -338,8 +345,18 @@ function pathwayIcon (mode: number): { url: string, label: string } {
 }
 
 function routeSummary (ss: StopData): string {
-  return (ss?.external_reference?.target_active_stop?.route_stops || [])
-    .map((rs: RouteStopData) => { return `${rs.route!.agency!.agency_id}:${rs.route!.route_short_name || rs.route!.route_long_name}` })
+  // Check external reference route_stops first (for associated stops), then fall back to direct route_stops
+  let rss = ss?.route_stops || []
+  if (ss?.external_reference?.target_active_stop?.route_stops) {
+    rss = ss.external_reference.target_active_stop.route_stops
+  }
+  return rss
+    .map((rs: RouteStopData) => {
+      const agencyId = rs.route?.agency?.agency_id || ''
+      const routeName = rs.route?.route_short_name || rs.route?.route_long_name || ''
+      return agencyId && routeName ? `${agencyId}:${routeName}` : routeName || ''
+    })
+    .filter(Boolean)
     .join(', ')
 }
 </script>
