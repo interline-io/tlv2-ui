@@ -125,13 +125,17 @@ function handleClick (event: MouseEvent) {
   background-color: #dbdbdb;
 }
 
-.t-dropdown-item-nested:first-of-type::before {
+/* Adjust vertical line for first/last nested items when they're the first/last child */
+.t-dropdown-item-nested:first-child::before {
   top: 50%;
 }
 
-.t-dropdown-item-nested:last-of-type::before {
+.t-dropdown-item-nested:last-child::before {
   bottom: 50%;
 }
+
+/* If nested items are not first/last child (e.g., header item before them),
+   the default top: 0 and bottom: 0 still works fine for the connector */
 
 .t-dropdown-item-nested::after {
   content: '';

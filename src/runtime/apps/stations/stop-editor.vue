@@ -52,7 +52,9 @@
         <!-- Parent dropdown is only needed for boarding areas (type 4) which must have a Platform as parent -->
         <!-- For all other types (Platform, Entrance, Node), parent is automatically set to the Station -->
         <t-field v-if="entity.location_type === 4" label="Parent" class="parent-dropdown-field">
+          <span v-if="readOnly">{{ parentStopLabel }}</span>
           <t-dropdown
+            v-else
             v-model="entity.parent.id"
             selectable
             :label="parentStopLabel"
@@ -72,6 +74,10 @@
                 {{ routeSummary(ss) }}
               </h3>
               <small class="has-text-grey">Platform</small>
+            </t-dropdown-item>
+            <!-- Show message when no platforms are available -->
+            <t-dropdown-item v-if="platformStops.length === 0" :disabled="true" :ariaRole="'listitem'">
+              <small class="has-text-grey">No platforms available</small>
             </t-dropdown-item>
           </t-dropdown>
         </t-field>
@@ -281,7 +287,7 @@ const platformStops = computed((): StopData[] => {
 
 const parentStop = computed((): StopData | null => {
   // For boarding areas (type 4), parent should be a platform, not the station
-  // Search through station stops to find the parent platform
+  // Search through station stops to find the current parent
   for (const s of props.station.stops) {
     if (s.id === entity.value.parent?.id) {
       return s
