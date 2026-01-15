@@ -235,7 +235,7 @@ const _emit = defineEmits<{
 }>()
 
 const level = ref(new Level(props.value).setDefaults())
-const basemap = ref('carto')
+const basemap = ref('protomaps-grayscale')
 const showGeojsonEditor = ref(false)
 const geojsonError = ref<string | null>(null)
 const geojsonGeometryBuffer = ref('')
