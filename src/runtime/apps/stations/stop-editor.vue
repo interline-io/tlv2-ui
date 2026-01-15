@@ -49,14 +49,16 @@
           </t-select>
         </t-field>
 
-        <t-field v-if="(entity.location_type === 4 || (entity.parent && entity.parent?.id !== station.id))" label="Parent">
+        <t-field v-if="(entity.location_type === 4 || (entity.parent && entity.parent?.id !== station.id))" label="Parent" class="parent-dropdown-field">
           <t-dropdown
             v-model="entity.parent.id"
             selectable
             :label="parentStop ? parentStop.stop_name : 'None'"
           >
             <!-- eslint-disable vue/attribute-hyphenation -->
-            <t-dropdown-item v-if="station.stop" :value="station.stop.id" :ariaRole="'listitem'">
+            <!-- For boarding areas (location_type=4), only show platforms, not the station -->
+            <!-- For all other location types, only show the station (per GTFS spec) -->
+            <t-dropdown-item v-if="station.stop && entity.location_type !== 4" :value="station.stop.id" :ariaRole="'listitem'">
               <h3>{{ station.stop.stop_name }}</h3>
               <small> Station </small>
             </t-dropdown-item>
@@ -64,11 +66,14 @@
             <!-- <t-dropdown-item :value="-1" :ariaRole="'listitem'">
               <h3>No parent</h3>
             </t-dropdown-item> -->
-            <t-dropdown-item v-for="ss of platformStops" :key="ss.id" :value="ss.id" :ariaRole="'listitem'" :disabled="ss.id === entity.id">
-              <!-- eslint-enable vue/attribute-hyphenation -->
-              <h3>{{ ss.stop_name }}</h3>
-              <small> Platform: {{ routeSummary(ss) }}</small>
-            </t-dropdown-item>
+            <!-- Only show platforms for boarding areas (location_type=4) per GTFS spec -->
+            <template v-if="entity.location_type === 4">
+              <t-dropdown-item v-for="ss of platformStops" :key="ss.id" :value="ss.id" :ariaRole="'listitem'" :disabled="ss.id === entity.id">
+                <!-- eslint-enable vue/attribute-hyphenation -->
+                <h3>{{ ss.stop_name }}</h3>
+                <small> Platform: {{ routeSummary(ss) }}</small>
+              </t-dropdown-item>
+            </template>
           </t-dropdown>
         </t-field>
 
@@ -352,5 +357,12 @@ function routeSummary (ss: StopData): string {
   white-space: nowrap;
   text-overflow: ellipsis;
   justify-content: left;
+}
+/* Allow text wrapping in parent dropdown items for long platform/station names */
+.parent-dropdown-field .t-dropdown-item h3,
+.parent-dropdown-field .t-dropdown-item small {
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 </style>

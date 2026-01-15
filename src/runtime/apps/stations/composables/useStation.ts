@@ -403,7 +403,12 @@ export function useStation (options: UseStationOptions) {
       throw new Error('Station not available')
     }
     ent.feed_version.id = feedVersion.value.id
-    ent.parent = { id: station.value.id }
+    // Boarding areas (location_type=4) must have a Platform (location_type=0) as parent_station
+    // For all other stop types, parent should be the Station (location_type=1)
+    if (ent.location_type !== 4) {
+      ent.parent = { id: station.value.id }
+    }
+    // If location_type is 4, preserve the parent that was set in the entity (should be a platform)
     const v = ent.value()
     const vars = { set: v }
     return executeMutation(stopCreateMutation, vars)
@@ -420,7 +425,12 @@ export function useStation (options: UseStationOptions) {
       throw new Error('Station not available')
     }
     const v = ent.value()
-    v.parent = { id: station.value.id }
+    // Boarding areas (location_type=4) must have a Platform (location_type=0) as parent_station
+    // For all other stop types, parent should be the Station (location_type=1)
+    if (ent.location_type !== 4) {
+      v.parent = { id: station.value.id }
+    }
+    // If location_type is 4, preserve the parent that was set in the entity (should be a platform)
     const vars = { set: v }
     return executeMutation(stopUpdateMutation, vars)
   }
@@ -440,9 +450,12 @@ export function useStation (options: UseStationOptions) {
       throw new Error('Feed version not available')
     }
     const sourceFeed = ent.feed_version?.feed?.onestop_id
-    const stop = new Stop({
+    // For boarding areas (location_type=4), don't set parent to station
+    // The parent platform relationship from the source feed may not exist in the target station
+    // User will need to manually set the correct platform parent after import
+    // For all other stop types, set parent to station
+    const stopData: any = {
       feed_version: { id: feedVersion.value.id },
-      parent: { id: station.value.id },
       stop_id: `import-${sourceFeed}-${ent.stop_id}`,
       level: { id: ent.level.id },
       stop_name: ent.stop_name,
@@ -454,7 +467,12 @@ export function useStation (options: UseStationOptions) {
         target_feed_onestop_id: sourceFeed,
         target_stop_id: ent.stop_id
       }
-    })
+    }
+    // Only set parent for non-boarding areas
+    if (ent.location_type !== 4) {
+      stopData.parent = { id: station.value.id }
+    }
+    const stop = new Stop(stopData)
     return createStop(stop)
   }
 
