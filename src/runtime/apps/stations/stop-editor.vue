@@ -61,14 +61,14 @@
           >
             <!-- eslint-disable vue/attribute-hyphenation -->
             <!-- Show station as non-selectable header when platforms exist -->
-            <t-dropdown-item v-if="station.stop && platformStops.length > 0" :disabled="true" :ariaRole="'listitem'">
+            <t-dropdown-item v-if="station.stop && platformStops.length > 0" :disabled="true">
               <h3 class="has-text-weight-semibold">
                 {{ station.stop.stop_name }}
               </h3>
-              <small class="has-text-grey"> Station </small>
+              <small class="has-text-grey">Station</small>
             </t-dropdown-item>
             <!-- Show platforms indented under the station -->
-            <t-dropdown-item v-for="ss of platformStops" :key="ss.id" :value="ss.id" :ariaRole="'listitem'" :disabled="ss.id === entity.id" nested>
+            <t-dropdown-item v-for="ss of platformStops" :key="ss.id" :value="ss.id" :disabled="ss.id === entity.id" nested>
               <!-- eslint-enable vue/attribute-hyphenation -->
               <h3>
                 {{ routeSummary(ss) }}
@@ -76,7 +76,7 @@
               <small class="has-text-grey">Platform</small>
             </t-dropdown-item>
             <!-- Show message when no platforms are available -->
-            <t-dropdown-item v-if="platformStops.length === 0" :disabled="true" :ariaRole="'listitem'">
+            <t-dropdown-item v-if="platformStops.length === 0" :disabled="true">
               <small class="has-text-grey">No platforms available</small>
             </t-dropdown-item>
           </t-dropdown>

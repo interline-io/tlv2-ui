@@ -111,40 +111,30 @@ function handleClick (event: MouseEvent) {
 
 /* Tree-like hierarchy for nested items */
 .t-dropdown-item-nested {
-  padding-left: 1.5rem;
+  padding-left: 2rem;
   position: relative;
 }
 
+/* Vertical line for each nested item - always full height */
 .t-dropdown-item-nested::before {
   content: '';
   position: absolute;
-  left: 0.75rem;
+  left: 1rem;
   top: 0;
   bottom: 0;
   width: 2px;
-  background-color: #dbdbdb;
+  background-color: var(--bulma-border, #dbdbdb);
 }
 
-/* Adjust vertical line for first/last nested items when they're the first/last child */
-.t-dropdown-item-nested:first-child::before {
-  top: 50%;
-}
-
-.t-dropdown-item-nested:last-child::before {
-  bottom: 50%;
-}
-
-/* If nested items are not first/last child (e.g., header item before them),
-   the default top: 0 and bottom: 0 still works fine for the connector */
-
+/* Horizontal branch connecting to the vertical trunk line */
 .t-dropdown-item-nested::after {
   content: '';
   position: absolute;
-  left: 0.75rem;
+  left: 1rem;
   top: 50%;
   width: 0.5rem;
   height: 2px;
-  background-color: #dbdbdb;
+  background-color: var(--bulma-border, #dbdbdb);
   transform: translateY(-50%);
 }
 </style>
