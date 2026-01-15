@@ -49,31 +49,36 @@
           </t-select>
         </t-field>
 
-        <t-field v-if="(entity.location_type === 4 || (entity.parent && entity.parent?.id !== station.id))" label="Parent" class="parent-dropdown-field">
+        <!-- Parent dropdown is only needed for boarding areas (type 4) which must have a Platform as parent -->
+        <!-- For all other types (Platform, Entrance, Node), parent is automatically set to the Station -->
+        <t-field v-if="entity.location_type === 4" label="Parent" class="parent-dropdown-field">
+          <span v-if="readOnly">{{ parentStopLabel }}</span>
           <t-dropdown
+            v-else
             v-model="entity.parent.id"
             selectable
-            :label="parentStop ? parentStop.stop_name : 'None'"
+            :label="parentStopLabel"
           >
             <!-- eslint-disable vue/attribute-hyphenation -->
-            <!-- For boarding areas (location_type=4), only show platforms, not the station -->
-            <!-- For all other location types, only show the station (per GTFS spec) -->
-            <t-dropdown-item v-if="station.stop && entity.location_type !== 4" :value="station.stop.id" :ariaRole="'listitem'">
-              <h3>{{ station.stop.stop_name }}</h3>
-              <small> Station </small>
+            <!-- Show station as non-selectable header when platforms exist -->
+            <t-dropdown-item v-if="station.stop && platformStops.length > 0" :disabled="true">
+              <h3 class="has-text-weight-semibold">
+                {{ station.stop.stop_name }}
+              </h3>
+              <small class="has-text-grey">Station</small>
             </t-dropdown-item>
-            <!-- Stops can be "lost" if parent is unset completely. Don't allow this in UI -->
-            <!-- <t-dropdown-item :value="-1" :ariaRole="'listitem'">
-              <h3>No parent</h3>
-            </t-dropdown-item> -->
-            <!-- Only show platforms for boarding areas (location_type=4) per GTFS spec -->
-            <template v-if="entity.location_type === 4">
-              <t-dropdown-item v-for="ss of platformStops" :key="ss.id" :value="ss.id" :ariaRole="'listitem'" :disabled="ss.id === entity.id">
-                <!-- eslint-enable vue/attribute-hyphenation -->
-                <h3>{{ ss.stop_name }}</h3>
-                <small> Platform: {{ routeSummary(ss) }}</small>
-              </t-dropdown-item>
-            </template>
+            <!-- Show platforms indented under the station -->
+            <t-dropdown-item v-for="ss of platformStops" :key="ss.id" :value="ss.id" :disabled="ss.id === entity.id" nested>
+              <!-- eslint-enable vue/attribute-hyphenation -->
+              <h3>
+                {{ routeSummary(ss) }}
+              </h3>
+              <small class="has-text-grey">Platform</small>
+            </t-dropdown-item>
+            <!-- Show message when no platforms are available -->
+            <t-dropdown-item v-if="platformStops.length === 0" :disabled="true">
+              <small class="has-text-grey">No platforms available</small>
+            </t-dropdown-item>
           </t-dropdown>
         </t-field>
 
@@ -270,19 +275,38 @@ const levelIdStr = computed({
 })
 
 const platformStops = computed((): StopData[] => {
-  return props.station.stops.filter((s) => { return s.location_type === 0 })
+  return props.station.stops
+    .filter(s => s.location_type === 0)
+    .sort((a, b) => {
+      // Sort by stop_name for consistent ordering
+      const nameA = a.stop_name || ''
+      const nameB = b.stop_name || ''
+      return nameA.localeCompare(nameB)
+    })
 })
 
 const parentStop = computed((): StopData | null => {
-  if (entity.value.parent?.id === props.station.id) {
-    return props.station.stop!
-  }
+  // For boarding areas (type 4), parent should be a platform, not the station
+  // Search through station stops to find the current parent
   for (const s of props.station.stops) {
     if (s.id === entity.value.parent?.id) {
       return s
     }
   }
   return null
+})
+
+const parentStopLabel = computed((): string => {
+  if (!parentStop.value) {
+    return 'None'
+  }
+  // For boarding areas, parent should be a platform - show route summary to distinguish it
+  if (parentStop.value.location_type === 0) {
+    const routes = routeSummary(parentStop.value)
+    return routes || parentStop.value.stop_name || 'Platform'
+  }
+  // Fallback (shouldn't happen for valid boarding areas)
+  return parentStop.value.stop_name || 'None'
 })
 
 const hasAssociatedPathways = computed((): boolean => {
@@ -338,8 +362,18 @@ function pathwayIcon (mode: number): { url: string, label: string } {
 }
 
 function routeSummary (ss: StopData): string {
-  return (ss?.external_reference?.target_active_stop?.route_stops || [])
-    .map((rs: RouteStopData) => { return `${rs.route!.agency!.agency_id}:${rs.route!.route_short_name || rs.route!.route_long_name}` })
+  // Check external reference route_stops first (for associated stops), then fall back to direct route_stops
+  let rss = ss?.route_stops || []
+  if (ss?.external_reference?.target_active_stop?.route_stops) {
+    rss = ss.external_reference.target_active_stop.route_stops
+  }
+  return rss
+    .map((rs: RouteStopData) => {
+      const agencyId = rs.route?.agency?.agency_id || ''
+      const routeName = rs.route?.route_short_name || rs.route?.route_long_name || ''
+      return agencyId && routeName ? `${agencyId}:${routeName}` : routeName || ''
+    })
+    .filter(Boolean)
     .join(', ')
 }
 </script>
@@ -357,12 +391,5 @@ function routeSummary (ss: StopData): string {
   white-space: nowrap;
   text-overflow: ellipsis;
   justify-content: left;
-}
-/* Allow text wrapping in parent dropdown items for long platform/station names */
-.parent-dropdown-field .t-dropdown-item h3,
-.parent-dropdown-field .t-dropdown-item small {
-  white-space: normal;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
 }
 </style>
