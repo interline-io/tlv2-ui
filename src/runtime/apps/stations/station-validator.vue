@@ -332,7 +332,7 @@ function validateStop (stop: Stop, stationStops: Stop[]): ValidationError[] {
   }
   if (stop.location_type === 3 && (fromPathways.length + toPathways.length < 2)) {
     errs.push({
-      message: 'Interline recommendation: generic nodes should connect to at least two pathways, so rider can transit through node to another node'
+      message: 'Interline recommendation: generic nodes should connect to at least two pathways so a rider can transit through the node to another node'
     })
   }
   if (stop.location_type === 0) {
