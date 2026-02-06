@@ -347,10 +347,9 @@ function validateStop (stop: Stop, stationStops: Stop[]): ValidationError[] {
     }
   }
   if (stop.location_type === 4 && stop.parent?.id) {
-    const parentPathways = [...fromPathways, ...toPathways].filter((pw) => {
-      return pw.from_stop.id === stop.parent!.id || pw.to_stop.id === stop.parent!.id
-    })
-    if (parentPathways.length > 0) {
+    const allPathways = [...fromPathways, ...toPathways]
+    const hasParentPathway = allPathways.some(pw => pw.from_stop.id === stop.parent!.id || pw.to_stop.id === stop.parent!.id)
+    if (hasParentPathway) {
       errs.push({
         message: 'Boarding areas connect to their parent platform via the parent_station setting, not via drawn pathways'
       })
