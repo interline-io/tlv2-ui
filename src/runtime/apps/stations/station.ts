@@ -68,6 +68,9 @@ fragment pathwayStop on Stop {
   platform_code
   level {
     id
+    level_id
+    level_name
+    level_index
   }
   parent {
     id

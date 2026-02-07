@@ -265,6 +265,7 @@ import { PathwayModes } from '../../../lib/pathways/pathway-icons'
 import { LocationTypes } from '../basemaps'
 import { Stop, Pathway, mapLevelKeyFn } from '../station'
 import type { Level } from '../station'
+import type { LevelData } from '../types'
 import { useStation } from '../composables/useStation'
 import { useToastNotification } from '../../../composables/useToastNotification'
 
@@ -273,6 +274,41 @@ type SelectMode = 'select' | 'add-node' | 'edit-node' | 'add-pathway' | 'edit-pa
 interface PathwayEdge {
   cost: number
   pathway: Pathway
+}
+
+type LevelFeatureProperties = Pick<LevelData, 'id' | 'level_id' | 'level_name' | 'level_index'>
+
+interface PathwayFeatureProperties {
+  id?: number
+  pathway_id?: string
+  pathway_mode?: number
+  signposted_as?: string
+  reverse_signposted_as?: string
+  stair_count?: number
+  is_bidirectional?: number
+  length?: number
+  max_slope?: number
+  from_id?: number
+  from_stop_id: string
+  from_stop_name?: string
+  to_id?: number
+  to_stop_id: string
+  to_stop_name?: string
+  from_level_id?: string
+  from_level_name?: string
+  to_level_id?: string
+  to_level_name?: string
+}
+
+interface StopFeatureProperties {
+  id?: number
+  stop_name?: string
+  stop_id: string
+  stop_code?: string
+  stop_desc?: string
+  location_type?: number
+  level_id?: string
+  level_index?: number
 }
 
 defineOptions({
@@ -390,7 +426,7 @@ const geojsonFeatures = computed((): Feature[] => {
         level_id: s.level_id,
         level_name: s.level_name,
         level_index: s.level_index
-      },
+      } satisfies LevelFeatureProperties,
       geometry: s.geometry!
     }
   }))
@@ -415,11 +451,11 @@ const geojsonFeatures = computed((): Feature[] => {
         to_id: s.to_stop.id,
         to_stop_id: String(s.to_stop.stop_id),
         to_stop_name: s.to_stop.stop_name,
-        from_level_id: s.from_stop.level?.id,
-        from_level_name: s.from_stop.level?.id,
-        to_level_id: s.to_stop.level?.id,
-        to_level_name: s.to_stop.level?.id
-      },
+        from_level_id: s.from_stop.level?.level_id,
+        from_level_name: s.from_stop.level?.level_name,
+        to_level_id: s.to_stop.level?.level_id,
+        to_level_name: s.to_stop.level?.level_name
+      } satisfies PathwayFeatureProperties,
       geometry: {
         type: 'LineString' as const,
         coordinates: [
@@ -441,9 +477,9 @@ const geojsonFeatures = computed((): Feature[] => {
         stop_code: s.stop_code,
         stop_desc: s.stop_desc,
         location_type: s.location_type,
-        level_id: s.level?.id,
+        level_id: s.level?.level_id,
         level_index: s.level?.level_index
-      },
+      } satisfies StopFeatureProperties,
       geometry: s.geometry!
     }
   }))
