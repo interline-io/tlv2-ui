@@ -220,7 +220,7 @@ const errors = computed((): { stops: Record<number, ValidationError[]>, pathways
   const errors: { stops: Record<number, ValidationError[]>, pathways: Record<number, ValidationError[]> } = { stops: {}, pathways: {} }
   for (const stop of props.station.stops) {
     if (stop.id) {
-      errors.stops[stop.id] = validateStop(stop)
+      errors.stops[stop.id] = validateStop(stop, props.station.stops)
     }
   }
   for (const pw of pathways.value) {
@@ -277,7 +277,7 @@ function _validateConnectivity (_station: Station): ValidationError[] {
   return []
 }
 
-function validateStop (stop: Stop): ValidationError[] {
+function validateStop (stop: Stop, stationStops: Stop[]): ValidationError[] {
   const fromPathways = stop.pathways_from_stop || []
   const toPathways = stop.pathways_to_stop || []
   const targetStop = stop.external_reference?.target_active_stop || null
@@ -289,7 +289,7 @@ function validateStop (stop: Stop): ValidationError[] {
   }
   if (targetStop && targetStop.location_type !== stop.location_type) {
     errs.push({
-      message: `Stop must have the same location_type as the target stop (location_type = ${targetStop.location_type})`
+      message: `Interline recommendation: stop must have the same location_type as the target stop (location_type = ${targetStop.location_type})`
     })
   }
   // if (stop.location_type === 2 && !stop.external_reference?.target_active_stop) {
@@ -321,23 +321,39 @@ function validateStop (stop: Stop): ValidationError[] {
   }
   if (stop.external_reference && stop.external_reference.target_active_stop === null) {
     errs.push({
-      message: `Cannot resolve reference to stop ${stop.external_reference.target_feed_onestop_id}:${stop.external_reference.target_stop_id}`
+      message: `Interline recommendation: cannot resolve reference to stop ${stop.external_reference.target_feed_onestop_id}:${stop.external_reference.target_stop_id}`
     })
   }
-  if (stop.location_type !== 1 && stop.location_type !== 0 && (stop.pathways_from_stop || []).length === 0 && (stop.pathways_to_stop || []).length === 0) {
+  const hasBoardingAreas = stop.location_type === 0 && stationStops.some(s => s.location_type === 4 && s.parent?.id === stop.id)
+  if (stop.location_type !== 1 && !hasBoardingAreas && fromPathways.length === 0 && toPathways.length === 0) {
     errs.push({
-      message: 'All non-platform stops require at least one connecting pathway'
+      message: 'All locations within a station require at least one connecting pathway, except platforms with boarding areas'
     })
   }
   if (stop.location_type === 3 && (fromPathways.length + toPathways.length < 2)) {
     errs.push({
-      message: 'Dangling generic node - must be able to transit through node to another node'
+      message: 'Interline recommendation: generic nodes should connect to at least two pathways so a rider can transit through the node to another node'
     })
   }
-  if (stop.location_type === 0 && (fromPathways.length + toPathways.length > 1)) {
-    errs.push({
-      message: 'Do not transit through platforms'
-    })
+  if (stop.location_type === 0) {
+    if (hasBoardingAreas && (fromPathways.length + toPathways.length > 0)) {
+      errs.push({
+        message: 'Platforms with boarding areas must not have pathways; assign pathways to the boarding areas instead'
+      })
+    } else if (!hasBoardingAreas && (fromPathways.length + toPathways.length > 1)) {
+      errs.push({
+        message: 'Interline recommendation: do not transit through platforms'
+      })
+    }
+  }
+  if (stop.location_type === 4 && stop.parent?.id) {
+    const allPathways = [...fromPathways, ...toPathways]
+    const hasParentPathway = allPathways.some(pw => pw.from_stop.id === stop.parent!.id || pw.to_stop.id === stop.parent!.id)
+    if (hasParentPathway) {
+      errs.push({
+        message: 'Boarding areas connect to their parent platform via the parent_station setting, not via drawn pathways'
+      })
+    }
   }
   return errs
 }
@@ -346,7 +362,7 @@ function validatePathway (pathway: Pathway): ValidationError[] {
   const errs: ValidationError[] = []
   if (pathway.from_stop.id === pathway.to_stop.id) {
     errs.push({
-      message: 'Pathway is a loop - from_stop_id cannot equal to_stop_id'
+      message: 'Interline recommendation: pathway is a loop — from_stop_id should not equal to_stop_id'
     })
   }
   if (pathway.pathway_mode === 7 && pathway.is_bidirectional === 1) {
@@ -359,7 +375,7 @@ function validatePathway (pathway: Pathway): ValidationError[] {
       // ok
     } else {
       errs.push({
-        message: 'Stairs pathways must have a stair_count or connect stops with different levels'
+        message: 'Interline recommendation: stairs pathways should have a stair_count or connect stops with different levels'
       })
     }
   }
