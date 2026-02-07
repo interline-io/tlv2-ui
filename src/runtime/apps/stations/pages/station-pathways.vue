@@ -415,10 +415,10 @@ const geojsonFeatures = computed((): Feature[] => {
         to_id: s.to_stop.id,
         to_stop_id: String(s.to_stop.stop_id),
         to_stop_name: s.to_stop.stop_name,
-        from_level_id: s.from_stop.level?.id,
-        from_level_name: s.from_stop.level?.id,
-        to_level_id: s.to_stop.level?.id,
-        to_level_name: s.to_stop.level?.id
+        from_level_id: s.from_stop.level?.level_id,
+        from_level_name: s.from_stop.level?.level_name,
+        to_level_id: s.to_stop.level?.level_id,
+        to_level_name: s.to_stop.level?.level_name
       },
       geometry: {
         type: 'LineString' as const,
@@ -441,7 +441,7 @@ const geojsonFeatures = computed((): Feature[] => {
         stop_code: s.stop_code,
         stop_desc: s.stop_desc,
         location_type: s.location_type,
-        level_id: s.level?.id,
+        level_id: s.level?.level_id,
         level_index: s.level?.level_index
       },
       geometry: s.geometry!
