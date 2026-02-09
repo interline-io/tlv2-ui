@@ -56,7 +56,7 @@ describe('Graph', () => {
       '6409868-6409863-1639527743885'
     ]
     const pwIds = path.edges?.map((s) => {
-      const pw = g.pwsById.get(s.pathway_id)
+      const pw = s.pathway_id ? g.pwsById.get(s.pathway_id) : undefined
       return pw?.pathway_id
     }) ?? []
     expect(pwIds).toEqual(expect.arrayContaining(expectIds))

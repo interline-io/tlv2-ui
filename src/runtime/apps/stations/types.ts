@@ -164,6 +164,8 @@ export interface PathwayModeIcon {
  */
 export interface RouteEdge {
   pathway_id?: number
+  from_stop_id?: number
+  to_stop_id?: number
   cost: number
 }
 

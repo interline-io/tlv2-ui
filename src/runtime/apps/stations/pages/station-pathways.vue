@@ -364,12 +364,20 @@ const selectedPath = computed((): PathwayEdge[] | null => {
   if (!p) return null
   const edges: PathwayEdge[] = []
   for (const edge of p.edges || []) {
-    const pathway = edge.pathway_id ? pathwayIndex.value[edge.pathway_id] : undefined
-    if (edge.pathway_id && pathway) {
-      edges.push({
-        cost: 0,
-        pathway
-      })
+    if (edge.pathway_id) {
+      const pathway = pathwayIndex.value[edge.pathway_id]
+      if (pathway) {
+        edges.push({ cost: edge.cost, pathway })
+      }
+    } else if (edge.from_stop_id && edge.to_stop_id) {
+      const fromStop = station.value.getStop(edge.from_stop_id)
+      const toStop = station.value.getStop(edge.to_stop_id)
+      if (fromStop && toStop) {
+        edges.push({
+          cost: edge.cost,
+          pathway: new Pathway({ pathway_mode: 1, is_bidirectional: 1, from_stop: fromStop, to_stop: toStop })
+        })
+      }
     }
   }
   return edges
