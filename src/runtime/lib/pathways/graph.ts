@@ -222,7 +222,7 @@ export class RoutingGraph {
       const nextIdx = d.path[i + 1]
       if (currentIdx === undefined || nextIdx === undefined) continue
       const pwid = this.pwids[currentIdx]?.[nextIdx]
-      const cost = this.distances[currentIdx]?.[nextIdx] ?? 0
+      const cost = this.adjacency[currentIdx]?.[nextIdx] ?? 0
       d.edges.push({
         pathway_id: pwid,
         from_stop_id: this.stopIds[currentIdx],
