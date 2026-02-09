@@ -1,7 +1,7 @@
 import { gql } from 'graphql-tag'
 import type { Point, MultiPolygon } from 'geojson'
 import { RoutingGraph, DefaultCost } from '../../lib/pathways/graph'
-import type { CostFunction } from '../../lib/pathways/graph'
+import type { CostFunction, AStarResult } from '../../lib/pathways/graph'
 import type {
   FeedVersionData,
   FeedInfo,
@@ -10,7 +10,6 @@ import type {
   LevelData,
   RouteStopData,
   StopExternalReferenceData,
-  RouteResult,
   ValidationPath
 } from './types'
 
@@ -544,7 +543,7 @@ export class Station {
     return null
   }
 
-  findRoute (start: number, goal: number, profile: CostFunction = DefaultCost): RouteResult | undefined {
+  findRoute (start: number, goal: number, profile: CostFunction = DefaultCost): AStarResult | undefined {
     if (this.stops.length === 0) {
       return
     }
@@ -663,6 +662,8 @@ export class Station {
     this.stops = newStops
     this.pathways = Array.from(pwIndex.values())
     this.levels = Array.from(lvls.values())
+    this.graph = null
+    this.graphProfile = null
     // Update stoplist
     return Array.from(toFetch)
   }

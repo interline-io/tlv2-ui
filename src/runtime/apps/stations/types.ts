@@ -160,31 +160,6 @@ export interface PathwayModeIcon {
 }
 
 /**
- * Routing graph edge information
- */
-export interface RouteEdge {
-  pathway_id?: number
-  from_stop_id?: number
-  to_stop_id?: number
-  cost: number
-}
-
-/**
- * Routing graph result
- */
-export interface RouteResult {
-  distance: number | null
-  path: number[]
-  edges?: RouteEdge[]
-  error?: string
-}
-
-/**
- * Profile function for routing cost calculation
- */
-export type ProfileFunction = (pw: PathwayData, distance: number, speed?: number) => number
-
-/**
  * Validation path result
  */
 export interface ValidationPath {

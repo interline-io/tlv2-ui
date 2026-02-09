@@ -113,7 +113,7 @@ export function WheelchairProfile (pw: RoutablePathway, d: number): number {
  * Available routing profiles with different accessibility constraints
  */
 export const Profiles: Record<string, CostFunction> = {
-  'Pathways: Default' (pw, d) { return DefaultCost(pw, d, DefaultWalkingSpeed) },
+  'Pathways: Default': DefaultCost,
   'Pathways: No Stairs' (pw, d) {
     return (pw.pathway_mode === 2) ? 0 : DefaultCost(pw, d, DefaultWalkingSpeed)
   },

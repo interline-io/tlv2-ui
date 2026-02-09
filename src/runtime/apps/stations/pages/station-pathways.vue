@@ -181,7 +181,7 @@
                   selectable
                   :label="selectedProfile"
                 >
-                  <t-dropdown-item v-for="opt of profileOptions" :key="opt" :value="opt">
+                  <t-dropdown-item v-for="opt of Object.keys(Profiles)" :key="opt" :value="opt">
                     {{ opt }}
                   </t-dropdown-item>
                 </t-dropdown>
@@ -364,7 +364,6 @@ const selectedStops = ref<Stop[]>([])
 const selectedPathways = ref<Pathway[]>([])
 const basemap = ref('carto')
 const selectedProfile = ref<string>('Pathways: Default')
-const profileOptions = Object.keys(Profiles)
 
 // Computed properties
 const selectedPath = computed((): PathwayEdge[] | null => {
