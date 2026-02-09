@@ -175,6 +175,17 @@
           </template>
           <template v-else-if="selectMode === 'find-route'">
             <t-card v-if="selectedStops.length > 1" label="Find Route">
+              <t-field label="Routing Profile">
+                <t-dropdown
+                  v-model="selectedProfile"
+                  selectable
+                  :label="selectedProfile"
+                >
+                  <t-dropdown-item v-for="opt of profileOptions" :key="opt" :value="opt">
+                    {{ opt }}
+                  </t-dropdown-item>
+                </t-dropdown>
+              </t-field>
               <tl-apps-stations-path-viewer :path="selectedPath || []" />
             </t-card>
           </template>
@@ -257,11 +268,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, toRefs, watch } from 'vue'
+import { computed, ref, toRaw, toRefs, watch } from 'vue'
 import { useRoute } from '#imports'
 import type { LngLat } from 'maplibre-gl'
 import type { Feature } from 'geojson'
 import { PathwayModes } from '../../../lib/pathways/pathway-icons'
+import { Profiles } from '../../../lib/pathways/graph'
 import { LocationTypes } from '../basemaps'
 import { Stop, Pathway, mapLevelKeyFn } from '../station'
 import type { Level } from '../station'
@@ -351,6 +363,8 @@ const selectedPoint = ref<LngLat | null>(null)
 const selectedStops = ref<Stop[]>([])
 const selectedPathways = ref<Pathway[]>([])
 const basemap = ref('carto')
+const selectedProfile = ref<string>('Pathways: Default')
+const profileOptions = Object.keys(Profiles)
 
 // Computed properties
 const selectedPath = computed((): PathwayEdge[] | null => {
@@ -360,7 +374,8 @@ const selectedPath = computed((): PathwayEdge[] | null => {
   const stop0Id = selectedStops.value[0]?.id
   const stop1Id = selectedStops.value[1]?.id
   if (!stop0Id || !stop1Id) return null
-  const p = station.value.findRoute(stop0Id, stop1Id)
+  const profile = Profiles[selectedProfile.value]
+  const p = toRaw(station.value).findRoute(stop0Id, stop1Id, profile)
   if (!p) return null
   const edges: PathwayEdge[] = []
   for (const edge of p.edges || []) {
