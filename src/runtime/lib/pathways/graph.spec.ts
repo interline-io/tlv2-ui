@@ -1,7 +1,7 @@
 import { describe, test, expect } from 'vitest'
 
 import { Station } from '../../apps/transfers/station'
-import { RoutingGraph, DefaultCost, Profiles, type RoutableStop } from './graph'
+import { RoutingGraph, DefaultCost, DefaultDistance, Profiles, type RoutableStop } from './graph'
 
 import StopData from '../../../../testdata/ftvl/stop.json'
 import StopsData from '../../../../testdata/ftvl/stops.json'
@@ -182,5 +182,62 @@ describe('Parallel pathways', () => {
     // Should still find a route via elevator
     expect(path.distance).not.toBeNull()
     expect(path.path.length).toEqual(2)
+  })
+})
+
+describe('traversal_time and length', () => {
+  const makeStops = (pwProps: Record<string, unknown> = {}): [RoutableStop, RoutableStop] => {
+    const pw = {
+      id: 1, pathway_id: 'pw-1', pathway_mode: 1, is_bidirectional: 1,
+      from_stop: { id: 300 }, to_stop: { id: 301 },
+      ...pwProps
+    }
+    return [
+      {
+        id: 300, stop_id: 'X', location_type: 0,
+        geometry: { coordinates: [-122.0, 37.0] },
+        pathways_from_stop: [pw], pathways_to_stop: []
+      },
+      {
+        id: 301, stop_id: 'Y', location_type: 0,
+        geometry: { coordinates: [-122.001, 37.0] },
+        pathways_from_stop: [], pathways_to_stop: [pw]
+      }
+    ]
+  }
+
+  test('traversal_time overrides computed cost', () => {
+    const stops = makeStops({ traversal_time: 42 })
+    const g = new RoutingGraph(stops, DefaultCost)
+    const path = g.aStar(300, 301)
+    expect(path.distance).toEqual(42)
+  })
+
+  test('traversal_time used by DefaultDistance', () => {
+    const stops = makeStops({ traversal_time: 10 })
+    const g = new RoutingGraph(stops, DefaultDistance)
+    const path = g.aStar(300, 301)
+    expect(path.distance).toEqual(10)
+  })
+
+  test('pathway length used instead of haversine when provided', () => {
+    const stopsWithLength = makeStops({ length: 200 })
+    const stopsWithout = makeStops()
+    const gWith = new RoutingGraph(stopsWithLength, DefaultDistance)
+    const gWithout = new RoutingGraph(stopsWithout, DefaultDistance)
+    const pathWith = gWith.aStar(300, 301)
+    const pathWithout = gWithout.aStar(300, 301)
+    // With length=200m, cost = 200/1.3 ≈ 153.8s
+    // Without, cost uses haversine (~88m) / 1.3 ≈ 67.9s
+    expect(pathWith.distance).not.toEqual(pathWithout.distance)
+    expect(pathWith.distance).toBeCloseTo(200 / 1.3, 1)
+  })
+
+  test('wheelchair profile still blocks stairs even with traversal_time', () => {
+    const stops = makeStops({ pathway_mode: 2, traversal_time: 30 })
+    const g = new RoutingGraph(stops, Profiles['Pathways: Wheelchair']!)
+    const path = g.aStar(300, 301)
+    // Stairs blocked for wheelchair, no route available
+    expect(path.path.length).toEqual(0)
   })
 })

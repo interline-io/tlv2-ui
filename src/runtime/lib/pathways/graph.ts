@@ -14,6 +14,8 @@ export interface RoutablePathway {
   pathway_id?: string
   pathway_mode?: number
   is_bidirectional?: number
+  length?: number
+  traversal_time?: number
   from_stop: { id?: number }
   to_stop: { id?: number }
 }
@@ -56,7 +58,8 @@ export type CostFunction = (pw: RoutablePathway, d: number, speed?: number) => n
 /**
  * Calculate default distance cost (time = distance / speed)
  */
-export function DefaultDistance (_pw: RoutablePathway, d: number, speed?: number): number {
+export function DefaultDistance (pw: RoutablePathway, d: number, speed?: number): number {
+  if (pw.traversal_time) { return pw.traversal_time }
   speed = DefaultWalkingSpeed
   const t = (d / speed)
   return t
@@ -67,6 +70,8 @@ export function DefaultDistance (_pw: RoutablePathway, d: number, speed?: number
  * Applies different penalties based on pathway type
  */
 export function DefaultCost (pw: RoutablePathway, d: number, speed?: number): number {
+  // Use traversal_time directly when available (already accounts for pathway characteristics)
+  if (pw.traversal_time) { return pw.traversal_time }
   speed = DefaultWalkingSpeed
   let t = (d / speed)
   if (pw.pathway_mode === 1) {
@@ -100,13 +105,13 @@ export function DefaultCost (pw: RoutablePathway, d: number, speed?: number): nu
  * Returns 0 (inaccessible) for stairs and escalators
  */
 export function WheelchairProfile (pw: RoutablePathway, d: number): number {
-  const speed = 0.7
+  // Block stairs and escalators regardless of traversal_time
   if (pw.pathway_mode === 2) {
     return 0.0
   } else if (pw.pathway_mode === 4) {
     return 0.0
   }
-  return DefaultCost(pw, d, speed)
+  return DefaultCost(pw, d)
 }
 
 /**
@@ -309,7 +314,8 @@ export class RoutingGraph {
       const toIndex = this.stopIndex[toStop.id!]
       if (fromIndex === undefined || toIndex === undefined) continue
 
-      let d = distances[fromIndex]?.[toIndex] ?? MinEdge
+      // Prefer pathway-provided length over haversine approximation
+      let d = pw.length ?? distances[fromIndex]?.[toIndex] ?? MinEdge
       if (d <= MinEdge) {
         d = MinEdge
       }
