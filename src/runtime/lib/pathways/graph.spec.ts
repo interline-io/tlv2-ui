@@ -18,7 +18,7 @@ function loadStation (): Station {
 
 describe('Graph', () => {
   const station = loadStation()
-  const g = new RoutingGraph(station.stops, undefined)
+  const g = new RoutingGraph(station.stops)
   test('single edge', () => {
     const path = g.aStar(6409875, 6409861)
     expect(path.distance).toBeCloseTo(36.4592747, 3)
@@ -67,7 +67,7 @@ describe('Profiles', () => {
   const station = loadStation()
 
   test('DefaultCost penalizes stairs vs DefaultDistance', () => {
-    const gDist = new RoutingGraph(station.stops, undefined)
+    const gDist = new RoutingGraph(station.stops)
     const gCost = new RoutingGraph(station.stops, DefaultCost)
     // Route through stairs (6409865->6409870 is mode 2)
     const distPath = gDist.aStar(6409865, 6409870)

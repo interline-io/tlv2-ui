@@ -60,7 +60,7 @@ export type CostFunction = (pw: RoutablePathway, d: number, speed?: number) => n
  */
 export function DefaultDistance (pw: RoutablePathway, d: number, speed?: number): number {
   if (pw.traversal_time) { return pw.traversal_time }
-  speed = DefaultWalkingSpeed
+  speed ??= DefaultWalkingSpeed
   const t = (d / speed)
   return t
 }
@@ -72,7 +72,7 @@ export function DefaultDistance (pw: RoutablePathway, d: number, speed?: number)
 export function DefaultCost (pw: RoutablePathway, d: number, speed?: number): number {
   // Use traversal_time directly when available (already accounts for pathway characteristics)
   if (pw.traversal_time) { return pw.traversal_time }
-  speed = DefaultWalkingSpeed
+  speed ??= DefaultWalkingSpeed
   let t = (d / speed)
   if (pw.pathway_mode === 1) {
     // walkway: default
