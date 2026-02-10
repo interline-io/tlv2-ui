@@ -274,15 +274,18 @@ export class RoutingGraph {
       distances.push(distRow)
     }
 
-    // Connect boarding areas to parent stations
+    // Connect boarding areas to parent stations bidirectionally
+    // so routes can start or end at a boarding area
     for (let fromIndex = 0; fromIndex < stops.length; fromIndex++) {
       const stop = stops[fromIndex]
       if (stop?.parent_station && stop.location_type === 4) {
         const toIndex = this.stopIndex[stop.parent_station]
-        const gRow = g[fromIndex]
-        if (toIndex !== undefined && gRow) {
-          console.log('connecting boarding', fromIndex, 'idx to parent ', toIndex, ' idx')
-          gRow[toIndex] = MinEdge
+        if (toIndex === undefined) continue
+        const fromRow = g[fromIndex]
+        const toRow = g[toIndex]
+        if (fromRow && toRow) {
+          fromRow[toIndex] = MinEdge
+          toRow[fromIndex] = MinEdge
         }
       }
     }
@@ -310,7 +313,12 @@ export class RoutingGraph {
       if (d <= MinEdge) {
         d = MinEdge
       }
+      // cost=0 means the profile blocks this pathway; skip so it doesn't
+      // overwrite a valid parallel pathway between the same stop pair
       const pathwayCost = profile(pw, d)
+      if (pathwayCost <= 0) {
+        continue
+      }
       const graphCost = g[fromIndex]?.[toIndex] ?? 0
       if (pathwayCost < graphCost || graphCost === 0) {
         console.log('    setting:', fromIndex, toIndex, 'cost:', pathwayCost.toFixed(0), 'dist', d.toFixed(0))
@@ -339,7 +347,6 @@ export class RoutingGraph {
     this.pwids = pwids
   }
 }
-
 
 /**
  * A* pathfinding algorithm implementation

@@ -1,7 +1,7 @@
 import { describe, test, expect } from 'vitest'
 
 import { Station } from '../../apps/transfers/station'
-import { RoutingGraph } from './graph'
+import { RoutingGraph, DefaultCost, Profiles, type RoutableStop } from './graph'
 
 import StopData from '../../../../testdata/ftvl/stop.json'
 import StopsData from '../../../../testdata/ftvl/stops.json'
@@ -60,5 +60,127 @@ describe('Graph', () => {
       return pw?.pathway_id
     }) ?? []
     expect(pwIds).toEqual(expect.arrayContaining(expectIds))
+  })
+})
+
+describe('Profiles', () => {
+  const station = loadStation()
+
+  test('DefaultCost penalizes stairs vs DefaultDistance', () => {
+    const gDist = new RoutingGraph(station.stops, undefined)
+    const gCost = new RoutingGraph(station.stops, DefaultCost)
+    // Route through stairs (6409865->6409870 is mode 2)
+    const distPath = gDist.aStar(6409865, 6409870)
+    const costPath = gCost.aStar(6409865, 6409870)
+    // DefaultCost applies 1.5x penalty on stairs, so cost should be higher
+    expect(costPath.distance).toBeGreaterThan(distPath.distance!)
+  })
+
+  test('No Stairs/Escalator avoids stairs and escalators', () => {
+    const gDefault = new RoutingGraph(station.stops, DefaultCost)
+    const gNoStairs = new RoutingGraph(station.stops, Profiles['Pathways: No Stairs/Escalator']!)
+    // 6409880->6409879 crosses levels; default uses 6 edges including stairs
+    const defaultPath = gDefault.aStar(6409880, 6409879)
+    const noStairsPath = gNoStairs.aStar(6409880, 6409879)
+    // Verify default route uses stairs or escalators
+    const defaultModes = defaultPath.edges?.map((e) => {
+      const pw = e.pathway_id ? gDefault.pwsById.get(e.pathway_id) : undefined
+      return pw?.pathway_mode
+    }) ?? []
+    expect(defaultModes.some(m => m === 2 || m === 4)).toBe(true)
+    // Restricted profile should not use stairs (2) or escalators (4)
+    const restrictedModes = noStairsPath.edges?.map((e) => {
+      const pw = e.pathway_id ? gNoStairs.pwsById.get(e.pathway_id) : undefined
+      return pw?.pathway_mode
+    }) ?? []
+    expect(restrictedModes.some(m => m === 2 || m === 4)).toBe(false)
+  })
+})
+
+describe('Boarding areas', () => {
+  // Synthetic station: platform (100) <--pathway--> entrance (101), boarding area (102) with parent_station=100
+  const platform: RoutableStop = {
+    id: 100, stop_id: 'platform', location_type: 0,
+    geometry: { coordinates: [-122.0, 37.0] },
+    pathways_from_stop: [{
+      id: 1, pathway_id: 'pw-1', pathway_mode: 1, is_bidirectional: 1,
+      from_stop: { id: 100 }, to_stop: { id: 101 }
+    }],
+    pathways_to_stop: []
+  }
+  const entrance: RoutableStop = {
+    id: 101, stop_id: 'entrance', location_type: 2,
+    geometry: { coordinates: [-122.001, 37.0] },
+    pathways_from_stop: [],
+    pathways_to_stop: [{
+      id: 1, pathway_id: 'pw-1', pathway_mode: 1, is_bidirectional: 1,
+      from_stop: { id: 100 }, to_stop: { id: 101 }
+    }]
+  }
+  const boardingArea: RoutableStop = {
+    id: 102, stop_id: 'boarding', location_type: 4,
+    parent_station: 100,
+    geometry: { coordinates: [-122.0, 37.0001] },
+    pathways_from_stop: [],
+    pathways_to_stop: []
+  }
+
+  test('boarding area routes to parent platform via implicit edge', () => {
+    const g = new RoutingGraph([platform, entrance, boardingArea])
+    // boarding area (102) -> platform (100) via implicit edge, then -> entrance (101) via pathway
+    const path = g.aStar(102, 101)
+    expect(path.distance).not.toBeNull()
+    expect(path.path.length).toEqual(3)
+    expect(path.path).toEqual([2, 0, 1]) // boarding -> platform -> entrance
+  })
+
+  test('boarding area is routable as a destination', () => {
+    const g = new RoutingGraph([platform, entrance, boardingArea])
+    // entrance (101) -> platform (100) via pathway, then -> boarding area (102) via implicit edge
+    const path = g.aStar(101, 102)
+    expect(path.distance).not.toBeNull()
+    expect(path.path.length).toEqual(3)
+    expect(path.path).toEqual([1, 0, 2]) // entrance -> platform -> boarding
+  })
+
+  test('boarding area without parent_station is not implicitly connected', () => {
+    const disconnected: RoutableStop = {
+      ...boardingArea,
+      id: 103, stop_id: 'disconnected', parent_station: undefined
+    }
+    const g = new RoutingGraph([platform, entrance, disconnected])
+    const path = g.aStar(103, 101)
+    expect(path.path.length).toEqual(0)
+  })
+})
+
+describe('Parallel pathways', () => {
+  // Two stops connected by both stairs (mode 2) and an elevator (mode 5)
+  const stopA: RoutableStop = {
+    id: 200, stop_id: 'A', location_type: 3,
+    geometry: { coordinates: [-122.0, 37.0] },
+    pathways_from_stop: [
+      { id: 10, pathway_id: 'stairs', pathway_mode: 2, is_bidirectional: 1, from_stop: { id: 200 }, to_stop: { id: 201 } },
+      { id: 11, pathway_id: 'elevator', pathway_mode: 5, is_bidirectional: 1, from_stop: { id: 200 }, to_stop: { id: 201 } }
+    ],
+    pathways_to_stop: []
+  }
+  const stopB: RoutableStop = {
+    id: 201, stop_id: 'B', location_type: 3,
+    geometry: { coordinates: [-122.0, 37.001] },
+    pathways_from_stop: [],
+    pathways_to_stop: [
+      { id: 10, pathway_id: 'stairs', pathway_mode: 2, is_bidirectional: 1, from_stop: { id: 200 }, to_stop: { id: 201 } },
+      { id: 11, pathway_id: 'elevator', pathway_mode: 5, is_bidirectional: 1, from_stop: { id: 200 }, to_stop: { id: 201 } }
+    ]
+  }
+
+  test('blocked pathway does not clobber valid parallel pathway', () => {
+    // Wheelchair blocks stairs (mode 2) but allows elevator (mode 5)
+    const g = new RoutingGraph([stopA, stopB], Profiles['Pathways: Wheelchair']!)
+    const path = g.aStar(200, 201)
+    // Should still find a route via elevator
+    expect(path.distance).not.toBeNull()
+    expect(path.path.length).toEqual(2)
   })
 })
