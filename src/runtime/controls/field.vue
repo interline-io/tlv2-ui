@@ -25,7 +25,13 @@
     </div>
 
     <template v-else>
-      <slot />
+      <!-- Wrap controls in nested field if we have a label and grouped/addons controls -->
+      <div v-if="(grouped || addons) && (label || $slots.label)" class="field" :class="{ 'is-grouped': grouped, 'has-addons': addons }">
+        <slot />
+      </div>
+      <template v-else>
+        <slot />
+      </template>
       <p v-if="message || $slots.message" class="help" :class="messageClass">
         <slot name="message">
           {{ message }}
@@ -119,11 +125,12 @@ const fieldClasses = computed(() => {
     classes.push('is-horizontal')
   }
 
-  if (props.addons && !props.horizontal) {
+  // Only add has-addons/is-grouped to parent if there's no label (label will wrap controls in nested field)
+  if (props.addons && !props.horizontal && !props.label) {
     classes.push('has-addons')
   }
 
-  if (props.grouped && !props.horizontal) {
+  if (props.grouped && !props.horizontal && !props.label) {
     classes.push('is-grouped')
   }
 
