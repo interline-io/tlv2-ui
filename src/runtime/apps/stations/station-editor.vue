@@ -145,7 +145,7 @@ const _emit = defineEmits<{
 }>()
 
 const station = ref(new Station(props.value.stop))
-const basemap = ref('carto')
+const basemap = ref('protomaps-grayscale')
 const showDeleteModal = ref(false)
 
 const editFeatures = computed((): Feature[] => {

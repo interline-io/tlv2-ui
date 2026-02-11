@@ -8,7 +8,7 @@
 import { ref, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 import { Map as MapLibreMap, NavigationControl, Popup, LngLatBounds } from 'maplibre-gl'
 import type { LngLatLike, MapMouseEvent, GeoJSONSource } from 'maplibre-gl'
-import { useBasemapLayers } from '../../composables/useBasemapLayers'
+import { useBasemapLayers, layers, GRAYSCALE, PROTOMAPS_GLYPHS_URL } from '../../composables/useBasemapLayers'
 import type { StationHub } from './types'
 import { haversinePosition } from '../../lib/geom'
 
@@ -66,23 +66,23 @@ const emit = defineEmits<{
 const mapContainer = ref<HTMLElement>()
 const map = ref<MapLibreMap | null>(null)
 
+// Get basemap configuration from composable
+const { basemapLayers } = useBasemapLayers()
+
 function initMap (): void {
   if (!mapContainer.value) return
 
-  const { basemapLayers } = useBasemapLayers()
-  const basemaps = basemapLayers.value
+  const grayscaleBasemap = basemapLayers.value['protomaps-grayscale']
 
   const mapValue = new MapLibreMap({
     container: mapContainer.value,
     center: props.center as LngLatLike,
     zoom: props.zoom,
     style: {
+      glyphs: PROTOMAPS_GLYPHS_URL,
       version: 8,
       sources: {
-        'carto': {
-          type: 'raster',
-          tiles: basemaps.carto.source.tiles,
-        },
+        'protomaps-base': grayscaleBasemap.source as any,
         'station-hubs': {
           type: 'geojson',
           data: {
@@ -93,12 +93,7 @@ function initMap (): void {
         }
       },
       layers: [
-        {
-          id: 'carto',
-          source: 'carto',
-          type: 'raster',
-          ...basemaps.carto.layer
-        },
+        ...layers('protomaps-base', GRAYSCALE),
         {
           id: 'station-hubs-fill',
           type: 'fill',

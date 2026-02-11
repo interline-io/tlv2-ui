@@ -25,7 +25,7 @@ interface Props {
 }
 
 withDefaults(defineProps<Props>(), {
-  modelValue: 'carto'
+  modelValue: 'protomaps-grayscale'
 })
 
 defineEmits<{

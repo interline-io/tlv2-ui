@@ -28,7 +28,7 @@
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { Map as MapLibreMap, NavigationControl } from 'maplibre-gl'
 import type { LngLatLike } from 'maplibre-gl'
-import { useBasemapLayers } from '../../composables/useBasemapLayers'
+import { useBasemapLayers, layers, GRAYSCALE, PROTOMAPS_GLYPHS_URL } from '../../composables/useBasemapLayers'
 
 interface Props {
   modelValue?: string | null
@@ -65,28 +65,25 @@ const dragStartY = ref(0)
 const dragStartWidth = ref(0)
 const dragStartHeight = ref(0)
 
+// Get basemap configuration from composable
+const { basemapLayers } = useBasemapLayers()
+
 function initMap (): void {
   if (!mapContainer.value) return
 
-  const { basemapLayers } = useBasemapLayers()
-  const basemaps = basemapLayers.value
+  const grayscaleBasemap = basemapLayers.value['protomaps-grayscale']
 
   const mapValue = new MapLibreMap({
     container: mapContainer.value,
     center: props.center as LngLatLike,
     zoom: props.zoom,
     style: {
+      glyphs: PROTOMAPS_GLYPHS_URL,
       version: 8,
       sources: {
-        carto: basemaps.carto.source
+        'protomaps-base': grayscaleBasemap.source as any
       },
-      layers: [
-        {
-          id: 'carto',
-          source: 'carto',
-          ...basemaps.carto.layer
-        }
-      ]
+      layers: layers('protomaps-base', GRAYSCALE)
     }
   } as any)
 
