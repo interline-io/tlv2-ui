@@ -53,7 +53,7 @@ export function useBasemapLayers () {
 
   const basemapLayers = computed<BasemapLayers>(() => ({
     carto: {
-      label: 'Carto street map',
+      label: 'OpenStreetMap rendered by CARTO',
       source: {
         type: 'raster',
         tiles: [
@@ -69,7 +69,7 @@ export function useBasemapLayers () {
       }
     },
     near: {
-      label: 'Nearmap aerial imagery',
+      label: 'Aerial imagery from Nearmap',
       source: {
         type: 'raster',
         tiles: [
