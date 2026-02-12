@@ -4,6 +4,8 @@
  */
 
 // Core variants and sizes that most components support
+import type { InjectionKey } from 'vue'
+
 export const CoreVariants = ['primary', 'link', 'info', 'success', 'warning', 'danger'] as const
 export type CoreVariant = typeof CoreVariants[number]
 
@@ -128,3 +130,4 @@ export interface TagOptionBase<T extends string | number = string> {
  * @template T - The type of the value (string or number)
  */
 export type TagOption<T extends string | number = string> = TagOptionBase<T> & Record<string, unknown>
+export const FieldIdKey: InjectionKey<string> = Symbol('fieldId')

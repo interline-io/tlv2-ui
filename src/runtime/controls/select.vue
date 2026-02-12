@@ -5,6 +5,7 @@
       :class="selectClasses"
     >
       <select
+        :id="fieldId"
         ref="selectRef"
         :value="modelValue"
         :disabled="disabled || readonly"
@@ -22,8 +23,11 @@
 </template>
 
 <script setup lang="ts" generic="T extends string | null | string[] = string | null">
-import { computed, ref, watch, onMounted, nextTick } from 'vue'
+import { computed, ref, watch, onMounted, nextTick, inject } from 'vue'
 import type { SelectVariant, SelectSize } from './types'
+import { FieldIdKey } from './types'
+
+const fieldId = inject(FieldIdKey, undefined)
 
 /**
  * Select dropdown component with Bulma styling.
