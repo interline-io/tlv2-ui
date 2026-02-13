@@ -3,12 +3,12 @@
     class="field"
     :class="fieldClasses"
   >
-    <label v-if="hasLabel && !horizontal" class="label">
+    <label v-if="hasLabel && !horizontal" class="label" :for="fieldId">
       <slot name="label">{{ label }}</slot>
     </label>
 
     <div v-if="horizontal" class="field-label" :class="labelSizeClass">
-      <label v-if="hasLabel" class="label">
+      <label v-if="hasLabel" class="label" :for="fieldId">
         <slot name="label">{{ label }}</slot>
       </label>
     </div>
@@ -42,9 +42,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, useSlots } from 'vue'
+import { computed, useId, useSlots, provide } from 'vue'
+import { FieldIdKey } from './types'
 
 const slots = useSlots()
+const fieldId = useId()
+provide(FieldIdKey, fieldId)
 
 /**
  * Form field wrapper component following Bulma field structure.

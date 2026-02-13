@@ -1,6 +1,7 @@
 <template>
   <div class="control" :class="controlClasses">
     <input
+      :id="fieldId"
       class="input"
       :class="inputClasses"
       :type="type"
@@ -31,8 +32,11 @@
 </template>
 
 <script setup lang="ts" generic="T extends string | number = string">
-import { computed } from 'vue'
+import { computed, inject } from 'vue'
 import type { InputVariant, InputSize } from './types'
+import { FieldIdKey } from './types'
+
+const fieldId = inject(FieldIdKey, undefined)
 
 /**
  * Text input component with Bulma styling.
