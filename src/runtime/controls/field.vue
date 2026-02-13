@@ -3,12 +3,12 @@
     class="field"
     :class="fieldClasses"
   >
-    <label v-if="(label || $slots.label) && !horizontal" class="label" :for="fieldId">
+    <label v-if="hasLabel && !horizontal" class="label" :for="fieldId">
       <slot name="label">{{ label }}</slot>
     </label>
 
     <div v-if="horizontal" class="field-label" :class="labelSizeClass">
-      <label v-if="label || $slots.label" class="label" :for="fieldId">
+      <label v-if="hasLabel" class="label" :for="fieldId">
         <slot name="label">{{ label }}</slot>
       </label>
     </div>
@@ -25,7 +25,13 @@
     </div>
 
     <template v-else>
-      <slot />
+      <!-- Wrap controls in nested field if we have a label and grouped/addons controls -->
+      <div v-if="(grouped || addons) && hasLabel" class="field" :class="{ 'is-grouped': grouped, 'has-addons': addons }">
+        <slot />
+      </div>
+      <template v-else>
+        <slot />
+      </template>
       <p v-if="message || $slots.message" class="help" :class="messageClass">
         <slot name="message">
           {{ message }}
@@ -36,9 +42,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, useId, provide } from 'vue'
+import { computed, useId, useSlots, provide } from 'vue'
 import { FieldIdKey } from './types'
 
+const slots = useSlots()
 const fieldId = useId()
 provide(FieldIdKey, fieldId)
 
@@ -116,6 +123,9 @@ const props = withDefaults(defineProps<Props>(), {
   labelSize: 'normal'
 })
 
+// Check if label exists via prop or slot
+const hasLabel = computed(() => !!(props.label || slots.label))
+
 const fieldClasses = computed(() => {
   const classes: string[] = []
 
@@ -123,11 +133,12 @@ const fieldClasses = computed(() => {
     classes.push('is-horizontal')
   }
 
-  if (props.addons && !props.horizontal) {
+  // Only add has-addons/is-grouped to parent if there's no label (label will wrap controls in nested field)
+  if (props.addons && !props.horizontal && !hasLabel.value) {
     classes.push('has-addons')
   }
 
-  if (props.grouped && !props.horizontal) {
+  if (props.grouped && !props.horizontal && !hasLabel.value) {
     classes.push('is-grouped')
   }
 
