@@ -365,7 +365,9 @@ const selectedPathways = ref<Pathway[]>([])
 const basemap = ref('carto')
 const selectedProfile = ref<string>('Pathways: Default')
 
-// Computed properties
+// Converts the A* routing result into PathwayEdge objects for map/diagram visualization.
+// Implicit edges between stops that share a parent but lack an explicit pathway
+// are represented as synthetic Pathway objects so they can be displayed too.
 const selectedPath = computed((): PathwayEdge[] | null => {
   if (selectMode.value !== 'find-route' || selectedStops.value.length < 2 || !station.value) {
     return null

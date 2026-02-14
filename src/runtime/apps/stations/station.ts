@@ -662,6 +662,8 @@ export class Station {
     this.stops = newStops
     this.pathways = Array.from(pwIndex.values())
     this.levels = Array.from(lvls.values())
+    // Invalidate cached routing graph since stops/pathways have changed;
+    // findRoute() will lazily rebuild it on next call.
     this.graph = null
     this.graphProfile = null
     // Update stoplist

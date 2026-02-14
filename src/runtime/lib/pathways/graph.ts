@@ -152,13 +152,21 @@ export interface AStarResult {
  * Routing graph for station pathways using A* algorithm
  */
 export class RoutingGraph {
+  /** Adjacency matrix: adjacency[i][j] is the travel cost from stop i to stop j (0 = no edge) */
   adjacency: number[][]
+  /** Heuristic matrix: heuristic[i][j] is the admissible A* estimate (haversine / max speed) */
   heuristic: number[][]
+  /** Distance matrix: distances[i][j] is the haversine distance in meters between stops */
   distances: Record<number, number[]>
+  /** Pathway ID matrix: pwids[i][j] is the pathway ID for the edge from stop i to j (undefined for implicit edges) */
   pwids: (number | undefined)[][]
+  /** Lookup from stop ID to its RoutableStop data */
   stopsById: Map<number, RoutableStop>
+  /** Lookup from pathway ID to its RoutablePathway data */
   pwsById: Map<number, RoutablePathway>
+  /** Maps stop ID → matrix index */
   stopIndex: Record<number, number>
+  /** Maps matrix index → stop ID (reverse of stopIndex) */
   stopIds: number[]
 
   constructor (stops: RoutableStop[], profile: CostFunction = DefaultDistance) {
