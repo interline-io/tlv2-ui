@@ -4,7 +4,7 @@ import { gql } from 'graphql-tag'
 import { TreeNode } from '../../lib/util/tree'
 import { useRouteCategories } from '../../composables/useRouteCategories'
 import { toSeconds, windowToSeconds } from '../../lib/util/time-format'
-import { NewGraph, Profiles, type Graph, type CostFunction } from '../../lib/pathways/graph'
+import { RoutingGraph, Profiles, type CostFunction } from '../../lib/pathways/graph'
 import { FeedVersion, type Stop } from './station'
 
 const { routeSubcategoriesTree, routeRunningWaysTree } = useRouteCategories()
@@ -1245,7 +1245,7 @@ function calculateTransfers (
   }
 
   // geographic distances
-  const pathwayDistances: Record<string, ReturnType<Graph['aStar']>> = {}
+  const pathwayDistances: Record<string, ReturnType<RoutingGraph['aStar']>> = {}
   const straightLineDistances: Record<string, number> = {}
   const stopGeomIndex = new Map<number, StopGeometry>()
   const pwIndex = new Map<number, PathwayData>()
@@ -1273,7 +1273,7 @@ function calculateTransfers (
   }
 
   // build routing graph
-  const graph = profile ? NewGraph(stops, profile) : null
+  const graph = profile ? new RoutingGraph(stops, profile) : null
 
   // check for possible transfers +/- a bucket
   let i = 0
@@ -1355,7 +1355,7 @@ function calculateTransfers (
         transferWalkDistance = 0.0
         for (const edge of pathwayDistance.edges.slice(0)) {
           transferEdges.push({
-            pathway: pwIndex.get(edge.pathway_id),
+            pathway: edge.pathway_id ? pwIndex.get(edge.pathway_id) : undefined,
             cost: edge.cost
           })
         }

@@ -1,6 +1,7 @@
 import { gql } from 'graphql-tag'
 import type { Point, MultiPolygon } from 'geojson'
-import { RoutingGraph } from '../../lib/pathways/graph'
+import { RoutingGraph, DefaultCost } from '../../lib/pathways/graph'
+import type { CostFunction, AStarResult } from '../../lib/pathways/graph'
 import type {
   FeedVersionData,
   FeedInfo,
@@ -9,7 +10,6 @@ import type {
   LevelData,
   RouteStopData,
   StopExternalReferenceData,
-  RouteResult,
   ValidationPath
 } from './types'
 
@@ -494,6 +494,7 @@ export class Level {
 export class Station {
   client: string
   graph: RoutingGraph | null
+  graphProfile: CostFunction | null
   stop: Stop
   pathways: Pathway[]
   stops: Stop[]
@@ -502,6 +503,7 @@ export class Station {
   constructor (stop?: StopData) {
     this.client = 'stationEditor'
     this.graph = null
+    this.graphProfile = null
     this.stop = new Stop(stop)
     this.pathways = []
     this.stops = []
@@ -541,12 +543,13 @@ export class Station {
     return null
   }
 
-  findRoute (start: number, goal: number): RouteResult | undefined {
+  findRoute (start: number, goal: number, profile: CostFunction = DefaultCost): AStarResult | undefined {
     if (this.stops.length === 0) {
       return
     }
-    if (!this.graph) {
-      this.graph = new RoutingGraph(this.stops)
+    if (!this.graph || this.graphProfile !== profile) {
+      this.graph = new RoutingGraph(this.stops, profile)
+      this.graphProfile = profile
     }
     return this.graph.aStar(start, goal)
   }
@@ -659,6 +662,10 @@ export class Station {
     this.stops = newStops
     this.pathways = Array.from(pwIndex.values())
     this.levels = Array.from(lvls.values())
+    // Invalidate cached routing graph since stops/pathways have changed;
+    // findRoute() will lazily rebuild it on next call.
+    this.graph = null
+    this.graphProfile = null
     // Update stoplist
     return Array.from(toFetch)
   }

@@ -175,6 +175,17 @@
           </template>
           <template v-else-if="selectMode === 'find-route'">
             <t-card v-if="selectedStops.length > 1" label="Find Route">
+              <t-field label="Routing Profile">
+                <t-dropdown
+                  v-model="selectedProfile"
+                  selectable
+                  :label="selectedProfile"
+                >
+                  <t-dropdown-item v-for="opt of Object.keys(Profiles)" :key="opt" :value="opt">
+                    {{ opt }}
+                  </t-dropdown-item>
+                </t-dropdown>
+              </t-field>
               <tl-apps-stations-path-viewer :path="selectedPath || []" />
             </t-card>
           </template>
@@ -257,11 +268,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, toRefs, watch } from 'vue'
+import { computed, ref, toRaw, toRefs, watch } from 'vue'
 import { useRoute } from '#imports'
 import type { LngLat } from 'maplibre-gl'
 import type { Feature } from 'geojson'
 import { PathwayModes } from '../../../lib/pathways/pathway-icons'
+import { Profiles } from '../../../lib/pathways/graph'
 import { LocationTypes } from '../basemaps'
 import { Stop, Pathway, mapLevelKeyFn } from '../station'
 import type { Level } from '../station'
@@ -351,8 +363,11 @@ const selectedPoint = ref<LngLat | null>(null)
 const selectedStops = ref<Stop[]>([])
 const selectedPathways = ref<Pathway[]>([])
 const basemap = ref('carto')
+const selectedProfile = ref<string>('Pathways: Default')
 
-// Computed properties
+// Converts the A* routing result into PathwayEdge objects for map/diagram visualization.
+// Implicit edges between stops that share a parent but lack an explicit pathway
+// are represented as synthetic Pathway objects so they can be displayed too.
 const selectedPath = computed((): PathwayEdge[] | null => {
   if (selectMode.value !== 'find-route' || selectedStops.value.length < 2 || !station.value) {
     return null
@@ -360,16 +375,25 @@ const selectedPath = computed((): PathwayEdge[] | null => {
   const stop0Id = selectedStops.value[0]?.id
   const stop1Id = selectedStops.value[1]?.id
   if (!stop0Id || !stop1Id) return null
-  const p = station.value.findRoute(stop0Id, stop1Id)
+  const profile = Profiles[selectedProfile.value]
+  const p = toRaw(station.value).findRoute(stop0Id, stop1Id, profile)
   if (!p) return null
   const edges: PathwayEdge[] = []
   for (const edge of p.edges || []) {
-    const pathway = edge.pathway_id ? pathwayIndex.value[edge.pathway_id] : undefined
-    if (edge.pathway_id && pathway) {
-      edges.push({
-        cost: 0,
-        pathway
-      })
+    if (edge.pathway_id) {
+      const pathway = pathwayIndex.value[edge.pathway_id]
+      if (pathway) {
+        edges.push({ cost: edge.cost, pathway })
+      }
+    } else if (edge.from_stop_id && edge.to_stop_id) {
+      const fromStop = station.value.getStop(edge.from_stop_id)
+      const toStop = station.value.getStop(edge.to_stop_id)
+      if (fromStop && toStop) {
+        edges.push({
+          cost: edge.cost,
+          pathway: new Pathway({ pathway_mode: 1, is_bidirectional: 1, from_stop: fromStop, to_stop: toStop })
+        })
+      }
     }
   }
   return edges
