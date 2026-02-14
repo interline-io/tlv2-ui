@@ -101,7 +101,7 @@ export function DefaultCost (pw: RoutablePathway, d: number, speed?: number): nu
 
 /**
  * Wheelchair-accessible profile
- * Returns 0 (inaccessible) for stairs and escalators
+ * Uses slower walking speed (0.7 m/s) and returns 0 (inaccessible) for stairs and escalators
  */
 export function WheelchairProfile (pw: RoutablePathway, d: number): number {
   // Block stairs and escalators regardless of traversal_time
@@ -110,7 +110,7 @@ export function WheelchairProfile (pw: RoutablePathway, d: number): number {
   } else if (pw.pathway_mode === 4) {
     return 0.0
   }
-  return DefaultCost(pw, d)
+  return DefaultCost(pw, d, 0.7)
 }
 
 /**
@@ -155,8 +155,6 @@ export class RoutingGraph {
   adjacency: number[][]
   /** Heuristic matrix: heuristic[i][j] is the admissible A* estimate (haversine / max speed) */
   heuristic: number[][]
-  /** Distance matrix: distances[i][j] is the haversine distance in meters between stops */
-  distances: Record<number, number[]>
   /** Pathway ID matrix: pwids[i][j] is the pathway ID for the edge from stop i to j (undefined for implicit edges) */
   pwids: (number | undefined)[][]
   /** Lookup from stop ID to its RoutableStop data */
@@ -169,10 +167,8 @@ export class RoutingGraph {
   stopIds: number[]
 
   constructor (stops: RoutableStop[], profile: CostFunction = DefaultDistance) {
-    console.log('ASD')
     this.adjacency = []
     this.heuristic = []
-    this.distances = {}
     this.pwids = []
 
     // Stops and pathways by ID
@@ -228,18 +224,24 @@ export class RoutingGraph {
 
     const d = aStar(this.adjacency, this.heuristic, startIndex, goalIndex)
 
+    // Convert path from matrix indices to stop IDs
+    d.path = d.path.map(idx => this.stopIds[idx]!)
+
     // Build edge list
     d.edges = []
     for (let i = 0; i < d.path.length - 1; i++) {
-      const currentIdx = d.path[i]
-      const nextIdx = d.path[i + 1]
-      if (currentIdx === undefined || nextIdx === undefined) continue
-      const pwid = this.pwids[currentIdx]?.[nextIdx]
-      const cost = this.adjacency[currentIdx]?.[nextIdx] ?? 0
+      const fromId = d.path[i]
+      const toId = d.path[i + 1]
+      if (fromId === undefined || toId === undefined) continue
+      const fromIdx = this.stopIndex[fromId]
+      const toIdx = this.stopIndex[toId]
+      if (fromIdx === undefined || toIdx === undefined) continue
+      const pwid = this.pwids[fromIdx]?.[toIdx]
+      const cost = this.adjacency[fromIdx]?.[toIdx] ?? 0
       d.edges.push({
         pathway_id: pwid,
-        from_stop_id: this.stopIds[currentIdx],
-        to_stop_id: this.stopIds[nextIdx],
+        from_stop_id: fromId,
+        to_stop_id: toId,
         cost
       })
     }
@@ -358,7 +360,6 @@ export class RoutingGraph {
 
     this.adjacency = g
     this.heuristic = h
-    this.distances = distances
     this.pwids = pwids
   }
 }

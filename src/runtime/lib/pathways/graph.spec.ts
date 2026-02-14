@@ -131,7 +131,7 @@ describe('Boarding areas', () => {
     const path = g.aStar(102, 101)
     expect(path.distance).not.toBeNull()
     expect(path.path.length).toEqual(3)
-    expect(path.path).toEqual([2, 0, 1]) // boarding -> platform -> entrance
+    expect(path.path).toEqual([102, 100, 101]) // boarding -> platform -> entrance
   })
 
   test('boarding area is routable as a destination', () => {
@@ -140,7 +140,7 @@ describe('Boarding areas', () => {
     const path = g.aStar(101, 102)
     expect(path.distance).not.toBeNull()
     expect(path.path.length).toEqual(3)
-    expect(path.path).toEqual([1, 0, 2]) // entrance -> platform -> boarding
+    expect(path.path).toEqual([101, 100, 102]) // entrance -> platform -> boarding
   })
 
   test('boarding area without parent is not implicitly connected', () => {
