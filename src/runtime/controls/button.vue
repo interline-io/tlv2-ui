@@ -76,7 +76,7 @@ interface Props {
 
   /**
    * Use outlined button style.
-   * When true without a variant, defaults to 'link' variant.
+   * When true without a variant, defaults to 'dark' variant for a neutral black outline.
    * @default false
    */
   outlined?: boolean
@@ -141,8 +141,8 @@ const props = withDefaults(defineProps<Props>(), {
 const buttonClasses = computed(() => {
   const classes: string[] = []
 
-  // If outlined is used without a variant, default to 'link' to avoid white-on-white in Bulma 1.x
-  const effectiveVariant = props.variant || (props.outlined ? 'link' : undefined)
+  // If outlined is used without a variant, default to 'dark' to avoid white-on-white in Bulma 1.x
+  const effectiveVariant = props.variant || (props.outlined ? 'dark' : undefined)
 
   if (effectiveVariant) {
     classes.push(`is-${effectiveVariant}`)

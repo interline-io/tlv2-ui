@@ -78,7 +78,7 @@
         <div class="level-left">
           <div class="level-item">
             <t-button
-              variant="link"
+              variant="dark"
               outlined
               @click="$emit('cancel')"
             >
