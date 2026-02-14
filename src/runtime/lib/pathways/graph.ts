@@ -30,7 +30,6 @@ export interface RoutableStop {
   stop_name?: string
   location_type?: number
   geometry?: { coordinates: number[] }
-  parent_station?: number
   parent?: { id?: number }
   pathways_from_stop: RoutablePathway[]
   pathways_to_stop: RoutablePathway[]
@@ -170,6 +169,7 @@ export class RoutingGraph {
   stopIds: number[]
 
   constructor (stops: RoutableStop[], profile: CostFunction = DefaultDistance) {
+    console.log('ASD')
     this.adjacency = []
     this.heuristic = []
     this.distances = {}
@@ -291,12 +291,13 @@ export class RoutingGraph {
     // so routes can start or end at a boarding area
     for (let fromIndex = 0; fromIndex < stops.length; fromIndex++) {
       const stop = stops[fromIndex]
-      if (stop?.parent_station && stop.location_type === 4) {
-        const toIndex = this.stopIndex[stop.parent_station]
+      if (stop?.parent?.id && stop.location_type === 4) {
+        const toIndex = this.stopIndex[stop.parent?.id]
         if (toIndex === undefined) continue
         const fromRow = g[fromIndex]
         const toRow = g[toIndex]
         if (fromRow && toRow) {
+          console.log('virtual edge: boarding area', stop.id, stop.stop_id, '->', stop.parent?.id)
           fromRow[toIndex] = MinEdge
           toRow[fromIndex] = MinEdge
         }

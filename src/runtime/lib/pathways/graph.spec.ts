@@ -98,7 +98,7 @@ describe('Profiles', () => {
 })
 
 describe('Boarding areas', () => {
-  // Synthetic station: platform (100) <--pathway--> entrance (101), boarding area (102) with parent_station=100
+  // Synthetic station: platform (100) <--pathway--> entrance (101), boarding area (102) with parent.id=100
   const platform: RoutableStop = {
     id: 100, stop_id: 'platform', location_type: 0,
     geometry: { coordinates: [-122.0, 37.0] },
@@ -119,7 +119,7 @@ describe('Boarding areas', () => {
   }
   const boardingArea: RoutableStop = {
     id: 102, stop_id: 'boarding', location_type: 4,
-    parent_station: 100,
+    parent: { id: 100 },
     geometry: { coordinates: [-122.0, 37.0001] },
     pathways_from_stop: [],
     pathways_to_stop: []
@@ -143,10 +143,10 @@ describe('Boarding areas', () => {
     expect(path.path).toEqual([1, 0, 2]) // entrance -> platform -> boarding
   })
 
-  test('boarding area without parent_station is not implicitly connected', () => {
+  test('boarding area without parent is not implicitly connected', () => {
     const disconnected: RoutableStop = {
       ...boardingArea,
-      id: 103, stop_id: 'disconnected', parent_station: undefined
+      id: 103, stop_id: 'disconnected', parent: undefined
     }
     const g = new RoutingGraph([platform, entrance, disconnected])
     const path = g.aStar(103, 101)
