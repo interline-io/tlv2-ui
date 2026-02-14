@@ -1,15 +1,15 @@
 <template>
   <div>
     <div class="buttons">
-      <a class="button is-outlined" :class="errorCount.stops > 0 ? 'is-danger' : ''" @click="openStops = true">
+      <a class="button is-outlined" :class="errorCount.stops > 0 ? 'is-danger' : 'is-dark'" @click="openStops = true">
         <i v-if="errorCount.stops > 0" class="mdi mdi-alert has-text-danger" /> Stops
       </a>
 
-      <a class="button is-outlined" :class="errorCount.pathways > 0 ? 'is-danger' : ''" @click="openPathways = true">
+      <a class="button is-outlined" :class="errorCount.pathways > 0 ? 'is-danger' : 'is-dark'" @click="openPathways = true">
         <i v-if="errorCount.pathways > 0" class="mdi mdi-alert has-text-danger" /> Pathways
       </a>
 
-      <a class="button is-outlined" :class="stopPathErrorCount > 0 ? 'is-danger' : ''" @click="openPaths = true">
+      <a class="button is-outlined" :class="stopPathErrorCount > 0 ? 'is-danger' : 'is-dark'" @click="openPaths = true">
         <i v-if="stopPathErrorCount > 0" class="mdi mdi-alert has-text-danger" /> Connectivity
       </a>
     </div>
