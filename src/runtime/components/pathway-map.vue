@@ -277,8 +277,8 @@ function drawStops () {
   }
 
   // Calculate centroid from stops with valid coordinates for approximation
-  const stopsWithCoords = allStops.filter(s => s.geometry?.coordinates &&
-    s.geometry.coordinates[0] !== 0 && s.geometry.coordinates[1] !== 0)
+  const stopsWithCoords = allStops.filter(s => s.geometry?.coordinates
+    && s.geometry.coordinates[0] !== 0 && s.geometry.coordinates[1] !== 0)
   let centroid: [number, number] = props.center || [0, 0]
   if (stopsWithCoords.length > 0) {
     const sumLng = stopsWithCoords.reduce((sum, s) => sum + (s.geometry?.coordinates[0] || 0), 0)
@@ -403,8 +403,8 @@ function drawPathways () {
   }
 
   // Calculate centroid from stops with valid coordinates
-  const stopsWithCoords = props.station.stops.filter(s => s.geometry?.coordinates &&
-    s.geometry.coordinates[0] !== 0 && s.geometry.coordinates[1] !== 0)
+  const stopsWithCoords = props.station.stops.filter(s => s.geometry?.coordinates
+    && s.geometry.coordinates[0] !== 0 && s.geometry.coordinates[1] !== 0)
   let centroid: [number, number] = props.center || [0, 0]
   if (stopsWithCoords.length > 0) {
     const sumLng = stopsWithCoords.reduce((sum, s) => sum + (s.geometry?.coordinates[0] || 0), 0)
