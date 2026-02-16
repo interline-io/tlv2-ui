@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { Map as MaplibreMap } from 'maplibre-gl'
+import { Map as MaplibreMap, LngLatBounds } from 'maplibre-gl'
 import type { LngLat, MapLayerMouseEvent, PointLike } from 'maplibre-gl'
 import { nextTick, ref, watch, onMounted } from 'vue'
 import { useBasemapLayers } from '../composables/useBasemapLayers'
@@ -276,11 +276,28 @@ function drawStops () {
     })
   }
 
+  // Calculate centroid from stops with valid coordinates for approximation
+  const stopsWithCoords = allStops.filter(s => s.geometry?.coordinates &&
+    s.geometry.coordinates[0] !== 0 && s.geometry.coordinates[1] !== 0)
+  let centroid: [number, number] = props.center || [0, 0]
+  if (stopsWithCoords.length > 0) {
+    const sumLng = stopsWithCoords.reduce((sum, s) => sum + (s.geometry?.coordinates[0] || 0), 0)
+    const sumLat = stopsWithCoords.reduce((sum, s) => sum + (s.geometry?.coordinates[1] || 0), 0)
+    centroid = [sumLng / stopsWithCoords.length, sumLat / stopsWithCoords.length]
+  }
+
   const newStops: FeatureCollection<Point> = {
     type: 'FeatureCollection',
     features: allStops
-      .filter(s => s.geometry)
       .map((s): Feature<Point> => {
+        // Use centroid for stops with no geometry or null coordinates
+        let coords: [number, number]
+        if (!s.geometry?.coordinates || (s.geometry.coordinates[0] === 0 && s.geometry.coordinates[1] === 0)) {
+          coords = centroid
+        } else {
+          coords = s.geometry.coordinates as [number, number]
+        }
+
         return {
           type: 'Feature',
           id: s.id,
@@ -290,7 +307,10 @@ function drawStops () {
             level_index: s.level?.level_index,
             stop_name: s.external_reference?.target_active_stop?.stop_name || s.stop_name
           },
-          geometry: s.geometry!
+          geometry: {
+            type: 'Point',
+            coordinates: coords
+          }
         }
       })
   }
@@ -301,6 +321,15 @@ function drawStops () {
     stopSource.setData(newStops)
   }
   console.log('stops source set')
+
+  // Fit map to features if we have stops
+  if (newStops.features.length > 0 && map.value) {
+    const bounds = new LngLatBounds()
+    newStops.features.forEach((feature) => {
+      bounds.extend(feature.geometry.coordinates as [number, number])
+    })
+    map.value.fitBounds(bounds, { padding: 50, maxZoom: 18, animate: false })
+  }
 
   const stopParentStationGeoms: Feature<LineString>[] = allStops.filter((s) => {
     return s.parent?.id
@@ -372,6 +401,32 @@ function drawPathways () {
   if (!ready.value || !props.station || !map.value) {
     return
   }
+
+  // Calculate centroid from stops with valid coordinates
+  const stopsWithCoords = props.station.stops.filter(s => s.geometry?.coordinates &&
+    s.geometry.coordinates[0] !== 0 && s.geometry.coordinates[1] !== 0)
+  let centroid: [number, number] = props.center || [0, 0]
+  if (stopsWithCoords.length > 0) {
+    const sumLng = stopsWithCoords.reduce((sum, s) => sum + (s.geometry?.coordinates[0] || 0), 0)
+    const sumLat = stopsWithCoords.reduce((sum, s) => sum + (s.geometry?.coordinates[1] || 0), 0)
+    centroid = [sumLng / stopsWithCoords.length, sumLat / stopsWithCoords.length]
+  }
+
+  // Helper to get coordinates with centroid fallback
+  const getCoordinates = (stop: MapStop | undefined | null): [number, number] => {
+    if (!stop?.geometry?.coordinates) return centroid
+    const coords = stop.geometry.coordinates
+    if (coords[0] === 0 && coords[1] === 0) return centroid
+    return coords as [number, number]
+  }
+
+  // Helper to check if coordinates are approximated
+  const isApproximated = (stop: MapStop | undefined | null): boolean => {
+    if (!stop?.geometry?.coordinates) return true
+    const coords = stop.geometry.coordinates
+    return coords[0] === 0 && coords[1] === 0
+  }
+
   const pwLevels = new Map<string, boolean>()
   for (const pw of props.station.pathways || []) {
     pwLevels.set(mapLevelKeyFn(pw.from_stop.level), true)
@@ -393,6 +448,7 @@ function drawPathways () {
       },
       filter: ['any', ['==', mapLevelKey1, ['get', 'fromMapLevelKey']], ['==', mapLevelKey1, ['get', 'toMapLevelKey']]]
     })
+    // Regular (non-approximated) pathways - solid lines
     addLevelLayer(mapLevelKey1, {
       id: `${mapLevelKey1}-pathway-type-same`,
       type: 'line',
@@ -409,7 +465,8 @@ function drawPathways () {
       filter: [
         'all',
         ['any', ['==', mapLevelKey1, ['get', 'fromMapLevelKey']], ['==', mapLevelKey1, ['get', 'toMapLevelKey']]],
-        ['==', ['get', 'fromMapLevelKey'], ['get', 'toMapLevelKey']]
+        ['==', ['get', 'fromMapLevelKey'], ['get', 'toMapLevelKey']],
+        ['!=', ['get', 'approximated'], true]
       ]
     })
     addLevelLayer(mapLevelKey1, {
@@ -428,7 +485,43 @@ function drawPathways () {
       filter: [
         'all',
         ['any', ['==', mapLevelKey1, ['get', 'fromMapLevelKey']], ['==', mapLevelKey1, ['get', 'toMapLevelKey']]],
-        ['!=', ['get', 'fromMapLevelKey'], ['get', 'toMapLevelKey']]
+        ['!=', ['get', 'fromMapLevelKey'], ['get', 'toMapLevelKey']],
+        ['!=', ['get', 'approximated'], true]
+      ]
+    })
+    // Approximated pathways - dashed lines
+    addLevelLayer(mapLevelKey1, {
+      id: `${mapLevelKey1}-pathway-type-same-approx`,
+      type: 'line',
+      source: 'pathways',
+      paint: {
+        'line-color': 'blue',
+        'line-opacity': 0.6,
+        'line-width': 4,
+        'line-dasharray': [2, 2]
+      },
+      filter: [
+        'all',
+        ['any', ['==', mapLevelKey1, ['get', 'fromMapLevelKey']], ['==', mapLevelKey1, ['get', 'toMapLevelKey']]],
+        ['==', ['get', 'fromMapLevelKey'], ['get', 'toMapLevelKey']],
+        ['==', ['get', 'approximated'], true]
+      ]
+    })
+    addLevelLayer(mapLevelKey1, {
+      id: `${mapLevelKey1}-pathway-type-transition-approx`,
+      type: 'line',
+      source: 'pathways',
+      paint: {
+        'line-color': 'red',
+        'line-opacity': 0.6,
+        'line-width': 4,
+        'line-dasharray': [2, 2]
+      },
+      filter: [
+        'all',
+        ['any', ['==', mapLevelKey1, ['get', 'fromMapLevelKey']], ['==', mapLevelKey1, ['get', 'toMapLevelKey']]],
+        ['!=', ['get', 'fromMapLevelKey'], ['get', 'toMapLevelKey']],
+        ['==', ['get', 'approximated'], true]
       ]
     })
     addLevelLayer(mapLevelKey1, {
@@ -445,6 +538,8 @@ function drawPathways () {
 
   // Add midpoints
   const midpoints: Feature<Point>[] = (props.station.pathways || []).map((s): Feature<Point> => {
+    const fromCoords = getCoordinates(s.from_stop)
+    const toCoords = getCoordinates(s.to_stop)
     return {
       type: 'Feature',
       id: s.id,
@@ -457,8 +552,8 @@ function drawPathways () {
       geometry: {
         type: 'Point',
         coordinates: [
-          ((s.from_stop?.geometry?.coordinates[0] || 0) + (s.to_stop?.geometry?.coordinates[0] || 0)) / 2,
-          ((s.from_stop?.geometry?.coordinates[1] || 0) + (s.to_stop?.geometry?.coordinates[1] || 0)) / 2
+          (fromCoords[0] + toCoords[0]) / 2,
+          (fromCoords[1] + toCoords[1]) / 2
         ]
       }
     }
@@ -473,6 +568,10 @@ function drawPathways () {
 
   // Add pathways
   const features: Feature<LineString>[] = (props.station.pathways || []).map((s): Feature<LineString> => {
+    const fromCoords = getCoordinates(s.from_stop)
+    const toCoords = getCoordinates(s.to_stop)
+    const approximated = isApproximated(s.from_stop) || isApproximated(s.to_stop)
+
     return {
       type: 'Feature',
       id: s.id,
@@ -482,14 +581,12 @@ function drawPathways () {
         mapLevelKey: mapLevelKeyFn(s.from_stop?.level),
         fromMapLevelKey: mapLevelKeyFn(s.from_stop?.level),
         toMapLevelKey: mapLevelKeyFn(s.to_stop?.level),
-        generated: false
+        generated: false,
+        approximated
       },
       geometry: {
         type: 'LineString',
-        coordinates: [
-          s.from_stop?.geometry?.coordinates || [0, 0],
-          s.to_stop?.geometry?.coordinates || [0, 0]
-        ]
+        coordinates: [fromCoords, toCoords]
       }
     }
   })
@@ -542,6 +639,14 @@ function initMap () {
   // Load images, defer drawing map until loaded
   map.value.on('load', async () => {
     if (!map.value) return
+    // Set initial basemap visibility
+    for (const [k] of Object.entries(basemapLayers.value)) {
+      if (k === props.basemap) {
+        map.value.setLayoutProperty(k, 'visibility', 'visible')
+      } else {
+        map.value.setLayoutProperty(k, 'visibility', 'none')
+      }
+    }
     for (const icon of Object.values(PathwayModeIcons)) {
       const image2 = await map.value.loadImage(`/icons/${icon.icon}.png`)
       map.value.addImage(icon.icon, image2.data)
@@ -680,7 +785,7 @@ watch(() => props.selectedStops, (cur, prev) => {
       { hover: true }
     )
   }
-})
+}, { deep: true })
 
 watch(() => props.selectedPathways, (cur, prev) => {
   if (!map.value) return
@@ -696,7 +801,7 @@ watch(() => props.selectedPathways, (cur, prev) => {
       { hover: true }
     )
   }
-})
+}, { deep: true })
 
 watch(() => props.selectedLevels, () => {
   if (!map.value) return
