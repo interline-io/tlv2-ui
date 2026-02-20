@@ -428,6 +428,77 @@ describe('validateStop', () => {
 })
 
 describe('validatePathway', () => {
+  describe('pathway endpoint is station', () => {
+    test('error when from_stop is a station (location_type=1)', () => {
+      const pw = makePathway({
+        from_stop: { id: 1, stop_id: 'station', location_type: 1, level: { id: 10, level_name: 'G' } },
+        to_stop: { id: 2, stop_id: 'node', location_type: 3, level: { id: 10, level_name: 'G' } }
+      })
+      const errs = validatePathway(pw)
+      expect(hasMessage(errs, 'Pathway endpoints must not be stations')).toBe(true)
+      expect(errs.find(e => e.message.includes('must not be stations'))?.severity).toBe('critical')
+    })
+
+    test('error when to_stop is a station (location_type=1)', () => {
+      const pw = makePathway({
+        from_stop: { id: 1, stop_id: 'node', location_type: 3, level: { id: 10, level_name: 'G' } },
+        to_stop: { id: 2, stop_id: 'station', location_type: 1, level: { id: 10, level_name: 'G' } }
+      })
+      const errs = validatePathway(pw)
+      expect(hasMessage(errs, 'Pathway endpoints must not be stations')).toBe(true)
+    })
+
+    test('no error when endpoints are valid location types', () => {
+      const pw = makePathway({
+        from_stop: { id: 1, stop_id: 'entrance', location_type: 2, level: { id: 10, level_name: 'G' } },
+        to_stop: { id: 2, stop_id: 'node', location_type: 3, level: { id: 11, level_name: 'U' } }
+      })
+      const errs = validatePathway(pw)
+      expect(hasMessage(errs, 'must not be stations')).toBe(false)
+    })
+  })
+
+  describe('pathway to platform with boarding areas', () => {
+    test('error when from_stop is a platform with boarding areas', () => {
+      const pw = makePathway({
+        from_stop: { id: 10, stop_id: 'platform', stop_name: 'Platform A', location_type: 0, level: { id: 10, level_name: 'G' } },
+        to_stop: { id: 20, stop_id: 'node', location_type: 3, level: { id: 10, level_name: 'G' } }
+      })
+      const boardingArea = makeStop({ id: 11, location_type: 4, stop_name: 'BA', parent: { id: 10, location_type: 0 } })
+      const errs = validatePathway(pw, [makeStop({ id: 10, location_type: 0 }), boardingArea])
+      expect(hasMessage(errs, 'which has boarding areas')).toBe(true)
+      expect(errs.find(e => e.message.includes('boarding areas'))?.severity).toBe('critical')
+    })
+
+    test('error when to_stop is a platform with boarding areas', () => {
+      const pw = makePathway({
+        from_stop: { id: 20, stop_id: 'node', location_type: 3, level: { id: 10, level_name: 'G' } },
+        to_stop: { id: 10, stop_id: 'platform', stop_name: 'Platform A', location_type: 0, level: { id: 10, level_name: 'G' } }
+      })
+      const boardingArea = makeStop({ id: 11, location_type: 4, stop_name: 'BA', parent: { id: 10, location_type: 0 } })
+      const errs = validatePathway(pw, [makeStop({ id: 10, location_type: 0 }), boardingArea])
+      expect(hasMessage(errs, 'which has boarding areas')).toBe(true)
+    })
+
+    test('no error when platform has no boarding areas', () => {
+      const pw = makePathway({
+        from_stop: { id: 10, stop_id: 'platform', location_type: 0, level: { id: 10, level_name: 'G' } },
+        to_stop: { id: 20, stop_id: 'node', location_type: 3, level: { id: 11, level_name: 'U' } }
+      })
+      const errs = validatePathway(pw, [makeStop({ id: 10, location_type: 0 })])
+      expect(hasMessage(errs, 'boarding areas')).toBe(false)
+    })
+
+    test('no error when stationStops not provided', () => {
+      const pw = makePathway({
+        from_stop: { id: 10, stop_id: 'platform', location_type: 0, level: { id: 10, level_name: 'G' } },
+        to_stop: { id: 20, stop_id: 'node', location_type: 3, level: { id: 11, level_name: 'U' } }
+      })
+      const errs = validatePathway(pw)
+      expect(hasMessage(errs, 'boarding areas')).toBe(false)
+    })
+  })
+
   describe('pathway loop', () => {
     test('error when from_stop and to_stop are the same', () => {
       const pw = makePathway({
@@ -446,28 +517,43 @@ describe('validatePathway', () => {
   })
 
   describe('endpoint level assignments', () => {
-    test('error when from_stop has no level', () => {
+    test('critical error when elevator from_stop has no level', () => {
       const pw = makePathway({
+        pathway_mode: 5,
         from_stop: { id: 1, stop_id: 'from' },
         to_stop: { id: 2, stop_id: 'to', level: { id: 11, level_name: 'Upper' } }
       })
       const errs = validatePathway(pw)
-      expect(hasMessage(errs, 'endpoint stops should have level assignments')).toBe(true)
+      expect(hasMessage(errs, 'Elevator pathway endpoint stops must have level assignments')).toBe(true)
+      expect(errs.find(e => e.message.includes('Elevator'))?.severity).toBe('critical')
     })
 
-    test('error when to_stop has no level', () => {
+    test('critical error when elevator to_stop has no level', () => {
       const pw = makePathway({
+        pathway_mode: 5,
         from_stop: { id: 1, stop_id: 'from', level: { id: 10, level_name: 'Ground' } },
         to_stop: { id: 2, stop_id: 'to' }
       })
       const errs = validatePathway(pw)
-      expect(hasMessage(errs, 'endpoint stops should have level assignments')).toBe(true)
+      expect(hasMessage(errs, 'Elevator pathway endpoint stops must have level assignments')).toBe(true)
+      expect(errs.find(e => e.message.includes('Elevator'))?.severity).toBe('critical')
+    })
+
+    test('interline error when non-elevator from_stop has no level', () => {
+      const pw = makePathway({
+        pathway_mode: 1,
+        from_stop: { id: 1, stop_id: 'from' },
+        to_stop: { id: 2, stop_id: 'to', level: { id: 11, level_name: 'Upper' } }
+      })
+      const errs = validatePathway(pw)
+      expect(hasMessage(errs, 'Interline recommendation: pathway endpoint stops should have level assignments')).toBe(true)
+      expect(errs.find(e => e.message.includes('endpoint stops'))?.severity).toBe('interline')
     })
 
     test('no error when both stops have levels', () => {
       const pw = makePathway()
       const errs = validatePathway(pw)
-      expect(hasMessage(errs, 'endpoint stops should have level assignments')).toBe(false)
+      expect(hasMessage(errs, 'level assignments')).toBe(false)
     })
   })
 
@@ -529,13 +615,54 @@ describe('validatePathway', () => {
     })
   })
 
+  describe('length and traversal_time', () => {
+    test('info when length is missing (default options)', () => {
+      const pw = makePathway({ length: undefined })
+      const errs = validatePathway(pw)
+      expect(hasMessage(errs, 'missing a length value')).toBe(true)
+      expect(errs.find(e => e.message.includes('length'))?.severity).toBe('info')
+    })
+
+    test('info when traversal_time is missing (default options)', () => {
+      const pw = makePathway({ traversal_time: undefined })
+      const errs = validatePathway(pw)
+      expect(hasMessage(errs, 'missing a traversal_time value')).toBe(true)
+      expect(errs.find(e => e.message.includes('traversal_time'))?.severity).toBe('info')
+    })
+
+    test('no error when length and traversal_time are present', () => {
+      const pw = makePathway({ length: 50, traversal_time: 30 })
+      const errs = validatePathway(pw)
+      expect(hasMessage(errs, 'missing a length')).toBe(false)
+      expect(hasMessage(errs, 'missing a traversal_time')).toBe(false)
+    })
+
+    test('no error when requireLengthAndTraversalTime is false', () => {
+      const pw = makePathway({ length: undefined, traversal_time: undefined })
+      const errs = validatePathway(pw, [], { requireLengthAndTraversalTime: false })
+      expect(hasMessage(errs, 'missing a length')).toBe(false)
+      expect(hasMessage(errs, 'missing a traversal_time')).toBe(false)
+    })
+  })
+
   describe('valid pathway produces no errors', () => {
     test('well-formed walkway has no errors', () => {
       const pw = makePathway({
         pathway_mode: 1,
-        is_bidirectional: 1
+        is_bidirectional: 1,
+        length: 50,
+        traversal_time: 30
       })
       const errs = validatePathway(pw)
+      expect(errs).toEqual([])
+    })
+
+    test('well-formed walkway has no errors with editor options', () => {
+      const pw = makePathway({
+        pathway_mode: 1,
+        is_bidirectional: 1
+      })
+      const errs = validatePathway(pw, [], { requireLengthAndTraversalTime: false })
       expect(errs).toEqual([])
     })
   })

@@ -197,16 +197,18 @@ const stopPathErrorCount = computed((): number => {
   return count
 })
 
+const editorOptions = { requireLengthAndTraversalTime: false }
+
 const errors = computed((): { stops: Record<number, ValidationError[]>, pathways: Record<number, ValidationError[]> } => {
   const errors: { stops: Record<number, ValidationError[]>, pathways: Record<number, ValidationError[]> } = { stops: {}, pathways: {} }
   for (const stop of props.station.stops) {
     if (stop.id) {
-      errors.stops[stop.id] = validateStop(stop, props.station.stops)
+      errors.stops[stop.id] = validateStop(stop, props.station.stops, editorOptions)
     }
   }
   for (const pw of pathways.value) {
     if (pw.id) {
-      errors.pathways[pw.id] = validatePathway(pw)
+      errors.pathways[pw.id] = validatePathway(pw, props.station.stops, editorOptions)
     }
   }
   return errors

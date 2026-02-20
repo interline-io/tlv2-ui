@@ -8,7 +8,11 @@ export interface ValidationError {
   severity: ValidationSeverity
 }
 
-export function validateStop (stop: Stop, stationStops: Stop[]): ValidationError[] {
+export interface ValidationOptions {
+  requireLengthAndTraversalTime?: boolean
+}
+
+export function validateStop (stop: Stop, stationStops: Stop[], options: ValidationOptions = {}): ValidationError[] {
   const fromPathways = stop.pathways_from_stop || []
   const toPathways = stop.pathways_to_stop || []
   const targetStop = stop.external_reference?.target_active_stop || null
@@ -118,8 +122,26 @@ export function validateStop (stop: Stop, stationStops: Stop[]): ValidationError
   return errs
 }
 
-export function validatePathway (pathway: Pathway): ValidationError[] {
+export function validatePathway (pathway: Pathway, stationStops: Stop[] = [], options: ValidationOptions = {}): ValidationError[] {
+  const { requireLengthAndTraversalTime = true } = options
   const errs: ValidationError[] = []
+  if (pathway.from_stop.location_type === 1 || pathway.to_stop.location_type === 1) {
+    errs.push({
+      severity: 'critical',
+      message: 'Pathway endpoints must not be stations (location_type = 1)'
+    })
+  }
+  for (const endpoint of [pathway.from_stop, pathway.to_stop]) {
+    if (endpoint.location_type === 0) {
+      const hasBoardingAreas = stationStops.some(s => s.location_type === 4 && s.parent?.id === endpoint.id)
+      if (hasBoardingAreas) {
+        errs.push({
+          severity: 'critical',
+          message: `Pathway must not target platform "${endpoint.stop_name || endpoint.stop_id}" which has boarding areas; assign pathways to the boarding areas instead`
+        })
+      }
+    }
+  }
   if (pathway.from_stop.id === pathway.to_stop.id) {
     errs.push({
       severity: 'interline',
@@ -127,25 +149,32 @@ export function validatePathway (pathway: Pathway): ValidationError[] {
     })
   }
   if (!pathway.from_stop.level?.id || !pathway.to_stop.level?.id) {
-    errs.push({
-      severity: 'interline',
-      message: 'Interline recommendation: pathway endpoint stops should have level assignments'
-    })
+    if (pathway.pathway_mode === 5) {
+      errs.push({
+        severity: 'critical',
+        message: 'Elevator pathway endpoint stops must have level assignments (GTFS spec: levels.txt is required for pathway_mode=5)'
+      })
+    } else {
+      errs.push({
+        severity: 'interline',
+        message: 'Interline recommendation: pathway endpoint stops should have level assignments'
+      })
+    }
   }
-  // Length and traversal_time are allowed to be empty in the station editor;
-  // these checks apply to exported GTFS only.
-  // if (!pathway.length || pathway.length === 0) {
-  //   errs.push({
-  //     severity: 'info',
-  //     message: 'Pathway is missing a length value'
-  //   })
-  // }
-  // if (!pathway.traversal_time || pathway.traversal_time === 0) {
-  //   errs.push({
-  //     severity: 'info',
-  //     message: 'Pathway is missing a traversal_time value'
-  //   })
-  // }
+  if (requireLengthAndTraversalTime) {
+    if (!pathway.length || pathway.length === 0) {
+      errs.push({
+        severity: 'info',
+        message: 'Pathway is missing a length value'
+      })
+    }
+    if (!pathway.traversal_time || pathway.traversal_time === 0) {
+      errs.push({
+        severity: 'info',
+        message: 'Pathway is missing a traversal_time value'
+      })
+    }
+  }
   if (pathway.pathway_mode === 7 && pathway.is_bidirectional === 1) {
     errs.push({
       severity: 'critical',
