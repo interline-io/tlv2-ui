@@ -17,6 +17,7 @@ yarn lint             # ESLint check
 yarn lint --fix       # ESLint auto-fix
 yarn check            # lint --fix + typecheck + test (full CI check)
 yarn test:types       # TypeScript type checking (vue-tsc)
+yarn generate:types   # Regenerate component type declarations (run after adding/removing components)
 yarn prepack          # Build the module for distribution
 ```
 
