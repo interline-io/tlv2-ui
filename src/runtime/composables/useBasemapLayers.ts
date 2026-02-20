@@ -96,8 +96,12 @@ export function useBasemapLayers () {
       source: {
         type: 'geojson',
         data: {
-          type: 'FeatureCollection',
-          features: []
+          type: 'Feature',
+          geometry: {
+            type: 'Polygon',
+            coordinates: [[[-180, -90], [180, -90], [180, 90], [-180, 90], [-180, -90]]]
+          },
+          properties: {}
         }
       },
       layer: {

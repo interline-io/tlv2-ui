@@ -330,13 +330,18 @@ function drawStops () {
   }
   console.log('stops source set')
 
-  // Fit map to features if we have stops
+  // Fit map to features if we have stops with distinct coordinates
   if (newStops.features.length > 0 && map.value) {
     const bounds = new LngLatBounds()
     newStops.features.forEach((feature) => {
       bounds.extend(feature.geometry.coordinates as [number, number])
     })
-    map.value.fitBounds(bounds, { padding: 50, maxZoom: 18, animate: false })
+    // Skip auto-fitting when all stops collapse to the same coordinate (e.g. fallback centroid)
+    const ne = bounds.getNorthEast()
+    const sw = bounds.getSouthWest()
+    if (ne.lng !== sw.lng || ne.lat !== sw.lat) {
+      map.value.fitBounds(bounds, { padding: 50, maxZoom: 18, animate: false })
+    }
   }
 
   const stopParentStationGeoms: Feature<LineString>[] = allStops.filter((s) => {
