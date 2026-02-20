@@ -78,3 +78,21 @@ HTTP fixtures use **Polly.js** (`@pollyjs/core`) with recordings stored in `test
 - 1TBS brace style, space before function parens
 - Vue templates: single-word component names allowed, up to 10 attributes per single line
 - Package manager: **yarn 4** (Yarn Berry)
+
+## PR Summary
+
+When asked to "generate PR summary", run `git diff main...HEAD` and `git log main..HEAD --oneline` to analyze all changes on the current branch, then output a GitHub-flavored markdown PR description wrapped in a fenced code block so it can be copy-pasted. No emojis, no checklists. Use this structure:
+
+```
+## Summary
+<high-level one paragraph description of the PR>
+
+### <theme 1>
+<bulleted details>
+
+### <theme 2>
+<bulleted details>
+
+## Test plan
+<manual verification steps relevant to the changes; do not include yarn test/lint/typecheck as those are handled by CI>
+```
