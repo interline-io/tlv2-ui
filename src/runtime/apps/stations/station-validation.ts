@@ -1,4 +1,5 @@
-import type { Stop, Pathway } from './station'
+import type { Stop, Pathway, Station } from './station'
+import type { ValidationPath } from './types'
 
 export type ValidationSeverity = 'critical' | 'info' | 'interline'
 
@@ -12,6 +13,24 @@ export function validateStop (stop: Stop, stationStops: Stop[]): ValidationError
   const toPathways = stop.pathways_to_stop || []
   const targetStop = stop.external_reference?.target_active_stop || null
   const errs: ValidationError[] = []
+  if (stop.location_type !== 3 && (!stop.stop_name || stop.stop_name.trim() === '')) {
+    errs.push({
+      severity: 'critical',
+      message: 'Stop name is required for all location types except generic nodes (location_type = 3)'
+    })
+  }
+  if (stop.location_type !== 3 && (!stop.geometry || !stop.geometry.coordinates)) {
+    errs.push({
+      severity: 'critical',
+      message: 'Coordinates are required for all location types except generic nodes (location_type = 3)'
+    })
+  }
+  if (!stop.level?.id) {
+    errs.push({
+      severity: 'interline',
+      message: 'Interline recommendation: stop should have a level assignment'
+    })
+  }
   if (stop.location_type === 0 && !targetStop) {
     // errs.push({
     //   message: 'Platform (location_type = 0) must have a stop association'
@@ -107,6 +126,26 @@ export function validatePathway (pathway: Pathway): ValidationError[] {
       message: 'Interline recommendation: pathway is a loop — from_stop_id should not equal to_stop_id'
     })
   }
+  if (!pathway.from_stop.level?.id || !pathway.to_stop.level?.id) {
+    errs.push({
+      severity: 'interline',
+      message: 'Interline recommendation: pathway endpoint stops should have level assignments'
+    })
+  }
+  // Length and traversal_time are allowed to be empty in the station editor;
+  // these checks apply to exported GTFS only.
+  // if (!pathway.length || pathway.length === 0) {
+  //   errs.push({
+  //     severity: 'info',
+  //     message: 'Pathway is missing a length value'
+  //   })
+  // }
+  // if (!pathway.traversal_time || pathway.traversal_time === 0) {
+  //   errs.push({
+  //     severity: 'info',
+  //     message: 'Pathway is missing a traversal_time value'
+  //   })
+  // }
   if (pathway.pathway_mode === 7 && pathway.is_bidirectional === 1) {
     errs.push({
       severity: 'critical',
