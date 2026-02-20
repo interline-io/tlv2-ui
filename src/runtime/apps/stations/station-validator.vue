@@ -166,13 +166,7 @@ import { ref, computed } from 'vue'
 import { PathwayModes } from '../../lib/pathways/pathway-icons'
 import { LocationTypes } from './basemaps'
 import type { Station, Stop, Pathway } from './station'
-import type { ValidationPath } from './types'
-import { validateStop, validatePathway, type ValidationError } from './station-validation'
-
-interface StopPathData {
-  stop: Stop
-  paths: ValidationPath[]
-}
+import { validateStop, validatePathway, validateConnectivity, type ValidationError, type ConnectivityResult } from './station-validation'
 
 interface Props {
   station: Station
@@ -191,18 +185,8 @@ const openPathways = ref(false)
 const openPaths = ref(false)
 const showAllPaths = ref(false)
 
-const stopPaths = computed((): StopPathData[] => {
-  const ret: StopPathData[] = []
-  const stationFromStops = props.station.stops.filter((s) => { return s.location_type === 2 })
-  const stationMustReach = props.station.stops.filter((s) => { return s.location_type !== 1 })
-  for (const stop of stationFromStops) {
-    const errs = props.station.validatePathsToStops(stop, stationMustReach)
-      .filter((path) => { return path.target.id !== stop.id })
-    if (errs.length > 0) {
-      ret.push({ stop, paths: errs })
-    }
-  }
-  return ret
+const stopPaths = computed((): ConnectivityResult[] => {
+  return validateConnectivity(props.station)
 })
 
 const stopPathErrorCount = computed((): number => {

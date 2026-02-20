@@ -125,3 +125,22 @@ export function validatePathway (pathway: Pathway): ValidationError[] {
   }
   return errs
 }
+
+export interface ConnectivityResult {
+  stop: Stop
+  paths: ValidationPath[]
+}
+
+export function validateConnectivity (station: Station): ConnectivityResult[] {
+  const ret: ConnectivityResult[] = []
+  const entrances = station.stops.filter(s => s.location_type === 2)
+  const mustReach = station.stops.filter(s => s.location_type !== 1)
+  for (const stop of entrances) {
+    const paths = station.validatePathsToStops(stop, mustReach)
+      .filter(path => path.target.id !== stop.id)
+    if (paths.length > 0) {
+      ret.push({ stop, paths })
+    }
+  }
+  return ret
+}
