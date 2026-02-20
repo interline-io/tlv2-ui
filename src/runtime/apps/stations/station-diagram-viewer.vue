@@ -112,11 +112,12 @@ const cytoscapeElements = computed((): any[] => {
 })
 
 function cytoscapeInit (): void {
-  if (cytoscapeElements.value.length === 0 || !cyContainer.value) {
+  const container = cyContainer.value
+  if (cytoscapeElements.value.length === 0 || !container) {
     return
   }
   const cyInstance = cytoscape({
-    container: cyContainer.value,
+    container: container as HTMLElement,
     elements: cytoscapeElements.value,
     style: cytoscapeConfig.style
   })
