@@ -154,7 +154,14 @@ function elementUnselected (event: any) {
 
 function clearSelection () {
   selectedElements.value = []
-  cy.value?.filter(':selected').forEach((element: any) => element.unselect())
+  if (cy.value) {
+    cy.value.off('select unselect')
+    cy.value.filter(':selected').forEach((element: any) => element.unselect())
+    cy.value.on('select', 'node', elementSelected)
+    cy.value.on('unselect', 'node', elementUnselected)
+    cy.value.on('select', 'edge', elementSelected)
+    cy.value.on('unselect', 'edge', elementUnselected)
+  }
   emit('update:selection', selectedElements.value)
 }
 
@@ -180,7 +187,7 @@ onMounted(() => {
   nextTick(() => { cytoscapeInit() })
 })
 
-watch(() => cytoscapeElements.value, () => {
+watch(cytoscapeElements, () => {
   if (cy.value) {
     cy.value.destroy()
     cy.value = null

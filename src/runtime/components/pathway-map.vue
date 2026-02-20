@@ -173,6 +173,28 @@ function drawLevels () {
   }
 }
 
+function getStopCentroid (stops: MapStop[]): [number, number] {
+  const withCoords = stops.filter(s => s.geometry?.coordinates
+    && s.geometry.coordinates[0] !== 0 && s.geometry.coordinates[1] !== 0)
+  if (withCoords.length === 0) return props.center || [0, 0]
+  const sumLng = withCoords.reduce((sum, s) => sum + (s.geometry?.coordinates[0] || 0), 0)
+  const sumLat = withCoords.reduce((sum, s) => sum + (s.geometry?.coordinates[1] || 0), 0)
+  return [sumLng / withCoords.length, sumLat / withCoords.length]
+}
+
+function getStopCoordinates (stop: MapStop | undefined | null, centroid: [number, number]): [number, number] {
+  if (!stop?.geometry?.coordinates) return centroid
+  const coords = stop.geometry.coordinates
+  if (coords[0] === 0 && coords[1] === 0) return centroid
+  return coords as [number, number]
+}
+
+function isStopApproximated (stop: MapStop | undefined | null): boolean {
+  if (!stop?.geometry?.coordinates) return true
+  const coords = stop.geometry.coordinates
+  return coords[0] === 0 && coords[1] === 0
+}
+
 function drawStops () {
   if (!ready.value || !props.station || !map.value) {
     return
@@ -276,27 +298,13 @@ function drawStops () {
     })
   }
 
-  // Calculate centroid from stops with valid coordinates for approximation
-  const stopsWithCoords = allStops.filter(s => s.geometry?.coordinates
-    && s.geometry.coordinates[0] !== 0 && s.geometry.coordinates[1] !== 0)
-  let centroid: [number, number] = props.center || [0, 0]
-  if (stopsWithCoords.length > 0) {
-    const sumLng = stopsWithCoords.reduce((sum, s) => sum + (s.geometry?.coordinates[0] || 0), 0)
-    const sumLat = stopsWithCoords.reduce((sum, s) => sum + (s.geometry?.coordinates[1] || 0), 0)
-    centroid = [sumLng / stopsWithCoords.length, sumLat / stopsWithCoords.length]
-  }
+  const centroid = getStopCentroid(allStops)
 
   const newStops: FeatureCollection<Point> = {
     type: 'FeatureCollection',
     features: allStops
       .map((s): Feature<Point> => {
-        // Use centroid for stops with no geometry or null coordinates
-        let coords: [number, number]
-        if (!s.geometry?.coordinates || (s.geometry.coordinates[0] === 0 && s.geometry.coordinates[1] === 0)) {
-          coords = centroid
-        } else {
-          coords = s.geometry.coordinates as [number, number]
-        }
+        const coords = getStopCoordinates(s, centroid)
 
         return {
           type: 'Feature',
@@ -402,30 +410,7 @@ function drawPathways () {
     return
   }
 
-  // Calculate centroid from stops with valid coordinates
-  const stopsWithCoords = props.station.stops.filter(s => s.geometry?.coordinates
-    && s.geometry.coordinates[0] !== 0 && s.geometry.coordinates[1] !== 0)
-  let centroid: [number, number] = props.center || [0, 0]
-  if (stopsWithCoords.length > 0) {
-    const sumLng = stopsWithCoords.reduce((sum, s) => sum + (s.geometry?.coordinates[0] || 0), 0)
-    const sumLat = stopsWithCoords.reduce((sum, s) => sum + (s.geometry?.coordinates[1] || 0), 0)
-    centroid = [sumLng / stopsWithCoords.length, sumLat / stopsWithCoords.length]
-  }
-
-  // Helper to get coordinates with centroid fallback
-  const getCoordinates = (stop: MapStop | undefined | null): [number, number] => {
-    if (!stop?.geometry?.coordinates) return centroid
-    const coords = stop.geometry.coordinates
-    if (coords[0] === 0 && coords[1] === 0) return centroid
-    return coords as [number, number]
-  }
-
-  // Helper to check if coordinates are approximated
-  const isApproximated = (stop: MapStop | undefined | null): boolean => {
-    if (!stop?.geometry?.coordinates) return true
-    const coords = stop.geometry.coordinates
-    return coords[0] === 0 && coords[1] === 0
-  }
+  const centroid = getStopCentroid(props.station.stops)
 
   const pwLevels = new Map<string, boolean>()
   for (const pw of props.station.pathways || []) {
@@ -538,8 +523,8 @@ function drawPathways () {
 
   // Add midpoints
   const midpoints: Feature<Point>[] = (props.station.pathways || []).map((s): Feature<Point> => {
-    const fromCoords = getCoordinates(s.from_stop)
-    const toCoords = getCoordinates(s.to_stop)
+    const fromCoords = getStopCoordinates(s.from_stop, centroid)
+    const toCoords = getStopCoordinates(s.to_stop, centroid)
     return {
       type: 'Feature',
       id: s.id,
@@ -568,9 +553,9 @@ function drawPathways () {
 
   // Add pathways
   const features: Feature<LineString>[] = (props.station.pathways || []).map((s): Feature<LineString> => {
-    const fromCoords = getCoordinates(s.from_stop)
-    const toCoords = getCoordinates(s.to_stop)
-    const approximated = isApproximated(s.from_stop) || isApproximated(s.to_stop)
+    const fromCoords = getStopCoordinates(s.from_stop, centroid)
+    const toCoords = getStopCoordinates(s.to_stop, centroid)
+    const approximated = isStopApproximated(s.from_stop) || isStopApproximated(s.to_stop)
 
     return {
       type: 'Feature',

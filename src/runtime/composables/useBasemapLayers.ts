@@ -101,9 +101,12 @@ export function useBasemapLayers () {
         }
       },
       layer: {
-        type: 'background',
+        type: 'fill',
         paint: {
-          'background-color': '#f5f5f5'
+          'fill-color': '#f5f5f5'
+        },
+        layout: {
+          visibility: 'none'
         }
       }
     }
