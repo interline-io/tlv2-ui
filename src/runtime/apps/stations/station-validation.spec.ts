@@ -699,7 +699,7 @@ describe('validateConnectivity', () => {
     station.addStops([entrance, platform])
     const results = validateConnectivity(station)
     expect(results.length).toBeGreaterThan(0)
-    expect(results[0].stop.id).toBe(1)
+    expect(results[0]?.stop.id).toBe(1)
   })
 
   test('returns empty when all stops are reachable from entrance', () => {

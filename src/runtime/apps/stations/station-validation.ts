@@ -12,7 +12,7 @@ export interface ValidationOptions {
   requireLengthAndTraversalTime?: boolean
 }
 
-export function validateStop (stop: Stop, stationStops: Stop[], options: ValidationOptions = {}): ValidationError[] {
+export function validateStop (stop: Stop, stationStops: Stop[], _options: ValidationOptions = {}): ValidationError[] {
   const fromPathways = stop.pathways_from_stop || []
   const toPathways = stop.pathways_to_stop || []
   const targetStop = stop.external_reference?.target_active_stop || null
