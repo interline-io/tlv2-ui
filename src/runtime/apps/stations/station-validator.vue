@@ -251,7 +251,6 @@ function routeSummary (stop: Stop): string {
   }
   return ''
 }
-
 </script>
 
 <style scoped>
