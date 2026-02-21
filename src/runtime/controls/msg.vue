@@ -25,7 +25,7 @@
     >
       <template v-if="hasIcon">
         <div class="media message-body">
-          <t-icon :icon="getIcon" size="large" class="media-left" />
+          <t-icon :icon="getIcon" :size="iconSize" class="media-left" />
           <div class="media-content">
             <slot />
           </div>
@@ -53,6 +53,7 @@ const props = withDefaults(defineProps<{
   title?: string | null
   icon?: string | null
   showIcon?: boolean
+  iconSize?: 'small' | 'medium' | 'large'
   expandable?: boolean
   open?: boolean
   closable?: boolean
@@ -62,6 +63,7 @@ const props = withDefaults(defineProps<{
   title: null,
   icon: null,
   showIcon: false,
+  iconSize: 'large',
   expandable: false,
   open: false,
   closable: false,

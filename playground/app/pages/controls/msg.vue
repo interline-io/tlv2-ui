@@ -58,6 +58,18 @@
         </t-msg>
       </t-demo-box>
 
+      <t-demo-box label="Icon Sizes">
+        <t-msg variant="info" show-icon icon-size="small">
+          Small icon size.
+        </t-msg>
+        <t-msg variant="success" show-icon icon-size="medium">
+          Medium icon size.
+        </t-msg>
+        <t-msg variant="warning" show-icon icon-size="large">
+          Large icon size (default).
+        </t-msg>
+      </t-demo-box>
+
       <t-demo-box label="Closable Messages">
         <t-msg v-if="messages.tips" variant="info" closable @close="messages.tips = false">
           <template #header>
