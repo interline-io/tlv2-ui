@@ -1,15 +1,15 @@
 <template>
   <div>
     <div class="buttons">
-      <a class="button is-outlined" :class="errorCount.stops > 0 ? 'is-danger' : ''" @click="openStops = true">
+      <a class="button is-outlined" :class="errorCount.stops > 0 ? 'is-danger' : 'is-dark'" @click="openStops = true">
         <i v-if="errorCount.stops > 0" class="mdi mdi-alert has-text-danger" /> Stops
       </a>
 
-      <a class="button is-outlined" :class="errorCount.pathways > 0 ? 'is-danger' : ''" @click="openPathways = true">
+      <a class="button is-outlined" :class="errorCount.pathways > 0 ? 'is-danger' : 'is-dark'" @click="openPathways = true">
         <i v-if="errorCount.pathways > 0" class="mdi mdi-alert has-text-danger" /> Pathways
       </a>
 
-      <a class="button is-outlined" :class="stopPathErrorCount > 0 ? 'is-danger' : ''" @click="openPaths = true">
+      <a class="button is-outlined" :class="stopPathErrorCount > 0 ? 'is-danger' : 'is-dark'" @click="openPaths = true">
         <i v-if="stopPathErrorCount > 0" class="mdi mdi-alert has-text-danger" /> Connectivity
       </a>
     </div>
@@ -166,16 +166,7 @@ import { ref, computed } from 'vue'
 import { PathwayModes } from '../../lib/pathways/pathway-icons'
 import { LocationTypes } from './basemaps'
 import type { Station, Stop, Pathway } from './station'
-import type { ValidationPath } from './types'
-
-interface ValidationError {
-  message: string
-}
-
-interface StopPathData {
-  stop: Stop
-  paths: ValidationPath[]
-}
+import { validateStop, validatePathway, validateConnectivity, type ValidationError, type ConnectivityResult } from './station-validation'
 
 interface Props {
   station: Station
@@ -194,18 +185,8 @@ const openPathways = ref(false)
 const openPaths = ref(false)
 const showAllPaths = ref(false)
 
-const stopPaths = computed((): StopPathData[] => {
-  const ret: StopPathData[] = []
-  const stationFromStops = props.station.stops.filter((s) => { return s.location_type === 2 })
-  const stationMustReach = props.station.stops.filter((s) => { return s.location_type !== 1 })
-  for (const stop of stationFromStops) {
-    const errs = props.station.validatePathsToStops(stop, stationMustReach)
-      .filter((path) => { return path.target.id !== stop.id })
-    if (errs.length > 0) {
-      ret.push({ stop, paths: errs })
-    }
-  }
-  return ret
+const stopPaths = computed((): ConnectivityResult[] => {
+  return validateConnectivity(props.station)
 })
 
 const stopPathErrorCount = computed((): number => {
@@ -216,16 +197,18 @@ const stopPathErrorCount = computed((): number => {
   return count
 })
 
+const editorOptions = { requireLengthAndTraversalTime: false }
+
 const errors = computed((): { stops: Record<number, ValidationError[]>, pathways: Record<number, ValidationError[]> } => {
   const errors: { stops: Record<number, ValidationError[]>, pathways: Record<number, ValidationError[]> } = { stops: {}, pathways: {} }
   for (const stop of props.station.stops) {
     if (stop.id) {
-      errors.stops[stop.id] = validateStop(stop)
+      errors.stops[stop.id] = validateStop(stop, props.station.stops, editorOptions)
     }
   }
   for (const pw of pathways.value) {
     if (pw.id) {
-      errors.pathways[pw.id] = validatePathway(pw)
+      errors.pathways[pw.id] = validatePathway(pw, props.station.stops, editorOptions)
     }
   }
   return errors
@@ -269,101 +252,6 @@ function routeSummary (stop: Stop): string {
       .join(', ')
   }
   return ''
-}
-
-function _validateConnectivity (_station: Station): ValidationError[] {
-  // TODO: "Unreachable location in a station"
-  // TODO: "Missing reciprocal pathways"
-  return []
-}
-
-function validateStop (stop: Stop): ValidationError[] {
-  const fromPathways = stop.pathways_from_stop || []
-  const toPathways = stop.pathways_to_stop || []
-  const targetStop = stop.external_reference?.target_active_stop || null
-  const errs: ValidationError[] = []
-  if (stop.location_type === 0 && !targetStop) {
-    // errs.push({
-    //   message: 'Platform (location_type = 0) must have a stop association'
-    // })
-  }
-  if (targetStop && targetStop.location_type !== stop.location_type) {
-    errs.push({
-      message: `Stop must have the same location_type as the target stop (location_type = ${targetStop.location_type})`
-    })
-  }
-  // if (stop.location_type === 2 && !stop.external_reference?.target_active_stop) {
-  //   errs.push({
-  //     message: 'Entrance (location_type = 2) must have a stop association'
-  //   })
-  // }
-  if (stop.location_type === 1 && (fromPathways.length > 0 || toPathways.length > 0)) {
-    errs.push({
-      message: 'Pathways cannot use Station (location_type = 1)'
-    })
-  }
-  if (stop.parent?.id && stop.parent.id === stop.id) {
-    errs.push({
-      message: 'Cannot have self as parent_station'
-    })
-  }
-  if (stop.location_type !== 4 && stop.parent?.id && stop.parent.location_type !== 1) {
-    errs.push({
-      message: 'The parent_station must be a Station (location_type = 1)'
-    })
-  }
-  if (
-    (stop.location_type === 4 && stop.parent === null) || (stop.location_type === 4 && stop.parent && stop.parent.location_type !== 0)
-  ) {
-    errs.push({
-      message: 'Boarding areas require a Platform (location_type = 0) as a parent_station'
-    })
-  }
-  if (stop.external_reference && stop.external_reference.target_active_stop === null) {
-    errs.push({
-      message: `Cannot resolve reference to stop ${stop.external_reference.target_feed_onestop_id}:${stop.external_reference.target_stop_id}`
-    })
-  }
-  if (stop.location_type !== 1 && stop.location_type !== 0 && (stop.pathways_from_stop || []).length === 0 && (stop.pathways_to_stop || []).length === 0) {
-    errs.push({
-      message: 'All non-platform stops require at least one connecting pathway'
-    })
-  }
-  if (stop.location_type === 3 && (fromPathways.length + toPathways.length < 2)) {
-    errs.push({
-      message: 'Dangling generic node - must be able to transit through node to another node'
-    })
-  }
-  if (stop.location_type === 0 && (fromPathways.length + toPathways.length > 1)) {
-    errs.push({
-      message: 'Do not transit through platforms'
-    })
-  }
-  return errs
-}
-
-function validatePathway (pathway: Pathway): ValidationError[] {
-  const errs: ValidationError[] = []
-  if (pathway.from_stop.id === pathway.to_stop.id) {
-    errs.push({
-      message: 'Pathway is a loop - from_stop_id cannot equal to_stop_id'
-    })
-  }
-  if (pathway.pathway_mode === 7 && pathway.is_bidirectional === 1) {
-    errs.push({
-      message: 'Exit-gate pathways must be one-way'
-    })
-  }
-  if (pathway.pathway_mode === 2 && pathway.stair_count === null) {
-    if (pathway.from_stop.level?.id !== pathway.to_stop.level?.id) {
-      // ok
-    } else {
-      errs.push({
-        message: 'Stairs pathways must have a stair_count or connect stops with different levels'
-      })
-    }
-  }
-  return errs
 }
 </script>
 

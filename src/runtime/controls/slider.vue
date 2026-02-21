@@ -1,6 +1,7 @@
 <template>
   <div class="t-slider-wrapper">
     <input
+      :id="fieldId"
       ref="sliderRef"
       type="range"
       class="t-slider"
@@ -31,8 +32,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, useSlots, provide } from 'vue'
+import { ref, computed, useSlots, provide, inject } from 'vue'
 import type { SliderSize, SliderVariant } from './types'
+import { FieldIdKey } from './types'
+
+const fieldId = inject(FieldIdKey, undefined)
 
 interface Props {
   /**

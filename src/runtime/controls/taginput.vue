@@ -118,7 +118,7 @@
 </template>
 
 <script setup lang="ts" generic="T extends string | number = string">
-import { computed, ref, watch, useSlots } from 'vue'
+import { computed, ref, watch, useSlots, useId } from 'vue'
 import type { TaginputVariant, TaginputSize, TagOption as TagOptionBase } from './types'
 
 /**
@@ -205,8 +205,7 @@ const inputRef = ref<HTMLInputElement | null>(null)
 const isOpen = ref(false)
 const highlightedIndex = ref(-1)
 
-// Unique ID for ARIA attributes
-const componentId = `taginput-${Math.random().toString(36).substring(2, 9)}`
+const componentId = useId()
 const listboxId = `${componentId}-listbox`
 const counterId = `${componentId}-counter`
 

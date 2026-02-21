@@ -4,7 +4,7 @@
 
 import type { Point } from 'geojson'
 import { haversinePosition } from '../../lib/geom'
-import type { Graph } from '../../lib/pathways/graph'
+import type { RoutingGraph } from '../../lib/pathways/graph'
 
 /**
  * Basic feed information
@@ -267,7 +267,7 @@ export class Pathway {
  */
 export class Station {
   stopIndex: Map<number, Stop>
-  graph: Graph | null
+  graph: RoutingGraph | null
   stop: Stop
   pathways: Pathway[]
   stops: Stop[]

@@ -87,6 +87,7 @@ declare module 'vue' {
     TlAppsStationsPathViewer: typeof import('./apps/stations/path-viewer.vue')['default']
     TlAppsStationsPathwayEditor: typeof import('./apps/stations/pathway-editor.vue')['default']
     TlAppsStationsPathwayMap: typeof import('./apps/stations/pathway-map.vue')['default']
+    TlAppsStationsStationDiagramViewer: typeof import('./apps/stations/station-diagram-viewer.vue')['default']
     TlAppsStationsStationEditor: typeof import('./apps/stations/station-editor.vue')['default']
     TlAppsStationsStationLevelsViewerSorter: typeof import('./apps/stations/station-levels-viewer-sorter.vue')['default']
     TlAppsStationsStationModeTabs: typeof import('./apps/stations/station-mode-tabs.vue')['default']

@@ -78,7 +78,8 @@
         <div class="level-left">
           <div class="level-item">
             <t-button
-              class="button is-outlined"
+              variant="dark"
+              outlined
               @click="$emit('cancel')"
             >
               Cancel

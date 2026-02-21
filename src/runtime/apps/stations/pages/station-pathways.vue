@@ -175,6 +175,17 @@
           </template>
           <template v-else-if="selectMode === 'find-route'">
             <t-card v-if="selectedStops.length > 1" label="Find Route">
+              <t-field label="Routing Profile">
+                <t-dropdown
+                  v-model="selectedProfile"
+                  selectable
+                  :label="selectedProfile"
+                >
+                  <t-dropdown-item v-for="opt of Object.keys(Profiles)" :key="opt" :value="opt">
+                    {{ opt }}
+                  </t-dropdown-item>
+                </t-dropdown>
+              </t-field>
               <tl-apps-stations-path-viewer :path="selectedPath || []" />
             </t-card>
           </template>
@@ -257,14 +268,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, toRefs, watch } from 'vue'
+import { computed, ref, toRaw, toRefs, watch } from 'vue'
 import { useRoute } from '#imports'
 import type { LngLat } from 'maplibre-gl'
 import type { Feature } from 'geojson'
 import { PathwayModes } from '../../../lib/pathways/pathway-icons'
+import { Profiles } from '../../../lib/pathways/graph'
 import { LocationTypes } from '../basemaps'
 import { Stop, Pathway, mapLevelKeyFn } from '../station'
 import type { Level } from '../station'
+import type { LevelData } from '../types'
 import { useStation } from '../composables/useStation'
 import { useToastNotification } from '../../../composables/useToastNotification'
 
@@ -273,6 +286,41 @@ type SelectMode = 'select' | 'add-node' | 'edit-node' | 'add-pathway' | 'edit-pa
 interface PathwayEdge {
   cost: number
   pathway: Pathway
+}
+
+type LevelFeatureProperties = Pick<LevelData, 'id' | 'level_id' | 'level_name' | 'level_index'>
+
+interface PathwayFeatureProperties {
+  id?: number
+  pathway_id?: string
+  pathway_mode?: number
+  signposted_as?: string
+  reverse_signposted_as?: string
+  stair_count?: number
+  is_bidirectional?: number
+  length?: number
+  max_slope?: number
+  from_id?: number
+  from_stop_id: string
+  from_stop_name?: string
+  to_id?: number
+  to_stop_id: string
+  to_stop_name?: string
+  from_level_id?: string
+  from_level_name?: string
+  to_level_id?: string
+  to_level_name?: string
+}
+
+interface StopFeatureProperties {
+  id?: number
+  stop_name?: string
+  stop_id: string
+  stop_code?: string
+  stop_desc?: string
+  location_type?: number
+  level_id?: string
+  level_index?: number
 }
 
 defineOptions({
@@ -315,8 +363,11 @@ const selectedPoint = ref<LngLat | null>(null)
 const selectedStops = ref<Stop[]>([])
 const selectedPathways = ref<Pathway[]>([])
 const basemap = ref('carto')
+const selectedProfile = ref<string>('Pathways: Default')
 
-// Computed properties
+// Converts the A* routing result into PathwayEdge objects for map/diagram visualization.
+// Implicit edges between stops that share a parent but lack an explicit pathway
+// are represented as synthetic Pathway objects so they can be displayed too.
 const selectedPath = computed((): PathwayEdge[] | null => {
   if (selectMode.value !== 'find-route' || selectedStops.value.length < 2 || !station.value) {
     return null
@@ -324,16 +375,25 @@ const selectedPath = computed((): PathwayEdge[] | null => {
   const stop0Id = selectedStops.value[0]?.id
   const stop1Id = selectedStops.value[1]?.id
   if (!stop0Id || !stop1Id) return null
-  const p = station.value.findRoute(stop0Id, stop1Id)
+  const profile = Profiles[selectedProfile.value]
+  const p = toRaw(station.value).findRoute(stop0Id, stop1Id, profile)
   if (!p) return null
   const edges: PathwayEdge[] = []
   for (const edge of p.edges || []) {
-    const pathway = edge.pathway_id ? pathwayIndex.value[edge.pathway_id] : undefined
-    if (edge.pathway_id && pathway) {
-      edges.push({
-        cost: 0,
-        pathway
-      })
+    if (edge.pathway_id) {
+      const pathway = pathwayIndex.value[edge.pathway_id]
+      if (pathway) {
+        edges.push({ cost: edge.cost, pathway })
+      }
+    } else if (edge.from_stop_id && edge.to_stop_id) {
+      const fromStop = station.value.getStop(edge.from_stop_id)
+      const toStop = station.value.getStop(edge.to_stop_id)
+      if (fromStop && toStop) {
+        edges.push({
+          cost: edge.cost,
+          pathway: new Pathway({ pathway_mode: 1, is_bidirectional: 1, from_stop: fromStop, to_stop: toStop })
+        })
+      }
     }
   }
   return edges
@@ -390,7 +450,7 @@ const geojsonFeatures = computed((): Feature[] => {
         level_id: s.level_id,
         level_name: s.level_name,
         level_index: s.level_index
-      },
+      } satisfies LevelFeatureProperties,
       geometry: s.geometry!
     }
   }))
@@ -415,11 +475,11 @@ const geojsonFeatures = computed((): Feature[] => {
         to_id: s.to_stop.id,
         to_stop_id: String(s.to_stop.stop_id),
         to_stop_name: s.to_stop.stop_name,
-        from_level_id: s.from_stop.level?.id,
-        from_level_name: s.from_stop.level?.id,
-        to_level_id: s.to_stop.level?.id,
-        to_level_name: s.to_stop.level?.id
-      },
+        from_level_id: s.from_stop.level?.level_id,
+        from_level_name: s.from_stop.level?.level_name,
+        to_level_id: s.to_stop.level?.level_id,
+        to_level_name: s.to_stop.level?.level_name
+      } satisfies PathwayFeatureProperties,
       geometry: {
         type: 'LineString' as const,
         coordinates: [
@@ -441,9 +501,9 @@ const geojsonFeatures = computed((): Feature[] => {
         stop_code: s.stop_code,
         stop_desc: s.stop_desc,
         location_type: s.location_type,
-        level_id: s.level?.id,
+        level_id: s.level?.level_id,
         level_index: s.level?.level_index
-      },
+      } satisfies StopFeatureProperties,
       geometry: s.geometry!
     }
   }))

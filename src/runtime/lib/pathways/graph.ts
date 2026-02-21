@@ -14,6 +14,8 @@ export interface RoutablePathway {
   pathway_id?: string
   pathway_mode?: number
   is_bidirectional?: number
+  length?: number
+  traversal_time?: number
   from_stop: { id?: number }
   to_stop: { id?: number }
 }
@@ -28,7 +30,6 @@ export interface RoutableStop {
   stop_name?: string
   location_type?: number
   geometry?: { coordinates: number[] }
-  parent_station?: number
   parent?: { id?: number }
   pathways_from_stop: RoutablePathway[]
   pathways_to_stop: RoutablePathway[]
@@ -56,8 +57,9 @@ export type CostFunction = (pw: RoutablePathway, d: number, speed?: number) => n
 /**
  * Calculate default distance cost (time = distance / speed)
  */
-export function DefaultDistance (_pw: RoutablePathway, d: number, speed?: number): number {
-  speed = DefaultWalkingSpeed
+export function DefaultDistance (pw: RoutablePathway, d: number, speed?: number): number {
+  if (pw.traversal_time) { return pw.traversal_time }
+  speed ??= DefaultWalkingSpeed
   const t = (d / speed)
   return t
 }
@@ -67,7 +69,9 @@ export function DefaultDistance (_pw: RoutablePathway, d: number, speed?: number
  * Applies different penalties based on pathway type
  */
 export function DefaultCost (pw: RoutablePathway, d: number, speed?: number): number {
-  speed = DefaultWalkingSpeed
+  // Use traversal_time directly when available (already accounts for pathway characteristics)
+  if (pw.traversal_time) { return pw.traversal_time }
+  speed ??= DefaultWalkingSpeed
   let t = (d / speed)
   if (pw.pathway_mode === 1) {
     // walkway: default
@@ -97,23 +101,23 @@ export function DefaultCost (pw: RoutablePathway, d: number, speed?: number): nu
 
 /**
  * Wheelchair-accessible profile
- * Returns 0 (inaccessible) for stairs and escalators
+ * Uses slower walking speed (0.7 m/s) and returns 0 (inaccessible) for stairs and escalators
  */
 export function WheelchairProfile (pw: RoutablePathway, d: number): number {
-  const speed = 0.7
+  // Block stairs and escalators regardless of traversal_time
   if (pw.pathway_mode === 2) {
     return 0.0
   } else if (pw.pathway_mode === 4) {
     return 0.0
   }
-  return DefaultCost(pw, d, speed)
+  return DefaultCost(pw, d, 0.7)
 }
 
 /**
  * Available routing profiles with different accessibility constraints
  */
 export const Profiles: Record<string, CostFunction> = {
-  'Pathways: Default' (pw, d) { return DefaultCost(pw, d, DefaultWalkingSpeed) },
+  'Pathways: Default': DefaultCost,
   'Pathways: No Stairs' (pw, d) {
     return (pw.pathway_mode === 2) ? 0 : DefaultCost(pw, d, DefaultWalkingSpeed)
   },
@@ -127,7 +131,9 @@ export const Profiles: Record<string, CostFunction> = {
  * Edge information in the routing result
  */
 export interface RouteEdge {
-  pathway_id: number
+  pathway_id?: number
+  from_stop_id?: number
+  to_stop_id?: number
   cost: number
 }
 
@@ -145,19 +151,24 @@ export interface AStarResult {
  * Routing graph for station pathways using A* algorithm
  */
 export class RoutingGraph {
+  /** Adjacency matrix: adjacency[i][j] is the travel cost from stop i to stop j (0 = no edge) */
   adjacency: number[][]
+  /** Heuristic matrix: heuristic[i][j] is the admissible A* estimate (haversine / max speed) */
   heuristic: number[][]
-  distances: Record<number, number[]>
+  /** Pathway ID matrix: pwids[i][j] is the pathway ID for the edge from stop i to j (undefined for implicit edges) */
   pwids: (number | undefined)[][]
+  /** Lookup from stop ID to its RoutableStop data */
   stopsById: Map<number, RoutableStop>
+  /** Lookup from pathway ID to its RoutablePathway data */
   pwsById: Map<number, RoutablePathway>
+  /** Maps stop ID → matrix index */
   stopIndex: Record<number, number>
+  /** Maps matrix index → stop ID (reverse of stopIndex) */
+  stopIds: number[]
 
-  constructor (stops: RoutableStop[], profile?: CostFunction) {
-    profile = DefaultDistance
+  constructor (stops: RoutableStop[], profile: CostFunction = DefaultDistance) {
     this.adjacency = []
     this.heuristic = []
-    this.distances = {}
     this.pwids = []
 
     // Stops and pathways by ID
@@ -191,7 +202,7 @@ export class RoutingGraph {
       }
     }
     this.stopIndex = sids
-    console.log('stop Index:', sids)
+    this.stopIds = allStops.map(s => s.id!)
 
     // Build graph
     this.buildGraph(allStops, profile)
@@ -213,20 +224,26 @@ export class RoutingGraph {
 
     const d = aStar(this.adjacency, this.heuristic, startIndex, goalIndex)
 
+    // Convert path from matrix indices to stop IDs
+    d.path = d.path.map(idx => this.stopIds[idx]!)
+
     // Build edge list
     d.edges = []
     for (let i = 0; i < d.path.length - 1; i++) {
-      const currentIdx = d.path[i]
-      const nextIdx = d.path[i + 1]
-      if (currentIdx === undefined || nextIdx === undefined) continue
-      const pwid = this.pwids[currentIdx]?.[nextIdx]
-      const cost = this.distances[currentIdx]?.[nextIdx]
-      if (pwid && cost !== undefined) {
-        d.edges.push({
-          pathway_id: pwid,
-          cost
-        })
-      }
+      const fromId = d.path[i]
+      const toId = d.path[i + 1]
+      if (fromId === undefined || toId === undefined) continue
+      const fromIdx = this.stopIndex[fromId]
+      const toIdx = this.stopIndex[toId]
+      if (fromIdx === undefined || toIdx === undefined) continue
+      const pwid = this.pwids[fromIdx]?.[toIdx]
+      const cost = this.adjacency[fromIdx]?.[toIdx] ?? 0
+      d.edges.push({
+        pathway_id: pwid,
+        from_stop_id: fromId,
+        to_stop_id: toId,
+        cost
+      })
     }
     return d
   }
@@ -272,15 +289,19 @@ export class RoutingGraph {
       distances.push(distRow)
     }
 
-    // Connect boarding areas to parent stations
+    // Connect boarding areas to parent stations bidirectionally
+    // so routes can start or end at a boarding area
     for (let fromIndex = 0; fromIndex < stops.length; fromIndex++) {
       const stop = stops[fromIndex]
-      if (stop?.parent_station && stop.location_type === 4) {
-        const toIndex = this.stopIndex[stop.parent_station]
-        const gRow = g[fromIndex]
-        if (toIndex !== undefined && gRow) {
-          console.log('connecting boarding', fromIndex, 'idx to parent ', toIndex, ' idx')
-          gRow[toIndex] = MinEdge
+      if (stop?.parent?.id && stop.location_type === 4) {
+        const toIndex = this.stopIndex[stop.parent?.id]
+        if (toIndex === undefined) continue
+        const fromRow = g[fromIndex]
+        const toRow = g[toIndex]
+        if (fromRow && toRow) {
+          console.log('virtual edge: boarding area', stop.id, stop.stop_id, '->', stop.parent?.id)
+          fromRow[toIndex] = MinEdge
+          toRow[fromIndex] = MinEdge
         }
       }
     }
@@ -304,11 +325,17 @@ export class RoutingGraph {
       const toIndex = this.stopIndex[toStop.id!]
       if (fromIndex === undefined || toIndex === undefined) continue
 
-      let d = distances[fromIndex]?.[toIndex] ?? MinEdge
+      // Prefer pathway-provided length over haversine approximation
+      let d = pw.length ?? distances[fromIndex]?.[toIndex] ?? MinEdge
       if (d <= MinEdge) {
         d = MinEdge
       }
+      // cost=0 means the profile blocks this pathway; skip so it doesn't
+      // overwrite a valid parallel pathway between the same stop pair
       const pathwayCost = profile(pw, d)
+      if (pathwayCost <= 0) {
+        continue
+      }
       const graphCost = g[fromIndex]?.[toIndex] ?? 0
       if (pathwayCost < graphCost || graphCost === 0) {
         console.log('    setting:', fromIndex, toIndex, 'cost:', pathwayCost.toFixed(0), 'dist', d.toFixed(0))
@@ -333,166 +360,7 @@ export class RoutingGraph {
 
     this.adjacency = g
     this.heuristic = h
-    this.distances = distances
     this.pwids = pwids
-  }
-}
-
-/**
- * Graph interface returned by NewGraph (legacy)
- */
-export interface Graph {
-  nodes: RoutableStop[]
-  adjacency: number[][]
-  heuristic: number[][]
-  distances: number[][]
-  aStar: (start: number, goal: number) => AStarResult
-}
-
-/**
- * Create a routing graph (legacy function, use RoutingGraph class instead)
- * @deprecated Use RoutingGraph class
- */
-export function NewGraph (stops: RoutableStop[], profile: CostFunction): Graph | null {
-  if (!stops || stops.length === 0 || !profile) {
-    return null
-  }
-
-  const g: number[][] = [] // adjacency matrix
-  const h: number[][] = [] // heuristic values
-  const distances: number[][] = [] // distances
-  const pwids: (number | undefined)[][] = []
-  const sids: Record<number, number> = {}
-
-  for (let i = 0; i < stops.length; i++) {
-    const stop = stops[i]
-    if (stop?.id) {
-      sids[stop.id] = i
-    }
-  }
-
-  // init heuristic
-  for (let i = 0; i < stops.length; i++) {
-    const fromStop = stops[i]
-    if (fromStop?.id) {
-      sids[fromStop.id] = i
-    }
-    const gRow: number[] = []
-    const hRow: number[] = []
-    const pwRow: (number | undefined)[] = []
-    const distRow: number[] = []
-
-    for (let j = 0; j < stops.length; j++) {
-      const toStop = stops[j]
-      if (!fromStop?.geometry || !toStop?.geometry) {
-        distRow.push(0)
-        gRow.push(0)
-        hRow.push(0)
-        continue
-      }
-      const d = haversinePosition(fromStop.geometry.coordinates, toStop.geometry.coordinates)
-      distRow.push(d)
-      gRow.push(0) // init with 0
-      hRow.push(d / 5) // assume maximum possible speed of 5m/s
-    }
-
-    g.push(gRow)
-    h.push(hRow)
-    pwids.push(pwRow)
-    distances.push(distRow)
-  }
-
-  // init pathway edges
-  const stopIndex = new Map<number, RoutableStop>()
-  const pwIndex = new Map<number, RoutablePathway>()
-  for (const stop of stops) {
-    if (stop.id) {
-      stopIndex.set(stop.id, stop)
-    }
-    for (const pw of stop.pathways_from_stop) {
-      if (pw.id) {
-        pwIndex.set(pw.id, pw)
-      }
-    }
-    for (const pw of stop.pathways_to_stop) {
-      if (pw.id) {
-        pwIndex.set(pw.id, pw)
-      }
-    }
-  }
-
-  for (const pw of pwIndex.values()) {
-    console.log('processing pathway:', pw.id, 'mode:', pw.pathway_mode)
-    const fromStop = stopIndex.get(pw.from_stop.id!)
-    const toStop = stopIndex.get(pw.to_stop.id!)
-    if (!fromStop) {
-      console.log('    skipping pw, unknown from_stop', pw.from_stop.id)
-      continue
-    }
-    if (!toStop) {
-      console.log('    skipping pw, unknown to_stop', pw.to_stop.id)
-      continue
-    }
-
-    const fromIndex = sids[fromStop.id!]
-    const toIndex = sids[toStop.id!]
-    if (fromIndex === undefined || toIndex === undefined) continue
-
-    let d = distances[fromIndex]?.[toIndex] ?? MinEdge
-    if (d <= MinEdge) {
-      d = MinEdge
-    }
-    const pathwayCost = profile(pw, d)
-    const graphCost = g[fromIndex]?.[toIndex] ?? 0
-    if (pathwayCost < graphCost || graphCost === 0) {
-      console.log('    setting:', fromIndex, toIndex, 'cost:', pathwayCost.toFixed(0), 'less than', graphCost, 'sld', d.toFixed(0))
-      if (g[fromIndex] && pwids[fromIndex]) {
-        g[fromIndex][toIndex] = pathwayCost
-        pwids[fromIndex][toIndex] = pw.id
-      }
-    }
-    if (pw.is_bidirectional) {
-      const graphCostReverse = g[toIndex]?.[fromIndex] ?? 0
-      if (pathwayCost < graphCostReverse || graphCostReverse === 0) {
-        console.log('    setting reverse:', fromIndex, toIndex, 'cost:', pathwayCost.toFixed(0), 'less than', graphCostReverse, 'sld', d.toFixed(0))
-        if (g[toIndex] && pwids[toIndex]) {
-          g[toIndex][fromIndex] = pathwayCost
-          pwids[toIndex][fromIndex] = pw.id
-        }
-      }
-    } else {
-      console.log('    not bidirectional')
-    }
-  }
-
-  return {
-    nodes: stops,
-    adjacency: g,
-    heuristic: h,
-    distances,
-    aStar (start: number, goal: number): AStarResult {
-      const startIdx = sids[start]
-      const goalIdx = sids[goal]
-      if (startIdx === undefined || goalIdx === undefined) {
-        return { distance: null, path: [], error: 'unknown stop' }
-      }
-      const d = aStar(g, h, startIdx, goalIdx)
-      d.edges = []
-      for (let i = 0; i < d.path.length - 1; i++) {
-        const currentIdx = d.path[i]
-        const nextIdx = d.path[i + 1]
-        if (currentIdx === undefined || nextIdx === undefined) continue
-        const pwid = pwids[currentIdx]?.[nextIdx]
-        const cost = g[currentIdx]?.[nextIdx]
-        if (pwid && cost !== undefined) {
-          d.edges.push({
-            pathway_id: pwid,
-            cost
-          })
-        }
-      }
-      return d
-    }
   }
 }
 

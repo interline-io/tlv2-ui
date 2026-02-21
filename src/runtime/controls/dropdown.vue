@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount, provide } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, provide, useId } from 'vue'
 
 /**
  * Dropdown component using Bulma dropdown structure.
@@ -152,7 +152,7 @@ const emit = defineEmits<{
 
 const dropdownRef = ref<HTMLElement | null>(null)
 const isActive = ref(false)
-const uid = ref(`dropdown-${Math.random().toString(36).substr(2, 9)}`)
+const uid = useId()
 
 const dropdownClass = computed(() => ({
   'is-active': isActive.value,
