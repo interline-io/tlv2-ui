@@ -62,51 +62,51 @@
         </div>
         <div v-if="selectedStopsCount === 0 && selectedPathwaysCount === 0">
           <div class="mb-2">
-            <o-field label="Select Stops">
+            <t-field label="Select Stops">
               <div class="buttons has-addons">
-                <a v-for="[type, label] of locationTypes" :key="type" class="button is-small" @click="$emit('select-location-types', type)">
+                <t-button v-for="[type, label] of locationTypes" :key="type" size="small" @click="$emit('select-location-types', type)">
                   {{ label }}
-                </a>
+                </t-button>
               </div>
-            </o-field>
-            <o-field>
+            </t-field>
+            <t-field>
               <div class="buttons has-addons">
-                <a class="button is-small" @click="$emit('select-stops-with-associations')">
+                <t-button size="small" @click="$emit('select-stops-with-associations')">
                   With associations
-                </a>
-                <a class="button is-small" @click="$emit('select-stops-platforms-without-associations')">
+                </t-button>
+                <t-button size="small" @click="$emit('select-stops-platforms-without-associations')">
                   Platforms w/o assoc.
-                </a>
-                <a class="button is-small" @click="$emit('select-stops-entrances-without-associations')">
+                </t-button>
+                <t-button size="small" @click="$emit('select-stops-entrances-without-associations')">
                   Entrances w/o assoc.
-                </a>
+                </t-button>
               </div>
               <div class="buttons has-addons">
-                <a class="button is-small" @click="$emit('select-stops-with-paired-pathways')">
+                <t-button size="small" @click="$emit('select-stops-with-paired-pathways')">
                   With paired pathways
-                </a>
+                </t-button>
               </div>
-            </o-field>
+            </t-field>
           </div>
           <div class="mb-2">
-            <o-field label="Select Pathways">
+            <t-field label="Select Pathways">
               <div class="buttons has-addons">
-                <a v-for="[mode, label] of pathwayModes" :key="mode" class="button is-small" @click="$emit('select-pathway-modes', mode)">
+                <t-button v-for="[mode, label] of pathwayModes" :key="mode" size="small" @click="$emit('select-pathway-modes', mode)">
                   {{ label }}
-                </a>
+                </t-button>
               </div>
               <div class="buttons has-addons">
-                <a class="button is-small" @click="$emit('select-pathways-with-pairs')">
+                <t-button size="small" @click="$emit('select-pathways-with-pairs')">
                   With pairs
-                </a>
-                <a class="button is-small" @click="$emit('select-pathways-oneway')">
+                </t-button>
+                <t-button size="small" @click="$emit('select-pathways-oneway')">
                   One-directional
-                </a>
-                <a class="button is-small" @click="$emit('select-pathways-bidirectional')">
+                </t-button>
+                <t-button size="small" @click="$emit('select-pathways-bidirectional')">
                   Bi-directional
-                </a>
+                </t-button>
               </div>
-            </o-field>
+            </t-field>
           </div>
         </div>
       </div>

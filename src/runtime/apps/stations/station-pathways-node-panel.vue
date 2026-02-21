@@ -1,154 +1,130 @@
 <template>
-  <div>
-    <nav class="panel station-editor-panel">
-      <p class="panel-heading">
-        <span v-if="!editMode">View Node</span>
-        <span v-else>Edit Node</span>
-        <span class="panel-heading-buttons">
-          <button
-            v-if="showUnselect"
-            class="button is-small"
-            title="Or press ESC key to unselect"
-            @click="$emit('unselect')"
-          >
-            Unselect
-          </button>
-          <button
-            class="button is-small"
-            :class="editMode ? 'is-primary' : ''"
-            @click="editMode = !editMode"
-          >
-            <span class="icon is-small">
-              <o-icon :icon="editMode ? 'eye' : 'pencil'" />
-            </span>
-            <span>{{ editMode ? 'View' : 'Edit' }}</span>
-          </button>
-        </span>
-      </p>
-
-      <!-- View Mode (Read-only) -->
-      <div v-if="!editMode" class="panel-block is-block">
-        <div class="content">
-          <div class="field is-horizontal">
-            <div class="field-label">
-              <label class="label">Stop ID:</label>
-            </div>
-            <div class="field-body">
-              <code>{{ stop.stop_id }}</code>
-            </div>
+  <tl-editor-station-pathways-editor-panel
+    view-heading="View Node"
+    edit-heading="Edit Node"
+    :show-unselect="showUnselect"
+    @unselect="$emit('unselect')"
+  >
+    <template #view>
+      <div class="content">
+        <div class="field is-horizontal">
+          <div class="field-label">
+            <label class="label">Stop ID:</label>
           </div>
-          <div class="field is-horizontal">
-            <div class="field-label">
-              <label class="label">Name:</label>
-            </div>
-            <div class="field-body">
-              <span>{{ stop.stop_name }}</span>
-            </div>
-          </div>
-          <div v-if="stop.platform_code" class="field is-horizontal">
-            <div class="field-label">
-              <label class="label">Platform:</label>
-            </div>
-            <div class="field-body">
-              <span>{{ stop.platform_code }}</span>
-            </div>
-          </div>
-          <div class="field is-horizontal">
-            <div class="field-label">
-              <label class="label">Type:</label>
-            </div>
-            <div class="field-body">
-              <span>{{ locationTypeName }}</span>
-            </div>
-          </div>
-          <div class="field is-horizontal">
-            <div class="field-label">
-              <label class="label">Level:</label>
-            </div>
-            <div class="field-body">
-              <span>{{ levelName }}</span>
-            </div>
-          </div>
-          <div class="field is-horizontal">
-            <div class="field-label">
-              <label class="label">Wheelchair:</label>
-            </div>
-            <div class="field-body">
-              <span>{{ stop.wheelchair_boarding === 1 ? 'Accessible' : 'Not accessible' }}</span>
-            </div>
+          <div class="field-body">
+            <code>{{ stop.stop_id }}</code>
           </div>
         </div>
-
-        <!-- Navigation -->
-        <div v-if="pathwaysFromStop.length > 0 || pathwaysToStop.length > 0" class="menu">
-          <p class="menu-label">
-            Navigate to connected pathways
-          </p>
-          <ul class="menu-list">
-            <li v-for="pw of pathwaysFromStop" :key="pw.id">
-              <a
-                @click="$emit('select-pathway', pw.id)"
-                @mouseenter="$emit('hover-pathway', pw.id)"
-                @mouseleave="$emit('hover-pathway', null)"
-              >
-                <span class="tl-path-icon"><img :src="pathwayIcon(pw.pathway_mode).url" :title="pathwayIcon(pw.pathway_mode).label"></span>
-                <span v-if="pw.is_bidirectional === 1">↔</span>
-                <span v-else>→</span>
-                {{ pw.to_stop.stop_name }}
-              </a>
-            </li>
-            <li v-for="pw of pathwaysToStop" :key="pw.id">
-              <a
-                @click="$emit('select-pathway', pw.id)"
-                @mouseenter="$emit('hover-pathway', pw.id)"
-                @mouseleave="$emit('hover-pathway', null)"
-              >
-                <span class="tl-path-icon"><img :src="pathwayIcon(pw.pathway_mode).url" :title="pathwayIcon(pw.pathway_mode).label"></span>
-                <span v-if="pw.is_bidirectional === 1">↔</span>
-                <span v-else>←</span>
-                {{ pw.from_stop.stop_name }}
-              </a>
-            </li>
-          </ul>
+        <div class="field is-horizontal">
+          <div class="field-label">
+            <label class="label">Name:</label>
+          </div>
+          <div class="field-body">
+            <span>{{ stop.stop_name }}</span>
+          </div>
         </div>
-
-        <!-- Mode Switch -->
-        <div class="menu">
-          <p class="menu-label">
-            Switch view
-          </p>
-          <ul class="menu-list">
-            <li>
-              <nuxt-link
-                :to="{
-                  name: 'saas-station-editor-feedKey-feedVersionKey-stations-stationKey-diagram',
-                  params: modeSwitchParams,
-                  query: modeSwitchQuery,
-                }"
-              >
-                <i class="mdi mdi-chart-timeline mdi-16px" /> &nbsp; View in Station Diagram
-              </nuxt-link>
-            </li>
-          </ul>
+        <div v-if="stop.platform_code" class="field is-horizontal">
+          <div class="field-label">
+            <label class="label">Platform:</label>
+          </div>
+          <div class="field-body">
+            <span>{{ stop.platform_code }}</span>
+          </div>
+        </div>
+        <div class="field is-horizontal">
+          <div class="field-label">
+            <label class="label">Type:</label>
+          </div>
+          <div class="field-body">
+            <span>{{ locationTypeName }}</span>
+          </div>
+        </div>
+        <div class="field is-horizontal">
+          <div class="field-label">
+            <label class="label">Level:</label>
+          </div>
+          <div class="field-body">
+            <span>{{ levelName }}</span>
+          </div>
+        </div>
+        <div class="field is-horizontal">
+          <div class="field-label">
+            <label class="label">Wheelchair:</label>
+          </div>
+          <div class="field-body">
+            <span>{{ stop.wheelchair_boarding === 1 ? 'Accessible' : 'Not accessible' }}</span>
+          </div>
         </div>
       </div>
 
-      <!-- Edit Mode -->
-      <div v-else class="panel-block is-block">
-        <tl-editor-stop-editor
-          :station="station"
-          :value="stop"
-          :stop-associations-enabled="stopAssociationsEnabled"
-          :hide-pathways="true"
-          @delete="$emit('delete', $event)"
-          @update="$emit('update', $event)"
-          @delete-association="$emit('delete-association', $event)"
-          @select-pathway="$emit('select-pathway', $event)"
-          @cancel="editMode = false"
-        />
+      <!-- Navigation -->
+      <div v-if="pathwaysFromStop.length > 0 || pathwaysToStop.length > 0" class="menu">
+        <p class="menu-label">
+          Navigate to connected pathways
+        </p>
+        <ul class="menu-list">
+          <li v-for="pw of pathwaysFromStop" :key="pw.id">
+            <a
+              @click="$emit('select-pathway', pw.id)"
+              @mouseenter="$emit('hover-pathway', pw.id)"
+              @mouseleave="$emit('hover-pathway', null)"
+            >
+              <span class="tl-path-icon"><img :src="pathwayIcon(pw.pathway_mode).url" :title="pathwayIcon(pw.pathway_mode).label"></span>
+              <span v-if="pw.is_bidirectional === 1">↔</span>
+              <span v-else>→</span>
+              {{ pw.to_stop.stop_name }}
+            </a>
+          </li>
+          <li v-for="pw of pathwaysToStop" :key="pw.id">
+            <a
+              @click="$emit('select-pathway', pw.id)"
+              @mouseenter="$emit('hover-pathway', pw.id)"
+              @mouseleave="$emit('hover-pathway', null)"
+            >
+              <span class="tl-path-icon"><img :src="pathwayIcon(pw.pathway_mode).url" :title="pathwayIcon(pw.pathway_mode).label"></span>
+              <span v-if="pw.is_bidirectional === 1">↔</span>
+              <span v-else>←</span>
+              {{ pw.from_stop.stop_name }}
+            </a>
+          </li>
+        </ul>
       </div>
-    </nav>
-  </div>
+
+      <!-- Mode Switch -->
+      <div class="menu">
+        <p class="menu-label">
+          Switch view
+        </p>
+        <ul class="menu-list">
+          <li>
+            <nuxt-link
+              :to="{
+                name: 'saas-station-editor-feedKey-feedVersionKey-stations-stationKey-diagram',
+                params: modeSwitchParams,
+                query: modeSwitchQuery,
+              }"
+            >
+              <i class="mdi mdi-chart-timeline mdi-16px" /> &nbsp; View in Station Diagram
+            </nuxt-link>
+          </li>
+        </ul>
+      </div>
+    </template>
+
+    <template #edit="{ cancel }">
+      <tl-editor-stop-editor
+        :station="station"
+        :value="stop"
+        :stop-associations-enabled="stopAssociationsEnabled"
+        :hide-pathways="true"
+        @delete="$emit('delete', $event)"
+        @update="$emit('update', $event)"
+        @delete-association="$emit('delete-association', $event)"
+        @select-pathway="$emit('select-pathway', $event)"
+        @cancel="cancel"
+      />
+    </template>
+  </tl-editor-station-pathways-editor-panel>
 </template>
 
 <script>
@@ -186,11 +162,6 @@ export default {
     }
   },
   emits: ['delete', 'update', 'delete-association', 'select-pathway', 'hover-pathway', 'unselect'],
-  data () {
-    return {
-      editMode: false
-    }
-  },
   computed: {
     modeSwitchParams () {
       return {
@@ -236,17 +207,6 @@ export default {
 </script>
 
 <style scoped>
-.panel-heading {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.panel-heading-buttons {
-  display: flex;
-  gap: 0.5rem;
-}
-
 .field.is-horizontal .field-label {
   flex-grow: 0;
   flex-basis: 120px;

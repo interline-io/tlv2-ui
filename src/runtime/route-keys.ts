@@ -17,6 +17,7 @@ export const TLV2_ROUTE_KEYS = [
   'apps-stations-feedKey-feedVersionKey-stations-stationKey-edit',
   'apps-stations-feedKey-feedVersionKey-stations-stationKey-stops',
   'apps-stations-feedKey-feedVersionKey-stations-stationKey-pathways',
+  'apps-stations-feedKey-feedVersionKey-stations-stationKey-pathways-legacy',
   'apps-stations-feedKey-feedVersionKey-stations-stationKey-diagram',
   'apps-stations-feedKey-feedVersionKey-stations-stationKey-levels-new',
   'apps-stations-feedKey-feedVersionKey-stations-stationKey-levels-levelKey-edit',

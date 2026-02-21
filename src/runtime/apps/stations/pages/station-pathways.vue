@@ -1,262 +1,275 @@
 <template>
-  <div v-if="station">
-    <slot name="title">
-      <tl-title title="Station Pathways">
-        Station Pathways: {{ stationName }}
-      </tl-title>
-    </slot>
-    <tl-apps-stations-station-mode-tabs
-      :station="station"
-      :feed-key="feedKey"
-      :feed-version-key="feedVersionKey"
-      :station-key="stationKey"
-      :stop-associations-enabled="stopAssociationsEnabled"
-    />
-
-    <div v-if="ready" class="columns" :class="{ 'is-loading-overlay': refetching }">
-      <div v-if="refetching" class="loading-overlay">
-        <t-loading />
-      </div>
+  <div v-if="station" class="station-pathways-container">
+    <div v-if="ready" class="columns pathways-columns">
       <div class="column is-narrow">
-        <div class="block tl-apps-stations-info">
-          <t-field label="Station Validation Reports">
-            <tl-apps-stations-station-validator
-              :station="station"
-              @select-path="selectPath"
-              @select-stop="selectStop"
-              @select-pathway="selectPathway"
-            />
-          </t-field>
+        <div class="block tl-editor-info">
+          <!-- Mode Selection -->
+          <nav class="panel station-editor-panel">
+            <p class="panel-heading">
+              Mode
+            </p>
+            <div class="panel-block">
+              <div class="buttons has-addons is-fullwidth" role="group" aria-label="Editor mode selection">
+                <button
+                  class="button"
+                  :class="{ 'is-primary is-selected': selectMode === 'select' }"
+                  aria-label="Switch to select mode"
+                  :aria-pressed="selectMode === 'select'"
+                  @click="selectMode = 'select'"
+                >
+                  Select
+                </button>
+                <button
+                  class="button"
+                  :class="{ 'is-primary is-selected': selectMode === 'add-node' }"
+                  aria-label="Switch to add node mode"
+                  :aria-pressed="selectMode === 'add-node'"
+                  @click="selectMode = 'add-node'"
+                >
+                  Add Node
+                </button>
+                <button
+                  class="button"
+                  :class="{ 'is-primary is-selected': selectMode === 'add-pathway' }"
+                  :disabled="!(selectedStop && selectedSource)"
+                  :title="!(selectedStop && selectedSource) ? 'Select two nodes to add a pathway' : ''"
+                  aria-label="Switch to add pathway mode"
+                  :aria-pressed="selectMode === 'add-pathway'"
+                  @click="selectMode = 'add-pathway'"
+                >
+                  Add Pathway
+                </button>
+                <button
+                  class="button"
+                  :class="{ 'is-primary is-selected': selectMode === 'find-route' }"
+                  :disabled="selectedStops.length !== 1"
+                  :title="selectedStops.length !== 1 ? 'Select a starting node before entering Find Route mode' : ''"
+                  aria-label="Switch to find route mode"
+                  :aria-pressed="selectMode === 'find-route'"
+                  @click="selectMode = 'find-route'"
+                >
+                  Find Route
+                </button>
+
+                <button
+                  class="button"
+                  :class="{ 'is-primary is-selected': selectMode === 'export' }"
+                  aria-label="Switch to export mode"
+                  :aria-pressed="selectMode === 'export'"
+                  @click="selectMode = 'export'"
+                >
+                  Export
+                </button>
+              </div>
+            </div>
+          </nav>
+
+          <!-- Map Controls -->
+          <nav class="panel station-editor-panel">
+            <p class="panel-heading">
+              Map Display
+            </p>
+            <div class="panel-block is-block">
+              <o-collapse v-model:open="levelsOpen" animation="slide">
+                <template #trigger="props">
+                  <div class="field collapse-trigger-field">
+                    <label class="label is-small collapse-trigger-label">
+                      <o-icon :icon="props.open ? 'menu-down' : 'menu-right'" />
+                      <span>Levels</span>
+                    </label>
+                  </div>
+                </template>
+                <div class="ml-4">
+                  <t-checkbox-group
+                    v-model="selectedLevelIds"
+                    :options="sortedStationLevels"
+                    value-field="id"
+                    hide-select-all
+                  >
+                    <template #option="{ option }">
+                      <span v-if="option.level_index != null" class="has-text-weight-semibold">{{ option.level_index }}:</span>
+                      {{ option.level_name }}
+                      <span class="has-text-grey is-size-7">({{ option.stops.length }} nodes)</span>
+                    </template>
+                  </t-checkbox-group>
+                </div>
+              </o-collapse>
+
+              <o-collapse v-model:open="basemapOpen" animation="slide">
+                <template #trigger="props">
+                  <div class="field collapse-trigger-field">
+                    <label class="label is-small collapse-trigger-label">
+                      <o-icon :icon="props.open ? 'menu-down' : 'menu-right'" />
+                      <span>Basemap</span>
+                    </label>
+                  </div>
+                </template>
+                <div v-for="(bm, key) in basemapLayers" :key="key" class="field ml-4">
+                  <t-radio
+                    v-model="basemap"
+                    :native-value="key"
+                  >
+                    {{ bm.label }}
+                  </t-radio>
+                </div>
+              </o-collapse>
+
+              <o-collapse v-model:open="legendOpen" animation="slide">
+                <template #trigger="props">
+                  <div class="field collapse-trigger-field">
+                    <label class="label is-small collapse-trigger-label">
+                      <o-icon :icon="props.open ? 'menu-down' : 'menu-right'" />
+                      <span>Legend</span>
+                    </label>
+                  </div>
+                </template>
+                <div class="ml-4">
+                  <ul>
+                    <li class="legend-item circle-indicator">
+                      circles are nodes (stops) with number for assigned level
+                    </li>
+                    <li class="legend-item blue-rectangle">
+                      blue pathways are on the same level
+                    </li>
+                    <li class="legend-item red-rectangle">
+                      red pathways connect two separate levels
+                    </li>
+                    <li class="legend-item purple-rectangle">
+                      purple lines show distance to associated stop
+                    </li>
+                  </ul>
+                </div>
+              </o-collapse>
+            </div>
+          </nav>
           <!-- SELECT -->
-          <t-card v-if="selectMode === 'select'" label="Select">
-            <div>
-              <div class="mb-2">
-                <div class="is-flex is-justify-content-space-between is-align-items-center mb-2">
-                  <p class="label mb-0">
-                    {{ selectedStops.length }} stops selected
-                  </p>
-                  <t-button :style="{ visibility: selectedStops.length > 0 ? 'visible' : 'hidden' }" variant="primary" size="small" outlined @click="unselectAll">
-                    Unselect All
-                  </t-button>
-                </div>
-                <t-field label="Select Stops">
-                  <div class="buttons has-addons">
-                    <a v-for="pwm of LocationTypes" :key="pwm[0]" class="button is-small" @click="selectLocationTypes(pwm[0])">{{ pwm[1] }}</a>
-                  </div>
-                </t-field>
-                <t-field>
-                  <div class="buttons has-addons">
-                    <a class="button is-small" @click="selectStopsWithAssociations()">With associations</a>
-                    <a class="button is-small" @click="selectStopsPlatformsWithoutAssociations()">Platforms w/o assoc.</a>
-                    <a class="button is-small" @click="selectStopsEntrancesWithoutAssociations()">Entrances w/o assoc.</a>
-                  </div>
-                  <div class="buttons has-addons">
-                    <a class="button is-small" @click="selectStopsWithPairedPathways()">With paired pathways</a>
-                  </div>
-                </t-field>
-              </div>
-              <div class="mb-2">
-                <div class="is-flex is-justify-content-space-between is-align-items-center mb-2">
-                  <p class="label mb-0">
-                    {{ selectedPathways.length }} pathways selected
-                  </p>
-                  <t-button :style="{ visibility: selectedPathways.length > 0 ? 'visible' : 'hidden' }" variant="primary" size="small" outlined @click="unselectAll">
-                    Unselect All
-                  </t-button>
-                </div>
-                <t-field label="Select Pathways">
-                  <div class="buttons has-addons">
-                    <a v-for="pwm of PathwayModes" :key="pwm[0]" class="button is-small" @click="selectPathwayModes(pwm[0])">{{ pwm[1] }}</a>
-                  </div>
-                  <div class="buttons has-addons">
-                    <a class="button is-small" @click="selectPathwaysWithPairs()">With pairs</a>
-                    <a class="button is-small" @click="selectPathwaysOneway()">One-directional</a>
-                    <a class="button is-small" @click="selectPathwaysBidirectional()">Bi-directional</a>
-                  </div>
-                </t-field>
-                <ul>
-                  <li class="blue-rectangle">
-                    blue pathways are on the same level
-                  </li>
-                  <li class="red-rectangle">
-                    red pathways connect two separate levels
-                  </li>
-                  <li class="purple-rectangle">
-                    purple lines show distance to associated stop
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </t-card>
-          <t-card v-else-if="selectMode === 'add-pathway'" label="Add Pathway">
-            <div>
-              <tl-apps-stations-pathway-editor
-                :station="station"
-                :value="newPathway()"
-                @select-stop="selectStop"
-                @create="createPathwayHandler"
-              />
-            </div>
-          </t-card>
+          <tl-editor-station-pathways-select-panel
+            v-if="selectMode === 'select'"
+            :selected-stops-count="selectedStops.length"
+            :selected-pathways-count="selectedPathways.length"
+            :selected-stops="selectedStops"
+            :selected-pathways="selectedPathways"
+            :last-filter-applied="lastFilterApplied"
+            :location-types="LocationTypes"
+            :pathway-modes="PathwayModes"
+            @unselect-all="unselectAll"
+            @select-stop="selectStop"
+            @select-pathway="selectPathway"
+            @hover-stop="hoverStopId = $event"
+            @hover-pathway="hoverPathwayId = $event"
+            @select-location-types="selectLocationTypes"
+            @select-stops-with-associations="selectStopsWithAssociations"
+            @select-stops-platforms-without-associations="selectStopsPlatformsWithoutAssociations"
+            @select-stops-entrances-without-associations="selectStopsEntrancesWithoutAssociations"
+            @select-stops-with-paired-pathways="selectStopsWithPairedPathways"
+            @select-pathway-modes="selectPathwayModes"
+            @select-pathways-with-pairs="selectPathwaysWithPairs"
+            @select-pathways-oneway="selectPathwaysOneway"
+            @select-pathways-bidirectional="selectPathwaysBidirectional"
+          />
+          <tl-editor-station-pathways-add-pathway-panel
+            v-else-if="selectMode === 'add-pathway'"
+            :station="station"
+            :pathway="newPathway()"
+            @select-stop="selectStop"
+            @create="createPathwayHandler"
+          />
           <template v-if="selectMode === 'edit-pathway'">
-            <t-card v-for="spw of selectedPathways" :key="spw.id">
-              <template #header>
-                <p class="card-header-title">
-                  Edit Pathway
-                </p>
-                <t-button class="card-header-icon" variant="primary" outlined @click="unselectAll">
-                  Unselect
-                </t-button>
-              </template>
-              <tl-apps-stations-mode-switch
-                :params="{
-                  feedKey: feedKey,
-                  feedVersionKey: feedVersionKey,
-                  stationKey: stationKey,
-                }"
-                :query="{
-                  selectedPathway: (spw.id?.toString() || '') as string,
-                }"
-              />
-              <tl-apps-stations-pathway-editor
-                :station="station"
-                :value="spw"
-                @select-stop="selectStop"
-                @delete="deletePathwayHandler"
-                @update="updatePathwayHandler"
-              />
-            </t-card>
+            <tl-editor-station-pathways-pathway-panel
+              v-for="spw of selectedPathways"
+              :key="spw.id"
+              :station="station"
+              :pathway="spw"
+              :show-unselect="selectedStops.length > 0 || selectedPathways.length > 0"
+              :feed-key="feedKey"
+              :feed-version-key="feedVersionKey"
+              :station-key="stationKey"
+              @select-stop="selectStop"
+              @hover-stop="hoverStopId = $event"
+              @delete="deletePathwayHandler"
+              @update="updatePathwayHandler"
+              @unselect="unselectAll"
+            />
           </template>
           <template v-else-if="selectMode === 'edit-node'">
-            <t-card v-for="ss of selectedStops" :key="ss.id" class="card">
-              <template #header>
-                <p class="card-header-title">
-                  Edit Node
-                </p>
-                <t-button class="card-header-icon" variant="primary" outlined @click="unselectAll">
-                  Unselect
-                </t-button>
-              </template>
-              <tl-apps-stations-mode-switch
-                :params="{
-                  feedKey: feedKey,
-                  feedVersionKey: feedVersionKey,
-                  stationKey: stationKey,
-                }"
-                :query="{
-                  selectedStop: (ss.id?.toString() || '') as string,
-                }"
-              />
-              <tl-apps-stations-stop-editor
+            <tl-editor-station-pathways-node-panel
+              v-for="ss of selectedStops"
+              :key="ss.id"
+              :station="station"
+              :stop="ss"
+              :stop-associations-enabled="stopAssociationsEnabled"
+              :show-unselect="selectedStops.length > 0 || selectedPathways.length > 0"
+              :feed-key="feedKey"
+              :feed-version-key="feedVersionKey"
+              :station-key="stationKey"
+              @delete="deleteStopHandler"
+              @update="updateStopHandler"
+              @delete-association="deleteAssociationHandler"
+              @select-pathway="selectPathway"
+              @hover-pathway="hoverPathwayId = $event"
+              @unselect="unselectAll"
+            />
+          </template>
+          <tl-editor-station-pathways-add-node-panel
+            v-else-if="selectMode === 'add-node'"
+            :selected-level="selectedLevel"
+            :levels="station.levels"
+            :level-index="levelIndex"
+            @update:selected-level="selectedLevel = $event"
+          />
+          <tl-editor-station-pathways-find-route-panel
+            v-else-if="selectMode === 'find-route'"
+            :path="selectedPath"
+            :selected-stops="selectedStops"
+          />
+          <nav v-else-if="selectMode === 'export'" class="panel station-editor-panel">
+            <p class="panel-heading">
+              Export
+            </p>
+            <div class="panel-block is-block">
+              <p class="notification">
+                To export as a full GTFS feed, exit the pathways editor and
+                <nuxt-link
+                  :to="{
+                    path: `/saas/station-editor/${feedKey}/${feedVersionKey}/stations`,
+                  }"
+                >
+                  return to the feed version
+                </nuxt-link>
+              </p>
+              <t-button icon-left="download" fullwidth @click="downloadGeojson">
+                Download this station as GeoJSON
+              </t-button>
+            </div>
+          </nav>
+
+          <!-- Validation Reports -->
+          <nav class="panel station-editor-panel">
+            <p class="panel-heading">
+              Station Validation Reports
+            </p>
+            <div class="panel-block is-block">
+              <tl-editor-station-validator
                 :station="station"
-                :value="ss"
-                :stop-associations-enabled="stopAssociationsEnabled"
-                @delete="deleteStopHandler"
-                @update="updateStopHandler"
+                @select-path="selectPath"
+                @select-stop="selectStop"
                 @select-pathway="selectPathway"
               />
-            </t-card>
-          </template>
-          <template v-else-if="selectMode === 'add-node'">
-            <t-card label="Add Node">
-              <t-field label="Level">
-                <t-dropdown
-                  v-model="selectedLevel"
-                  selectable
-                  :label="(selectedLevel !== null && levelIndex[selectedLevel]) ? levelIndex[selectedLevel]!.level_name : 'None'"
-                >
-                  <t-dropdown-item v-for="level of station.levels" :key="level.id" :value="level.id">
-                    <h3>{{ level.level_name }}</h3>
-                    <small> {{ level.stops.length }} nodes</small>
-                  </t-dropdown-item>
-                </t-dropdown>
-              </t-field>
-            </t-card>
-          </template>
-          <template v-else-if="selectMode === 'find-route'">
-            <t-card v-if="selectedStops.length > 1" label="Find Route">
-              <t-field label="Routing Profile">
-                <t-dropdown
-                  v-model="selectedProfile"
-                  selectable
-                  :label="selectedProfile"
-                >
-                  <t-dropdown-item v-for="opt of Object.keys(Profiles)" :key="opt" :value="opt">
-                    {{ opt }}
-                  </t-dropdown-item>
-                </t-dropdown>
-              </t-field>
-              <tl-apps-stations-path-viewer :path="selectedPath || []" />
-            </t-card>
-          </template>
-
-          <br>
+            </div>
+          </nav>
         </div>
       </div>
 
       <div class="column">
-        <t-field grouped>
-          <t-dropdown
-            v-model="selectedLevels"
-            :width="300"
-            label="Levels"
-            multiple
-            selectable
-            variant="primary"
-          >
-            <t-dropdown-item v-for="level of sortedStationLevels" :key="level.id" :value="mapLevelKeyFn(level)">
-              <div class="media">
-                <div class="media-left">
-                  {{ level.level_index == null ? '&nbsp;&nbsp;&nbsp;' : level.level_index }}
-                </div>
-                <div class="media-content">
-                  <h3>{{ level.level_name }}</h3>
-                  <small>{{ level.stops.length }} nodes </small>
-                </div>
-              </div>
-            </t-dropdown-item>
-          </t-dropdown>
-          <tl-apps-stations-basemap-control v-model="basemap" />
-          <tl-download-geojson
-            :features="geojsonFeatures"
-            filename="station"
-            label="GeoJSON"
-          />
-          <t-radio
-            v-model="selectMode"
-            native-value="select"
-          >
-            <span>Select</span>
-          </t-radio>
-          <t-radio
-            v-model="selectMode"
-            :disabled="!(selectedStop && selectedSource)"
-            native-value="add-pathway"
-          >
-            <span>Add Pathway</span>
-          </t-radio>
-          <t-radio
-            v-model="selectMode"
-            native-value="find-route"
-          >
-            <span>Find Route</span>
-          </t-radio>
-          <t-radio
-            v-model="selectMode"
-            native-value="add-node"
-          >
-            Add Node
-          </t-radio>
-        </t-field>
-
-        <tl-pathway-map
-          :center="station.geometry?.coordinates as [number, number]"
+        <tl-editor-pathway-map
+          :center="station.geometry.coordinates"
           :station="station"
           :basemap="basemap"
           :selected-stops="selectedStops"
           :selected-pathways="selectMode === 'find-route' && selectedPath ? selectedPath.map((s) => { return s.pathway }) : selectedPathways"
           :selected-levels="selectedLevels"
-          :editable="true"
+          :hover-stop-id="hoverStopId"
+          :hover-pathway-id="hoverPathwayId"
           @select-stop="selectStop"
           @select-pathway="selectPathway"
           @select-point="selectPoint"
@@ -267,563 +280,656 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { computed, ref, toRaw, toRefs, watch } from 'vue'
-import { useRoute } from '#imports'
-import type { LngLat } from 'maplibre-gl'
-import type { Feature } from 'geojson'
-import { PathwayModes } from '../../../lib/pathways/pathway-icons'
-import { Profiles } from '../../../lib/pathways/graph'
-import { LocationTypes } from '../basemaps'
+<script>
+import { PathwayModes, LocationTypes, getBasemapLayers } from '../basemaps'
 import { Stop, Pathway, mapLevelKeyFn } from '../station'
-import type { Level } from '../station'
-import type { LevelData } from '../types'
-import { useStation } from '../composables/useStation'
+import { nextTick, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { useToastNotification } from '../../../composables/useToastNotification'
+import { useStation } from '../composables/useStation'
 
-type SelectMode = 'select' | 'add-node' | 'edit-node' | 'add-pathway' | 'edit-pathway' | 'find-route'
+export default {
+  layout: 'wide',
+  query: ['selectedStop', 'selectedPathway'],
+  setup () {
+    const { showToast } = useToastNotification()
+    const route = useRoute()
+    const feedKey = computed(() => route.params.feedKey)
+    const feedVersionKey = computed(() => route.params.feedVersionKey)
+    const stationKey = computed(() => route.params.stationKey)
 
-interface PathwayEdge {
-  cost: number
-  pathway: Pathway
-}
+    const {
+      ready,
+      station,
+      stopAssociationsEnabled,
+      selectedLevels,
+      selectedLevel,
+      refetch,
+      handleError
+    } = useStation({ feedKey, feedVersionKey, stationKey })
 
-type LevelFeatureProperties = Pick<LevelData, 'id' | 'level_id' | 'level_name' | 'level_index'>
-
-interface PathwayFeatureProperties {
-  id?: number
-  pathway_id?: string
-  pathway_mode?: number
-  signposted_as?: string
-  reverse_signposted_as?: string
-  stair_count?: number
-  is_bidirectional?: number
-  length?: number
-  max_slope?: number
-  from_id?: number
-  from_stop_id: string
-  from_stop_name?: string
-  to_id?: number
-  to_stop_id: string
-  to_stop_name?: string
-  from_level_id?: string
-  from_level_name?: string
-  to_level_id?: string
-  to_level_name?: string
-}
-
-interface StopFeatureProperties {
-  id?: number
-  stop_name?: string
-  stop_id: string
-  stop_code?: string
-  stop_desc?: string
-  location_type?: number
-  level_id?: string
-  level_index?: number
-}
-
-defineOptions({
-  layout: 'wide'
-})
-
-const props = defineProps<{
-  feedKey: string
-  feedVersionKey: string
-  stationKey: string
-  clientId?: string
-}>()
-
-const { feedKey, feedVersionKey, stationKey, clientId } = toRefs(props)
-
-const {
-  ready,
-  refetching,
-  station,
-  stationName,
-  stopAssociationsEnabled,
-  selectedLevels,
-  selectedLevel,
-  handleError,
-  refetch,
-  createStop,
-  updateStop,
-  deleteStop,
-  createPathway,
-  updatePathway,
-  deletePathway
-} = useStation({ feedKey, feedVersionKey, stationKey, clientId: clientId?.value })
-
-const route = useRoute()
-const { showToast } = useToastNotification()
-
-// Reactive data
-const selectMode = ref<SelectMode>('select')
-const selectedPoint = ref<LngLat | null>(null)
-const selectedStops = ref<Stop[]>([])
-const selectedPathways = ref<Pathway[]>([])
-const basemap = ref('carto')
-const selectedProfile = ref<string>('Pathways: Default')
-
-// Converts the A* routing result into PathwayEdge objects for map/diagram visualization.
-// Implicit edges between stops that share a parent but lack an explicit pathway
-// are represented as synthetic Pathway objects so they can be displayed too.
-const selectedPath = computed((): PathwayEdge[] | null => {
-  if (selectMode.value !== 'find-route' || selectedStops.value.length < 2 || !station.value) {
-    return null
-  }
-  const stop0Id = selectedStops.value[0]?.id
-  const stop1Id = selectedStops.value[1]?.id
-  if (!stop0Id || !stop1Id) return null
-  const profile = Profiles[selectedProfile.value]
-  const p = toRaw(station.value).findRoute(stop0Id, stop1Id, profile)
-  if (!p) return null
-  const edges: PathwayEdge[] = []
-  for (const edge of p.edges || []) {
-    if (edge.pathway_id) {
-      const pathway = pathwayIndex.value[edge.pathway_id]
-      if (pathway) {
-        edges.push({ cost: edge.cost, pathway })
+    return {
+      showToast,
+      ready,
+      station,
+      stopAssociationsEnabled,
+      selectedLevels,
+      selectedLevel,
+      refetch,
+      handleError,
+      feedKey,
+      feedVersionKey,
+      stationKey
+    }
+  },
+  data () {
+    return {
+      id: undefined,
+      selectMode: 'select',
+      selectedPoint: null,
+      selectedStops: [],
+      selectedPathways: [],
+      openStationValidator: false,
+      basemap: 'carto',
+      basemapLayers: getBasemapLayers(),
+      levelsOpen: true,
+      basemapOpen: false,
+      legendOpen: false,
+      lastFilterApplied: '',
+      hoverStopId: null,
+      hoverPathwayId: null,
+      PathwayModes,
+      LocationTypes
+    }
+  },
+  computed: {
+    selectedLevelIds: {
+      get () {
+        if (!this.selectedLevels || this.selectedLevels.length === 0) {
+          return undefined // t-checkbox-group treats undefined as "all selected"
+        }
+        // Convert from mapLevelKey format to plain IDs
+        return this.selectedLevels.map((key) => {
+          const match = key.match(/mapLevelKey-(.+)/)
+          return match ? (match[1] === 'unassigned' ? null : Number(match[1])) : null
+        }).filter(id => id !== null)
+      },
+      set (ids) {
+        if (ids === undefined) {
+          // All levels selected - set to all mapped keys
+          this.selectedLevels = this.station?.levels?.map(mapLevelKeyFn) || []
+        } else {
+          // Convert plain IDs back to mapLevelKey format
+          this.selectedLevels = ids.map(id => mapLevelKeyFn({ id }))
+        }
       }
-    } else if (edge.from_stop_id && edge.to_stop_id) {
-      const fromStop = station.value.getStop(edge.from_stop_id)
-      const toStop = station.value.getStop(edge.to_stop_id)
-      if (fromStop && toStop) {
+    },
+    selectedPath () {
+      if (this.selectMode !== 'find-route' || this.selectedStops.length < 2) {
+        return null
+      }
+      const p = this.station.findRoute(this.selectedStops[0].id, this.selectedStops[1].id)
+      const edges = []
+      for (const edge of p.edges || []) {
         edges.push({
-          cost: edge.cost,
-          pathway: new Pathway({ pathway_mode: 1, is_bidirectional: 1, from_stop: fromStop, to_stop: toStop })
+          cost: 0,
+          pathway: this.pathwayIndex[edge.pathway_id]
         })
       }
+      return edges
+    },
+    selectedSource () {
+      if (this.selectedStops.length === 2) {
+        return this.selectedStops[0]
+      }
+      return null
+    },
+    selectedStop () {
+      if (this.selectedStops.length > 0) {
+        return this.selectedStops[this.selectedStops.length - 1]
+      }
+      return null
+    },
+    levelIndex () {
+      const si = {}
+      for (const level of this.station.levels) {
+        si[level.id] = level
+      }
+      return si
+    },
+    pathwayIndex () {
+      const pwi = {}
+      for (const pw of this.station.pathways) {
+        pwi[pw.id] = pw
+      }
+      return pwi
+    },
+    sortedStationLevels () {
+      return this.station.levels.slice(0).sort(
+        (a, b) => (b.level_index != null ? b.level_index : -Infinity) - (a.level_index != null ? a.level_index : -Infinity)
+      )
     }
-  }
-  return edges
-})
-
-const selectedSource = computed((): Stop | null | undefined => {
-  if (selectedStops.value.length === 2) {
-    return selectedStops.value[0]
-  }
-  return null
-})
-
-const selectedStop = computed((): Stop | null | undefined => {
-  if (selectedStops.value.length > 0) {
-    return selectedStops.value[selectedStops.value.length - 1]
-  }
-  return null
-})
-
-const levelIndex = computed((): Record<number, Level> => {
-  const si: Record<number, Level> = {}
-  if (!station.value) return si
-  for (const level of station.value.levels) {
-    si[level.id!] = level
-  }
-  return si
-})
-
-const pathwayIndex = computed((): Record<number, Pathway> => {
-  const si: Record<number, Pathway> = {}
-  if (!station.value) return si
-  for (const pw of station.value.pathways) {
-    si[pw.id!] = pw
-  }
-  return si
-})
-
-const sortedStationLevels = computed((): Level[] => {
-  if (!station.value) return []
-  return station.value.levels.slice(0).sort(
-    (a, b) => (b.level_index != null ? b.level_index : -Infinity) - (a.level_index != null ? a.level_index : -Infinity)
-  )
-})
-
-const geojsonFeatures = computed((): Feature[] => {
-  const allFeatures: Feature[] = []
-  const levels = station.value?.levels || []
-  allFeatures.push(...levels.filter(s => s.geometry).map((s) => {
-    return {
-      type: 'Feature' as const,
-      id: s.id,
-      properties: {
-        id: s.id,
-        level_id: s.level_id,
-        level_name: s.level_name,
-        level_index: s.level_index
-      } satisfies LevelFeatureProperties,
-      geometry: s.geometry!
-    }
-  }))
-  const pathways = station.value?.pathways || []
-  allFeatures.push(...pathways.map((s) => {
-    return {
-      type: 'Feature' as const,
-      id: s.id,
-      properties: {
-        id: s.id,
-        pathway_id: s.pathway_id,
-        pathway_mode: s.pathway_mode,
-        signposted_as: s.signposted_as,
-        reverse_signposted_as: s.reverse_signposted_as,
-        stair_count: s.stair_count,
-        is_bidirectional: s.is_bidirectional,
-        length: s.length,
-        max_slope: s.max_slope,
-        from_id: s.from_stop.id,
-        from_stop_id: String(s.from_stop.stop_id),
-        from_stop_name: s.from_stop.stop_name,
-        to_id: s.to_stop.id,
-        to_stop_id: String(s.to_stop.stop_id),
-        to_stop_name: s.to_stop.stop_name,
-        from_level_id: s.from_stop.level?.level_id,
-        from_level_name: s.from_stop.level?.level_name,
-        to_level_id: s.to_stop.level?.level_id,
-        to_level_name: s.to_stop.level?.level_name
-      } satisfies PathwayFeatureProperties,
-      geometry: {
-        type: 'LineString' as const,
-        coordinates: [
-          s.from_stop.geometry?.coordinates || [0, 0],
-          s.to_stop.geometry?.coordinates || [0, 0]
-        ]
+  },
+  watch: {
+    // Wait for all stops to be loaded before selecting from query params
+    // This ensures the selectedStop exists when coming from external links (e.g., stop associations page)
+    ready () {
+      if (this.ready && this.$route.query.selectedStop) {
+        this.selectStop(Number(this.$route.query.selectedStop))
+      }
+      if (this.ready && this.$route.query.selectedPathway) {
+        this.selectPathway(this.$route.query.selectedPathway)
+      }
+    },
+    selectedLevels () {
+      if (this.$route.query.selectedStop || this.$route.query.selectedPathway) {
+        // nothing
+      } else {
+        this.selectedStops = []
+        this.selectedPathways = []
+      }
+      this.selectMode = 'select'
+    },
+    selectMode () {
+      if (this.selectMode === 'add-node') {
+        this.selectedStops = []
+        this.selectedPathways = []
       }
     }
-  }))
-  const stops = station.value?.stops || []
-  allFeatures.push(...stops.filter(s => s.geometry).map((s) => {
-    return {
-      type: 'Feature' as const,
-      id: s.id,
-      properties: {
-        id: s.id,
-        stop_name: s.stop_name,
-        stop_id: String(s.stop_id),
-        stop_code: s.stop_code,
-        stop_desc: s.stop_desc,
-        location_type: s.location_type,
-        level_id: s.level?.level_id,
-        level_index: s.level?.level_index
-      } satisfies StopFeatureProperties,
-      geometry: s.geometry!
-    }
-  }))
-  return allFeatures
-})
-
-// Watchers
-watch(ready, (isReady) => {
-  if (isReady && route.query.selectedStop) {
-    selectStop(Number(route.query.selectedStop))
-  }
-  if (isReady && route.query.selectedPathway) {
-    selectPathway(Number(route.query.selectedPathway))
-  }
-})
-
-watch(selectedLevels, () => {
-  if (route.query.selectedStop || route.query.selectedPathway) {
-    // Preserve selection when navigating from query parameters
-  } else {
-    selectedStops.value = []
-    selectedPathways.value = []
-  }
-})
-
-watch(selectMode, (mode) => {
-  if (mode === 'add-node') {
-    selectedStops.value = []
-    selectedPathways.value = []
-  }
-})
-
-// Methods - Stops
-function createStopHandler (node: Stop) {
-  if (!station.value) return
-  createStop(node)
-    .then((d) => {
-      const newStopId = d?.data?.stop_create?.id
-      return refetch().then(() => newStopId)
-    })
-    .then((newStopId) => {
-      if (newStopId) {
-        showToast('Stop created successfully', 'success')
-        selectStop(newStopId)
+  },
+  mounted () {
+    // Add ESC key listener to unselect all
+    this.handleEscKey = (event) => {
+      if (event.key === 'Escape') {
+        this.unselectAll()
       }
-    })
-    .catch(handleError)
-}
-
-function updateStopHandler (node: Stop) {
-  if (!station.value) return
-  const stopId = node.id!
-  updateStop(node)
-    .then(() => refetch())
-    .then(() => {
-      showToast('Stop updated successfully', 'success')
-      selectStop(stopId)
-    })
-    .catch(handleError)
-}
-
-function deleteStopHandler (node: Stop) {
-  if (!station.value) return
-  return deleteStop(node)
-    .then(() => refetch())
-    .then(() => {
-      showToast('Stop deleted successfully', 'success')
-      selectStop(null)
-    })
-    .catch(handleError)
-}
-
-function moveStopSave (stopId: number, e: LngLat) {
-  if (!station.value) return
-  const stop = station.value.getStop(stopId)
-  if (!stop) {
-    return
-  }
-  stop.setCoords(e.lng, e.lat)
-  updateStopHandler(stop)
-}
-
-// Pathways
-function newPathway (): Pathway {
-  const fromId = selectedSource.value?.id ?? 'unknown'
-  const toId = selectedStop.value?.id ?? 'unknown'
-  return new Pathway({
-    from_stop: selectedSource.value || undefined,
-    to_stop: selectedStop.value || undefined,
-    pathway_id: `${fromId}-${toId}-${Date.now()}`
-  }).setDefaults()
-}
-
-function createPathwayHandler (pw: Pathway) {
-  if (!station.value) return
-  createPathway(pw)
-    .then((d) => {
-      const newPathwayId = d?.data?.pathway_create?.id
-      return refetch().then(() => newPathwayId)
-    })
-    .then((newPathwayId) => {
-      if (newPathwayId) {
-        showToast('Pathway created successfully', 'success')
-        selectPathway(newPathwayId)
+    }
+    window.addEventListener('keydown', this.handleEscKey)
+  },
+  unmounted () {
+    // Clean up ESC key listener
+    if (this.handleEscKey) {
+      window.removeEventListener('keydown', this.handleEscKey)
+    }
+  },
+  methods: {
+    mapLevelKeyFn,
+    // stops
+    createStopHandler (node) {
+      let newStopId = 0
+      this.station.createStop(this.$apollo, node)
+        .then((d) => {
+          newStopId = d?.data?.stop_create?.id
+          return this.refetch()
+        })
+        .then(() => {
+          // Use nextTick to ensure Vue has updated after refetch
+          return nextTick()
+        })
+        .then(() => {
+          // Additional small delay to ensure map has updated
+          setTimeout(() => {
+            this.selectStop(newStopId)
+          }, 150)
+        })
+        .catch(this.handleError)
+    },
+    updateStopHandler (node) {
+      this.station.updateStop(this.$apollo, node)
+        .then(() => { return this.refetch() })
+        .then(() => { this.selectStop(node.id) })
+        .catch(this.handleError)
+    },
+    deleteStopHandler (nodeId) {
+      return this.station.deleteStop(this.$apollo, nodeId)
+        .then(() => { return this.refetch() })
+        .then(() => { this.selectStop(null) })
+        .catch(this.handleError)
+    },
+    moveStopSave (stopid, e) {
+      if (stopid === null) {
+        return
       }
-    })
-    .catch(handleError)
-}
-
-function updatePathwayHandler (pw: Pathway) {
-  if (!station.value) return
-  updatePathway(pw)
-    .then(() => refetch())
-    .then(() => {
-      showToast('Pathway updated successfully', 'success')
-      selectPathway(null)
-    })
-    .catch(handleError)
-}
-
-function deletePathwayHandler (pw: Pathway) {
-  if (!station.value) return
-  deletePathway(pw)
-    .then(() => refetch())
-    .then(() => {
-      showToast('Pathway deleted successfully', 'success')
-      selectPathway(null)
-    })
-    .catch(handleError)
-}
-
-// Select tools
-function selectStop (stopId: number | null) {
-  if (stopId === null) {
-    selectedStops.value = []
-    selectMode.value = 'select'
-    return
-  }
-  if (!station.value) return
-  const cur = station.value.getStop(stopId)
-  const prev = selectedStops.value.length > 0 ? selectedStops.value[selectedStops.value.length - 1] : null
-  if (!cur) {
-    return
-  }
-  // find-route is sticky on first selected stop
-  if (prev && selectMode.value === 'find-route') {
-    if (prev === cur) {
-      selectedStops.value = []
-      return
-    }
-    selectedStops.value = [selectedStops.value[0]!, cur]
-    return
-  }
-  // Handle stop selection for editing or pathway creation
-  selectedPathways.value = []
-  if (prev) {
-    if (prev === cur) {
-      selectedStops.value = []
-      selectMode.value = 'select'
-    } else {
-      selectedStops.value = [prev, cur]
-      selectMode.value = 'add-pathway'
-    }
-  } else {
-    selectedStops.value = [cur]
-    selectMode.value = 'edit-node'
-  }
-}
-
-function selectPath (fromId: number, toId: number) {
-  if (!station.value) return
-  selectMode.value = 'find-route'
-  selectedStops.value = [station.value.getStop(fromId)!, station.value.getStop(toId)!]
-}
-
-function selectPathway (pwid: number | null) {
-  if (pwid === null) {
-    selectedPathways.value = []
-    selectMode.value = 'select'
-    return
-  }
-  const cur = pathwayIndex.value[pwid]
-  if (!cur) return
-  const prev = selectedPathways.value.length > 0 ? selectedPathways.value[selectedPathways.value.length - 1] : null
-  selectedStops.value = []
-  if (prev === cur) {
-    selectedPathways.value = []
-    selectMode.value = 'select'
-  } else {
-    selectedPathways.value = [cur]
-    selectMode.value = 'edit-pathway'
-  }
-}
-
-function selectPoint (ll: LngLat) {
-  selectedPoint.value = ll
-  if (selectMode.value === 'add-node') {
-    const stop = new Stop({
-      geometry: {
-        type: 'Point',
-        coordinates: [ll.lng, ll.lat]
-      },
-      level: { id: selectedLevel.value || undefined }
-    }).setDefaults()
-    createStopHandler(stop)
-  }
-}
-
-function selectStopsWithAssociations () {
-  selectedStops.value = station.value?.stops?.filter(s => s.external_reference?.target_stop_id) || []
-  selectMode.value = 'select'
-}
-
-function selectStopsPlatformsWithoutAssociations () {
-  selectedStops.value = station.value?.stops?.filter(s => s.location_type === 0 && !s.external_reference) || []
-  selectMode.value = 'select'
-}
-
-function selectStopsEntrancesWithoutAssociations () {
-  selectedStops.value = station.value?.stops?.filter(s => s.location_type === 2 && !s.external_reference) || []
-  selectMode.value = 'select'
-}
-
-function selectStopsWithPairedPathways () {
-  const pairedPathways = new Map()
-  selectedStops.value = station.value?.stops?.filter((s) => {
-    const pwKeys = []
-    for (const pw of s.pathways_from_stop) {
-      pwKeys.push(`${pw.from_stop.id}-${pw.to_stop.id}`)
-    }
-    for (const pw of s.pathways_to_stop) {
-      pwKeys.push(`${pw.to_stop.id}-${pw.from_stop.id}`)
-    }
-    let matched = false
-    for (const pwkey of pwKeys) {
-      if (pairedPathways.has(pwkey)) {
-        matched = true
+      const stop = this.station.getStop(stopid) // copy
+      if (!stop) {
+        return
       }
-      pairedPathways.set(pwkey, true)
-    }
-    return matched
-  }) || []
-  selectMode.value = 'select'
-}
-
-function selectLocationTypes (stype: number) {
-  selectedStops.value = station.value?.stops?.filter(s => s.location_type === stype) || []
-}
-
-function selectPathwayModes (stype: number) {
-  selectedPathways.value = station.value?.pathways?.filter(s => s.pathway_mode === stype) || []
-}
-
-function selectPathwaysWithPairs () {
-  const pwPairs = new Map()
-  selectedPathways.value = station.value?.pathways?.filter((s) => {
-    const pwKeys = [
-      `${s.from_stop.id}-${s.to_stop.id}`,
-      `${s.to_stop.id}-${s.from_stop.id}`
-    ]
-    let matched = false
-    for (const pwkey of pwKeys) {
-      if (pwPairs.has(pwkey)) {
-        matched = true
+      stop.setCoords(e.lng, e.lat)
+      this.updateStopHandler(stop)
+    },
+    // node associations
+    deleteAssociationHandler (node) {
+      this.station.deleteAssociation(this.$apollo, node)
+        .then(() => { return this.refetch() })
+        .then(() => { this.selectStop(null) })
+        .catch(this.handleError)
+    },
+    // pathways
+    newPathway () {
+      return new Pathway({
+        // other fields will be defaults
+        from_stop_id: this.selectedSource.id,
+        to_stop_id: this.selectedStop.id,
+        from_stop: this.selectedSource,
+        to_stop: this.selectedStop,
+        pathway_id: `${this.selectedSource.id}-${this.selectedStop.id}-${Date.now()}`
+      }).setDefaults()
+    },
+    createPathwayHandler (pw) {
+      this.station.createPathway(this.$apollo, pw)
+        .then(() => { return this.refetch() })
+        .then(() => { this.selectPathway(null) })
+        .catch(this.handleError) // todo: select
+    },
+    updatePathwayHandler (pw) {
+      this.station.updatePathway(this.$apollo, pw)
+        .then(() => { return this.refetch() })
+        .then(() => { this.selectPathway(null) })
+        .catch(this.handleError)
+    },
+    deletePathwayHandler (pw) {
+      this.selectPathway(null)
+      this.station.deletePathway(this.$apollo, pw)
+        .then(() => { return this.refetch() })
+        .then(() => { this.selectPathway(null) })
+        .catch(this.handleError)
+    },
+    // select tools
+    selectStop (stopId) {
+      console.log('selectStop: start', stopId)
+      if (stopId === null) {
+        this.selectedStops = []
+        this.selectMode = 'select'
+        console.log('selectStop: no stopid')
+        return
       }
-      pwPairs.set(pwkey, true)
+      const cur = this.station.getStop(stopId)
+      console.log('selectStop: cur stop', cur)
+      const prev = this.selectedStops.length > 0 ? this.selectedStops[this.selectedStops.length - 1] : null
+      if (!cur) {
+        console.warn('selectStop: stop not found', stopId)
+        return
+      }
+      // find-route is sticky on first selected stop
+      if (prev && this.selectMode === 'find-route') {
+        if (prev === cur) {
+          console.log('selectStop: same stop, unselecting')
+          this.selectedStops = []
+          return
+        }
+        this.selectedStops = [this.selectedStops[0], cur]
+        console.log('selectStop: find-route set selectedStops to', this.selectedStops)
+        return
+      }
+      //
+      this.selectedPathways = []
+      if (prev) {
+        if (prev === cur) {
+          this.selectedStops = []
+          this.selectMode = 'select'
+        } else {
+          this.selectedStops = [prev, cur]
+          this.selectMode = 'add-pathway'
+        }
+      } else {
+        this.selectedStops = [cur]
+        this.selectMode = 'edit-node'
+      }
+      console.log('selectStop: set selectedStops to', this.selectedStops, 'and selectMode to', this.selectMode)
+    },
+    selectPath (fromId, toId) {
+      this.selectMode = 'find-route'
+      this.selectedStops = [this.station.getStop(fromId), this.station.getStop(toId)]
+    },
+    selectPathway (pwid) {
+      if (pwid === null) {
+        this.selectedPathways = []
+        this.selectMode = 'select'
+        return
+      }
+      const cur = this.pathwayIndex[pwid]
+      const prev = this.selectedPathways.length > 0 ? this.selectedPathways[this.selectedPathways.length - 1] : null
+      this.selectedStops = []
+      if (prev === cur) {
+        this.selectedPathways = []
+        this.selectMode = 'select'
+      } else {
+        this.selectedPathways = [cur]
+        this.selectMode = 'edit-pathway'
+      }
+    },
+    selectPoint (ll) {
+      this.selectedPoint = ll
+      if (this.selectMode === 'add-node') {
+        const stop = new Stop({
+          geometry: {
+            type: 'Point',
+            coordinates: [ll.lng, ll.lat]
+          },
+          level: { id: this.selectedLevel }
+        }).setDefaults()
+        this.createStopHandler(stop)
+      }
+    },
+    // Helper method to filter and notify
+    applyFilter (filterFn, filterLabel, notFoundMessage, target = 'stops') {
+      const results = target === 'stops'
+        ? this.station.stops.filter(filterFn)
+        : this.station.pathways.filter(filterFn)
+
+      if (target === 'stops') {
+        this.selectedStops = results
+      } else {
+        this.selectedPathways = results
+      }
+
+      this.lastFilterApplied = filterLabel
+      this.selectMode = 'select'
+
+      if (results.length === 0) {
+        this.showToast(notFoundMessage)
+      }
+    },
+    selectStopsWithAssociations () {
+      this.applyFilter(
+        s => s.external_reference?.target_stop_id,
+        'Stops with associations',
+        'No stops with associations found'
+      )
+    },
+    selectStopsPlatformsWithoutAssociations () {
+      this.applyFilter(
+        s => s.location_type === 0 && !s.external_reference,
+        'Platforms without associations',
+        'No platforms without associations found'
+      )
+    },
+    selectStopsEntrancesWithoutAssociations () {
+      this.applyFilter(
+        s => s.location_type === 2 && !s.external_reference,
+        'Entrances without associations',
+        'No entrances without associations found'
+      )
+    },
+    selectStopsWithPairedPathways () {
+      const pairedPathways = new Map()
+      this.applyFilter(
+        (s) => {
+          const pwKeys = []
+          for (const pw of s.pathways_from_stop) {
+            pwKeys.push(`${pw.from_stop.id}-${pw.to_stop.id}`)
+          }
+          for (const pw of s.pathways_to_stop) {
+            pwKeys.push(`${pw.to_stop.id}-${pw.from_stop.id}`)
+          }
+          let matched = false
+          for (const pwkey of pwKeys) {
+            if (pairedPathways.has(pwkey)) {
+              matched = true
+            }
+            pairedPathways.set(pwkey, true)
+          }
+          return matched
+        },
+        'Stops with paired pathways',
+        'No stops with paired pathways found'
+      )
+    },
+    selectLocationTypes (stype) {
+      this.applyFilter(
+        s => s.location_type === stype,
+        `Stops: ${this.LocationTypes.get(stype)}`,
+        `No ${this.LocationTypes.get(stype)} stops found`
+      )
+    },
+    selectPathwayModes (stype) {
+      this.applyFilter(
+        s => s.pathway_mode === stype,
+        `Pathways: ${this.PathwayModes.get(stype)}`,
+        `No ${this.PathwayModes.get(stype)} pathways found`,
+        'pathways'
+      )
+    },
+    selectPathwaysWithPairs () {
+      const pwPairs = new Map()
+      this.applyFilter(
+        (s) => {
+          const pwKeys = [
+            `${s.from_stop.id}-${s.to_stop.id}`,
+            `${s.to_stop.id}-${s.from_stop.id}`
+          ]
+          let matched = false
+          for (const pwkey of pwKeys) {
+            if (pwPairs.has(pwkey)) {
+              matched = true
+            }
+            pwPairs.set(pwkey, true)
+          }
+          return matched
+        },
+        'Pathways with pairs',
+        'No pathways with pairs found',
+        'pathways'
+      )
+    },
+    selectPathwaysOneway () {
+      this.applyFilter(
+        s => !s.is_bidirectional,
+        'One-directional pathways',
+        'No one-directional pathways found',
+        'pathways'
+      )
+    },
+    selectPathwaysBidirectional () {
+      this.applyFilter(
+        s => s.is_bidirectional,
+        'Bi-directional pathways',
+        'No bi-directional pathways found',
+        'pathways'
+      )
+    },
+    unselectAll () {
+      this.selectedStops = []
+      this.selectedPathways = []
+      this.selectedPoint = null
+      this.lastFilterApplied = ''
+      this.selectMode = 'select'
+    },
+    downloadGeojson () {
+      const allFeatures = []
+      allFeatures.push(...this.station.levels.map((s) => {
+        return {
+          type: 'Feature',
+          id: s.id,
+          properties: {
+            id: s.id,
+            level_id: s.level_id,
+            level_name: s.level_name,
+            level_index: s.level_index
+          },
+          geometry: s.geometry
+        }
+      }))
+      allFeatures.push(...this.station.pathways.map((s) => {
+        return {
+          type: 'Feature',
+          id: s.id,
+          properties: {
+            id: s.id,
+            pathway_id: s.pathway_id,
+            pathway_mode: s.pathway_mode,
+            signposted_as: s.signposted_as,
+            reverse_signposted_as: s.reverse_signposted_as,
+            stair_count: s.stair_count,
+            is_bidirectional: s.is_bidirectional,
+            length: s.length,
+            min_slope: s.min_slope,
+            max_slope: s.max_slope,
+            from_id: s.from_stop.id,
+            from_stop_id: String(s.from_stop.stop_id),
+            from_stop_name: s.from_stop.stop_name,
+            to_id: s.to_stop.id,
+            to_stop_id: String(s.to_stop.stop_id),
+            to_stop_name: s.to_stop.stop_name,
+            from_level_id: s.from_stop.level?.id,
+            from_level_name: s.from_stop.level?.id,
+            to_level_id: s.to_stop.level?.id,
+            to_level_name: s.to_stop.level?.id
+          },
+          geometry: {
+            type: 'LineString',
+            coordinates: [
+              s.from_stop.geometry.coordinates,
+              s.to_stop.geometry.coordinates
+            ]
+          }
+        }
+      }))
+      allFeatures.push(...this.station.stops.map((s) => {
+        return {
+          type: 'Feature',
+          id: s.id,
+          properties: {
+            id: s.id,
+            stop_name: s.stop_name,
+            stop_id: String(s.stop_id),
+            stop_code: s.stop_code,
+            stop_desc: s.stop_desc,
+            location_type: s.location_type,
+            level_id: s.level?.id,
+            level_index: s.level?.level_index
+          },
+          geometry: s.geometry
+        }
+      }))
+      const data = JSON.stringify({ type: 'FeatureCollection', features: allFeatures })
+      const blob = new Blob([data], { type: 'text/json' })
+      const e = document.createEvent('MouseEvents')
+      const a = document.createElement('a')
+      a.download = 'station.geojson'
+      a.href = window.URL.createObjectURL(blob)
+      a.dataset.downloadurl = ['text/json', a.download, a.href].join(':')
+      e.initEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null)
+      a.dispatchEvent(e)
     }
-    return matched
-  }) || []
-  selectMode.value = 'select'
-}
-
-function selectPathwaysOneway () {
-  selectedPathways.value = station.value?.pathways?.filter(s => !s.is_bidirectional) || []
-}
-
-function selectPathwaysBidirectional () {
-  selectedPathways.value = station.value?.pathways?.filter(s => s.is_bidirectional) || []
-}
-
-function unselectAll () {
-  selectedStops.value = []
-  selectedPathways.value = []
-  selectedPoint.value = null
-  selectMode.value = 'select'
+  }
 }
 </script>
 
-  <style scoped>
+  <style>
   .help li {
     margin-bottom:10px;
   }
-  .blue-rectangle::before {
-    content: "🟦 ";
-  }
-  .red-rectangle::before {
-    content: "🟥 "
-  }
-  .purple-rectangle::before {
-    content: "🟪 "
-  }
-  .tl-apps-stations-info {
-    width: 540px;
-  }
 
-  .is-loading-overlay {
-    position: relative;
-  }
+   .station-pathways-container {
+     height: calc(100vh - 80px);
+     display: flex;
+     flex-direction: column;
+   }
 
-  .loading-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(255, 255, 255, 0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    pointer-events: all;
-  }
+   .pathways-columns {
+     flex: 1;
+     height: 100%;
+   }
+
+   .tl-editor-info {
+     width: 540px;
+     height: 100%;
+     overflow-y: auto;
+     padding-right: 0.5rem;
+   }
+   .station-editor-panel {
+     margin-bottom: 0.75rem;
+   }
+   .station-editor-panel .panel-heading {
+     padding: 0.5em 0.75em;
+     font-size: 0.875rem;
+   }
+   .station-editor-panel .panel-block {
+     padding: 0.75rem;
+   }
+   .station-editor-panel .buttons.has-addons {
+     display: flex;
+     width: 100%;
+   }
+   .station-editor-panel .buttons.has-addons .button {
+     flex: 1;
+   }
+   .station-editor-panel .columns.is-mobile {
+     margin-bottom: 0;
+   }
+   .station-editor-panel .columns.is-mobile .column {
+     padding-top: 0;
+     padding-bottom: 0;
+   }
+
+   /* Ensure layout fits in viewport */
+   .pathways-columns {
+     margin-top: 0;
+     margin-bottom: 0;
+     display: flex;
+     align-items: stretch;
+   }
+
+   .pathways-columns .column.is-narrow {
+     display: flex;
+     flex-direction: column;
+   }
+
+   .pathways-columns .column.is-narrow .block {
+     flex: 1;
+     display: flex;
+     flex-direction: column;
+   }
+
+   /* Make map container fill available height */
+   .pathways-columns .column:not(.is-narrow) {
+     display: flex;
+     flex-direction: column;
+     flex: 1;
+   }
+
+   .pathways-columns .column:not(.is-narrow) > * {
+     flex: 1;
+     height: 100%;
+   }
+
+   /* Collapse trigger styling */
+   .collapse-trigger-field {
+     margin-bottom: 0.5rem;
+   }
+
+   .collapse-trigger-label {
+     display: flex;
+     align-items: center;
+     gap: 0.25rem;
+     cursor: pointer;
+     margin-bottom: 0 !important;
+   }
+
+   .collapse-trigger-label:hover {
+     color: #3273dc;
+   }
+
+   /* Legend styling */
+   .legend-item {
+     margin-bottom: 0.25rem;
+   }
+
+   .circle-indicator::before {
+     content: "⓪ ";
+     font-size: 1.2em;
+   }
+
+   .blue-rectangle::before {
+     content: "🟦 ";
+   }
+
+   .red-rectangle::before {
+     content: "🟥 ";
+   }
+
+   .purple-rectangle::before {
+     content: "🟪 ";
+   }
   </style>
