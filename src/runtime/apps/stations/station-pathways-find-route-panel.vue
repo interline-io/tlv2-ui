@@ -3,8 +3,8 @@
     <p class="panel-heading">
       <span>Find Route</span>
       <span class="panel-heading-buttons">
-        <button class="button is-small" title="Or press ESC key to exit" @click="$emit('unselect')">
-          Clear
+        <button class="button is-small" @click="$emit('unselect')">
+          Clear <kbd>ESC</kbd>
         </button>
       </span>
     </p>
@@ -80,5 +80,19 @@ export default {
 .panel-heading-buttons {
   display: flex;
   gap: 0.5rem;
+}
+
+.button kbd {
+  display: inline-block;
+  margin-left: 0.3em;
+  padding: 0 0.3em;
+  font-size: 0.7em;
+  font-family: monospace;
+  line-height: 1.4;
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+  opacity: 0.75;
 }
 </style>

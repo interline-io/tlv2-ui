@@ -17,7 +17,7 @@
                   :aria-pressed="selectMode === 'select'"
                   @click="selectMode = 'select'"
                 >
-                  Select
+                  Select <kbd>S</kbd>
                 </button>
                 <button
                   class="button"
@@ -26,7 +26,7 @@
                   :aria-pressed="selectMode === 'add-node'"
                   @click="selectMode = 'add-node'"
                 >
-                  Add Node
+                  Add Node <kbd>N</kbd>
                 </button>
                 <button
                   class="button"
@@ -37,7 +37,7 @@
                   :aria-pressed="selectMode === 'add-pathway'"
                   @click="selectMode = 'add-pathway'"
                 >
-                  Add Pathway
+                  Add Pathway <kbd>P</kbd>
                 </button>
                 <button
                   class="button"
@@ -48,9 +48,8 @@
                   :aria-pressed="selectMode === 'find-route'"
                   @click="selectMode = 'find-route'"
                 >
-                  Find Route
+                  Find Route <kbd>F</kbd>
                 </button>
-
                 <button
                   class="button"
                   :class="{ 'is-primary is-selected': selectMode === 'export' }"
@@ -481,18 +480,42 @@ export default {
     }
   },
   mounted () {
-    // Add ESC key listener to unselect all
-    this.handleEscKey = (event) => {
-      if (event.key === 'Escape') {
-        this.unselectAll()
+    this.handleKeyDown = (event) => {
+      const tag = (event.target?.tagName || '').toLowerCase()
+      if (['input', 'textarea', 'select'].includes(tag) || event.target?.isContentEditable) {
+        return
+      }
+      switch (event.key) {
+        case 'Escape':
+          this.unselectAll()
+          break
+        case 's':
+        case 'S':
+          this.selectMode = 'select'
+          break
+        case 'n':
+        case 'N':
+          this.selectMode = 'add-node'
+          break
+        case 'p':
+        case 'P':
+          if (this.selectedStop && this.selectedSource) {
+            this.selectMode = 'add-pathway'
+          }
+          break
+        case 'f':
+        case 'F':
+          if (this.selectedStops.length === 1) {
+            this.selectMode = 'find-route'
+          }
+          break
       }
     }
-    window.addEventListener('keydown', this.handleEscKey)
+    window.addEventListener('keydown', this.handleKeyDown)
   },
   unmounted () {
-    // Clean up ESC key listener
-    if (this.handleEscKey) {
-      window.removeEventListener('keydown', this.handleEscKey)
+    if (this.handleKeyDown) {
+      window.removeEventListener('keydown', this.handleKeyDown)
     }
   },
   methods: {
@@ -967,5 +990,25 @@ export default {
 
    .purple-rectangle::before {
      content: "🟪 ";
+   }
+
+   /* Keyboard shortcut hints in mode buttons */
+   .station-editor-panel .buttons.has-addons .button kbd {
+     display: inline-block;
+     margin-left: 0.3em;
+     padding: 0 0.3em;
+     font-size: 0.7em;
+     font-family: monospace;
+     line-height: 1.4;
+     color: inherit;
+     background-color: rgba(0, 0, 0, 0.08);
+     border: 1px solid rgba(0, 0, 0, 0.2);
+     border-radius: 3px;
+     opacity: 0.75;
+   }
+
+   .station-editor-panel .buttons.has-addons .button.is-primary.is-selected kbd {
+     background-color: rgba(255, 255, 255, 0.2);
+     border-color: rgba(255, 255, 255, 0.4);
    }
   </style>

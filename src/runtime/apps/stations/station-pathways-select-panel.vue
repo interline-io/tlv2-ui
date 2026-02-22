@@ -6,10 +6,9 @@
         <span v-if="selectedStopsCount > 0 || selectedPathwaysCount > 0" class="panel-heading-buttons">
           <button
             class="button is-small"
-            title="Or press ESC key to unselect all"
             @click="$emit('unselect-all')"
           >
-            Unselect All
+            Unselect All <kbd>ESC</kbd>
           </button>
         </span>
       </p>
@@ -254,5 +253,19 @@ export default {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
+}
+
+.button kbd {
+  display: inline-block;
+  margin-left: 0.3em;
+  padding: 0 0.3em;
+  font-size: 0.7em;
+  font-family: monospace;
+  line-height: 1.4;
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+  opacity: 0.75;
 }
 </style>
