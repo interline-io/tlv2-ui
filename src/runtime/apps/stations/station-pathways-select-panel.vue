@@ -61,34 +61,24 @@
           </div>
         </div>
         <div v-if="selectedStopsCount === 0 && selectedPathwaysCount === 0">
-          <t-field label="Select Stops" class="mb-3">
-            <p class="subcategory-label">By type</p>
-            <div class="buttons mb-2">
-              <t-button v-for="[type, label] of locationTypes" :key="type" size="small" @click="$emit('select-location-types', type)">
-                {{ label }}
-              </t-button>
-            </div>
-            <p class="subcategory-label">By filter</p>
-            <div class="buttons">
-              <t-button size="small" @click="$emit('select-stops-with-associations')">With associations</t-button>
-              <t-button size="small" @click="$emit('select-stops-platforms-without-associations')">Platforms w/o assoc.</t-button>
-              <t-button size="small" @click="$emit('select-stops-entrances-without-associations')">Entrances w/o assoc.</t-button>
-              <t-button size="small" @click="$emit('select-stops-with-paired-pathways')">With paired pathways</t-button>
-            </div>
-          </t-field>
-          <t-field label="Select Pathways">
-            <p class="subcategory-label">By mode</p>
-            <div class="buttons mb-2">
-              <t-button v-for="[mode, label] of pathwayModes" :key="mode" size="small" @click="$emit('select-pathway-modes', mode)">
-                {{ label }}
-              </t-button>
-            </div>
-            <p class="subcategory-label">By direction</p>
-            <div class="buttons">
-              <t-button size="small" @click="$emit('select-pathways-with-pairs')">With pairs</t-button>
-              <t-button size="small" @click="$emit('select-pathways-oneway')">One-directional</t-button>
-              <t-button size="small" @click="$emit('select-pathways-bidirectional')">Bi-directional</t-button>
-            </div>
+          <t-field
+            v-for="(section, si) of filterSections"
+            :key="section.label"
+            :label="section.label"
+            :class="{ 'mb-3': si < filterSections.length - 1 }"
+          >
+            <template v-for="(group, gi) of section.groups" :key="group.label">
+              <p class="subcategory-label">
+                {{ group.label }}
+              </p>
+              <div class="filter-buttons" :class="{ 'mb-2': gi < section.groups.length - 1 }">
+                <t-tooltip v-for="btn of group.buttons" :key="btn.key" :text="btn.tooltip" position="bottom">
+                  <t-button size="small" :disabled="!btn.count" @click="$emit(btn.event, btn.arg)">
+                    {{ btn.label }}
+                  </t-button>
+                </t-tooltip>
+              </div>
+            </template>
           </t-field>
         </div>
       </div>
@@ -97,8 +87,19 @@
 </template>
 
 <script>
+function makeBtn (key, label, event, count, noun, arg) {
+  const tooltip = count
+    ? `${count} ${noun}`
+    : `No ${noun} in this station`
+  return { key, label, event, count, tooltip, arg }
+}
+
 export default {
   props: {
+    filterCounts: {
+      type: Object,
+      default: () => ({})
+    },
     selectedStopsCount: {
       type: Number,
       required: true
@@ -144,11 +145,57 @@ export default {
     'select-pathways-oneway',
     'select-pathways-bidirectional'
   ],
+  computed: {
+    filterSections () {
+      const fc = this.filterCounts
+      const stopCounts = fc.stopsByLocationType || {}
+      const pwCounts = fc.pathwaysByMode || {}
+      return [
+        {
+          label: 'Select Stops',
+          groups: [
+            {
+              label: 'By type',
+              buttons: [...this.locationTypes].map(([type, label]) =>
+                makeBtn(type, label, 'select-location-types', stopCounts[type] || 0, `${label} stops`, type)
+              )
+            },
+            {
+              label: 'By filter',
+              buttons: [
+                makeBtn('assoc', 'With associations', 'select-stops-with-associations', fc.stopsWithAssociations || 0, 'stops with associations'),
+                makeBtn('plat-no-assoc', 'Platforms w/o assoc.', 'select-stops-platforms-without-associations', fc.platformsWithoutAssociations || 0, 'platforms without associations'),
+                makeBtn('ent-no-assoc', 'Entrances w/o assoc.', 'select-stops-entrances-without-associations', fc.entrancesWithoutAssociations || 0, 'entrances without associations'),
+                makeBtn('paired-pw', 'With paired pathways', 'select-stops-with-paired-pathways', fc.stopsWithPairedPathways || 0, 'stops with paired pathways')
+              ]
+            }
+          ]
+        },
+        {
+          label: 'Select Pathways',
+          groups: [
+            {
+              label: 'By mode',
+              buttons: [...this.pathwayModes].map(([mode, label]) =>
+                makeBtn(mode, label, 'select-pathway-modes', pwCounts[mode] || 0, `${label} pathways`, mode)
+              )
+            },
+            {
+              label: 'By direction',
+              buttons: [
+                makeBtn('pairs', 'With pairs', 'select-pathways-with-pairs', fc.pathwaysWithPairs || 0, 'pathways with pairs'),
+                makeBtn('oneway', 'One-directional', 'select-pathways-oneway', fc.pathwaysOneway || 0, 'one-directional pathways'),
+                makeBtn('bidir', 'Bi-directional', 'select-pathways-bidirectional', fc.pathwaysBidirectional || 0, 'bi-directional pathways')
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
   methods: {
     selectItem (type, id) {
-      // First unselect all items
       this.$emit('unselect-all')
-      // Then select the clicked item
       this.$nextTick(() => {
         if (type === 'stop') {
           this.$emit('select-stop', id)
@@ -201,5 +248,11 @@ export default {
   text-transform: uppercase;
   letter-spacing: 0.04em;
   margin-bottom: 0.35rem;
+}
+
+.filter-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
 }
 </style>

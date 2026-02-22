@@ -144,6 +144,7 @@
           <!-- SELECT -->
           <tl-apps-stations-station-pathways-select-panel
             v-if="selectMode === 'select'"
+            :filter-counts="filterCounts"
             :selected-stops-count="selectedStops.length"
             :selected-pathways-count="selectedPathways.length"
             :selected-stops="selectedStops"
@@ -290,6 +291,7 @@ import { LocationTypes } from '../basemaps'
 import { PathwayModes } from '../../../lib/pathways/pathway-icons'
 import { Profiles } from '../../../lib/pathways/graph'
 import { Stop, Pathway, mapLevelKeyFn } from '../station'
+import { computeFilterCounts } from '../station-pathways-filter-counts'
 import { nextTick, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useToastNotification } from '../../../composables/useToastNotification'
@@ -387,6 +389,9 @@ export default {
           this.selectedLevels = ids.map(id => mapLevelKeyFn({ id }))
         }
       }
+    },
+    filterCounts () {
+      return computeFilterCounts(this.station?.stops || [], this.station?.pathways || [])
     },
     selectedPath () {
       if (this.selectMode !== 'find-route' || this.selectedStops.length < 2) {
@@ -729,22 +734,9 @@ export default {
       )
     },
     selectPathwaysWithPairs () {
-      const pwPairs = new Map()
+      const allKeys = new Set(this.station.pathways.map(p => `${p.from_stop.id}-${p.to_stop.id}`))
       this.applyFilter(
-        (s) => {
-          const pwKeys = [
-            `${s.from_stop.id}-${s.to_stop.id}`,
-            `${s.to_stop.id}-${s.from_stop.id}`
-          ]
-          let matched = false
-          for (const pwkey of pwKeys) {
-            if (pwPairs.has(pwkey)) {
-              matched = true
-            }
-            pwPairs.set(pwkey, true)
-          }
-          return matched
-        },
+        s => allKeys.has(`${s.to_stop.id}-${s.from_stop.id}`),
         'Pathways with pairs',
         'No pathways with pairs found',
         'pathways'
