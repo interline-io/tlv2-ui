@@ -991,5 +991,4 @@ export default {
    .purple-rectangle::before {
      content: "🟪 ";
    }
-
-  </style>
+</style>

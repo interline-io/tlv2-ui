@@ -254,5 +254,4 @@ export default {
   flex-wrap: wrap;
   gap: 0.4rem;
 }
-
 </style>

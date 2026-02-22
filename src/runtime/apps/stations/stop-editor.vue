@@ -109,7 +109,6 @@
       </div>
     </div>
 
-
     <!-- Pathways viewer — shown in legacy view only; hidden in new editor which shows pathways in the view panel instead.
          TODO: remove when legacy pathways view is removed. -->
     <t-field v-if="showPathways && pathwaysFromStop.length > 0" label="Pathways (From)">
