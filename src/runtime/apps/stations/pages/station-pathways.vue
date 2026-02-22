@@ -17,7 +17,7 @@
                   :aria-pressed="selectMode === 'select'"
                   @click="selectMode = 'select'"
                 >
-                  Select <kbd>S</kbd>
+                  Select
                 </button>
                 <button
                   class="button"
@@ -37,7 +37,7 @@
                   :aria-pressed="selectMode === 'add-pathway'"
                   @click="selectMode = 'add-pathway'"
                 >
-                  Add Pathway <kbd>P</kbd>
+                  Add Pathway
                 </button>
                 <button
                   class="button"
@@ -255,6 +255,7 @@
             </p>
             <div class="panel-block is-block">
               <tl-apps-stations-station-validator
+                ref="stationValidator"
                 :station="station"
                 @select-path="selectPath"
                 @select-stop="selectStop"
@@ -489,25 +490,27 @@ export default {
         case 'Escape':
           this.unselectAll()
           break
-        case 's':
-        case 'S':
-          this.selectMode = 'select'
-          break
         case 'n':
         case 'N':
           this.selectMode = 'add-node'
-          break
-        case 'p':
-        case 'P':
-          if (this.selectedStop && this.selectedSource) {
-            this.selectMode = 'add-pathway'
-          }
           break
         case 'f':
         case 'F':
           if (this.selectedStops.length === 1) {
             this.selectMode = 'find-route'
           }
+          break
+        case 's':
+        case 'S':
+          this.$refs.stationValidator?.openStopsModal()
+          break
+        case 'p':
+        case 'P':
+          this.$refs.stationValidator?.openPathwaysModal()
+          break
+        case 'c':
+        case 'C':
+          this.$refs.stationValidator?.openPathsModal()
           break
       }
     }

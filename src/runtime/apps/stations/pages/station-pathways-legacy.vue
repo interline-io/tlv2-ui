@@ -826,4 +826,8 @@ function unselectAll () {
     z-index: 1000;
     pointer-events: all;
   }
+  /* hide keyboard shortcuts added for the new pathways editor */
+  :deep(.button kbd) {
+    display: none;
+  }
   </style>

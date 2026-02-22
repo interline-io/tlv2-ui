@@ -1,16 +1,16 @@
 <template>
   <div>
-    <div class="buttons">
-      <a class="button is-outlined" :class="errorCount.stops > 0 ? 'is-danger' : 'is-dark'" @click="openStops = true">
-        <i v-if="errorCount.stops > 0" class="mdi mdi-alert has-text-danger" /> Stops
+    <div class="buttons has-addons is-fullwidth">
+      <a class="button is-outlined is-flex-grow-1" :class="errorCount.stops > 0 ? 'is-danger' : 'is-dark'" @click="openStops = true">
+        <i v-if="errorCount.stops > 0" class="mdi mdi-alert has-text-danger" /> Stops <kbd>S</kbd>
       </a>
 
-      <a class="button is-outlined" :class="errorCount.pathways > 0 ? 'is-danger' : 'is-dark'" @click="openPathways = true">
-        <i v-if="errorCount.pathways > 0" class="mdi mdi-alert has-text-danger" /> Pathways
+      <a class="button is-outlined is-flex-grow-1" :class="errorCount.pathways > 0 ? 'is-danger' : 'is-dark'" @click="openPathways = true">
+        <i v-if="errorCount.pathways > 0" class="mdi mdi-alert has-text-danger" /> Pathways <kbd>P</kbd>
       </a>
 
-      <a class="button is-outlined" :class="stopPathErrorCount > 0 ? 'is-danger' : 'is-dark'" @click="openPaths = true">
-        <i v-if="stopPathErrorCount > 0" class="mdi mdi-alert has-text-danger" /> Connectivity
+      <a class="button is-outlined is-flex-grow-1" :class="stopPathErrorCount > 0 ? 'is-danger' : 'is-dark'" @click="openPaths = true">
+        <i v-if="stopPathErrorCount > 0" class="mdi mdi-alert has-text-danger" /> Connectivity <kbd>C</kbd>
       </a>
     </div>
 
@@ -184,6 +184,12 @@ const openStops = ref(false)
 const openPathways = ref(false)
 const openPaths = ref(false)
 const showAllPaths = ref(false)
+
+defineExpose({
+  openStopsModal: () => { openStops.value = true },
+  openPathwaysModal: () => { openPathways.value = true },
+  openPathsModal: () => { openPaths.value = true }
+})
 
 const stopPaths = computed((): ConnectivityResult[] => {
   return validateConnectivity(props.station)
