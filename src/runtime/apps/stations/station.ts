@@ -171,6 +171,7 @@ query stationStopQuery($stop_ids: [Int!]!) {
     route_stops {
           route {
             id
+            route_type
             route_short_name
             route_long_name
             agency {

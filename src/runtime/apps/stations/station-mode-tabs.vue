@@ -44,6 +44,14 @@
           <i class="mdi mdi-chart-timeline mdi-16px" /> &nbsp; Station Diagram
         </tl-link>
       </li>
+      <li :class="(activeTab === 'simulator') ? 'is-active' : ''">
+        <tl-link
+          route-key="apps-stations-feedKey-feedVersionKey-stations-stationKey-simulator"
+          :to="{ params: { feedKey: feedKey, feedVersionKey: feedVersionKey, stationKey: stationKey } }"
+        >
+          <i class="mdi mdi-cellphone mdi-16px" /> &nbsp; Simulator
+        </tl-link>
+      </li>
     </ul>
   </div>
 </template>
@@ -78,7 +86,8 @@ const routeKeys = {
   'stops': 'apps-stations-feedKey-feedVersionKey-stations-stationKey-stops',
   'pathways': 'apps-stations-feedKey-feedVersionKey-stations-stationKey-pathways',
   'pathways-legacy': 'apps-stations-feedKey-feedVersionKey-stations-stationKey-pathways-legacy',
-  'diagram': 'apps-stations-feedKey-feedVersionKey-stations-stationKey-diagram'
+  'diagram': 'apps-stations-feedKey-feedVersionKey-stations-stationKey-diagram',
+  'simulator': 'apps-stations-feedKey-feedVersionKey-stations-stationKey-simulator'
 }
 
 const pathwaysModeEnabled = computed((): boolean => {

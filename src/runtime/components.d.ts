@@ -98,6 +98,7 @@ declare module 'vue' {
     TlAppsStationsStationPathwaysNodePanel: typeof import('./apps/stations/station-pathways-node-panel.vue')['default']
     TlAppsStationsStationPathwaysPathwayPanel: typeof import('./apps/stations/station-pathways-pathway-panel.vue')['default']
     TlAppsStationsStationPathwaysSelectPanel: typeof import('./apps/stations/station-pathways-select-panel.vue')['default']
+    TlAppsStationsStationSimulatorMap: typeof import('./apps/stations/station-simulator-map.vue')['default']
     TlAppsStationsStationValidator: typeof import('./apps/stations/station-validator.vue')['default']
     TlAppsStationsStopEditor: typeof import('./apps/stations/stop-editor.vue')['default']
     TlAppsStationsStopTable: typeof import('./apps/stations/stop-table.vue')['default']
