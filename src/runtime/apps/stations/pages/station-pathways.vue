@@ -70,16 +70,14 @@
               Map Display
             </p>
             <div class="panel-block is-block">
-              <o-collapse v-model:open="levelsOpen" animation="slide">
-                <template #trigger="props">
-                  <div class="field collapse-trigger-field">
-                    <label class="label is-small collapse-trigger-label">
-                      <o-icon :icon="props.open ? 'menu-down' : 'menu-right'" />
-                      <span>Levels</span>
-                    </label>
-                  </div>
-                </template>
-                <div class="ml-4">
+              <div>
+                <div class="field collapse-trigger-field" style="cursor:pointer" @click="levelsOpen = !levelsOpen">
+                  <label class="label is-small collapse-trigger-label" style="cursor:pointer">
+                    <t-icon :icon="levelsOpen ? 'menu-down' : 'menu-right'" size="small" />
+                    <span>Levels</span>
+                  </label>
+                </div>
+                <div v-show="levelsOpen" class="ml-4">
                   <t-checkbox-group
                     v-model="selectedLevelIds"
                     :options="sortedStationLevels"
@@ -93,37 +91,35 @@
                     </template>
                   </t-checkbox-group>
                 </div>
-              </o-collapse>
+              </div>
 
-              <o-collapse v-model:open="basemapOpen" animation="slide">
-                <template #trigger="props">
-                  <div class="field collapse-trigger-field">
-                    <label class="label is-small collapse-trigger-label">
-                      <o-icon :icon="props.open ? 'menu-down' : 'menu-right'" />
-                      <span>Basemap</span>
-                    </label>
-                  </div>
-                </template>
-                <div v-for="(bm, key) in basemapLayers" :key="key" class="field ml-4">
-                  <t-radio
-                    v-model="basemap"
-                    :native-value="key"
-                  >
-                    {{ bm.label }}
-                  </t-radio>
+              <div>
+                <div class="field collapse-trigger-field" style="cursor:pointer" @click="basemapOpen = !basemapOpen">
+                  <label class="label is-small collapse-trigger-label" style="cursor:pointer">
+                    <t-icon :icon="basemapOpen ? 'menu-down' : 'menu-right'" size="small" />
+                    <span>Basemap</span>
+                  </label>
                 </div>
-              </o-collapse>
-
-              <o-collapse v-model:open="legendOpen" animation="slide">
-                <template #trigger="props">
-                  <div class="field collapse-trigger-field">
-                    <label class="label is-small collapse-trigger-label">
-                      <o-icon :icon="props.open ? 'menu-down' : 'menu-right'" />
-                      <span>Legend</span>
-                    </label>
+                <div v-show="basemapOpen">
+                  <div v-for="(bm, key) in basemapLayers" :key="key" class="field ml-4">
+                    <t-radio
+                      v-model="basemap"
+                      :native-value="key"
+                    >
+                      {{ bm.label }}
+                    </t-radio>
                   </div>
-                </template>
-                <div class="ml-4">
+                </div>
+              </div>
+
+              <div>
+                <div class="field collapse-trigger-field" style="cursor:pointer" @click="legendOpen = !legendOpen">
+                  <label class="label is-small collapse-trigger-label" style="cursor:pointer">
+                    <t-icon :icon="legendOpen ? 'menu-down' : 'menu-right'" size="small" />
+                    <span>Legend</span>
+                  </label>
+                </div>
+                <div v-show="legendOpen" class="ml-4">
                   <ul>
                     <li class="legend-item circle-indicator">
                       circles are nodes (stops) with number for assigned level
@@ -139,11 +135,11 @@
                     </li>
                   </ul>
                 </div>
-              </o-collapse>
+              </div>
             </div>
           </nav>
           <!-- SELECT -->
-          <tl-editor-station-pathways-select-panel
+          <tl-apps-stations-station-pathways-select-panel
             v-if="selectMode === 'select'"
             :selected-stops-count="selectedStops.length"
             :selected-pathways-count="selectedPathways.length"
@@ -167,7 +163,8 @@
             @select-pathways-oneway="selectPathwaysOneway"
             @select-pathways-bidirectional="selectPathwaysBidirectional"
           />
-          <tl-editor-station-pathways-add-pathway-panel
+
+          <tl-apps-stations-station-pathways-add-pathway-panel
             v-else-if="selectMode === 'add-pathway'"
             :station="station"
             :pathway="newPathway()"
@@ -175,7 +172,7 @@
             @create="createPathwayHandler"
           />
           <template v-if="selectMode === 'edit-pathway'">
-            <tl-editor-station-pathways-pathway-panel
+            <tl-apps-stations-station-pathways-pathway-panel
               v-for="spw of selectedPathways"
               :key="spw.id"
               :station="station"
@@ -192,7 +189,7 @@
             />
           </template>
           <template v-else-if="selectMode === 'edit-node'">
-            <tl-editor-station-pathways-node-panel
+            <tl-apps-stations-station-pathways-node-panel
               v-for="ss of selectedStops"
               :key="ss.id"
               :station="station"
@@ -210,14 +207,14 @@
               @unselect="unselectAll"
             />
           </template>
-          <tl-editor-station-pathways-add-node-panel
+          <tl-apps-stations-station-pathways-add-node-panel
             v-else-if="selectMode === 'add-node'"
             :selected-level="selectedLevel"
             :levels="station.levels"
             :level-index="levelIndex"
             @update:selected-level="selectedLevel = $event"
           />
-          <tl-editor-station-pathways-find-route-panel
+          <tl-apps-stations-station-pathways-find-route-panel
             v-else-if="selectMode === 'find-route'"
             :path="selectedPath"
             :selected-stops="selectedStops"
@@ -249,7 +246,7 @@
               Station Validation Reports
             </p>
             <div class="panel-block is-block">
-              <tl-editor-station-validator
+              <tl-apps-stations-station-validator
                 :station="station"
                 @select-path="selectPath"
                 @select-stop="selectStop"
@@ -261,7 +258,7 @@
       </div>
 
       <div class="column">
-        <tl-editor-pathway-map
+        <tl-apps-stations-pathway-map
           :center="station.geometry.coordinates"
           :station="station"
           :basemap="basemap"
@@ -281,11 +278,13 @@
 </template>
 
 <script>
-import { PathwayModes, LocationTypes, getBasemapLayers } from '../basemaps'
+import { LocationTypes } from '../basemaps'
+import { PathwayModes } from '../../../lib/pathways/pathway-icons'
 import { Stop, Pathway, mapLevelKeyFn } from '../station'
 import { nextTick, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useToastNotification } from '../../../composables/useToastNotification'
+import { useBasemapLayers } from '../../../composables/useBasemapLayers'
 import { useStation } from '../composables/useStation'
 
 export default {
@@ -305,8 +304,16 @@ export default {
       selectedLevels,
       selectedLevel,
       refetch,
-      handleError
-    } = useStation({ feedKey, feedVersionKey, stationKey })
+      handleError,
+      createStop,
+      updateStop,
+      deleteStop,
+      createPathway,
+      updatePathway,
+      deletePathway
+    } = useStation({ feedKey, feedVersionKey, stationKey, clientId: 'stationEditor' })
+
+    const { basemapLayers } = useBasemapLayers()
 
     return {
       showToast,
@@ -319,7 +326,14 @@ export default {
       handleError,
       feedKey,
       feedVersionKey,
-      stationKey
+      stationKey,
+      basemapLayers,
+      createStop,
+      updateStop,
+      deleteStop,
+      createPathway,
+      updatePathway,
+      deletePathway
     }
   },
   data () {
@@ -331,7 +345,6 @@ export default {
       selectedPathways: [],
       openStationValidator: false,
       basemap: 'carto',
-      basemapLayers: getBasemapLayers(),
       levelsOpen: true,
       basemapOpen: false,
       legendOpen: false,
@@ -457,7 +470,7 @@ export default {
     // stops
     createStopHandler (node) {
       let newStopId = 0
-      this.station.createStop(this.$apollo, node)
+      this.createStop(node)
         .then((d) => {
           newStopId = d?.data?.stop_create?.id
           return this.refetch()
@@ -475,13 +488,13 @@ export default {
         .catch(this.handleError)
     },
     updateStopHandler (node) {
-      this.station.updateStop(this.$apollo, node)
+      this.updateStop(node)
         .then(() => { return this.refetch() })
         .then(() => { this.selectStop(node.id) })
         .catch(this.handleError)
     },
-    deleteStopHandler (nodeId) {
-      return this.station.deleteStop(this.$apollo, nodeId)
+    deleteStopHandler (node) {
+      return this.deleteStop(node)
         .then(() => { return this.refetch() })
         .then(() => { this.selectStop(null) })
         .catch(this.handleError)
@@ -499,7 +512,7 @@ export default {
     },
     // node associations
     deleteAssociationHandler (node) {
-      this.station.deleteAssociation(this.$apollo, node)
+      this.updateStop(node)
         .then(() => { return this.refetch() })
         .then(() => { this.selectStop(null) })
         .catch(this.handleError)
@@ -516,20 +529,20 @@ export default {
       }).setDefaults()
     },
     createPathwayHandler (pw) {
-      this.station.createPathway(this.$apollo, pw)
+      this.createPathway(pw)
         .then(() => { return this.refetch() })
         .then(() => { this.selectPathway(null) })
-        .catch(this.handleError) // todo: select
+        .catch(this.handleError)
     },
     updatePathwayHandler (pw) {
-      this.station.updatePathway(this.$apollo, pw)
+      this.updatePathway(pw)
         .then(() => { return this.refetch() })
         .then(() => { this.selectPathway(null) })
         .catch(this.handleError)
     },
     deletePathwayHandler (pw) {
       this.selectPathway(null)
-      this.station.deletePathway(this.$apollo, pw)
+      this.deletePathway(pw)
         .then(() => { return this.refetch() })
         .then(() => { this.selectPathway(null) })
         .catch(this.handleError)

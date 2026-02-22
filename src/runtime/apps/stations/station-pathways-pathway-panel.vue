@@ -1,5 +1,5 @@
 <template>
-  <tl-editor-station-pathways-editor-panel
+  <tl-apps-stations-station-pathways-editor-panel
     view-heading="View Pathway"
     edit-heading="Edit Pathway"
     :show-unselect="showUnselect"
@@ -130,7 +130,7 @@
     </template>
 
     <template #edit="{ cancel }">
-      <tl-editor-pathway-editor
+      <tl-apps-stations-pathway-editor
         :station="station"
         :value="pathway"
         @select-stop="$emit('select-stop', $event)"
@@ -139,11 +139,11 @@
         @cancel="cancel"
       />
     </template>
-  </tl-editor-station-pathways-editor-panel>
+  </tl-apps-stations-station-pathways-editor-panel>
 </template>
 
 <script>
-import { PathwayModes } from './basemaps'
+import { PathwayModes } from '../../lib/pathways/pathway-icons'
 
 export default {
   props: {

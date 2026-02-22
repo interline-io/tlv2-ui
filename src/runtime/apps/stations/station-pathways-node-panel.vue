@@ -1,5 +1,5 @@
 <template>
-  <tl-editor-station-pathways-editor-panel
+  <tl-apps-stations-station-pathways-editor-panel
     view-heading="View Node"
     edit-heading="Edit Node"
     :show-unselect="showUnselect"
@@ -112,7 +112,7 @@
     </template>
 
     <template #edit="{ cancel }">
-      <tl-editor-stop-editor
+      <tl-apps-stations-stop-editor
         :station="station"
         :value="stop"
         :stop-associations-enabled="stopAssociationsEnabled"
@@ -124,11 +124,12 @@
         @cancel="cancel"
       />
     </template>
-  </tl-editor-station-pathways-editor-panel>
+  </tl-apps-stations-station-pathways-editor-panel>
 </template>
 
 <script>
-import { LocationTypes, PathwayModeIcons } from './basemaps'
+import { LocationTypes } from './basemaps'
+import { PathwayModeIcons } from '../../lib/pathways/pathway-icons'
 
 export default {
   props: {

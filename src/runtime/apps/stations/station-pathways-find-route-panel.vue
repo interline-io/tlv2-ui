@@ -17,7 +17,7 @@
         </div>
       </div>
       <div v-else-if="path && Array.isArray(path) && path.length > 0">
-        <tl-editor-path-viewer :path="path" />
+        <tl-apps-stations-path-viewer :path="path" />
       </div>
     </div>
   </nav>

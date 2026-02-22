@@ -5,7 +5,7 @@
         Add Pathway
       </p>
       <div class="panel-block is-block">
-        <tl-editor-pathway-editor
+        <tl-apps-stations-pathway-editor
           :station="station"
           :value="pathway"
           @select-stop="$emit('select-stop', $event)"

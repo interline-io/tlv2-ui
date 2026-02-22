@@ -18,9 +18,7 @@
             :class="editMode ? 'is-primary' : ''"
             @click="toggleEditMode"
           >
-            <span class="icon is-small">
-              <o-icon :icon="editMode ? 'eye' : 'pencil'" />
-            </span>
+            <t-icon :icon="editMode ? 'eye' : 'pencil'" size="small" />
             <span>{{ editMode ? 'View' : 'Edit' }}</span>
           </button>
         </span>
