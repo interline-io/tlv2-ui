@@ -221,6 +221,11 @@
             v-else-if="selectMode === 'find-route'"
             :path="selectedPath"
             :selected-stops="selectedStops"
+            :profile="selectedProfile"
+            :profiles="profileNames"
+            @update:profile="selectedProfile = $event"
+            @hover-pathway="hoverPathwayId = $event"
+            @unselect="unselectAll"
           />
           <nav v-else-if="selectMode === 'export'" class="panel station-editor-panel">
             <p class="panel-heading">
@@ -283,6 +288,7 @@
 <script>
 import { LocationTypes } from '../basemaps'
 import { PathwayModes } from '../../../lib/pathways/pathway-icons'
+import { Profiles } from '../../../lib/pathways/graph'
 import { Stop, Pathway, mapLevelKeyFn } from '../station'
 import { nextTick, computed } from 'vue'
 import { useRoute } from 'vue-router'
@@ -354,6 +360,8 @@ export default {
       lastFilterApplied: '',
       hoverStopId: null,
       hoverPathwayId: null,
+      selectedProfile: 'Pathways: Default',
+      profileNames: Object.keys(Profiles),
       PathwayModes,
       LocationTypes
     }
@@ -384,13 +392,27 @@ export default {
       if (this.selectMode !== 'find-route' || this.selectedStops.length < 2) {
         return null
       }
-      const p = this.station.findRoute(this.selectedStops[0].id, this.selectedStops[1].id)
+      const p = this.station.findRoute(this.selectedStops[0].id, this.selectedStops[1].id, Profiles[this.selectedProfile])
+      if (!p) {
+        return null
+      }
       const edges = []
       for (const edge of p.edges || []) {
-        edges.push({
-          cost: 0,
-          pathway: this.pathwayIndex[edge.pathway_id]
-        })
+        if (edge.pathway_id) {
+          const pathway = this.pathwayIndex[edge.pathway_id]
+          if (pathway) {
+            edges.push({ cost: edge.cost, pathway })
+          }
+        } else if (edge.from_stop_id && edge.to_stop_id) {
+          const fromStop = this.station.getStop(edge.from_stop_id)
+          const toStop = this.station.getStop(edge.to_stop_id)
+          if (fromStop && toStop) {
+            edges.push({
+              cost: edge.cost,
+              pathway: new Pathway({ pathway_mode: 1, is_bidirectional: 1, from_stop: fromStop, to_stop: toStop })
+            })
+          }
+        }
       }
       return edges
     },
