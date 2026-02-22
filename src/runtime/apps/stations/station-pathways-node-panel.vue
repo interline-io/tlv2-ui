@@ -116,6 +116,7 @@
         :station="station"
         :value="stop"
         :stop-associations-enabled="stopAssociationsEnabled"
+        :show-pathways="false"
         @delete="$emit('delete', $event)"
         @update="$emit('update', $event)"
         @delete-association="$emit('delete-association', $event)"
