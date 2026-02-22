@@ -743,7 +743,7 @@ const progressPercent = computed((): number => {
 })
 
 const totalTimeStr = computed((): string => {
-  const totalCost = routeResult.value?.distance  // A* cost in seconds (traversal_time)
+  const totalCost = routeResult.value?.distance // A* cost in seconds (traversal_time)
   if (!totalCost) { return '' }
   const secs = Math.round(totalCost)
   const mins = Math.floor(secs / 60)
