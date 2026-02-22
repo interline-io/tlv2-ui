@@ -124,6 +124,9 @@
                     <li class="legend-item circle-indicator">
                       circles are nodes (stops) with number for assigned level
                     </li>
+                    <li class="legend-item green-ring">
+                      green ring indicates selected node(s)
+                    </li>
                     <li class="legend-item blue-rectangle">
                       blue pathways are on the same level
                     </li>
@@ -932,6 +935,10 @@ export default {
    .circle-indicator::before {
      content: "⓪ ";
      font-size: 1.2em;
+   }
+
+   .green-ring::before {
+     content: "🟢 ";
    }
 
    .blue-rectangle::before {
