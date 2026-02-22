@@ -49,6 +49,8 @@ interface Props {
   selectedLevels?: string[]
   selectedPathwayTransitionTypes?: string
   selectedAgencies?: Array<{ id: number }> | null
+  hoverStopId?: number | null
+  hoverPathwayId?: number | null
   search?: boolean
 }
 
@@ -64,6 +66,8 @@ const props = withDefaults(defineProps<Props>(), {
   selectedLevels: () => [],
   selectedPathwayTransitionTypes: 'all',
   selectedAgencies: null,
+  hoverStopId: null,
+  hoverPathwayId: null,
   search: false
 })
 
@@ -199,12 +203,28 @@ function drawStops () {
 
   for (const [mapLevelKey, color] of levelColors.entries()) {
     addLevelLayer(mapLevelKey, {
+      id: `${mapLevelKey}-stops-list-hover`,
+      type: 'circle',
+      source: 'stops',
+      paint: {
+        'circle-radius': 22,
+        'circle-color': 'yellow',
+        'circle-opacity': [
+          'case',
+          ['boolean', ['feature-state', 'listHover'], false],
+          0.8,
+          0.0
+        ]
+      },
+      filter: ['==', mapLevelKey, ['get', 'mapLevelKey']]
+    })
+    addLevelLayer(mapLevelKey, {
       id: `${mapLevelKey}-stops-selected`,
       type: 'circle',
       source: 'stops',
       paint: {
         'circle-radius': 16,
-        'circle-color': '#00ff00',
+        'circle-color': 'yellow',
         'circle-opacity': [
           'case',
           ['boolean', ['feature-state', 'hover'], false],
@@ -375,6 +395,22 @@ function drawPathways () {
     pwLevels.set(mapLevelKeyFn(pw.from_stop.level), true)
   }
   for (const mapLevelKey1 of pwLevels.keys()) {
+    addLevelLayer(mapLevelKey1, {
+      id: `${mapLevelKey1}-pathway-list-hover`,
+      type: 'line',
+      source: 'pathways',
+      paint: {
+        'line-color': 'yellow',
+        'line-width': 24,
+        'line-opacity': [
+          'case',
+          ['boolean', ['feature-state', 'listHover'], false],
+          0.8,
+          0.0
+        ]
+      },
+      filter: ['any', ['==', mapLevelKey1, ['get', 'fromMapLevelKey']], ['==', mapLevelKey1, ['get', 'toMapLevelKey']]]
+    })
     addLevelLayer(mapLevelKey1, {
       id: `${mapLevelKey1}-pathway-selected`,
       type: 'line',
@@ -688,6 +724,26 @@ watch(() => props.selectedPathways, (cur, prev) => {
       { source: 'pathways', id: i.id },
       { hover: true }
     )
+  }
+})
+
+watch(() => props.hoverStopId, (cur, prev) => {
+  if (!map.value) return
+  if (prev != null) {
+    map.value.setFeatureState({ source: 'stops', id: prev }, { listHover: false })
+  }
+  if (cur != null) {
+    map.value.setFeatureState({ source: 'stops', id: cur }, { listHover: true })
+  }
+})
+
+watch(() => props.hoverPathwayId, (cur, prev) => {
+  if (!map.value) return
+  if (prev != null) {
+    map.value.setFeatureState({ source: 'pathways', id: prev }, { listHover: false })
+  }
+  if (cur != null) {
+    map.value.setFeatureState({ source: 'pathways', id: cur }, { listHover: true })
   }
 })
 
