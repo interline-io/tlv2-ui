@@ -109,39 +109,6 @@
       </div>
     </div>
 
-    <!-- Pathways viewer -->
-    <t-field v-if="pathwaysFromStop.length > 0" label="Pathways (From)">
-      <ul>
-        <li v-for="pw of pathwaysFromStop" :key="pw.id">
-          <span class="button" :title="pw.pathway_id" @click="emit('selectPathway', pw.id!)">
-            <span class="tl-path-icon"><img :src="pathwayIcon(pw.pathway_mode ?? 0).url" :title="pathwayIcon(pw.pathway_mode ?? 0).label"></span>
-            <span v-if="pw.is_bidirectional === 1">
-              ↔
-            </span>
-            <span v-else>
-              →
-            </span>
-            {{ pw.to_stop.stop_name }}
-          </span>
-        </li>
-      </ul>
-    </t-field>
-    <t-field v-if="pathwaysToStop.length" label="Pathways (To)">
-      <ul>
-        <li v-for="pw of pathwaysToStop" :key="pw.id">
-          <span class="button" :title="pw.pathway_id" @click="emit('selectPathway', pw.id!)">
-            <span class="tl-path-icon"><img :src="pathwayIcon(pw.pathway_mode ?? 0).url" :title="pathwayIcon(pw.pathway_mode ?? 0).label"></span>
-            <span v-if="pw.is_bidirectional === 1">
-              ↔
-            </span>
-            <span v-else>
-              ←
-            </span>
-            {{ pw.from_stop.stop_name }}
-          </span>
-        </li>
-      </ul>
-    </t-field>
 
     <!-- Show target routes -->
     <t-field v-if="targetActiveStop" label="Routes (Associated)">
@@ -188,7 +155,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import type { Point } from 'geojson'
-import { PathwayModeIcons } from '../../lib/pathways/pathway-icons'
 import { LocationTypes } from './basemaps'
 import { Stop } from './station'
 import type { StopData, StationData, RouteStopData } from './types'
@@ -351,14 +317,6 @@ function createAssociation () {
 function deleteAssociation () {
   showStopAssociations.value = false
   entity.value.external_reference = undefined
-}
-
-function pathwayIcon (mode: number): { url: string, label: string } {
-  const m = PathwayModeIcons[mode]
-  if (!m) {
-    return { url: '', label: '' }
-  }
-  return { url: `/icons/${m.altIcon ? m.altIcon : m.icon}.png`, label: m.label }
 }
 
 function routeSummary (ss: StopData): string {
