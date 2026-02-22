@@ -61,53 +61,35 @@
           </div>
         </div>
         <div v-if="selectedStopsCount === 0 && selectedPathwaysCount === 0">
-          <div class="mb-2">
-            <t-field label="Select Stops">
-              <div class="buttons has-addons">
-                <t-button v-for="[type, label] of locationTypes" :key="type" size="small" @click="$emit('select-location-types', type)">
-                  {{ label }}
-                </t-button>
-              </div>
-            </t-field>
-            <t-field>
-              <div class="buttons has-addons">
-                <t-button size="small" @click="$emit('select-stops-with-associations')">
-                  With associations
-                </t-button>
-                <t-button size="small" @click="$emit('select-stops-platforms-without-associations')">
-                  Platforms w/o assoc.
-                </t-button>
-                <t-button size="small" @click="$emit('select-stops-entrances-without-associations')">
-                  Entrances w/o assoc.
-                </t-button>
-              </div>
-              <div class="buttons has-addons">
-                <t-button size="small" @click="$emit('select-stops-with-paired-pathways')">
-                  With paired pathways
-                </t-button>
-              </div>
-            </t-field>
-          </div>
-          <div class="mb-2">
-            <t-field label="Select Pathways">
-              <div class="buttons has-addons">
-                <t-button v-for="[mode, label] of pathwayModes" :key="mode" size="small" @click="$emit('select-pathway-modes', mode)">
-                  {{ label }}
-                </t-button>
-              </div>
-              <div class="buttons has-addons">
-                <t-button size="small" @click="$emit('select-pathways-with-pairs')">
-                  With pairs
-                </t-button>
-                <t-button size="small" @click="$emit('select-pathways-oneway')">
-                  One-directional
-                </t-button>
-                <t-button size="small" @click="$emit('select-pathways-bidirectional')">
-                  Bi-directional
-                </t-button>
-              </div>
-            </t-field>
-          </div>
+          <t-field label="Select Stops" class="mb-3">
+            <p class="subcategory-label">By type</p>
+            <div class="buttons mb-2">
+              <t-button v-for="[type, label] of locationTypes" :key="type" size="small" @click="$emit('select-location-types', type)">
+                {{ label }}
+              </t-button>
+            </div>
+            <p class="subcategory-label">By filter</p>
+            <div class="buttons">
+              <t-button size="small" @click="$emit('select-stops-with-associations')">With associations</t-button>
+              <t-button size="small" @click="$emit('select-stops-platforms-without-associations')">Platforms w/o assoc.</t-button>
+              <t-button size="small" @click="$emit('select-stops-entrances-without-associations')">Entrances w/o assoc.</t-button>
+              <t-button size="small" @click="$emit('select-stops-with-paired-pathways')">With paired pathways</t-button>
+            </div>
+          </t-field>
+          <t-field label="Select Pathways">
+            <p class="subcategory-label">By mode</p>
+            <div class="buttons mb-2">
+              <t-button v-for="[mode, label] of pathwayModes" :key="mode" size="small" @click="$emit('select-pathway-modes', mode)">
+                {{ label }}
+              </t-button>
+            </div>
+            <p class="subcategory-label">By direction</p>
+            <div class="buttons">
+              <t-button size="small" @click="$emit('select-pathways-with-pairs')">With pairs</t-button>
+              <t-button size="small" @click="$emit('select-pathways-oneway')">One-directional</t-button>
+              <t-button size="small" @click="$emit('select-pathways-bidirectional')">Bi-directional</t-button>
+            </div>
+          </t-field>
         </div>
       </div>
     </nav>
@@ -211,5 +193,13 @@ export default {
 .menu-list a:hover {
   background-color: #f5f5f5;
   color: #363636;
+}
+
+.subcategory-label {
+  font-size: 0.7rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.35rem;
 }
 </style>

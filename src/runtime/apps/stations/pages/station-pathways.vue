@@ -772,6 +772,8 @@ export default {
       this.selectedPoint = null
       this.lastFilterApplied = ''
       this.selectMode = 'select'
+      this.hoverStopId = null
+      this.hoverPathwayId = null
     },
     downloadGeojson () {
       const allFeatures = []
