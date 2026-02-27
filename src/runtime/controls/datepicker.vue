@@ -112,7 +112,7 @@
   </div>
 </template>
 
-<script setup lang="ts" generic="T extends Date | Date[] = Date">
+<script setup lang="ts" generic="T extends Date | Date[] | string | string[] = Date">
 import { ref, computed, watch } from 'vue'
 import type { InputSize, InputVariant } from './types'
 
@@ -123,7 +123,9 @@ import type { InputSize, InputVariant } from './types'
  * @component t-datepicker
  * @example
  * <t-datepicker v-model="selectedDate" placeholder="Select date" />
+ * <t-datepicker v-model="dateString" placeholder="Select date" /> <!-- string mode: emits 'YYYY-MM-DD' -->
  * <t-datepicker v-model="dateRange" multiple placeholder="Select dates" />
+ * <t-datepicker v-model="dateStrings" multiple placeholder="Select dates" /> <!-- string[] mode -->
  */
 
 interface CalendarDay {
@@ -260,11 +262,22 @@ const availableYears = computed(() => {
   return years
 })
 
+const isStringMode = computed(() => {
+  const v = props.modelValue
+  if (typeof v === 'string') return true
+  if (Array.isArray(v) && v.length > 0 && typeof v[0] === 'string') return true
+  return false
+})
+
 const formattedValue = computed(() => {
-  if (!props.modelValue) return ''
+  if (props.modelValue == null) return ''
+
+  if (typeof props.modelValue === 'string') {
+    return props.modelValue
+  }
 
   if (Array.isArray(props.modelValue)) {
-    return props.modelValue.map(d => formatDate(d)).join(', ')
+    return props.modelValue.map(d => typeof d === 'string' ? d : formatDate(d)).join(', ')
   }
 
   return formatDate(props.modelValue as Date)
@@ -333,6 +346,11 @@ function formatDate (date: Date): string {
 
 function parseDate (dateString: string): Date | null {
   if (!dateString) return null
+  // Parse YYYY-MM-DD as local date to avoid UTC timezone shift
+  const match = dateString.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+  if (match) {
+    return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]))
+  }
   const date = new Date(dateString)
   return Number.isNaN(date.getTime()) ? null : date
 }
@@ -346,8 +364,16 @@ function isSameDay (date1: Date, date2: Date): boolean {
 function isDateSelected (date: Date): boolean {
   if (!props.modelValue) return false
 
+  if (isStringMode.value) {
+    const parsed = parseDate(props.modelValue as string)
+    return parsed ? isSameDay(parsed, date) : false
+  }
+
   if (Array.isArray(props.modelValue)) {
-    return props.modelValue.some(d => isSameDay(d, date))
+    return props.modelValue.some((d) => {
+      const parsed = typeof d === 'string' ? parseDate(d) : d
+      return parsed ? isSameDay(parsed, date) : false
+    })
   }
 
   return isSameDay(props.modelValue as Date, date)
@@ -383,18 +409,29 @@ function selectDate (date: Date) {
   if (!isDateSelectable(date)) return
 
   if (props.multiple) {
-    const currentDates = Array.isArray(props.modelValue) ? [...props.modelValue] : []
-    const index = currentDates.findIndex(d => isSameDay(d, date))
-
-    if (index >= 0) {
-      currentDates.splice(index, 1)
+    if (isStringMode.value) {
+      const currentStrings = Array.isArray(props.modelValue) ? [...props.modelValue as string[]] : []
+      const dateStr = formatDate(date)
+      const index = currentStrings.indexOf(dateStr)
+      if (index >= 0) {
+        currentStrings.splice(index, 1)
+      } else {
+        currentStrings.push(dateStr)
+      }
+      emit('update:modelValue', currentStrings as T)
     } else {
-      currentDates.push(date)
+      const currentDates = Array.isArray(props.modelValue) ? [...props.modelValue as Date[]] : []
+      const index = currentDates.findIndex(d => isSameDay(d, date))
+      if (index >= 0) {
+        currentDates.splice(index, 1)
+      } else {
+        currentDates.push(date)
+      }
+      emit('update:modelValue', currentDates as T)
     }
-
-    emit('update:modelValue', currentDates as T)
   } else {
-    emit('update:modelValue', date as T)
+    const value = isStringMode.value ? formatDate(date) : date
+    emit('update:modelValue', value as T)
 
     if (props.closeOnSelect) {
       close()
@@ -405,7 +442,8 @@ function selectDate (date: Date) {
 function handleInputChange (value: string) {
   const date = parseDate(value)
   if (date && isDateSelectable(date)) {
-    emit('update:modelValue', date as T)
+    const emitValue = isStringMode.value ? formatDate(date) : date
+    emit('update:modelValue', emitValue as T)
     focusedMonth.value = date.getMonth()
     focusedYear.value = date.getFullYear()
   }
@@ -436,7 +474,15 @@ function close () {
 // Initialize focused date from modelValue
 watch(() => props.modelValue, (newValue) => {
   if (newValue) {
-    const date = Array.isArray(newValue) ? newValue[0] : newValue as Date
+    let date: Date | null = null
+    if (typeof newValue === 'string') {
+      date = parseDate(newValue)
+    } else if (Array.isArray(newValue)) {
+      const first = newValue[0]
+      date = typeof first === 'string' ? parseDate(first) : first ?? null
+    } else {
+      date = newValue as Date
+    }
     if (date) {
       focusedMonth.value = date.getMonth()
       focusedYear.value = date.getFullYear()

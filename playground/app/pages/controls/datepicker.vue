@@ -18,6 +18,33 @@
         </p>
       </t-demo-box>
 
+      <t-demo-box label="String Mode">
+        <t-datepicker
+          v-model:model-value="stringDate"
+          placeholder="Select a date (string mode)"
+        />
+        <p class="mt-3">
+          Selected: {{ stringDate || 'None' }} (type: {{ typeof stringDate }})
+        </p>
+      </t-demo-box>
+
+      <t-demo-box label="String Mode (Multiple)">
+        <t-datepicker
+          v-model:model-value="stringDates as any"
+          placeholder="Select dates (string[] mode)"
+          multiple
+          :close-on-select="false"
+        />
+        <p class="mt-3">
+          Selected: {{ stringDates.length }}
+        </p>
+        <ul v-if="stringDates.length">
+          <li v-for="(d, i) in stringDates" :key="i">
+            {{ d }}
+          </li>
+        </ul>
+      </t-demo-box>
+
       <t-demo-box label="Multiple Date Selection">
         <t-datepicker
           v-model:model-value="multipleDates as any"
@@ -222,6 +249,10 @@ import TDemoBox from '../../components/t-demo-box.vue'
 
 // Basic usage
 const singleDate = ref<Date>()
+
+// String mode
+const stringDate = ref('')
+const stringDates = ref<string[]>(['2026-02-27'])
 
 // Multiple selection
 const multipleDates = ref<Date[]>([])
