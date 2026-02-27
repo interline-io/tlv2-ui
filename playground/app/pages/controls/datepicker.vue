@@ -39,7 +39,7 @@
           Selected: {{ stringDates.length }}
         </p>
         <ul v-if="stringDates.length">
-          <li v-for="(d, i) in stringDates" :key="i">
+          <li v-for="d in stringDates" :key="d">
             {{ d }}
           </li>
         </ul>

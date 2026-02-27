@@ -267,14 +267,12 @@ const focusedYear = ref(today.getFullYear())
 watch(focusedMonth, newMonth => emit('change-month', newMonth))
 watch(focusedYear, newYear => emit('change-year', newYear))
 
-// Whether the string model (v-model:date-string) is active
-const useStringModel = computed(() => props.dateString != null)
-
 // Resolve active dates from whichever model is bound.
 // Internally the component always works with Date objects.
+// Prefers dateString when both are provided.
 const activeDates = computed((): Date[] => {
-  if (useStringModel.value) {
-    const ds = props.dateString!
+  if (props.dateString != null) {
+    const ds = props.dateString
     if (Array.isArray(ds)) {
       return ds.map(s => parseDate(s)).filter((d): d is Date => d != null)
     }
@@ -384,19 +382,13 @@ function getDayClasses (day: CalendarDay) {
 }
 
 function emitDate (date: Date) {
-  if (useStringModel.value) {
-    emit('update:dateString', formatDate(date, DATE_FORMAT) as S)
-  } else {
-    emit('update:modelValue', date as T)
-  }
+  emit('update:modelValue', date as T)
+  emit('update:dateString', formatDate(date, DATE_FORMAT) as S)
 }
 
 function emitDates (dates: Date[]) {
-  if (useStringModel.value) {
-    emit('update:dateString', dates.map(d => formatDate(d, DATE_FORMAT)) as S)
-  } else {
-    emit('update:modelValue', dates as T)
-  }
+  emit('update:modelValue', dates as T)
+  emit('update:dateString', dates.map(d => formatDate(d, DATE_FORMAT)) as S)
 }
 
 function selectDate (date: Date) {
