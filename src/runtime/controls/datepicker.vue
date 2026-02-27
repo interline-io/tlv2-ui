@@ -364,16 +364,16 @@ function isSameDay (date1: Date, date2: Date): boolean {
 function isDateSelected (date: Date): boolean {
   if (!props.modelValue) return false
 
-  if (isStringMode.value) {
-    const parsed = parseDate(props.modelValue as string)
-    return parsed ? isSameDay(parsed, date) : false
-  }
-
   if (Array.isArray(props.modelValue)) {
     return props.modelValue.some((d) => {
       const parsed = typeof d === 'string' ? parseDate(d) : d
       return parsed ? isSameDay(parsed, date) : false
     })
+  }
+
+  if (typeof props.modelValue === 'string') {
+    const parsed = parseDate(props.modelValue)
+    return parsed ? isSameDay(parsed, date) : false
   }
 
   return isSameDay(props.modelValue as Date, date)
