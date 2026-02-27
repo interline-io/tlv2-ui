@@ -112,21 +112,23 @@
   </div>
 </template>
 
-<script setup lang="ts" generic="T extends Date | Date[] | string | string[] = Date">
+<script setup lang="ts" generic="T extends Date | Date[] = Date, S extends string | string[] = string">
 import { ref, computed, watch } from 'vue'
 import type { InputSize, InputVariant } from './types'
 import { formatDate, parseDate, isSameDay } from './datepicker-utils'
 
 /**
  * Datepicker component with calendar dropdown for date selection.
- * Similar in concept to Oruga Datepicker with customizable calendar interface.
+ * Supports two model bindings:
+ * - `v-model` for Date / Date[] values
+ * - `v-model:date-string` for YYYY-MM-DD string / string[] values
  *
  * @component t-datepicker
  * @example
  * <t-datepicker v-model="selectedDate" placeholder="Select date" />
- * <t-datepicker v-model="dateString" placeholder="Select date" /> <!-- string mode: emits 'YYYY-MM-DD' -->
+ * <t-datepicker v-model:date-string="dateStr" placeholder="Select date" />
  * <t-datepicker v-model="dateRange" multiple placeholder="Select dates" />
- * <t-datepicker v-model="dateStrings" multiple placeholder="Select dates" /> <!-- string[] mode -->
+ * <t-datepicker v-model:date-string="dateStrs" multiple placeholder="Select dates" />
  */
 
 interface CalendarDay {
@@ -138,8 +140,10 @@ interface CalendarDay {
 }
 
 const props = withDefaults(defineProps<{
-  /** Selected date(s) - use with v-model. Date for single selection, Date[] for multiple selection. */
+  /** Selected date(s) - use with v-model. Date for single, Date[] for multiple. */
   modelValue?: T
+  /** Selected date(s) as YYYY-MM-DD string(s) - use with v-model:date-string. */
+  dateString?: S
   /** Allow multiple date selections. @default false */
   multiple?: boolean
   /** Input placeholder text. */
@@ -198,12 +202,10 @@ const props = withDefaults(defineProps<{
   ariaSelectMonthLabel?: string
   /** Accessibility label for year select. @default 'Select year' */
   ariaSelectYearLabel?: string
-  /** Emit string values ('YYYY-MM-DD') instead of Date objects. Required for string[] with an initially empty array. @default false */
-  stringMode?: boolean
 }>(), {
   modelValue: undefined,
+  dateString: undefined,
   multiple: false,
-  stringMode: false,
   placeholder: undefined,
   size: undefined,
   variant: undefined,
@@ -236,6 +238,7 @@ const props = withDefaults(defineProps<{
 
 const emit = defineEmits<{
   'update:modelValue': [value: T]
+  'update:dateString': [value: S]
   'focus': [event: FocusEvent]
   'blur': [event: FocusEvent]
   'icon-right-click': [event: MouseEvent]
@@ -256,6 +259,25 @@ const focusedYear = ref(today.getFullYear())
 watch(focusedMonth, newMonth => emit('change-month', newMonth))
 watch(focusedYear, newYear => emit('change-year', newYear))
 
+// Whether the string model (v-model:date-string) is active
+const useStringModel = computed(() => props.dateString != null)
+
+// Resolve active dates from whichever model is bound.
+// Internally the component always works with Date objects.
+const activeDates = computed((): Date[] => {
+  if (useStringModel.value) {
+    const ds = props.dateString!
+    if (Array.isArray(ds)) {
+      return ds.map(s => parseDate(s)).filter((d): d is Date => d != null)
+    }
+    const parsed = parseDate(ds)
+    return parsed ? [parsed] : []
+  }
+  if (props.modelValue == null) return []
+  if (Array.isArray(props.modelValue)) return props.modelValue as Date[]
+  return [props.modelValue as Date]
+})
+
 const availableYears = computed(() => {
   const currentYear = new Date().getFullYear()
   const [before, after] = props.yearsRange
@@ -266,26 +288,8 @@ const availableYears = computed(() => {
   return years
 })
 
-const isStringMode = computed(() => {
-  if (props.stringMode) return true
-  const v = props.modelValue
-  if (typeof v === 'string') return true
-  if (Array.isArray(v) && v.length > 0 && typeof v[0] === 'string') return true
-  return false
-})
-
 const formattedValue = computed(() => {
-  if (props.modelValue == null) return ''
-
-  if (typeof props.modelValue === 'string') {
-    return props.modelValue
-  }
-
-  if (Array.isArray(props.modelValue)) {
-    return props.modelValue.map(d => typeof d === 'string' ? d : formatDate(d)).join(', ')
-  }
-
-  return formatDate(props.modelValue as Date)
+  return activeDates.value.map(d => formatDate(d)).join(', ')
 })
 
 const calendarDays = computed(() => {
@@ -342,24 +346,7 @@ const calendarDays = computed(() => {
 })
 
 function isDateSelected (date: Date): boolean {
-  if (!props.modelValue) return false
-
-  if (isStringMode.value) {
-    if (Array.isArray(props.modelValue)) {
-      return (props.modelValue as string[]).some((d) => {
-        const parsed = parseDate(d)
-        return parsed ? isSameDay(parsed, date) : false
-      })
-    }
-    const parsed = parseDate(props.modelValue as string)
-    return parsed ? isSameDay(parsed, date) : false
-  }
-
-  if (Array.isArray(props.modelValue)) {
-    return (props.modelValue as Date[]).some(d => isSameDay(d, date))
-  }
-
-  return isSameDay(props.modelValue as Date, date)
+  return activeDates.value.some(d => isSameDay(d, date))
 }
 
 function isDateSelectable (date: Date): boolean {
@@ -388,34 +375,36 @@ function getDayClasses (day: CalendarDay) {
   }
 }
 
+function emitDate (date: Date) {
+  if (useStringModel.value) {
+    emit('update:dateString', formatDate(date) as S)
+  } else {
+    emit('update:modelValue', date as T)
+  }
+}
+
+function emitDates (dates: Date[]) {
+  if (useStringModel.value) {
+    emit('update:dateString', dates.map(d => formatDate(d)) as S)
+  } else {
+    emit('update:modelValue', dates as T)
+  }
+}
+
 function selectDate (date: Date) {
   if (!isDateSelectable(date)) return
 
   if (props.multiple) {
-    if (isStringMode.value) {
-      const currentStrings = Array.isArray(props.modelValue) ? [...props.modelValue as string[]] : []
-      const dateStr = formatDate(date)
-      const index = currentStrings.indexOf(dateStr)
-      if (index >= 0) {
-        currentStrings.splice(index, 1)
-      } else {
-        currentStrings.push(dateStr)
-      }
-      emit('update:modelValue', currentStrings as T)
+    const current = [...activeDates.value]
+    const index = current.findIndex(d => isSameDay(d, date))
+    if (index >= 0) {
+      current.splice(index, 1)
     } else {
-      const currentDates = Array.isArray(props.modelValue) ? [...props.modelValue as Date[]] : []
-      const index = currentDates.findIndex(d => isSameDay(d, date))
-      if (index >= 0) {
-        currentDates.splice(index, 1)
-      } else {
-        currentDates.push(date)
-      }
-      emit('update:modelValue', currentDates as T)
+      current.push(date)
     }
+    emitDates(current)
   } else {
-    const value = isStringMode.value ? formatDate(date) : date
-    emit('update:modelValue', value as T)
-
+    emitDate(date)
     if (props.closeOnSelect) {
       close()
     }
@@ -428,8 +417,7 @@ function handleInputChange (value: string) {
     if (props.multiple) {
       selectDate(date)
     } else {
-      const emitValue = isStringMode.value ? formatDate(date) : date
-      emit('update:modelValue', emitValue as T)
+      emitDate(date)
     }
     focusedMonth.value = date.getMonth()
     focusedYear.value = date.getFullYear()
@@ -458,22 +446,12 @@ function close () {
   isActive.value = false
 }
 
-// Initialize focused date from modelValue
-watch(() => props.modelValue, (newValue) => {
-  if (newValue) {
-    let date: Date | null = null
-    if (typeof newValue === 'string') {
-      date = parseDate(newValue)
-    } else if (Array.isArray(newValue)) {
-      const first = newValue[0]
-      date = typeof first === 'string' ? parseDate(first) : first ?? null
-    } else {
-      date = newValue as Date
-    }
-    if (date) {
-      focusedMonth.value = date.getMonth()
-      focusedYear.value = date.getFullYear()
-    }
+// Initialize focused date from the active selection
+watch(activeDates, (dates) => {
+  const date = dates[0]
+  if (date) {
+    focusedMonth.value = date.getMonth()
+    focusedYear.value = date.getFullYear()
   }
 }, { immediate: true })
 

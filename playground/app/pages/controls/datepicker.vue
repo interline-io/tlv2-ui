@@ -18,22 +18,21 @@
         </p>
       </t-demo-box>
 
-      <t-demo-box label="String Mode">
+      <t-demo-box label="String Model (v-model:date-string)">
         <t-datepicker
-          v-model:model-value="stringDate"
-          placeholder="Select a date (string mode)"
+          v-model:date-string="stringDate"
+          placeholder="Select a date (string model)"
         />
         <p class="mt-3">
           Selected: {{ stringDate || 'None' }} (type: {{ typeof stringDate }})
         </p>
       </t-demo-box>
 
-      <t-demo-box label="String Mode (Multiple)">
+      <t-demo-box label="String Model Multiple (v-model:date-string)">
         <t-datepicker
-          v-model:model-value="stringDates as any"
-          placeholder="Select dates (string[] mode)"
+          v-model:date-string="stringDates"
+          placeholder="Select dates (string[] model)"
           multiple
-          string-mode
           :close-on-select="false"
         />
         <p class="mt-3">
