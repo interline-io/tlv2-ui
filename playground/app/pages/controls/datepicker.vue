@@ -33,6 +33,7 @@
           v-model:model-value="stringDates as any"
           placeholder="Select dates (string[] mode)"
           multiple
+          string-mode
           :close-on-select="false"
         />
         <p class="mt-3">
@@ -252,7 +253,7 @@ const singleDate = ref<Date>()
 
 // String mode
 const stringDate = ref('')
-const stringDates = ref<string[]>(['2026-02-27'])
+const stringDates = ref<string[]>([])
 
 // Multiple selection
 const multipleDates = ref<Date[]>([])

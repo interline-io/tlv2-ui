@@ -115,6 +115,7 @@
 <script setup lang="ts" generic="T extends Date | Date[] | string | string[] = Date">
 import { ref, computed, watch } from 'vue'
 import type { InputSize, InputVariant } from './types'
+import { formatDate, parseDate, isSameDay } from './datepicker-utils'
 
 /**
  * Datepicker component with calendar dropdown for date selection.
@@ -197,9 +198,12 @@ const props = withDefaults(defineProps<{
   ariaSelectMonthLabel?: string
   /** Accessibility label for year select. @default 'Select year' */
   ariaSelectYearLabel?: string
+  /** Emit string values ('YYYY-MM-DD') instead of Date objects. Required for string[] with an initially empty array. @default false */
+  stringMode?: boolean
 }>(), {
   modelValue: undefined,
   multiple: false,
+  stringMode: false,
   placeholder: undefined,
   size: undefined,
   variant: undefined,
@@ -263,6 +267,7 @@ const availableYears = computed(() => {
 })
 
 const isStringMode = computed(() => {
+  if (props.stringMode) return true
   const v = props.modelValue
   if (typeof v === 'string') return true
   if (Array.isArray(v) && v.length > 0 && typeof v[0] === 'string') return true
@@ -336,44 +341,22 @@ const calendarDays = computed(() => {
   return days
 })
 
-function formatDate (date: Date): string {
-  // Simple format implementation - can be enhanced
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
-}
-
-function parseDate (dateString: string): Date | null {
-  if (!dateString) return null
-  // Parse YYYY-MM-DD as local date to avoid UTC timezone shift
-  const match = dateString.match(/^(\d{4})-(\d{2})-(\d{2})$/)
-  if (match) {
-    return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]))
-  }
-  const date = new Date(dateString)
-  return Number.isNaN(date.getTime()) ? null : date
-}
-
-function isSameDay (date1: Date, date2: Date): boolean {
-  return date1.getFullYear() === date2.getFullYear()
-    && date1.getMonth() === date2.getMonth()
-    && date1.getDate() === date2.getDate()
-}
-
 function isDateSelected (date: Date): boolean {
   if (!props.modelValue) return false
 
-  if (Array.isArray(props.modelValue)) {
-    return props.modelValue.some((d) => {
-      const parsed = typeof d === 'string' ? parseDate(d) : d
-      return parsed ? isSameDay(parsed, date) : false
-    })
+  if (isStringMode.value) {
+    if (Array.isArray(props.modelValue)) {
+      return (props.modelValue as string[]).some((d) => {
+        const parsed = parseDate(d)
+        return parsed ? isSameDay(parsed, date) : false
+      })
+    }
+    const parsed = parseDate(props.modelValue as string)
+    return parsed ? isSameDay(parsed, date) : false
   }
 
-  if (typeof props.modelValue === 'string') {
-    const parsed = parseDate(props.modelValue)
-    return parsed ? isSameDay(parsed, date) : false
+  if (Array.isArray(props.modelValue)) {
+    return (props.modelValue as Date[]).some(d => isSameDay(d, date))
   }
 
   return isSameDay(props.modelValue as Date, date)
@@ -442,8 +425,12 @@ function selectDate (date: Date) {
 function handleInputChange (value: string) {
   const date = parseDate(value)
   if (date && isDateSelectable(date)) {
-    const emitValue = isStringMode.value ? formatDate(date) : date
-    emit('update:modelValue', emitValue as T)
+    if (props.multiple) {
+      selectDate(date)
+    } else {
+      const emitValue = isStringMode.value ? formatDate(date) : date
+      emit('update:modelValue', emitValue as T)
+    }
     focusedMonth.value = date.getMonth()
     focusedYear.value = date.getFullYear()
   }
