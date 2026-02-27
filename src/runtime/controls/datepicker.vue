@@ -115,7 +115,15 @@
 <script setup lang="ts" generic="T extends Date | Date[] = Date, S extends string | string[] = string">
 import { ref, computed, watch } from 'vue'
 import type { InputSize, InputVariant } from './types'
-import { formatDate, parseDate, isSameDay } from './datepicker-utils'
+import { format as formatDate, parse, isValid, isSameDay } from 'date-fns'
+
+const DATE_FORMAT = 'yyyy-MM-dd'
+
+function parseDate (dateString: string): Date | null {
+  if (!dateString) return null
+  const date = parse(dateString, DATE_FORMAT, new Date())
+  return isValid(date) ? date : null
+}
 
 /**
  * Datepicker component with calendar dropdown for date selection.
@@ -289,7 +297,7 @@ const availableYears = computed(() => {
 })
 
 const formattedValue = computed(() => {
-  return activeDates.value.map(d => formatDate(d)).join(', ')
+  return activeDates.value.map(d => formatDate(d, DATE_FORMAT)).join(', ')
 })
 
 const calendarDays = computed(() => {
@@ -377,7 +385,7 @@ function getDayClasses (day: CalendarDay) {
 
 function emitDate (date: Date) {
   if (useStringModel.value) {
-    emit('update:dateString', formatDate(date) as S)
+    emit('update:dateString', formatDate(date, DATE_FORMAT) as S)
   } else {
     emit('update:modelValue', date as T)
   }
@@ -385,7 +393,7 @@ function emitDate (date: Date) {
 
 function emitDates (dates: Date[]) {
   if (useStringModel.value) {
-    emit('update:dateString', dates.map(d => formatDate(d)) as S)
+    emit('update:dateString', dates.map(d => formatDate(d, DATE_FORMAT)) as S)
   } else {
     emit('update:modelValue', dates as T)
   }
