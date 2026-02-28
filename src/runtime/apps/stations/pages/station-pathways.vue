@@ -249,7 +249,7 @@
           </t-radio>
         </t-field>
 
-        <tl-pathway-map
+        <tl-apps-stations-pathway-map
           :center="station.geometry?.coordinates as [number, number]"
           :station="station"
           :basemap="basemap"
