@@ -16,7 +16,7 @@
         <t-table-column field="parent.stop_name" label="Station" sortable />
         <t-table-column field="external_reference.target_feed_onestop_id" label="Target feed Onestop ID" sortable />
         <t-table-column field="external_reference.target_stop_id" label="Target stop ID" sortable />
-        <t-table-column field="external_reference.target_active_stop" label="Stop ID association found?" sortable />
+        <t-table-column field="external_reference.target_active_stop" label="Stop ID association found?" />
         <t-table-column field="external_reference.target_active_stop.location_type" label="Target location type" sortable />
         <t-table-column label="Routes serving stop" />
         <t-table-column label="Actions" />
