@@ -84,6 +84,25 @@ describe('validateStop', () => {
       const errs = validateStop(stop, [])
       expect(hasMessage(errs, 'Coordinates are required')).toBe(false)
     })
+
+    test('interline recommendation when generic node has no geometry', () => {
+      const stop = makeStop({ location_type: 3, geometry: undefined })
+      const errs = validateStop(stop, [])
+      expect(hasMessage(errs, 'generic nodes should have coordinates')).toBe(true)
+      expect(errs.find(e => e.message.includes('generic nodes should have coordinates'))?.severity).toBe('interline')
+    })
+
+    test('no interline recommendation when generic node has geometry', () => {
+      const stop = makeStop({ location_type: 3, geometry: { type: 'Point', coordinates: [-122.0, 37.0] } })
+      const errs = validateStop(stop, [])
+      expect(hasMessage(errs, 'generic nodes should have coordinates')).toBe(false)
+    })
+
+    test('no interline recommendation for non-generic node without geometry (covered by critical error)', () => {
+      const stop = makeStop({ location_type: 2, geometry: undefined })
+      const errs = validateStop(stop, [])
+      expect(hasMessage(errs, 'generic nodes should have coordinates')).toBe(false)
+    })
   })
 
   describe('level assignment', () => {

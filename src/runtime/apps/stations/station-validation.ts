@@ -29,6 +29,12 @@ export function validateStop (stop: Stop, stationStops: Stop[], _options: Valida
       message: 'Coordinates are required for all location types except generic nodes (location_type = 3)'
     })
   }
+  if (stop.location_type === 3 && (!stop.geometry || !stop.geometry.coordinates)) {
+    errs.push({
+      severity: 'interline',
+      message: 'Interline recommendation: generic nodes should have coordinates to enable visualization and pathway maintenance'
+    })
+  }
   if (!stop.level?.id) {
     errs.push({
       severity: 'interline',
