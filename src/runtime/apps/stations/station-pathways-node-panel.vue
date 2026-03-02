@@ -1,7 +1,9 @@
 <template>
   <tl-apps-stations-station-pathways-editor-panel
+    v-model:edit-mode="editMode"
     view-heading="View Node"
     edit-heading="Edit Node"
+    edit-label="Edit / Move"
     :show-unselect="showUnselect"
     @unselect="$emit('unselect')"
   >
@@ -65,8 +67,8 @@
         <ul class="menu-list">
           <li v-for="pw of pathwaysFromStop" :key="pw.id">
             <a
-              @click="$emit('select-pathway', pw.id)"
-              @mouseenter="$emit('hover-pathway', pw.id)"
+              @click="pw.id != null && $emit('select-pathway', pw.id)"
+              @mouseenter="$emit('hover-pathway', pw.id ?? null)"
               @mouseleave="$emit('hover-pathway', null)"
             >
               <span class="tl-path-icon"><img :src="pathwayIcon(pw.pathway_mode).url" :title="pathwayIcon(pw.pathway_mode).label"></span>
@@ -77,8 +79,8 @@
           </li>
           <li v-for="pw of pathwaysToStop" :key="pw.id">
             <a
-              @click="$emit('select-pathway', pw.id)"
-              @mouseenter="$emit('hover-pathway', pw.id)"
+              @click="pw.id != null && $emit('select-pathway', pw.id)"
+              @mouseenter="$emit('hover-pathway', pw.id ?? null)"
               @mouseleave="$emit('hover-pathway', null)"
             >
               <span class="tl-path-icon"><img :src="pathwayIcon(pw.pathway_mode).url" :title="pathwayIcon(pw.pathway_mode).label"></span>
@@ -104,14 +106,17 @@
                 query: modeSwitchQuery,
               }"
             >
-              <i class="mdi mdi-chart-timeline mdi-16px" /> &nbsp; View in Station Diagram
+              <t-icon icon="chart-timeline" size="small" /> &nbsp; View in Station Diagram
             </nuxt-link>
           </li>
         </ul>
       </div>
     </template>
 
-    <template #edit="{ cancel }">
+    <template #edit>
+      <p class="notification is-info is-light py-2 px-3 mb-3 is-size-7">
+        Drag the node on the map to reposition it.
+      </p>
       <tl-apps-stations-stop-editor
         :station="station"
         :value="stop"
@@ -119,91 +124,75 @@
         :show-pathways="false"
         @delete="$emit('delete', $event)"
         @update="$emit('update', $event)"
-        @delete-association="$emit('delete-association', $event)"
         @select-pathway="$emit('select-pathway', $event)"
-        @cancel="cancel"
       />
     </template>
   </tl-apps-stations-station-pathways-editor-panel>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed } from 'vue'
 import { LocationTypes } from './basemaps'
 import { PathwayModeIcons } from '../../lib/pathways/pathway-icons'
+import type { Station, Stop, Pathway } from './station'
+import type { StationData } from './types'
 
-export default {
-  props: {
-    station: {
-      type: Object,
-      required: true
-    },
-    stop: {
-      type: Object,
-      required: true
-    },
-    stopAssociationsEnabled: {
-      type: Boolean,
-      default: false
-    },
-    showUnselect: {
-      type: Boolean,
-      default: false
-    },
-    feedKey: {
-      type: String,
-      required: true
-    },
-    feedVersionKey: {
-      type: String,
-      required: true
-    },
-    stationKey: {
-      type: String,
-      required: true
-    }
-  },
-  emits: ['delete', 'update', 'delete-association', 'select-pathway', 'hover-pathway', 'unselect'],
-  computed: {
-    modeSwitchParams () {
-      return {
-        feedKey: this.feedKey,
-        feedVersionKey: this.feedVersionKey,
-        stationKey: this.stationKey
-      }
-    },
-    modeSwitchQuery () {
-      return {
-        selectedStop: this.stop.id
-      }
-    },
-    levelName () {
-      return this.stop.level?.level_name || 'None'
-    },
-    locationTypeName () {
-      const type = this.stop.location_type
-      for (const [key, value] of LocationTypes.entries()) {
-        if (key === type) {
-          return value
-        }
-      }
-      return 'Unknown'
-    },
-    pathwaysFromStop () {
-      return this.stop.pathways_from_stop || []
-    },
-    pathwaysToStop () {
-      return this.stop.pathways_to_stop || []
-    }
-  },
-  methods: {
-    pathwayIcon (mode) {
-      const m = PathwayModeIcons[mode]
-      if (!m) {
-        return { url: '', label: '' }
-      }
-      return { url: `/icons/${m.altIcon ? m.altIcon : m.icon}.png`, label: m.label }
+const editMode = defineModel<boolean>('editMode', { default: false })
+
+interface Props {
+  station: StationData | Station
+  stop: Stop
+  stopAssociationsEnabled?: boolean
+  showUnselect?: boolean
+  feedKey: string
+  feedVersionKey: string
+  stationKey: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  stopAssociationsEnabled: false,
+  showUnselect: false
+})
+
+defineEmits<{
+  'delete': [stop: Stop]
+  'update': [stop: Stop]
+  'delete-association': [stop: Stop]
+  'select-pathway': [id: number]
+  'hover-pathway': [id: number | null]
+  'unselect': []
+}>()
+
+const modeSwitchParams = computed(() => ({
+  feedKey: props.feedKey,
+  feedVersionKey: props.feedVersionKey,
+  stationKey: props.stationKey
+}))
+
+const modeSwitchQuery = computed(() => ({
+  selectedStop: props.stop.id
+}))
+
+const locationTypeName = computed(() => {
+  const type = props.stop.location_type
+  for (const [key, value] of LocationTypes.entries()) {
+    if (key === type) {
+      return value
     }
   }
+  return 'Unknown'
+})
+
+const levelName = computed(() => props.stop.level?.level_name || 'None')
+
+const pathwaysFromStop = computed<Pathway[]>(() => props.stop.pathways_from_stop || [])
+const pathwaysToStop = computed<Pathway[]>(() => props.stop.pathways_to_stop || [])
+
+function pathwayIcon (mode: number | undefined): { url: string, label: string } {
+  if (mode == null) return { url: '', label: '' }
+  const m = PathwayModeIcons[mode]
+  if (!m) return { url: '', label: '' }
+  return { url: `/icons/${m.altIcon ?? m.icon}.png`, label: m.label }
 }
 </script>
 

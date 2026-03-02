@@ -1,80 +1,57 @@
 <template>
-  <div>
-    <nav class="panel station-editor-panel">
-      <p class="panel-heading">
-        <span v-if="!editMode">{{ viewHeading }}</span>
-        <span v-else>{{ editHeading }}</span>
-        <span class="panel-heading-buttons">
-          <button
-            v-if="showUnselect"
-            class="button is-small"
-            @click="$emit('unselect')"
-          >
-            Unselect <kbd>ESC</kbd>
-          </button>
-          <button
-            class="button is-small"
-            :class="editMode ? 'is-primary' : ''"
-            @click="toggleEditMode"
-          >
-            <t-icon :icon="editMode ? 'eye' : 'pencil'" size="small" />
-            <span>{{ editMode ? 'View' : 'Edit' }}</span>
-          </button>
-        </span>
-      </p>
+  <nav class="panel station-editor-panel">
+    <p class="panel-heading">
+      <span v-if="!editMode">{{ viewHeading }}</span>
+      <span v-else>{{ editHeading }}</span>
+      <span style="display:flex;gap:0.5rem;">
+        <t-button
+          v-if="showUnselect"
+          size="small"
+          @click="$emit('unselect')"
+        >
+          Unselect <kbd>ESC</kbd>
+        </t-button>
+        <t-button
+          size="small"
+          :variant="editMode ? 'primary' : undefined"
+          @click="editMode = !editMode"
+        >
+          <t-icon :icon="editMode ? 'eye' : 'pencil'" size="small" />
+          <span>{{ editMode ? 'View' : editLabel }}</span>
+        </t-button>
+      </span>
+    </p>
 
-      <!-- View Mode (Read-only) -->
-      <div v-if="!editMode" class="panel-block is-block">
-        <slot name="view" />
-      </div>
+    <!-- View Mode (Read-only) -->
+    <div v-if="!editMode" class="panel-block is-block">
+      <slot name="view" />
+    </div>
 
-      <!-- Edit Mode -->
-      <div v-else class="panel-block is-block">
-        <slot name="edit" :cancel="() => editMode = false" />
-      </div>
-    </nav>
-  </div>
+    <!-- Edit Mode -->
+    <div v-else class="panel-block is-block">
+      <slot name="edit" :cancel="() => (editMode = false)" />
+    </div>
+  </nav>
 </template>
 
-<script>
-export default {
-  props: {
-    viewHeading: {
-      type: String,
-      default: 'View'
-    },
-    editHeading: {
-      type: String,
-      default: 'Edit'
-    },
-    showUnselect: {
-      type: Boolean,
-      default: false
-    }
-  },
-  emits: ['unselect'],
-  data () {
-    return {
-      editMode: false
-    }
-  },
-  methods: {
-    toggleEditMode () {
-      this.editMode = !this.editMode
-    }
-  }
+<script setup lang="ts">
+interface Props {
+  viewHeading?: string
+  editHeading?: string
+  editLabel?: string
+  showUnselect?: boolean
 }
+
+withDefaults(defineProps<Props>(), {
+  viewHeading: 'View',
+  editHeading: 'Edit',
+  editLabel: 'Edit',
+  showUnselect: false
+})
+
+defineEmits<{
+  unselect: []
+}>()
+
+const editMode = defineModel<boolean>('editMode', { default: false })
 </script>
-
-<style scoped>
-.panel-heading {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.panel-heading-buttons {
-  display: flex;
-  gap: 0.5rem;
-}
-</style>

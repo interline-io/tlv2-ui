@@ -73,8 +73,8 @@
         <ul class="menu-list">
           <li>
             <a
-              @click="$emit('select-stop', pathway.from_stop.id)"
-              @mouseenter="$emit('hover-stop', pathway.from_stop.id)"
+              @click="pathway.from_stop.id != null && $emit('select-stop', pathway.from_stop.id)"
+              @mouseenter="$emit('hover-stop', pathway.from_stop.id ?? null)"
               @mouseleave="$emit('hover-stop', null)"
             >
               <span v-if="pathway.is_bidirectional === 1">↔</span>
@@ -100,8 +100,8 @@
           </li>
           <li>
             <a
-              @click="$emit('select-stop', pathway.to_stop.id)"
-              @mouseenter="$emit('hover-stop', pathway.to_stop.id)"
+              @click="pathway.to_stop.id != null && $emit('select-stop', pathway.to_stop.id)"
+              @mouseenter="$emit('hover-stop', pathway.to_stop.id ?? null)"
               @mouseleave="$emit('hover-stop', null)"
             >
               <span v-if="pathway.is_bidirectional === 1">↔</span>
@@ -129,85 +129,64 @@
       </div>
     </template>
 
-    <template #edit="{ cancel }">
+    <template #edit>
       <tl-apps-stations-pathway-editor
         :station="station"
         :value="pathway"
         @select-stop="$emit('select-stop', $event)"
         @delete="$emit('delete', $event)"
         @update="$emit('update', $event)"
-        @cancel="cancel"
       />
     </template>
   </tl-apps-stations-station-pathways-editor-panel>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed } from 'vue'
 import { PathwayModes } from '../../lib/pathways/pathway-icons'
+import type { Station, Pathway } from './station'
+import type { StationData } from './types'
 
-export default {
-  props: {
-    station: {
-      type: Object,
-      required: true
-    },
-    pathway: {
-      type: Object,
-      required: true
-    },
-    showUnselect: {
-      type: Boolean,
-      default: false
-    },
-    feedKey: {
-      type: String,
-      required: true
-    },
-    feedVersionKey: {
-      type: String,
-      required: true
-    },
-    stationKey: {
-      type: String,
-      required: true
-    }
-  },
-  emits: ['select-stop', 'hover-stop', 'delete', 'update', 'unselect'],
-  computed: {
-    modeSwitchParams () {
-      return {
-        feedKey: this.feedKey,
-        feedVersionKey: this.feedVersionKey,
-        stationKey: this.stationKey
-      }
-    },
-    modeSwitchQuery () {
-      return {
-        selectedPathway: this.pathway.id
-      }
-    },
-    pathwayModeName () {
-      for (const [mode, label] of PathwayModes) {
-        if (mode === this.pathway.pathway_mode) {
-          return label
-        }
-      }
-      return 'Unknown'
-    },
-    fromStopLevel () {
-      if (!this.pathway.from_stop.level?.id) {
-        return null
-      }
-      return this.station.levels.find(l => l.id === this.pathway.from_stop.level.id)
-    },
-    toStopLevel () {
-      if (!this.pathway.to_stop.level?.id) {
-        return null
-      }
-      return this.station.levels.find(l => l.id === this.pathway.to_stop.level.id)
+interface Props {
+  station: StationData | Station
+  pathway: Pathway
+  showUnselect?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  showUnselect: false
+})
+
+defineEmits<{
+  'select-stop': [id: number]
+  'hover-stop': [id: number | null]
+  'delete': [pathway: Pathway]
+  'update': [pathway: Pathway]
+  'unselect': []
+}>()
+
+const pathwayModeName = computed(() => {
+  for (const [mode, label] of PathwayModes) {
+    if (mode === props.pathway.pathway_mode) {
+      return label
     }
   }
-}
+  return 'Unknown'
+})
+
+const fromStopLevel = computed(() => {
+  if (!props.pathway.from_stop.level?.id) {
+    return null
+  }
+  return (props.station as Station).levels?.find(l => l.id === props.pathway.from_stop.level.id) ?? null
+})
+
+const toStopLevel = computed(() => {
+  if (!props.pathway.to_stop.level?.id) {
+    return null
+  }
+  return (props.station as Station).levels?.find(l => l.id === props.pathway.to_stop.level.id) ?? null
+})
 </script>
 
 <style scoped>

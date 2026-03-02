@@ -45,6 +45,7 @@ interface Props {
   otherStops?: Stop[]
   routes?: Feature[]
   selectedStops?: Stop[]
+  draggableStops?: Stop[]
   selectedPathways?: Pathway[]
   selectedLevels?: string[]
   selectedPathwayTransitionTypes?: string
@@ -62,6 +63,7 @@ const props = withDefaults(defineProps<Props>(), {
   otherStops: () => [],
   routes: () => [],
   selectedStops: () => [],
+  draggableStops: () => [],
   selectedPathways: () => [],
   selectedLevels: () => [],
   selectedPathwayTransitionTypes: 'all',
@@ -646,9 +648,6 @@ function drawMap () {
     if (!feature || feature.source !== 'stops') {
       return
     }
-    // Prevent the default map drag behavior.
-    e.preventDefault()
-    const dragStartPoint = e.point
     // Get reference to update geometry
     let dragStop: Stop | null = null
     for (const stop of props.station.stops) {
@@ -659,9 +658,12 @@ function drawMap () {
     if (!dragStop) {
       return
     }
-    if (!props.selectedStops.map(s => s.id).includes(dragStop.id)) {
+    if (!props.draggableStops.map(s => s.id).includes(dragStop.id)) {
       return
     }
+    // Prevent the default map drag behavior only when we're going to drag.
+    e.preventDefault()
+    const dragStartPoint = e.point
     const mouseMove = (e: MapLayerMouseEvent) => {
       const d = distance(dragStartPoint, e.point)
       if (d < 10) {

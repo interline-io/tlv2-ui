@@ -103,7 +103,7 @@
                   <div v-for="(bm, key) in basemapLayers" :key="key" class="field ml-4">
                     <t-radio
                       v-model="basemap"
-                      :native-value="key"
+                      :native-value="String(key)"
                     >
                       {{ bm.label }}
                     </t-radio>
@@ -181,9 +181,6 @@
               :station="station"
               :pathway="spw"
               :show-unselect="selectedStops.length > 0 || selectedPathways.length > 0"
-              :feed-key="feedKey"
-              :feed-version-key="feedVersionKey"
-              :station-key="stationKey"
               @select-stop="selectStop"
               @hover-stop="hoverStopId = $event"
               @delete="deletePathwayHandler"
@@ -195,6 +192,7 @@
             <tl-apps-stations-station-pathways-node-panel
               v-for="ss of selectedStops"
               :key="ss.id"
+              v-model:edit-mode="nodeEditMode"
               :station="station"
               :stop="ss"
               :stop-associations-enabled="stopAssociationsEnabled"
@@ -215,7 +213,7 @@
             :selected-level="selectedLevel"
             :levels="station.levels"
             :level-index="levelIndex"
-            @update:selected-level="selectedLevel = $event"
+            @update:selected-level="selectedLevel = Number($event)"
           />
           <tl-apps-stations-station-pathways-find-route-panel
             v-else-if="selectMode === 'find-route'"
@@ -268,10 +266,11 @@
 
       <div class="column">
         <tl-apps-stations-pathway-map
-          :center="station.geometry.coordinates"
+          :center="stationCenter"
           :station="station"
           :basemap="basemap"
           :selected-stops="selectedStops"
+          :draggable-stops="nodeEditMode && selectedStop ? [selectedStop] : []"
           :selected-pathways="selectMode === 'find-route' && selectedPath ? selectedPath.map((s) => { return s.pathway }) : selectedPathways"
           :selected-levels="selectedLevels"
           :hover-stop-id="hoverStopId"
@@ -286,592 +285,314 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed, nextTick, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { LocationTypes } from '../basemaps'
 import { PathwayModes } from '../../../lib/pathways/pathway-icons'
 import { Profiles } from '../../../lib/pathways/graph'
+import type { Level } from '../station'
 import { Stop, Pathway, mapLevelKeyFn } from '../station'
-import { computeFilterCounts } from '../station-pathways-filter-counts'
-import { nextTick, computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { useToastNotification } from '../../../composables/useToastNotification'
-import { useBasemapLayers } from '../../../composables/useBasemapLayers'
 import { useStation } from '../composables/useStation'
+import { useBasemapLayers } from '../../../composables/useBasemapLayers'
+import { useToastNotification } from '../../../composables/useToastNotification'
+import { usePathwaySelection } from '../composables/usePathwaySelection'
+import { usePathwayEditorKeyboard } from '../composables/usePathwayEditorKeyboard'
 
-export default {
-  layout: 'wide',
-  query: ['selectedStop', 'selectedPathway'],
-  setup () {
-    const { showToast } = useToastNotification()
-    const route = useRoute()
-    const feedKey = computed(() => route.params.feedKey)
-    const feedVersionKey = computed(() => route.params.feedVersionKey)
-    const stationKey = computed(() => route.params.stationKey)
+defineOptions({ layout: 'wide' })
 
-    const {
-      ready,
-      station,
-      stopAssociationsEnabled,
-      selectedLevels,
-      selectedLevel,
-      refetch,
-      handleError,
-      createStop,
-      updateStop,
-      deleteStop,
-      createPathway,
-      updatePathway,
-      deletePathway
-    } = useStation({ feedKey, feedVersionKey, stationKey, clientId: 'stationEditor' })
+const route = useRoute()
+const { showToast } = useToastNotification()
 
-    const { basemapLayers } = useBasemapLayers()
+const feedKey = computed(() => String(route.params.feedKey))
+const feedVersionKey = computed(() => String(route.params.feedVersionKey))
+const stationKey = computed(() => String(route.params.stationKey))
 
-    return {
-      showToast,
-      ready,
-      station,
-      stopAssociationsEnabled,
-      selectedLevels,
-      selectedLevel,
-      refetch,
-      handleError,
-      feedKey,
-      feedVersionKey,
-      stationKey,
-      basemapLayers,
-      createStop,
-      updateStop,
-      deleteStop,
-      createPathway,
-      updatePathway,
-      deletePathway
-    }
-  },
-  data () {
-    return {
-      id: undefined,
-      selectMode: 'select',
-      selectedPoint: null,
-      selectedStops: [],
-      selectedPathways: [],
-      openStationValidator: false,
-      basemap: 'carto',
-      levelsOpen: true,
-      basemapOpen: false,
-      legendOpen: false,
-      lastFilterApplied: '',
-      hoverStopId: null,
-      hoverPathwayId: null,
-      selectedProfile: 'Pathways: Default',
-      profileNames: Object.keys(Profiles),
-      PathwayModes,
-      LocationTypes
-    }
-  },
-  computed: {
-    selectedLevelIds: {
-      get () {
-        if (!this.selectedLevels || this.selectedLevels.length === 0) {
-          return undefined // t-checkbox-group treats undefined as "all selected"
-        }
-        // Convert from mapLevelKey format to plain IDs
-        return this.selectedLevels.map((key) => {
-          const match = key.match(/mapLevelKey-(.+)/)
-          return match ? (match[1] === 'unassigned' ? null : Number(match[1])) : null
-        }).filter(id => id !== null)
-      },
-      set (ids) {
-        if (ids === undefined) {
-          // All levels selected - set to all mapped keys
-          this.selectedLevels = this.station?.levels?.map(mapLevelKeyFn) || []
-        } else {
-          // Convert plain IDs back to mapLevelKey format
-          this.selectedLevels = ids.map(id => mapLevelKeyFn({ id }))
-        }
-      }
-    },
-    filterCounts () {
-      return computeFilterCounts(this.station?.stops || [], this.station?.pathways || [])
-    },
-    selectedPath () {
-      if (this.selectMode !== 'find-route' || this.selectedStops.length < 2) {
-        return null
-      }
-      const p = this.station.findRoute(this.selectedStops[0].id, this.selectedStops[1].id, Profiles[this.selectedProfile])
-      if (!p) {
-        return null
-      }
-      const edges = []
-      for (const edge of p.edges || []) {
-        if (edge.pathway_id) {
-          const pathway = this.pathwayIndex[edge.pathway_id]
-          if (pathway) {
-            edges.push({ cost: edge.cost, pathway })
-          }
-        } else if (edge.from_stop_id && edge.to_stop_id) {
-          const fromStop = this.station.getStop(edge.from_stop_id)
-          const toStop = this.station.getStop(edge.to_stop_id)
-          if (fromStop && toStop) {
-            edges.push({
-              cost: edge.cost,
-              pathway: new Pathway({ pathway_mode: 1, is_bidirectional: 1, from_stop: fromStop, to_stop: toStop })
-            })
-          }
-        }
-      }
-      return edges
-    },
-    selectedSource () {
-      if (this.selectedStops.length === 2) {
-        return this.selectedStops[0]
-      }
-      return null
-    },
-    selectedStop () {
-      if (this.selectedStops.length > 0) {
-        return this.selectedStops[this.selectedStops.length - 1]
-      }
-      return null
-    },
-    levelIndex () {
-      const si = {}
-      for (const level of this.station.levels) {
-        si[level.id] = level
-      }
-      return si
-    },
-    pathwayIndex () {
-      const pwi = {}
-      for (const pw of this.station.pathways) {
-        pwi[pw.id] = pw
-      }
-      return pwi
-    },
-    sortedStationLevels () {
-      return this.station.levels.slice(0).sort(
-        (a, b) => (b.level_index != null ? b.level_index : -Infinity) - (a.level_index != null ? a.level_index : -Infinity)
-      )
-    }
-  },
-  watch: {
-    // Wait for all stops to be loaded before selecting from query params
-    // This ensures the selectedStop exists when coming from external links (e.g., stop associations page)
-    ready () {
-      if (this.ready && this.$route.query.selectedStop) {
-        this.selectStop(Number(this.$route.query.selectedStop))
-      }
-      if (this.ready && this.$route.query.selectedPathway) {
-        this.selectPathway(this.$route.query.selectedPathway)
-      }
-    },
-    selectedLevels () {
-      if (this.$route.query.selectedStop || this.$route.query.selectedPathway) {
-        // nothing
-      } else {
-        this.selectedStops = []
-        this.selectedPathways = []
-      }
-      this.selectMode = 'select'
-    },
-    selectMode () {
-      if (this.selectMode === 'add-node') {
-        this.selectedStops = []
-        this.selectedPathways = []
-      }
-    }
-  },
-  mounted () {
-    this.handleKeyDown = (event) => {
-      const tag = (event.target?.tagName || '').toLowerCase()
-      if (['input', 'textarea', 'select'].includes(tag) || event.target?.isContentEditable) {
-        return
-      }
-      switch (event.key) {
-        case 'Escape':
-          this.unselectAll()
-          break
-        case 'n':
-        case 'N':
-          this.selectMode = 'add-node'
-          break
-        case 'f':
-        case 'F':
-          if (this.selectedStops.length === 1) {
-            this.selectMode = 'find-route'
-          }
-          break
-        case 's':
-        case 'S':
-          this.$refs.stationValidator?.openStopsModal()
-          break
-        case 'p':
-        case 'P':
-          this.$refs.stationValidator?.openPathwaysModal()
-          break
-        case 'c':
-        case 'C':
-          this.$refs.stationValidator?.openPathsModal()
-          break
-      }
-    }
-    window.addEventListener('keydown', this.handleKeyDown)
-  },
-  unmounted () {
-    if (this.handleKeyDown) {
-      window.removeEventListener('keydown', this.handleKeyDown)
-    }
-  },
-  methods: {
-    mapLevelKeyFn,
-    // stops
-    createStopHandler (node) {
-      let newStopId = 0
-      this.createStop(node)
-        .then((d) => {
-          newStopId = d?.data?.stop_create?.id
-          return this.refetch()
-        })
-        .then(() => {
-          // Use nextTick to ensure Vue has updated after refetch
-          return nextTick()
-        })
-        .then(() => {
-          // Additional small delay to ensure map has updated
-          setTimeout(() => {
-            this.selectStop(newStopId)
-          }, 150)
-        })
-        .catch(this.handleError)
-    },
-    updateStopHandler (node) {
-      this.updateStop(node)
-        .then(() => { return this.refetch() })
-        .then(() => { this.selectStop(node.id) })
-        .catch(this.handleError)
-    },
-    deleteStopHandler (node) {
-      return this.deleteStop(node)
-        .then(() => { return this.refetch() })
-        .then(() => { this.selectStop(null) })
-        .catch(this.handleError)
-    },
-    moveStopSave (stopid, e) {
-      if (stopid === null) {
-        return
-      }
-      const stop = this.station.getStop(stopid) // copy
-      if (!stop) {
-        return
-      }
-      stop.setCoords(e.lng, e.lat)
-      this.updateStopHandler(stop)
-    },
-    // node associations
-    deleteAssociationHandler (node) {
-      this.updateStop(node)
-        .then(() => { return this.refetch() })
-        .then(() => { this.selectStop(null) })
-        .catch(this.handleError)
-    },
-    // pathways
-    newPathway () {
-      return new Pathway({
-        // other fields will be defaults
-        from_stop_id: this.selectedSource.id,
-        to_stop_id: this.selectedStop.id,
-        from_stop: this.selectedSource,
-        to_stop: this.selectedStop,
-        pathway_id: `${this.selectedSource.id}-${this.selectedStop.id}-${Date.now()}`
-      }).setDefaults()
-    },
-    createPathwayHandler (pw) {
-      this.createPathway(pw)
-        .then(() => { return this.refetch() })
-        .then(() => { this.selectPathway(null) })
-        .catch(this.handleError)
-    },
-    updatePathwayHandler (pw) {
-      this.updatePathway(pw)
-        .then(() => { return this.refetch() })
-        .then(() => { this.selectPathway(null) })
-        .catch(this.handleError)
-    },
-    deletePathwayHandler (pw) {
-      this.selectPathway(null)
-      this.deletePathway(pw)
-        .then(() => { return this.refetch() })
-        .then(() => { this.selectPathway(null) })
-        .catch(this.handleError)
-    },
-    // select tools
-    selectStop (stopId) {
-      console.log('selectStop: start', stopId)
-      if (stopId === null) {
-        this.selectedStops = []
-        this.selectMode = 'select'
-        console.log('selectStop: no stopid')
-        return
-      }
-      const cur = this.station.getStop(stopId)
-      console.log('selectStop: cur stop', cur)
-      const prev = this.selectedStops.length > 0 ? this.selectedStops[this.selectedStops.length - 1] : null
-      if (!cur) {
-        console.warn('selectStop: stop not found', stopId)
-        return
-      }
-      // find-route is sticky on first selected stop
-      if (prev && this.selectMode === 'find-route') {
-        if (prev === cur) {
-          console.log('selectStop: same stop, unselecting')
-          this.selectedStops = []
-          return
-        }
-        this.selectedStops = [this.selectedStops[0], cur]
-        console.log('selectStop: find-route set selectedStops to', this.selectedStops)
-        return
-      }
-      //
-      this.selectedPathways = []
-      if (prev) {
-        if (prev === cur) {
-          this.selectedStops = []
-          this.selectMode = 'select'
-        } else {
-          this.selectedStops = [prev, cur]
-          this.selectMode = 'add-pathway'
-        }
-      } else {
-        this.selectedStops = [cur]
-        this.selectMode = 'edit-node'
-      }
-      console.log('selectStop: set selectedStops to', this.selectedStops, 'and selectMode to', this.selectMode)
-    },
-    selectPath (fromId, toId) {
-      this.selectMode = 'find-route'
-      this.selectedStops = [this.station.getStop(fromId), this.station.getStop(toId)]
-    },
-    selectPathway (pwid) {
-      if (pwid === null) {
-        this.selectedPathways = []
-        this.selectMode = 'select'
-        return
-      }
-      const cur = this.pathwayIndex[pwid]
-      const prev = this.selectedPathways.length > 0 ? this.selectedPathways[this.selectedPathways.length - 1] : null
-      this.selectedStops = []
-      if (prev === cur) {
-        this.selectedPathways = []
-        this.selectMode = 'select'
-      } else {
-        this.selectedPathways = [cur]
-        this.selectMode = 'edit-pathway'
-      }
-    },
-    selectPoint (ll) {
-      this.selectedPoint = ll
-      if (this.selectMode === 'add-node') {
-        const stop = new Stop({
-          geometry: {
-            type: 'Point',
-            coordinates: [ll.lng, ll.lat]
-          },
-          level: { id: this.selectedLevel }
-        }).setDefaults()
-        this.createStopHandler(stop)
-      }
-    },
-    // Helper method to filter and notify
-    applyFilter (filterFn, filterLabel, notFoundMessage, target = 'stops') {
-      const results = target === 'stops'
-        ? this.station.stops.filter(filterFn)
-        : this.station.pathways.filter(filterFn)
+const {
+  ready,
+  station,
+  stopAssociationsEnabled,
+  selectedLevels,
+  selectedLevel,
+  refetch,
+  handleError,
+  createStop,
+  updateStop,
+  deleteStop,
+  createPathway,
+  updatePathway,
+  deletePathway
+} = useStation({ feedKey, feedVersionKey, stationKey, clientId: 'stationEditor' })
 
-      if (target === 'stops') {
-        this.selectedStops = results
-      } else {
-        this.selectedPathways = results
-      }
+const { basemapLayers } = useBasemapLayers()
 
-      this.lastFilterApplied = filterLabel
-      this.selectMode = 'select'
+const basemap = ref('carto')
+const levelsOpen = ref(true)
+const basemapOpen = ref(false)
+const legendOpen = ref(false)
+const selectedProfile = ref('Pathways: Default')
+const profileNames = Object.keys(Profiles) as string[]
 
-      if (results.length === 0) {
-        this.showToast(notFoundMessage)
-      }
-    },
-    selectStopsWithAssociations () {
-      this.applyFilter(
-        s => s.external_reference?.target_stop_id,
-        'Stops with associations',
-        'No stops with associations found'
-      )
-    },
-    selectStopsPlatformsWithoutAssociations () {
-      this.applyFilter(
-        s => s.location_type === 0 && !s.external_reference,
-        'Platforms without associations',
-        'No platforms without associations found'
-      )
-    },
-    selectStopsEntrancesWithoutAssociations () {
-      this.applyFilter(
-        s => s.location_type === 2 && !s.external_reference,
-        'Entrances without associations',
-        'No entrances without associations found'
-      )
-    },
-    selectStopsWithPairedPathways () {
-      const pairedPathways = new Map()
-      this.applyFilter(
-        (s) => {
-          const pwKeys = []
-          for (const pw of s.pathways_from_stop) {
-            pwKeys.push(`${pw.from_stop.id}-${pw.to_stop.id}`)
-          }
-          for (const pw of s.pathways_to_stop) {
-            pwKeys.push(`${pw.to_stop.id}-${pw.from_stop.id}`)
-          }
-          let matched = false
-          for (const pwkey of pwKeys) {
-            if (pairedPathways.has(pwkey)) {
-              matched = true
-            }
-            pairedPathways.set(pwkey, true)
-          }
-          return matched
-        },
-        'Stops with paired pathways',
-        'No stops with paired pathways found'
-      )
-    },
-    selectLocationTypes (stype) {
-      this.applyFilter(
-        s => s.location_type === stype,
-        `Stops: ${this.LocationTypes.get(stype)}`,
-        `No ${this.LocationTypes.get(stype)} stops found`
-      )
-    },
-    selectPathwayModes (stype) {
-      this.applyFilter(
-        s => s.pathway_mode === stype,
-        `Pathways: ${this.PathwayModes.get(stype)}`,
-        `No ${this.PathwayModes.get(stype)} pathways found`,
-        'pathways'
-      )
-    },
-    selectPathwaysWithPairs () {
-      const allKeys = new Set(this.station.pathways.map(p => `${p.from_stop.id}-${p.to_stop.id}`))
-      this.applyFilter(
-        s => allKeys.has(`${s.to_stop.id}-${s.from_stop.id}`),
-        'Pathways with pairs',
-        'No pathways with pairs found',
-        'pathways'
-      )
-    },
-    selectPathwaysOneway () {
-      this.applyFilter(
-        s => !s.is_bidirectional,
-        'One-directional pathways',
-        'No one-directional pathways found',
-        'pathways'
-      )
-    },
-    selectPathwaysBidirectional () {
-      this.applyFilter(
-        s => s.is_bidirectional,
-        'Bi-directional pathways',
-        'No bi-directional pathways found',
-        'pathways'
-      )
-    },
-    unselectAll () {
-      this.selectedStops = []
-      this.selectedPathways = []
-      this.selectedPoint = null
-      this.lastFilterApplied = ''
-      this.selectMode = 'select'
-      this.hoverStopId = null
-      this.hoverPathwayId = null
-    },
-    downloadGeojson () {
-      const allFeatures = []
-      allFeatures.push(...this.station.levels.map((s) => {
-        return {
-          type: 'Feature',
-          id: s.id,
-          properties: {
-            id: s.id,
-            level_id: s.level_id,
-            level_name: s.level_name,
-            level_index: s.level_index
-          },
-          geometry: s.geometry
-        }
-      }))
-      allFeatures.push(...this.station.pathways.map((s) => {
-        return {
-          type: 'Feature',
-          id: s.id,
-          properties: {
-            id: s.id,
-            pathway_id: s.pathway_id,
-            pathway_mode: s.pathway_mode,
-            signposted_as: s.signposted_as,
-            reverse_signposted_as: s.reverse_signposted_as,
-            stair_count: s.stair_count,
-            is_bidirectional: s.is_bidirectional,
-            length: s.length,
-            min_slope: s.min_slope,
-            max_slope: s.max_slope,
-            from_id: s.from_stop.id,
-            from_stop_id: String(s.from_stop.stop_id),
-            from_stop_name: s.from_stop.stop_name,
-            to_id: s.to_stop.id,
-            to_stop_id: String(s.to_stop.stop_id),
-            to_stop_name: s.to_stop.stop_name,
-            from_level_id: s.from_stop.level?.id,
-            from_level_name: s.from_stop.level?.id,
-            to_level_id: s.to_stop.level?.id,
-            to_level_name: s.to_stop.level?.id
-          },
-          geometry: {
-            type: 'LineString',
-            coordinates: [
-              s.from_stop.geometry.coordinates,
-              s.to_stop.geometry.coordinates
-            ]
-          }
-        }
-      }))
-      allFeatures.push(...this.station.stops.map((s) => {
-        return {
-          type: 'Feature',
-          id: s.id,
-          properties: {
-            id: s.id,
-            stop_name: s.stop_name,
-            stop_id: String(s.stop_id),
-            stop_code: s.stop_code,
-            stop_desc: s.stop_desc,
-            location_type: s.location_type,
-            level_id: s.level?.id,
-            level_index: s.level?.level_index
-          },
-          geometry: s.geometry
-        }
-      }))
-      const data = JSON.stringify({ type: 'FeatureCollection', features: allFeatures })
-      const blob = new Blob([data], { type: 'text/json' })
-      const e = document.createEvent('MouseEvents')
-      const a = document.createElement('a')
-      a.download = 'station.geojson'
-      a.href = window.URL.createObjectURL(blob)
-      a.dataset.downloadurl = ['text/json', a.download, a.href].join(':')
-      e.initEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null)
-      a.dispatchEvent(e)
+const stationValidator = ref<{ openStopsModal: () => void, openPathwaysModal: () => void, openPathsModal: () => void } | null>(null)
+
+const {
+  selectMode,
+  selectedStops,
+  selectedPathways,
+  hoverStopId,
+  hoverPathwayId,
+  lastFilterApplied,
+  filterCounts,
+  selectedStop,
+  selectedSource,
+  selectedPath,
+  selectStop,
+  selectPathway,
+  selectPath,
+  selectPoint: setSelectedPoint,
+  unselectAll,
+  selectLocationTypes,
+  selectPathwayModes,
+  selectStopsWithAssociations,
+  selectStopsPlatformsWithoutAssociations,
+  selectStopsEntrancesWithoutAssociations,
+  selectStopsWithPairedPathways,
+  selectPathwaysWithPairs,
+  selectPathwaysOneway,
+  selectPathwaysBidirectional
+} = usePathwaySelection(station, selectedProfile, showToast)
+
+const nodeEditMode = ref(false)
+watch(selectedStop, () => { nodeEditMode.value = false })
+
+// Watch for query params after station loads
+watch(ready, (isReady) => {
+  if (isReady && route.query.selectedStop) {
+    selectStop(Number(route.query.selectedStop))
+  }
+  if (isReady && route.query.selectedPathway) {
+    selectPathway(Number(route.query.selectedPathway))
+  }
+})
+
+// Clear selection when levels filter changes
+watch(selectedLevels, () => {
+  if (!route.query.selectedStop && !route.query.selectedPathway) {
+    selectedStops.value = []
+    selectedPathways.value = []
+  }
+  selectMode.value = 'select'
+})
+
+// Level and sorting
+const levelIndex = computed<Record<number, Level>>(() => {
+  const si: Record<number, Level> = {}
+  for (const level of (station.value?.levels || [])) {
+    if (level.id != null) {
+      si[level.id] = level
     }
   }
+  return si
+})
+
+const stationCenter = computed<[number, number] | undefined>(() => {
+  const coords = station.value?.geometry?.coordinates
+  if (!coords) { return undefined }
+  return [coords[0]!, coords[1]!] as [number, number]
+})
+
+const sortedStationLevels = computed(() =>
+  (station.value?.levels || []).slice(0).sort(
+    (a, b) => (b.level_index != null ? b.level_index : -Infinity) - (a.level_index != null ? a.level_index : -Infinity)
+  )
+)
+
+const selectedLevelIds = computed({
+  get (): number[] | undefined {
+    if (!selectedLevels.value || selectedLevels.value.length === 0) {
+      return undefined
+    }
+    return selectedLevels.value.map((key) => {
+      const match = key.match(/mapLevelKey-(.+)/)
+      return match ? (match[1] === 'unassigned' ? null : Number(match[1])) : null
+    }).filter((id): id is number => id !== null)
+  },
+  set (ids: number[] | undefined) {
+    if (ids === undefined) {
+      selectedLevels.value = station.value?.levels?.map(mapLevelKeyFn) || []
+    } else {
+      selectedLevels.value = ids.map(id => mapLevelKeyFn({ id }))
+    }
+  }
+})
+
+// Map select-point: set state + handle add-node creation
+function selectPoint (ll: { lng: number, lat: number }) {
+  setSelectedPoint(ll)
+  if (selectMode.value === 'add-node') {
+    const stop = new Stop({
+      geometry: {
+        type: 'Point',
+        coordinates: [ll.lng, ll.lat]
+      },
+      level: { id: selectedLevel.value ?? undefined }
+    }).setDefaults()
+    createStopHandler(stop)
+  }
 }
+
+// CRUD handlers
+function createStopHandler (node: Stop) {
+  let newStopId = 0
+  createStop(node)
+    .then((d: any) => {
+      newStopId = d?.data?.stop_create?.id
+      return refetch()
+    })
+    .then(() => nextTick())
+    .then(() => {
+      setTimeout(() => { selectStop(newStopId) }, 150)
+    })
+    .catch(handleError)
+}
+
+function updateStopHandler (node: Stop) {
+  updateStop(node)
+    .then(() => refetch())
+    .then(() => { selectStop(node.id!) })
+    .catch(handleError)
+}
+
+function deleteStopHandler (node: Stop) {
+  deleteStop(node)
+    .then(() => refetch())
+    .then(() => { selectStop(null) })
+    .catch(handleError)
+}
+
+function moveStopSave (stopid: number | null, e: { lng: number, lat: number }) {
+  if (stopid === null) return
+  const stop = station.value?.getStop(stopid)
+  if (!stop) return
+  stop.setCoords(e.lng, e.lat)
+  updateStopHandler(stop)
+}
+
+function deleteAssociationHandler (node: Stop) {
+  updateStop(node)
+    .then(() => refetch())
+    .then(() => { selectStop(null) })
+    .catch(handleError)
+}
+
+function newPathway (): Pathway {
+  return new Pathway({
+    from_stop: selectedSource.value!,
+    to_stop: selectedStop.value!,
+    pathway_id: `${selectedSource.value!.id}-${selectedStop.value!.id}-${Date.now()}`
+  }).setDefaults()
+}
+
+function createPathwayHandler (pw: Pathway) {
+  createPathway(pw)
+    .then(() => refetch())
+    .then(() => { selectPathway(null) })
+    .catch(handleError)
+}
+
+function updatePathwayHandler (pw: Pathway) {
+  updatePathway(pw)
+    .then(() => refetch())
+    .then(() => { selectPathway(null) })
+    .catch(handleError)
+}
+
+function deletePathwayHandler (pw: Pathway) {
+  selectPathway(null)
+  deletePathway(pw)
+    .then(() => refetch())
+    .then(() => { selectPathway(null) })
+    .catch(handleError)
+}
+
+function downloadGeojson () {
+  const allFeatures: any[] = []
+  allFeatures.push(...(station.value?.levels || []).map(s => ({
+    type: 'Feature',
+    id: s.id,
+    properties: {
+      id: s.id,
+      level_id: s.level_id,
+      level_name: s.level_name,
+      level_index: s.level_index
+    },
+    geometry: s.geometry
+  })))
+  allFeatures.push(...(station.value?.pathways || []).map(s => ({
+    type: 'Feature',
+    id: s.id,
+    properties: {
+      id: s.id,
+      pathway_id: s.pathway_id,
+      pathway_mode: s.pathway_mode,
+      signposted_as: s.signposted_as,
+      reverse_signposted_as: s.reverse_signposted_as,
+      stair_count: s.stair_count,
+      is_bidirectional: s.is_bidirectional,
+      length: s.length,
+      max_slope: s.max_slope,
+      from_id: s.from_stop.id,
+      from_stop_id: String(s.from_stop.stop_id),
+      from_stop_name: s.from_stop.stop_name,
+      to_id: s.to_stop.id,
+      to_stop_id: String(s.to_stop.stop_id),
+      to_stop_name: s.to_stop.stop_name,
+      from_level_id: s.from_stop.level?.id,
+      from_level_name: s.from_stop.level?.id,
+      to_level_id: s.to_stop.level?.id,
+      to_level_name: s.to_stop.level?.id
+    },
+    geometry: {
+      type: 'LineString',
+      coordinates: [
+        s.from_stop.geometry!.coordinates,
+        s.to_stop.geometry!.coordinates
+      ]
+    }
+  })))
+  allFeatures.push(...(station.value?.stops || []).map(s => ({
+    type: 'Feature',
+    id: s.id,
+    properties: {
+      id: s.id,
+      stop_name: s.stop_name,
+      stop_id: String(s.stop_id),
+      stop_code: s.stop_code,
+      stop_desc: s.stop_desc,
+      location_type: s.location_type,
+      level_id: s.level?.id,
+      level_index: s.level?.level_index
+    },
+    geometry: s.geometry
+  })))
+  const data = JSON.stringify({ type: 'FeatureCollection', features: allFeatures })
+  const blob = new Blob([data], { type: 'text/json' })
+  const a = document.createElement('a')
+  a.download = 'station.geojson'
+  a.href = window.URL.createObjectURL(blob)
+  a.dataset.downloadurl = ['text/json', a.download, a.href].join(':')
+  a.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: false }))
+}
+
+// Keyboard shortcuts
+usePathwayEditorKeyboard({
+  onEscape: unselectAll,
+  onN: () => { selectMode.value = 'add-node' },
+  onF: () => { if (selectedStops.value.length === 1) { selectMode.value = 'find-route' } },
+  onS: () => stationValidator.value?.openStopsModal(),
+  onP: () => stationValidator.value?.openPathwaysModal(),
+  onC: () => stationValidator.value?.openPathsModal()
+})
 </script>
 
   <style>
@@ -902,6 +623,10 @@ export default {
    .station-editor-panel .panel-heading {
      padding: 0.5em 0.75em;
      font-size: 0.875rem;
+     min-height: 2.5rem;
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
    }
    .station-editor-panel .panel-block {
      padding: 0.75rem;

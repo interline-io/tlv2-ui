@@ -7,7 +7,7 @@
           <t-input v-else v-model="pathway.pathway_id" />
         </t-field>
         <t-field label="From">
-          <span class="button stop-label" @click="emit('selectStop', pathway.from_stop.id!)">
+          <span class="button stop-label" @click="emit('select-stop', pathway.from_stop.id!)">
             <template v-if="pathway.from_stop.stop_name">
               {{ pathway.from_stop.stop_name }}</template>
             <template v-else>
@@ -17,7 +17,7 @@
           </span>
         </t-field>
         <t-field label="To">
-          <span class="button stop-label" @click="emit('selectStop', pathway.to_stop.id!)">
+          <span class="button stop-label" @click="emit('select-stop', pathway.to_stop.id!)">
             <template v-if="pathway.to_stop.stop_name">
               {{ pathway.to_stop.stop_name }}</template>
             <template v-else>
@@ -111,11 +111,17 @@
 
     <template v-if="!readOnly">
       <div v-if="pathway.id" class="buttons is-justify-content-flex-end">
-        <span class="button is-danger" @click="emit('delete', pathway)">Delete Pathway</span>
-        <span class="button is-primary ml-3" @click="emit('update', pathway)">Save Pathway</span>
+        <t-button variant="danger" @click="emit('delete', pathway)">
+          Delete Pathway
+        </t-button>
+        <t-button variant="primary" class="ml-3" @click="emit('update', pathway)">
+          Save Pathway
+        </t-button>
       </div>
       <div v-else class="buttons is-justify-content-flex-end">
-        <span class="button is-primary" @click="emit('create', pathway)">Add Pathway</span>
+        <t-button variant="primary" @click="emit('create', pathway)">
+          Add Pathway
+        </t-button>
       </div>
     </template>
   </div>
@@ -141,10 +147,10 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  selectStop: [id: number]
-  update: [pathway: Pathway]
-  delete: [pathway: Pathway]
-  create: [pathway: Pathway]
+  'select-stop': [id: number]
+  'update': [pathway: Pathway]
+  'delete': [pathway: Pathway]
+  'create': [pathway: Pathway]
 }>()
 
 const pathway = ref(new Pathway(props.value).setDefaults())
