@@ -10,14 +10,14 @@
       narrowed
       striped
       hoverable
-      :default-sort="['target_stops', 'asc']"
+      :default-sort="['parent.stop_name', 'asc']"
     >
       <template #columns>
-        <t-table-column field="stop.parent.stop_name" label="Station" sortable />
-        <t-table-column field="target_feed_onestop_id" label="Target feed Onestop ID" sortable />
-        <t-table-column field="target_stop_id" label="Target stop ID" sortable />
-        <t-table-column field="target_stops" label="Stop ID association found?" sortable />
-        <t-table-column field="location_type" label="Target location type" sortable />
+        <t-table-column field="parent.stop_name" label="Station" sortable />
+        <t-table-column field="external_reference.target_feed_onestop_id" label="Target feed Onestop ID" sortable />
+        <t-table-column field="external_reference.target_stop_id" label="Target stop ID" sortable />
+        <t-table-column field="external_reference.target_active_stop" label="Stop ID association found?" sortable />
+        <t-table-column field="external_reference.target_active_stop.location_type" label="Target location type" sortable />
         <t-table-column label="Routes serving stop" />
         <t-table-column label="Actions" />
       </template>
@@ -154,17 +154,7 @@ const stopsWithRefs = computed(() => {
     }
     ret.push(stop)
   }
-  return ret.sort((a, b) => {
-    const nameA = (a.parent ? a.parent.stop_name : 'zzz') + (a.stop_id || '')
-    const nameB = (b.parent ? b.parent.stop_name : 'zzz') + (b.stop_id || '')
-    if (nameA < nameB) {
-      return -1
-    }
-    if (nameA > nameB) {
-      return 1
-    }
-    return 0
-  })
+  return ret
 })
 
 const fetchMore = (after: number) => {
