@@ -255,6 +255,7 @@
               <tl-apps-stations-station-validator
                 ref="stationValidator"
                 :station="station"
+                show-shortcuts
                 @select-path="selectPath"
                 @select-stop="selectStop"
                 @select-pathway="selectPathway"

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="{ 'show-shortcuts': showShortcuts }">
     <div class="buttons has-addons is-fullwidth">
       <a class="button is-outlined is-flex-grow-1" :class="errorCount.stops > 0 ? 'is-danger' : 'is-dark'" @click="openStops = true">
         <i v-if="errorCount.stops > 0" class="mdi mdi-alert has-text-danger" /> Stops <kbd>S</kbd>
@@ -170,9 +170,10 @@ import { validateStop, validatePathway, validateConnectivity, type ValidationErr
 
 interface Props {
   station: Station
+  showShortcuts?: boolean
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), { showShortcuts: false })
 
 const emit = defineEmits<{
   selectStop: [id: number | null]
@@ -265,4 +266,7 @@ function routeSummary (stop: Stop): string {
 .tl-apps-stations-report {
   width:100%;
 }
+
+kbd { display: none; }
+.show-shortcuts kbd { display: inline; }
 </style>
