@@ -11,124 +11,111 @@
     <div v-if="ready" class="simulator-layout">
       <!-- Controls column -->
       <div class="simulator-controls">
-        <nav class="panel station-editor-panel">
-          <p class="panel-heading">
-            Route
-          </p>
-          <div class="panel-block is-block">
-            <div class="field">
-              <label class="label is-small">Starting point</label>
-              <div class="select is-fullwidth is-small">
-                <select v-model="fromStopId">
-                  <option :value="null">
-                    Select starting point...
+        <t-card label="Route" variant="panel" class="station-editor-panel">
+          <div class="field">
+            <label class="label is-small">Starting point</label>
+            <div class="select is-fullwidth is-small">
+              <select v-model="fromStopId">
+                <option :value="null">
+                  Select starting point...
+                </option>
+                <optgroup v-if="entrances.length > 0" label="Entrances / Exits">
+                  <option v-for="s in entrances" :key="s.id" :value="s.id">
+                    {{ s.stop_name || s.stop_id }}
                   </option>
-                  <optgroup v-if="entrances.length > 0" label="Entrances / Exits">
-                    <option v-for="s in entrances" :key="s.id" :value="s.id">
-                      {{ s.stop_name || s.stop_id }}
-                    </option>
-                  </optgroup>
-                  <optgroup v-if="routeOptions.length > 0" label="Routes">
-                    <option v-for="opt in routeOptions" :key="`route-from-${opt.value}`" :value="opt.value">
-                      {{ opt.label }}
-                    </option>
-                  </optgroup>
-                  <optgroup v-if="unroutedPlatforms.length > 0" label="Other Platforms">
-                    <option v-for="s in unroutedPlatforms" :key="s.id" :value="s.id">
-                      {{ s.stop_name || s.stop_id }}
-                    </option>
-                  </optgroup>
-                </select>
-              </div>
-            </div>
-
-            <div class="field">
-              <label class="label is-small">Destination</label>
-              <div class="select is-fullwidth is-small">
-                <select v-model="toStopId">
-                  <option :value="null">
-                    Select destination...
+                </optgroup>
+                <optgroup v-if="routeOptions.length > 0" label="Routes">
+                  <option v-for="opt in routeOptions" :key="`route-from-${opt.value}`" :value="opt.value">
+                    {{ opt.label }}
                   </option>
-                  <optgroup v-if="entrances.length > 0" label="Entrances / Exits">
-                    <option v-for="s in entrances" :key="s.id" :value="s.id">
-                      {{ s.stop_name || s.stop_id }}
-                    </option>
-                  </optgroup>
-                  <optgroup v-if="routeOptions.length > 0" label="Routes">
-                    <option v-for="opt in routeOptions" :key="`route-to-${opt.value}`" :value="opt.value">
-                      {{ opt.label }}
-                    </option>
-                  </optgroup>
-                  <optgroup v-if="unroutedPlatforms.length > 0" label="Other Platforms">
-                    <option v-for="s in unroutedPlatforms" :key="s.id" :value="s.id">
-                      {{ s.stop_name || s.stop_id }}
-                    </option>
-                  </optgroup>
-                </select>
-              </div>
-            </div>
-
-            <div class="field">
-              <label class="label is-small">Routing profile</label>
-              <div class="select is-fullwidth is-small">
-                <select v-model="selectedProfile">
-                  <option v-for="name in profileNames" :key="name" :value="name">
-                    {{ name }}
+                </optgroup>
+                <optgroup v-if="unroutedPlatforms.length > 0" label="Other Platforms">
+                  <option v-for="s in unroutedPlatforms" :key="s.id" :value="s.id">
+                    {{ s.stop_name || s.stop_id }}
                   </option>
-                </select>
-              </div>
-            </div>
-
-            <div v-if="sameEndpoints" class="notification is-warning is-light mt-3 p-3">
-              <p class="is-size-7">
-                Starting point and destination can't be the same. Pick two different locations.
-              </p>
-            </div>
-            <div v-else-if="fromStopId && toStopId && steps.length === 0" class="notification is-warning is-light mt-3 p-3">
-              <p class="is-size-7">
-                No route found between these stops with the selected profile.
-              </p>
+                </optgroup>
+              </select>
             </div>
           </div>
-        </nav>
 
-        <nav v-if="steps.length > 0" class="panel station-editor-panel">
-          <p class="panel-heading">
-            User Interface
-          </p>
-          <div class="panel-block is-block">
-            <div class="buttons has-addons is-fullwidth">
-              <button
-                class="button is-small view-mode-btn"
-                :class="displayMode === 'paged' ? 'is-primary' : 'is-light'"
-                title="Turn-by-turn pages"
-                @click="displayMode = 'paged'"
-              >
-                <span class="icon">
-                  <i class="mdi mdi-view-carousel" />
-                </span>
-                <span>Turn-by-turn pages</span>
-              </button>
-              <button
-                class="button is-small view-mode-btn"
-                :class="displayMode === 'scroll' ? 'is-primary' : 'is-light'"
-                title="Single itinerary"
-                @click="displayMode = 'scroll'"
-              >
-                <span class="icon">
-                  <i class="mdi mdi-timeline-text" />
-                </span>
-                <span>Scrolling itinerary</span>
-              </button>
+          <div class="field">
+            <label class="label is-small">Destination</label>
+            <div class="select is-fullwidth is-small">
+              <select v-model="toStopId">
+                <option :value="null">
+                  Select destination...
+                </option>
+                <optgroup v-if="entrances.length > 0" label="Entrances / Exits">
+                  <option v-for="s in entrances" :key="s.id" :value="s.id">
+                    {{ s.stop_name || s.stop_id }}
+                  </option>
+                </optgroup>
+                <optgroup v-if="routeOptions.length > 0" label="Routes">
+                  <option v-for="opt in routeOptions" :key="`route-to-${opt.value}`" :value="opt.value">
+                    {{ opt.label }}
+                  </option>
+                </optgroup>
+                <optgroup v-if="unroutedPlatforms.length > 0" label="Other Platforms">
+                  <option v-for="s in unroutedPlatforms" :key="s.id" :value="s.id">
+                    {{ s.stop_name || s.stop_id }}
+                  </option>
+                </optgroup>
+              </select>
             </div>
           </div>
-        </nav>
 
-        <nav v-if="steps.length > 0" class="panel station-editor-panel">
-          <p class="panel-heading">
-            Summary
-          </p>
-          <div class="panel-block is-block is-size-7">
+          <div class="field">
+            <label class="label is-small">Routing profile</label>
+            <div class="select is-fullwidth is-small">
+              <select v-model="selectedProfile">
+                <option v-for="name in profileNames" :key="name" :value="name">
+                  {{ name }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div v-if="sameEndpoints" class="notification is-warning is-light mt-3 p-3">
+            <p class="is-size-7">
+              Starting point and destination can't be the same. Pick two different locations.
+            </p>
+          </div>
+          <div v-else-if="fromStopId && toStopId && steps.length === 0" class="notification is-warning is-light mt-3 p-3">
+            <p class="is-size-7">
+              No route found between these stops with the selected profile.
+            </p>
+          </div>
+        </t-card>
+
+        <t-card v-if="steps.length > 0" label="User Interface" variant="panel" class="station-editor-panel">
+          <div class="buttons has-addons is-fullwidth">
+            <button
+              class="button is-small view-mode-btn"
+              :class="displayMode === 'paged' ? 'is-primary' : 'is-light'"
+              title="Turn-by-turn pages"
+              @click="displayMode = 'paged'"
+            >
+              <span class="icon">
+                <i class="mdi mdi-view-carousel" />
+              </span>
+              <span>Turn-by-turn pages</span>
+            </button>
+            <button
+              class="button is-small view-mode-btn"
+              :class="displayMode === 'scroll' ? 'is-primary' : 'is-light'"
+              title="Single itinerary"
+              @click="displayMode = 'scroll'"
+            >
+              <span class="icon">
+                <i class="mdi mdi-timeline-text" />
+              </span>
+              <span>Scrolling itinerary</span>
+            </button>
+          </div>
+        </t-card>
+
+        <t-card v-if="steps.length > 0" label="Summary" variant="panel" class="station-editor-panel">
+          <div class="is-size-7">
             <p><strong>{{ steps.length }}</strong> step{{ steps.length !== 1 ? 's' : '' }}</p>
             <p v-if="totalTimeStr">
               Estimated: <strong>{{ totalTimeStr }}</strong>
@@ -157,7 +144,7 @@
               </tl-link>
             </div>
           </div>
-        </nav>
+        </t-card>
       </div>
 
       <!-- Phone frame column -->
@@ -766,7 +753,7 @@ watch(displayMode, (newMode) => {
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .simulator-layout {
   display: flex;
   gap: 1.5rem;
@@ -784,6 +771,23 @@ watch(displayMode, (newMode) => {
   display: flex;
   justify-content: center;
   padding: 0.5rem 0;
+}
+
+.station-editor-panel {
+  margin-bottom: 0.75rem;
+
+  :deep(.card-header) {
+    min-height: 2.5rem;
+  }
+
+  :deep(.card-header-title) {
+    padding: 0.5em 0.75em;
+    font-size: 0.875rem;
+  }
+
+  :deep(.card-content) {
+    padding: 0.75rem;
+  }
 }
 
 /* ── Phone frame ── */

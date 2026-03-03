@@ -23,7 +23,7 @@
             />
           </t-field>
           <!-- SELECT -->
-          <t-card v-if="selectMode === 'select'" label="Select">
+          <t-card v-if="selectMode === 'select'" label="Select" variant="panel">
             <div>
               <div class="mb-2">
                 <div class="is-flex is-justify-content-space-between is-align-items-center mb-2">
@@ -83,7 +83,7 @@
               </div>
             </div>
           </t-card>
-          <t-card v-else-if="selectMode === 'add-pathway'" label="Add Pathway">
+          <t-card v-else-if="selectMode === 'add-pathway'" label="Add Pathway" variant="panel">
             <div>
               <tl-apps-stations-pathway-editor
                 :station="station"
@@ -94,7 +94,7 @@
             </div>
           </t-card>
           <template v-if="selectMode === 'edit-pathway'">
-            <t-card v-for="spw of selectedPathways" :key="spw.id">
+            <t-card v-for="spw of selectedPathways" :key="spw.id" variant="panel">
               <template #header>
                 <p class="card-header-title">
                   Edit Pathway
@@ -123,7 +123,7 @@
             </t-card>
           </template>
           <template v-else-if="selectMode === 'edit-node'">
-            <t-card v-for="ss of selectedStops" :key="ss.id" class="card">
+            <t-card v-for="ss of selectedStops" :key="ss.id" variant="panel">
               <template #header>
                 <p class="card-header-title">
                   Edit Node
@@ -153,7 +153,7 @@
             </t-card>
           </template>
           <template v-else-if="selectMode === 'add-node'">
-            <t-card label="Add Node">
+            <t-card label="Add Node" variant="panel">
               <t-field label="Level">
                 <t-dropdown
                   v-model="selectedLevel"
@@ -169,7 +169,7 @@
             </t-card>
           </template>
           <template v-else-if="selectMode === 'find-route'">
-            <t-card v-if="selectedStops.length > 1" label="Find Route">
+            <t-card v-if="selectedStops.length > 1" label="Find Route" variant="panel">
               <t-field label="Routing Profile">
                 <t-dropdown
                   v-model="selectedProfile"
