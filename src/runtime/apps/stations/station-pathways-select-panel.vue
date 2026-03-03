@@ -1,16 +1,16 @@
 <template>
-  <nav class="panel station-editor-panel">
-    <p class="panel-heading">
-      <span>Select</span>
-      <t-button
-        v-if="selectedStopsCount > 0 || selectedPathwaysCount > 0"
-        size="small"
-        @click="$emit('unselect-all')"
-      >
-        Unselect All <kbd>ESC</kbd>
-      </t-button>
-    </p>
-    <div class="panel-block is-block">
+  <t-card variant="panel" class="station-editor-panel">
+    <template #header>
+      <p class="card-header-title">
+        Select
+      </p>
+      <div v-if="selectedStopsCount > 0 || selectedPathwaysCount > 0" class="card-header-actions">
+        <t-button size="small" @click="$emit('unselect-all')">
+          Unselect All <kbd>ESC</kbd>
+        </t-button>
+      </div>
+    </template>
+    <div>
       <div v-if="selectedStopsCount > 0 || selectedPathwaysCount > 0" class="mb-4">
         <div v-if="lastFilterApplied" class="notification is-info is-light py-2 px-3 mb-3">
           <p class="is-size-7">
@@ -79,7 +79,7 @@
         </t-field>
       </div>
     </div>
-  </nav>
+  </t-card>
 </template>
 
 <script setup lang="ts">

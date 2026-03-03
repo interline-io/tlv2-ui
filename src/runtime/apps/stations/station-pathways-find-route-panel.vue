@@ -1,12 +1,16 @@
 <template>
-  <nav class="panel station-editor-panel">
-    <p class="panel-heading">
-      <span>Find Route</span>
-      <t-button size="small" @click="$emit('unselect')">
-        Clear <kbd>ESC</kbd>
-      </t-button>
-    </p>
-    <div class="panel-block is-block">
+  <t-card variant="panel" class="station-editor-panel">
+    <template #header>
+      <p class="card-header-title">
+        Find Route
+      </p>
+      <div class="card-header-actions">
+        <t-button size="small" @click="$emit('unselect')">
+          Clear <kbd>ESC</kbd>
+        </t-button>
+      </div>
+    </template>
+    <div>
       <div class="field">
         <label class="label is-small">Routing Profile</label>
         <t-select
@@ -39,7 +43,7 @@
         />
       </div>
     </div>
-  </nav>
+  </t-card>
 </template>
 
 <script setup lang="ts">

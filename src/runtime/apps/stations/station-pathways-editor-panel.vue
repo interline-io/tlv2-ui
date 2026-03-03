@@ -1,9 +1,11 @@
 <template>
-  <nav class="panel station-editor-panel">
-    <p class="panel-heading">
-      <span v-if="!editMode">{{ viewHeading }}</span>
-      <span v-else>{{ editHeading }}</span>
-      <span style="display:flex;gap:0.5rem;">
+  <t-card variant="panel" class="station-editor-panel">
+    <template #header>
+      <p class="card-header-title">
+        <span v-if="!editMode">{{ viewHeading }}</span>
+        <span v-else>{{ editHeading }}</span>
+      </p>
+      <div class="card-header-actions">
         <t-button
           v-if="showUnselect"
           size="small"
@@ -19,19 +21,19 @@
           <t-icon :icon="editMode ? 'eye' : 'pencil'" size="small" />
           <span>{{ editMode ? 'View' : editLabel }}</span>
         </t-button>
-      </span>
-    </p>
+      </div>
+    </template>
 
     <!-- View Mode (Read-only) -->
-    <div v-if="!editMode" class="panel-block is-block">
+    <template v-if="!editMode">
       <slot name="view" />
-    </div>
+    </template>
 
     <!-- Edit Mode -->
-    <div v-else class="panel-block is-block">
+    <template v-else>
       <slot name="edit" :cancel="() => (editMode = false)" />
-    </div>
-  </nav>
+    </template>
+  </t-card>
 </template>
 
 <script setup lang="ts">

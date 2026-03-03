@@ -1,9 +1,6 @@
 <template>
-  <nav class="panel station-editor-panel">
-    <p class="panel-heading">
-      Add Node
-    </p>
-    <div class="panel-block is-block">
+  <t-card label="Add Node" variant="panel" class="station-editor-panel">
+    <div>
       <p class="notification">
         To create a node, select which level it will be located on and then click/tap on the map.
       </p>
@@ -25,7 +22,7 @@
         </t-dropdown>
       </t-field>
     </div>
-  </nav>
+  </t-card>
 </template>
 
 <script setup lang="ts">

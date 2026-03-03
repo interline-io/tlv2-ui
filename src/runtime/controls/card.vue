@@ -1,5 +1,5 @@
 <template>
-  <div class="card t-card">
+  <div class="card t-card" :class="{ 't-card--panel': variant === 'panel' }">
     <header
       v-if="label || $slots.header"
       class="card-header"
@@ -78,6 +78,12 @@ interface Props {
   open?: boolean
 
   /**
+   * Visual variant for the card.
+   * 'panel' gives a dark header matching Bulma's panel-heading style.
+   */
+  variant?: 'panel'
+
+  /**
    * Icon for the collapse indicator.
    * @default 'chevron-down'
    */
@@ -86,6 +92,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   label: undefined,
+  variant: undefined,
   expandable: false,
   open: false,
   icon: 'chevron-down'
@@ -134,6 +141,17 @@ function toggle () {
 
     &.is-rotated {
       transform: rotate(-90deg);
+    }
+  }
+
+  &.t-card--panel {
+    .card-header {
+      background-color: hsl(var(--bulma-scheme-h), var(--bulma-scheme-s), var(--bulma-text-l));
+      color: hsl(var(--bulma-scheme-h), var(--bulma-scheme-s), var(--bulma-text-invert-l));
+    }
+
+    :deep(.card-header-title) {
+      color: inherit;
     }
   }
 }

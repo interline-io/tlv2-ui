@@ -1,9 +1,6 @@
 <template>
-  <nav class="panel station-editor-panel">
-    <p class="panel-heading">
-      Add Pathway
-    </p>
-    <div class="panel-block is-block">
+  <t-card label="Add Pathway" variant="panel" class="station-editor-panel">
+    <div>
       <tl-apps-stations-pathway-editor
         :station="station"
         :value="pathway"
@@ -11,7 +8,7 @@
         @create="$emit('create', $event)"
       />
     </div>
-  </nav>
+  </t-card>
 </template>
 
 <script setup lang="ts">

@@ -9,144 +9,134 @@
     />
     <div v-if="ready" class="columns pathways-columns">
       <div class="column is-narrow">
-        <div class="block tl-editor-info">
+        <div class="tl-editor-info">
           <!-- Mode Selection -->
-          <nav class="panel station-editor-panel">
-            <p class="panel-heading">
-              Mode
-            </p>
-            <div class="panel-block">
-              <div class="buttons has-addons is-fullwidth" role="group" aria-label="Editor mode selection">
-                <button
-                  class="button"
-                  :class="{ 'is-primary is-selected': selectMode === 'select' }"
-                  aria-label="Switch to select mode"
-                  :aria-pressed="selectMode === 'select'"
-                  @click="selectMode = 'select'"
-                >
-                  Select
-                </button>
-                <button
-                  class="button"
-                  :class="{ 'is-primary is-selected': selectMode === 'add-node' }"
-                  aria-label="Switch to add node mode"
-                  :aria-pressed="selectMode === 'add-node'"
-                  @click="selectMode = 'add-node'"
-                >
-                  Add Node <kbd>N</kbd>
-                </button>
-                <button
-                  class="button"
-                  :class="{ 'is-primary is-selected': selectMode === 'add-pathway' }"
-                  :disabled="!(selectedStop && selectedSource)"
-                  :title="!(selectedStop && selectedSource) ? 'Select two nodes to add a pathway' : ''"
-                  aria-label="Switch to add pathway mode"
-                  :aria-pressed="selectMode === 'add-pathway'"
-                  @click="selectMode = 'add-pathway'"
-                >
-                  Add Pathway
-                </button>
-                <button
-                  class="button"
-                  :class="{ 'is-primary is-selected': selectMode === 'find-route' }"
-                  :disabled="selectedStops.length !== 1"
-                  :title="selectedStops.length !== 1 ? 'Select a starting node before entering Find Route mode' : ''"
-                  aria-label="Switch to find route mode"
-                  :aria-pressed="selectMode === 'find-route'"
-                  @click="selectMode = 'find-route'"
-                >
-                  Find Route <kbd>F</kbd>
-                </button>
-                <button
-                  class="button"
-                  :class="{ 'is-primary is-selected': selectMode === 'export' }"
-                  aria-label="Switch to export mode"
-                  :aria-pressed="selectMode === 'export'"
-                  @click="selectMode = 'export'"
-                >
-                  Export
-                </button>
-              </div>
+          <t-card label="Mode" variant="panel" class="station-editor-panel">
+            <div class="buttons has-addons is-fullwidth" role="group" aria-label="Editor mode selection">
+              <button
+                class="button"
+                :class="{ 'is-primary is-selected': selectMode === 'select' }"
+                aria-label="Switch to select mode"
+                :aria-pressed="selectMode === 'select'"
+                @click="selectMode = 'select'"
+              >
+                Select
+              </button>
+              <button
+                class="button"
+                :class="{ 'is-primary is-selected': selectMode === 'add-node' }"
+                aria-label="Switch to add node mode"
+                :aria-pressed="selectMode === 'add-node'"
+                @click="selectMode = 'add-node'"
+              >
+                Add Node <kbd>N</kbd>
+              </button>
+              <button
+                class="button"
+                :class="{ 'is-primary is-selected': selectMode === 'add-pathway' }"
+                :disabled="!(selectedStop && selectedSource)"
+                :title="!(selectedStop && selectedSource) ? 'Select two nodes to add a pathway' : ''"
+                aria-label="Switch to add pathway mode"
+                :aria-pressed="selectMode === 'add-pathway'"
+                @click="selectMode = 'add-pathway'"
+              >
+                Add Pathway
+              </button>
+              <button
+                class="button"
+                :class="{ 'is-primary is-selected': selectMode === 'find-route' }"
+                :disabled="selectedStops.length !== 1"
+                :title="selectedStops.length !== 1 ? 'Select a starting node before entering Find Route mode' : ''"
+                aria-label="Switch to find route mode"
+                :aria-pressed="selectMode === 'find-route'"
+                @click="selectMode = 'find-route'"
+              >
+                Find Route <kbd>F</kbd>
+              </button>
+              <button
+                class="button"
+                :class="{ 'is-primary is-selected': selectMode === 'export' }"
+                aria-label="Switch to export mode"
+                :aria-pressed="selectMode === 'export'"
+                @click="selectMode = 'export'"
+              >
+                Export
+              </button>
             </div>
-          </nav>
+          </t-card>
 
           <!-- Map Controls -->
-          <nav class="panel station-editor-panel">
-            <p class="panel-heading">
-              Map Display
-            </p>
-            <div class="panel-block is-block">
-              <div>
-                <div class="field collapse-trigger-field" style="cursor:pointer" @click="levelsOpen = !levelsOpen">
-                  <label class="label is-small collapse-trigger-label" style="cursor:pointer">
-                    <t-icon :icon="levelsOpen ? 'menu-down' : 'menu-right'" size="small" />
-                    <span>Levels</span>
-                  </label>
-                </div>
-                <div v-show="levelsOpen" class="ml-4">
-                  <t-checkbox-group
-                    v-model="selectedLevelIds"
-                    :options="sortedStationLevels"
-                    value-field="id"
-                    hide-select-all
+          <t-card label="Map Display" variant="panel" class="station-editor-panel">
+            <div>
+              <div class="field collapse-trigger-field" style="cursor:pointer" @click="levelsOpen = !levelsOpen">
+                <label class="label is-small collapse-trigger-label" style="cursor:pointer">
+                  <t-icon :icon="levelsOpen ? 'menu-down' : 'menu-right'" size="small" />
+                  <span>Levels</span>
+                </label>
+              </div>
+              <div v-show="levelsOpen" class="ml-4">
+                <t-checkbox-group
+                  v-model="selectedLevelIds"
+                  :options="sortedStationLevels"
+                  value-field="id"
+                  hide-select-all
+                >
+                  <template #option="{ option }">
+                    <span v-if="option.level_index != null" class="has-text-weight-semibold">{{ option.level_index }}:</span>
+                    {{ option.level_name }}
+                    <span class="has-text-grey is-size-7">({{ option.stops.length }} nodes)</span>
+                  </template>
+                </t-checkbox-group>
+              </div>
+            </div>
+
+            <div>
+              <div class="field collapse-trigger-field" style="cursor:pointer" @click="basemapOpen = !basemapOpen">
+                <label class="label is-small collapse-trigger-label" style="cursor:pointer">
+                  <t-icon :icon="basemapOpen ? 'menu-down' : 'menu-right'" size="small" />
+                  <span>Basemap</span>
+                </label>
+              </div>
+              <div v-show="basemapOpen">
+                <div v-for="(bm, key) in basemapLayers" :key="key" class="field ml-4">
+                  <t-radio
+                    v-model="basemap"
+                    :native-value="String(key)"
                   >
-                    <template #option="{ option }">
-                      <span v-if="option.level_index != null" class="has-text-weight-semibold">{{ option.level_index }}:</span>
-                      {{ option.level_name }}
-                      <span class="has-text-grey is-size-7">({{ option.stops.length }} nodes)</span>
-                    </template>
-                  </t-checkbox-group>
-                </div>
-              </div>
-
-              <div>
-                <div class="field collapse-trigger-field" style="cursor:pointer" @click="basemapOpen = !basemapOpen">
-                  <label class="label is-small collapse-trigger-label" style="cursor:pointer">
-                    <t-icon :icon="basemapOpen ? 'menu-down' : 'menu-right'" size="small" />
-                    <span>Basemap</span>
-                  </label>
-                </div>
-                <div v-show="basemapOpen">
-                  <div v-for="(bm, key) in basemapLayers" :key="key" class="field ml-4">
-                    <t-radio
-                      v-model="basemap"
-                      :native-value="String(key)"
-                    >
-                      {{ bm.label }}
-                    </t-radio>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <div class="field collapse-trigger-field" style="cursor:pointer" @click="legendOpen = !legendOpen">
-                  <label class="label is-small collapse-trigger-label" style="cursor:pointer">
-                    <t-icon :icon="legendOpen ? 'menu-down' : 'menu-right'" size="small" />
-                    <span>Legend</span>
-                  </label>
-                </div>
-                <div v-show="legendOpen" class="ml-4">
-                  <ul>
-                    <li class="legend-item circle-indicator">
-                      circles are nodes (stops) with number for assigned level
-                    </li>
-                    <li class="legend-item yellow-ring">
-                      yellow highlight indicates selected or hovered node/pathway
-                    </li>
-                    <li class="legend-item blue-rectangle">
-                      blue pathways are on the same level
-                    </li>
-                    <li class="legend-item red-rectangle">
-                      red pathways connect two separate levels
-                    </li>
-                    <li class="legend-item purple-rectangle">
-                      purple lines show distance to associated stop
-                    </li>
-                  </ul>
+                    {{ bm.label }}
+                  </t-radio>
                 </div>
               </div>
             </div>
-          </nav>
+
+            <div>
+              <div class="field collapse-trigger-field" style="cursor:pointer" @click="legendOpen = !legendOpen">
+                <label class="label is-small collapse-trigger-label" style="cursor:pointer">
+                  <t-icon :icon="legendOpen ? 'menu-down' : 'menu-right'" size="small" />
+                  <span>Legend</span>
+                </label>
+              </div>
+              <div v-show="legendOpen" class="ml-4">
+                <ul>
+                  <li class="legend-item circle-indicator">
+                    circles are nodes (stops) with number for assigned level
+                  </li>
+                  <li class="legend-item yellow-ring">
+                    yellow highlight indicates selected or hovered node/pathway
+                  </li>
+                  <li class="legend-item blue-rectangle">
+                    blue pathways are on the same level
+                  </li>
+                  <li class="legend-item red-rectangle">
+                    red pathways connect two separate levels
+                  </li>
+                  <li class="legend-item purple-rectangle">
+                    purple lines show distance to associated stop
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </t-card>
           <!-- SELECT -->
           <tl-apps-stations-station-pathways-select-panel
             v-if="selectMode === 'select'"
@@ -232,43 +222,33 @@
             @hover-pathway="hoverPathwayId = $event"
             @unselect="unselectAll"
           />
-          <nav v-else-if="selectMode === 'export'" class="panel station-editor-panel">
-            <p class="panel-heading">
-              Export
+          <t-card v-else-if="selectMode === 'export'" label="Export" variant="panel" class="station-editor-panel">
+            <p class="notification">
+              To export as a full GTFS feed, exit the pathways editor and
+              <nuxt-link
+                :to="{
+                  path: `/saas/station-editor/${feedKey}/${feedVersionKey}/stations`,
+                }"
+              >
+                return to the feed version
+              </nuxt-link>
             </p>
-            <div class="panel-block is-block">
-              <p class="notification">
-                To export as a full GTFS feed, exit the pathways editor and
-                <nuxt-link
-                  :to="{
-                    path: `/saas/station-editor/${feedKey}/${feedVersionKey}/stations`,
-                  }"
-                >
-                  return to the feed version
-                </nuxt-link>
-              </p>
-              <t-button icon-left="download" fullwidth @click="downloadGeojson">
-                Download this station as GeoJSON
-              </t-button>
-            </div>
-          </nav>
+            <t-button icon-left="download" fullwidth @click="downloadGeojson">
+              Download this station as GeoJSON
+            </t-button>
+          </t-card>
 
           <!-- Validation Reports -->
-          <nav class="panel station-editor-panel">
-            <p class="panel-heading">
-              Station Validation Reports
-            </p>
-            <div class="panel-block is-block">
-              <tl-apps-stations-station-validator
-                ref="stationValidator"
-                :station="station"
-                show-shortcuts
-                @select-path="selectPath"
-                @select-stop="selectStop"
-                @select-pathway="selectPathway"
-              />
-            </div>
-          </nav>
+          <t-card label="Station Validation Reports" variant="panel" class="station-editor-panel">
+            <tl-apps-stations-station-validator
+              ref="stationValidator"
+              :station="station"
+              show-shortcuts
+              @select-path="selectPath"
+              @select-stop="selectStop"
+              @select-pathway="selectPathway"
+            />
+          </t-card>
         </div>
       </div>
 
@@ -608,136 +588,120 @@ usePathwayEditorKeyboard({
 })
 </script>
 
-  <style>
-  .help li {
-    margin-bottom:10px;
+  <style scoped lang="scss">
+  .station-pathways-container {
+    height: calc(100vh - 100px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    :deep(.station-mode-tabs-bar) {
+      margin-bottom: 0;
+    }
   }
 
-   .station-pathways-container {
-     /* saas layout: 60px nav + 20px container padding-top + 20px padding-bottom */
-     height: calc(100vh - 100px);
-     display: flex;
-     flex-direction: column;
-     overflow: hidden;
-     gap: 0.75rem;
-   }
+  .tl-editor-info {
+    width: 540px;
+    height: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0 4px;
+  }
 
-   /* The tabs bar has margin-bottom: 0.75rem globally; neutralize it here so
-      the flex gap handles spacing instead (avoids Firefox scrollHeight inflation) */
-   .station-pathways-container :deep(.station-mode-tabs-bar) {
-     margin-bottom: 0;
-   }
+  .station-editor-panel {
+    margin-bottom: 0.75rem;
 
-   .tl-editor-info {
-     width: 540px;
-     height: 100%;
-     overflow-y: auto;
-     overflow-x: hidden;
-     padding-left: 0.5rem;
-     padding-right: 0.5rem;
-   }
-   .station-editor-panel {
-     margin-bottom: 0.75rem;
-   }
-   .station-editor-panel .panel-heading {
-     padding: 0.5em 0.75em;
-     font-size: 0.875rem;
-     min-height: 2.5rem;
-     display: flex;
-     justify-content: space-between;
-     align-items: center;
-   }
-   .station-editor-panel .panel-block {
-     padding: 0.75rem;
-   }
-   .station-editor-panel .buttons.has-addons {
-     display: flex;
-     width: 100%;
-   }
-   .station-editor-panel .buttons.has-addons .button {
-     flex: 1;
-   }
-   .station-editor-panel .columns.is-mobile {
-     margin-bottom: 0;
-   }
-   .station-editor-panel .columns.is-mobile .column {
-     padding-top: 0;
-     padding-bottom: 0;
-   }
+    :deep(.card-header) {
+      min-height: 2.5rem;
+    }
 
-   /* Ensure layout fits in viewport */
-   .pathways-columns {
-     flex: 1;
-     min-height: 0;
-     /* Override Bulma's negative column margins that cause x-overflow */
-     margin: 0;
-     display: flex;
-     align-items: stretch;
-   }
+    :deep(.card-header-title) {
+      padding: 0.5em 0.75em;
+      font-size: 0.875rem;
+    }
 
-   .pathways-columns .column.is-narrow {
-     display: flex;
-     flex-direction: column;
-   }
+    :deep(.card-header-actions) {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding-right: 0.75rem;
+    }
 
-   .pathways-columns .column.is-narrow .block {
-     flex: 1;
-     display: flex;
-     flex-direction: column;
-   }
+    :deep(.card-content) {
+      padding: 0.75rem;
+    }
 
-   /* Make map container fill available height */
-   .pathways-columns .column:not(.is-narrow) {
-     display: flex;
-     flex-direction: column;
-     flex: 1;
-   }
+    .buttons.has-addons {
+      display: flex;
+      width: 100%;
 
-   .pathways-columns .column:not(.is-narrow) > * {
-     flex: 1;
-     height: 100%;
-   }
+      .button {
+        flex: 1;
+      }
+    }
 
-   /* Collapse trigger styling */
-   .collapse-trigger-field {
-     margin-bottom: 0.5rem;
-   }
+    :deep(.columns.is-mobile) {
+      margin-bottom: 0;
 
-   .collapse-trigger-label {
-     display: flex;
-     align-items: center;
-     gap: 0.25rem;
-     cursor: pointer;
-     margin-bottom: 0 !important;
-   }
+      .column {
+        padding-top: 0;
+        padding-bottom: 0;
+      }
+    }
+  }
 
-   .collapse-trigger-label:hover {
-     color: #3273dc;
-   }
+  .pathways-columns {
+    flex: 1;
+    min-height: 0;
+    margin: 0;
+    display: flex;
+    align-items: stretch;
 
-   /* Legend styling */
-   .legend-item {
-     margin-bottom: 0.25rem;
-   }
+    .column.is-narrow {
+      display: flex;
+      flex-direction: column;
+      padding-left: 0;
+      padding-right: 0;
+    }
 
-   .circle-indicator::before {
-     content: "⓪ ";
-     font-size: 1.2em;
-   }
+    .column:not(.is-narrow) {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
 
-   .yellow-ring::before {
-     content: "🟡 ";
-   }
+      > :deep(*) {
+        flex: 1;
+        height: 100%;
+      }
+    }
+  }
 
-   .blue-rectangle::before {
-     content: "🟦 ";
-   }
+  .collapse-trigger-field {
+    margin-bottom: 0.5rem;
+  }
 
-   .red-rectangle::before {
-     content: "🟥 ";
-   }
+  .collapse-trigger-label {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    cursor: pointer;
+    margin-bottom: 0 !important;
 
-   .purple-rectangle::before {
-     content: "🟪 ";
-   }
+    &:hover {
+      color: #3273dc;
+    }
+  }
+
+  .legend-item {
+    margin-bottom: 0.25rem;
+  }
+
+  .circle-indicator::before { content: "⓪ "; font-size: 1.2em; }
+  .yellow-ring::before { content: "🟡 "; }
+  .blue-rectangle::before { content: "🟦 "; }
+  .red-rectangle::before { content: "🟥 "; }
+  .purple-rectangle::before { content: "🟪 "; }
 </style>
