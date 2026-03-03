@@ -1,5 +1,12 @@
 <template>
   <div v-if="station" class="station-pathways-container">
+    <tl-apps-stations-station-mode-tabs
+      :station="station"
+      :feed-key="feedKey"
+      :feed-version-key="feedVersionKey"
+      :station-key="stationKey"
+      :stop-associations-enabled="stopAssociationsEnabled"
+    />
     <div v-if="ready" class="columns pathways-columns">
       <div class="column is-narrow">
         <div class="block tl-editor-info">

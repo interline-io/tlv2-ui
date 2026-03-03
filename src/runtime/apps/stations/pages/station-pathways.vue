@@ -1,10 +1,5 @@
 <template>
   <div v-if="station">
-    <slot name="title">
-      <tl-title title="Station Pathways">
-        Station Pathways: {{ stationName }}
-      </tl-title>
-    </slot>
     <tl-apps-stations-station-mode-tabs
       :station="station"
       :feed-key="feedKey"
@@ -340,7 +335,6 @@ const {
   ready,
   refetching,
   station,
-  stationName,
   stopAssociationsEnabled,
   selectedLevels,
   selectedLevel,

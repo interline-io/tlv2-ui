@@ -1,12 +1,14 @@
 <template>
   <div v-if="station">
-    <slot name="title">
-      <tl-title title="Station">
-        Station: {{ stationName }}
-      </tl-title>
-    </slot>
+    <tl-apps-stations-station-mode-tabs
+      :station="station"
+      :feed-key="feedKey"
+      :feed-version-key="feedVersionKey"
+      :station-key="stationKey"
+      :stop-associations-enabled="stopAssociationsEnabled"
+    />
 
-    <div class="box">
+    <div class="mb-4">
       <h4 class="title is-4 is-clearfix">
         Station Info
         <tl-link
@@ -31,14 +33,6 @@
         <strong>Database ID:</strong> {{ station.stop.id }} <br>
       </div>
     </div>
-
-    <tl-apps-stations-station-mode-tabs
-      :station="station"
-      :feed-key="feedKey"
-      :feed-version-key="feedVersionKey"
-      :station-key="stationKey"
-      :stop-associations-enabled="stopAssociationsEnabled"
-    />
 
     <t-loading v-if="loading" :active="true" />
     <div v-else>
@@ -81,7 +75,6 @@ const { feedKey, feedVersionKey, stationKey, clientId } = toRefs(props)
 
 const {
   station,
-  stationName,
   stopAssociationsEnabled,
   loading
 } = useStation({

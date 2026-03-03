@@ -1,11 +1,5 @@
 <template>
   <div v-if="station">
-    <slot name="title">
-      <tl-title title="Station Simulator">
-        Station Simulator: {{ stationName }}
-      </tl-title>
-    </slot>
-
     <tl-apps-stations-station-mode-tabs
       :station="station"
       :feed-key="feedKey"

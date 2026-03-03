@@ -1,10 +1,5 @@
 <template>
   <div v-if="station">
-    <slot name="title">
-      <tl-title title="Station Stops">
-        Station Stops: {{ stationName }}
-      </tl-title>
-    </slot>
     <tl-apps-stations-station-mode-tabs
       :station="station"
       :feed-key="feedKey"
@@ -185,7 +180,6 @@ const { feedKey, feedVersionKey, stationKey, clientId } = toRefs(props)
 
 const {
   station,
-  stationName,
   stopAssociationsEnabled,
   selectedAgencies: stationSelectedAgencies,
   handleError,
