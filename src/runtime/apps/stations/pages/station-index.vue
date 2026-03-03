@@ -61,7 +61,8 @@
 </template>
 
 <script setup lang="ts">
-import { toRefs } from 'vue'
+import { computed, toRefs } from 'vue'
+import { useHead } from '#imports'
 import { useStation } from '../composables/useStation'
 
 const props = defineProps<{
@@ -83,6 +84,10 @@ const {
   stationKey,
   clientId: clientId?.value
 })
+
+useHead(computed(() => ({
+  title: station.value?.stop?.stop_name ? `${station.value.stop.stop_name} — Draw Levels` : 'Draw Levels'
+})))
 </script>
 
   <style scoped>

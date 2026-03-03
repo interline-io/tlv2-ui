@@ -396,6 +396,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, toRefs } from 'vue'
+import { useHead } from '#imports'
 import type { Stop, Station } from '../station'
 import { Pathway } from '../station'
 import { Profiles } from '../../../lib/pathways/graph'
@@ -431,6 +432,10 @@ const {
   stationName,
   stopAssociationsEnabled
 } = useStation({ feedKey, feedVersionKey, stationKey, clientId: clientId?.value })
+
+useHead(computed(() => ({
+  title: station.value?.stop?.stop_name ? `${station.value.stop.stop_name} — Simulator` : 'Simulator'
+})))
 
 const fromStopId = ref<number | null>(null)
 const toStopId = ref<number | null>(null)

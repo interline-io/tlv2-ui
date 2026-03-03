@@ -162,7 +162,7 @@
 
 <script setup lang="ts">
 import { computed, ref, toRefs, watch } from 'vue'
-import { navigateTo, useRoute } from '#imports'
+import { navigateTo, useHead, useRoute } from '#imports'
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
 import { Stop } from '../station'
@@ -185,6 +185,10 @@ const {
   handleError,
   importStop
 } = useStation({ feedKey, feedVersionKey, stationKey, clientId: clientId?.value })
+
+useHead(computed(() => ({
+  title: station.value?.stop?.stop_name ? `${station.value.stop.stop_name} — Associate Stops` : 'Associate Stops'
+})))
 
 const route = useRoute()
 

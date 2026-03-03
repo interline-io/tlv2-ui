@@ -296,6 +296,7 @@
 <script setup lang="ts">
 import { ref, computed, nextTick, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { useHead } from '#imports'
 import { LocationTypes } from '../basemaps'
 import { PathwayModes } from '../../../lib/pathways/pathway-icons'
 import { Profiles } from '../../../lib/pathways/graph'
@@ -331,6 +332,10 @@ const {
   updatePathway,
   deletePathway
 } = useStation({ feedKey, feedVersionKey, stationKey, clientId: 'stationEditor' })
+
+useHead(computed(() => ({
+  title: station.value?.stop?.stop_name ? `${station.value.stop.stop_name} — Draw Pathways` : 'Draw Pathways'
+})))
 
 const { basemapLayers } = useBasemapLayers()
 
@@ -609,20 +614,26 @@ usePathwayEditorKeyboard({
   }
 
    .station-pathways-container {
-     height: calc(100vh - 80px);
+     /* saas layout: 60px nav + 20px container padding-top + 20px padding-bottom */
+     height: calc(100vh - 100px);
      display: flex;
      flex-direction: column;
+     overflow: hidden;
+     gap: 0.75rem;
    }
 
-   .pathways-columns {
-     flex: 1;
-     height: 100%;
+   /* The tabs bar has margin-bottom: 0.75rem globally; neutralize it here so
+      the flex gap handles spacing instead (avoids Firefox scrollHeight inflation) */
+   .station-pathways-container :deep(.station-mode-tabs-bar) {
+     margin-bottom: 0;
    }
 
    .tl-editor-info {
      width: 540px;
      height: 100%;
      overflow-y: auto;
+     overflow-x: hidden;
+     padding-left: 0.5rem;
      padding-right: 0.5rem;
    }
    .station-editor-panel {
@@ -656,8 +667,10 @@ usePathwayEditorKeyboard({
 
    /* Ensure layout fits in viewport */
    .pathways-columns {
-     margin-top: 0;
-     margin-bottom: 0;
+     flex: 1;
+     min-height: 0;
+     /* Override Bulma's negative column margins that cause x-overflow */
+     margin: 0;
      display: flex;
      align-items: stretch;
    }

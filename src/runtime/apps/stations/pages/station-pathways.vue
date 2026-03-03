@@ -264,7 +264,7 @@
 
 <script setup lang="ts">
 import { computed, ref, toRaw, toRefs, watch } from 'vue'
-import { useRoute } from '#imports'
+import { useHead, useRoute } from '#imports'
 import type { LngLat } from 'maplibre-gl'
 import type { Feature } from 'geojson'
 import { PathwayModes } from '../../../lib/pathways/pathway-icons'
@@ -347,6 +347,10 @@ const {
   updatePathway,
   deletePathway
 } = useStation({ feedKey, feedVersionKey, stationKey, clientId: clientId?.value })
+
+useHead(computed(() => ({
+  title: station.value?.stop?.stop_name ? `${station.value.stop.stop_name} — Draw Pathways` : 'Draw Pathways'
+})))
 
 const route = useRoute()
 const { showToast } = useToastNotification()
