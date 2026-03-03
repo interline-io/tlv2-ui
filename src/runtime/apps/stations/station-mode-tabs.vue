@@ -1,7 +1,9 @@
 <template>
   <div class="station-mode-tabs-bar">
     <div v-if="station?.stop?.stop_name" class="station-name-label pr-4">
-      <h2 class="title is-5 mb-0">{{ station.stop.stop_name }}</h2>
+      <h2 class="title is-5 mb-0">
+        {{ station.stop.stop_name }}
+      </h2>
     </div>
     <div class="tabs is-boxed mb-0">
       <ul>
