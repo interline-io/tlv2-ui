@@ -27,13 +27,13 @@
           <i class="mdi mdi-chart-timeline-variant-shimmer mdi-16px" /> &nbsp; Draw Pathways
         </tl-link>
       </li>
-      <li :class="(activeTab === 'pathways-legacy') ? 'is-active' : ''">
+      <li :class="(activeTab === 'pathways-v2') ? 'is-active' : ''">
         <tl-link
-          route-key="apps-stations-feedKey-feedVersionKey-stations-stationKey-pathways-legacy"
+          route-key="apps-stations-feedKey-feedVersionKey-stations-stationKey-pathways-v2"
           :to="{ params: { feedKey: feedKey, feedVersionKey: feedVersionKey, stationKey: stationKey } }"
           :class="pathwaysModeEnabled ? '' : 'disabled'"
         >
-          <i class="mdi mdi-chart-timeline-variant-shimmer mdi-16px" /> &nbsp; Draw Pathways (Legacy)
+          <i class="mdi mdi-chart-timeline-variant-shimmer mdi-16px" /> &nbsp; Draw Pathways (v2 Preview)
         </tl-link>
       </li>
       <li :class="(activeTab === 'diagram') ? 'is-active' : ''">
@@ -85,7 +85,7 @@ const routeKeys = {
   'levels': 'apps-stations-feedKey-feedVersionKey-stations-stationKey',
   'stops': 'apps-stations-feedKey-feedVersionKey-stations-stationKey-stops',
   'pathways': 'apps-stations-feedKey-feedVersionKey-stations-stationKey-pathways',
-  'pathways-legacy': 'apps-stations-feedKey-feedVersionKey-stations-stationKey-pathways-legacy',
+  'pathways-v2': 'apps-stations-feedKey-feedVersionKey-stations-stationKey-pathways-v2',
   'diagram': 'apps-stations-feedKey-feedVersionKey-stations-stationKey-diagram',
   'simulator': 'apps-stations-feedKey-feedVersionKey-stations-stationKey-simulator'
 }

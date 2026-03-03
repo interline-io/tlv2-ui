@@ -10,7 +10,6 @@ declare module 'vue' {
     TlDownloadJson: typeof import('./components/download-json.vue')['default']
     TlLink: typeof import('./components/link.vue')['default']
     TlLoginGate: typeof import('./components/login-gate.vue')['default']
-
     TlRouteCategoryAbbr: typeof import('./components/route-category-abbr.vue')['default']
     TlRouteCategory: typeof import('./components/route-category.vue')['default']
     TlRouteIcon: typeof import('./components/route-icon.vue')['default']
@@ -78,8 +77,9 @@ declare module 'vue' {
     TlAppsStationsPagesStationDiagram: typeof import('./apps/stations/pages/station-diagram.vue')['default']
     TlAppsStationsPagesStationEdit: typeof import('./apps/stations/pages/station-edit.vue')['default']
     TlAppsStationsPagesStationIndex: typeof import('./apps/stations/pages/station-index.vue')['default']
-    TlAppsStationsPagesStationPathwaysLegacy: typeof import('./apps/stations/pages/station-pathways-legacy.vue')['default']
+    TlAppsStationsPagesStationPathwaysV2: typeof import('./apps/stations/pages/station-pathways-v2.vue')['default']
     TlAppsStationsPagesStationPathways: typeof import('./apps/stations/pages/station-pathways.vue')['default']
+    TlAppsStationsPagesStationSimulator: typeof import('./apps/stations/pages/station-simulator.vue')['default']
     TlAppsStationsPagesStationStops: typeof import('./apps/stations/pages/station-stops.vue')['default']
     TlAppsStationsPagesStationsIndex: typeof import('./apps/stations/pages/stations-index.vue')['default']
     TlAppsStationsPagesStationsNew: typeof import('./apps/stations/pages/stations-new.vue')['default']
