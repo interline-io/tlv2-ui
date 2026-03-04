@@ -230,13 +230,12 @@
           <t-card v-else-if="selectMode === 'export'" label="Export" variant="panel" class="station-editor-panel">
             <p class="notification">
               To export as a full GTFS feed, exit the pathways editor and
-              <nuxt-link
-                :to="{
-                  path: `/saas/station-editor/${feedKey}/${feedVersionKey}/stations`,
-                }"
+              <tl-link
+                route-key="apps-stations-feedKey-feedVersionKey-stations"
+                :to="{ params: { feedKey, feedVersionKey } }"
               >
                 return to the feed version
-              </nuxt-link>
+              </tl-link>
             </p>
             <t-button icon-left="download" fullwidth @click="downloadGeojson">
               Download this station as GeoJSON
