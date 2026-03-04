@@ -63,7 +63,7 @@ export function computeFilterCounts (stops: Stop[], pathways: Pathway[]): Filter
     stopsWithPairedPathways,
     pathwaysByMode,
     pathwaysWithPairs,
-    pathwaysOneway: pathways.filter(p => !p.is_bidirectional).length,
-    pathwaysBidirectional: pathways.filter(p => p.is_bidirectional).length
+    pathwaysOneway: pathways.filter(p => p.is_bidirectional === 0).length,
+    pathwaysBidirectional: pathways.filter(p => p.is_bidirectional === 1).length
   }
 }

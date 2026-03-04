@@ -16,7 +16,7 @@
           {{ label }}
         </p>
       </slot>
-      <div v-if="$slots.actions" class="card-header-actions">
+      <div v-if="$slots.actions" class="card-header-actions" @click.stop>
         <slot name="actions" />
       </div>
       <button
