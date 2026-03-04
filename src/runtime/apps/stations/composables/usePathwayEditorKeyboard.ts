@@ -17,6 +17,9 @@ export function usePathwayEditorKeyboard (actions: KeyboardActions) {
     if (['input', 'textarea', 'select'].includes(tag) || (event.target as HTMLElement)?.isContentEditable) {
       return
     }
+    if (event.metaKey || event.ctrlKey || event.altKey) {
+      return
+    }
     switch (event.key) {
       case 'Escape':
         actions.onEscape()

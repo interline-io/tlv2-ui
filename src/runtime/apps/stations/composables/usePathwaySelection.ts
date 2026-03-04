@@ -268,7 +268,7 @@ export function usePathwaySelection (
 
   function selectPathwaysOneway () {
     applyFilter(
-      s => !(s as Pathway).is_bidirectional,
+      s => (s as Pathway).is_bidirectional === 0,
       'One-directional pathways',
       'No one-directional pathways found',
       'pathways'
@@ -277,7 +277,7 @@ export function usePathwaySelection (
 
   function selectPathwaysBidirectional () {
     applyFilter(
-      s => !!(s as Pathway).is_bidirectional,
+      s => (s as Pathway).is_bidirectional === 1,
       'Bi-directional pathways',
       'No bi-directional pathways found',
       'pathways'
