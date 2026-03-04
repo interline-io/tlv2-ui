@@ -99,15 +99,15 @@
         </p>
         <ul class="menu-list">
           <li>
-            <nuxt-link
+            <tl-link
+              route-key="apps-stations-feedKey-feedVersionKey-stations-stationKey-diagram"
               :to="{
-                name: 'saas-station-editor-feedKey-feedVersionKey-stations-stationKey-diagram',
                 params: modeSwitchParams,
                 query: modeSwitchQuery,
               }"
             >
               <t-icon icon="chart-timeline" size="small" /> &nbsp; View in Station Diagram
-            </nuxt-link>
+            </tl-link>
           </li>
         </ul>
       </div>

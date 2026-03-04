@@ -546,9 +546,9 @@ function downloadGeojson () {
       to_stop_id: String(s.to_stop.stop_id),
       to_stop_name: s.to_stop.stop_name,
       from_level_id: s.from_stop.level?.id,
-      from_level_name: s.from_stop.level?.id,
+      from_level_name: s.from_stop.level?.level_name,
       to_level_id: s.to_stop.level?.id,
-      to_level_name: s.to_stop.level?.id
+      to_level_name: s.to_stop.level?.level_name
     },
     geometry: {
       type: 'LineString',
@@ -577,9 +577,11 @@ function downloadGeojson () {
   const blob = new Blob([data], { type: 'text/json' })
   const a = document.createElement('a')
   a.download = 'station.geojson'
-  a.href = window.URL.createObjectURL(blob)
+  const url = window.URL.createObjectURL(blob)
+  a.href = url
   a.dataset.downloadurl = ['text/json', a.download, a.href].join(':')
   a.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: false }))
+  window.URL.revokeObjectURL(url)
 }
 
 // Keyboard shortcuts

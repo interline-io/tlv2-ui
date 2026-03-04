@@ -187,8 +187,15 @@ const filterSections = computed(() => {
   ]
 })
 
+type FilterEventWithArg = 'select-location-types' | 'select-pathway-modes'
+type FilterEventNoArg = 'select-stops-with-associations' | 'select-stops-platforms-without-associations' | 'select-stops-entrances-without-associations' | 'select-stops-with-paired-pathways' | 'select-pathways-with-pairs' | 'select-pathways-oneway' | 'select-pathways-bidirectional'
+
 function dispatchFilter (event: string, arg?: number) {
-  ;(emit as any)(event, arg)
+  if (arg !== undefined) {
+    emit(event as FilterEventWithArg, arg)
+  } else {
+    emit(event as FilterEventNoArg)
+  }
 }
 
 function selectItem (type: 'stop' | 'pathway', id: number | undefined) {
