@@ -2,6 +2,8 @@ import { onMounted, onUnmounted } from 'vue'
 
 interface KeyboardActions {
   onEscape: () => void
+  onV: () => void
+  onE: () => void
   onN: () => void
   onF: () => void
   onS: () => void
@@ -18,6 +20,14 @@ export function usePathwayEditorKeyboard (actions: KeyboardActions) {
     switch (event.key) {
       case 'Escape':
         actions.onEscape()
+        break
+      case 'v':
+      case 'V':
+        actions.onV()
+        break
+      case 'e':
+      case 'E':
+        actions.onE()
         break
       case 'n':
       case 'N':

@@ -20,7 +20,7 @@
                 :aria-pressed="selectMode === 'select'"
                 @click="selectMode = 'select'"
               >
-                Select
+                Select <kbd>V</kbd>
               </button>
               <button
                 class="button"
@@ -177,6 +177,7 @@
             <tl-apps-stations-station-pathways-pathway-panel
               v-for="spw of selectedPathways"
               :key="spw.id"
+              v-model:edit-mode="pathwayEditMode"
               :station="station"
               :pathway="spw"
               :show-unselect="selectedStops.length > 0 || selectedPathways.length > 0"
@@ -360,7 +361,9 @@ const {
 } = usePathwaySelection(station, selectedProfile, showToast)
 
 const nodeEditMode = ref(false)
+const pathwayEditMode = ref(false)
 watch(selectedStop, () => { nodeEditMode.value = false })
+watch(selectedPathways, () => { pathwayEditMode.value = false })
 
 // Watch for query params after station loads
 watch(ready, (isReady) => {
@@ -582,6 +585,11 @@ function downloadGeojson () {
 // Keyboard shortcuts
 usePathwayEditorKeyboard({
   onEscape: unselectAll,
+  onV: () => { selectMode.value = 'select' },
+  onE: () => {
+    if (selectMode.value === 'edit-node') { nodeEditMode.value = !nodeEditMode.value }
+    if (selectMode.value === 'edit-pathway') { pathwayEditMode.value = !pathwayEditMode.value }
+  },
   onN: () => { selectMode.value = 'add-node' },
   onF: () => { if (selectedStops.value.length === 1) { selectMode.value = 'find-route' } },
   onS: () => stationValidator.value?.openStopsModal(),

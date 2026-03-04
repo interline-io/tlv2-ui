@@ -14,7 +14,7 @@
         @click="editMode = !editMode"
       >
         <t-icon :icon="editMode ? 'eye' : 'pencil'" size="small" />
-        <span>{{ editMode ? 'View' : editLabel }}</span>
+        <span>{{ editMode ? 'View' : editLabel }}</span> <kbd>E</kbd>
       </t-button>
     </template>
 

@@ -1,5 +1,5 @@
 <template>
-  <t-card label="Select" variant="panel" class="station-editor-panel">
+  <t-card :label="selectLabel" variant="panel" class="station-editor-panel">
     <template v-if="selectedStopsCount > 0 || selectedPathwaysCount > 0" #actions>
       <t-button size="small" @click="$emit('unselect-all')">
         Unselect All <kbd>ESC</kbd>
@@ -128,6 +128,17 @@ const emit = defineEmits<{
   'select-pathways-oneway': []
   'select-pathways-bidirectional': []
 }>()
+
+const selectLabel = computed(() => {
+  const parts: string[] = []
+  if (props.selectedStopsCount > 0) {
+    parts.push(`${props.selectedStopsCount} stop${props.selectedStopsCount === 1 ? '' : 's'}`)
+  }
+  if (props.selectedPathwaysCount > 0) {
+    parts.push(`${props.selectedPathwaysCount} pathway${props.selectedPathwaysCount === 1 ? '' : 's'}`)
+  }
+  return parts.length > 0 ? `Select (${parts.join(', ')})` : 'Select'
+})
 
 const filterSections = computed(() => {
   const fc = props.filterCounts

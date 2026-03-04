@@ -1,5 +1,6 @@
 <template>
   <tl-apps-stations-station-pathways-editor-panel
+    v-model:edit-mode="editMode"
     view-heading="View Pathway"
     edit-heading="Edit Pathway"
     :show-unselect="showUnselect"
@@ -156,6 +157,8 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   showUnselect: false
 })
+
+const editMode = defineModel<boolean>('editMode', { default: false })
 
 defineEmits<{
   'select-stop': [id: number]
