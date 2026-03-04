@@ -76,9 +76,9 @@
               </div>
               <div v-show="levelsOpen" class="ml-4">
                 <t-checkbox-group
-                  v-model="selectedLevelIds"
+                  v-model="selectedLevelKeys"
                   :options="sortedStationLevels"
-                  value-field="id"
+                  value-field="levelKey"
                   hide-select-all
                 >
                   <template #option="{ option }">
@@ -405,23 +405,18 @@ const sortedStationLevels = computed(() =>
     .sort(
       (a, b) => (b.level_index != null ? b.level_index : -Infinity) - (a.level_index != null ? a.level_index : -Infinity)
     )
+    .map(l => ({ ...l, levelKey: mapLevelKeyFn(l) }))
 )
 
-const selectedLevelIds = computed({
-  get (): number[] | undefined {
-    if (!selectedLevels.value || selectedLevels.value.length === 0) {
-      return undefined
-    }
-    return selectedLevels.value.map((key) => {
-      const match = key.match(/mapLevelKey-(.+)/)
-      return match ? (match[1] === 'unassigned' ? null : Number(match[1])) : null
-    }).filter((id): id is number => id !== null)
+const selectedLevelKeys = computed({
+  get (): string[] | undefined {
+    return selectedLevels.value
   },
-  set (ids: number[] | undefined) {
-    if (ids === undefined) {
+  set (keys: string[] | undefined) {
+    if (keys === undefined) {
       selectedLevels.value = station.value?.levels?.map(mapLevelKeyFn) || []
     } else {
-      selectedLevels.value = ids.map(id => mapLevelKeyFn({ id }))
+      selectedLevels.value = keys
     }
   }
 })
