@@ -13,7 +13,12 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="edge of path" :key="edge.pathway.id">
+        <tr
+          v-for="edge of path"
+          :key="edge.pathway.id"
+          @mouseenter="edge.pathway.id != null ? $emit('hover-pathway', edge.pathway.id) : undefined"
+          @mouseleave="$emit('hover-pathway', null)"
+        >
           <td>
             <span class="tl-path-icon"><img :src="pathwayIcon(edge.pathway.pathway_mode).url" :title="pathwayIcon(edge.pathway.pathway_mode).label"></span>
           </td>
@@ -51,6 +56,10 @@ interface Props {
 withDefaults(defineProps<Props>(), {
   path: () => []
 })
+
+defineEmits<{
+  'hover-pathway': [id: number | null]
+}>()
 
 function stopName (node: StopData): string {
   if (node.stop_name === 'Node' && node.location_type === 3) {

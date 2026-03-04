@@ -45,10 +45,13 @@ interface Props {
   otherStops?: MapStop[]
   routes?: Feature[]
   selectedStops?: MapStop[]
+  draggableStops?: MapStop[]
   selectedPathways?: MapPathway[]
   selectedLevels?: string[]
   selectedPathwayTransitionTypes?: string
   selectedAgencies?: Array<{ id: number }> | null
+  hoverStopId?: number | null
+  hoverPathwayId?: number | null
   search?: boolean
   editable?: boolean
 }
@@ -61,10 +64,13 @@ const props = withDefaults(defineProps<Props>(), {
   otherStops: () => [],
   routes: () => [],
   selectedStops: () => [],
+  draggableStops: () => [],
   selectedPathways: () => [],
   selectedLevels: () => [],
   selectedPathwayTransitionTypes: 'all',
   selectedAgencies: null,
+  hoverStopId: null,
+  hoverPathwayId: null,
   search: false,
   editable: true
 })
@@ -200,7 +206,6 @@ function drawStops () {
   if (!ready.value || !props.station || !map.value) {
     return
   }
-  console.log('drawing stops', props.station.stops, props.otherStops)
 
   // get geoms
   const allStops = [...props.station.stops, ...props.otherStops].filter(s => (s.location_type !== 1))
@@ -220,16 +225,31 @@ function drawStops () {
       levelColors.set(mapLevelKeyFn(level), color)
     }
   }
-  console.log('levelColors:', levelColors)
 
   for (const [mapLevelKey, color] of levelColors.entries()) {
+    addLevelLayer(mapLevelKey, {
+      id: `${mapLevelKey}-stops-list-hover`,
+      type: 'circle',
+      source: 'stops',
+      paint: {
+        'circle-radius': 22,
+        'circle-color': 'yellow',
+        'circle-opacity': [
+          'case',
+          ['boolean', ['feature-state', 'listHover'], false],
+          0.8,
+          0.0
+        ]
+      },
+      filter: ['==', mapLevelKey, ['get', 'mapLevelKey']]
+    })
     addLevelLayer(mapLevelKey, {
       id: `${mapLevelKey}-stops-selected`,
       type: 'circle',
       source: 'stops',
       paint: {
         'circle-radius': 16,
-        'circle-color': '#00ff00',
+        'circle-color': 'yellow',
         'circle-opacity': [
           'case',
           ['boolean', ['feature-state', 'hover'], false],
@@ -324,12 +344,10 @@ function drawStops () {
       })
   }
 
-  console.log('newStops:', newStops)
   const stopSource: any = map.value.getSource('stops')
   if (stopSource && stopSource.setData) {
     stopSource.setData(newStops)
   }
-  console.log('stops source set')
 
   // Fit map to features only on initial draw, not on data refreshes
   if (!initialFitDone.value && newStops.features.length > 0 && map.value) {
@@ -402,7 +420,6 @@ function drawStops () {
       }
     }
   })
-  console.log('stopAssociationGeoms:', stopAssociationGeoms)
   const associationSource: any = map.value.getSource('stops-associations')
   if (associationSource && associationSource.setData) {
     associationSource.setData({
@@ -424,6 +441,22 @@ function drawPathways () {
     pwLevels.set(mapLevelKeyFn(pw.from_stop.level), true)
   }
   for (const mapLevelKey1 of pwLevels.keys()) {
+    addLevelLayer(mapLevelKey1, {
+      id: `${mapLevelKey1}-pathway-list-hover`,
+      type: 'line',
+      source: 'pathways',
+      paint: {
+        'line-color': 'yellow',
+        'line-width': 24,
+        'line-opacity': [
+          'case',
+          ['boolean', ['feature-state', 'listHover'], false],
+          0.8,
+          0.0
+        ]
+      },
+      filter: ['any', ['==', mapLevelKey1, ['get', 'fromMapLevelKey']], ['==', mapLevelKey1, ['get', 'toMapLevelKey']]]
+    })
     addLevelLayer(mapLevelKey1, {
       id: `${mapLevelKey1}-pathway-selected`,
       type: 'line',
@@ -712,9 +745,6 @@ function drawMap () {
       if (!feature || feature.source !== 'stops') {
         return
       }
-      // Prevent the default map drag behavior.
-      e.preventDefault()
-      const dragStartPoint = e.point
       // Get reference to update geometry
       let dragStop: MapStop | null = null
       for (const stop of props.station.stops) {
@@ -725,9 +755,12 @@ function drawMap () {
       if (!dragStop) {
         return
       }
-      if (!props.selectedStops.map(s => s.id).includes(dragStop.id)) {
+      if (!props.draggableStops.map(s => s.id).includes(dragStop.id)) {
         return
       }
+      // Prevent the default map drag behavior only when we're going to drag.
+      e.preventDefault()
+      const dragStartPoint = e.point
       const mouseMove = (e: MapLayerMouseEvent) => {
         const d = distance(dragStartPoint, e.point)
         if (d < 10) {
@@ -794,6 +827,26 @@ watch(() => props.selectedPathways, (cur, prev) => {
     )
   }
 }, { deep: true })
+
+watch(() => props.hoverStopId, (cur, prev) => {
+  if (!map.value) return
+  if (prev != null) {
+    map.value.setFeatureState({ source: 'stops', id: prev }, { listHover: false })
+  }
+  if (cur != null) {
+    map.value.setFeatureState({ source: 'stops', id: cur }, { listHover: true })
+  }
+})
+
+watch(() => props.hoverPathwayId, (cur, prev) => {
+  if (!map.value) return
+  if (prev != null) {
+    map.value.setFeatureState({ source: 'pathways', id: prev }, { listHover: false })
+  }
+  if (cur != null) {
+    map.value.setFeatureState({ source: 'pathways', id: cur }, { listHover: true })
+  }
+})
 
 watch(() => props.selectedLevels, () => {
   if (!map.value) return

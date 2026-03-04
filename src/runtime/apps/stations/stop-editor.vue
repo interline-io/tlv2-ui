@@ -109,8 +109,9 @@
       </div>
     </div>
 
-    <!-- Pathways viewer -->
-    <t-field v-if="pathwaysFromStop.length > 0" label="Pathways (From)">
+    <!-- Pathways viewer — shown in legacy view only; hidden in new editor which shows pathways in the view panel instead.
+         TODO: remove when legacy pathways view is removed. -->
+    <t-field v-if="showPathways && pathwaysFromStop.length > 0" label="Pathways (From)">
       <ul>
         <li v-for="pw of pathwaysFromStop" :key="pw.id">
           <span class="button" :title="pw.pathway_id" @click="emit('selectPathway', pw.id!)">
@@ -126,7 +127,7 @@
         </li>
       </ul>
     </t-field>
-    <t-field v-if="pathwaysToStop.length" label="Pathways (To)">
+    <t-field v-if="showPathways && pathwaysToStop.length" label="Pathways (To)">
       <ul>
         <li v-for="pw of pathwaysToStop" :key="pw.id">
           <span class="button" :title="pw.pathway_id" @click="emit('selectPathway', pw.id!)">
@@ -215,13 +216,16 @@ interface Props {
   readOnly?: boolean
   stopAssociationsEnabled?: boolean
   currentMode?: string
+  // TODO: remove showPathways prop and pathways viewer below once the legacy pathways view is removed
+  showPathways?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   value: () => ({} as StopData),
   readOnly: false,
   stopAssociationsEnabled: false,
-  currentMode: 'pathways'
+  currentMode: 'pathways',
+  showPathways: true
 })
 
 const emit = defineEmits<{

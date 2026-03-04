@@ -76,6 +76,7 @@ export interface RouteStopData {
 export interface RouteData {
   id?: number
   route_id?: string
+  route_type?: number
   route_short_name?: string
   route_long_name?: string
   agency?: AgencyData

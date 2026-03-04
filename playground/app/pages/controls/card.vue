@@ -53,6 +53,64 @@
         </t-card>
       </t-demo-box>
 
+      <t-demo-box label="Panel Variant">
+        <div class="columns">
+          <div class="column">
+            <t-card label="With Label Prop" variant="panel">
+              <div class="content">
+                <p>
+                  Panel variant gives the header a dark background matching Bulma's panel-heading style.
+                  Uses <code>variant="panel"</code>.
+                </p>
+              </div>
+            </t-card>
+          </div>
+          <div class="column">
+            <t-card label="With Actions Slot" variant="panel">
+              <template #actions>
+                <t-button size="small">
+                  Edit
+                </t-button>
+              </template>
+              <div class="content">
+                <p>
+                  The <code>#actions</code> slot places right-aligned buttons in the header.
+                  Header height stays constant whether actions are shown or hidden.
+                </p>
+              </div>
+            </t-card>
+          </div>
+        </div>
+        <div class="columns">
+          <div class="column">
+            <t-card label="Conditional Actions" variant="panel">
+              <template v-if="cardOpen" #actions>
+                <t-button size="small">
+                  Action 1
+                </t-button>
+                <t-button size="small">
+                  Action 2
+                </t-button>
+              </template>
+              <div class="content">
+                <p>
+                  Actions can be conditional. Toggle the card below to show/hide actions here.
+                </p>
+              </div>
+            </t-card>
+          </div>
+          <div class="column">
+            <t-card label="Expandable Panel" variant="panel" expandable>
+              <div class="content">
+                <p>
+                  Panel variant combined with expandable functionality.
+                </p>
+              </div>
+            </t-card>
+          </div>
+        </div>
+      </t-demo-box>
+
       <t-demo-box label="Expandable Card">
         <div class="columns">
           <div class="column">

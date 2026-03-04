@@ -1,10 +1,5 @@
 <template>
   <div v-if="station">
-    <slot name="title">
-      <tl-title title="Station Pathways">
-        Station Pathways: {{ stationName }}
-      </tl-title>
-    </slot>
     <tl-apps-stations-station-mode-tabs
       :station="station"
       :feed-key="feedKey"
@@ -28,7 +23,7 @@
             />
           </t-field>
           <!-- SELECT -->
-          <t-card v-if="selectMode === 'select'" label="Select">
+          <t-card v-if="selectMode === 'select'" label="Select" variant="panel">
             <div>
               <div class="mb-2">
                 <div class="is-flex is-justify-content-space-between is-align-items-center mb-2">
@@ -88,7 +83,7 @@
               </div>
             </div>
           </t-card>
-          <t-card v-else-if="selectMode === 'add-pathway'" label="Add Pathway">
+          <t-card v-else-if="selectMode === 'add-pathway'" label="Add Pathway" variant="panel">
             <div>
               <tl-apps-stations-pathway-editor
                 :station="station"
@@ -99,12 +94,9 @@
             </div>
           </t-card>
           <template v-if="selectMode === 'edit-pathway'">
-            <t-card v-for="spw of selectedPathways" :key="spw.id">
-              <template #header>
-                <p class="card-header-title">
-                  Edit Pathway
-                </p>
-                <t-button class="card-header-icon" variant="primary" outlined @click="unselectAll">
+            <t-card v-for="spw of selectedPathways" :key="spw.id" label="Edit Pathway" variant="panel">
+              <template #actions>
+                <t-button size="small" variant="primary" outlined @click="unselectAll">
                   Unselect
                 </t-button>
               </template>
@@ -128,12 +120,9 @@
             </t-card>
           </template>
           <template v-else-if="selectMode === 'edit-node'">
-            <t-card v-for="ss of selectedStops" :key="ss.id" class="card">
-              <template #header>
-                <p class="card-header-title">
-                  Edit Node
-                </p>
-                <t-button class="card-header-icon" variant="primary" outlined @click="unselectAll">
+            <t-card v-for="ss of selectedStops" :key="ss.id" label="Edit Node" variant="panel">
+              <template #actions>
+                <t-button size="small" variant="primary" outlined @click="unselectAll">
                   Unselect
                 </t-button>
               </template>
@@ -158,7 +147,7 @@
             </t-card>
           </template>
           <template v-else-if="selectMode === 'add-node'">
-            <t-card label="Add Node">
+            <t-card label="Add Node" variant="panel">
               <t-field label="Level">
                 <t-dropdown
                   v-model="selectedLevel"
@@ -174,7 +163,7 @@
             </t-card>
           </template>
           <template v-else-if="selectMode === 'find-route'">
-            <t-card v-if="selectedStops.length > 1" label="Find Route">
+            <t-card v-if="selectedStops.length > 1" label="Find Route" variant="panel">
               <t-field label="Routing Profile">
                 <t-dropdown
                   v-model="selectedProfile"
@@ -269,7 +258,7 @@
 
 <script setup lang="ts">
 import { computed, ref, toRaw, toRefs, watch } from 'vue'
-import { useRoute } from '#imports'
+import { useHead, useRoute } from '#imports'
 import type { LngLat } from 'maplibre-gl'
 import type { Feature } from 'geojson'
 import { PathwayModes } from '../../../lib/pathways/pathway-icons'
@@ -340,7 +329,6 @@ const {
   ready,
   refetching,
   station,
-  stationName,
   stopAssociationsEnabled,
   selectedLevels,
   selectedLevel,
@@ -353,6 +341,10 @@ const {
   updatePathway,
   deletePathway
 } = useStation({ feedKey, feedVersionKey, stationKey, clientId: clientId?.value })
+
+useHead(computed(() => ({
+  title: station.value?.stop?.stop_name ? `${station.value.stop.stop_name} — Draw Pathways` : 'Draw Pathways'
+})))
 
 const route = useRoute()
 const { showToast } = useToastNotification()

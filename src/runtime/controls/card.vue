@@ -1,7 +1,7 @@
 <template>
-  <div class="card t-card">
+  <div class="card t-card" :class="{ 't-card--panel': variant === 'panel' }">
     <header
-      v-if="label || $slots.header"
+      v-if="label || $slots.header || $slots.actions"
       class="card-header"
       :class="{ 'is-clickable': expandable }"
       :role="expandable ? 'button' : undefined"
@@ -16,6 +16,9 @@
           {{ label }}
         </p>
       </slot>
+      <div v-if="$slots.actions" class="card-header-actions">
+        <slot name="actions" />
+      </div>
       <button
         v-if="expandable"
         type="button"
@@ -78,6 +81,12 @@ interface Props {
   open?: boolean
 
   /**
+   * Visual variant for the card.
+   * 'panel' gives a dark header matching Bulma's panel-heading style.
+   */
+  variant?: 'panel'
+
+  /**
    * Icon for the collapse indicator.
    * @default 'chevron-down'
    */
@@ -86,6 +95,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   label: undefined,
+  variant: undefined,
   expandable: false,
   open: false,
   icon: 'chevron-down'
@@ -123,6 +133,14 @@ function toggle () {
     }
   }
 
+  .card-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-right: 0.75rem;
+    margin-left: auto;
+  }
+
   .card-header-icon {
     border: none;
     background: transparent;
@@ -134,6 +152,17 @@ function toggle () {
 
     &.is-rotated {
       transform: rotate(-90deg);
+    }
+  }
+
+  &.t-card--panel {
+    .card-header {
+      background-color: hsl(var(--bulma-scheme-h), var(--bulma-scheme-s), var(--bulma-text-l));
+      color: hsl(var(--bulma-scheme-h), var(--bulma-scheme-s), var(--bulma-text-invert-l));
+    }
+
+    :deep(.card-header-title) {
+      color: inherit;
     }
   }
 }

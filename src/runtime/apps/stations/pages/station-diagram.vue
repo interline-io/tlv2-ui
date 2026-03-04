@@ -1,11 +1,5 @@
 <template>
   <div v-if="station">
-    <slot name="title">
-      <tl-title title="Station Diagram">
-        Station Diagram: {{ stationName }}
-      </tl-title>
-    </slot>
-
     <tl-apps-stations-station-mode-tabs
       :station="station"
       :feed-key="feedKey"
@@ -82,7 +76,7 @@
 
 <script setup lang="ts">
 import { computed, ref, toRefs } from 'vue'
-import { navigateTo, useRoute } from '#imports'
+import { navigateTo, useHead, useRoute } from '#imports'
 import type { Stop, Pathway, Level } from '../station'
 import { useStation } from '../composables/useStation'
 
@@ -98,9 +92,12 @@ const { feedKey, feedVersionKey, stationKey, clientId } = toRefs(props)
 const {
   ready,
   station,
-  stationName,
   stopAssociationsEnabled
 } = useStation({ feedKey, feedVersionKey, stationKey, clientId: clientId?.value })
+
+useHead(computed(() => ({
+  title: station.value?.stop?.stop_name ? `${station.value.stop.stop_name} — Station Diagram` : 'Station Diagram'
+})))
 
 const route = useRoute()
 const viewer = ref<any>(null)
