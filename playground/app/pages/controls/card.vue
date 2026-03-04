@@ -66,19 +66,16 @@
             </t-card>
           </div>
           <div class="column">
-            <t-card variant="panel">
-              <template #header>
-                <p class="card-header-title">
-                  With Header Slot
-                </p>
-                <button class="card-header-icon" aria-label="more options">
-                  <t-icon icon="dots-vertical" />
-                </button>
+            <t-card label="With Actions Slot" variant="panel">
+              <template #actions>
+                <t-button size="small">
+                  Edit
+                </t-button>
               </template>
               <div class="content">
                 <p>
-                  Panel variant also works with the <code>#header</code> slot.
-                  The title text color inherits the light color automatically.
+                  The <code>#actions</code> slot places right-aligned buttons in the header.
+                  Header height stays constant whether actions are shown or hidden.
                 </p>
               </div>
             </t-card>
@@ -86,23 +83,29 @@
         </div>
         <div class="columns">
           <div class="column">
+            <t-card label="Conditional Actions" variant="panel">
+              <template v-if="cardOpen" #actions>
+                <t-button size="small">
+                  Action 1
+                </t-button>
+                <t-button size="small">
+                  Action 2
+                </t-button>
+              </template>
+              <div class="content">
+                <p>
+                  Actions can be conditional. Toggle the card below to show/hide actions here.
+                </p>
+              </div>
+            </t-card>
+          </div>
+          <div class="column">
             <t-card label="Expandable Panel" variant="panel" expandable>
               <div class="content">
                 <p>
                   Panel variant combined with expandable functionality.
                 </p>
               </div>
-            </t-card>
-          </div>
-          <div class="column">
-            <t-card label="Panel with Footer" variant="panel">
-              <div class="content">
-                <p>Content area with normal background.</p>
-              </div>
-              <template #footer>
-                <a href="#" class="card-footer-item">Save</a>
-                <a href="#" class="card-footer-item">Cancel</a>
-              </template>
             </t-card>
           </div>
         </div>

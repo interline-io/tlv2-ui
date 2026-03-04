@@ -1,14 +1,9 @@
 <template>
-  <t-card variant="panel" class="station-editor-panel">
-    <template #header>
-      <p class="card-header-title">
-        Select
-      </p>
-      <div v-if="selectedStopsCount > 0 || selectedPathwaysCount > 0" class="card-header-actions">
-        <t-button size="small" @click="$emit('unselect-all')">
-          Unselect All <kbd>ESC</kbd>
-        </t-button>
-      </div>
+  <t-card label="Select" variant="panel" class="station-editor-panel">
+    <template v-if="selectedStopsCount > 0 || selectedPathwaysCount > 0" #actions>
+      <t-button size="small" @click="$emit('unselect-all')">
+        Unselect All <kbd>ESC</kbd>
+      </t-button>
     </template>
     <div>
       <div v-if="selectedStopsCount > 0 || selectedPathwaysCount > 0" class="mb-4">

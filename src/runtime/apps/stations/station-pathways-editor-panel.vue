@@ -1,27 +1,21 @@
 <template>
-  <t-card variant="panel" class="station-editor-panel">
-    <template #header>
-      <p class="card-header-title">
-        <span v-if="!editMode">{{ viewHeading }}</span>
-        <span v-else>{{ editHeading }}</span>
-      </p>
-      <div class="card-header-actions">
-        <t-button
-          v-if="showUnselect"
-          size="small"
-          @click="$emit('unselect')"
-        >
-          Unselect <kbd>ESC</kbd>
-        </t-button>
-        <t-button
-          size="small"
-          :variant="editMode ? 'primary' : undefined"
-          @click="editMode = !editMode"
-        >
-          <t-icon :icon="editMode ? 'eye' : 'pencil'" size="small" />
-          <span>{{ editMode ? 'View' : editLabel }}</span>
-        </t-button>
-      </div>
+  <t-card :label="editMode ? editHeading : viewHeading" variant="panel" class="station-editor-panel">
+    <template #actions>
+      <t-button
+        v-if="showUnselect"
+        size="small"
+        @click="$emit('unselect')"
+      >
+        Unselect <kbd>ESC</kbd>
+      </t-button>
+      <t-button
+        size="small"
+        :variant="editMode ? 'primary' : undefined"
+        @click="editMode = !editMode"
+      >
+        <t-icon :icon="editMode ? 'eye' : 'pencil'" size="small" />
+        <span>{{ editMode ? 'View' : editLabel }}</span>
+      </t-button>
     </template>
 
     <!-- View Mode (Read-only) -->

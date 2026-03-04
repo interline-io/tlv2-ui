@@ -303,6 +303,10 @@ function emitValue (selected: V[]) {
   &-items {
     display: flex;
     flex-direction: column;
+
+    > .field {
+      margin-bottom: 0.25rem;
+    }
   }
 
   &-empty {

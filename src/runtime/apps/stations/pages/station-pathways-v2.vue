@@ -137,6 +137,7 @@
               </div>
             </div>
           </t-card>
+
           <!-- SELECT -->
           <tl-apps-stations-station-pathways-select-panel
             v-if="selectMode === 'select'"
@@ -171,6 +172,7 @@
             @select-stop="selectStop"
             @create="createPathwayHandler"
           />
+
           <template v-if="selectMode === 'edit-pathway'">
             <tl-apps-stations-station-pathways-pathway-panel
               v-for="spw of selectedPathways"
@@ -185,6 +187,7 @@
               @unselect="unselectAll"
             />
           </template>
+
           <template v-else-if="selectMode === 'edit-node'">
             <tl-apps-stations-station-pathways-node-panel
               v-for="ss of selectedStops"
@@ -222,6 +225,7 @@
             @hover-pathway="hoverPathwayId = $event"
             @unselect="unselectAll"
           />
+
           <t-card v-else-if="selectMode === 'export'" label="Export" variant="panel" class="station-editor-panel">
             <p class="notification">
               To export as a full GTFS feed, exit the pathways editor and
@@ -395,9 +399,12 @@ const stationCenter = computed<[number, number] | undefined>(() => {
 })
 
 const sortedStationLevels = computed(() =>
-  (station.value?.levels || []).slice(0).sort(
-    (a, b) => (b.level_index != null ? b.level_index : -Infinity) - (a.level_index != null ? a.level_index : -Infinity)
-  )
+  (station.value?.levels || [])
+    .filter(l => l.id || l.stops.length > 0)
+    .slice(0)
+    .sort(
+      (a, b) => (b.level_index != null ? b.level_index : -Infinity) - (a.level_index != null ? a.level_index : -Infinity)
+    )
 )
 
 const selectedLevelIds = computed({
@@ -612,22 +619,10 @@ usePathwayEditorKeyboard({
   }
 
   .station-editor-panel {
-    margin-bottom: 0.75rem;
-
-    :deep(.card-header) {
-      min-height: 2.5rem;
-    }
-
+    // Compact padding to fit sidebar on smaller screens (e.g. iPad)
     :deep(.card-header-title) {
       padding: 0.5em 0.75em;
       font-size: 0.875rem;
-    }
-
-    :deep(.card-header-actions) {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding-right: 0.75rem;
     }
 
     :deep(.card-content) {
@@ -671,7 +666,6 @@ usePathwayEditorKeyboard({
       display: flex;
       flex-direction: column;
       flex: 1;
-
       > :deep(*) {
         flex: 1;
         height: 100%;

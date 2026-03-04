@@ -1,14 +1,9 @@
 <template>
-  <t-card variant="panel" class="station-editor-panel">
-    <template #header>
-      <p class="card-header-title">
-        Find Route
-      </p>
-      <div class="card-header-actions">
-        <t-button size="small" @click="$emit('unselect')">
-          Clear <kbd>ESC</kbd>
-        </t-button>
-      </div>
+  <t-card label="Find Route" variant="panel" class="station-editor-panel">
+    <template #actions>
+      <t-button size="small" @click="$emit('unselect')">
+        Clear <kbd>ESC</kbd>
+      </t-button>
     </template>
     <div>
       <div class="field">

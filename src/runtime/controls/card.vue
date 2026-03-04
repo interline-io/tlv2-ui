@@ -1,7 +1,7 @@
 <template>
   <div class="card t-card" :class="{ 't-card--panel': variant === 'panel' }">
     <header
-      v-if="label || $slots.header"
+      v-if="label || $slots.header || $slots.actions"
       class="card-header"
       :class="{ 'is-clickable': expandable }"
       :role="expandable ? 'button' : undefined"
@@ -16,6 +16,9 @@
           {{ label }}
         </p>
       </slot>
+      <div v-if="$slots.actions" class="card-header-actions">
+        <slot name="actions" />
+      </div>
       <button
         v-if="expandable"
         type="button"
@@ -128,6 +131,14 @@ function toggle () {
     &:hover {
       background-color: var(--bulma-scheme-main-bis, #fafafa);
     }
+  }
+
+  .card-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-right: 0.75rem;
+    margin-left: auto;
   }
 
   .card-header-icon {

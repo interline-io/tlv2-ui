@@ -94,12 +94,9 @@
             </div>
           </t-card>
           <template v-if="selectMode === 'edit-pathway'">
-            <t-card v-for="spw of selectedPathways" :key="spw.id" variant="panel">
-              <template #header>
-                <p class="card-header-title">
-                  Edit Pathway
-                </p>
-                <t-button class="card-header-icon" variant="primary" outlined @click="unselectAll">
+            <t-card v-for="spw of selectedPathways" :key="spw.id" label="Edit Pathway" variant="panel">
+              <template #actions>
+                <t-button size="small" variant="primary" outlined @click="unselectAll">
                   Unselect
                 </t-button>
               </template>
@@ -123,12 +120,9 @@
             </t-card>
           </template>
           <template v-else-if="selectMode === 'edit-node'">
-            <t-card v-for="ss of selectedStops" :key="ss.id" variant="panel">
-              <template #header>
-                <p class="card-header-title">
-                  Edit Node
-                </p>
-                <t-button class="card-header-icon" variant="primary" outlined @click="unselectAll">
+            <t-card v-for="ss of selectedStops" :key="ss.id" label="Edit Node" variant="panel">
+              <template #actions>
+                <t-button size="small" variant="primary" outlined @click="unselectAll">
                   Unselect
                 </t-button>
               </template>
