@@ -112,18 +112,31 @@
   </div>
 </template>
 
-<script setup lang="ts" generic="T extends Date | Date[] = Date">
+<script setup lang="ts" generic="T extends Date | Date[] = Date, S extends string | string[] = string">
 import { ref, computed, watch } from 'vue'
 import type { InputSize, InputVariant } from './types'
+import { format as formatDate, parse, isValid, isSameDay } from 'date-fns'
+
+const DATE_FORMAT = 'yyyy-MM-dd'
+
+function parseDate (dateString: string): Date | null {
+  if (!dateString) return null
+  const date = parse(dateString, DATE_FORMAT, new Date())
+  return isValid(date) ? date : null
+}
 
 /**
  * Datepicker component with calendar dropdown for date selection.
- * Similar in concept to Oruga Datepicker with customizable calendar interface.
+ * Supports two model bindings:
+ * - `v-model` for Date / Date[] values
+ * - `v-model:date-string` for YYYY-MM-DD string / string[] values
  *
  * @component t-datepicker
  * @example
  * <t-datepicker v-model="selectedDate" placeholder="Select date" />
+ * <t-datepicker v-model:date-string="dateStr" placeholder="Select date" />
  * <t-datepicker v-model="dateRange" multiple placeholder="Select dates" />
+ * <t-datepicker v-model:date-string="dateStrs" multiple placeholder="Select dates" />
  */
 
 interface CalendarDay {
@@ -135,8 +148,10 @@ interface CalendarDay {
 }
 
 const props = withDefaults(defineProps<{
-  /** Selected date(s) - use with v-model. Date for single selection, Date[] for multiple selection. */
+  /** Selected date(s) - use with v-model. Date for single, Date[] for multiple. */
   modelValue?: T
+  /** Selected date(s) as YYYY-MM-DD string(s) - use with v-model:date-string. */
+  dateString?: S
   /** Allow multiple date selections. @default false */
   multiple?: boolean
   /** Input placeholder text. */
@@ -197,6 +212,7 @@ const props = withDefaults(defineProps<{
   ariaSelectYearLabel?: string
 }>(), {
   modelValue: undefined,
+  dateString: undefined,
   multiple: false,
   placeholder: undefined,
   size: undefined,
@@ -230,6 +246,7 @@ const props = withDefaults(defineProps<{
 
 const emit = defineEmits<{
   'update:modelValue': [value: T]
+  'update:dateString': [value: S]
   'focus': [event: FocusEvent]
   'blur': [event: FocusEvent]
   'icon-right-click': [event: MouseEvent]
@@ -250,6 +267,23 @@ const focusedYear = ref(today.getFullYear())
 watch(focusedMonth, newMonth => emit('change-month', newMonth))
 watch(focusedYear, newYear => emit('change-year', newYear))
 
+// Resolve active dates from whichever model is bound.
+// Internally the component always works with Date objects.
+// Prefers dateString when both are provided.
+const activeDates = computed((): Date[] => {
+  if (props.dateString != null) {
+    const ds = props.dateString
+    if (Array.isArray(ds)) {
+      return ds.map(s => parseDate(s)).filter((d): d is Date => d != null)
+    }
+    const parsed = parseDate(ds)
+    return parsed ? [parsed] : []
+  }
+  if (props.modelValue == null) return []
+  if (Array.isArray(props.modelValue)) return props.modelValue as Date[]
+  return [props.modelValue as Date]
+})
+
 const availableYears = computed(() => {
   const currentYear = new Date().getFullYear()
   const [before, after] = props.yearsRange
@@ -261,13 +295,7 @@ const availableYears = computed(() => {
 })
 
 const formattedValue = computed(() => {
-  if (!props.modelValue) return ''
-
-  if (Array.isArray(props.modelValue)) {
-    return props.modelValue.map(d => formatDate(d)).join(', ')
-  }
-
-  return formatDate(props.modelValue as Date)
+  return activeDates.value.map(d => formatDate(d, DATE_FORMAT)).join(', ')
 })
 
 const calendarDays = computed(() => {
@@ -323,34 +351,8 @@ const calendarDays = computed(() => {
   return days
 })
 
-function formatDate (date: Date): string {
-  // Simple format implementation - can be enhanced
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
-}
-
-function parseDate (dateString: string): Date | null {
-  if (!dateString) return null
-  const date = new Date(dateString)
-  return Number.isNaN(date.getTime()) ? null : date
-}
-
-function isSameDay (date1: Date, date2: Date): boolean {
-  return date1.getFullYear() === date2.getFullYear()
-    && date1.getMonth() === date2.getMonth()
-    && date1.getDate() === date2.getDate()
-}
-
 function isDateSelected (date: Date): boolean {
-  if (!props.modelValue) return false
-
-  if (Array.isArray(props.modelValue)) {
-    return props.modelValue.some(d => isSameDay(d, date))
-  }
-
-  return isSameDay(props.modelValue as Date, date)
+  return activeDates.value.some(d => isSameDay(d, date))
 }
 
 function isDateSelectable (date: Date): boolean {
@@ -379,23 +381,30 @@ function getDayClasses (day: CalendarDay) {
   }
 }
 
+function emitDate (date: Date) {
+  emit('update:modelValue', date as T)
+  emit('update:dateString', formatDate(date, DATE_FORMAT) as S)
+}
+
+function emitDates (dates: Date[]) {
+  emit('update:modelValue', dates as T)
+  emit('update:dateString', dates.map(d => formatDate(d, DATE_FORMAT)) as S)
+}
+
 function selectDate (date: Date) {
   if (!isDateSelectable(date)) return
 
   if (props.multiple) {
-    const currentDates = Array.isArray(props.modelValue) ? [...props.modelValue] : []
-    const index = currentDates.findIndex(d => isSameDay(d, date))
-
+    const current = [...activeDates.value]
+    const index = current.findIndex(d => isSameDay(d, date))
     if (index >= 0) {
-      currentDates.splice(index, 1)
+      current.splice(index, 1)
     } else {
-      currentDates.push(date)
+      current.push(date)
     }
-
-    emit('update:modelValue', currentDates as T)
+    emitDates(current)
   } else {
-    emit('update:modelValue', date as T)
-
+    emitDate(date)
     if (props.closeOnSelect) {
       close()
     }
@@ -405,7 +414,11 @@ function selectDate (date: Date) {
 function handleInputChange (value: string) {
   const date = parseDate(value)
   if (date && isDateSelectable(date)) {
-    emit('update:modelValue', date as T)
+    if (props.multiple) {
+      selectDate(date)
+    } else {
+      emitDate(date)
+    }
     focusedMonth.value = date.getMonth()
     focusedYear.value = date.getFullYear()
   }
@@ -433,14 +446,12 @@ function close () {
   isActive.value = false
 }
 
-// Initialize focused date from modelValue
-watch(() => props.modelValue, (newValue) => {
-  if (newValue) {
-    const date = Array.isArray(newValue) ? newValue[0] : newValue as Date
-    if (date) {
-      focusedMonth.value = date.getMonth()
-      focusedYear.value = date.getFullYear()
-    }
+// Initialize focused date from the active selection
+watch(activeDates, (dates) => {
+  const date = dates[0]
+  if (date) {
+    focusedMonth.value = date.getMonth()
+    focusedYear.value = date.getFullYear()
   }
 }, { immediate: true })
 
