@@ -278,7 +278,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick, watch } from 'vue'
+import { ref, computed, nextTick, watch, toRefs } from 'vue'
 import { useRoute } from 'vue-router'
 import { useHead } from '#imports'
 import { LocationTypes } from '../basemaps'
@@ -294,12 +294,16 @@ import { usePathwayEditorKeyboard } from '../composables/usePathwayEditorKeyboar
 
 defineOptions({ layout: 'wide' })
 
+const props = defineProps<{
+  feedKey: string
+  feedVersionKey: string
+  stationKey: string
+  clientId?: string
+}>()
+
+const { feedKey, feedVersionKey, stationKey, clientId } = toRefs(props)
 const route = useRoute()
 const { showToast } = useToastNotification()
-
-const feedKey = computed(() => String(route.params.feedKey))
-const feedVersionKey = computed(() => String(route.params.feedVersionKey))
-const stationKey = computed(() => String(route.params.stationKey))
 
 const {
   ready,
@@ -315,7 +319,7 @@ const {
   createPathway,
   updatePathway,
   deletePathway
-} = useStation({ feedKey, feedVersionKey, stationKey, clientId: 'stationEditor' })
+} = useStation({ feedKey, feedVersionKey, stationKey, clientId: clientId?.value })
 
 useHead(computed(() => ({
   title: station.value?.stop?.stop_name ? `${station.value.stop.stop_name} — Draw Pathways` : 'Draw Pathways'
