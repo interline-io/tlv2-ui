@@ -1,5 +1,3 @@
-import { useStorage } from '@vueuse/core'
-
 export class User {
   loggedIn = false
   id = ''
@@ -20,14 +18,4 @@ export class User {
     }
     return false
   }
-}
-
-export function clearUser () {
-  const checkUser = useStorage('user', {})
-  checkUser.value = new User({ loggedIn: false })
-}
-
-export const useUser = () => {
-  const user = useStorage('user', {})
-  return new User(user?.value || {})
 }

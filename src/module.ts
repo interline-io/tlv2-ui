@@ -29,7 +29,6 @@ export interface ModuleOptions {
   auth0RedirectUri?: string
   auth0LogoutUri?: string
   // Server-side auth
-  serverAuth?: boolean
   serverAuthRoutes?: string[]
   // Transfer Analyst options
   transferAnalystReadOnlyFeedSelector?: boolean
@@ -68,7 +67,6 @@ export default defineNuxtModule<ModuleOptions>({
     auth0Scope: undefined,
     auth0RedirectUri: undefined,
     auth0LogoutUri: undefined,
-    serverAuth: false,
     serverAuthRoutes: undefined,
     transferAnalystReadOnlyFeedSelector: false,
     transferAnalystGtfsRealtimeStopObservations: true
@@ -119,7 +117,6 @@ export default defineNuxtModule<ModuleOptions>({
         auth0LogoutUri: options.auth0LogoutUri,
         auth0Audience: options.auth0Audience,
         auth0Scope: options.auth0Scope,
-        serverAuth: !!options.serverAuth,
         transferAnalystReadOnlyFeedSelector: options.transferAnalystReadOnlyFeedSelector,
         transferAnalystGtfsRealtimeStopObservations: options.transferAnalystGtfsRealtimeStopObservations,
       }
@@ -133,35 +130,35 @@ export default defineNuxtModule<ModuleOptions>({
     // Setup plugins (run in order added)
     addPlugin(resolveRuntimeModule('plugins/apollo'))
     addPlugin(resolveRuntimeModule('plugins/mixpanel.client'))
-    if (options.serverAuth) {
-      addPlugin(resolveRuntimeModule('plugins/auth.server'))
-    } else {
-      addPlugin(resolveRuntimeModule('plugins/auth.client'))
-    }
+    addPlugin(resolveRuntimeModule('plugins/auth.server'))
+    addPlugin(resolveRuntimeModule('plugins/auth.migrate.client'))
     addImportsDir(resolveRuntimeModule('composables'))
 
     // Server-side auth middleware and routes
-    if (options.serverAuth) {
-      addServerHandler({
-        middleware: true,
-        handler: resolveRuntimeModule('server/middleware/auth')
-      })
-      addServerHandler({
-        route: '/api/auth/login',
-        method: 'get',
-        handler: resolveRuntimeModule('server/api/auth/login.get')
-      })
-      addServerHandler({
-        route: '/api/auth/callback',
-        method: 'get',
-        handler: resolveRuntimeModule('server/api/auth/callback.get')
-      })
-      addServerHandler({
-        route: '/api/auth/logout',
-        method: 'get',
-        handler: resolveRuntimeModule('server/api/auth/logout.get')
-      })
-    }
+    addServerHandler({
+      middleware: true,
+      handler: resolveRuntimeModule('server/middleware/auth')
+    })
+    addServerHandler({
+      route: '/api/auth/login',
+      method: 'get',
+      handler: resolveRuntimeModule('server/api/auth/login.get')
+    })
+    addServerHandler({
+      route: '/api/auth/callback',
+      method: 'get',
+      handler: resolveRuntimeModule('server/api/auth/callback.get')
+    })
+    addServerHandler({
+      route: '/api/auth/logout',
+      method: 'get',
+      handler: resolveRuntimeModule('server/api/auth/logout.get')
+    })
+    addServerHandler({
+      route: '/api/auth/migrate',
+      method: 'post',
+      handler: resolveRuntimeModule('server/api/auth/migrate.post')
+    })
 
     // Proxy options
     if (useProxy) {
