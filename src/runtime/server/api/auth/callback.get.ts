@@ -1,4 +1,4 @@
-import { defineEventHandler, getQuery, getCookie, setCookie, sendRedirect, createError } from 'h3'
+import { defineEventHandler, getQuery, getCookie, setCookie, sendRedirect, createError, getRequestURL } from 'h3'
 import { getAuth0Config, getAuth0BaseUrl, setAuthCookie, verifyToken, STATE_COOKIE } from '../../utils/auth'
 
 export default defineEventHandler(async (event) => {
@@ -40,7 +40,9 @@ export default defineEventHandler(async (event) => {
   }
 
   // Exchange the authorization code for tokens (with PKCE code verifier)
-  const callbackUrl = `${auth0.redirectUri || ''}/api/auth/callback`
+  // redirect_uri must match what was sent in the authorize request (see initiateLogin)
+  const requestUrl = getRequestURL(event)
+  const callbackUrl = `${auth0.redirectUri || requestUrl.origin}/api/auth/callback`
   const tokenResponse = await fetch(`${getAuth0BaseUrl(auth0.domain)}/oauth/token`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

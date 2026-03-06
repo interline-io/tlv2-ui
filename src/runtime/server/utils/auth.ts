@@ -159,13 +159,24 @@ export async function generatePKCE (): Promise<{ codeVerifier: string, codeChall
 }
 
 /**
+ * Ensure a redirect target is a safe relative path (prevents open redirect).
+ */
+export function sanitizeRedirectUrl (url: string): string {
+  if (!url || !url.startsWith('/') || url.startsWith('//')) {
+    return '/'
+  }
+  return url
+}
+
+/**
  * Initiate the Auth0 login flow: generate PKCE, set state cookie, redirect to Auth0.
  */
 export async function initiateLogin (event: H3Event, auth0: Auth0Config, returnTo?: string) {
   const { codeVerifier, codeChallenge } = await generatePKCE()
   const requestUrl = getRequestURL(event)
+  const targetUrl = sanitizeRedirectUrl(returnTo || requestUrl.pathname + requestUrl.search)
   const stateData = {
-    targetUrl: returnTo || requestUrl.pathname + requestUrl.search,
+    targetUrl,
     codeVerifier,
   }
   const state = Buffer.from(JSON.stringify(stateData)).toString('base64url')
