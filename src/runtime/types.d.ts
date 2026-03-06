@@ -35,7 +35,6 @@ declare module 'nuxt/schema' {
       nearmapsApikey?: string
       mixpanelApikey?: string
       loginGate?: boolean
-      requireLogin?: boolean
       editorRoutePrefix: string
       auth0Domain?: string
       auth0ClientId?: string

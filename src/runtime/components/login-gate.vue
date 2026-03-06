@@ -13,9 +13,7 @@
       </div>
     </div>
     <div v-else>
-      <client-only>
-        <slot name="default" />
-      </client-only>
+      <slot name="default" />
     </div>
   </div>
 </template>

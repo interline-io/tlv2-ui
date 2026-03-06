@@ -16,7 +16,6 @@ export interface ModuleOptions {
   apiBase?: string
   // Login gate
   loginGate?: boolean
-  requireLogin?: boolean
   // Api keys
   protomapsApikey?: string
   nearmapsApikey?: string
@@ -55,7 +54,6 @@ export default defineNuxtModule<ModuleOptions>({
     bulma: '',
     useProxy: false,
     loginGate: false,
-    requireLogin: false,
     safelinkUtmSource: undefined,
     proxyBase: undefined,
     apiBase: undefined,
@@ -109,7 +107,6 @@ export default defineNuxtModule<ModuleOptions>({
         nearmapsApikey: options.nearmapsApikey,
         mixpanelApikey: options.mixpanelApikey,
         loginGate: options.loginGate,
-        requireLogin: options.requireLogin,
         routes: options.routes,
         auth0Domain: options.auth0Domain,
         auth0ClientId: options.auth0ClientId,
