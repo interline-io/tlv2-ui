@@ -3,6 +3,7 @@ import {
   getAuth0Config,
   extractToken,
   verifyToken,
+  clearAuthCookie,
   isApiRequest,
   matchesAuthRoute,
   initiateLogin,
@@ -33,8 +34,8 @@ export default defineEventHandler(async (event) => {
         payload,
       }
     } catch {
-      // Token is invalid/expired — clear it but don't block yet
-      // (only block below if this is a protected route)
+      // Token is invalid/expired — clear the stale cookie
+      clearAuthCookie(event)
     }
   }
 

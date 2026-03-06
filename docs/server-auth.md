@@ -1,6 +1,6 @@
 # Server-Side Authentication
 
-tlv2-ui supports two authentication modes, selected per consuming application via the `serverAuth` module option. Only one mode is active at a time.
+tlv2-ui uses server-side authentication via Auth0. JWTs are stored in HttpOnly cookies, verified server-side with `jose`, and forwarded to upstream APIs. The Auth0 SPA SDK is not used.
 
 ## Configuration
 
@@ -9,7 +9,6 @@ tlv2-ui supports two authentication modes, selected per consuming application vi
 export default defineNuxtConfig({
   modules: ['tlv2-ui'],
   tlv2: {
-    serverAuth: true,               // Enable server-side auth (false = client-side SPA SDK)
     serverAuthRoutes: ['/admin/**'], // Optional: only protect matching routes (default: all routes)
     auth0Domain: 'example.auth0.com',
     auth0ClientId: 'your-client-id',
@@ -21,19 +20,17 @@ export default defineNuxtConfig({
 })
 ```
 
+### Environment Variables (server-only, via runtimeConfig)
+
+```
+NUXT_TLV2_AUTH0_CLIENT_SECRET=...   # Required: Auth0 client secret for code exchange
+NUXT_TLV2_AUTH0_PUBLIC_KEY=...      # Optional: PEM public key for local JWT verification
+NUXT_TLV2_GRAPHQL_APIKEY=...       # API key for unauthenticated upstream requests
+```
+
 If `auth0PublicKey` is not set, JWT verification uses JWKS (fetched once from Auth0's `/.well-known/jwks.json` endpoint and cached).
 
-## Auth Modes
-
-### Server Auth (`serverAuth: true`)
-
-JWT is stored in an HttpOnly secure cookie. The Auth0 SPA SDK is not loaded. All auth operations happen server-side.
-
-### Client Auth (`serverAuth: false`, default)
-
-JWT is managed by the Auth0 SPA SDK in the browser (localStorage). This is the existing behavior.
-
-## Server Auth Flow
+## Auth Flow
 
 ### 1. Initial Page Load (unauthenticated)
 
@@ -98,7 +95,7 @@ Browser                    Nuxt Server                Auth0
   |    original targetUrl      |                        |
 ```
 
-### 3. Authenticated Page Load
+### 3. Authenticated Page Load (SSR)
 
 ```
 Browser                    Nuxt Server                Upstream API
@@ -112,14 +109,22 @@ Browser                    Nuxt Server                Upstream API
   |                            |   { sub, email,         |
   |                            |     permissions }       |
   |                            |                        |
-  |                            |-- SSR: auth.server.ts   |
-  |                            |   plugin copies auth    |
-  |                            |   to useState           |
+  |                            |-- SSR: Apollo query --->|
+  |                            |   Authorization: Bearer |
+  |                            |   <user's jwt>          |
+  |                            |                        |
+  |                            |<-- GraphQL response ----|
+  |                            |                        |
+  |                            |-- auth.server.ts plugin |
+  |                            |   copies auth to        |
+  |                            |   useState for client   |
   |                            |                        |
   |<-- HTML (SSR rendered) ----|                        |
   |   (useState hydrated       |                        |
   |    in payload)             |                        |
 ```
+
+During SSR, `useAuthHeaders()` extracts the user's JWT from the request cookie and forwards it as `Authorization: Bearer <jwt>` to the upstream API. This ensures SSR-rendered pages reflect the user's permissions and data. If no JWT is present, it falls back to the configured `graphqlApikey` for unauthenticated access.
 
 ### 4. Client-Side API Request (via proxy)
 
@@ -143,6 +148,8 @@ Browser                    Nuxt Server (proxy)        Upstream API
   |<-- response ---------------|                        |
 ```
 
+On the client, the browser sends the HttpOnly cookie automatically with every request to the proxy (`/api/v2/**`). The proxy extracts the JWT from the cookie and forwards it as an `Authorization: Bearer` header to the upstream API.
+
 ### 5. Unauthenticated API Request (via proxy)
 
 ```
@@ -161,6 +168,8 @@ Browser                    Nuxt Server (proxy)        Upstream API
   |                            |<-- response ------------|
   |<-- response ---------------|                        |
 ```
+
+When no JWT is available, the proxy sends the server-configured `graphqlApikey` instead. JWT and apikey are mutually exclusive: if a JWT is found, no apikey is sent.
 
 ### 6. Manual Login
 
@@ -197,15 +206,14 @@ Browser                    Nuxt Server                Auth0
   |<-- 302 Redirect to returnTo -----------------------|
 ```
 
-## Proxy Auth Precedence
+## Upstream Auth Precedence
 
-The proxy (`/api/v2/**`) determines upstream credentials in this order:
+Both the proxy (`/api/v2/**`) and SSR (`useAuthHeaders`) use the same precedence for upstream credentials:
 
-1. **Authorization header** -- present in client auth mode (SPA SDK sends `Bearer <token>`)
-2. **`tlv2_auth_token` cookie** -- present in server auth mode (converted to `Bearer <token>`)
-3. **apikey** -- fallback for unauthenticated users (from request query/header, or server-configured `graphqlApikey`)
+1. **User's JWT** from the `tlv2_auth_token` cookie (forwarded as `Authorization: Bearer <jwt>`)
+2. **apikey** fallback for unauthenticated requests (server-configured `graphqlApikey`)
 
-JWT and apikey are mutually exclusive: if a JWT is found, no apikey is sent.
+The proxy also accepts an `Authorization` header directly from the request, which takes priority over the cookie. This supports programmatic API clients that send their own Bearer tokens.
 
 ## Route-Specific Auth
 
@@ -224,35 +232,41 @@ Pattern syntax:
 - Exact strings match exactly (e.g. `/settings` matches only `/settings`)
 - If `serverAuthRoutes` is empty or not set, all routes require authentication
 
-## Composable Behavior
+## Composables
 
-All composables behave identically regardless of auth mode. Components do not need to know which mode is active.
+| Composable         | Behavior                                                              |
+|--------------------|-----------------------------------------------------------------------|
+| `useUser()`        | Returns user from `useState` (populated via SSR payload)              |
+| `useLogin()`       | Navigates to `/api/auth/login?returnTo=...`                           |
+| `useLogout()`      | Navigates to `/api/auth/logout`                                       |
+| `useLoginGate()`   | Returns `true` if login gate blocks access (calls `useUser()`)        |
+| `useAuthHeaders()` | Server: JWT or apikey for upstream. Client: CSRF token for proxy      |
 
-| Composable         | Server Auth                              | Client Auth                    |
-|--------------------|------------------------------------------|--------------------------------|
-| `useUser()`        | Reads from `useState` (SSR payload)      | Reads from `localStorage`      |
-| `useLogin()`       | Navigates to `/api/auth/login`           | Redirects to Auth0 via SPA SDK |
-| `useLogout()`      | Navigates to `/api/auth/logout`          | Redirects to Auth0 via SPA SDK |
-| `useLoginGate()`   | Works with either mode (calls `useUser()`) | Same                         |
-| `useAuthHeaders()` | CSRF only (cookie sent automatically)    | `Authorization` header + CSRF  |
+## Migration from Auth0 SPA SDK
+
+A client-side migration plugin (`auth.migrate.client.ts`) runs on page load. It detects Auth0 SPA SDK tokens in localStorage, sends them to `POST /api/auth/migrate` for verification and cookie-setting, then clears the localStorage entries. This allows existing logged-in users to transition without being forced to re-login.
+
+The migration endpoint verifies the token before accepting it and skips if the user already has a valid auth cookie. Once all users have migrated, the migration plugin can be removed.
 
 ## Security Properties
 
 - **XSS resistant**: JWT stored in HttpOnly cookie, inaccessible to JavaScript
 - **CSRF protected**: State parameter with short-lived cookie validates the OAuth callback; nuxt-csurf protects proxy requests
 - **PKCE**: Authorization Code flow uses S256 code challenge, preventing authorization code interception
+- **Open redirect prevention**: `returnTo` parameter is validated to be a relative path before use in redirects
 - **Server-only secrets**: `client_secret` and `auth0PublicKey` are in private runtime config, never exposed to the browser
 
 ## Files
 
 | File                                          | Purpose                                                              |
 |-----------------------------------------------|----------------------------------------------------------------------|
-| `src/module.ts`                               | Module config: registers plugins and server handlers based on `serverAuth` |
+| `src/module.ts`                               | Module config: registers plugins and server handlers                 |
 | `src/runtime/server/middleware/auth.ts`       | Global middleware: verifies JWT, populates `event.context.auth`      |
 | `src/runtime/server/utils/auth.ts`            | Shared auth helpers: config, token verification, PKCE, cookies       |
 | `src/runtime/server/api/auth/login.get.ts`    | Login route: initiates Auth0 redirect with PKCE                      |
 | `src/runtime/server/api/auth/callback.get.ts` | Callback route: exchanges code for token, sets cookie                |
 | `src/runtime/server/api/auth/logout.get.ts`   | Logout route: clears cookie, redirects to Auth0 logout               |
+| `src/runtime/server/api/auth/migrate.post.ts` | Migration route: accepts localStorage JWT, sets as cookie            |
 | `src/runtime/plugins/auth.server.ts`          | Server plugin: copies `event.context.auth` to `useState` for SSR    |
-| `src/runtime/plugins/auth.client.ts`          | Client plugin: Auth0 SPA SDK flow (only when `serverAuth: false`)   |
-| `src/runtime/lib/util/proxy.ts`               | API proxy: extracts JWT from header or cookie for upstream requests  |
+| `src/runtime/plugins/auth.migrate.client.ts`  | Client plugin: migrates Auth0 SPA SDK tokens from localStorage       |
+| `src/runtime/lib/util/proxy.ts`               | API proxy: extracts JWT from cookie for upstream requests            |

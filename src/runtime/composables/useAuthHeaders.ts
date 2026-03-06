@@ -1,5 +1,6 @@
 import { useRuntimeConfig, useRequestEvent, useCsrf } from '#imports'
 import { getCookie } from 'h3'
+import { AUTH_COOKIE } from '../server/utils/auth'
 
 // Headers for API requests.
 // Server-side: forwards user's JWT from cookie as Authorization header for SSR,
@@ -13,7 +14,7 @@ export const useAuthHeaders = async () => {
   // Server side: forward user's JWT or fall back to API key
   if (import.meta.server) {
     const event = useRequestEvent()
-    const token = event ? getCookie(event, 'tlv2_auth_token') : undefined
+    const token = event ? getCookie(event, AUTH_COOKIE) : undefined
     if (token) {
       headers['Authorization'] = `Bearer ${token}`
     } else if (config.tlv2?.graphqlApikey) {

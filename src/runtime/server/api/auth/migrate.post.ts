@@ -29,16 +29,16 @@ export default defineEventHandler(async (event) => {
   }
 
   // Verify the token is valid before setting as cookie
+  let payload
   try {
-    await verifyToken(token, auth0)
+    payload = await verifyToken(token, auth0)
   } catch {
     throw createError({ statusCode: 401, statusMessage: 'Invalid token' })
   }
 
-  // Set as HttpOnly cookie — use a conservative maxAge since we don't know
-  // the original expiry. The token's own `exp` claim will still be enforced
-  // on subsequent verification.
-  setAuthCookie(event, token, 86400)
+  // Use the token's actual expiry for the cookie maxAge
+  const maxAge = payload.exp ? payload.exp - Math.floor(Date.now() / 1000) : 86400
+  setAuthCookie(event, token, maxAge)
 
   return { migrated: true }
 })
