@@ -11,5 +11,14 @@ export const useLogout = async () => {
   const config = useRuntimeConfig()
   const mixpanel = createMixpanel(config.public.tlv2?.mixpanelApikey, useUser())
   mixpanel.reset()
+
+  const serverAuth = !!(config.public.tlv2 as any)?.serverAuth
+
+  if (serverAuth) {
+    // Server auth mode: redirect to server logout route (clears cookie, redirects to Auth0 logout)
+    return navigateTo('/api/auth/logout', { external: true })
+  }
+
+  // Client auth mode: redirect to Auth0 logout via SPA SDK
   return navigateTo(await getLogoutUrl(), { external: true })
 }
