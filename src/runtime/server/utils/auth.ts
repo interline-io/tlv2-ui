@@ -140,7 +140,7 @@ export function isApiRequest (event: H3Event): boolean {
 export function matchesAuthRoute (path: string, patterns: string[]): boolean {
   for (const pattern of patterns) {
     if (pattern.endsWith('/**')) {
-      const prefix = pattern.slice(0, -2)
+      const prefix = pattern.slice(0, -3)
       if (path === prefix || path.startsWith(prefix + '/')) {
         return true
       }

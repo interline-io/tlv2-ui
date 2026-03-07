@@ -1,5 +1,5 @@
 import { defineEventHandler, getQuery, getCookie, setCookie, sendRedirect, createError, getRequestURL } from 'h3'
-import { getAuth0Config, getAuth0BaseUrl, setAuthCookie, verifyToken, STATE_COOKIE } from '../../utils/auth'
+import { getAuth0Config, getAuth0BaseUrl, setAuthCookie, verifyToken, sanitizeRedirectUrl, STATE_COOKIE } from '../../utils/auth'
 
 export default defineEventHandler(async (event) => {
   const auth0 = getAuth0Config()
@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
   let codeVerifier: string | undefined
   try {
     const stateData = JSON.parse(Buffer.from(state, 'base64url').toString())
-    targetUrl = stateData.targetUrl || '/'
+    targetUrl = sanitizeRedirectUrl(stateData.targetUrl || '/')
     codeVerifier = stateData.codeVerifier
   } catch {
     // Fall back to root if state can't be parsed
