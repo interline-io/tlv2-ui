@@ -5,6 +5,9 @@ declare module 'nuxt/schema' {
   interface RuntimeConfig {
     tlv2: {
       graphqlApikey: string
+      auth0PublicKey: string
+      auth0ClientSecret: string
+      serverAuthRoutes: string[]
       proxyBase: {
         default?: string
         stationEditor: string
@@ -32,7 +35,6 @@ declare module 'nuxt/schema' {
       nearmapsApikey?: string
       mixpanelApikey?: string
       loginGate?: boolean
-      requireLogin?: boolean
       editorRoutePrefix: string
       auth0Domain?: string
       auth0ClientId?: string
@@ -60,6 +62,18 @@ declare module 'vue' {
   interface ComponentCustomProperties {
     $apollo: any
     $buefy: any
+  }
+}
+
+// Server-side auth context set by JWT middleware
+declare module 'h3' {
+  interface H3EventContext {
+    auth?: {
+      sub?: string
+      email?: string
+      permissions?: string[]
+      payload: Record<string, unknown>
+    }
   }
 }
 

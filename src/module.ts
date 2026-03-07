@@ -16,7 +16,6 @@ export interface ModuleOptions {
   apiBase?: string
   // Login gate
   loginGate?: boolean
-  requireLogin?: boolean
   // Api keys
   protomapsApikey?: string
   nearmapsApikey?: string
@@ -28,6 +27,8 @@ export interface ModuleOptions {
   auth0Scope?: string
   auth0RedirectUri?: string
   auth0LogoutUri?: string
+  // Server-side auth
+  serverAuthRoutes?: string[]
   // Transfer Analyst options
   transferAnalystReadOnlyFeedSelector?: boolean
   transferAnalystGtfsRealtimeStopObservations?: boolean
@@ -53,7 +54,6 @@ export default defineNuxtModule<ModuleOptions>({
     bulma: '',
     useProxy: false,
     loginGate: false,
-    requireLogin: false,
     safelinkUtmSource: undefined,
     proxyBase: undefined,
     apiBase: undefined,
@@ -65,6 +65,7 @@ export default defineNuxtModule<ModuleOptions>({
     auth0Scope: undefined,
     auth0RedirectUri: undefined,
     auth0LogoutUri: undefined,
+    serverAuthRoutes: undefined,
     transferAnalystReadOnlyFeedSelector: false,
     transferAnalystGtfsRealtimeStopObservations: true
   },
@@ -80,6 +81,9 @@ export default defineNuxtModule<ModuleOptions>({
     Object.assign(nuxt.options.runtimeConfig, defu(nuxt.options.runtimeConfig, {
       tlv2: {
         graphqlApikey: '',
+        auth0PublicKey: '',
+        auth0ClientSecret: '',
+        serverAuthRoutes: options.serverAuthRoutes || [],
         proxyBase: {
           default: options.proxyBase,
           stationEditor: '',
@@ -103,7 +107,6 @@ export default defineNuxtModule<ModuleOptions>({
         nearmapsApikey: options.nearmapsApikey,
         mixpanelApikey: options.mixpanelApikey,
         loginGate: options.loginGate,
-        requireLogin: options.requireLogin,
         routes: options.routes,
         auth0Domain: options.auth0Domain,
         auth0ClientId: options.auth0ClientId,
@@ -124,8 +127,35 @@ export default defineNuxtModule<ModuleOptions>({
     // Setup plugins (run in order added)
     addPlugin(resolveRuntimeModule('plugins/apollo'))
     addPlugin(resolveRuntimeModule('plugins/mixpanel.client'))
-    addPlugin(resolveRuntimeModule('plugins/auth.client'))
+    addPlugin(resolveRuntimeModule('plugins/auth.server'))
+    addPlugin(resolveRuntimeModule('plugins/auth.migrate.client'))
     addImportsDir(resolveRuntimeModule('composables'))
+
+    // Server-side auth middleware and routes
+    addServerHandler({
+      middleware: true,
+      handler: resolveRuntimeModule('server/middleware/auth')
+    })
+    addServerHandler({
+      route: '/api/auth/login',
+      method: 'get',
+      handler: resolveRuntimeModule('server/api/auth/login.get')
+    })
+    addServerHandler({
+      route: '/api/auth/callback',
+      method: 'get',
+      handler: resolveRuntimeModule('server/api/auth/callback.get')
+    })
+    addServerHandler({
+      route: '/api/auth/logout',
+      method: 'get',
+      handler: resolveRuntimeModule('server/api/auth/logout.get')
+    })
+    addServerHandler({
+      route: '/api/auth/migrate',
+      method: 'post',
+      handler: resolveRuntimeModule('server/api/auth/migrate.post')
+    })
 
     // Proxy options
     if (useProxy) {

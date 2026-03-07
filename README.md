@@ -43,7 +43,6 @@ export default defineNuxtConfig({
 | `proxyBase` | `string` | - | Proxy base URL |
 | `apiBase` | `string` | - | API base URL |
 | `loginGate` | `boolean` | `false` | Enable login gate |
-| `requireLogin` | `boolean` | `false` | Require user login |
 | `protomapsApikey` | `string` | - | Protomaps API key |
 | `nearmapsApikey` | `string` | - | Nearmaps API key |
 | `mixpanelApikey` | `string` | - | Mixpanel API key |

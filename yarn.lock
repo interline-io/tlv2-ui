@@ -9933,6 +9933,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jose@npm:6.2.0":
+  version: 6.2.0
+  resolution: "jose@npm:6.2.0"
+  checksum: 10/5b27d04aa2176726d42897758d91ece12210eec11674a42124db280d3560e0ba32c8e75b9d1341589b42384fe40cd8d06ee682f9c5c9fe79e0065be7ba9fddce
+  languageName: node
+  linkType: hard
+
 "js-beautify@npm:^1.14.9":
   version: 1.15.4
   resolution: "js-beautify@npm:1.15.4"
@@ -14569,6 +14576,7 @@ __metadata:
     graphql-tag: "npm:2.12.6"
     h3: "npm:1.15.1"
     happy-dom: "npm:18.0.1"
+    jose: "npm:6.2.0"
     jsdom: "npm:26.1.0"
     maplibre-gl: "npm:5.2.0"
     mixpanel-browser: "npm:2.61.2"

@@ -1,44 +1,34 @@
-import { useRuntimeConfig, useCsrf } from '#imports'
-import { checkToken } from '../lib/auth/auth0'
-import { clearUser } from '../lib/auth'
-import { logAuthDebug } from '../lib/util/log'
+import { useRuntimeConfig, useRequestEvent, useCsrf } from '#imports'
+import { getCookie } from 'h3'
+import { AUTH_COOKIE } from '../server/utils/auth'
 
-// JWT
-const useJwt = async () => {
-  const { token, mustReauthorize } = await checkToken()
-  if (mustReauthorize) {
-    logAuthDebug('useJwt: mustReauthorize')
-    clearUser()
-    return ''
-  }
-  return token
-}
-
-// Headers, including CSRF
+// Headers for API requests.
+// Server-side: forwards user's JWT from cookie as Authorization header for SSR,
+//   falls back to apikey for unauthenticated requests.
+// Client-side: includes CSRF token when using proxy. JWT is sent automatically
+//   via HttpOnly cookie (credentials: 'same-origin' in Apollo).
 export const useAuthHeaders = async () => {
   const config = useRuntimeConfig()
   const headers: Record<string, string> = {}
 
-  // Server side configuration
+  // Server side: forward user's JWT or fall back to API key
   if (import.meta.server) {
-    // Api key
-    if (config.tlv2?.graphqlApikey) {
+    const event = useRequestEvent()
+    const token = event ? getCookie(event, AUTH_COOKIE) : undefined
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    } else if (config.tlv2?.graphqlApikey) {
       headers['apikey'] = config.tlv2?.graphqlApikey
     }
   }
 
-  // Client side configuration
+  // Client side: CSRF token for proxy requests
   if (import.meta.client) {
-    // CSRF
     if (config.public.tlv2?.useProxy) {
       const { headerName: csrfHeader, csrf: csrfToken } = useCsrf()
       headers[csrfHeader] = csrfToken
     }
-    // JWT
-    const token = await useJwt()
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`
-    }
   }
+
   return headers
 }

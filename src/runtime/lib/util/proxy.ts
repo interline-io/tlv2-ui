@@ -1,5 +1,6 @@
 import type { H3Event } from 'h3'
-import { proxyRequest, getQuery } from 'h3'
+import { proxyRequest, getQuery, getCookie } from 'h3'
+import { AUTH_COOKIE } from '../../server/utils/auth'
 
 // Use sessions and/or nuxt-csurf to protect this in nuxt.config.ts
 export function proxyHandler (
@@ -7,17 +8,22 @@ export function proxyHandler (
   proxyBase: string,
   graphqlApikey: string
 ) {
-  // Check user provided apikey
-  const query = getQuery(event)
-  const requestApikey = (query.apikey ? query.apikey.toString() : '') || event.headers.get('apikey') || ''
-
-  // Check user provided bearer
+  // Upstream auth precedence:
+  // 1. Authorization header (programmatic API clients send Bearer token directly)
+  // 2. Auth cookie (browser sends HttpOnly cookie automatically)
+  // 3. Fall back to apikey for unauthenticated users
   const requestBearer = event.headers.get('authorization') || ''
+  const cookieToken = !requestBearer ? getCookie(event, AUTH_COOKIE) : ''
+  const authorization = requestBearer || (cookieToken ? `Bearer ${cookieToken}` : '')
 
-  // Auth headers
-  const headers = {
-    authorization: requestBearer,
-    apikey: requestApikey || graphqlApikey
+  const headers: Record<string, string> = {}
+  if (authorization) {
+    headers.authorization = authorization
+  } else {
+    // No JWT available — use apikey for unauthenticated access
+    const query = getQuery(event)
+    const requestApikey = (query.apikey ? query.apikey.toString() : '') || event.headers.get('apikey') || ''
+    headers.apikey = requestApikey || graphqlApikey
   }
 
   // Proxy request

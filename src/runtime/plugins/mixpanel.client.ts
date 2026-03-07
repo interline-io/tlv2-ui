@@ -1,7 +1,7 @@
 import { useRuntimeConfig } from '#imports'
 import { defineNuxtPlugin } from 'nuxt/app'
 import { createMixpanel } from '../lib/analytics/mixpanel'
-import { useUser } from '../lib/auth'
+import { useUser } from '../composables/useUser'
 
 export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig()
