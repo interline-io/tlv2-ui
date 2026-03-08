@@ -4,6 +4,7 @@
     view-heading="View Pathway"
     edit-heading="Edit Pathway"
     :show-unselect="showUnselect"
+    :read-only="readOnly"
     @unselect="$emit('unselect')"
   >
     <template #view>
@@ -152,10 +153,12 @@ interface Props {
   station: StationData | Station
   pathway: Pathway
   showUnselect?: boolean
+  readOnly?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  showUnselect: false
+  showUnselect: false,
+  readOnly: false
 })
 
 const editMode = defineModel<boolean>('editMode', { default: false })

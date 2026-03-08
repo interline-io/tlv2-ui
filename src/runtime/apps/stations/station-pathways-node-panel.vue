@@ -5,6 +5,7 @@
     edit-heading="Edit Node"
     edit-label="Edit / Move"
     :show-unselect="showUnselect"
+    :read-only="readOnly"
     @unselect="$emit('unselect')"
   >
     <template #view>
@@ -144,6 +145,7 @@ interface Props {
   stop: Stop
   stopAssociationsEnabled?: boolean
   showUnselect?: boolean
+  readOnly?: boolean
   feedKey: string
   feedVersionKey: string
   stationKey: string
@@ -151,7 +153,8 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   stopAssociationsEnabled: false,
-  showUnselect: false
+  showUnselect: false,
+  readOnly: false
 })
 
 defineEmits<{
