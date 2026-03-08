@@ -57,29 +57,47 @@
           <input v-model.number="floorHeight" type="range" min="3" max="10" step="1" style="width: 72px;">
           <span style="font-size: 11px; min-width: 26px; color: #444;">{{ floorHeight }}m</span>
         </div>
-        <div style="background: rgba(255,255,255,0.92); padding: 4px 8px; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.12); font-size: 11px; color: #444;">
-          <div style="font-weight: 600; margin-bottom: 3px; color: #555;">Layers</div>
-          <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
-            <input v-model="showGroundPlane" type="checkbox">
-            Ground plane
-          </label>
-          <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; margin-top: 2px;" :title="routeIds.length === 0 ? 'No routes found for this station' : ''">
-            <input v-model="showRoutes" type="checkbox" :disabled="routeIds.length === 0">
-            Routes
-            <span v-if="routeIds.length === 0" style="color: #aaa;">(none)</span>
-          </label>
-          <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; margin-top: 2px;">
-            <input v-model="showSlabs" type="checkbox">
-            Floor slabs
-          </label>
-          <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; margin-top: 2px;">
-            <input v-model="showPathways" type="checkbox">
-            Pathways
-          </label>
-          <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; margin-top: 2px;">
-            <input v-model="showNodeLabels" type="checkbox">
-            Node labels
-          </label>
+        <div class="iso-layers-panel">
+          <div class="iso-layers-group">
+            <div class="iso-layers-heading">Base</div>
+            <label class="iso-layers-row">
+              <input v-model="basemap" type="radio" value="none">
+              None
+            </label>
+            <label class="iso-layers-row">
+              <input v-model="basemap" type="radio" value="ground">
+              Ground plane
+            </label>
+            <label v-if="nearmapsApikey" class="iso-layers-row">
+              <input v-model="basemap" type="radio" value="aerial">
+              Aerial imagery
+            </label>
+            <div class="iso-layers-divider" />
+            <label class="iso-layers-row">
+              <input v-model="showCompass" type="checkbox">
+              Compass rose
+            </label>
+          </div>
+          <div class="iso-layers-group">
+            <div class="iso-layers-heading">Station</div>
+            <label class="iso-layers-row">
+              <input v-model="showSlabs" type="checkbox">
+              Floor slabs
+            </label>
+            <label class="iso-layers-row">
+              <input v-model="showPathways" type="checkbox">
+              Pathways
+            </label>
+            <label class="iso-layers-row" :title="routeIds.length === 0 ? 'No routes found for this station' : ''">
+              <input v-model="showRoutes" type="checkbox" :disabled="routeIds.length === 0">
+              Routes
+              <span v-if="routeIds.length === 0" style="color: #aaa;">(none)</span>
+            </label>
+            <label class="iso-layers-row">
+              <input v-model="showNodeLabels" type="checkbox">
+              Node labels
+            </label>
+          </div>
         </div>
       </div>
 
@@ -92,9 +110,24 @@
         @click.self="onSvgClick"
       >
         <g ref="zoomGroup">
+          <!-- Aerial imagery tiles (rendered first, at z=0 ground level) -->
+          <image
+            v-for="(tile, ti) in aerialTiles"
+            :key="`tile-${ti}`"
+            :href="tile.url"
+            x="0"
+            y="0"
+            width="256"
+            height="256"
+            preserveAspectRatio="none"
+            :transform="tile.matrix"
+            opacity="0.9"
+          />
+
           <!-- Ground plane at level_index=0, drawn first (behind everything) -->
+          <!-- Hidden when aerial imagery is shown -->
           <polygon
-            v-if="showGroundPlane && groundPlanePoints"
+            v-if="showGroundPlane && !showAerialImagery && groundPlanePoints"
             :points="groundPlanePoints"
             fill="#a8c4a2"
             fill-opacity="0.28"
@@ -102,6 +135,41 @@
             stroke-width="1"
             stroke-opacity="0.5"
           />
+
+          <!-- Compass rose projected onto ground plane -->
+          <g v-if="projectedCompass" style="pointer-events: none;">
+            <line
+              v-for="(l, i) in projectedCompass.otherLines"
+              :key="`cl-${i}`"
+              :x1="l.x1" :y1="l.y1" :x2="l.x2" :y2="l.y2"
+              stroke="#555" stroke-width="1.2" stroke-linecap="round"
+            />
+            <line
+              :x1="projectedCompass.northLine.x1"
+              :y1="projectedCompass.northLine.y1"
+              :x2="projectedCompass.northLine.x2"
+              :y2="projectedCompass.northLine.y2"
+              stroke="#c0392b" stroke-width="2" stroke-linecap="round"
+            />
+            <polygon :points="projectedCompass.northArrow" fill="#c0392b" />
+            <circle
+              :cx="projectedCompass.center.x"
+              :cy="projectedCompass.center.y"
+              r="2.5" fill="white" stroke="#555" stroke-width="1"
+            />
+            <text
+              v-for="label in projectedCompass.labels"
+              :key="`clabel-${label.text}`"
+              :x="label.x"
+              :y="label.y"
+              :fill="label.isNorth ? '#c0392b' : '#444'"
+              font-size="10"
+              font-weight="600"
+              text-anchor="middle"
+              dominant-baseline="middle"
+              style="user-select: none;"
+            >{{ label.text }}</text>
+          </g>
 
           <!-- Route lines at z=0 (above ground plane, below level geometry) -->
           <path
@@ -237,6 +305,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onBeforeUnmount, ref, watch } from 'vue'
 import { useQuery } from '@vue/apollo-composable'
+import { useRuntimeConfig } from '#imports'
 import gql from 'graphql-tag'
 import { zoom as d3Zoom } from 'd3-zoom'
 import { select } from 'd3-selection'
@@ -265,11 +334,19 @@ const zoomScale = ref(1)
 const legendExpanded = ref(true)
 
 // --- Layer visibility ---
-const showGroundPlane = ref(true)
+type Basemap = 'none' | 'ground' | 'aerial'
+const basemap = ref<Basemap>('ground')
+const showGroundPlane = computed(() => basemap.value === 'ground')
+const showAerialImagery = computed(() => basemap.value === 'aerial')
+const showCompass = ref(true)
 const showRoutes = ref(true)
 const showSlabs = ref(true)
 const showPathways = ref(true)
 const showNodeLabels = ref(false)
+
+// --- Nearmap API key ---
+const runtimeConfig = useRuntimeConfig()
+const nearmapsApikey = computed(() => (runtimeConfig.public.tlv2 as any)?.nearmapsApikey || '')
 
 // --- Route geometry query ---
 interface RouteGeomEntry {
@@ -355,7 +432,119 @@ const routeLevelZMap = computed((): Map<number, number> => {
   return result
 })
 
-const ROUTE_CLIP_METERS = 1500
+const CLIP_BUFFER_METERS = 300  // added beyond the furthest stop/level vertex
+const CLIP_MIN_METERS = 400     // floor so tiny stations still have context
+
+// Adaptive clip radius: bounding circle of all stop + level geometry, plus buffer.
+// Used consistently for ground plane, aerial imagery, and route lines.
+const stationClipRadius = computed((): number => {
+  const originLon = centroid.value.lon
+  const originLat = centroid.value.lat
+  const cosLat = Math.cos(originLat * Math.PI / 180)
+  let maxDist = 0
+  function checkLonLat (lon: number, lat: number) {
+    const lx = (lon - originLon) * 111320 * cosLat
+    const ly = (lat - originLat) * 111320
+    const d = Math.sqrt(lx * lx + ly * ly)
+    if (d > maxDist) maxDist = d
+  }
+  for (const stop of stopsWithGeometry.value) {
+    checkLonLat(stop.geometry!.coordinates[0] as number, stop.geometry!.coordinates[1] as number)
+  }
+  for (const lvl of sortedLevels.value) {
+    if (!lvl.geometry) continue
+    for (const polygon of lvl.geometry.coordinates) {
+      for (const ring of polygon) {
+        for (const pos of ring) {
+          checkLonLat(pos[0] as number, pos[1] as number)
+        }
+      }
+    }
+  }
+  return Math.max(maxDist + CLIP_BUFFER_METERS, CLIP_MIN_METERS)
+})
+
+// --- Aerial imagery / tile math ---
+
+// Convert lon/lat to XYZ tile coordinates (standard Web Mercator, Y origin at top)
+function lonLatToTileXY (lon: number, lat: number, z: number): { x: number, y: number } {
+  const n = 2 ** z
+  const x = Math.floor((lon + 180) / 360 * n)
+  const latRad = lat * Math.PI / 180
+  const y = Math.floor((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2 * n)
+  return { x: Math.max(0, Math.min(n - 1, x)), y: Math.max(0, Math.min(n - 1, y)) }
+}
+
+// Convert tile (x, y) at zoom z to the lon/lat of its top-left corner
+function tileTopLeftLonLat (tx: number, ty: number, z: number): { lon: number, lat: number } {
+  const n = 2 ** z
+  const lon = tx / n * 360 - 180
+  const lat = Math.atan(Math.sinh(Math.PI * (1 - 2 * ty / n))) * 180 / Math.PI
+  return { lon, lat }
+}
+
+// Geographic bounding box (lon/lat) derived from stationClipRadius around the centroid.
+// A square clip radius converts directly to degree offsets — no geometry iteration needed.
+const stationGeoBbox = computed((): { minLon: number, maxLon: number, minLat: number, maxLat: number } | null => {
+  if (stopsWithGeometry.value.length === 0) return null
+  const r = stationClipRadius.value
+  const originLon = centroid.value.lon
+  const originLat = centroid.value.lat
+  const cosLat = Math.cos(originLat * Math.PI / 180)
+  const dLon = r / (111320 * cosLat)
+  const dLat = r / 111320
+  return {
+    minLon: originLon - dLon,
+    maxLon: originLon + dLon,
+    minLat: originLat - dLat,
+    maxLat: originLat + dLat,
+  }
+})
+
+interface AerialTile {
+  url: string
+  matrix: string // SVG matrix(a,b,c,d,e,f)
+}
+
+const aerialTiles = computed((): AerialTile[] => {
+  if (!showAerialImagery.value || !nearmapsApikey.value) return []
+  const bbox = stationGeoBbox.value
+  if (!bbox) return []
+  const cfg = projConfig.value
+  const W = 256 // tile pixel size
+  const z = 19  // always use max zoom for highest resolution
+
+  const tl = lonLatToTileXY(bbox.minLon, bbox.maxLat, z)
+  const br = lonLatToTileXY(bbox.maxLon, bbox.minLat, z)
+
+  const tiles: AerialTile[] = []
+  for (let tx = tl.x; tx <= br.x; tx++) {
+    for (let ty = tl.y; ty <= br.y; ty++) {
+      // Geographic corners of this tile
+      const corner00 = tileTopLeftLonLat(tx, ty, z)       // top-left
+      const corner10 = tileTopLeftLonLat(tx + 1, ty, z)   // top-right
+      const corner01 = tileTopLeftLonLat(tx, ty + 1, z)   // bottom-left
+
+      // Project tile corners onto the SVG at z=0 (ground plane level)
+      const p00 = projectPoint(corner00.lon, corner00.lat, 0, cfg)
+      const p10 = projectPoint(corner10.lon, corner10.lat, 0, cfg)
+      const p01 = projectPoint(corner01.lon, corner01.lat, 0, cfg)
+
+      // Affine matrix mapping tile pixel (px, py) → SVG (a·px + c·py + e, b·px + d·py + f)
+      // Derived from 3 corner correspondences: TL(0,0), TR(W,0), BL(0,W)
+      const e = sx(p00.mx)
+      const f = sy(p00.my)
+      const a = (sx(p10.mx) - e) / W
+      const b = (sy(p10.my) - f) / W
+      const c = (sx(p01.mx) - e) / W
+      const d = (sy(p01.my) - f) / W
+
+      const url = `https://api.nearmap.com/tiles/v3/Vert/${z}/${tx}/${ty}.jpg?apikey=${nearmapsApikey.value}`
+      tiles.push({ url, matrix: `matrix(${a},${b},${c},${d},${e},${f})` })
+    }
+  }
+  return tiles
+})
 
 const projectedRouteLines = computed((): { d: string, color: string }[] => {
   if (!showRoutes.value || !routeQueryResult.value) return []
@@ -384,7 +573,7 @@ const projectedRouteLines = computed((): { d: string, color: string }[] => {
         const lat = coord[1] as number
         const lx = (lon - cfg.originLon) * 111320 * cosLat
         const ly = (lat - cfg.originLat) * 111320
-        if (Math.sqrt(lx * lx + ly * ly) > ROUTE_CLIP_METERS) {
+        if (Math.sqrt(lx * lx + ly * ly) > stationClipRadius.value) {
           penDown = false
           continue
         }
@@ -493,62 +682,80 @@ function sx (mx: number): number { return svgWidth / 2 + mx * pixelsPerMeter.val
 function sy (my: number): number { return svgHeight / 2 - my * pixelsPerMeter.value }
 function pt (p: ProjectedPoint): string { return `${sx(p.mx)},${sy(p.my)}` }
 
-// Ground plane: a parallelogram at z=0 bounding the station footprint with padding.
-// Extent computed in local meter space (x=east, y=north) then projected.
+// Ground plane: a square in local meter space centered on the station centroid,
+// sized to stationClipRadius. Projected to a parallelogram in SVG space.
 const groundPlanePoints = computed((): string | null => {
-  const cfg0: ProjectionConfig = { ...projConfig.value, azimuth: 0, elevation: 0 }
-  const pts: ProjectedPoint[] = []
-  for (const stop of stopsWithGeometry.value) {
-    pts.push(projectPoint(stop.geometry!.coordinates[0] as number, stop.geometry!.coordinates[1] as number, 0, cfg0))
-  }
-  for (const lvl of sortedLevels.value) {
-    if (!lvl.geometry) continue
-    for (const polygon of lvl.geometry.coordinates) {
-      for (const ring of polygon) {
-        for (const pos of ring) {
-          pts.push(projectPoint(pos[0] as number, pos[1] as number, 0, cfg0))
-        }
-      }
-    }
-  }
-  // Extend to include clipped route geometry so routes don't overhang the ground plane
-  if (routeQueryResult.value) {
-    const cosLat = Math.cos(cfg0.originLat * Math.PI / 180)
-    for (const route of routeQueryResult.value.routes) {
-      const geom = route.geometries[0]?.combined_geometry
-      if (!geom) continue
-      const rings: number[][][] =
-        geom.type === 'LineString'
-          ? [geom.coordinates as number[][]]
-          : geom.type === 'MultiLineString'
-            ? (geom.coordinates as number[][][])
-            : []
-      for (const ring of rings) {
-        for (const coord of ring) {
-          // With az=0, el=0: mx = local x (east), my = local y (north)
-          const lx = (coord[0] as number - cfg0.originLon) * 111320 * cosLat
-          const ly = (coord[1] as number - cfg0.originLat) * 111320
-          if (Math.sqrt(lx * lx + ly * ly) > ROUTE_CLIP_METERS) continue
-          pts.push({ mx: lx, my: ly })
-        }
-      }
-    }
-  }
-  if (pts.length === 0) return null
-  const pad = 20 // meters padding
-  const minX = Math.min(...pts.map(p => p.mx)) - pad
-  const maxX = Math.max(...pts.map(p => p.mx)) + pad
-  const minY = Math.min(...pts.map(p => p.my)) - pad
-  const maxY = Math.max(...pts.map(p => p.my)) + pad
-  // Project 4 corners of bounding rect (in local meters) with current azimuth/elevation at z=0
+  if (stopsWithGeometry.value.length === 0) return null
+  const r = stationClipRadius.value
   const cfg = projConfig.value
   const corners = [
-    projectLocalPoint(minX, minY, 0, cfg),
-    projectLocalPoint(maxX, minY, 0, cfg),
-    projectLocalPoint(maxX, maxY, 0, cfg),
-    projectLocalPoint(minX, maxY, 0, cfg),
+    projectLocalPoint(-r, -r, 0, cfg),
+    projectLocalPoint(r, -r, 0, cfg),
+    projectLocalPoint(r, r, 0, cfg),
+    projectLocalPoint(-r, r, 0, cfg),
   ]
   return corners.map(p => `${sx(p.mx)},${sy(p.my)}`).join(' ')
+})
+
+// Compass rose projected onto the ground plane at z=0.
+// Positioned in the SW corner of the clip area so it's typically in open space.
+interface CompassRose {
+  center: { x: number, y: number }
+  northLine: { x1: number, y1: number, x2: number, y2: number }
+  northArrow: string
+  otherLines: { x1: number, y1: number, x2: number, y2: number }[]
+  labels: { text: string, x: number, y: number, isNorth: boolean }[]
+}
+
+const projectedCompass = computed((): CompassRose | null => {
+  if (!showCompass.value || stopsWithGeometry.value.length === 0) return null
+  const cfg = projConfig.value
+  const r = stationClipRadius.value
+
+  // SW corner inset — typically the "near" corner at the default azimuth=225
+  const cx = -r * 0.72
+  const cy = -r * 0.72
+  const arm = r * 0.14        // arm length in meters
+  const arrowW = arm * 0.20   // arrowhead half-width
+  const arrowBase = arm * 0.68 // fraction along arm where arrowhead base sits
+  const labelDist = arm * 1.35 // label distance from center
+
+  function proj (lx: number, ly: number) {
+    const p = projectLocalPoint(lx, ly, 0, cfg)
+    return { x: sx(p.mx), y: sy(p.my) }
+  }
+
+  const center = proj(cx, cy)
+  const northTip = proj(cx, cy + arm)
+  const southTip = proj(cx, cy - arm)
+  const eastTip = proj(cx + arm, cy)
+  const westTip = proj(cx - arm, cy)
+  const northArrowBase = proj(cx, cy + arrowBase)
+  const northArrowLeft = proj(cx - arrowW, cy + arrowBase)
+  const northArrowRight = proj(cx + arrowW, cy + arrowBase)
+
+  // Label positions: slightly beyond each arm tip
+  const northLabel = proj(cx, cy + labelDist)
+  const southLabel = proj(cx, cy - labelDist)
+  const eastLabel = proj(cx + labelDist, cy)
+  const westLabel = proj(cx - labelDist, cy)
+
+  return {
+    center,
+    northLine: { x1: center.x, y1: center.y, x2: northTip.x, y2: northTip.y },
+    northArrow: `${northTip.x},${northTip.y} ${northArrowLeft.x},${northArrowLeft.y} ${northArrowRight.x},${northArrowRight.y}`,
+    otherLines: [
+      { x1: center.x, y1: center.y, x2: southTip.x, y2: southTip.y },
+      { x1: center.x, y1: center.y, x2: eastTip.x, y2: eastTip.y },
+      { x1: center.x, y1: center.y, x2: westTip.x, y2: westTip.y },
+    ],
+    labels: [
+      { text: 'N', x: northLabel.x, y: northLabel.y, isNorth: true },
+      { text: 'S', x: southLabel.x, y: southLabel.y, isNorth: false },
+      { text: 'E', x: eastLabel.x, y: eastLabel.y, isNorth: false },
+      { text: 'W', x: westLabel.x, y: westLabel.y, isNorth: false },
+    ],
+  }
 })
 
 // Level HSL color
@@ -993,5 +1200,48 @@ function handleKeyDown (e: KeyboardEvent) {
   align-items: center;
   gap: 6px;
   line-height: 1.3;
+}
+
+.iso-layers-panel {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+  font-size: 11px;
+  color: #444;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.iso-layers-group {
+  padding: 5px 8px 6px;
+}
+
+.iso-layers-group + .iso-layers-group {
+  border-top: 1px solid #e0e0e0;
+}
+
+.iso-layers-heading {
+  font-weight: 600;
+  color: #555;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+
+.iso-layers-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+
+.iso-layers-divider {
+  border-top: 1px solid #e8e8e8;
+  margin: 3px 0;
 }
 </style>
