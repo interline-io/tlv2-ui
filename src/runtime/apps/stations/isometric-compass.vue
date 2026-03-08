@@ -1,10 +1,10 @@
 <template>
   <div class="isometric-compass">
-    <!-- Reactive 3D cube -->
+    <!-- Reactive 3D cube + compass ring -->
     <svg
       ref="cubeEl"
       width="100"
-      height="90"
+      height="140"
       style="cursor: grab; display: block;"
     >
       <g :transform="`translate(50, 48)`">
@@ -33,18 +33,83 @@
           style="pointer-events: none;"
         >{{ face.label }}</text>
       </g>
+
+      <!-- Fixed ring border -->
+      <circle cx="50" cy="115" r="22" fill="rgba(255,255,255,0.6)" stroke="#bbb" stroke-width="1.2" />
+
+      <!-- Rotating labels + ticks group: rotates by -azimuth around ring center -->
+      <g :transform="`rotate(${-azimuth}, 50, 115)`" style="pointer-events: none;">
+        <!-- Cardinal tick marks (longer, 4px) at N/S/E/W -->
+        <line x1="50" y1="93" x2="50" y2="97" stroke="#888" stroke-width="1.5" />
+        <line x1="50" y1="133" x2="50" y2="137" stroke="#888" stroke-width="1.5" />
+        <line x1="28" y1="115" x2="32" y2="115" stroke="#888" stroke-width="1.5" />
+        <line x1="68" y1="115" x2="72" y2="115" stroke="#888" stroke-width="1.5" />
+
+        <!-- Diagonal tick marks (shorter, 3px) at 45° intervals -->
+        <line x1="65.6" y1="99.4" x2="63.4" y2="101.6" stroke="#bbb" stroke-width="1" />
+        <line x1="34.4" y1="99.4" x2="36.6" y2="101.6" stroke="#bbb" stroke-width="1" />
+        <line x1="65.6" y1="130.6" x2="63.4" y2="128.4" stroke="#bbb" stroke-width="1" />
+        <line x1="34.4" y1="130.6" x2="36.6" y2="128.4" stroke="#bbb" stroke-width="1" />
+
+        <!-- Cardinal labels -->
+        <text
+          x="50"
+          y="92"
+          text-anchor="middle"
+          dominant-baseline="auto"
+          font-size="8"
+          font-weight="700"
+          fill="#c0392b"
+        >N</text>
+        <text
+          x="50"
+          y="140"
+          text-anchor="middle"
+          dominant-baseline="hanging"
+          font-size="7"
+          fill="#666"
+        >S</text>
+        <text
+          x="73"
+          y="115"
+          text-anchor="start"
+          dominant-baseline="middle"
+          font-size="7"
+          fill="#666"
+        >E</text>
+        <text
+          x="27"
+          y="115"
+          text-anchor="end"
+          dominant-baseline="middle"
+          font-size="7"
+          fill="#666"
+        >W</text>
+      </g>
+
+      <!-- Fixed viewer-position indicator: small inward-pointing triangle at 6 o'clock -->
+      <polygon points="50,136 47,131 53,131" fill="#555" style="pointer-events: none;" />
+
+      <!-- Transparent ring drag target (on top of rotating content) -->
+      <circle
+        ref="ringEl"
+        cx="50"
+        cy="115"
+        r="22"
+        fill="transparent"
+        stroke="none"
+        style="cursor: grab;"
+      />
     </svg>
 
-    <!-- Controls row: elevation + az/el readout -->
+    <!-- Controls row: elevation buttons only -->
     <div class="compass-controls">
-      <button class="button is-small is-outlined" title="+15° elevation" @click="adjustElevation(15)">▲</button>
-      <div class="compass-readout">
-        <span>{{ Math.round(props.azimuth) }}°</span>
-        <span style="color:#888; font-size:9px;">az</span>
-        <span style="margin-left:4px;">{{ Math.round(props.elevation) }}°</span>
-        <span style="color:#888; font-size:9px;">el</span>
-      </div>
-      <button class="button is-small is-outlined" title="-15° elevation" @click="adjustElevation(-15)">▼</button>
+      <button class="button is-small is-outlined" title="+15° elevation" @click="adjustElevation(15)">
+        ▲
+      </button>
+      <button class="button is-small is-outlined" title="-15° elevation" @click="adjustElevation(-15)">
+        ▼
+      </button>
     </div>
   </div>
 </template>
@@ -65,25 +130,26 @@ const emit = defineEmits<{
 }>()
 
 const cubeEl = ref<SVGElement | null>(null)
+const ringEl = ref<SVGCircleElement | null>(null)
 
 // Cube vertices: (x=east, y=north, z=up), unit cube centered at origin
 const cubeVerts: [number, number, number][] = [
   [-0.5, -0.5, -0.5], // 0 SW bottom
-  [ 0.5, -0.5, -0.5], // 1 SE bottom
-  [ 0.5,  0.5, -0.5], // 2 NE bottom
-  [-0.5,  0.5, -0.5], // 3 NW bottom
-  [-0.5, -0.5,  0.5], // 4 SW top
-  [ 0.5, -0.5,  0.5], // 5 SE top
-  [ 0.5,  0.5,  0.5], // 6 NE top
-  [-0.5,  0.5,  0.5], // 7 NW top
+  [0.5, -0.5, -0.5], // 1 SE bottom
+  [0.5, 0.5, -0.5], // 2 NE bottom
+  [-0.5, 0.5, -0.5], // 3 NW bottom
+  [-0.5, -0.5, 0.5], // 4 SW top
+  [0.5, -0.5, 0.5], // 5 SE top
+  [0.5, 0.5, 0.5], // 6 NE top
+  [-0.5, 0.5, 0.5], // 7 NW top
 ]
 
 const faceDefs = [
-  { idx: [4, 5, 6, 7], nx: 0, ny:  0, nz:  1, label: 'Top', lightness: 75 },
-  { idx: [0, 1, 5, 4], nx: 0, ny: -1, nz:  0, label: 'S',   lightness: 58 },
-  { idx: [3, 7, 6, 2], nx: 0, ny:  1, nz:  0, label: 'N',   lightness: 58 },
-  { idx: [1, 2, 6, 5], nx: 1, ny:  0, nz:  0, label: 'E',   lightness: 65 },
-  { idx: [0, 4, 7, 3], nx: -1, ny: 0, nz:  0, label: 'W',   lightness: 65 },
+  { idx: [4, 5, 6, 7], nx: 0, ny: 0, nz: 1, label: 'Top', lightness: 75 },
+  { idx: [0, 1, 5, 4], nx: 0, ny: -1, nz: 0, label: 'S', lightness: 58 },
+  { idx: [3, 7, 6, 2], nx: 0, ny: 1, nz: 0, label: 'N', lightness: 58 },
+  { idx: [1, 2, 6, 5], nx: 1, ny: 0, nz: 0, label: 'E', lightness: 65 },
+  { idx: [0, 4, 7, 3], nx: -1, ny: 0, nz: 0, label: 'W', lightness: 65 },
 ]
 
 const scale = 38 // pixels per cube unit
@@ -137,10 +203,10 @@ const visibleFaces = computed((): FaceResult[] => {
 function snapFace (label: string) {
   switch (label) {
     case 'Top': emit('update:elevation', 90); break
-    case 'N':   emit('update:azimuth', 0);   emit('update:elevation', 30); break
-    case 'S':   emit('update:azimuth', 180); emit('update:elevation', 30); break
-    case 'E':   emit('update:azimuth', 90);  emit('update:elevation', 30); break
-    case 'W':   emit('update:azimuth', 270); emit('update:elevation', 30); break
+    case 'N': emit('update:azimuth', 0); emit('update:elevation', 30); break
+    case 'S': emit('update:azimuth', 180); emit('update:elevation', 30); break
+    case 'E': emit('update:azimuth', 90); emit('update:elevation', 30); break
+    case 'W': emit('update:azimuth', 270); emit('update:elevation', 30); break
   }
 }
 
@@ -157,33 +223,51 @@ function adjustElevation (delta: number) {
 }
 
 let dragCleanup: (() => void) | null = null
+let ringDragCleanup: (() => void) | null = null
 
 onMounted(() => {
-  if (!cubeEl.value) return
-  let startAz = 0
-  let startEl = 0
+  if (cubeEl.value) {
+    let startAz = 0
+    let startEl = 0
 
-  const dragBehavior = d3Drag<SVGElement, unknown>()
-    .on('start', () => {
-      startAz = props.azimuth
-      startEl = props.elevation
-    })
-    .on('drag', (event) => {
-      const dx = event.x - event.subject.x
-      const dy = event.y - event.subject.y
-      const newAz = ((startAz + dx * 0.7) % 360 + 360) % 360
-      const newEl = clampElevation(startEl - dy * 0.5)
-      emit('update:azimuth', newAz)
-      emit('update:elevation', newEl)
-    })
+    const dragBehavior = d3Drag<SVGElement, unknown>()
+      .on('start', () => {
+        startAz = props.azimuth
+        startEl = props.elevation
+      })
+      .on('drag', (event) => {
+        const dx = event.x - event.subject.x
+        const dy = event.y - event.subject.y
+        const newAz = ((startAz + dx * 0.7) % 360 + 360) % 360
+        const newEl = clampElevation(startEl - dy * 0.5)
+        emit('update:azimuth', newAz)
+        emit('update:elevation', newEl)
+      })
 
-  const sel = select(cubeEl.value as unknown as Element)
-  sel.call(dragBehavior as any)
-  dragCleanup = () => { sel.on('.drag', null) }
+    const sel = select(cubeEl.value as unknown as Element)
+    sel.call(dragBehavior as any)
+    dragCleanup = () => { sel.on('.drag', null) }
+  }
+
+  if (ringEl.value) {
+    let startAzRing = 0
+
+    const ringDrag = d3Drag<SVGCircleElement, unknown>()
+      .on('start', () => { startAzRing = props.azimuth })
+      .on('drag', (event: any) => {
+        const newAz = ((startAzRing + (event.x - event.subject.x) * 0.7) % 360 + 360) % 360
+        emit('update:azimuth', newAz)
+      })
+
+    const ringSel = select(ringEl.value as unknown as Element)
+    ringSel.call(ringDrag as any)
+    ringDragCleanup = () => { ringSel.on('.drag', null) }
+  }
 })
 
 onBeforeUnmount(() => {
   dragCleanup?.()
+  ringDragCleanup?.()
 })
 </script>
 
@@ -207,13 +291,5 @@ onBeforeUnmount(() => {
   margin-top: 2px;
   width: 100%;
   justify-content: center;
-}
-
-.compass-readout {
-  font-size: 11px;
-  color: #444;
-  min-width: 64px;
-  text-align: center;
-  font-variant-numeric: tabular-nums;
 }
 </style>

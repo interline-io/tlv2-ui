@@ -24,7 +24,9 @@
         </div>
         <div v-if="legendExpanded" class="iso-legend-body">
           <div v-if="legendStopTypes.length" class="iso-legend-section">
-            <div class="iso-legend-title">Stops</div>
+            <div class="iso-legend-title">
+              Stops
+            </div>
             <div v-for="entry in legendStopTypes" :key="entry.label" class="iso-legend-row">
               <svg width="14" height="14" style="flex-shrink:0;">
                 <circle cx="7" cy="7" r="5" :fill="entry.color" stroke="#fff" stroke-width="1" />
@@ -33,7 +35,9 @@
             </div>
           </div>
           <div v-if="legendPathwayEntries.length" class="iso-legend-section">
-            <div class="iso-legend-title">Pathways</div>
+            <div class="iso-legend-title">
+              Pathways
+            </div>
             <div v-for="entry in legendPathwayEntries" :key="entry.label" class="iso-legend-row">
               <svg width="24" height="14" style="flex-shrink:0;">
                 <line x1="2" y1="7" x2="22" y2="7" :stroke="entry.color" stroke-width="2.5" :stroke-dasharray="entry.dashed ? '5,3' : 'none'" />
@@ -59,7 +63,9 @@
         </div>
         <div class="iso-layers-panel">
           <div class="iso-layers-group">
-            <div class="iso-layers-heading">Base</div>
+            <div class="iso-layers-heading">
+              Base
+            </div>
             <label class="iso-layers-row">
               <input v-model="basemap" type="radio" value="none">
               None
@@ -73,13 +79,15 @@
               Aerial imagery
             </label>
             <div class="iso-layers-divider" />
-            <label class="iso-layers-row">
-              <input v-model="showCompass" type="checkbox">
+            <label class="iso-layers-row" :class="{ 'has-text-grey': basemap !== 'ground' }">
+              <input v-model="showCompass" type="checkbox" :disabled="basemap !== 'ground'">
               Compass rose
             </label>
           </div>
           <div class="iso-layers-group">
-            <div class="iso-layers-heading">Station</div>
+            <div class="iso-layers-heading">
+              Station
+            </div>
             <label class="iso-layers-row">
               <input v-model="showSlabs" type="checkbox">
               Floor slabs
@@ -141,21 +149,31 @@
             <line
               v-for="(l, i) in projectedCompass.otherLines"
               :key="`cl-${i}`"
-              :x1="l.x1" :y1="l.y1" :x2="l.x2" :y2="l.y2"
-              stroke="#555" stroke-width="1.2" stroke-linecap="round"
+              :x1="l.x1"
+              :y1="l.y1"
+              :x2="l.x2"
+              :y2="l.y2"
+              stroke="#555"
+              stroke-width="1.2"
+              stroke-linecap="round"
             />
             <line
               :x1="projectedCompass.northLine.x1"
               :y1="projectedCompass.northLine.y1"
               :x2="projectedCompass.northLine.x2"
               :y2="projectedCompass.northLine.y2"
-              stroke="#c0392b" stroke-width="2" stroke-linecap="round"
+              stroke="#c0392b"
+              stroke-width="2"
+              stroke-linecap="round"
             />
             <polygon :points="projectedCompass.northArrow" fill="#c0392b" />
             <circle
               :cx="projectedCompass.center.x"
               :cy="projectedCompass.center.y"
-              r="2.5" fill="white" stroke="#555" stroke-width="1"
+              r="2.5"
+              fill="white"
+              stroke="#555"
+              stroke-width="1"
             />
             <text
               v-for="label in projectedCompass.labels"
@@ -432,8 +450,8 @@ const routeLevelZMap = computed((): Map<number, number> => {
   return result
 })
 
-const CLIP_BUFFER_METERS = 300  // added beyond the furthest stop/level vertex
-const CLIP_MIN_METERS = 400     // floor so tiny stations still have context
+const CLIP_BUFFER_METERS = 300 // added beyond the furthest stop/level vertex
+const CLIP_MIN_METERS = 400 // floor so tiny stations still have context
 
 // Adaptive clip radius: bounding circle of all stop + level geometry, plus buffer.
 // Used consistently for ground plane, aerial imagery, and route lines.
@@ -512,7 +530,7 @@ const aerialTiles = computed((): AerialTile[] => {
   if (!bbox) return []
   const cfg = projConfig.value
   const W = 256 // tile pixel size
-  const z = 19  // always use max zoom for highest resolution
+  const z = 19 // always use max zoom for highest resolution
 
   const tl = lonLatToTileXY(bbox.minLon, bbox.maxLat, z)
   const br = lonLatToTileXY(bbox.maxLon, bbox.minLat, z)
@@ -521,9 +539,9 @@ const aerialTiles = computed((): AerialTile[] => {
   for (let tx = tl.x; tx <= br.x; tx++) {
     for (let ty = tl.y; ty <= br.y; ty++) {
       // Geographic corners of this tile
-      const corner00 = tileTopLeftLonLat(tx, ty, z)       // top-left
-      const corner10 = tileTopLeftLonLat(tx + 1, ty, z)   // top-right
-      const corner01 = tileTopLeftLonLat(tx, ty + 1, z)   // bottom-left
+      const corner00 = tileTopLeftLonLat(tx, ty, z) // top-left
+      const corner10 = tileTopLeftLonLat(tx + 1, ty, z) // top-right
+      const corner01 = tileTopLeftLonLat(tx, ty + 1, z) // bottom-left
 
       // Project tile corners onto the SVG at z=0 (ground plane level)
       const p00 = projectPoint(corner00.lon, corner00.lat, 0, cfg)
@@ -558,8 +576,8 @@ const projectedRouteLines = computed((): { d: string, color: string }[] => {
     if (!geom) continue
     const routeZ = routeLevelZMap.value.get(route.id) ?? 0
 
-    const rings: number[][][] =
-      geom.type === 'LineString'
+    const rings: number[][][]
+      = geom.type === 'LineString'
         ? [geom.coordinates as number[][]]
         : geom.type === 'MultiLineString'
           ? (geom.coordinates as number[][][])
@@ -708,15 +726,15 @@ interface CompassRose {
 }
 
 const projectedCompass = computed((): CompassRose | null => {
-  if (!showCompass.value || stopsWithGeometry.value.length === 0) return null
+  if (!showCompass.value || basemap.value !== 'ground' || stopsWithGeometry.value.length === 0) return null
   const cfg = projConfig.value
   const r = stationClipRadius.value
 
   // SW corner inset — typically the "near" corner at the default azimuth=225
   const cx = -r * 0.72
   const cy = -r * 0.72
-  const arm = r * 0.14        // arm length in meters
-  const arrowW = arm * 0.20   // arrowhead half-width
+  const arm = r * 0.14 // arm length in meters
+  const arrowW = arm * 0.20 // arrowhead half-width
   const arrowBase = arm * 0.68 // fraction along arm where arrowhead base sits
   const labelDist = arm * 1.35 // label distance from center
 
@@ -1063,9 +1081,9 @@ function downloadPng () {
 }
 
 // --- d3-zoom ---
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 let zoomBehavior: any = null
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 let zoomSel: any = null
 let zoomCleanup: (() => void) | null = null
 
@@ -1090,7 +1108,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleKeyDown)
 })
 
-const ROTATE_STEP = 15  // degrees per arrow key press
+const ROTATE_STEP = 15 // degrees per arrow key press
 const ZOOM_FACTOR = 1.25
 const MIN_ELEVATION = 15
 
