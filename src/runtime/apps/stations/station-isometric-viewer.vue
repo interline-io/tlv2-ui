@@ -114,9 +114,10 @@
         ref="svgEl"
         :width="svgWidth"
         :height="svgHeight"
-        style="display: block; background: #f8f9fa; cursor: move;"
+        :style="{ display: 'block', background: '#f8f9fa', cursor: isPanning ? 'grabbing' : 'grab' }"
         @click.self="onSvgClick"
       >
+        <title>Drag to pan · Scroll to zoom · Arrow keys rotate/tilt · Click stop or pathway to select</title>
         <g ref="zoomGroup">
           <!-- Aerial imagery tiles (rendered first, at z=0 ground level) -->
           <image
@@ -621,6 +622,7 @@ watch(() => props.selectedPathway, (id) => {
 // --- DOM refs ---
 const svgEl = ref<SVGSVGElement | null>(null)
 const zoomGroup = ref<SVGGElement | null>(null)
+const isPanning = ref(false)
 const svgWidth = 900
 const svgHeight = 700
 const padding = 60
@@ -1092,6 +1094,8 @@ onMounted(() => {
     if (!svgEl.value || !zoomGroup.value) return
     zoomBehavior = d3Zoom()
       .scaleExtent([0.1, 10])
+      .on('start', () => { isPanning.value = true })
+      .on('end', () => { isPanning.value = false })
       .on('zoom', (event: any) => {
         select(zoomGroup.value! as unknown as Element).attr('transform', event.transform)
         zoomScale.value = event.transform.k
@@ -1151,6 +1155,16 @@ function handleKeyDown (e: KeyboardEvent) {
       e.preventDefault()
       elevation.value = Math.max(MIN_ELEVATION, elevation.value - ROTATE_STEP)
       break
+    case 'n': case 'N':
+      e.preventDefault(); azimuth.value = 0; elevation.value = 30; break
+    case 's': case 'S':
+      e.preventDefault(); azimuth.value = 180; elevation.value = 30; break
+    case 'e': case 'E':
+      e.preventDefault(); azimuth.value = 90; elevation.value = 30; break
+    case 'w': case 'W':
+      e.preventDefault(); azimuth.value = 270; elevation.value = 30; break
+    case 't': case 'T':
+      e.preventDefault(); elevation.value = 90; break
   }
 }
 </script>

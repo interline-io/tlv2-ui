@@ -7,6 +7,7 @@
       height="140"
       style="cursor: grab; display: block;"
     >
+      <title>Drag to orbit (rotate + tilt) · Drag ring to spin heading · Click face to snap</title>
       <g :transform="`translate(50, 48)`">
         <!-- Draw visible faces sorted back-to-front -->
         <polygon
@@ -91,25 +92,34 @@
       <polygon points="50,136 47,131 53,131" fill="#555" style="pointer-events: none;" />
 
       <!-- Transparent ring drag target (on top of rotating content) -->
-      <circle
-        ref="ringEl"
-        cx="50"
-        cy="115"
-        r="22"
-        fill="transparent"
-        stroke="none"
-        style="cursor: grab;"
-      />
+      <g>
+        <title>Drag to rotate compass heading</title>
+        <circle
+          ref="ringEl"
+          cx="50"
+          cy="115"
+          r="22"
+          fill="transparent"
+          stroke="none"
+          style="cursor: grab;"
+        />
+      </g>
     </svg>
 
     <!-- Controls row: elevation buttons only -->
     <div class="compass-controls">
-      <button class="button is-small is-outlined" title="+15° elevation" @click="adjustElevation(15)">
-        ▲
-      </button>
-      <button class="button is-small is-outlined" title="-15° elevation" @click="adjustElevation(-15)">
-        ▼
-      </button>
+      <t-tooltip text="+15° elevation" position="left">
+        <button class="button is-small is-outlined" @click="adjustElevation(15)">▲</button>
+      </t-tooltip>
+      <t-tooltip text="-15° elevation" position="left">
+        <button class="button is-small is-outlined" @click="adjustElevation(-15)">▼</button>
+      </t-tooltip>
+    </div>
+    <div class="compass-hint">
+      <kbd>N</kbd><kbd>S</kbd><kbd>E</kbd><kbd>W</kbd><kbd>T</kbd> snap
+      &middot; <kbd>←</kbd><kbd>→</kbd> rotate
+      &middot; <kbd>↑</kbd><kbd>↓</kbd> tilt
+      &middot; <kbd>+</kbd><kbd>−</kbd> zoom
     </div>
   </div>
 </template>
@@ -291,5 +301,25 @@ onBeforeUnmount(() => {
   margin-top: 2px;
   width: 100%;
   justify-content: center;
+}
+
+.compass-hint {
+  font-size: 9px;
+  color: #888;
+  text-align: center;
+  margin-top: 4px;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+
+.compass-hint kbd {
+  display: inline-block;
+  padding: 0 0.25em;
+  font-size: 0.9em;
+  font-family: monospace;
+  background: rgba(0, 0, 0, 0.07);
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  border-radius: 2px;
+  line-height: 1.4;
 }
 </style>
