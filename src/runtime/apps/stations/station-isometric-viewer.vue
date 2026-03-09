@@ -750,7 +750,7 @@ const projectedCompass = computed((): CompassRose | null => {
   const southTip = proj(cx, cy - arm)
   const eastTip = proj(cx + arm, cy)
   const westTip = proj(cx - arm, cy)
-  const northArrowBase = proj(cx, cy + arrowBase)
+  const _northArrowBase = proj(cx, cy + arrowBase)
   const northArrowLeft = proj(cx - arrowW, cy + arrowBase)
   const northArrowRight = proj(cx + arrowW, cy + arrowBase)
 
@@ -1204,13 +1204,25 @@ function handleKeyDown (e: KeyboardEvent) {
       elevation.value = Math.max(MIN_ELEVATION, elevation.value - ROTATE_STEP)
       break
     case 'n': case 'N':
-      e.preventDefault(); azimuth.value = 0; elevation.value = 30; break
+      e.preventDefault()
+      azimuth.value = 0
+      elevation.value = 30
+      break
     case 's': case 'S':
-      e.preventDefault(); azimuth.value = 180; elevation.value = 30; break
+      e.preventDefault()
+      azimuth.value = 180
+      elevation.value = 30
+      break
     case 'e': case 'E':
-      e.preventDefault(); azimuth.value = 90; elevation.value = 30; break
+      e.preventDefault()
+      azimuth.value = 90
+      elevation.value = 30
+      break
     case 'w': case 'W':
-      e.preventDefault(); azimuth.value = 270; elevation.value = 30; break
+      e.preventDefault()
+      azimuth.value = 270
+      elevation.value = 30
+      break
     case 't': case 'T':
       e.preventDefault(); elevation.value = 90; break
   }

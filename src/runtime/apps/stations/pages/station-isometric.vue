@@ -15,13 +15,12 @@
             Click a stop node or pathway line to select it.
           </p>
           <div v-for="pw in selectedPathwayObjects" :key="pw.id" class="block">
-            <tl-apps-stations-mode-switch
-              :params="{ feedKey, feedVersionKey, stationKey }"
-              :query="{ selectedPathway: String(pw.id) }"
-            />
             <tl-apps-stations-station-pathways-pathway-panel
               :station="station"
               :pathway="pw"
+              :feed-key="feedKey"
+              :feed-version-key="feedVersionKey"
+              :station-key="stationKey"
               :show-unselect="true"
               read-only
               @unselect="clearSelectedElements"
@@ -29,10 +28,6 @@
             />
           </div>
           <div v-for="stop in selectedStopObjects" :key="stop.id" class="block">
-            <tl-apps-stations-mode-switch
-              :params="{ feedKey, feedVersionKey, stationKey }"
-              :query="{ selectedStop: String(stop.id) }"
-            />
             <tl-apps-stations-station-pathways-node-panel
               :station="station"
               :stop="stop"

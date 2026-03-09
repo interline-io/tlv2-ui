@@ -197,7 +197,7 @@ const visibleFaces = computed((): FaceResult[] => {
   return faceDefs
     .map((face) => {
       // Rotate normal by azimuth, then check screen-space z (positive = facing viewer)
-      const rnx = face.nx * Math.cos(azRad) - face.ny * Math.sin(azRad)
+      const _rnx = face.nx * Math.cos(azRad) - face.ny * Math.sin(azRad)
       const rny = face.nx * Math.sin(azRad) + face.ny * Math.cos(azRad)
       const screenZ = rny * Math.sin(elRad) + face.nz * Math.cos(elRad)
       if (screenZ < 0.01) return null

@@ -99,15 +99,28 @@
           Switch view
         </p>
         <ul class="menu-list">
-          <li>
+          <li v-if="activeTab !== 'pathways-v2'">
+            <tl-link
+              route-key="apps-stations-feedKey-feedVersionKey-stations-stationKey-pathways-v2"
+              :to="{ params: modeSwitchParams, query: modeSwitchQuery }"
+            >
+              <t-icon icon="chart-timeline-variant-shimmer" size="small" /> &nbsp; Draw Pathways (v2 Preview)
+            </tl-link>
+          </li>
+          <li v-if="activeTab !== 'diagram'">
             <tl-link
               route-key="apps-stations-feedKey-feedVersionKey-stations-stationKey-diagram"
-              :to="{
-                params: modeSwitchParams,
-                query: modeSwitchQuery,
-              }"
+              :to="{ params: modeSwitchParams, query: modeSwitchQuery }"
             >
-              <t-icon icon="chart-timeline" size="small" /> &nbsp; View in Station Diagram
+              <t-icon icon="chart-timeline" size="small" /> &nbsp; Station Diagram
+            </tl-link>
+          </li>
+          <li v-if="activeTab !== 'isometric'">
+            <tl-link
+              route-key="apps-stations-feedKey-feedVersionKey-stations-stationKey-isometric"
+              :to="{ params: modeSwitchParams, query: modeSwitchQuery }"
+            >
+              <t-icon icon="cube-outline" size="small" /> &nbsp; Isometric View
             </tl-link>
           </li>
         </ul>
@@ -133,8 +146,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { LocationTypes } from './basemaps'
 import { PathwayModeIcons } from '../../lib/pathways/pathway-icons'
+import { useRouteResolver } from '../../composables/useRouteResolver'
 import type { Station, Stop, Pathway } from './station'
 import type { StationData } from './types'
 
@@ -165,6 +180,22 @@ defineEmits<{
   'hover-pathway': [id: number | null]
   'unselect': []
 }>()
+
+const { resolve } = useRouteResolver()
+const route = useRoute()
+
+const routeKeys = {
+  'pathways-v2': 'apps-stations-feedKey-feedVersionKey-stations-stationKey-pathways-v2',
+  'diagram': 'apps-stations-feedKey-feedVersionKey-stations-stationKey-diagram',
+  'isometric': 'apps-stations-feedKey-feedVersionKey-stations-stationKey-isometric',
+}
+
+const activeTab = computed(() => {
+  for (const [k, r] of Object.entries(routeKeys)) {
+    if (route.name === resolve(r)) return k
+  }
+  return ''
+})
 
 const modeSwitchParams = computed(() => ({
   feedKey: props.feedKey,
