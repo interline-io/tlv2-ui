@@ -9,6 +9,7 @@
         Unselect <kbd>ESC</kbd>
       </t-button>
       <t-button
+        v-if="!readOnly"
         size="small"
         :variant="editMode ? 'primary' : undefined"
         @click="editMode = !editMode"
@@ -36,13 +37,15 @@ interface Props {
   editHeading?: string
   editLabel?: string
   showUnselect?: boolean
+  readOnly?: boolean
 }
 
 withDefaults(defineProps<Props>(), {
   viewHeading: 'View',
   editHeading: 'Edit',
   editLabel: 'Edit',
-  showUnselect: false
+  showUnselect: false,
+  readOnly: false
 })
 
 defineEmits<{

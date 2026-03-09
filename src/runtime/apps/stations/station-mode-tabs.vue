@@ -57,6 +57,14 @@
             <i class="mdi mdi-cellphone mdi-16px" /> &nbsp; Simulator
           </tl-link>
         </li>
+        <li :class="(activeTab === 'isometric') ? 'is-active' : ''">
+          <tl-link
+            route-key="apps-stations-feedKey-feedVersionKey-stations-stationKey-isometric"
+            :to="{ params: { feedKey: feedKey, feedVersionKey: feedVersionKey, stationKey: stationKey } }"
+          >
+            <i class="mdi mdi-cube-outline mdi-16px" /> &nbsp; Isometric View
+          </tl-link>
+        </li>
       </ul>
     </div>
   </div>
@@ -93,7 +101,8 @@ const routeKeys = {
   'pathways': 'apps-stations-feedKey-feedVersionKey-stations-stationKey-pathways',
   'pathways-v2': 'apps-stations-feedKey-feedVersionKey-stations-stationKey-pathways-v2',
   'diagram': 'apps-stations-feedKey-feedVersionKey-stations-stationKey-diagram',
-  'simulator': 'apps-stations-feedKey-feedVersionKey-stations-stationKey-simulator'
+  'simulator': 'apps-stations-feedKey-feedVersionKey-stations-stationKey-simulator',
+  'isometric': 'apps-stations-feedKey-feedVersionKey-stations-stationKey-isometric'
 }
 
 const pathwaysModeEnabled = computed((): boolean => {

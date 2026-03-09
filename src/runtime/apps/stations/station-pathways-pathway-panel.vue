@@ -4,6 +4,7 @@
     view-heading="View Pathway"
     edit-heading="Edit Pathway"
     :show-unselect="showUnselect"
+    :read-only="readOnly"
     @unselect="$emit('unselect')"
   >
     <template #view>
@@ -64,6 +65,39 @@
             <span>{{ pathway.signposted_as }}</span>
           </div>
         </div>
+      </div>
+
+      <!-- Mode Switch -->
+      <div v-if="feedKey" class="menu">
+        <p class="menu-label">
+          Switch view
+        </p>
+        <ul class="menu-list">
+          <li v-if="activeTab !== 'pathways-v2'">
+            <tl-link
+              route-key="apps-stations-feedKey-feedVersionKey-stations-stationKey-pathways-v2"
+              :to="{ params: modeSwitchParams, query: modeSwitchQuery }"
+            >
+              <t-icon icon="chart-timeline-variant-shimmer" size="small" /> &nbsp; Draw Pathways (v2 Preview)
+            </tl-link>
+          </li>
+          <li v-if="activeTab !== 'diagram'">
+            <tl-link
+              route-key="apps-stations-feedKey-feedVersionKey-stations-stationKey-diagram"
+              :to="{ params: modeSwitchParams, query: modeSwitchQuery }"
+            >
+              <t-icon icon="chart-timeline" size="small" /> &nbsp; Station Diagram
+            </tl-link>
+          </li>
+          <li v-if="activeTab !== 'isometric'">
+            <tl-link
+              route-key="apps-stations-feedKey-feedVersionKey-stations-stationKey-isometric"
+              :to="{ params: modeSwitchParams, query: modeSwitchQuery }"
+            >
+              <t-icon icon="cube-outline" size="small" /> &nbsp; Isometric View
+            </tl-link>
+          </li>
+        </ul>
       </div>
 
       <!-- Navigation -->
@@ -144,7 +178,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { PathwayModes } from '../../lib/pathways/pathway-icons'
+import { SWITCH_VIEW_ROUTE_KEYS } from './basemaps'
+import { useRouteResolver } from '../../composables/useRouteResolver'
 import type { Station, Pathway } from './station'
 import type { StationData } from './types'
 
@@ -152,10 +189,15 @@ interface Props {
   station: StationData | Station
   pathway: Pathway
   showUnselect?: boolean
+  readOnly?: boolean
+  feedKey?: string
+  feedVersionKey?: string
+  stationKey?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  showUnselect: false
+  showUnselect: false,
+  readOnly: false
 })
 
 const editMode = defineModel<boolean>('editMode', { default: false })
@@ -167,6 +209,28 @@ defineEmits<{
   'update': [pathway: Pathway]
   'unselect': []
 }>()
+
+const { resolve } = useRouteResolver()
+const route = useRoute()
+
+const routeKeys = SWITCH_VIEW_ROUTE_KEYS
+
+const activeTab = computed(() => {
+  for (const [k, r] of Object.entries(routeKeys)) {
+    if (route.name === resolve(r)) return k
+  }
+  return ''
+})
+
+const modeSwitchParams = computed(() => ({
+  feedKey: props.feedKey,
+  feedVersionKey: props.feedVersionKey,
+  stationKey: props.stationKey
+}))
+
+const modeSwitchQuery = computed(() => ({
+  selectedPathway: props.pathway.id
+}))
 
 const pathwayModeName = computed(() => {
   for (const [mode, label] of PathwayModes) {
