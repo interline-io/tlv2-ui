@@ -1,13 +1,32 @@
 <template>
-  <div class="station-isometric-viewer" style="position: relative;">
-    <!-- Empty state -->
-    <div v-if="stopsWithGeometry.length === 0" class="notification is-light" style="margin: 2rem;">
-      No stops with geometry to display.
-    </div>
-
-    <template v-else>
-      <!-- Export buttons -->
-      <div style="position: absolute; top: 8px; left: 8px; z-index: 10; display: flex; gap: 6px;">
+  <div class="station-isometric-viewer">
+    <!-- Toolbar (always rendered) -->
+    <div class="iso-toolbar">
+      <div class="iso-toolbar-section">
+        <span class="iso-toolbar-label">Floor ht:</span>
+        <input v-model.number="floorHeight" type="range" min="3" max="10" step="1" style="width: 72px;">
+        <span>{{ floorHeight }}m</span>
+      </div>
+      <div class="iso-toolbar-divider" />
+      <div class="iso-toolbar-section">
+        <label class="iso-layers-row"><input v-model="basemap" type="radio" value="none"> None</label>
+        <label class="iso-layers-row"><input v-model="basemap" type="radio" value="ground"> Ground</label>
+        <label v-if="nearmapsApikey" class="iso-layers-row"><input v-model="basemap" type="radio" value="aerial"> Aerial</label>
+        <label v-if="basemap === 'ground'" class="iso-layers-row">
+          <input v-model="showCompass" type="checkbox"> Compass rose
+        </label>
+      </div>
+      <div class="iso-toolbar-divider" />
+      <div class="iso-toolbar-section">
+        <label class="iso-layers-row"><input v-model="showSlabs" type="checkbox"> Slabs</label>
+        <label class="iso-layers-row"><input v-model="showPathways" type="checkbox"> Paths</label>
+        <label class="iso-layers-row" :title="routeIds.length === 0 ? 'No routes found for this station' : ''">
+          <input v-model="showRoutes" type="checkbox" :disabled="routeIds.length === 0"> Routes
+        </label>
+        <label class="iso-layers-row"><input v-model="showNodeLabels" type="checkbox"> Labels</label>
+      </div>
+      <div class="iso-toolbar-spacer" />
+      <div class="iso-toolbar-section">
         <t-button size="small" outlined @click="downloadSvg">
           <i class="mdi mdi-download" /> SVG
         </t-button>
@@ -15,309 +34,265 @@
           <i class="mdi mdi-image" /> PNG
         </t-button>
       </div>
+    </div>
 
-      <!-- Bottom-left legend -->
-      <div class="iso-legend" style="position: absolute; bottom: 8px; left: 8px; z-index: 10;">
-        <div class="iso-legend-header" @click="legendExpanded = !legendExpanded">
-          <span>Legend</span>
-          <i :class="legendExpanded ? 'mdi mdi-chevron-down' : 'mdi mdi-chevron-right'" style="margin-left: 4px;" />
-        </div>
-        <div v-if="legendExpanded" class="iso-legend-body">
-          <div v-if="legendStopTypes.length" class="iso-legend-section">
-            <div class="iso-legend-title">
-              Stops
-            </div>
-            <div v-for="entry in legendStopTypes" :key="entry.label" class="iso-legend-row">
-              <svg width="14" height="14" style="flex-shrink:0;">
-                <circle cx="7" cy="7" r="5" :fill="entry.color" stroke="#fff" stroke-width="1" />
-              </svg>
-              <span>{{ entry.label }}</span>
-            </div>
-          </div>
-          <div v-if="legendPathwayEntries.length" class="iso-legend-section">
-            <div class="iso-legend-title">
-              Pathways
-            </div>
-            <div v-for="entry in legendPathwayEntries" :key="entry.label" class="iso-legend-row">
-              <svg width="24" height="14" style="flex-shrink:0;">
-                <line x1="2" y1="7" x2="22" y2="7" :stroke="entry.color" stroke-width="2.5" :stroke-dasharray="entry.dashed ? '5,3' : 'none'" />
-              </svg>
-              <span>{{ entry.label }}</span>
-            </div>
-          </div>
-        </div>
+    <!-- Canvas area -->
+    <div ref="canvasEl" class="viewer-canvas">
+      <!-- Empty state -->
+      <div v-if="stopsWithGeometry.length === 0" class="notification is-light" style="margin: 2rem;">
+        No stops with geometry to display.
       </div>
 
-      <!-- Top-right controls: compass + floor height -->
-      <div style="position: absolute; top: 8px; right: 10px; z-index: 10; display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
+      <template v-else>
+        <!-- Bottom-left legend -->
+        <div class="iso-legend" style="position: absolute; bottom: 8px; left: 8px; z-index: 10;">
+          <div class="iso-legend-header" @click="legendExpanded = !legendExpanded">
+            <span>Legend</span>
+            <i :class="legendExpanded ? 'mdi mdi-chevron-down' : 'mdi mdi-chevron-right'" style="margin-left: 4px;" />
+          </div>
+          <div v-if="legendExpanded" class="iso-legend-body">
+            <div v-if="legendStopTypes.length" class="iso-legend-section">
+              <div class="iso-legend-title">
+                Stops
+              </div>
+              <div v-for="entry in legendStopTypes" :key="entry.label" class="iso-legend-row">
+                <svg width="14" height="14" style="flex-shrink:0;">
+                  <circle cx="7" cy="7" r="5" :fill="entry.color" stroke="#fff" stroke-width="1" />
+                </svg>
+                <span>{{ entry.label }}</span>
+              </div>
+            </div>
+            <div v-if="legendPathwayEntries.length" class="iso-legend-section">
+              <div class="iso-legend-title">
+                Pathways
+              </div>
+              <div v-for="entry in legendPathwayEntries" :key="entry.label" class="iso-legend-row">
+                <svg width="24" height="14" style="flex-shrink:0;">
+                  <line x1="2" y1="7" x2="22" y2="7" :stroke="entry.color" stroke-width="2.5" :stroke-dasharray="entry.dashed ? '5,3' : 'none'" />
+                </svg>
+                <span>{{ entry.label }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top-right compass overlay -->
         <tl-apps-stations-isometric-compass
+          style="position: absolute; top: 8px; right: 8px; z-index: 10;"
           :azimuth="azimuth"
           :elevation="elevation"
           @update:azimuth="azimuth = $event"
           @update:elevation="elevation = $event"
         />
-        <div style="display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.92); padding: 4px 8px; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.12);">
-          <label style="font-size: 11px; white-space: nowrap; color: #555;">Floor height</label>
-          <input v-model.number="floorHeight" type="range" min="3" max="10" step="1" style="width: 72px;">
-          <span style="font-size: 11px; min-width: 26px; color: #444;">{{ floorHeight }}m</span>
-        </div>
-        <div class="iso-layers-panel">
-          <div class="iso-layers-group">
-            <div class="iso-layers-heading">
-              Base
-            </div>
-            <label class="iso-layers-row">
-              <input v-model="basemap" type="radio" value="none">
-              None
-            </label>
-            <label class="iso-layers-row">
-              <input v-model="basemap" type="radio" value="ground">
-              Ground plane
-            </label>
-            <label v-if="nearmapsApikey" class="iso-layers-row">
-              <input v-model="basemap" type="radio" value="aerial">
-              Aerial imagery
-            </label>
-            <div class="iso-layers-divider" />
-            <label class="iso-layers-row" :class="{ 'has-text-grey': basemap !== 'ground' }">
-              <input v-model="showCompass" type="checkbox" :disabled="basemap !== 'ground'">
-              Compass rose
-            </label>
-          </div>
-          <div class="iso-layers-group">
-            <div class="iso-layers-heading">
-              Station
-            </div>
-            <label class="iso-layers-row">
-              <input v-model="showSlabs" type="checkbox">
-              Floor slabs
-            </label>
-            <label class="iso-layers-row">
-              <input v-model="showPathways" type="checkbox">
-              Pathways
-            </label>
-            <label class="iso-layers-row" :title="routeIds.length === 0 ? 'No routes found for this station' : ''">
-              <input v-model="showRoutes" type="checkbox" :disabled="routeIds.length === 0">
-              Routes
-              <span v-if="routeIds.length === 0" style="color: #aaa;">(none)</span>
-            </label>
-            <label class="iso-layers-row">
-              <input v-model="showNodeLabels" type="checkbox">
-              Node labels
-            </label>
-          </div>
-        </div>
-      </div>
 
-      <!-- Main SVG -->
-      <svg
-        ref="svgEl"
-        :width="svgWidth"
-        :height="svgHeight"
-        :style="{ display: 'block', background: '#f8f9fa', cursor: isPanning ? 'grabbing' : 'grab' }"
-        @click.self="onSvgClick"
-      >
-        <title>Drag to pan · Scroll to zoom · Arrow keys rotate/tilt · Click stop or pathway to select</title>
-        <g ref="zoomGroup">
-          <!-- Aerial imagery tiles (rendered first, at z=0 ground level) -->
-          <image
-            v-for="(tile, ti) in aerialTiles"
-            :key="`tile-${ti}`"
-            :href="tile.url"
-            x="0"
-            y="0"
-            width="256"
-            height="256"
-            preserveAspectRatio="none"
-            :transform="tile.matrix"
-            opacity="0.9"
-          />
-
-          <!-- Ground plane at level_index=0, drawn first (behind everything) -->
-          <!-- Hidden when aerial imagery is shown -->
-          <polygon
-            v-if="showGroundPlane && !showAerialImagery && groundPlanePoints"
-            :points="groundPlanePoints"
-            fill="#a8c4a2"
-            fill-opacity="0.28"
-            stroke="#7aaa72"
-            stroke-width="1"
-            stroke-opacity="0.5"
-          />
-
-          <!-- Compass rose projected onto ground plane -->
-          <g v-if="projectedCompass" style="pointer-events: none;">
-            <line
-              v-for="(l, i) in projectedCompass.otherLines"
-              :key="`cl-${i}`"
-              :x1="l.x1"
-              :y1="l.y1"
-              :x2="l.x2"
-              :y2="l.y2"
-              stroke="#555"
-              stroke-width="1.2"
-              stroke-linecap="round"
+        <!-- Main SVG -->
+        <svg
+          ref="svgEl"
+          :style="{ display: 'block', width: '100%', height: '100%', background: '#f8f9fa', cursor: isPanning ? 'grabbing' : 'grab' }"
+          @click.self="onSvgClick"
+        >
+          <title>Drag to pan · Scroll to zoom · Arrow keys rotate/tilt · Click stop or pathway to select</title>
+          <g ref="zoomGroup">
+            <!-- Aerial imagery tiles (rendered first, at z=0 ground level) -->
+            <image
+              v-for="(tile, ti) in aerialTiles"
+              :key="`tile-${ti}`"
+              :href="tile.url"
+              x="0"
+              y="0"
+              width="256"
+              height="256"
+              preserveAspectRatio="none"
+              :transform="tile.matrix"
+              opacity="0.9"
             />
-            <line
-              :x1="projectedCompass.northLine.x1"
-              :y1="projectedCompass.northLine.y1"
-              :x2="projectedCompass.northLine.x2"
-              :y2="projectedCompass.northLine.y2"
-              stroke="#c0392b"
-              stroke-width="2"
-              stroke-linecap="round"
-            />
-            <polygon :points="projectedCompass.northArrow" fill="#c0392b" />
-            <circle
-              :cx="projectedCompass.center.x"
-              :cy="projectedCompass.center.y"
-              r="2.5"
-              fill="white"
-              stroke="#555"
+
+            <!-- Ground plane at level_index=0, drawn first (behind everything) -->
+            <!-- Hidden when aerial imagery is shown -->
+            <polygon
+              v-if="showGroundPlane && !showAerialImagery && groundPlanePoints"
+              :points="groundPlanePoints"
+              fill="#a8c4a2"
+              fill-opacity="0.28"
+              stroke="#7aaa72"
               stroke-width="1"
+              stroke-opacity="0.5"
             />
-            <text
-              v-for="label in projectedCompass.labels"
-              :key="`clabel-${label.text}`"
-              :x="label.x"
-              :y="label.y"
-              :fill="label.isNorth ? '#c0392b' : '#444'"
-              font-size="10"
-              font-weight="600"
-              text-anchor="middle"
-              dominant-baseline="middle"
-              style="user-select: none;"
-            >{{ label.text }}</text>
-          </g>
 
-          <!-- Route lines at z=0 (above ground plane, below level geometry) -->
-          <path
-            v-for="(rl, ri) in projectedRouteLines"
-            :key="`rl-${ri}`"
-            :d="rl.d"
-            :stroke="rl.color"
-            stroke-width="3"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            fill="none"
-            opacity="0.7"
-          />
-
-          <!-- Render levels bottom to top (painter's algorithm) -->
-          <g v-for="lvl in projectedLevels" :key="lvl.levelId">
-            <template v-if="showSlabs">
-              <!-- Side wall quads -->
-              <polygon
-                v-for="(wall, wi) in lvl.wallPolygons"
-                :key="`wall-${wi}`"
-                :points="wall.points"
-                :fill="wall.fill"
-                :fill-opacity="0.85"
-                stroke="none"
-              />
-              <!-- Top face polygons (evenodd for holes) -->
-              <path
-                v-for="(face, fi) in lvl.topFacePolygons"
-                :key="`face-${fi}`"
-                :d="face.d"
-                :fill="face.fill"
-                fill-rule="evenodd"
-                :fill-opacity="0.75"
+            <!-- Compass rose projected onto ground plane -->
+            <g v-if="projectedCompass" style="pointer-events: none;">
+              <line
+                v-for="(l, i) in projectedCompass.otherLines"
+                :key="`cl-${i}`"
+                :x1="l.x1"
+                :y1="l.y1"
+                :x2="l.x2"
+                :y2="l.y2"
                 stroke="#555"
-                stroke-width="0.5"
+                stroke-width="1.2"
+                stroke-linecap="round"
+              />
+              <line
+                :x1="projectedCompass.northLine.x1"
+                :y1="projectedCompass.northLine.y1"
+                :x2="projectedCompass.northLine.x2"
+                :y2="projectedCompass.northLine.y2"
+                stroke="#c0392b"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <polygon :points="projectedCompass.northArrow" fill="#c0392b" />
+              <circle
+                :cx="projectedCompass.center.x"
+                :cy="projectedCompass.center.y"
+                r="2.5"
+                fill="white"
+                stroke="#555"
+                stroke-width="1"
+              />
+              <text
+                v-for="label in projectedCompass.labels"
+                :key="`clabel-${label.text}`"
+                :x="label.x"
+                :y="label.y"
+                :fill="label.isNorth ? '#c0392b' : '#444'"
+                font-size="10"
+                font-weight="600"
+                text-anchor="middle"
+                dominant-baseline="middle"
+                style="user-select: none;"
+              >{{ label.text }}</text>
+            </g>
+
+            <!-- Route lines at z=0 (above ground plane, below level geometry) -->
+            <path
+              v-for="(rl, ri) in projectedRouteLines"
+              :key="`rl-${ri}`"
+              :d="rl.d"
+              :stroke="rl.color"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              fill="none"
+              opacity="0.7"
+            />
+
+            <!-- Render levels bottom to top (painter's algorithm) -->
+            <g v-for="lvl in projectedLevels" :key="lvl.levelId">
+              <template v-if="showSlabs">
+                <!-- Side wall quads -->
+                <polygon
+                  v-for="(wall, wi) in lvl.wallPolygons"
+                  :key="`wall-${wi}`"
+                  :points="wall.points"
+                  :fill="wall.fill"
+                  :fill-opacity="0.85"
+                  stroke="none"
+                />
+                <!-- Top face polygons (evenodd for holes) -->
+                <path
+                  v-for="(face, fi) in lvl.topFacePolygons"
+                  :key="`face-${fi}`"
+                  :d="face.d"
+                  :fill="face.fill"
+                  fill-rule="evenodd"
+                  :fill-opacity="0.75"
+                  stroke="#555"
+                  stroke-width="0.5"
+                />
+              </template>
+            </g>
+
+            <template v-if="showPathways">
+              <!-- Same-level pathways -->
+              <line
+                v-for="pw in sameLevelPathways"
+                :key="`pw-${pw.pw.id}`"
+                :x1="pw.x1"
+                :y1="pw.y1"
+                :x2="pw.x2"
+                :y2="pw.y2"
+                :stroke="pw.stroke"
+                :stroke-width="pathwayStrokeWidth"
+                :class="isSelectedPathway(pw.pw.id) ? 'pw-selected' : ''"
+                style="cursor: pointer;"
+                @click.stop="onPathwayClick(pw.pw.id)"
+              />
+
+              <!-- Cross-level pathways (dashed) -->
+              <line
+                v-for="pw in crossLevelPathways"
+                :key="`cpw-${pw.pw.id}`"
+                :x1="pw.x1"
+                :y1="pw.y1"
+                :x2="pw.x2"
+                :y2="pw.y2"
+                :stroke="pw.stroke"
+                :stroke-width="pathwayStrokeWidth"
+                :stroke-dasharray="`${5 / zoomScale},${3 / zoomScale}`"
+                :class="isSelectedPathway(pw.pw.id) ? 'pw-selected' : ''"
+                style="cursor: pointer;"
+                @click.stop="onPathwayClick(pw.pw.id)"
               />
             </template>
-          </g>
 
-          <template v-if="showPathways">
-            <!-- Same-level pathways -->
-            <line
-              v-for="pw in sameLevelPathways"
-              :key="`pw-${pw.pw.id}`"
-              :x1="pw.x1"
-              :y1="pw.y1"
-              :x2="pw.x2"
-              :y2="pw.y2"
-              :stroke="pw.stroke"
-              :stroke-width="pathwayStrokeWidth"
-              :class="isSelectedPathway(pw.pw.id) ? 'pw-selected' : ''"
-              style="cursor: pointer;"
-              @click.stop="onPathwayClick(pw.pw.id)"
-            />
-
-            <!-- Cross-level pathways (dashed) -->
-            <line
-              v-for="pw in crossLevelPathways"
-              :key="`cpw-${pw.pw.id}`"
-              :x1="pw.x1"
-              :y1="pw.y1"
-              :x2="pw.x2"
-              :y2="pw.y2"
-              :stroke="pw.stroke"
-              :stroke-width="pathwayStrokeWidth"
-              :stroke-dasharray="`${5 / zoomScale},${3 / zoomScale}`"
-              :class="isSelectedPathway(pw.pw.id) ? 'pw-selected' : ''"
-              style="cursor: pointer;"
-              @click.stop="onPathwayClick(pw.pw.id)"
-            />
-          </template>
-
-          <!-- Stop circles -->
-          <g v-for="lvl in projectedLevels" :key="`stops-${lvl.levelId}`">
-            <circle
-              v-for="stop in lvl.stops"
-              :key="`stop-${stop.stop.id}`"
-              :cx="stop.sx"
-              :cy="stop.sy"
-              :r="stopRadius"
-              :fill="isSelectedStop(stop.stop.id) ? '#f28e2b' : stop.fill"
-              stroke="#fff"
-              :stroke-width="stopStrokeWidth"
-              style="cursor: pointer;"
-              @click.stop="onStopClick(stop.stop.id)"
-              @mouseenter="hoveredStop = stop.stop"
-              @mouseleave="hoveredStop = null"
-            />
-          </g>
-
-          <!-- Permanent node labels (optional layer) -->
-          <template v-if="showNodeLabels">
-            <g v-for="lvl in projectedLevels" :key="`labels-${lvl.levelId}`">
-              <text
+            <!-- Stop circles -->
+            <g v-for="lvl in projectedLevels" :key="`stops-${lvl.levelId}`">
+              <circle
                 v-for="stop in lvl.stops"
-                :key="`label-${stop.stop.id}`"
-                :x="stop.sx + labelOffset"
-                :y="stop.sy + labelFontSize * 0.35"
+                :key="`stop-${stop.stop.id}`"
+                :cx="stop.sx"
+                :cy="stop.sy"
+                :r="stopRadius"
+                :fill="isSelectedStop(stop.stop.id) ? '#f28e2b' : stop.fill"
+                stroke="#fff"
+                :stroke-width="stopStrokeWidth"
+                style="cursor: pointer;"
+                @click.stop="onStopClick(stop.stop.id)"
+                @mouseenter="hoveredStop = stop.stop"
+                @mouseleave="hoveredStop = null"
+              />
+            </g>
+
+            <!-- Permanent node labels (optional layer) -->
+            <template v-if="showNodeLabels">
+              <g v-for="lvl in projectedLevels" :key="`labels-${lvl.levelId}`">
+                <text
+                  v-for="stop in lvl.stops"
+                  :key="`label-${stop.stop.id}`"
+                  :x="stop.sx + labelOffset"
+                  :y="stop.sy + labelFontSize * 0.35"
+                  :font-size="labelFontSize"
+                  fill="#333"
+                  style="pointer-events: none; user-select: none;"
+                >{{ stop.stop.stop_name || stop.stop.stop_id }}</text>
+              </g>
+            </template>
+
+            <!-- Hover label -->
+            <g v-if="hoveredStop && hoveredStopPos">
+              <rect
+                :x="hoveredStopPos.sx + labelOffset"
+                :y="hoveredStopPos.sy - labelFontSize * 1.3"
+                :width="hoveredLabelWidth"
+                :height="labelFontSize * 1.7"
+                :rx="3 / zoomScale"
+                fill="rgba(255,255,255,0.9)"
+                stroke="#ccc"
+                :stroke-width="0.5 / zoomScale"
+              />
+              <text
+                :x="hoveredStopPos.sx + labelOffset + 4 / zoomScale"
+                :y="hoveredStopPos.sy - labelFontSize * 0.25"
                 :font-size="labelFontSize"
                 fill="#333"
-                style="pointer-events: none; user-select: none;"
-              >{{ stop.stop.stop_name || stop.stop.stop_id }}</text>
+                style="pointer-events: none;"
+              >{{ hoveredStopLabel }}</text>
             </g>
-          </template>
-
-          <!-- Hover label -->
-          <g v-if="hoveredStop && hoveredStopPos">
-            <rect
-              :x="hoveredStopPos.sx + labelOffset"
-              :y="hoveredStopPos.sy - labelFontSize * 1.3"
-              :width="hoveredLabelWidth"
-              :height="labelFontSize * 1.7"
-              :rx="3 / zoomScale"
-              fill="rgba(255,255,255,0.9)"
-              stroke="#ccc"
-              :stroke-width="0.5 / zoomScale"
-            />
-            <text
-              :x="hoveredStopPos.sx + labelOffset + 4 / zoomScale"
-              :y="hoveredStopPos.sy - labelFontSize * 0.25"
-              :font-size="labelFontSize"
-              fill="#333"
-              style="pointer-events: none;"
-            >{{ hoveredStopLabel }}</text>
           </g>
-        </g>
-      </svg>
-    </template>
+        </svg>
+      </template>
+    </div>
   </div>
 </template>
 
@@ -622,9 +597,10 @@ watch(() => props.selectedPathway, (id) => {
 // --- DOM refs ---
 const svgEl = ref<SVGSVGElement | null>(null)
 const zoomGroup = ref<SVGGElement | null>(null)
+const canvasEl = ref<HTMLDivElement | null>(null)
 const isPanning = ref(false)
-const svgWidth = 900
-const svgHeight = 700
+const svgWidth = ref(900)
+const svgHeight = ref(700)
 const padding = 60
 
 // --- Derived data ---
@@ -694,12 +670,12 @@ const physicalExtentMeters = computed((): number => {
 // Fixed pixels-per-meter: station centroid maps to SVG center, scale stable across rotation.
 // The 0.45 factor leaves room for z-extent and diagonal worst-case.
 const pixelsPerMeter = computed((): number => {
-  const avail = Math.min(svgWidth, svgHeight) - padding * 2
+  const avail = Math.min(svgWidth.value, svgHeight.value) - padding * 2
   return (avail * 0.45) / Math.max(physicalExtentMeters.value, 1)
 })
 
-function sx (mx: number): number { return svgWidth / 2 + mx * pixelsPerMeter.value }
-function sy (my: number): number { return svgHeight / 2 - my * pixelsPerMeter.value }
+function sx (mx: number): number { return svgWidth.value / 2 + mx * pixelsPerMeter.value }
+function sy (my: number): number { return svgHeight.value / 2 - my * pixelsPerMeter.value }
 function pt (p: ProjectedPoint): string { return `${sx(p.mx)},${sy(p.my)}` }
 
 // Ground plane: a square in local meter space centered on the station centroid,
@@ -1085,12 +1061,16 @@ function downloadPng () {
 // --- d3-zoom ---
 
 let zoomBehavior: any = null
-
 let zoomSel: any = null
 let zoomCleanup: (() => void) | null = null
+let resizeObserver: ResizeObserver | null = null
 
 onMounted(() => {
   nextTick(() => {
+    if (canvasEl.value) {
+      svgWidth.value = Math.floor(canvasEl.value.clientWidth) || 900
+      svgHeight.value = Math.floor(canvasEl.value.clientHeight) || 700
+    }
     if (!svgEl.value || !zoomGroup.value) return
     zoomBehavior = d3Zoom()
       .scaleExtent([0.1, 10])
@@ -1104,11 +1084,21 @@ onMounted(() => {
     zoomSel.call(zoomBehavior)
     zoomCleanup = () => { zoomSel.on('.zoom', null) }
     window.addEventListener('keydown', handleKeyDown)
+
+    resizeObserver = new ResizeObserver((entries) => {
+      const e = entries[0]
+      if (e) {
+        svgWidth.value = Math.floor(e.contentRect.width)
+        svgHeight.value = Math.floor(e.contentRect.height)
+      }
+    })
+    if (canvasEl.value) resizeObserver.observe(canvasEl.value as unknown as Element)
   })
 })
 
 onBeforeUnmount(() => {
   zoomCleanup?.()
+  resizeObserver?.disconnect()
   window.removeEventListener('keydown', handleKeyDown)
 })
 
@@ -1171,8 +1161,55 @@ function handleKeyDown (e: KeyboardEvent) {
 
 <style scoped>
 .station-isometric-viewer {
-  width: 100%;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.viewer-canvas {
+  flex: 1;
   position: relative;
+  overflow: hidden;
+  background: #f8f9fa;
+  min-height: 0;
+}
+
+.iso-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0 10px;
+  height: 38px;
+  flex-shrink: 0;
+  border-bottom: 1px solid #dbdbdb;
+  background: white;
+  font-size: 12px;
+  color: #444;
+}
+
+.iso-toolbar-section {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+}
+
+.iso-toolbar-label {
+  white-space: nowrap;
+  color: #555;
+}
+
+.iso-toolbar-divider {
+  width: 1px;
+  height: 22px;
+  background: #dbdbdb;
+  flex-shrink: 0;
+}
+
+.iso-toolbar-spacer {
+  flex: 1;
 }
 
 .pw-selected {
@@ -1234,46 +1271,11 @@ function handleKeyDown (e: KeyboardEvent) {
   line-height: 1.3;
 }
 
-.iso-layers-panel {
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
-  font-size: 11px;
-  color: #444;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
-.iso-layers-group {
-  padding: 5px 8px 6px;
-}
-
-.iso-layers-group + .iso-layers-group {
-  border-top: 1px solid #e0e0e0;
-}
-
-.iso-layers-heading {
-  font-weight: 600;
-  color: #555;
-  text-transform: uppercase;
-  font-size: 10px;
-  letter-spacing: 0.04em;
-  margin-bottom: 4px;
-}
-
 .iso-layers-row {
   display: flex;
   align-items: center;
   gap: 5px;
   cursor: pointer;
-  line-height: 1.6;
   white-space: nowrap;
-}
-
-.iso-layers-divider {
-  border-top: 1px solid #e8e8e8;
-  margin: 3px 0;
 }
 </style>

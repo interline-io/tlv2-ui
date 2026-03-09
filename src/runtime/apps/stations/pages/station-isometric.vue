@@ -1,5 +1,5 @@
 <template>
-  <div v-if="station">
+  <div v-if="station" class="isometric-page">
     <tl-apps-stations-station-mode-tabs
       :station="station"
       :feed-key="feedKey"
@@ -8,7 +8,7 @@
       :stop-associations-enabled="stopAssociationsEnabled"
     />
 
-    <div v-if="ready" class="columns">
+    <div v-if="ready" class="columns isometric-columns">
       <div class="column is-narrow">
         <div class="block tl-apps-stations-info">
           <p v-if="selectedElements.length === 0" class="notification">
@@ -147,6 +147,32 @@ function clearSelectedElements () {
 </script>
 
 <style scoped>
+.isometric-page {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 60px);
+  overflow: hidden;
+}
+
+.isometric-columns {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  align-items: stretch;
+}
+
+.isometric-columns > .column:not(.is-narrow) {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  min-height: 0;
+}
+
+.isometric-columns > .column.is-narrow {
+  overflow-y: auto;
+  padding-top: 0.5rem;
+}
+
 .tl-apps-stations-info {
   width: 540px;
 }
