@@ -93,7 +93,6 @@
           :style="{ cursor: isPanning ? 'grabbing' : 'grab' }"
           @click.self="onSvgClick"
         >
-          <title>Drag to pan · Scroll to zoom · Arrow keys rotate/tilt · Click stop or pathway to select</title>
           <g ref="zoomGroup">
             <!-- Aerial imagery tiles (rendered first, at z=0 ground level) -->
             <image
