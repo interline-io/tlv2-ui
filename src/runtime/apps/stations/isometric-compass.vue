@@ -109,10 +109,14 @@
     <!-- Controls row: elevation buttons only -->
     <div class="compass-controls">
       <t-tooltip text="+15° elevation" position="left">
-        <button class="button is-small is-outlined" @click="adjustElevation(15)">▲</button>
+        <button class="button is-small is-outlined" @click="adjustElevation(15)">
+          ▲
+        </button>
       </t-tooltip>
       <t-tooltip text="-15° elevation" position="left">
-        <button class="button is-small is-outlined" @click="adjustElevation(-15)">▼</button>
+        <button class="button is-small is-outlined" @click="adjustElevation(-15)">
+          ▼
+        </button>
       </t-tooltip>
     </div>
     <div class="compass-hint">

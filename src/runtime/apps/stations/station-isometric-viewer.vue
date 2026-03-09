@@ -186,7 +186,7 @@
                   :key="`wall-${wi}`"
                   :points="wall.points"
                   :fill="wall.fill"
-                  :fill-opacity="0.85"
+                  :fill-opacity="0.28"
                   stroke="none"
                 />
                 <!-- Top face polygons (evenodd for holes) -->
@@ -196,9 +196,10 @@
                   :d="face.d"
                   :fill="face.fill"
                   fill-rule="evenodd"
-                  :fill-opacity="0.75"
+                  :fill-opacity="0.50"
                   stroke="#555"
                   stroke-width="0.5"
+                  stroke-opacity="0.5"
                 />
               </template>
             </g>
@@ -214,8 +215,10 @@
                 :y2="pw.y2"
                 :stroke="pw.stroke"
                 :stroke-width="pathwayStrokeWidth"
-                :class="isSelectedPathway(pw.pw.id) ? 'pw-selected' : ''"
+                :class="{ 'pw-selected': isSelectedPathway(pw.pw.id), 'pw-hovered': isHoveredPathway(pw.pw.id) }"
                 style="cursor: pointer;"
+                @mouseenter="hoveredPathway = pw.pw.id ?? null"
+                @mouseleave="hoveredPathway = null"
                 @click.stop="onPathwayClick(pw.pw.id)"
               />
 
@@ -230,8 +233,10 @@
                 :stroke="pw.stroke"
                 :stroke-width="pathwayStrokeWidth"
                 :stroke-dasharray="`${5 / zoomScale},${3 / zoomScale}`"
-                :class="isSelectedPathway(pw.pw.id) ? 'pw-selected' : ''"
+                :class="{ 'pw-selected': isSelectedPathway(pw.pw.id), 'pw-hovered': isHoveredPathway(pw.pw.id) }"
                 style="cursor: pointer;"
+                @mouseenter="hoveredPathway = pw.pw.id ?? null"
+                @mouseleave="hoveredPathway = null"
                 @click.stop="onPathwayClick(pw.pw.id)"
               />
             </template>
@@ -244,9 +249,9 @@
                 :cx="stop.sx"
                 :cy="stop.sy"
                 :r="stopRadius"
-                :fill="isSelectedStop(stop.stop.id) ? '#f28e2b' : stop.fill"
+                :fill="isSelectedStop(stop.stop.id) ? '#00d4ff' : stop.fill"
                 stroke="#fff"
-                :stroke-width="stopStrokeWidth"
+                :stroke-width="isHoveredStop(stop.stop.id) && !isSelectedStop(stop.stop.id) ? stopHoverStrokeWidth : stopStrokeWidth"
                 style="cursor: pointer;"
                 @click.stop="onStopClick(stop.stop.id)"
                 @mouseenter="hoveredStop = stop.stop"
@@ -269,25 +274,43 @@
               </g>
             </template>
 
-            <!-- Hover label -->
-            <g v-if="hoveredStop && hoveredStopPos">
+            <!-- Hover tooltip -->
+            <g v-if="hoveredStop && hoveredStopPos && hoveredTooltipLines">
               <rect
                 :x="hoveredStopPos.sx + labelOffset"
-                :y="hoveredStopPos.sy - labelFontSize * 1.3"
+                :y="hoveredStopPos.sy - tooltipHeight / 2"
                 :width="hoveredLabelWidth"
-                :height="labelFontSize * 1.7"
+                :height="tooltipHeight"
                 :rx="3 / zoomScale"
-                fill="rgba(255,255,255,0.9)"
+                fill="rgba(255,255,255,0.95)"
                 stroke="#ccc"
                 :stroke-width="0.5 / zoomScale"
               />
+              <!-- Name -->
               <text
-                :x="hoveredStopPos.sx + labelOffset + 4 / zoomScale"
-                :y="hoveredStopPos.sy - labelFontSize * 0.25"
+                :x="hoveredStopPos.sx + labelOffset + tooltipPad"
+                :y="hoveredStopPos.sy - tooltipHeight / 2 + tooltipPad + labelFontSize"
                 :font-size="labelFontSize"
+                font-weight="600"
                 fill="#333"
                 style="pointer-events: none;"
-              >{{ hoveredStopLabel }}</text>
+              >{{ hoveredTooltipLines.name }}</text>
+              <!-- Location type -->
+              <text
+                :x="hoveredStopPos.sx + labelOffset + tooltipPad"
+                :y="hoveredStopPos.sy - tooltipHeight / 2 + tooltipPad + labelFontSize + tooltipLineH"
+                :font-size="tooltipSubFontSize"
+                fill="#666"
+                style="pointer-events: none;"
+              >{{ hoveredTooltipLines.typeLine }}</text>
+              <!-- Level -->
+              <text
+                :x="hoveredStopPos.sx + labelOffset + tooltipPad"
+                :y="hoveredStopPos.sy - tooltipHeight / 2 + tooltipPad + labelFontSize + tooltipLineH * 2"
+                :font-size="tooltipSubFontSize"
+                fill="#666"
+                style="pointer-events: none;"
+              >{{ hoveredTooltipLines.levelLine }}</text>
             </g>
           </g>
         </svg>
@@ -323,6 +346,7 @@ const azimuth = ref(225)
 const elevation = ref(35) // true isometric ≈ arcsin(1/√3) ≈ 35.26°
 const floorHeight = ref(5) // typical transit floor-to-floor: 4.5–5m
 const hoveredStop = ref<Stop | null>(null)
+const hoveredPathway = ref<number | null>(null)
 const selectedElements = ref<string[]>([])
 const zoomScale = ref(1)
 const legendExpanded = ref(true)
@@ -776,14 +800,14 @@ function stopColor (locationType: number | null | undefined): string {
 // Pathway color by pathway_mode
 function pathwayColor (mode: number | undefined): string {
   switch (mode) {
-    case 1: return '#aaa'
+    case 1: return '#888'
     case 2: return '#e15759'
     case 3: return '#76b7b2'
     case 4: return '#f28e2b'
     case 5: return '#59a14f'
     case 6: return '#b07aa1'
     case 7: return '#ff9da7'
-    default: return '#aaa'
+    default: return '#888'
   }
 }
 
@@ -959,18 +983,44 @@ const hoveredStopPos = computed(() => {
   return null
 })
 
-const hoveredStopLabel = computed(() => {
-  if (!hoveredStop.value) return ''
-  return hoveredStop.value.stop_name || hoveredStop.value.stop_id || String(hoveredStop.value.id)
+const LOCATION_TYPE_LABELS: Record<number, string> = {
+  0: 'Stop / Platform',
+  1: 'Station',
+  2: 'Entrance / Exit',
+  3: 'Generic Node',
+  4: 'Boarding Area',
+}
+
+const hoveredTooltipLines = computed(() => {
+  const s = hoveredStop.value
+  if (!s) return null
+  const name = s.stop_name || s.stop_id || String(s.id)
+  const typeLine = LOCATION_TYPE_LABELS[s.location_type ?? -1] ?? `Type ${s.location_type ?? '?'}`
+  const lvl = s.level
+  const levelLine = lvl?.level_name
+    ? lvl.level_name + (lvl.level_index != null ? ` · L${lvl.level_index}` : '')
+    : ''
+  return { name, typeLine, levelLine }
 })
 
 // Inverse-zoom sizes: keep visual pixel size constant as user zooms in/out
 const stopRadius = computed(() => 6 / zoomScale.value)
 const stopStrokeWidth = computed(() => 1.5 / zoomScale.value)
+const stopHoverStrokeWidth = computed(() => 4 / zoomScale.value)
 const pathwayStrokeWidth = computed(() => 2 / zoomScale.value)
 const labelFontSize = computed(() => 11 / zoomScale.value)
 const labelOffset = computed(() => 8 / zoomScale.value)
-const hoveredLabelWidth = computed(() => Math.max(60, hoveredStopLabel.value.length * 7 + 8) / zoomScale.value)
+const tooltipSubFontSize = computed(() => labelFontSize.value * 0.85)
+const tooltipLineH = computed(() => labelFontSize.value * 1.4)
+const tooltipPad = computed(() => 4 / zoomScale.value)
+const tooltipHeight = computed(() => tooltipPad.value * 2 + labelFontSize.value + tooltipLineH.value * 2)
+const hoveredLabelWidth = computed(() => {
+  const t = hoveredTooltipLines.value
+  if (!t) return 60 / zoomScale.value
+  const primaryW = t.name.length * 7
+  const secondaryW = Math.max(t.typeLine.length, t.levelLine.length) * 6
+  return Math.max(100, primaryW, secondaryW) / zoomScale.value + tooltipPad.value * 2
+})
 
 // --- Selection ---
 function isSelectedStop (id: number | undefined): boolean {
@@ -979,6 +1029,14 @@ function isSelectedStop (id: number | undefined): boolean {
 
 function isSelectedPathway (id: number | undefined): boolean {
   return selectedElements.value.includes(`p-${id}`)
+}
+
+function isHoveredStop (id: number | undefined): boolean {
+  return hoveredStop.value?.id === id
+}
+
+function isHoveredPathway (id: number | undefined): boolean {
+  return hoveredPathway.value === id
 }
 
 function onStopClick (id: number | undefined) {
@@ -1213,7 +1271,11 @@ function handleKeyDown (e: KeyboardEvent) {
 }
 
 .pw-selected {
-  filter: drop-shadow(0 0 3px orange);
+  filter: drop-shadow(0 0 4px #00d4ff);
+}
+
+.pw-hovered {
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.85));
 }
 
 .iso-legend {
