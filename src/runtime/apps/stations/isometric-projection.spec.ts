@@ -110,12 +110,10 @@ describe('projectPoint', () => {
     // 0.001 deg lat ≈ 111.32m north
     const pt1 = projectPoint(-122.0, 37.000, 0, baseCfg)
     const pt2 = projectPoint(-122.0, 37.001, 0, baseCfg)
-    const elRad = baseCfg.elevation * Math.PI / 180
     const dy = Math.abs(pt2.my - pt1.my)
     // Should be approximately 111.32 * cos(elevation) ≈ 96m
     expect(dy).toBeGreaterThan(80)
     expect(dy).toBeLessThan(120)
-    void elRad
   })
 })
 

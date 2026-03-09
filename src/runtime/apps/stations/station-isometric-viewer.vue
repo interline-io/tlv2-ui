@@ -4,7 +4,7 @@
     <div class="iso-toolbar">
       <div class="iso-toolbar-section">
         <span class="iso-toolbar-label">Floor ht:</span>
-        <input v-model.number="floorHeight" type="range" min="3" max="10" step="1" style="width: 72px;">
+        <input v-model.number="floorHeight" type="range" min="3" max="10" step="1" class="iso-floorheight-slider">
         <span>{{ floorHeight }}m</span>
       </div>
       <div class="iso-toolbar-divider" />
@@ -39,16 +39,16 @@
     <!-- Canvas area -->
     <div ref="canvasEl" class="viewer-canvas">
       <!-- Empty state -->
-      <div v-if="stopsWithGeometry.length === 0" class="notification is-light" style="margin: 2rem;">
+      <div v-if="stopsWithGeometry.length === 0" class="notification is-light iso-empty-state">
         No stops with geometry to display.
       </div>
 
       <template v-else>
         <!-- Bottom-left legend -->
-        <div class="iso-legend" style="position: absolute; bottom: 8px; left: 8px; z-index: 10;">
+        <div class="iso-legend iso-legend-overlay">
           <div class="iso-legend-header" @click="legendExpanded = !legendExpanded">
             <span>Legend</span>
-            <i :class="legendExpanded ? 'mdi mdi-chevron-down' : 'mdi mdi-chevron-right'" style="margin-left: 4px;" />
+            <i :class="legendExpanded ? 'mdi mdi-chevron-down' : 'mdi mdi-chevron-right'" class="iso-legend-chevron" />
           </div>
           <div v-if="legendExpanded" class="iso-legend-body">
             <div v-if="legendStopTypes.length" class="iso-legend-section">
@@ -56,7 +56,7 @@
                 Stops
               </div>
               <div v-for="entry in legendStopTypes" :key="entry.label" class="iso-legend-row">
-                <svg width="14" height="14" style="flex-shrink:0;">
+                <svg width="14" height="14" class="iso-legend-icon">
                   <circle cx="7" cy="7" r="5" :fill="entry.color" stroke="#fff" stroke-width="1" />
                 </svg>
                 <span>{{ entry.label }}</span>
@@ -67,7 +67,7 @@
                 Pathways
               </div>
               <div v-for="entry in legendPathwayEntries" :key="entry.label" class="iso-legend-row">
-                <svg width="24" height="14" style="flex-shrink:0;">
+                <svg width="24" height="14" class="iso-legend-icon">
                   <line x1="2" y1="7" x2="22" y2="7" :stroke="entry.color" stroke-width="2.5" :stroke-dasharray="entry.dashed ? '5,3' : 'none'" />
                 </svg>
                 <span>{{ entry.label }}</span>
@@ -77,18 +77,20 @@
         </div>
 
         <!-- Top-right compass overlay -->
-        <tl-apps-stations-isometric-compass
-          style="position: absolute; top: 8px; right: 8px; z-index: 10;"
-          :azimuth="azimuth"
-          :elevation="elevation"
-          @update:azimuth="azimuth = $event"
-          @update:elevation="elevation = $event"
-        />
+        <div class="iso-compass-overlay">
+          <tl-apps-stations-isometric-compass
+            :azimuth="azimuth"
+            :elevation="elevation"
+            @update:azimuth="azimuth = $event"
+            @update:elevation="elevation = $event"
+          />
+        </div>
 
         <!-- Main SVG -->
         <svg
           ref="svgEl"
-          :style="{ display: 'block', width: '100%', height: '100%', background: '#f8f9fa', cursor: isPanning ? 'grabbing' : 'grab' }"
+          class="viewer-canvas-svg"
+          :style="{ cursor: isPanning ? 'grabbing' : 'grab' }"
           @click.self="onSvgClick"
         >
           <title>Drag to pan · Scroll to zoom · Arrow keys rotate/tilt · Click stop or pathway to select</title>
@@ -364,7 +366,7 @@ const showNodeLabels = ref(false)
 
 // --- Nearmap API key ---
 const runtimeConfig = useRuntimeConfig()
-const nearmapsApikey = computed(() => (runtimeConfig.public.tlv2 as any)?.nearmapsApikey || '')
+const nearmapsApikey = computed(() => runtimeConfig.public.tlv2?.nearmapsApikey || '')
 
 // --- Route geometry query ---
 interface RouteGeomEntry {
@@ -750,7 +752,6 @@ const projectedCompass = computed((): CompassRose | null => {
   const southTip = proj(cx, cy - arm)
   const eastTip = proj(cx + arm, cy)
   const westTip = proj(cx - arm, cy)
-  const _northArrowBase = proj(cx, cy + arrowBase)
   const northArrowLeft = proj(cx - arrowW, cy + arrowBase)
   const northArrowRight = proj(cx + arrowW, cy + arrowBase)
 
@@ -1351,5 +1352,43 @@ function handleKeyDown (e: KeyboardEvent) {
   gap: 5px;
   cursor: pointer;
   white-space: nowrap;
+}
+
+.iso-floorheight-slider {
+  width: 72px;
+}
+
+.iso-empty-state {
+  margin: 2rem;
+}
+
+.iso-legend-overlay {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  z-index: 10;
+}
+
+.iso-compass-overlay {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+}
+
+.iso-legend-chevron {
+  margin-left: 4px;
+}
+
+.iso-legend-row svg,
+.iso-legend-icon {
+  flex-shrink: 0;
+}
+
+.viewer-canvas-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #f8f9fa;
 }
 </style>

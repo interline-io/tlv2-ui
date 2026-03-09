@@ -180,6 +180,7 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { PathwayModes } from '../../lib/pathways/pathway-icons'
+import { SWITCH_VIEW_ROUTE_KEYS } from './basemaps'
 import { useRouteResolver } from '../../composables/useRouteResolver'
 import type { Station, Pathway } from './station'
 import type { StationData } from './types'
@@ -212,11 +213,7 @@ defineEmits<{
 const { resolve } = useRouteResolver()
 const route = useRoute()
 
-const routeKeys = {
-  'pathways-v2': 'apps-stations-feedKey-feedVersionKey-stations-stationKey-pathways-v2',
-  'diagram': 'apps-stations-feedKey-feedVersionKey-stations-stationKey-diagram',
-  'isometric': 'apps-stations-feedKey-feedVersionKey-stations-stationKey-isometric',
-}
+const routeKeys = SWITCH_VIEW_ROUTE_KEYS
 
 const activeTab = computed(() => {
   for (const [k, r] of Object.entries(routeKeys)) {

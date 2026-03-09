@@ -1,5 +1,11 @@
 import type { PathwayModeIcon } from '../../lib/pathways/pathway-icons'
 
+export const SWITCH_VIEW_ROUTE_KEYS = {
+  'pathways-v2': 'apps-stations-feedKey-feedVersionKey-stations-stationKey-pathways-v2',
+  'diagram': 'apps-stations-feedKey-feedVersionKey-stations-stationKey-diagram',
+  'isometric': 'apps-stations-feedKey-feedVersionKey-stations-stationKey-isometric',
+} as const
+
 export const PeliasIcons: Record<string, PathwayModeIcon> = {
   marker: {
     icon: 'marker',

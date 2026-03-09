@@ -82,7 +82,7 @@ useHead(computed(() => ({
 })))
 
 const route = useRoute()
-const viewer = ref<any>(null)
+const viewer = ref<{ selectStop: (id: number) => void, selectPathway: (id: number) => void, clearSelection: () => void } | null>(null)
 const selectedElements = ref<string[]>([])
 
 const initialSelectedStop = computed(() => {
