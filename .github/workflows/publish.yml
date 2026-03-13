@@ -1,0 +1,60 @@
+name: Publish to GitHub Packages
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@interline-io'
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Compute version and tags
+        id: meta
+        run: |
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          BRANCH=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9._-]/-/g' | sed 's/^-//')
+          BASE_VERSION=$(node -p "require('./package.json').version")
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            echo "version=${BASE_VERSION}-sha.${SHORT_SHA}" >> $GITHUB_OUTPUT
+            echo "tag=sha-${SHORT_SHA}" >> $GITHUB_OUTPUT
+          else
+            echo "version=${BASE_VERSION}-branch.${BRANCH}" >> $GITHUB_OUTPUT
+            echo "tag=${BRANCH}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Set version
+        run: npm version ${{ steps.meta.outputs.version }} --no-git-tag-version
+
+      - name: Build
+        run: yarn prepack
+
+      - name: Publish
+        run: npm publish --tag ${{ steps.meta.outputs.tag }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Add latest tag
+        if: github.ref_name == 'main'
+        run: npm dist-tag add @interline-io/tlv2-ui@${{ steps.meta.outputs.version }} latest
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
