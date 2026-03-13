@@ -34,9 +34,13 @@ jobs:
           SHORT_SHA=$(git rev-parse --short HEAD)
           BRANCH=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9._-]/-/g' | sed 's/^-//')
           BASE_VERSION=$(node -p "require('./package.json').version")
-          echo "version=${BASE_VERSION}-sha.${SHORT_SHA}" >> $GITHUB_OUTPUT
-          echo "short_sha=${SHORT_SHA}" >> $GITHUB_OUTPUT
-          echo "branch=${BRANCH}" >> $GITHUB_OUTPUT
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            echo "version=${BASE_VERSION}-sha.${SHORT_SHA}" >> $GITHUB_OUTPUT
+            echo "tag=sha-${SHORT_SHA}" >> $GITHUB_OUTPUT
+          else
+            echo "version=${BASE_VERSION}-branch.${BRANCH}" >> $GITHUB_OUTPUT
+            echo "tag=${BRANCH}" >> $GITHUB_OUTPUT
+          fi
 
       - name: Set version
         run: npm version ${{ steps.meta.outputs.version }} --no-git-tag-version
@@ -45,12 +49,7 @@ jobs:
         run: yarn prepack
 
       - name: Publish
-        run: npm publish --tag ${{ steps.meta.outputs.branch }}
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Add SHA tag
-        run: npm dist-tag add @interline-io/tlv2-ui@${{ steps.meta.outputs.version }} sha-${{ steps.meta.outputs.short_sha }}
+        run: npm publish --tag ${{ steps.meta.outputs.tag }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
