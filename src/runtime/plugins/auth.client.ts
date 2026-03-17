@@ -2,9 +2,9 @@ import { navigateTo, useRuntimeConfig } from '#imports'
 import { defineNuxtPlugin, addRouteMiddleware } from 'nuxt/app'
 import { useStorage } from '@vueuse/core'
 import { gql } from 'graphql-tag'
-import { configureAuth0Client, getAuth0Client, getAuthorizeUrl, checkToken } from '../lib/auth0'
-import { useUser, clearUser, User } from '../auth'
-import { logAuthDebug } from '../lib/log'
+import { configureAuth0Client, getAuth0Client, getAuthorizeUrl, checkToken } from '../lib/auth/auth0'
+import { useUser, clearUser, User } from '../lib/auth'
+import { logAuthDebug } from '../lib/util/log'
 import { useApolloClient } from '@vue/apollo-composable'
 
 const RECHECK_INTERVAL = 600_000

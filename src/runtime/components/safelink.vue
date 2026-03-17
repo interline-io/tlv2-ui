@@ -18,7 +18,7 @@
 import { computed } from 'vue'
 import { useRuntimeConfig } from '#imports'
 import { useToastNotification } from '../composables/useToastNotification'
-import { sanitizeUrl } from '../lib/sanitize'
+import { sanitizeUrl } from '../lib/util/sanitize'
 
 // Props
 const props = withDefaults(defineProps<{

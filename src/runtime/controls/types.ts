@@ -4,6 +4,8 @@
  */
 
 // Core variants and sizes that most components support
+import type { InjectionKey } from 'vue'
+
 export const CoreVariants = ['primary', 'link', 'info', 'success', 'warning', 'danger'] as const
 export type CoreVariant = typeof CoreVariants[number]
 
@@ -95,7 +97,7 @@ export const DropdownTriggerVariants = [...CoreVariants, 'white', 'light', 'dark
 export type DropdownTriggerVariant = typeof DropdownTriggerVariants[number]
 
 // Msg extends core variants with dark
-export const MsgVariants = [...CoreVariants, 'dark'] as const
+export const MsgVariants = [...CoreVariants, 'dark', 'light'] as const
 export type MsgVariant = typeof MsgVariants[number]
 
 // Pagination uses core sizes and positions
@@ -128,3 +130,4 @@ export interface TagOptionBase<T extends string | number = string> {
  * @template T - The type of the value (string or number)
  */
 export type TagOption<T extends string | number = string> = TagOptionBase<T> & Record<string, unknown>
+export const FieldIdKey: InjectionKey<string> = Symbol('fieldId')

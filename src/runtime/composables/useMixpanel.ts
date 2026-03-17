@@ -1,6 +1,6 @@
 import { useRuntimeConfig } from '#imports'
-import { createMixpanel } from '../lib/mixpanel'
-import { useUser } from '../auth'
+import { createMixpanel } from '../lib/analytics/mixpanel'
+import { useUser } from '../lib/auth'
 
 // Composable for use in components
 export const useMixpanel = () => {

@@ -19,7 +19,7 @@
         </li>
       </ul>
     </div>
-    <div class="tab-content t-tab-content">
+    <div class="t-tab-content">
       <slot />
     </div>
   </div>
@@ -43,7 +43,7 @@ import { computed, provide, ref, watch, nextTick } from 'vue'
 
 import type { TabsSize, TabsPosition, TabsType } from './types'
 
-interface Props {
+const props = withDefaults(defineProps<{
   /** The active tab value (v-model) */
   modelValue?: T
   /** Position: 'left' (default), 'centered', 'right' */
@@ -54,9 +54,7 @@ interface Props {
   type?: TabsType
   /** Make tabs take full width */
   expanded?: boolean
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   modelValue: undefined,
   position: 'left',
   size: 'normal',
@@ -115,10 +113,7 @@ watch(() => props.modelValue, () => {
 </script>
 
 <style lang="scss">
-@use "bulma/sass/utilities/initial-variables" as *;
-@use "bulma/sass/utilities/derived-variables" as *;
-
-/* Override .content ul styles for tabs */
+/* Override .content ul styles for tabs - must be unscoped */
 .content .t-tabs ul {
   margin-left: 0;
   margin-inline-start: 0;

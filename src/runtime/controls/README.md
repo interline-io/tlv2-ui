@@ -2,6 +2,10 @@
 
 This directory contains **general-purpose UI controls** that are **domain-agnostic** and have **no application-specific dependencies**.
 
+## Documentation
+
+- [CSS Class Conventions](./README-CLASSES.md) - Guidelines for using Bulma classes vs. our `t-` prefixed classes
+
 ## Purpose
 
 Controls in this directory should be:

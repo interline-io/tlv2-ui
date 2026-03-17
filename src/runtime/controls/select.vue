@@ -1,10 +1,11 @@
 <template>
-  <div class="control t-control" :class="controlClasses">
+  <div class="control" :class="controlClasses">
     <div
       class="select t-select"
       :class="selectClasses"
     >
       <select
+        :id="fieldId"
         ref="selectRef"
         :value="modelValue"
         :disabled="disabled || readonly"
@@ -22,8 +23,11 @@
 </template>
 
 <script setup lang="ts" generic="T extends string | null | string[] = string | null">
-import { computed, ref, watch, onMounted, nextTick } from 'vue'
+import { computed, ref, watch, onMounted, nextTick, inject } from 'vue'
 import type { SelectVariant, SelectSize } from './types'
+import { FieldIdKey } from './types'
+
+const fieldId = inject(FieldIdKey, undefined)
 
 /**
  * Select dropdown component with Bulma styling.
@@ -37,68 +41,28 @@ import type { SelectVariant, SelectSize } from './types'
  * </t-select>
  */
 
-interface Props {
-  /**
-   * The selected value (v-model).
-   * For multiple select, use an array.
-   */
+const props = withDefaults(defineProps<{
+  /** The selected value (v-model). For multiple select, use an array. */
   modelValue?: T
-
-  /**
-   * Select size variant.
-   * @default undefined (normal size)
-   */
+  /** Select size variant. @default undefined (normal size) */
   size?: SelectSize
-
-  /**
-   * Select color variant.
-   */
+  /** Select color variant. */
   variant?: SelectVariant
-
-  /**
-   * Disable the select.
-   * @default false
-   */
+  /** Disable the select. @default false */
   disabled?: boolean
-
-  /**
-   * Make the select full width.
-   * @default false
-   */
+  /** Make the select full width. @default false */
   fullwidth?: boolean
-
-  /**
-   * Round the select corners.
-   * @default false
-   */
+  /** Round the select corners. @default false */
   rounded?: boolean
-
-  /**
-   * Show loading state.
-   * @default false
-   */
+  /** Show loading state. @default false */
   loading?: boolean
-
-  /**
-   * Make the select readonly (not editable).
-   * @default false
-   */
+  /** Make the select readonly (not editable). @default false */
   readonly?: boolean
-
-  /**
-   * MDI icon name for left icon (without mdi- prefix).
-   * @example 'magnify', 'account', 'calendar'
-   */
+  /** MDI icon name for left icon (without mdi- prefix). @example 'magnify', 'account', 'calendar' */
   icon?: string
-
-  /**
-   * Allow multiple selections.
-   * @default false
-   */
+  /** Allow multiple selections. @default false */
   multiple?: boolean
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   modelValue: undefined,
   size: undefined,
   variant: undefined,
@@ -210,9 +174,6 @@ function handleChange (event: Event) {
 </script>
 
 <style lang="scss" scoped>
-@use "bulma/sass/utilities/initial-variables" as *;
-@use "bulma/sass/utilities/derived-variables" as *;
-
 /* Make select expand to fill container by default, like input */
 .t-select {
   width: 100%;

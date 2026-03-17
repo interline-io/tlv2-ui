@@ -30,6 +30,7 @@ export interface BasemapLayer {
 export interface BasemapLayers {
   carto: BasemapLayer
   near: BasemapLayer
+  none: BasemapLayer
   [key: string]: BasemapLayer
 }
 
@@ -53,11 +54,14 @@ export function useBasemapLayers () {
 
   const basemapLayers = computed<BasemapLayers>(() => ({
     carto: {
-      label: 'Carto street map',
+      label: 'OpenStreetMap rendered by CARTO',
       source: {
         type: 'raster',
         tiles: [
-          'https://0.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{scale}.png'
+          'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+          'https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+          'https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+          'https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
         ],
         tileSize: 256,
         attribution: 'Transitland | Interline | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>'
@@ -69,7 +73,7 @@ export function useBasemapLayers () {
       }
     },
     near: {
-      label: 'Nearmap aerial imagery',
+      label: 'Aerial imagery from Nearmap',
       source: {
         type: 'raster',
         tiles: [
@@ -82,6 +86,29 @@ export function useBasemapLayers () {
         type: 'raster',
         minzoom: 17,
         maxzoom: 22,
+        layout: {
+          visibility: 'none'
+        }
+      }
+    },
+    none: {
+      label: 'No basemap',
+      source: {
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          geometry: {
+            type: 'Polygon',
+            coordinates: [[[-180, -90], [180, -90], [180, 90], [-180, 90], [-180, -90]]]
+          },
+          properties: {}
+        }
+      },
+      layer: {
+        type: 'fill',
+        paint: {
+          'fill-color': '#f5f5f5'
+        },
         layout: {
           visibility: 'none'
         }

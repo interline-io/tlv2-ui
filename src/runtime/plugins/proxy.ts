@@ -1,6 +1,6 @@
 import { useRuntimeConfig } from '#imports'
 import { defineEventHandler } from 'h3'
-import { proxyHandler } from '../lib/proxy'
+import { proxyHandler } from '../lib/util/proxy'
 
 export default defineEventHandler((event) => {
   // Pass event; see https://github.com/nuxt/nuxt/issues/25047

@@ -6,8 +6,8 @@
       :disabled="disabled"
       @change="handleChange"
     >
-    <span class="check t-check" />
-    <span v-if="$slots.default || label" class="control-label t-control-label">
+    <span class="check" />
+    <span v-if="$slots.default || label" class="control-label">
       <slot>{{ label }}</slot>
     </span>
   </label>
@@ -28,54 +28,24 @@ import type { SwitchVariant, SwitchSize } from './types'
  * <t-switch v-model="mode" true-value="dark" false-value="light">Dark Mode</t-switch>
  */
 
-interface Props {
-  /**
-   * Switch state (v-model).
-   * Type is inferred from trueValue/falseValue or the bound variable.
-   */
+const props = withDefaults(defineProps<{
+  /** Switch state (v-model). Type is inferred from trueValue/falseValue or the bound variable. */
   modelValue?: T
-
-  /**
-   * Value when switch is on.
-   * @default true
-   */
+  /** Value when switch is on. @default true */
   trueValue?: T
-
-  /**
-   * Value when switch is off.
-   * @default false
-   */
+  /** Value when switch is off. @default false */
   falseValue?: T
-
-  /**
-   * Disable switch interaction.
-   * @default false
-   */
+  /** Disable switch interaction. @default false */
   disabled?: boolean
-
-  /**
-   * Label text (alternative to using default slot).
-   */
+  /** Label text (alternative to using default slot). */
   label?: string
-
-  /**
-   * Switch size.
-   */
+  /** Switch size. */
   size?: SwitchSize
-
-  /**
-   * Color variant for the switch.
-   */
+  /** Color variant for the switch. */
   variant?: SwitchVariant
-
-  /**
-   * Use rounded style for the switch.
-   * @default false
-   */
+  /** Use rounded style for the switch. @default false */
   rounded?: boolean
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   modelValue: undefined,
   trueValue: undefined,
   falseValue: undefined,
@@ -131,9 +101,6 @@ function handleChange (event: Event) {
 </script>
 
 <style lang="scss" scoped>
-@use "bulma/sass/utilities/initial-variables" as *;
-@use "bulma/sass/utilities/derived-variables" as *;
-
 .t-switch {
   cursor: pointer;
   display: inline-flex;
@@ -153,91 +120,75 @@ function handleChange (event: Event) {
     z-index: -1;
   }
 
-  .t-check {
+  .check {
     display: flex;
     align-items: center;
     flex-shrink: 0;
     width: 2.75em;
     height: 1.575em;
     padding: 0.2em;
-    background: $grey;
-    border-radius: $radius-rounded;
+    background: var(--bulma-grey);
+    border-radius: var(--bulma-radius-rounded);
     transition: background 150ms ease-out;
     position: relative;
 
     &::before {
       content: "";
       display: block;
-      border-radius: $radius-rounded;
+      border-radius: var(--bulma-radius-rounded);
       width: 1.175em;
       height: 1.175em;
-      background: $white;
-      box-shadow: 0 3px 1px 0 rgba($black, 0.05), 0 2px 2px 0 rgba($black, 0.1), 0 3px 3px 0 rgba($black, 0.05);
+      background: var(--bulma-white);
+      box-shadow: 0 3px 1px 0 rgba(0, 0, 0, 0.05), 0 2px 2px 0 rgba(0, 0, 0, 0.1), 0 3px 3px 0 rgba(0, 0, 0, 0.05);
       transition: transform 150ms ease-out;
       will-change: transform;
     }
   }
 
-  input[type="checkbox"]:checked + .t-check {
-    background: $link;
+  input[type="checkbox"]:checked + .check {
+    background: var(--bulma-grey-dark);
 
     &::before {
       transform: translateX(1.175em);
     }
   }
 
-  .t-control-label {
+  .control-label {
     padding-left: 0.5em;
   }
 
   // Size variants
-  &.is-small {
-    font-size: $size-small;
-  }
-
-  &.is-medium {
-    font-size: $size-medium;
-  }
-
-  &.is-large {
-    font-size: $size-large;
+  @each $name, $var in (
+    "small": "--bulma-size-small",
+    "medium": "--bulma-size-medium",
+    "large": "--bulma-size-large"
+  ) {
+    &.is-#{$name} {
+      font-size: var(#{$var});
+    }
   }
 
   // Color variants
-  &.is-primary input[type="checkbox"]:checked + .t-check {
-    background: $primary;
-  }
-
-  &.is-link input[type="checkbox"]:checked + .t-check {
-    background: $link;
-  }
-
-  &.is-info input[type="checkbox"]:checked + .t-check {
-    background: $info;
-  }
-
-  &.is-success input[type="checkbox"]:checked + .t-check {
-    background: $success;
-  }
-
-  &.is-warning input[type="checkbox"]:checked + .t-check {
-    background: $warning;
-  }
-
-  &.is-danger input[type="checkbox"]:checked + .t-check {
-    background: $danger;
-  }
-
-  &.is-dark input[type="checkbox"]:checked + .t-check {
-    background: $dark;
+  @each $name, $var in (
+    "primary": "--bulma-primary",
+    "link": "--bulma-link",
+    "info": "--bulma-info",
+    "success": "--bulma-success",
+    "warning": "--bulma-warning",
+    "danger": "--bulma-danger",
+    "dark": "--bulma-dark"
+  ) {
+    &.is-#{$name} input[type="checkbox"]:checked + .check {
+      background: var(#{$var});
+    }
   }
 
   // Rounded switch style
-  &.is-rounded .t-check {
-    border-radius: $radius;
+  &.is-rounded .check {
+    border-radius: var(--bulma-radius);
 
     &::before {
-      border-radius: $radius-small;
+      border-radius: var(--bulma-radius-small);
     }
   }
 }

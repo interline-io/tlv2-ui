@@ -3,7 +3,7 @@
     <div style="display: none;">
       <slot name="columns" />
     </div>
-    <table class="table" :class="tableClasses">
+    <table class="table t-table" :class="tableClasses">
       <thead v-if="hasHeader">
         <tr>
           <slot name="header" :columns="columns" :sort="handleSort">
@@ -201,21 +201,23 @@ provide('registerColumn', registerColumn)
 @use "bulma/sass/utilities/initial-variables" as *;
 @use "bulma/sass/utilities/derived-variables" as *;
 
-th.is-sortable {
-  cursor: pointer;
-  user-select: none;
+.t-table {
+  th.is-sortable {
+    cursor: pointer;
+    user-select: none;
 
-  &:hover {
-    background-color: $white-bis;
+    &:hover {
+      background-color: $white-bis;
+    }
   }
-}
 
-.t-sort-icon {
-  margin-left: 0.25rem;
+  .t-sort-icon {
+    margin-left: 0.25rem;
 
-  .mdi {
-    font-size: $size-normal;
-    vertical-align: middle;
+    .mdi {
+      font-size: $size-normal;
+      vertical-align: middle;
+    }
   }
 }
 </style>

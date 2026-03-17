@@ -8,18 +8,14 @@
       v-bind="$attrs"
       @click="handleClick"
     >
-      <span v-if="loading" class="icon">
+      <span v-if="loading" class="icon is-small">
         <i class="mdi mdi-loading mdi-spin" />
       </span>
-      <span v-if="iconLeft && !loading" class="icon is-small">
-        <t-icon :icon="iconLeft" />
-      </span>
+      <t-icon v-if="iconLeft && !loading" :icon="iconLeft" :size="iconSize" />
       <span v-if="$slots.default || label">
         <slot>{{ label }}</slot>
       </span>
-      <span v-if="iconRight && !loading" class="icon is-small">
-        <t-icon :icon="iconRight" />
-      </span>
+      <t-icon v-if="iconRight && !loading" :icon="iconRight" :size="iconSize" />
     </button>
   </div>
 </template>
@@ -80,6 +76,7 @@ interface Props {
 
   /**
    * Use outlined button style.
+   * When true without a variant, defaults to 'dark' variant for a neutral black outline.
    * @default false
    */
   outlined?: boolean
@@ -144,8 +141,11 @@ const props = withDefaults(defineProps<Props>(), {
 const buttonClasses = computed(() => {
   const classes: string[] = []
 
-  if (props.variant) {
-    classes.push(`is-${props.variant}`)
+  // If outlined is used without a variant, default to 'dark' to avoid white-on-white in Bulma 1.x
+  const effectiveVariant = props.variant || (props.outlined ? 'dark' : undefined)
+
+  if (effectiveVariant) {
+    classes.push(`is-${effectiveVariant}`)
   }
 
   if (props.size) {
@@ -173,5 +173,21 @@ const buttonClasses = computed(() => {
   }
 
   return classes
+})
+
+// Map button size to appropriate icon size
+// Following Bulma's icon-in-button patterns
+const iconSize = computed((): 'small' | 'medium' | 'large' | undefined => {
+  // For small/normal buttons, use small icons
+  // For medium buttons, use default (undefined) icons
+  // For large buttons, use medium icons
+  if (props.size === 'large') {
+    return 'medium'
+  }
+  if (props.size === 'medium') {
+    return undefined // default size
+  }
+  // small or normal button -> small icon
+  return 'small'
 })
 </script>

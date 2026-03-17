@@ -118,7 +118,7 @@
 </template>
 
 <script setup lang="ts" generic="T extends string | number = string">
-import { computed, ref, watch, useSlots } from 'vue'
+import { computed, ref, watch, useSlots, useId } from 'vue'
 import type { TaginputVariant, TaginputSize, TagOption as TagOptionBase } from './types'
 
 /**
@@ -141,91 +141,36 @@ defineOptions({
  */
 type TagOption = TagOptionBase<T>
 
-interface Props {
-  /**
-   * Array of options to choose from.
-   * @default []
-   */
+const props = withDefaults(defineProps<{
+  /** Array of options to choose from. @default [] */
   options?: TagOption[]
-
-  /**
-   * Placeholder text for the input.
-   */
+  /** Placeholder text for the input. */
   placeholder?: string
-
-  /**
-   * MDI icon name for left icon (without mdi- prefix).
-   * @example 'magnify', 'tag', 'account'
-   */
+  /** MDI icon name for left icon (without mdi- prefix). @example 'magnify', 'tag', 'account' */
   icon?: string
-
-  /**
-   * Open dropdown when input is focused.
-   * @default false
-   */
+  /** Open dropdown when input is focused. @default false */
   openOnFocus?: boolean
-
-  /**
-   * Disable the input and prevent interaction.
-   * @default false
-   */
+  /** Disable the input and prevent interaction. @default false */
   disabled?: boolean
-
-  /**
-   * Make the input readonly (can view but not modify).
-   * @default false
-   */
+  /** Make the input readonly (can view but not modify). @default false */
   readonly?: boolean
-
-  /**
-   * Make the component take full width.
-   * @default false
-   */
+  /** Make the component take full width. @default false */
   fullwidth?: boolean
-
-  /**
-   * Show loading state.
-   * @default false
-   */
+  /** Show loading state. @default false */
   loading?: boolean
-
-  /**
-   * Color variant for the tags.
-   * @default 'info'
-   */
+  /** Color variant for the tags. */
   variant?: TaginputVariant
-
-  /**
-   * Size of the input and tags.
-   */
+  /** Size of the input and tags. */
   size?: TaginputSize
-
-  /**
-   * Allow removing tags by clicking the delete button.
-   * @default true
-   */
+  /** Allow removing tags by clicking the delete button. @default true */
   closable?: boolean
-
-  /**
-   * Use rounded style for tags and input.
-   * @default false
-   */
+  /** Use rounded style for tags and input. @default false */
   rounded?: boolean
-
-  /**
-   * Text to display when no tags are selected.
-   * @default 'None selected'
-   */
+  /** Text to display when no tags are selected. @default 'None selected' */
   emptyText?: string
-
-  /**
-   * Maximum number of tags that can be selected.
-   * When undefined, there is no limit.
-   */
+  /** Maximum number of tags that can be selected. When undefined, there is no limit. */
   maxTags?: number
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   options: () => [],
   placeholder: '',
   icon: undefined,
@@ -234,7 +179,7 @@ const props = withDefaults(defineProps<Props>(), {
   readonly: false,
   fullwidth: false,
   loading: false,
-  variant: 'info',
+  variant: undefined,
   size: undefined,
   closable: true,
   rounded: false,
@@ -260,8 +205,7 @@ const inputRef = ref<HTMLInputElement | null>(null)
 const isOpen = ref(false)
 const highlightedIndex = ref(-1)
 
-// Unique ID for ARIA attributes
-const componentId = `taginput-${Math.random().toString(36).substring(2, 9)}`
+const componentId = useId()
 const listboxId = `${componentId}-listbox`
 const counterId = `${componentId}-counter`
 
@@ -474,89 +418,89 @@ defineExpose({
     opacity: 0.5;
     pointer-events: none;
   }
-}
 
-.t-taginput-input-wrapper {
-  position: relative;
-}
-
-.t-taginput-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
-  min-height: 2em; // Reserve space for tags
-  align-items: center;
-
-  // Reset Bulma's default margin on .tags
-  .tags {
-    margin-bottom: 0;
+  .t-taginput-input-wrapper {
+    position: relative;
   }
 
-  // Reduce left padding on label tag when following delete button
-  .tag.is-delete + .tag {
-    padding-left: 0.5em;
-  }
-}
+  .t-taginput-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    min-height: 2em; // Reserve space for tags
+    align-items: center;
 
-.t-taginput-placeholder {
-  color: var(--bulma-text-weak);
-  font-style: italic;
-  line-height: 2em; // Match tag height
-}
+    // Reset Bulma's default margin on .tags
+    .tags {
+      margin-bottom: 0;
+    }
 
-.t-taginput-counter {
-  margin-left: auto;
-  font-size: 0.875rem;
-  color: var(--bulma-text-weak);
-
-  &.is-max {
-    color: var(--bulma-danger);
-    font-weight: 600;
-  }
-}
-
-.t-taginput-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  z-index: 20;
-  max-height: 300px;
-  overflow-y: auto;
-  background: var(--bulma-scheme-main);
-  border: 1px solid var(--bulma-border);
-  border-radius: var(--bulma-radius);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.t-taginput-dropdown-header {
-  padding: 0.5rem 0.75rem;
-  background: var(--bulma-scheme-main-bis);
-  border-bottom: 1px solid var(--bulma-border);
-}
-
-.t-taginput-dropdown-content {
-  padding: 0.25rem 0;
-}
-
-.t-taginput-dropdown-item {
-  display: block;
-  padding: 0.5rem 0.75rem;
-  color: var(--bulma-text);
-  cursor: pointer;
-
-  &:hover,
-  &.is-active {
-    background: var(--bulma-scheme-main-ter);
+    // Reduce left padding on label tag when following delete button
+    .tag.is-delete + .tag {
+      padding-left: 0.5em;
+    }
   }
 
-  &.is-empty {
+  .t-taginput-placeholder {
     color: var(--bulma-text-weak);
-    cursor: default;
+    font-style: italic;
+    line-height: 2em; // Match tag height
+  }
 
-    &:hover {
-      background: transparent;
+  .t-taginput-counter {
+    margin-left: auto;
+    font-size: 0.875rem;
+    color: var(--bulma-text-weak);
+
+    &.is-max {
+      color: var(--bulma-danger);
+      font-weight: 600;
+    }
+  }
+
+  .t-taginput-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    max-height: 300px;
+    overflow-y: auto;
+    background: var(--bulma-scheme-main);
+    border: 1px solid var(--bulma-border);
+    border-radius: var(--bulma-radius);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .t-taginput-dropdown-header {
+    padding: 0.5rem 0.75rem;
+    background: var(--bulma-scheme-main-bis);
+    border-bottom: 1px solid var(--bulma-border);
+  }
+
+  .t-taginput-dropdown-content {
+    padding: 0.25rem 0;
+  }
+
+  .t-taginput-dropdown-item {
+    display: block;
+    padding: 0.5rem 0.75rem;
+    color: var(--bulma-text);
+    cursor: pointer;
+
+    &:hover,
+    &.is-active {
+      background: var(--bulma-scheme-main-ter);
+    }
+
+    &.is-empty {
+      color: var(--bulma-text-weak);
+      cursor: default;
+
+      &:hover {
+        background: transparent;
+      }
     }
   }
 }

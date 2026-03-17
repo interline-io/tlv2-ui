@@ -17,6 +17,7 @@ export const navigationGroups: NavGroup[] = [
     items: [
       { name: 'Button', path: '/controls/button', icon: 'gesture-tap' },
       { name: 'Checkbox', path: '/controls/checkbox', icon: 'checkbox-marked' },
+      { name: 'Checkbox Group', path: '/controls/checkbox-group', icon: 'checkbox-multiple-marked' },
       { name: 'Radio', path: '/controls/radio', icon: 'radiobox-marked' },
       { name: 'Switch', path: '/controls/switch', icon: 'toggle-switch' },
       { name: 'Input', path: '/controls/input', icon: 'form-textbox' },

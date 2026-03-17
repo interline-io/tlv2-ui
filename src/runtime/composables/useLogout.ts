@@ -1,7 +1,7 @@
 import { navigateTo, useRuntimeConfig } from '#imports'
-import { getLogoutUrl } from '../lib/auth0'
-import { logAuthDebug } from '../lib/log'
-import { createMixpanel } from '../lib/mixpanel'
+import { getLogoutUrl } from '../lib/auth/auth0'
+import { logAuthDebug } from '../lib/util/log'
+import { createMixpanel } from '../lib/analytics/mixpanel'
 import { useUser } from './useUser'
 
 // Logout

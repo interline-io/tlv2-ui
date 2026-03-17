@@ -29,7 +29,7 @@
         <header class="t-datepicker-header">
           <button
             type="button"
-            class="button is-small t-button"
+            class="button is-small"
             :aria-label="ariaPreviousLabel"
             @click="previousMonth"
           >
@@ -68,7 +68,7 @@
 
           <button
             type="button"
-            class="button is-small t-button"
+            class="button is-small"
             :aria-label="ariaNextLabel"
             @click="nextMonth"
           >
@@ -112,18 +112,31 @@
   </div>
 </template>
 
-<script setup lang="ts" generic="T extends Date | Date[] = Date">
+<script setup lang="ts" generic="T extends Date | Date[] = Date, S extends string | string[] = string">
 import { ref, computed, watch } from 'vue'
 import type { InputSize, InputVariant } from './types'
+import { format as formatDate, parse, isValid, isSameDay } from 'date-fns'
+
+const DATE_FORMAT = 'yyyy-MM-dd'
+
+function parseDate (dateString: string): Date | null {
+  if (!dateString) return null
+  const date = parse(dateString, DATE_FORMAT, new Date())
+  return isValid(date) ? date : null
+}
 
 /**
  * Datepicker component with calendar dropdown for date selection.
- * Similar in concept to Oruga Datepicker with customizable calendar interface.
+ * Supports two model bindings:
+ * - `v-model` for Date / Date[] values
+ * - `v-model:date-string` for YYYY-MM-DD string / string[] values
  *
  * @component t-datepicker
  * @example
  * <t-datepicker v-model="selectedDate" placeholder="Select date" />
+ * <t-datepicker v-model:date-string="dateStr" placeholder="Select date" />
  * <t-datepicker v-model="dateRange" multiple placeholder="Select dates" />
+ * <t-datepicker v-model:date-string="dateStrs" multiple placeholder="Select dates" />
  */
 
 interface CalendarDay {
@@ -134,179 +147,72 @@ interface CalendarDay {
   selectable: boolean
 }
 
-interface Props {
-  /**
-   * Selected date(s) - use with v-model.
-   * Date for single selection, Date[] for multiple selection.
-   */
+const props = withDefaults(defineProps<{
+  /** Selected date(s) - use with v-model. Date for single, Date[] for multiple. */
   modelValue?: T
-
-  /**
-   * Allow multiple date selections.
-   * @default false
-   */
+  /** Selected date(s) as YYYY-MM-DD string(s) - use with v-model:date-string. */
+  dateString?: S
+  /** Allow multiple date selections. @default false */
   multiple?: boolean
-
-  /**
-   * Input placeholder text.
-   */
+  /** Input placeholder text. */
   placeholder?: string
-
-  /**
-   * Input size variant.
-   */
+  /** Input size variant. */
   size?: InputSize
-
-  /**
-   * Input color variant.
-   */
+  /** Input color variant. */
   variant?: InputVariant
-
-  /**
-   * Disable the datepicker.
-   * @default false
-   */
+  /** Disable the datepicker. @default false */
   disabled?: boolean
-
-  /**
-   * Make input readonly (calendar still accessible).
-   * @default false
-   */
+  /** Make input readonly (calendar still accessible). @default false */
   readonly?: boolean
-
-  /**
-   * Use rounded input style.
-   * @default false
-   */
+  /** Use rounded input style. @default false */
   rounded?: boolean
-
-  /**
-   * Minimum selectable date.
-   */
+  /** Minimum selectable date. */
   minDate?: Date
-
-  /**
-   * Maximum selectable date.
-   */
+  /** Maximum selectable date. */
   maxDate?: Date
-
-  /**
-   * List of dates that cannot be selected.
-   */
+  /** List of dates that cannot be selected. */
   unselectableDates?: Date[]
-
-  /**
-   * List of dates that can be selected (whitelist).
-   */
+  /** List of dates that can be selected (whitelist). */
   selectableDates?: Date[]
-
-  /**
-   * Days of week that cannot be selected (0-6, Sunday-Saturday).
-   */
+  /** Days of week that cannot be selected (0-6, Sunday-Saturday). */
   unselectableDaysOfWeek?: number[]
-
-  /**
-   * Custom month names.
-   */
+  /** Custom month names. */
   monthNames?: string[]
-
-  /**
-   * Custom day names (short).
-   */
+  /** Custom day names (short). */
   dayNames?: string[]
-
-  /**
-   * First day of week (0-6, Sunday-Saturday).
-   * @default 0
-   */
+  /** First day of week (0-6, Sunday-Saturday). @default 0 */
   firstDayOfWeek?: number
-
-  /**
-   * Left icon (MDI icon name without 'mdi-' prefix).
-   * @default 'calendar'
-   */
+  /** Left icon (MDI icon name without 'mdi-' prefix). @default 'calendar' */
   icon?: string
-
-  /**
-   * Right icon (MDI icon name without 'mdi-' prefix).
-   */
+  /** Right icon (MDI icon name without 'mdi-' prefix). */
   iconRight?: string
-
-  /**
-   * Make right icon clickable.
-   * @default false
-   */
+  /** Make right icon clickable. @default false */
   iconRightClickable?: boolean
-
-  /**
-   * Previous month icon.
-   * @default 'chevron-left'
-   */
+  /** Previous month icon. @default 'chevron-left' */
   iconPrev?: string
-
-  /**
-   * Next month icon.
-   * @default 'chevron-right'
-   */
+  /** Next month icon. @default 'chevron-right' */
   iconNext?: string
-
-  /**
-   * Position of the dropdown.
-   * @default 'bottom-left'
-   */
+  /** Position of the dropdown. @default 'bottom-left' */
   position?: 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right'
-
-  /**
-   * Date format for display.
-   * @default 'yyyy-MM-dd'
-   */
+  /** Date format for display. @default 'yyyy-MM-dd' */
   dateFormat?: string
-
-  /**
-   * Years range for year select [before, after].
-   * @default [-100, 10]
-   */
+  /** Years range for year select [before, after]. @default [-100, 10] */
   yearsRange?: [number, number]
-
-  /**
-   * Open dropdown on input focus.
-   * @default true
-   */
+  /** Open dropdown on input focus. @default true */
   openOnFocus?: boolean
-
-  /**
-   * Close dropdown on date selection.
-   * @default true
-   */
+  /** Close dropdown on date selection. @default true */
   closeOnSelect?: boolean
-
-  /**
-   * Accessibility label for previous button.
-   * @default 'Previous month'
-   */
+  /** Accessibility label for previous button. @default 'Previous month' */
   ariaPreviousLabel?: string
-
-  /**
-   * Accessibility label for next button.
-   * @default 'Next month'
-   */
+  /** Accessibility label for next button. @default 'Next month' */
   ariaNextLabel?: string
-
-  /**
-   * Accessibility label for month select.
-   * @default 'Select month'
-   */
+  /** Accessibility label for month select. @default 'Select month' */
   ariaSelectMonthLabel?: string
-
-  /**
-   * Accessibility label for year select.
-   * @default 'Select year'
-   */
+  /** Accessibility label for year select. @default 'Select year' */
   ariaSelectYearLabel?: string
-}
-
-const props = withDefaults(defineProps<Props>(), {
+}>(), {
   modelValue: undefined,
+  dateString: undefined,
   multiple: false,
   placeholder: undefined,
   size: undefined,
@@ -340,6 +246,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   'update:modelValue': [value: T]
+  'update:dateString': [value: S]
   'focus': [event: FocusEvent]
   'blur': [event: FocusEvent]
   'icon-right-click': [event: MouseEvent]
@@ -360,6 +267,23 @@ const focusedYear = ref(today.getFullYear())
 watch(focusedMonth, newMonth => emit('change-month', newMonth))
 watch(focusedYear, newYear => emit('change-year', newYear))
 
+// Resolve active dates from whichever model is bound.
+// Internally the component always works with Date objects.
+// Prefers dateString when both are provided.
+const activeDates = computed((): Date[] => {
+  if (props.dateString != null) {
+    const ds = props.dateString
+    if (Array.isArray(ds)) {
+      return ds.map(s => parseDate(s)).filter((d): d is Date => d != null)
+    }
+    const parsed = parseDate(ds)
+    return parsed ? [parsed] : []
+  }
+  if (props.modelValue == null) return []
+  if (Array.isArray(props.modelValue)) return props.modelValue as Date[]
+  return [props.modelValue as Date]
+})
+
 const availableYears = computed(() => {
   const currentYear = new Date().getFullYear()
   const [before, after] = props.yearsRange
@@ -371,13 +295,7 @@ const availableYears = computed(() => {
 })
 
 const formattedValue = computed(() => {
-  if (!props.modelValue) return ''
-
-  if (Array.isArray(props.modelValue)) {
-    return props.modelValue.map(d => formatDate(d)).join(', ')
-  }
-
-  return formatDate(props.modelValue as Date)
+  return activeDates.value.map(d => formatDate(d, DATE_FORMAT)).join(', ')
 })
 
 const calendarDays = computed(() => {
@@ -433,34 +351,8 @@ const calendarDays = computed(() => {
   return days
 })
 
-function formatDate (date: Date): string {
-  // Simple format implementation - can be enhanced
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
-}
-
-function parseDate (dateString: string): Date | null {
-  if (!dateString) return null
-  const date = new Date(dateString)
-  return Number.isNaN(date.getTime()) ? null : date
-}
-
-function isSameDay (date1: Date, date2: Date): boolean {
-  return date1.getFullYear() === date2.getFullYear()
-    && date1.getMonth() === date2.getMonth()
-    && date1.getDate() === date2.getDate()
-}
-
 function isDateSelected (date: Date): boolean {
-  if (!props.modelValue) return false
-
-  if (Array.isArray(props.modelValue)) {
-    return props.modelValue.some(d => isSameDay(d, date))
-  }
-
-  return isSameDay(props.modelValue as Date, date)
+  return activeDates.value.some(d => isSameDay(d, date))
 }
 
 function isDateSelectable (date: Date): boolean {
@@ -489,23 +381,30 @@ function getDayClasses (day: CalendarDay) {
   }
 }
 
+function emitDate (date: Date) {
+  emit('update:modelValue', date as T)
+  emit('update:dateString', formatDate(date, DATE_FORMAT) as S)
+}
+
+function emitDates (dates: Date[]) {
+  emit('update:modelValue', dates as T)
+  emit('update:dateString', dates.map(d => formatDate(d, DATE_FORMAT)) as S)
+}
+
 function selectDate (date: Date) {
   if (!isDateSelectable(date)) return
 
   if (props.multiple) {
-    const currentDates = Array.isArray(props.modelValue) ? [...props.modelValue] : []
-    const index = currentDates.findIndex(d => isSameDay(d, date))
-
+    const current = [...activeDates.value]
+    const index = current.findIndex(d => isSameDay(d, date))
     if (index >= 0) {
-      currentDates.splice(index, 1)
+      current.splice(index, 1)
     } else {
-      currentDates.push(date)
+      current.push(date)
     }
-
-    emit('update:modelValue', currentDates as T)
+    emitDates(current)
   } else {
-    emit('update:modelValue', date as T)
-
+    emitDate(date)
     if (props.closeOnSelect) {
       close()
     }
@@ -515,7 +414,11 @@ function selectDate (date: Date) {
 function handleInputChange (value: string) {
   const date = parseDate(value)
   if (date && isDateSelectable(date)) {
-    emit('update:modelValue', date as T)
+    if (props.multiple) {
+      selectDate(date)
+    } else {
+      emitDate(date)
+    }
     focusedMonth.value = date.getMonth()
     focusedYear.value = date.getFullYear()
   }
@@ -543,14 +446,12 @@ function close () {
   isActive.value = false
 }
 
-// Initialize focused date from modelValue
-watch(() => props.modelValue, (newValue) => {
-  if (newValue) {
-    const date = Array.isArray(newValue) ? newValue[0] : newValue as Date
-    if (date) {
-      focusedMonth.value = date.getMonth()
-      focusedYear.value = date.getFullYear()
-    }
+// Initialize focused date from the active selection
+watch(activeDates, (dates) => {
+  const date = dates[0]
+  if (date) {
+    focusedMonth.value = date.getMonth()
+    focusedYear.value = date.getFullYear()
   }
 }, { immediate: true })
 
@@ -558,10 +459,6 @@ defineExpose({ close, focus: () => inputRef.value?.focus() })
 </script>
 
 <style lang="scss" scoped>
-@use "sass:color";
-@use "bulma/sass/utilities/initial-variables" as *;
-@use "bulma/sass/utilities/derived-variables" as *;
-
 .t-datepicker-calendar {
   min-width: 320px;
   padding: 1rem;
@@ -590,9 +487,9 @@ defineExpose({ close, focus: () => inputRef.value?.focus() })
 
 .t-datepicker-weekday {
   text-align: center;
-  font-size: $size-small;
+  font-size: var(--bulma-size-small);
   font-weight: 600;
-  color: $grey;
+  color: var(--bulma-grey);
   padding: 0.5rem 0;
 }
 
@@ -604,11 +501,11 @@ defineExpose({ close, focus: () => inputRef.value?.focus() })
 
 .t-datepicker-day {
   aspect-ratio: 1;
-  border: 1px solid $grey-lighter;
-  border-radius: $radius;
-  background: $white;
-  color: $text;
-  font-size: $size-normal;
+  border: 1px solid var(--bulma-grey-lighter);
+  border-radius: var(--bulma-radius);
+  background: var(--bulma-white);
+  color: var(--bulma-text);
+  font-size: var(--bulma-size-normal);
   cursor: pointer;
   transition: all 0.15s ease;
   display: flex;
@@ -616,38 +513,38 @@ defineExpose({ close, focus: () => inputRef.value?.focus() })
   justify-content: center;
 
   &:hover:not(:disabled) {
-    background: $grey-lighter;
-    border-color: $grey-light;
+    background: var(--bulma-grey-lighter);
+    border-color: var(--bulma-grey-light);
   }
 
   &.is-today {
-    border-color: $primary;
+    border-color: var(--bulma-primary);
     font-weight: 600;
   }
 
   &.is-selected {
-    background: $primary;
-    color: $white;
-    border-color: $primary;
+    background: var(--bulma-primary);
+    color: var(--bulma-white);
+    border-color: var(--bulma-primary);
 
     &:hover {
-      background: color.adjust($primary, $lightness: -5%);
+      filter: brightness(0.95);
     }
   }
 
   &.is-other-month {
-    color: $grey-light;
+    color: var(--bulma-grey-light);
   }
 
   &.is-unselectable,
   &:disabled {
-    color: $grey-lighter;
+    color: var(--bulma-grey-lighter);
     cursor: not-allowed;
     opacity: 0.5;
 
     &:hover {
-      background: $white;
-      border-color: $grey-lighter;
+      background: var(--bulma-white);
+      border-color: var(--bulma-grey-lighter);
     }
   }
 }
@@ -655,6 +552,6 @@ defineExpose({ close, focus: () => inputRef.value?.focus() })
 .t-datepicker-footer {
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid $grey-lighter;
+  border-top: 1px solid var(--bulma-grey-lighter);
 }
 </style>

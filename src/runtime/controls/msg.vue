@@ -1,16 +1,16 @@
 <template>
   <article :class="msgClass">
     <div
-      v-if="title || collapsible || closable"
-      class="message-header t-message-header"
-      :class="{ 'is-clickable': collapsible }"
-      @click="collapsible && toggleCollapsed()"
+      v-if="title || expandable || closable"
+      class="message-header"
+      :class="{ 'is-clickable': expandable }"
+      @click="expandable && toggle()"
     >
       <span>{{ title || defaultTitle }}</span>
       <t-icon
-        v-if="collapsible"
-        :icon="isCollapsed ? 'chevron-down' : 'chevron-up'"
-        class="t-collapse-icon"
+        v-if="expandable"
+        :icon="isOpen ? 'chevron-up' : 'chevron-down'"
+        class="t-expand-icon"
       />
       <button
         v-if="closable"
@@ -20,19 +20,19 @@
       />
     </div>
     <div
-      v-if="!collapsible || !isCollapsed"
-      :class="collapsible ? 't-collapsible-content' : ''"
+      v-if="!expandable || isOpen"
+      :class="expandable ? 't-expandable-content' : ''"
     >
       <template v-if="hasIcon">
-        <div class="media message-body t-message-body">
-          <t-icon :icon="getIcon" size="large" class="media-left" />
+        <div class="media message-body">
+          <t-icon :icon="getIcon" :size="iconSize" class="media-left" />
           <div class="media-content">
             <slot />
           </div>
         </div>
       </template>
       <template v-else>
-        <div class="message-body t-message-body">
+        <div class="message-body">
           <slot />
         </div>
       </template>
@@ -53,29 +53,31 @@ const props = withDefaults(defineProps<{
   title?: string | null
   icon?: string | null
   showIcon?: boolean
-  collapsible?: boolean
-  collapsed?: boolean
+  iconSize?: 'small' | 'medium' | 'large'
+  expandable?: boolean
+  open?: boolean
   closable?: boolean
   defaultTitle?: string
 }>(), {
-  variant: 'info',
+  variant: 'light',
   title: null,
   icon: null,
   showIcon: false,
-  collapsible: false,
-  collapsed: false,
+  iconSize: 'large',
+  expandable: false,
+  open: false,
   closable: false,
   defaultTitle: 'Information'
 })
 
 // Emits
 const emit = defineEmits<{
-  toggle: [isCollapsed: boolean]
-  close: []
+  'update:open': [value: boolean]
+  'close': []
 }>()
 
 // Reactive state
-const isCollapsed = ref<boolean>(props.collapsed)
+const isOpen = ref<boolean>(props.open)
 
 // Computed properties
 const getIcon = computed<string>(() => {
@@ -101,14 +103,14 @@ const msgClass = computed<string>(() => {
 })
 
 // Watchers
-watch(() => props.collapsed, (newVal: boolean) => {
-  isCollapsed.value = newVal
+watch(() => props.open, (newVal: boolean) => {
+  isOpen.value = newVal
 }, { immediate: true })
 
 // Methods
-const toggleCollapsed = (): void => {
-  isCollapsed.value = !isCollapsed.value
-  emit('toggle', isCollapsed.value)
+const toggle = (): void => {
+  isOpen.value = !isOpen.value
+  emit('update:open', isOpen.value)
 }
 
 const handleClose = (): void => {
@@ -116,28 +118,29 @@ const handleClose = (): void => {
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped lang="scss">
 @use "bulma/sass/utilities/initial-variables" as *;
 @use "bulma/sass/utilities/derived-variables" as *;
 
-/* Collapsible styles */
-.t-message-header.is-clickable {
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  transition: background-color 0.2s ease;
+.t-message {
+  .message-header.is-clickable {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background-color 0.2s ease;
 
-  &:hover {
-    opacity: 0.8;
+    &:hover {
+      opacity: 0.8;
+    }
   }
-}
 
-.t-collapse-icon {
-  transition: transform 0.2s ease;
-}
+  .t-expand-icon {
+    transition: transform 0.2s ease;
+  }
 
-.t-collapsible-content {
-  transition: all 0.2s ease;
+  .t-expandable-content {
+    transition: all 0.2s ease;
+  }
 }
 </style>

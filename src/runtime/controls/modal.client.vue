@@ -136,7 +136,7 @@ onBeforeUnmount(() => {
 })
 </script>
 
-<style lang="scss" scoped>
+<style scoped lang="scss">
 @use "bulma/sass/utilities/initial-variables" as *;
 @use "bulma/sass/utilities/derived-variables" as *;
 

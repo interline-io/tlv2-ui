@@ -1,23 +1,26 @@
 <template>
-  <div class="card t-card">
+  <div class="card t-card" :class="{ 't-card--panel': variant === 'panel' }">
     <header
-      v-if="label || $slots.header"
+      v-if="label || $slots.header || $slots.actions"
       class="card-header"
-      :class="{ 'is-clickable': collapsible }"
-      :role="collapsible ? 'button' : undefined"
-      :aria-expanded="collapsible ? isOpen : undefined"
-      :tabindex="collapsible ? 0 : undefined"
-      @click="collapsible && toggle()"
-      @keydown.enter="collapsible && toggle()"
-      @keydown.space.prevent="collapsible && toggle()"
+      :class="{ 'is-clickable': expandable }"
+      :role="expandable ? 'button' : undefined"
+      :aria-expanded="expandable ? isOpen : undefined"
+      :tabindex="expandable ? 0 : undefined"
+      @click="expandable && toggle()"
+      @keydown.enter="expandable && toggle()"
+      @keydown.space.prevent="expandable && toggle()"
     >
       <slot name="header">
         <p v-if="label" class="card-header-title">
           {{ label }}
         </p>
       </slot>
+      <div v-if="$slots.actions" class="card-header-actions" @click.stop>
+        <slot name="actions" />
+      </div>
       <button
-        v-if="collapsible"
+        v-if="expandable"
         type="button"
         class="card-header-icon"
         :aria-label="isOpen ? 'Collapse' : 'Expand'"
@@ -25,13 +28,13 @@
       >
         <t-icon
           :icon="icon"
-          class="t-collapse-icon"
+          class="t-expand-icon"
           :class="{ 'is-rotated': !isOpen }"
         />
       </button>
     </header>
-    <Transition name="t-collapse">
-      <div v-show="!collapsible || isOpen">
+    <Transition name="t-expand">
+      <div v-show="!expandable || isOpen">
         <div class="card-content">
           <slot />
         </div>
@@ -54,8 +57,8 @@ import { ref, watch, computed } from 'vue'
  * @see https://bulma.io/documentation/components/card/
  * @example
  * <t-card label="Settings">Content</t-card>
- * <t-card label="Details" collapsible>Collapsible content</t-card>
- * <t-card label="Advanced" collapsible v-model:open="isOpen">Controlled</t-card>
+ * <t-card label="Details" expandable>Expandable content</t-card>
+ * <t-card label="Advanced" expandable v-model:open="isOpen">Controlled</t-card>
  */
 
 interface Props {
@@ -66,16 +69,22 @@ interface Props {
   label?: string
 
   /**
-   * Enable collapse functionality.
+   * Enable expand/collapse functionality.
    * @default false
    */
-  collapsible?: boolean
+  expandable?: boolean
 
   /**
    * Control the open/closed state (v-model:open).
-   * @default true
+   * @default false
    */
   open?: boolean
+
+  /**
+   * Visual variant for the card.
+   * 'panel' gives a dark header matching Bulma's panel-heading style.
+   */
+  variant?: 'panel'
 
   /**
    * Icon for the collapse indicator.
@@ -86,8 +95,9 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   label: undefined,
-  collapsible: false,
-  open: true,
+  variant: undefined,
+  expandable: false,
+  open: false,
   icon: 'chevron-down'
 })
 
@@ -123,36 +133,55 @@ function toggle () {
     }
   }
 
+  .card-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-right: 0.75rem;
+    margin-left: auto;
+  }
+
   .card-header-icon {
     border: none;
     background: transparent;
     cursor: pointer;
   }
 
-  .t-collapse-icon {
+  .t-expand-icon {
     transition: transform 0.3s ease;
 
     &.is-rotated {
       transform: rotate(-90deg);
     }
   }
+
+  &.t-card--panel {
+    .card-header {
+      background-color: hsl(var(--bulma-scheme-h), var(--bulma-scheme-s), var(--bulma-text-l));
+      color: hsl(var(--bulma-scheme-h), var(--bulma-scheme-s), var(--bulma-text-invert-l));
+    }
+
+    :deep(.card-header-title) {
+      color: inherit;
+    }
+  }
 }
 
-// Collapse transition
-.t-collapse-enter-active,
-.t-collapse-leave-active {
+// Expand transition
+.t-expand-enter-active,
+.t-expand-leave-active {
   transition: all 0.3s ease;
   overflow: hidden;
 }
 
-.t-collapse-enter-from,
-.t-collapse-leave-to {
+.t-expand-enter-from,
+.t-expand-leave-to {
   opacity: 0;
   max-height: 0;
 }
 
-.t-collapse-enter-to,
-.t-collapse-leave-from {
+.t-expand-enter-to,
+.t-expand-leave-from {
   opacity: 1;
   max-height: 1000px; // Arbitrary large value
 }
