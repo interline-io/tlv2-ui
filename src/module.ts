@@ -211,6 +211,17 @@ export default defineNuxtModule<ModuleOptions>({
         // Without this, Vite fails to resolve module files when using symlinked dependencies
         config.resolve = config.resolve || {}
         config.resolve.preserveSymlinks = true
+        // Ensure Apollo packages resolve to a single instance in production builds.
+        // Without this, the Apollo plugin (from tlv2-ui) and consumer useQuery calls
+        // can reference different module instances, causing "client not found" errors.
+        config.resolve.dedupe = config.resolve.dedupe || []
+        if (Array.isArray(config.resolve.dedupe)) {
+          config.resolve.dedupe.push(
+            '@vue/apollo-composable',
+            '@apollo/client',
+            'graphql',
+          )
+        }
       }
     }))
   }
