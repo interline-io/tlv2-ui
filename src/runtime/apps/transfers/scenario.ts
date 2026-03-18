@@ -1,6 +1,7 @@
 import dayjs from 'dayjs'
 import { haversinePosition, type Point, type Polygon } from '../../lib/geom'
 import { gql } from 'graphql-tag'
+import type { DocumentNode } from 'graphql'
 import { TreeNode } from '../../lib/util/tree'
 import { useRouteCategories } from '../../composables/useRouteCategories'
 import { toSeconds, windowToSeconds } from '../../lib/util/time-format'
@@ -224,7 +225,7 @@ interface ScenarioStopStopTimesQueryResponse {
 // GraphQL Query Definitions
 // ============================================================================
 
-export const analystFeedQuery = gql`
+export const analystFeedQuery: DocumentNode = gql`
 fragment feed on Feed {
   id
   onestop_id
@@ -272,7 +273,7 @@ query analystFeedQuery($geometry: Polygon) {
   }
 }`
 
-export const analystStopQuery = gql`
+export const analystStopQuery: DocumentNode = gql`
 query analystStopQuery($feed_version_ids: [Int!]!, $geometry: Polygon!) {
     feed_versions(ids: $feed_version_ids) {
       stops(where: { within: $geometry }) {
@@ -369,7 +370,7 @@ query analystStopQuery($feed_version_ids: [Int!]!, $geometry: Polygon!) {
     }
   }`
 
-export const scenarioStopStopTimesQuery = gql`
+export const scenarioStopStopTimesQuery: DocumentNode = gql`
   fragment stopTime on StopTime {
     scheduled_arrival_time_str: arrival_time
     scheduled_departure_time_str: departure_time
