@@ -14,7 +14,7 @@ A Nuxt 4 module providing UI components, controls, and composables for transit a
 ## Installation
 
 ```bash
-yarn add tlv2-ui
+pnpm add tlv2-ui
 ```
 
 ## Usage
@@ -129,22 +129,22 @@ Available Vue composables:
 
 ```bash
 # Install dependencies
-yarn install
+pnpm install
 
 # Start development server with playground
-yarn dev
+pnpm dev
 
 # Run linting
-yarn lint
+pnpm lint
 
 # Run tests
-yarn test
+pnpm test
 
 # Type check
-yarn test:types
+pnpm test:types
 
 # Build the module
-yarn prepack
+pnpm prepack
 ```
 
 ## Requirements

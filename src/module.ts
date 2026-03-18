@@ -206,7 +206,7 @@ export default defineNuxtModule<ModuleOptions>({
         // Debug log removed: tlv2-ui:vite-config applied
       },
       config (config) {
-        // Fix for local development with symlinks (yarn/npm link, --stub mode)
+        // Fix for local development with symlinks (pnpm link, --stub mode)
         // https://github.com/nuxt/nuxt/issues/20001
         // Without this, Vite fails to resolve module files when using symlinked dependencies
         config.resolve = config.resolve || {}

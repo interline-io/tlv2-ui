@@ -9,16 +9,16 @@ tlv2-ui is a **Nuxt 4 module** (not a standalone app) that provides UI component
 ## Commands
 
 ```bash
-yarn dev              # Start dev server with playground app
-yarn test             # Run all tests (vitest)
-yarn test -- -t "test name"  # Run a single test by name
-yarn test -- src/runtime/lib/pathways/graph.spec.ts  # Run a single test file
-yarn lint             # ESLint check
-yarn lint --fix       # ESLint auto-fix
-yarn check            # lint --fix + typecheck + test (full CI check)
-yarn test:types       # TypeScript type checking (vue-tsc)
-yarn generate:types   # Regenerate component type declarations (run after adding/removing components)
-yarn prepack          # Build the module for distribution
+pnpm dev              # Start dev server with playground app
+pnpm test             # Run all tests (vitest)
+pnpm test -- -t "test name"  # Run a single test by name
+pnpm test -- src/runtime/lib/pathways/graph.spec.ts  # Run a single test file
+pnpm lint             # ESLint check
+pnpm lint --fix       # ESLint auto-fix
+pnpm check            # lint --fix + typecheck + test (full CI check)
+pnpm test:types       # TypeScript type checking (vue-tsc)
+pnpm generate:types   # Regenerate component type declarations (run after adding/removing components)
+pnpm prepack          # Build the module for distribution
 ```
 
 ## Test Setup
@@ -77,7 +77,7 @@ HTTP fixtures use **Polly.js** (`@pollyjs/core`) with recordings stored in `test
 - 2-space indent, single quotes, no semicolons
 - 1TBS brace style, space before function parens
 - Vue templates: single-word component names allowed, up to 10 attributes per single line
-- Package manager: **yarn 4** (Yarn Berry)
+- Package manager: **pnpm**
 
 ## PR Summary
 
@@ -94,5 +94,5 @@ When asked to "generate PR summary", run `git diff main...HEAD` and `git log mai
 <bulleted details>
 
 ## Test plan
-<manual verification steps relevant to the changes; do not include yarn test/lint/typecheck as those are handled by CI>
+<manual verification steps relevant to the changes; do not include pnpm test/lint/typecheck as those are handled by CI>
 ```

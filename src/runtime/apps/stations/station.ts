@@ -1,4 +1,5 @@
 import { gql } from 'graphql-tag'
+import type { DocumentNode } from 'graphql'
 import type { Point, MultiPolygon } from 'geojson'
 import { RoutingGraph, DefaultCost } from '../../lib/pathways/graph'
 import type { CostFunction, AStarResult } from '../../lib/pathways/graph'
@@ -13,7 +14,7 @@ import type {
   ValidationPath
 } from './types'
 
-export const stationQuery = gql`
+export const stationQuery: DocumentNode = gql`
 fragment level on Level {
   id
   level_id
@@ -58,7 +59,7 @@ query stationQuery ($stop_id: String, $feed_onestop_id: String!, $feed_version_i
   }
 }`
 
-export const stationStopQuery = gql`
+export const stationStopQuery: DocumentNode = gql`
 fragment pathwayStop on Stop {
   id
   stop_id

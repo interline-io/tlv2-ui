@@ -1,10 +1,11 @@
-import { computed, type Ref } from 'vue'
+import { computed, type Ref, type ComputedRef } from 'vue'
 import { gql } from 'graphql-tag'
+import type { DocumentNode } from 'graphql'
 import { useQuery } from '@vue/apollo-composable'
 import { useToastNotification } from '../../../composables/useToastNotification'
 import type { FeedQueryResponse } from '../types'
 
-const currentFeedsQuery = gql`
+const currentFeedsQuery: DocumentNode = gql`
 query currentFeeds ($feed_onestop_id: String, $feed_version_ids: [Int!]) {
   feeds(limit:1000, where: {onestop_id: $feed_onestop_id, spec: GTFS}) {
     id
@@ -35,7 +36,18 @@ export interface UseFeedOptions {
   clientId?: string
 }
 
-export function useFeed (options: UseFeedOptions) {
+interface UseFeedReturn {
+  feeds: ComputedRef<FeedQueryResponse[]>
+  loading: Ref<boolean>
+  error: Ref<Error | null>
+  feed: ComputedRef<FeedQueryResponse | null | undefined>
+  feedVersion: ComputedRef<FeedQueryResponse['feed_versions'][0] | string | null | undefined>
+  feedName: ComputedRef<string | null | undefined>
+  feedVersionName: ComputedRef<string>
+  stations: ComputedRef<FeedQueryResponse['feed_versions'][0]['stations'] | null>
+}
+
+export function useFeed (options: UseFeedOptions): UseFeedReturn {
   const { feedKey, feedVersionKey, clientId } = options
   const { showToast } = useToastNotification()
 

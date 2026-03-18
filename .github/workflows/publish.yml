@@ -13,20 +13,21 @@ jobs:
       packages: write
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
+          cache: 'pnpm'
           registry-url: 'https://npm.pkg.github.com'
           scope: '@interline-io'
 
-      - name: Enable Corepack
-        run: corepack enable
-
       - name: Install dependencies
-        run: yarn install --immutable
+        run: pnpm install --frozen-lockfile
 
       - name: Compute version and tags
         id: meta
@@ -38,7 +39,7 @@ jobs:
             echo "version=${BASE_VERSION}-sha.${SHORT_SHA}" >> $GITHUB_OUTPUT
             echo "tag=sha-${SHORT_SHA}" >> $GITHUB_OUTPUT
           else
-            echo "version=${BASE_VERSION}-branch.${BRANCH}" >> $GITHUB_OUTPUT
+            echo "version=${BASE_VERSION}-branch.${BRANCH}.${SHORT_SHA}" >> $GITHUB_OUTPUT
             echo "tag=${BRANCH}" >> $GITHUB_OUTPUT
           fi
 
@@ -46,7 +47,7 @@ jobs:
         run: npm version ${{ steps.meta.outputs.version }} --no-git-tag-version
 
       - name: Build
-        run: yarn prepack
+        run: pnpm prepack
 
       - name: Publish
         run: npm publish --tag ${{ steps.meta.outputs.tag }}
