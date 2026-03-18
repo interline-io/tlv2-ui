@@ -3,6 +3,8 @@ import { defineNuxtModule, addPlugin, createResolver, addImportsDir, addServerHa
 import { defu } from 'defu'
 import type { Tlv2RouteKey } from './runtime/route-keys'
 
+export const TEST = 456
+
 // Config handler
 export interface ModuleOptions {
   // Bulma config
