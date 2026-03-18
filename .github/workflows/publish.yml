@@ -39,7 +39,7 @@ jobs:
             echo "version=${BASE_VERSION}-sha.${SHORT_SHA}" >> $GITHUB_OUTPUT
             echo "tag=sha-${SHORT_SHA}" >> $GITHUB_OUTPUT
           else
-            echo "version=${BASE_VERSION}-branch.${BRANCH}" >> $GITHUB_OUTPUT
+            echo "version=${BASE_VERSION}-branch.${BRANCH}.${SHORT_SHA}" >> $GITHUB_OUTPUT
             echo "tag=${BRANCH}" >> $GITHUB_OUTPUT
           fi
 
