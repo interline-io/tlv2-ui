@@ -243,6 +243,7 @@
           :station="station"
           :basemap="basemap"
           :selected-stops="selectedStops"
+          :draggable-stops="selectMode === 'edit-node' /* v1 drag only in edit-node mode */ ? selectedStops : []"
           :selected-pathways="selectMode === 'find-route' && selectedPath ? selectedPath.map((s) => { return s.pathway }) : selectedPathways"
           :selected-levels="selectedLevels"
           :editable="true"
