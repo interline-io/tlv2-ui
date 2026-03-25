@@ -1,7 +1,7 @@
 import 'dotenv/config'
 
 export default defineNuxtConfig({
-  modules: ['../src/module'],
+  modules: [['../src/module', { useProxy: true }]],
 
   ssr: false,
 
@@ -49,9 +49,5 @@ export default defineNuxtConfig({
         strictTemplates: true
       }
     }
-  },
-
-  tlv2: {
-    useProxy: true,
   },
 })

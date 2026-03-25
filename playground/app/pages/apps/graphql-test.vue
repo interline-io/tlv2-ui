@@ -52,7 +52,7 @@
 import { computed, ref } from 'vue'
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
-import { useUser } from '#imports'
+import { useUser } from '../../../../src/runtime/composables/useUser'
 
 const user = useUser()
 const enabled = ref(false)

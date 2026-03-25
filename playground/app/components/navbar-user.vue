@@ -19,7 +19,9 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { useUser, useLogin, useLogout } from '#imports'
+import { useUser } from '../../../src/runtime/composables/useUser'
+import { useLogin } from '../../../src/runtime/composables/useLogin'
+import { useLogout } from '../../../src/runtime/composables/useLogout'
 
 const route = useRoute()
 const user = useUser()
