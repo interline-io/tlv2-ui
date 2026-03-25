@@ -190,13 +190,3 @@ const changed = () => {
   emit('changed')
 }
 </script>
-
-<style scoped>
-:deep(.field.is-horizontal > .field-label) {
-  flex-grow: 0;
-  flex-basis: auto;
-  min-width: 12em;
-  text-align: right;
-  padding-top: 0.5em;
-}
-</style>
