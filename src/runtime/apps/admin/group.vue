@@ -6,7 +6,7 @@
       Error: {{ error }}
     </t-notification>
 
-    <table v-else-if="group" class="admin-detail-table">
+    <table v-else-if="group" class="table is-fullwidth">
       <tbody>
         <!-- Name -->
         <tr>
@@ -275,5 +275,3 @@ const changed = () => {
   emit('changed')
 }
 </script>
-
-<style src="./admin.css" />

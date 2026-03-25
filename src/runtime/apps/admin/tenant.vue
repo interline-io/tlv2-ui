@@ -8,7 +8,7 @@
 
     <div v-else-if="tenant && filterAction && !tenant.actions[filterAction]" />
 
-    <table v-else-if="tenant" class="admin-detail-table">
+    <table v-else-if="tenant" class="table is-fullwidth">
       <tbody>
         <!-- Name -->
         <tr>
@@ -216,5 +216,3 @@ const changed = () => {
   emit('changed')
 }
 </script>
-
-<style src="./admin.css" />

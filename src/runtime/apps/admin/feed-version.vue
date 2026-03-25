@@ -6,7 +6,7 @@
       Error: {{ error }}
     </t-notification>
 
-    <table v-else-if="fv && perms" class="admin-detail-table">
+    <table v-else-if="fv && perms" class="table is-fullwidth">
       <tbody>
         <!-- Name -->
         <tr v-if="fv.name">
@@ -181,5 +181,3 @@ const removePermissions = async (relation: string, value: any) => {
   }
 }
 </script>
-
-<style src="./admin.css" />

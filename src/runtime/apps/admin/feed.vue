@@ -6,7 +6,7 @@
       Error: {{ error }}
     </t-notification>
 
-    <table v-else-if="feed" class="admin-detail-table">
+    <table v-else-if="feed" class="table is-fullwidth">
       <tbody>
         <!-- Feed name -->
         <tr>
@@ -114,5 +114,3 @@ const changed = () => {
 
 defineExpose({ changed })
 </script>
-
-<style src="./admin.css" />
