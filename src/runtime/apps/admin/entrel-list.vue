@@ -14,6 +14,7 @@
       </t-button>
       <t-field
         grouped
+        grouped-multiline
       >
         <tl-apps-admin-tenant-item
           v-for="v of (nameSort(tenants || []) as any[])"
