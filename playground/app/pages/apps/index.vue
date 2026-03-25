@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { appsGroups } from '../../../navigation'
-
 </script>
 
 <template>

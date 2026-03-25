@@ -13,6 +13,5 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
-const feedId = computed(() => route.params.feedId?.toString() || '')
 const feedVersionId = computed(() => route.params.feedVersionId?.toString() || '')
 </script>

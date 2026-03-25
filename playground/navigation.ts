@@ -82,5 +82,3 @@ export const appsGroups: NavGroup[] = [
     ]
   }
 ]
-
-export const navigationGroups: NavGroup[] = [...controlsGroups, ...appsGroups]

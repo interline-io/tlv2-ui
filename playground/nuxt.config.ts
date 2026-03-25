@@ -7,8 +7,6 @@ export default defineNuxtConfig({
 
   devtools: { enabled: true },
 
-  compatibilityDate: '2024-11-01',
-
   runtimeConfig: {
     tlv2: {
       graphqlApikey: '',
@@ -41,9 +39,7 @@ export default defineNuxtConfig({
     },
   },
 
-  tlv2: {
-    useProxy: true,
-  },
+  compatibilityDate: '2024-11-01',
 
   typescript: {
     strict: true,
@@ -53,5 +49,9 @@ export default defineNuxtConfig({
         strictTemplates: true
       }
     }
+  },
+
+  tlv2: {
+    useProxy: true,
   },
 })

@@ -29,8 +29,6 @@ import { controlsGroups } from '../../navigation'
             </NuxtLink>
           </div>
         </div>
-
-
       </div>
     </section>
   </div>

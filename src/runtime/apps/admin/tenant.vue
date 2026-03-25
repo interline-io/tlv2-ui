@@ -109,7 +109,6 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useUser } from '../../composables/useUser'
 import { nameSort } from '../../lib/util/filters'
 import { useAdminFetch, fetchAdmin } from './useAdminApi'
 import { useAuthz } from './useAuthz'
@@ -125,7 +124,6 @@ const emit = defineEmits<{
   (e: 'changed'): void
 }>()
 
-const user = useUser()
 const { getObjectType, getRelation } = useAuthz()
 
 const { data: tenant, pending: fetchPending, error: fetchError, refresh } = await useAdminFetch<any>(() => `/tenants/${props.id}`)
@@ -219,23 +217,4 @@ const changed = () => {
 }
 </script>
 
-<style scoped>
-.admin-detail-table {
-  border-collapse: collapse;
-  width: 100%;
-}
-
-.admin-detail-table th {
-  vertical-align: top;
-  text-align: right;
-  white-space: nowrap;
-  padding: 0.75em 1em 0.75em 0;
-  width: 1%;
-  font-weight: 600;
-}
-
-.admin-detail-table td {
-  vertical-align: top;
-  padding: 0.75em 0;
-}
-</style>
+<style src="./admin.css" />

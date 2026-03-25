@@ -111,7 +111,7 @@ const tenants = computed(() => nameSort(allEntrels.value.filter(v => v.type === 
 const filterBySearch = (items: any[]) => {
   if (!searchQuery.value) return items
   const q = searchQuery.value.toLowerCase()
-  return items.filter(v => {
+  return items.filter((v) => {
     const name = String(v.name || '').toLowerCase()
     const email = String(v.email || '').toLowerCase()
     return name.includes(q) || email.includes(q)

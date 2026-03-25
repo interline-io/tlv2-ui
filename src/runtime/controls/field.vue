@@ -14,7 +14,7 @@
     </div>
 
     <div v-if="horizontal" class="field-body">
-      <div class="field" :class="{ 'has-addons': addons, 'is-grouped': grouped, 'is-grouped-multiline': groupedMultiline }">
+      <div class="field" :class="{ 'has-addons': addons }">
         <slot />
         <p v-if="message || $slots.message" class="help" :class="messageClass">
           <slot name="message">
@@ -26,7 +26,7 @@
 
     <template v-else>
       <!-- Wrap controls in nested field if we have a label and grouped/addons controls -->
-      <div v-if="(grouped || addons) && hasLabel" class="field" :class="{ 'is-grouped': grouped, 'is-grouped-multiline': groupedMultiline, 'has-addons': addons }">
+      <div v-if="(grouped || addons) && hasLabel" class="field" :class="{ 'is-grouped': grouped, 'has-addons': addons }">
         <slot />
       </div>
       <template v-else>
@@ -98,12 +98,6 @@ interface Props {
   grouped?: boolean
 
   /**
-   * Allow grouped controls to wrap to multiple lines.
-   * @default false
-   */
-  groupedMultiline?: boolean
-
-  /**
    * Help text message below field.
    */
   message?: string
@@ -124,7 +118,6 @@ const props = withDefaults(defineProps<Props>(), {
   horizontal: false,
   addons: false,
   grouped: false,
-  groupedMultiline: false,
   message: undefined,
   variant: undefined,
   labelSize: 'normal'
@@ -147,9 +140,6 @@ const fieldClasses = computed(() => {
 
   if (props.grouped && !props.horizontal && !hasLabel.value) {
     classes.push('is-grouped')
-    if (props.groupedMultiline) {
-      classes.push('is-grouped-multiline')
-    }
   }
 
   return classes

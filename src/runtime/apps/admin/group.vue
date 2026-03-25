@@ -69,7 +69,9 @@
                       {{ item.name || item.onestop_id }}
                     </tl-link>
                   </td>
-                  <td class="has-text-grey is-size-7">{{ item.onestop_id }}</td>
+                  <td class="has-text-grey is-size-7">
+                    {{ item.onestop_id }}
+                  </td>
                 </tr>
               </template>
             </tl-apps-admin-entity-list>
@@ -159,7 +161,6 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useUser } from '../../composables/useUser'
 import { useAdminFetch, fetchAdmin } from './useAdminApi'
 import { useAuthz } from './useAuthz'
 
@@ -183,7 +184,6 @@ const emit = defineEmits<{
 }>()
 
 const showAssignTenant = ref(false)
-const user = useUser()
 
 const { data: group, pending: fetchPending, error: fetchError, refresh } = await useAdminFetch<any>(() => `/groups/${props.id}`)
 const { getObjectType, getRelation } = useAuthz()
@@ -276,23 +276,4 @@ const changed = () => {
 }
 </script>
 
-<style scoped>
-.admin-detail-table {
-  border-collapse: collapse;
-  width: 100%;
-}
-
-.admin-detail-table th {
-  vertical-align: top;
-  text-align: right;
-  white-space: nowrap;
-  padding: 0.75em 1em 0.75em 0;
-  width: 1%;
-  font-weight: 600;
-}
-
-.admin-detail-table td {
-  vertical-align: top;
-  padding: 0.75em 0;
-}
-</style>
+<style src="./admin.css" />
