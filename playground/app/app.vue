@@ -1,46 +1,48 @@
 <template>
   <div id="app">
-    <header class="navbar is-justify-content-center" role="navigation" aria-label="main navigation">
+    <header class="navbar" role="navigation" aria-label="main navigation">
       <div class="navbar-brand">
         <NuxtLink to="/" class="navbar-item">
           <strong>tlv2-ui Component Library</strong>
         </NuxtLink>
       </div>
+      <div class="navbar-menu">
+        <div class="navbar-end">
+          <NuxtLink to="/" class="navbar-item">
+            <t-icon icon="palette-swatch" size="small" class="pr-1" />
+            Controls
+          </NuxtLink>
+          <NuxtLink to="/apps" class="navbar-item">
+            <t-icon icon="application" size="small" class="pr-1" />
+            Apps
+          </NuxtLink>
+          <div class="navbar-item">
+            <t-theme-toggle />
+          </div>
+          <navbar-user />
+        </div>
+      </div>
     </header>
 
-    <div class="columns is-gapless p-5">
-      <aside class="column is-narrow menu">
-        <t-theme-toggle class="mb-3" />
-        <div v-for="group in navigationGroups" :key="group.title">
-          <p class="menu-label">
-            {{ group.title }}
-          </p>
-          <ul class="menu-list">
-            <li v-for="item in group.items" :key="item.path">
-              <NuxtLink
-                :to="item.path"
-                :class="{ 'is-active': route.path === item.path }"
-              >
-                <t-icon :icon="item.icon" size="small" class="pr-2" />
-                <span>{{ item.name }}</span>
-              </NuxtLink>
-            </li>
-          </ul>
-        </div>
-      </aside>
-
-      <main class="column">
-        <NuxtPage />
-      </main>
-    </div>
+    <sidebar-layout :groups="sidebarGroups">
+      <NuxtPage />
+    </sidebar-layout>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { navigationGroups } from '../navigation'
+import { controlsGroups, appsGroups } from '../navigation'
+import SidebarLayout from './components/sidebar-layout.vue'
+import NavbarUser from './components/navbar-user.vue'
 
 const route = useRoute()
+const sidebarGroups = computed(() =>
+  route.path.startsWith('/apps') || route.path.startsWith('/admin')
+    ? appsGroups
+    : controlsGroups
+)
 </script>
 
 <style lang="scss">

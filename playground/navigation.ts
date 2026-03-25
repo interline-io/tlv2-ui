@@ -10,7 +10,7 @@ export interface NavGroup {
   items: NavItem[]
 }
 
-export const navigationGroups: NavGroup[] = [
+export const controlsGroups: NavGroup[] = [
   {
     title: 'Form Controls',
     variant: 'primary',
@@ -62,3 +62,17 @@ export const navigationGroups: NavGroup[] = [
     ]
   }
 ]
+
+export const appsGroups: NavGroup[] = [
+  {
+    title: 'Admin',
+    variant: 'info',
+    items: [
+      { name: 'Admin Home', path: '/admin', icon: 'shield-account' },
+      { name: 'Groups', path: '/admin/groups', icon: 'account-group' },
+      { name: 'Tenants', path: '/admin/tenants', icon: 'domain' }
+    ]
+  }
+]
+
+export const navigationGroups: NavGroup[] = [...controlsGroups, ...appsGroups]
