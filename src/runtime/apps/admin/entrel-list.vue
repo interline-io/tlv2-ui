@@ -1,46 +1,42 @@
 <template>
   <div>
-    <t-field
-      horizontal
-      :label="text"
-      grouped
-    >
-      <t-button
-        v-if="canAdd"
-        size="small"
-        @click="showUserPicker = true"
-      >
-        <t-icon icon="plus" />
-      </t-button>
-      <t-field
-        grouped
-        grouped-multiline
-      >
-        <tl-apps-admin-tenant-item
-          v-for="v of (nameSort(tenants || []) as any[])"
-          :key="v.id"
-          :value="v"
-          :action="canRemove ? 'remove' : null"
-          @select="$emit('removePermissions', { type: 'tenant', id: $event, refrel: 'member' })"
-        />
+    <div class="field is-grouped is-grouped-multiline">
+      <div v-if="canAdd" class="control">
+        <t-button
+          size="small"
+          @click="showUserPicker = true"
+        >
+          <t-icon icon="plus" />
+        </t-button>
+      </div>
 
-        <tl-apps-admin-group-item
-          v-for="v of (nameSort(groups || []) as any[])"
-          :key="v.id"
-          :value="v"
-          :action="canRemove ? 'remove' : null"
-          @select="$emit('removePermissions', { type: 'org', id: $event, refrel: 'viewer' })"
-        />
+      <tl-apps-admin-tenant-item
+        v-for="v of (nameSort(tenants || []) as any[])"
+        :key="v.id"
+        :value="v"
+        :action="canRemove ? 'remove' : null"
+        @select="$emit('removePermissions', { type: 'tenant', id: $event, refrel: 'member' })"
+      />
 
-        <tl-apps-admin-user-item
-          v-for="v of (nameSort(users || []) as any[])"
-          :key="v.id"
-          :user="v"
-          :action="canRemove ? 'remove' : null"
-          @select="$emit('removePermissions', { type: 'user', id: $event })"
-        />
-      </t-field>
-    </t-field>
+      <tl-apps-admin-group-item
+        v-for="v of (nameSort(groups || []) as any[])"
+        :key="v.id"
+        :value="v"
+        :action="canRemove ? 'remove' : null"
+        @select="$emit('removePermissions', { type: 'org', id: $event, refrel: 'viewer' })"
+      />
+
+      <tl-apps-admin-user-item
+        v-for="v of (nameSort(users || []) as any[])"
+        :key="v.id"
+        :user="v"
+        :action="canRemove ? 'remove' : null"
+        @select="$emit('removePermissions', { type: 'user', id: $event })"
+      />
+
+      <span v-if="!entrels?.length" class="has-text-grey">(none)</span>
+    </div>
+
     <t-modal
       v-slot="scope"
       v-model="showUserPicker"

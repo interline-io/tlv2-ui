@@ -22,7 +22,6 @@
       >
         <tl-apps-admin-input
           :value="feed?.group?.name || 'Unnamed Group'"
-          :link="true"
         >
           <template #link>
             <tl-link

@@ -1,79 +1,93 @@
 <template>
-  <div>
+  <div class="admin-tenant">
     <t-loading :active="loading" :full-page="false" />
-    <t-notification
-      v-if="error"
-      variant="danger"
-    >
+
+    <t-notification v-if="error" variant="danger">
       {{ error }}
     </t-notification>
+
     <div v-else-if="tenant && filterAction && !tenant.actions[filterAction]" />
-    <div v-else-if="tenant">
-      <t-field
-        label="Name"
-        horizontal
-      >
-        <tl-apps-admin-input
-          :value="tenant.tenant?.name"
-          :can-edit="tenant.actions.can_edit"
-          @save="saveName"
-        />
-      </t-field>
 
-      <t-field
-        label="Groups"
-        horizontal
-      >
-        <t-button
-          v-if="tenant.actions.can_create_org"
-          size="small"
-          @click="createGroup"
-        >
-          <t-icon icon="plus" />
-          <span>Create group</span>
-        </t-button>
-        <div class="field">
-          <div class="field is-grouped is-grouped-multiline">
-            <tl-apps-admin-group-item
-              v-for="group of (nameSort(tenant.groups || []) as any[])"
-              :key="group.id"
-              :value="group"
+    <table v-else-if="tenant" class="admin-detail-table">
+      <tbody>
+        <!-- Name -->
+        <tr>
+          <th>Name</th>
+          <td>
+            <tl-apps-admin-input
+              :value="tenant.tenant?.name"
+              :can-edit="tenant.actions.can_edit"
+              @save="saveName"
             />
-          </div>
-        </div>
-      </t-field>
+          </td>
+        </tr>
 
-      <t-field label="Your permissions" horizontal>
-        <div :title="`You are logged in as ${user.name} (${user.email})`">
-          <tl-apps-admin-perm-list :actions="tenant.actions" />
-        </div>
-      </t-field>
+        <!-- Groups -->
+        <tr>
+          <th>Groups</th>
+          <td>
+            <div class="is-flex is-align-items-center mb-2" style="gap: 0.5em;" v-if="tenant.actions.can_create_org">
+              <t-button
+                size="small"
+                @click="createGroup"
+              >
+                <t-icon icon="plus" size="small" />
+                <span>Create group</span>
+              </t-button>
+            </div>
+            <div class="field is-grouped is-grouped-multiline">
+              <tl-apps-admin-group-item
+                v-for="group of (nameSort(tenant.groups || []) as any[])"
+                :key="group.id"
+                :value="group"
+              />
+              <span v-if="!tenant.groups?.length" class="has-text-grey">(none)</span>
+            </div>
+          </td>
+        </tr>
 
-      <tl-apps-admin-entrel-list
-        v-if="tenant.actions.can_edit_members || tenant.users.admins?.length > 0"
-        text="Admins"
-        action-text="Add a tenant admin"
-        :action-info="permLevels('admin')"
-        :entrels="tenant.users.admins"
-        :can-add="tenant.actions.can_edit_members"
-        :can-remove="tenant.actions.can_edit_members"
-        @add-permissions="addPermissions('admin', $event)"
-        @remove-permissions="removePermissions('admin', $event)"
-      />
+        <!-- Your permissions -->
+        <tr>
+          <th>Your permissions</th>
+          <td>
+            <tl-apps-admin-perm-list :actions="tenant.actions" />
+          </td>
+        </tr>
 
-      <tl-apps-admin-entrel-list
-        v-if="tenant.actions.can_edit_members || tenant.users.members?.length > 0"
-        text="Members"
-        action-text="Add a tenant member"
-        :action-info="permLevels('member')"
-        :entrels="tenant.users.members"
-        :can-add="tenant.actions.can_edit_members"
-        :can-remove="tenant.actions.can_edit_members"
-        :show-user-star="true"
-        @add-permissions="addPermissions('member', $event)"
-        @remove-permissions="removePermissions('member', $event)"
-      />
-    </div>
+        <!-- Admins -->
+        <tr v-if="tenant.actions.can_edit_members || tenant.users.admins?.length > 0">
+          <th>Admins</th>
+          <td>
+            <tl-apps-admin-entrel-list
+              action-text="Add a tenant admin"
+              :action-info="permLevels('admin')"
+              :entrels="tenant.users.admins"
+              :can-add="tenant.actions.can_edit_members"
+              :can-remove="tenant.actions.can_edit_members"
+              @add-permissions="addPermissions('admin', $event)"
+              @remove-permissions="removePermissions('admin', $event)"
+            />
+          </td>
+        </tr>
+
+        <!-- Members -->
+        <tr v-if="tenant.actions.can_edit_members || tenant.users.members?.length > 0">
+          <th>Members</th>
+          <td>
+            <tl-apps-admin-entrel-list
+              action-text="Add a tenant member"
+              :action-info="permLevels('member')"
+              :entrels="tenant.users.members"
+              :can-add="tenant.actions.can_edit_members"
+              :can-remove="tenant.actions.can_edit_members"
+              :show-user-star="true"
+              @add-permissions="addPermissions('member', $event)"
+              @remove-permissions="removePermissions('member', $event)"
+            />
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
@@ -121,7 +135,6 @@ const permLevels = (lvl: string) => {
 }
 
 const saveName = async (value: string) => {
-  console.log('saveName', value)
   submitting.value = true
   try {
     await fetchAdmin(`/tenants/${props.id}`, { method: 'POST', body: { name: value } })
@@ -134,7 +147,6 @@ const saveName = async (value: string) => {
 }
 
 const createGroup = async () => {
-  console.log('createGroup')
   const data = { group: { name: 'New Group' } }
   submitting.value = true
   try {
@@ -148,7 +160,6 @@ const createGroup = async () => {
 }
 
 const addPermissions = async (relation: string, value: any) => {
-  console.log('addPermissions:', relation, value)
   const data = {
     id: value.id,
     type: getObjectType(value.type),
@@ -167,7 +178,6 @@ const addPermissions = async (relation: string, value: any) => {
 }
 
 const removePermissions = async (relation: string, value: any) => {
-  console.log('removePermissions:', relation, value)
   const data = {
     id: value.id,
     type: getObjectType(value.type),
@@ -190,3 +200,24 @@ const changed = () => {
   emit('changed')
 }
 </script>
+
+<style scoped>
+.admin-detail-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.admin-detail-table th {
+  vertical-align: top;
+  text-align: right;
+  white-space: nowrap;
+  padding: 0.75em 1em 0.75em 0;
+  width: 1%;
+  font-weight: 600;
+}
+
+.admin-detail-table td {
+  vertical-align: top;
+  padding: 0.75em 0;
+}
+</style>
