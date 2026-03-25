@@ -1,14 +1,19 @@
 <template>
   <div class="admin-entity-list">
     <!-- Header: click to toggle, shows count -->
-    <div class="admin-entity-list-header" @click="expanded = !expanded">
+    <button
+      type="button"
+      class="admin-entity-list-header"
+      :aria-expanded="expanded"
+      @click="toggle"
+    >
       <span class="admin-entity-list-toggle">
         <t-icon :icon="expanded ? 'chevron-down' : 'chevron-right'" size="small" />
       </span>
       <span class="has-text-grey">
         {{ items.length }} {{ items.length === 1 ? itemLabel : itemLabelPlural }}
       </span>
-    </div>
+    </button>
 
     <div v-if="expanded">
       <!-- Search (only shown for lists with enough items) -->
@@ -40,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 
 const props = withDefaults(defineProps<{
   items: any[]
@@ -58,7 +63,20 @@ const props = withDefaults(defineProps<{
 })
 
 const searchQuery = ref('')
+const userToggled = ref(false)
 const expanded = ref(props.items.length <= props.collapseThreshold)
+
+// Auto-collapse when items load asynchronously, until user manually toggles
+watch(() => props.items.length, (len) => {
+  if (!userToggled.value) {
+    expanded.value = len <= props.collapseThreshold
+  }
+})
+
+const toggle = () => {
+  userToggled.value = true
+  expanded.value = !expanded.value
+}
 
 const filteredItems = computed(() => {
   if (!searchQuery.value) {
@@ -82,6 +100,10 @@ const filteredItems = computed(() => {
   align-items: center;
   gap: 0.25em;
   padding: 0.25em 0;
+  background: none;
+  border: none;
+  font: inherit;
+  color: inherit;
 }
 
 .admin-entity-list-header:hover {

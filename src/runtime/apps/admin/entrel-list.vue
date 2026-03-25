@@ -8,7 +8,7 @@
       >
         <t-icon icon="plus" size="small" />
       </t-button>
-      <span class="has-text-grey is-size-7">{{ allEntrels.length }} {{ allEntrels.length === 1 ? 'user' : 'users' }}</span>
+      <span class="has-text-grey is-size-7">{{ allEntrels.length }} {{ allEntrels.length === 1 ? 'member' : 'members' }}</span>
     </div>
 
     <!-- Search (for larger lists) -->
