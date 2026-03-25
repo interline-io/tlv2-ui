@@ -1,51 +1,84 @@
 <template>
-  <div>
+  <div class="admin-feed-version">
     <t-loading :active="loading" :full-page="false" />
-    <t-notification
-      v-if="error"
-      variant="danger"
-    >
+
+    <t-notification v-if="error" variant="danger">
       Error: {{ error }}
     </t-notification>
-    <div v-else-if="fv && perms">
-      <t-field label="Your permissions" horizontal>
-        <div :title="`You are logged in as ${user.name} (${user.email})`">
-          <tl-apps-admin-perm-list :actions="perms.actions" />
-        </div>
-      </t-field>
 
-      <tl-apps-admin-entrel-list
-        v-if="perms.actions.can_edit_members || perms.users.editors?.length > 0"
-        text="Editors"
-        action-text="Add a feed version editor"
-        :action-info="permLevels('editor')"
-        :entrels="perms.users.editors"
-        :can-add="perms.actions.can_edit_members"
-        :can-remove="perms.actions.can_edit_members"
-        :show-groups="true"
-        :show-tenants="true"
-        @add-permissions="addPermissions('editor', $event)"
-        @remove-permissions="removePermissions('editor', $event)"
-      />
+    <table v-else-if="fv && perms" class="admin-detail-table">
+      <tbody>
+        <!-- Name -->
+        <tr v-if="fv.name">
+          <th>Name</th>
+          <td>{{ fv.name }}</td>
+        </tr>
 
-      <tl-apps-admin-entrel-list
-        v-if="perms.actions.can_edit_members || perms.users.viewers?.length > 0"
-        text="Viewers"
-        action-text="Add a feed version viewer"
-        :action-info="permLevels('viewer')"
-        :entrels="perms.users.viewers"
-        :can-add="perms.actions.can_edit_members"
-        :can-remove="perms.actions.can_edit_members"
-        :show-groups="true"
-        :show-tenants="true"
-        @add-permissions="addPermissions('viewer', $event)"
-        @remove-permissions="removePermissions('viewer', $event)"
-      />
+        <!-- SHA1 -->
+        <tr>
+          <th>SHA1</th>
+          <td><code>{{ fv.sha1 }}</code></td>
+        </tr>
 
-      <t-field label="" horizontal>
-        * Permissions are additive with permissions defined by feed and group (not shown)
-      </t-field>
-    </div>
+        <!-- Description -->
+        <tr v-if="fv.description">
+          <th>Description</th>
+          <td>{{ fv.description }}</td>
+        </tr>
+
+        <!-- Your permissions -->
+        <tr>
+          <th>Your permissions</th>
+          <td>
+            <tl-apps-admin-perm-list :actions="perms.actions" />
+          </td>
+        </tr>
+
+        <!-- Editors -->
+        <tr v-if="perms.actions.can_edit_members || perms.users.editors?.length > 0">
+          <th>Editors</th>
+          <td>
+            <tl-apps-admin-entrel-list
+              action-text="Add a feed version editor"
+              :action-info="permLevels('editor')"
+              :entrels="perms.users.editors"
+              :can-add="perms.actions.can_edit_members"
+              :can-remove="perms.actions.can_edit_members"
+              :show-groups="true"
+              :show-tenants="true"
+              @add-permissions="addPermissions('editor', $event)"
+              @remove-permissions="removePermissions('editor', $event)"
+            />
+          </td>
+        </tr>
+
+        <!-- Viewers -->
+        <tr v-if="perms.actions.can_edit_members || perms.users.viewers?.length > 0">
+          <th>Viewers</th>
+          <td>
+            <tl-apps-admin-entrel-list
+              action-text="Add a feed version viewer"
+              :action-info="permLevels('viewer')"
+              :entrels="perms.users.viewers"
+              :can-add="perms.actions.can_edit_members"
+              :can-remove="perms.actions.can_edit_members"
+              :show-groups="true"
+              :show-tenants="true"
+              @add-permissions="addPermissions('viewer', $event)"
+              @remove-permissions="removePermissions('viewer', $event)"
+            />
+          </td>
+        </tr>
+
+        <!-- Note -->
+        <tr>
+          <th />
+          <td class="has-text-grey is-size-7">
+            * Permissions are additive with permissions defined by feed and group (not shown)
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
@@ -64,7 +97,7 @@ const props = withDefaults(defineProps<{
   client: 'default'
 })
 
-defineEmits<{
+const emit = defineEmits<{
   (e: 'changed'): void
 }>()
 
@@ -72,14 +105,14 @@ const user = useUser()
 const { getObjectType, getRelation } = useAuthz()
 
 const feedVersionQuery = gql`
-query($ids:[Int!]!) {
-  feed_versions(ids:$ids) {
-    id
-    name
-    sha1
-    description
+  query($ids: [Int!]!) {
+    feed_versions(ids: $ids) {
+      id
+      name
+      sha1
+      description
+    }
   }
-}
 `
 
 // Apollo for feed version details
@@ -142,4 +175,32 @@ const removePermissions = async (relation: string, value: any) => {
     submitting.value = false
   }
 }
+
+const changed = () => {
+  refresh()
+  emit('changed')
+}
+
+defineExpose({ changed })
 </script>
+
+<style scoped>
+.admin-detail-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.admin-detail-table th {
+  vertical-align: top;
+  text-align: right;
+  white-space: nowrap;
+  padding: 0.75em 1em 0.75em 0;
+  width: 1%;
+  font-weight: 600;
+}
+
+.admin-detail-table td {
+  vertical-align: top;
+  padding: 0.75em 0;
+}
+</style>

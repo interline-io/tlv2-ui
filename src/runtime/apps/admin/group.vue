@@ -49,14 +49,30 @@
         <tr v-if="showFeeds">
           <th>Feeds</th>
           <td>
-            <div class="field is-grouped is-grouped-multiline">
-              <tl-apps-admin-feed-item
-                v-for="v of group.feeds || []"
-                :key="v.id"
-                :value="v"
-              />
-              <span v-if="!group.feeds?.length" class="has-text-grey">(none)</span>
-            </div>
+            <tl-apps-admin-entity-list
+              :items="group.feeds || []"
+              item-label="feed"
+              item-label-plural="feeds"
+              :search-fields="['name', 'onestop_id']"
+            >
+              <template #header>
+                <th>Name</th>
+                <th>Onestop ID</th>
+              </template>
+              <template #row="{ item }">
+                <tr>
+                  <td>
+                    <tl-link
+                      route-key="feeds-feedKey"
+                      :to="{ params: { feedKey: item.onestop_id } }"
+                    >
+                      {{ item.name || item.onestop_id }}
+                    </tl-link>
+                  </td>
+                  <td class="has-text-grey is-size-7">{{ item.onestop_id }}</td>
+                </tr>
+              </template>
+            </tl-apps-admin-entity-list>
           </td>
         </tr>
 
@@ -73,7 +89,6 @@
           <th>Managers</th>
           <td>
             <tl-apps-admin-entrel-list
-              text=""
               action-text="Add a group manager"
               :action-info="permLevels('manager')"
               :entrels="group.users.managers"
@@ -90,7 +105,6 @@
           <th>Editors</th>
           <td>
             <tl-apps-admin-entrel-list
-              text=""
               action-text="Add a group editor"
               :action-info="permLevels('editor')"
               :entrels="group.users.editors"
@@ -108,7 +122,6 @@
           <th>Viewers</th>
           <td>
             <tl-apps-admin-entrel-list
-              text=""
               action-text="Add a group viewer"
               :action-info="permLevels('viewer')"
               :entrels="group.users.viewers"

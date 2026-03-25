@@ -1,41 +1,53 @@
 <template>
   <div>
-    <div class="field is-grouped is-grouped-multiline">
-      <div v-if="canAdd" class="control">
-        <t-button
-          size="small"
-          @click="showUserPicker = true"
-        >
-          <t-icon icon="plus" />
-        </t-button>
-      </div>
+    <div class="is-flex is-align-items-center mb-2" style="gap: 0.5em;">
+      <t-button
+        v-if="canAdd"
+        size="small"
+        @click="showUserPicker = true"
+      >
+        <t-icon icon="plus" size="small" />
+      </t-button>
+      <span class="has-text-grey is-size-7">{{ allEntrels.length }} {{ allEntrels.length === 1 ? 'user' : 'users' }}</span>
+    </div>
 
+    <!-- Search (for larger lists) -->
+    <div v-if="allEntrels.length > 8" class="mb-2">
+      <t-input
+        v-model="searchQuery"
+        size="small"
+        placeholder="Filter..."
+      />
+    </div>
+
+    <!-- User tags -->
+    <div v-if="filteredEntrels.length" class="field is-grouped is-grouped-multiline">
       <tl-apps-admin-tenant-item
-        v-for="v of (nameSort(tenants || []) as any[])"
-        :key="v.id"
+        v-for="v of filteredTenants"
+        :key="'t' + v.id"
         :value="v"
         :action="canRemove ? 'remove' : null"
         @select="$emit('removePermissions', { type: 'tenant', id: $event, refrel: 'member' })"
       />
 
       <tl-apps-admin-group-item
-        v-for="v of (nameSort(groups || []) as any[])"
-        :key="v.id"
+        v-for="v of filteredGroups"
+        :key="'g' + v.id"
         :value="v"
         :action="canRemove ? 'remove' : null"
         @select="$emit('removePermissions', { type: 'org', id: $event, refrel: 'viewer' })"
       />
 
       <tl-apps-admin-user-item
-        v-for="v of (nameSort(users || []) as any[])"
-        :key="v.id"
+        v-for="v of filteredUsers"
+        :key="'u' + v.id"
         :user="v"
         :action="canRemove ? 'remove' : null"
         @select="$emit('removePermissions', { type: 'user', id: $event })"
       />
-
-      <span v-if="!entrels?.length" class="has-text-grey">(none)</span>
     </div>
+    <span v-else-if="searchQuery" class="has-text-grey is-size-7">No matches</span>
+    <span v-else class="has-text-grey">(none)</span>
 
     <t-modal
       v-slot="scope"
@@ -88,16 +100,26 @@ defineEmits<{
 }>()
 
 const showUserPicker = ref(false)
+const searchQuery = ref('')
 
-const users = computed(() => {
-  return props.entrels.filter((v) => { return v.type === 5 })
-})
+const allEntrels = computed(() => props.entrels || [])
 
-const groups = computed(() => {
-  return props.entrels.filter((v) => { return v.type === 2 })
-})
+const users = computed(() => nameSort(allEntrels.value.filter(v => v.type === 5)) as any[])
+const groups = computed(() => nameSort(allEntrels.value.filter(v => v.type === 2)) as any[])
+const tenants = computed(() => nameSort(allEntrels.value.filter(v => v.type === 1)) as any[])
 
-const tenants = computed(() => {
-  return props.entrels.filter((v) => { return v.type === 1 })
-})
+const filterBySearch = (items: any[]) => {
+  if (!searchQuery.value) return items
+  const q = searchQuery.value.toLowerCase()
+  return items.filter(v => {
+    const name = String(v.name || '').toLowerCase()
+    const email = String(v.email || '').toLowerCase()
+    return name.includes(q) || email.includes(q)
+  })
+}
+
+const filteredUsers = computed(() => filterBySearch(users.value))
+const filteredGroups = computed(() => filterBySearch(groups.value))
+const filteredTenants = computed(() => filterBySearch(tenants.value))
+const filteredEntrels = computed(() => [...filteredTenants.value, ...filteredGroups.value, ...filteredUsers.value])
 </script>

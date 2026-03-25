@@ -1,6 +1,6 @@
 <template>
-  <div class="columns is-gapless p-5">
-    <aside class="column is-narrow menu">
+  <div class="sidebar-layout">
+    <aside class="sidebar-nav menu">
       <div v-for="group in groups" :key="group.title">
         <p class="menu-label">
           {{ group.title }}
@@ -19,7 +19,7 @@
       </div>
     </aside>
 
-    <main class="column">
+    <main class="sidebar-main">
       <slot />
     </main>
   </div>
@@ -35,3 +35,21 @@ defineProps<{
 
 const route = useRoute()
 </script>
+
+<style scoped>
+.sidebar-layout {
+  display: flex;
+  padding: 1.5rem;
+  gap: 2rem;
+}
+
+.sidebar-nav {
+  flex-shrink: 0;
+  width: 12rem;
+}
+
+.sidebar-main {
+  flex: 1;
+  min-width: 0;
+}
+</style>

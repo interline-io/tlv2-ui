@@ -26,23 +26,39 @@
         <tr>
           <th>Groups</th>
           <td>
-            <div class="is-flex is-align-items-center mb-2" style="gap: 0.5em;" v-if="tenant.actions.can_create_org">
-              <t-button
-                size="small"
-                @click="createGroup"
-              >
-                <t-icon icon="plus" size="small" />
-                <span>Create group</span>
-              </t-button>
-            </div>
-            <div class="field is-grouped is-grouped-multiline">
-              <tl-apps-admin-group-item
-                v-for="group of (nameSort(tenant.groups || []) as any[])"
-                :key="group.id"
-                :value="group"
-              />
-              <span v-if="!tenant.groups?.length" class="has-text-grey">(none)</span>
-            </div>
+            <t-button
+              v-if="tenant.actions.can_create_org"
+              size="small"
+              class="mb-2"
+              @click="createGroup"
+            >
+              <t-icon icon="plus" size="small" />
+              <span>Create group</span>
+            </t-button>
+
+            <tl-apps-admin-entity-list
+              :items="sortedGroups"
+              item-label="group"
+              item-label-plural="groups"
+              :search-fields="['name']"
+            >
+              <template #header>
+                <th>Name</th>
+              </template>
+              <template #row="{ item }">
+                <tr>
+                  <td>
+                    <tl-link
+                      route-key="apps-admin-groups-groupKey"
+                      :to="{ params: { groupKey: item.id } }"
+                    >
+                      <t-icon icon="account-group" size="small" class="mr-1" />
+                      {{ item.name }}
+                    </tl-link>
+                  </td>
+                </tr>
+              </template>
+            </tl-apps-admin-entity-list>
           </td>
         </tr>
 
@@ -123,6 +139,8 @@ const loading = computed({
 })
 
 const error = computed(() => fetchError.value || actionError.value)
+
+const sortedGroups = computed(() => nameSort(tenant.value?.groups || []) as any[])
 
 const permLevels = (lvl: string) => {
   return {

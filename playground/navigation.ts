@@ -77,7 +77,8 @@ export const appsGroups: NavGroup[] = [
     items: [
       { name: 'Admin Home', path: '/admin', icon: 'shield-account' },
       { name: 'Groups', path: '/admin/groups', icon: 'account-group' },
-      { name: 'Tenants', path: '/admin/tenants', icon: 'domain' }
+      { name: 'Tenants', path: '/admin/tenants', icon: 'domain' },
+      { name: 'Feeds', path: '/admin/feeds', icon: 'rss' }
     ]
   }
 ]
