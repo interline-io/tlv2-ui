@@ -65,6 +65,13 @@ export const controlsGroups: NavGroup[] = [
 
 export const appsGroups: NavGroup[] = [
   {
+    title: 'Tools',
+    variant: 'warning',
+    items: [
+      { name: 'GraphQL Test', path: '/apps/graphql-test', icon: 'api' }
+    ]
+  },
+  {
     title: 'Admin',
     variant: 'info',
     items: [

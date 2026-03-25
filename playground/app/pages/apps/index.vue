@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { appsGroups } from '../../navigation'
+import { appsGroups } from '../../../navigation'
 
 </script>
 

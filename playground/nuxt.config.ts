@@ -1,3 +1,5 @@
+import 'dotenv/config'
+
 export default defineNuxtConfig({
   modules: ['../src/module'],
 

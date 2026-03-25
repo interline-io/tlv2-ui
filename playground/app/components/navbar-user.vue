@@ -5,13 +5,13 @@
       {{ user.name || user.email }}
     </a>
     <div class="navbar-dropdown is-right">
-      <a class="navbar-item" @click="useLogout()">
+      <a class="navbar-item" @click="logout">
         Sign out
       </a>
     </div>
   </div>
   <div v-else class="navbar-item">
-    <button class="button is-small is-link" @click="useLogin(route.fullPath)">
+    <button class="button is-small is-link" @click="login">
       Sign in
     </button>
   </div>
@@ -23,4 +23,12 @@ import { useUser, useLogin, useLogout } from '#imports'
 
 const route = useRoute()
 const user = useUser()
+
+async function login () {
+  await useLogin(route.fullPath)
+}
+
+async function logout () {
+  await useLogout()
+}
 </script>
