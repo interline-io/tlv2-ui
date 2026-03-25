@@ -1,35 +1,31 @@
 <template>
-  <div>
+  <div class="admin-group">
     <t-loading :active="loading" :full-page="false" />
-    <t-notification
-      v-if="error"
-      variant="danger"
-    >
+
+    <t-notification v-if="error" variant="danger">
       Error: {{ error }}
     </t-notification>
-    <div v-else-if="group">
-      <div>
-        <t-field
-          label="Group name"
-          horizontal
-        >
-          <tl-apps-admin-input
-            :value="group.group?.name"
-            :can-edit="editable && group.actions.can_edit"
-            @save="saveName"
-          />
-        </t-field>
 
-        <t-field
-          v-if="showTenant"
-          label="Parent"
-          horizontal
-        >
-          <tl-apps-admin-input
-            :value="group.tenant?.name"
-            :link="true"
-          >
-            <template #link>
+    <table v-else-if="group" class="table is-fullwidth">
+      <tbody>
+        <!-- Name -->
+        <tr>
+          <th>Group name</th>
+          <td>
+            <tl-apps-admin-input
+              :value="group.group?.name"
+              :can-edit="editable && group.actions.can_edit"
+              @save="saveName"
+            />
+          </td>
+        </tr>
+
+        <!-- Parent tenant -->
+        <tr v-if="showTenant">
+          <th>Parent</th>
+          <td>
+            <div class="is-flex is-align-items-center" style="gap: 0.5em;">
+              <span>{{ group.tenant?.name }}</span>
               <tl-link
                 v-if="group.tenant"
                 class="button is-small"
@@ -45,94 +41,126 @@
               >
                 Set tenant
               </t-button>
+            </div>
+          </td>
+        </tr>
 
-              <t-field
-                v-if="showFeeds"
-                label="Feeds"
-                horizontal
-              >
-                <div class="field">
-                  <div class="field is-grouped is-grouped-multiline">
-                    <tl-apps-admin-feed-item
-                      v-for="v of group.feeds || []"
-                      :key="v.id"
-                      :value="v"
-                    />
-                  </div>
-                </div>
-              </t-field>
+        <!-- Feeds -->
+        <tr v-if="showFeeds">
+          <th>Feeds</th>
+          <td>
+            <tl-apps-admin-entity-list
+              :items="group.feeds || []"
+              item-label="feed"
+              item-label-plural="feeds"
+              :search-fields="['name', 'onestop_id']"
+            >
+              <template #header>
+                <th>Name</th>
+                <th>Onestop ID</th>
+              </template>
+              <template #row="{ item }">
+                <tr>
+                  <td>
+                    <tl-link
+                      route-key="feeds-feedKey"
+                      :to="{ params: { feedKey: item.onestop_id } }"
+                    >
+                      {{ item.name || item.onestop_id }}
+                    </tl-link>
+                  </td>
+                  <td class="has-text-grey is-size-7">
+                    {{ item.onestop_id }}
+                  </td>
+                </tr>
+              </template>
+            </tl-apps-admin-entity-list>
+          </td>
+        </tr>
 
-              <t-field v-if="showActions" label="Your permissions" horizontal>
-                <div :title="`You are logged in as ${user.name} (${user.email})`">
-                  <tl-apps-admin-perm-list :actions="group.actions" />
-                </div>
-              </t-field>
+        <!-- Your permissions -->
+        <tr v-if="showActions">
+          <th>Your permissions</th>
+          <td>
+            <tl-apps-admin-perm-list :actions="group.actions" />
+          </td>
+        </tr>
 
-              <div v-if="showMembers">
-                <tl-apps-admin-entrel-list
-                  v-if="(editable && group.actions.can_edit_members) || group.users.managers?.length > 0"
-                  text="Managers"
-                  action-text="Add a group manager"
-                  :action-info="permLevels('manager')"
-                  :entrels="group.users.managers"
-                  :can-add="editable && group.actions.can_edit_members"
-                  :can-remove="editable && group.actions.can_edit_members"
-                  @add-permissions="addPermissions('manager', $event)"
-                  @remove-permissions="removePermissions('manager', $event)"
-                />
+        <!-- Managers -->
+        <tr v-if="showMembers && ((editable && group.actions.can_edit_members) || group.users.managers?.length > 0)">
+          <th>Managers</th>
+          <td>
+            <tl-apps-admin-entrel-list
+              action-text="Add a group manager"
+              :action-info="permLevels('manager')"
+              :entrels="group.users.managers"
+              :can-add="editable && group.actions.can_edit_members"
+              :can-remove="editable && group.actions.can_edit_members"
+              @add-permissions="addPermissions('manager', $event)"
+              @remove-permissions="removePermissions('manager', $event)"
+            />
+          </td>
+        </tr>
 
-                <tl-apps-admin-entrel-list
-                  v-if="(editable && group.actions.can_edit_members) || group.users.editors?.length > 0"
-                  text="Editors"
-                  action-text="Add a group editor"
-                  :action-info="permLevels('editor')"
-                  :entrels="group.users.editors"
-                  :can-add="editable && group.actions.can_edit_members"
-                  :can-remove="editable && group.actions.can_edit_members"
-                  :show-tenants="true"
-                  @add-permissions="addPermissions('editor', $event)"
-                  @remove-permissions="removePermissions('editor', $event)"
-                />
+        <!-- Editors -->
+        <tr v-if="showMembers && ((editable && group.actions.can_edit_members) || group.users.editors?.length > 0)">
+          <th>Editors</th>
+          <td>
+            <tl-apps-admin-entrel-list
+              action-text="Add a group editor"
+              :action-info="permLevels('editor')"
+              :entrels="group.users.editors"
+              :can-add="editable && group.actions.can_edit_members"
+              :can-remove="editable && group.actions.can_edit_members"
+              :show-tenants="true"
+              @add-permissions="addPermissions('editor', $event)"
+              @remove-permissions="removePermissions('editor', $event)"
+            />
+          </td>
+        </tr>
 
-                <tl-apps-admin-entrel-list
-                  v-if="(editable && group.actions.can_edit_members) || group.users.viewers?.length > 0"
-                  text="Viewers"
-                  action-text="Add a group viewer"
-                  :action-info="permLevels('viewer')"
-                  :entrels="group.users.viewers"
-                  :can-add="editable && group.actions.can_edit_members"
-                  :can-remove="editable && group.actions.can_edit_members"
-                  :show-tenants="true"
-                  @add-permissions="addPermissions('viewer', $event)"
-                  @remove-permissions="removePermissions('viewer', $event)"
-                />
+        <!-- Viewers -->
+        <tr v-if="showMembers && ((editable && group.actions.can_edit_members) || group.users.viewers?.length > 0)">
+          <th>Viewers</th>
+          <td>
+            <tl-apps-admin-entrel-list
+              action-text="Add a group viewer"
+              :action-info="permLevels('viewer')"
+              :entrels="group.users.viewers"
+              :can-add="editable && group.actions.can_edit_members"
+              :can-remove="editable && group.actions.can_edit_members"
+              :show-tenants="true"
+              @add-permissions="addPermissions('viewer', $event)"
+              @remove-permissions="removePermissions('viewer', $event)"
+            />
+          </td>
+        </tr>
 
-                <t-field label="" horizontal>
-                  * Admin users in parent {{ group.tenant?.name }} are also group managers (not shown)
-                </t-field>
-              </div>
+        <!-- Note -->
+        <tr v-if="showMembers && group.tenant?.name">
+          <th />
+          <td class="has-text-grey is-size-7">
+            * Admin users in parent {{ group.tenant.name }} are also group managers (not shown)
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
-              <t-modal
-                v-model="showAssignTenant"
-                title="Set tenant"
-              >
-                <tl-apps-admin-entrel-search
-                  :show-users="false"
-                  :show-tenants="true"
-                  @select="showAssignTenant = false; setTenant($event)"
-                />
-              </t-modal>
-            </template>
-          </tl-apps-admin-input>
-        </t-field>
-      </div>
-    </div>
+    <t-modal
+      v-model="showAssignTenant"
+      title="Set tenant"
+    >
+      <tl-apps-admin-entrel-search
+        :show-users="false"
+        :show-tenants="true"
+        @select="showAssignTenant = false; setTenant($event)"
+      />
+    </t-modal>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useUser } from '../../composables/useUser'
 import { useAdminFetch, fetchAdmin } from './useAdminApi'
 import { useAuthz } from './useAuthz'
 
@@ -156,7 +184,6 @@ const emit = defineEmits<{
 }>()
 
 const showAssignTenant = ref(false)
-const user = useUser()
 
 const { data: group, pending: fetchPending, error: fetchError, refresh } = await useAdminFetch<any>(() => `/groups/${props.id}`)
 const { getObjectType, getRelation } = useAuthz()
@@ -183,7 +210,6 @@ const permLevels = (lvl: string) => {
 }
 
 const saveName = async (value: string) => {
-  console.log('saveName', value)
   submitting.value = true
   try {
     await fetchAdmin(`/groups/${props.id}`, { method: 'POST', body: { name: value } })
@@ -196,7 +222,6 @@ const saveName = async (value: string) => {
 }
 
 const addPermissions = async (relation: string, value: any) => {
-  console.log('addPermissions:', relation, value)
   const data = {
     id: String(value.id),
     type: getObjectType(value.type),
@@ -215,7 +240,6 @@ const addPermissions = async (relation: string, value: any) => {
 }
 
 const removePermissions = async (relation: string, value: any) => {
-  console.log('removePermissions:', relation, value)
   const data = {
     id: String(value.id),
     type: getObjectType(value.type),
@@ -234,7 +258,6 @@ const removePermissions = async (relation: string, value: any) => {
 }
 
 const setTenant = async (value: any) => {
-  console.log('setTenant', value)
   const data = { tenant_id: value.id }
   submitting.value = true
   try {

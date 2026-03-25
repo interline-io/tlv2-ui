@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { controlsGroups } from '../../navigation'
+import { appsGroups } from '../../../navigation'
 </script>
 
 <template>
   <div class="container">
     <section class="section">
       <h1 class="title is-1">
-        tlv2-ui Component Library
+        Apps
       </h1>
       <p class="subtitle">
-        Interactive demos and testing playground for all t-* components
+        Full app sections provided by tlv2-ui (requires backend configuration)
       </p>
 
       <div class="content">
-        <div v-for="group in controlsGroups" :key="group.title">
+        <div v-for="group in appsGroups" :key="group.title">
           <h2 class="title is-3">
             {{ group.title }}
           </h2>

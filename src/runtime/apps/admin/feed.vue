@@ -1,72 +1,75 @@
 <template>
-  <div>
+  <div class="admin-feed">
     <t-loading :active="loading" :full-page="false" />
-    <t-notification
-      v-if="error"
-      variant="danger"
-    >
+
+    <t-notification v-if="error" variant="danger">
       Error: {{ error }}
     </t-notification>
-    <div v-if="feed">
-      <t-field label="Feed name" horizontal>
-        {{ feed.feed.name }}
-      </t-field>
 
-      <t-field label="Feed ID" horizontal>
-        {{ feed.feed.onestop_id }}
-      </t-field>
+    <table v-else-if="feed" class="table is-fullwidth">
+      <tbody>
+        <!-- Feed name -->
+        <tr>
+          <th>Feed name</th>
+          <td>{{ feed.feed.name || '(unnamed)' }}</td>
+        </tr>
 
-      <t-field
-        label="Group"
-        horizontal
-      >
-        <tl-apps-admin-input
-          :value="feed?.group?.name || 'Unnamed Group'"
-          :link="true"
-        >
-          <template #link>
-            <tl-link
-              v-if="feed?.group"
-              class="button is-small mr-2"
-              route-key="apps-admin-groups-groupKey"
-              :to="{ params: { groupKey: feed.group.id } }"
-            >
-              Show group
-            </tl-link>
-            <t-button
-              v-if="feed.actions.can_set_group"
-              size="small"
-              @click="showAssignGroup = true"
-            >
-              Set group
-            </t-button>
-          </template>
-        </tl-apps-admin-input>
-      </t-field>
+        <!-- Onestop ID -->
+        <tr>
+          <th>Onestop ID</th>
+          <td><code>{{ feed.feed.onestop_id }}</code></td>
+        </tr>
 
-      <t-field label="Your permissions" horizontal>
-        <div :title="`You are logged in as ${user.name} (${user.email})`">
-          <tl-apps-admin-perm-list :actions="feed?.actions" />
-        </div>
-      </t-field>
+        <!-- Group -->
+        <tr>
+          <th>Group</th>
+          <td>
+            <div class="is-flex is-align-items-center" style="gap: 0.5em;">
+              <span>{{ feed.group?.name || '(none)' }}</span>
+              <tl-link
+                v-if="feed.group"
+                class="button is-small"
+                route-key="apps-admin-groups-groupKey"
+                :to="{ params: { groupKey: feed.group.id } }"
+              >
+                View group
+              </tl-link>
+              <t-button
+                v-if="feed.actions.can_set_group"
+                size="small"
+                @click="showAssignGroup = true"
+              >
+                Set group
+              </t-button>
+            </div>
+          </td>
+        </tr>
 
-      <t-modal
-        v-model="showAssignGroup"
-        :title="`Set group`"
-      >
-        <tl-apps-admin-entrel-search
-          :show-users="false"
-          :show-groups="true"
-          @select="showAssignGroup = false; setGroup($event)"
-        />
-      </t-modal>
-    </div>
+        <!-- Your permissions -->
+        <tr>
+          <th>Your permissions</th>
+          <td>
+            <tl-apps-admin-perm-list :actions="feed.actions" />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <t-modal
+      v-model="showAssignGroup"
+      title="Set group"
+    >
+      <tl-apps-admin-entrel-search
+        :show-users="false"
+        :show-groups="true"
+        @select="showAssignGroup = false; setGroup($event)"
+      />
+    </t-modal>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useUser } from '../../composables/useUser'
 import { useAdminFetch, fetchAdmin } from './useAdminApi'
 
 const props = defineProps<{
@@ -78,12 +81,6 @@ const emit = defineEmits<{
 }>()
 
 const showAssignGroup = ref(false)
-const user = useUser()
-
-const changed = () => {
-  refresh()
-  emit('changed')
-}
 
 const { data: feed, pending: fetchPending, error: fetchError, refresh } = useAdminFetch<any>(() => `/feeds/${props.id}`)
 
@@ -108,6 +105,11 @@ const setGroup = async (value: any) => {
   } finally {
     submitting.value = false
   }
+}
+
+const changed = () => {
+  refresh()
+  emit('changed')
 }
 
 defineExpose({ changed })
