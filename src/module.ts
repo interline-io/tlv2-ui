@@ -180,11 +180,9 @@ export default defineNuxtModule<ModuleOptions>({
     // Add Vite plugin - Nuxt 4 pattern
     addVitePlugin(() => ({
       name: 'tlv2-ui:vite-config',
-      configEnvironment (name, config) {
-        // Note: optimizeDeps.include was removed because pnpm's strict node_modules
-        // layout prevents Vite from resolving transitive deps during pre-bundling.
-        // shamefully-hoist=true in .npmrc resolves this; Vite 7 handles discovery.
-      },
+      // Note: optimizeDeps.include was removed because pnpm's strict node_modules
+      // layout prevents Vite from resolving transitive deps during pre-bundling.
+      // shamefully-hoist=true in .npmrc resolves this; Vite 7 handles discovery.
       config (config) {
         // Fix for local development with symlinks (pnpm link, --stub mode)
         // https://github.com/nuxt/nuxt/issues/20001
