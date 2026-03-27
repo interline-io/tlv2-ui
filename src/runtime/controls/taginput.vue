@@ -170,7 +170,7 @@ const props = withDefaults(defineProps<{
   emptyText?: string
   /** Maximum number of tags that can be selected. When undefined, there is no limit. */
   maxTags?: number
-  /** Allow creating new tags not in the options list. @default false */
+  /** Allow creating new tags not in the options list. Only for string-typed taginputs. @default false */
   allowNew?: boolean
   /** Separator keys that trigger creating a new tag (in addition to Enter). @default [','] */
   separators?: string[]
@@ -345,13 +345,6 @@ function handleBlur () {
 function handleKeydown (event: KeyboardEvent) {
   if (props.readonly) return
 
-  // Handle separator keys (e.g. comma) for creating new tags
-  if (props.allowNew && props.separators.includes(event.key)) {
-    event.preventDefault()
-    addNewTag()
-    return
-  }
-
   switch (event.key) {
     case 'ArrowDown':
       event.preventDefault()
@@ -388,6 +381,12 @@ function handleKeydown (event: KeyboardEvent) {
         if (lastTag) {
           removeTag(lastTag)
         }
+      }
+      break
+    default:
+      if (props.allowNew && props.separators.includes(event.key)) {
+        event.preventDefault()
+        addNewTag()
       }
       break
   }
