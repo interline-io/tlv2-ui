@@ -170,6 +170,10 @@ const props = withDefaults(defineProps<{
   emptyText?: string
   /** Maximum number of tags that can be selected. When undefined, there is no limit. */
   maxTags?: number
+  /** Allow creating new tags not in the options list. @default false */
+  allowNew?: boolean
+  /** Separator keys that trigger creating a new tag (in addition to Enter). @default [','] */
+  separators?: string[]
 }>(), {
   options: () => [],
   placeholder: '',
@@ -184,7 +188,9 @@ const props = withDefaults(defineProps<{
   closable: true,
   rounded: false,
   emptyText: 'None selected',
-  maxTags: undefined
+  maxTags: undefined,
+  allowNew: false,
+  separators: () => [',']
 })
 
 const emit = defineEmits<{
@@ -339,6 +345,13 @@ function handleBlur () {
 function handleKeydown (event: KeyboardEvent) {
   if (props.readonly) return
 
+  // Handle separator keys (e.g. comma) for creating new tags
+  if (props.allowNew && props.separators.includes(event.key)) {
+    event.preventDefault()
+    addNewTag()
+    return
+  }
+
   switch (event.key) {
     case 'ArrowDown':
       event.preventDefault()
@@ -361,6 +374,8 @@ function handleKeydown (event: KeyboardEvent) {
         if (option) {
           selectOption(option)
         }
+      } else {
+        addNewTag()
       }
       break
     case 'Escape':
@@ -376,6 +391,23 @@ function handleKeydown (event: KeyboardEvent) {
       }
       break
   }
+}
+
+function addNewTag () {
+  const text = searchText.value.trim()
+  if (!text || !props.allowNew || isMaxReached.value) return false
+  // Check if it already exists as a selected value
+  if (modelValue.value.includes(text as T)) {
+    searchText.value = ''
+    return true
+  }
+  const option: TagOption = { value: text as T, label: text }
+  modelValue.value = [...modelValue.value, text as T]
+  emit('select', option)
+  searchText.value = ''
+  highlightedIndex.value = -1
+  inputRef.value?.focus()
+  return true
 }
 
 function selectOption (option: TagOption) {
