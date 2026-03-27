@@ -28,9 +28,6 @@ export interface ModuleOptions {
   auth0Scope?: string
   auth0RedirectUri?: string
   auth0LogoutUri?: string
-  // Transfer Analyst options
-  transferAnalystReadOnlyFeedSelector?: boolean
-  transferAnalystGtfsRealtimeStopObservations?: boolean
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -65,8 +62,6 @@ export default defineNuxtModule<ModuleOptions>({
     auth0Scope: undefined,
     auth0RedirectUri: undefined,
     auth0LogoutUri: undefined,
-    transferAnalystReadOnlyFeedSelector: false,
-    transferAnalystGtfsRealtimeStopObservations: true
   },
   async setup (options, nuxt) {
     // Create resolver to resolve relative paths
@@ -111,15 +106,12 @@ export default defineNuxtModule<ModuleOptions>({
         auth0LogoutUri: options.auth0LogoutUri,
         auth0Audience: options.auth0Audience,
         auth0Scope: options.auth0Scope,
-        transferAnalystReadOnlyFeedSelector: options.transferAnalystReadOnlyFeedSelector,
-        transferAnalystGtfsRealtimeStopObservations: options.transferAnalystGtfsRealtimeStopObservations,
       }
     }))
 
     // Setup CSS
     nuxt.options.css.push(resolveRuntimeModule('assets/main.css'))
     nuxt.options.css.push('@mdi/font/css/materialdesignicons.css')
-    nuxt.options.css.push('maplibre-gl/dist/maplibre-gl.css')
 
     // Setup plugins (run in order added)
     addPlugin(resolveRuntimeModule('plugins/apollo'))
@@ -155,13 +147,6 @@ export default defineNuxtModule<ModuleOptions>({
     addComponentsDir({
       path: resolveRuntimeModule('controls'),
       prefix: 't'
-    })
-
-    // Add apps (TlApps* components)
-    addComponentsDir({
-      path: resolveRuntimeModule('apps'),
-      pathPrefix: true,
-      prefix: 'TlApps'
     })
 
     // Nuxt 4: Transpile packages for SSR compatibility
