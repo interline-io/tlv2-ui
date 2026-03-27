@@ -181,29 +181,9 @@ export default defineNuxtModule<ModuleOptions>({
     addVitePlugin(() => ({
       name: 'tlv2-ui:vite-config',
       configEnvironment (name, config) {
-        // Vite optimizeDeps pre-bundles dependencies for faster dev server
-        // Include packages that:
-        // - Have many internal modules (reduces waterfall requests)
-        // - Are CommonJS and need ESM conversion for browser
-        // - Cause slow cold starts or discovery issues
-        config.optimizeDeps = config.optimizeDeps || {}
-        config.optimizeDeps.include = config.optimizeDeps.include || []
-        config.optimizeDeps.include.push(
-          '@mapbox/mapbox-gl-draw', // Large library with 100+ modules - pre-bundle to avoid request waterfall
-          '@observablehq/plot', // Complex plotting library with many internal imports
-          'binary-search-bounds', // CommonJS dependency of interval-tree-1d - needs ESM conversion
-          'cytoscape-fcose', // Graph layout algorithm - improves cold start performance
-          'cytoscape', // Core graph library with numerous sub-modules
-          'fast-json-stable-stringify', // Small utility but frequently imported - bundle once
-          'maplibre-gl', // Large mapping library - dramatically speeds up dev cold starts
-          'mixpanel-browser', // Analytics SDK with dynamic imports - needs pre-bundling
-          'zen-observable', // Observable polyfill used by Apollo - avoid re-discovery
-          'vega', // Needs ESM: Visualization library
-          'vega-lite', // Needs ESM: High-level visualization grammar
-          'vega-embed', // Needs ESM: Embeds Vega visualizations
-          'dayjs', // Needs ESM: Date library
-        )
-        // Debug log removed: tlv2-ui:vite-config applied
+        // Note: optimizeDeps.include was removed because pnpm's strict node_modules
+        // layout prevents Vite from resolving transitive deps during pre-bundling.
+        // shamefully-hoist=true in .npmrc resolves this; Vite 7 handles discovery.
       },
       config (config) {
         // Fix for local development with symlinks (pnpm link, --stub mode)
