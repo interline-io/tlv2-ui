@@ -1,14 +1,14 @@
 import 'dotenv/config'
 
 export default defineNuxtConfig({
-  modules: [['../src/module', {}]],
+  modules: [['../src/module', { authMode: 'server' }]],
 
   ssr: false,
 
   devtools: { enabled: true },
 
   runtimeConfig: {
-    // Auth0 server-side config (use NUXT_AUTH0_* env vars)
+    // Auth0 server-side config (use NUXT_AUTH0_* env vars) — only for authMode: 'server'
     auth0: {
       domain: '',
       clientId: '',

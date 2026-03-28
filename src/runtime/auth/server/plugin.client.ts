@@ -1,6 +1,6 @@
 import { defineNuxtPlugin, addRouteMiddleware, useState } from '#imports'
-import { useUserRoles, useUserGraphqlId } from '../lib/auth/user'
-import { logAuthDebug } from '../lib/util/log'
+import { useUserRoles, useUserGraphqlId } from './useUser'
+import { logAuthDebug } from '../../lib/util/log'
 import { useApolloClient } from '@vue/apollo-composable'
 import { gql } from 'graphql-tag'
 

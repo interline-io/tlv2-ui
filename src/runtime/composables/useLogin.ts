@@ -1,7 +1,10 @@
-import { navigateTo, useRoute } from '#imports'
+import { useRuntimeConfig } from '#imports'
+import { useLogin as useServerLogin } from '../auth/server/useLogin'
+import { useLogin as useSpaLogin } from '../auth/spa/useLogin'
 
 export const useLogin = async (targetUrl: null | string) => {
-  const route = useRoute()
-  targetUrl = targetUrl || route.fullPath
-  return navigateTo('/auth/login?returnTo=' + encodeURIComponent(targetUrl), { external: true })
+  const config = useRuntimeConfig()
+  return config.public.tlv2?.authMode === 'spa'
+    ? useSpaLogin(targetUrl)
+    : useServerLogin(targetUrl)
 }

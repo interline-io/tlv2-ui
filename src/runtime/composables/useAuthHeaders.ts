@@ -1,7 +1,10 @@
-// Auth headers are no longer needed client-side.
-// The server proxy (proxy.ts) extracts the JWT from the auth0-nuxt session
-// and attaches it to backend requests automatically.
-// This stub is kept for backwards compatibility during migration.
+import { useRuntimeConfig } from '#imports'
+import { useAuthHeaders as useServerAuthHeaders } from '../auth/server/useAuthHeaders'
+import { useAuthHeaders as useSpaAuthHeaders } from '../auth/spa/useAuthHeaders'
+
 export const useAuthHeaders = async (): Promise<Record<string, string>> => {
-  return {}
+  const config = useRuntimeConfig()
+  return config.public.tlv2?.authMode === 'spa'
+    ? useSpaAuthHeaders()
+    : useServerAuthHeaders()
 }
