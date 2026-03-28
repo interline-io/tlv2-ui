@@ -63,8 +63,7 @@
     "access": "restricted"
   },
   "peerDependencies": {
-    "nuxt": "^4.0.0",
-    "vue": "^3.0.0"
+    "nuxt": "^4.0.0"
   },
   "devDependencies": {
     "@nuxt/cli": "3.30.0",
