@@ -3,8 +3,8 @@
  */
 
 import type { Point } from 'geojson'
-import { haversinePosition } from '../../lib/geom'
-import type { RoutingGraph } from '../../lib/pathways/graph'
+import { haversinePosition } from '../geom'
+import type { RoutingGraph } from './graph'
 
 /**
  * Basic feed information

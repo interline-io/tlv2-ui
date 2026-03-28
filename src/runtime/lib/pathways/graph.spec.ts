@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest'
 
-import { Station } from '../../apps/transfers/station'
+import { Station } from './station'
 import { RoutingGraph, DefaultCost, DefaultDistance, Profiles, type RoutableStop } from './graph'
 
 import StopData from '../../../../testdata/ftvl/stop.json'
