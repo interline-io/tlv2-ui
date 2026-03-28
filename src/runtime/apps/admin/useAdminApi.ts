@@ -9,6 +9,7 @@ export function useAdminFetch<T> (path: string | (() => string), options: UseFet
 
   return useFetch(path, {
     baseURL: apiEndpoint + '/admin',
+    credentials: 'same-origin',
     onRequest: async ({ options }) => {
       const authHeaders = await useAuthHeaders()
       options.headers = {

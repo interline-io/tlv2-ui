@@ -1,9 +1,13 @@
-import { defineNuxtModule, addPlugin, createResolver, addImportsDir, addServerHandler, addVitePlugin, addComponentsDir } from '@nuxt/kit'
+import { defineNuxtModule, addPlugin, createResolver, addImportsDir, addServerHandler, addVitePlugin, addComponentsDir, installModule } from '@nuxt/kit'
 import { defu } from 'defu'
 import type { Tlv2RouteKey } from './runtime/route-keys'
 
+export type AuthMode = 'server' | 'spa'
+
 // Config handler
 export interface ModuleOptions {
+  // Auth mode: 'server' (auth0-nuxt, HTTP-only cookies) or 'spa' (auth0-spa-js, client-side tokens)
+  authMode: AuthMode
   // Bulma config
   bulma: string
   // Link sources
@@ -11,7 +15,6 @@ export interface ModuleOptions {
   // Route resolver
   routes?: Partial<Record<Tlv2RouteKey, string>>
   // Proxy options
-  useProxy: boolean
   proxyBase?: string
   apiBase?: string
   // Login gate
@@ -21,7 +24,7 @@ export interface ModuleOptions {
   protomapsApikey?: string
   nearmapsApikey?: string
   mixpanelApikey?: string
-  // Auth0
+  // SPA-mode-only Auth0 options (ignored in server mode)
   auth0ClientId?: string
   auth0Domain?: string
   auth0Audience?: string
@@ -42,16 +45,10 @@ export default defineNuxtModule<ModuleOptions>({
       nuxt: '^4.0.0'
     }
   },
-  moduleDependencies: {
-    'nuxt-csurf': {
-      defaults: {
-        addCsrfTokenToEventCtx: true
-      }
-    }
-  },
+  // moduleDependencies is set dynamically in setup() based on authMode
   defaults: {
+    authMode: 'server',
     bulma: '',
-    useProxy: false,
     loginGate: false,
     requireLogin: false,
     safelinkUtmSource: undefined,
@@ -73,7 +70,14 @@ export default defineNuxtModule<ModuleOptions>({
     const resolver = createResolver(import.meta.url)
     const resolveRuntimeModule = (path: string) => resolver.resolve('./runtime', path)
 
-    const useProxy = !!options.useProxy
+    const authMode = options.authMode || 'server'
+
+    // Install auth-mode-specific module dependencies
+    if (authMode === 'server') {
+      await installModule('@auth0/auth0-nuxt', {})
+    } else {
+      await installModule('nuxt-csurf', { addCsrfTokenToEventCtx: true })
+    }
 
     // Private runtime options (server-side only)
     // Nuxt 4 recommended pattern: merge at the nested key level
@@ -90,30 +94,36 @@ export default defineNuxtModule<ModuleOptions>({
 
     // Public runtime options (available on both server and client)
     // Nuxt 4 recommended pattern: merge at the nested key level
+    const publicConfig: Record<string, any> = {
+      authMode,
+      safelinkUtmSource: options.safelinkUtmSource,
+      apiBase: {
+        default: options.apiBase,
+        stationEditor: '',
+        feedManagement: '',
+      },
+      protomapsApikey: options.protomapsApikey,
+      nearmapsApikey: options.nearmapsApikey,
+      mixpanelApikey: options.mixpanelApikey,
+      loginGate: options.loginGate,
+      requireLogin: options.requireLogin,
+      routes: options.routes,
+      transferAnalystReadOnlyFeedSelector: options.transferAnalystReadOnlyFeedSelector,
+      transferAnalystGtfsRealtimeStopObservations: options.transferAnalystGtfsRealtimeStopObservations,
+    }
+
+    // SPA mode: add Auth0 client config to public runtime
+    if (authMode === 'spa') {
+      publicConfig.auth0Domain = options.auth0Domain
+      publicConfig.auth0ClientId = options.auth0ClientId
+      publicConfig.auth0RedirectUri = options.auth0RedirectUri
+      publicConfig.auth0LogoutUri = options.auth0LogoutUri
+      publicConfig.auth0Audience = options.auth0Audience
+      publicConfig.auth0Scope = options.auth0Scope
+    }
+
     Object.assign(nuxt.options.runtimeConfig.public, defu(nuxt.options.runtimeConfig.public, {
-      tlv2: {
-        useProxy: useProxy,
-        safelinkUtmSource: options.safelinkUtmSource,
-        apiBase: {
-          default: options.apiBase,
-          stationEditor: '',
-          feedManagement: '',
-        },
-        protomapsApikey: options.protomapsApikey,
-        nearmapsApikey: options.nearmapsApikey,
-        mixpanelApikey: options.mixpanelApikey,
-        loginGate: options.loginGate,
-        requireLogin: options.requireLogin,
-        routes: options.routes,
-        auth0Domain: options.auth0Domain,
-        auth0ClientId: options.auth0ClientId,
-        auth0RedirectUri: options.auth0RedirectUri,
-        auth0LogoutUri: options.auth0LogoutUri,
-        auth0Audience: options.auth0Audience,
-        auth0Scope: options.auth0Scope,
-        transferAnalystReadOnlyFeedSelector: options.transferAnalystReadOnlyFeedSelector,
-        transferAnalystGtfsRealtimeStopObservations: options.transferAnalystGtfsRealtimeStopObservations,
-      }
+      tlv2: publicConfig
     }))
 
     // Setup CSS
@@ -124,16 +134,27 @@ export default defineNuxtModule<ModuleOptions>({
     // Setup plugins (run in order added)
     addPlugin(resolveRuntimeModule('plugins/apollo'))
     addPlugin(resolveRuntimeModule('plugins/mixpanel.client'))
-    addPlugin(resolveRuntimeModule('plugins/auth.client'))
+
+    // Auth mode-specific plugins
+    if (authMode === 'server') {
+      addPlugin(resolveRuntimeModule('auth/server/plugin.client'))
+
+      // Server middleware for auth protection on API routes
+      addServerHandler({
+        middleware: true,
+        handler: resolveRuntimeModule('server/middleware/auth')
+      })
+    } else {
+      addPlugin(resolveRuntimeModule('auth/spa/plugin.client'))
+    }
+
     addImportsDir(resolveRuntimeModule('composables'))
 
-    // Proxy options
-    if (useProxy) {
-      addServerHandler({
-        route: '/api/v2/**',
-        handler: resolveRuntimeModule('plugins/proxy')
-      })
-    }
+    // Proxy — all authenticated API calls go through the server proxy
+    addServerHandler({
+      route: '/api/v2/**',
+      handler: resolveRuntimeModule('plugins/proxy')
+    })
 
     // Add assets
     nuxt.hook('nitro:config', (nitroConfig) => {

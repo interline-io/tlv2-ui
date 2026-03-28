@@ -1,5 +1,6 @@
 import './components.d.ts'
 import type { Tlv2RouteKey } from './route-keys'
+import type { AuthMode } from '../module'
 
 declare module 'nuxt/schema' {
   interface RuntimeConfig {
@@ -10,17 +11,12 @@ declare module 'nuxt/schema' {
         stationEditor: string
         feedManagement: string
       }
-      apiBase: {
-        default?: string
-        stationEditor: string
-        feedManagement: string
-      }
     }
   }
 
   interface PublicRuntimeConfig {
     tlv2: {
-      useProxy: boolean
+      authMode: AuthMode
       safelinkUtmSource?: string
       apiBase: {
         default?: string
@@ -34,6 +30,7 @@ declare module 'nuxt/schema' {
       loginGate?: boolean
       requireLogin?: boolean
       editorRoutePrefix: string
+      // SPA-mode Auth0 config (only present when authMode === 'spa')
       auth0Domain?: string
       auth0ClientId?: string
       auth0RedirectUri?: string
@@ -46,13 +43,12 @@ declare module 'nuxt/schema' {
   }
 }
 
-// Add type declarations for nuxt-csurf composables
+// Add type declarations for nuxt-csurf composables (SPA mode)
 declare module '#imports' {
   export function useCsrf (): {
     csrf: string
     headerName: string
   }
-  export function useAuthHeaders (): Promise<Record<string, string>>
 }
 
 // Add type declarations for Vue Apollo

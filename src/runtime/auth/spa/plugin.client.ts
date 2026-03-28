@@ -2,9 +2,9 @@ import { navigateTo, useRuntimeConfig } from '#imports'
 import { defineNuxtPlugin, addRouteMiddleware } from 'nuxt/app'
 import { useStorage } from '@vueuse/core'
 import { gql } from 'graphql-tag'
-import { configureAuth0Client, getAuth0Client, getAuthorizeUrl, checkToken } from '../lib/auth/auth0'
-import { useUser, clearUser, User } from '../lib/auth'
-import { logAuthDebug } from '../lib/util/log'
+import { configureAuth0Client, getAuth0Client, getAuthorizeUrl, checkToken } from './auth0'
+import { useUser, clearUser, User } from './useUser'
+import { logAuthDebug } from '../../lib/util/log'
 import { useApolloClient } from '@vue/apollo-composable'
 
 const RECHECK_INTERVAL = 600_000
@@ -50,9 +50,9 @@ export default defineNuxtPlugin(() => {
     }
 
     // Check user data freshness
-    const user = useUser()
+    const user = useUser() as User
     if (loggedIn) {
-      const lastChecked = Date.now() - (user?.checked || 0)
+      const lastChecked = Date.now() - (user?.checked ?? 0)
       if (lastChecked > RECHECK_INTERVAL || !user?.id) {
         logAuthDebug('auth mw: recheck user')
         await buildUser()

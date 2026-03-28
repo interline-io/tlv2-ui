@@ -1,33 +1,6 @@
-import { useStorage } from '@vueuse/core'
+// Re-export from the composable wrapper which delegates based on authMode
+export { useUser } from '../../composables/useUser'
+export type { TlUser } from '../../auth/shared/types'
 
-export class User {
-  loggedIn = false
-  id = ''
-  name = ''
-  email = ''
-  roles = []
-  externalData = {}
-  checked = 0
-  constructor (v: any) {
-    Object.assign(this, v)
-  }
-
-  hasRole (v: string): boolean {
-    for (const s of this.roles) {
-      if (s === v) {
-        return true
-      }
-    }
-    return false
-  }
-}
-
-export function clearUser () {
-  const checkUser = useStorage('user', {})
-  checkUser.value = new User({ loggedIn: false })
-}
-
-export const useUser = () => {
-  const user = useStorage('user', {})
-  return new User(user?.value || {})
-}
+// Re-export clearUser from both modes for direct imports
+export { clearUser } from '../../auth/server/useUser'

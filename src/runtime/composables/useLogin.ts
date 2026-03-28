@@ -1,12 +1,10 @@
-import { navigateTo, useRoute } from '#imports'
-import { getAuthorizeUrl } from '../lib/auth/auth0'
-import { logAuthDebug } from '../lib/util/log'
+import { useRuntimeConfig } from '#imports'
+import { useLogin as useServerLogin } from '../auth/server/useLogin'
+import { useLogin as useSpaLogin } from '../auth/spa/useLogin'
 
-// Login
 export const useLogin = async (targetUrl: null | string) => {
-  logAuthDebug('useLogin')
-  // Get current route's full path if no targetUrl provided
-  const route = useRoute()
-  targetUrl = targetUrl || route.fullPath
-  return navigateTo(await getAuthorizeUrl(targetUrl), { external: true })
+  const config = useRuntimeConfig()
+  return config.public.tlv2?.authMode === 'spa'
+    ? useSpaLogin(targetUrl)
+    : useServerLogin(targetUrl)
 }
