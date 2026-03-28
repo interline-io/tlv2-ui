@@ -11,7 +11,6 @@ export interface ModuleOptions {
   // Route resolver
   routes?: Partial<Record<Tlv2RouteKey, string>>
   // Proxy options
-  useProxy: boolean
   proxyBase?: string
   apiBase?: string
   // Login gate
@@ -21,13 +20,6 @@ export interface ModuleOptions {
   protomapsApikey?: string
   nearmapsApikey?: string
   mixpanelApikey?: string
-  // Auth0
-  auth0ClientId?: string
-  auth0Domain?: string
-  auth0Audience?: string
-  auth0Scope?: string
-  auth0RedirectUri?: string
-  auth0LogoutUri?: string
   // Transfer Analyst options
   transferAnalystReadOnlyFeedSelector?: boolean
   transferAnalystGtfsRealtimeStopObservations?: boolean
@@ -43,15 +35,10 @@ export default defineNuxtModule<ModuleOptions>({
     }
   },
   moduleDependencies: {
-    'nuxt-csurf': {
-      defaults: {
-        addCsrfTokenToEventCtx: true
-      }
-    }
+    '@auth0/auth0-nuxt': {}
   },
   defaults: {
     bulma: '',
-    useProxy: false,
     loginGate: false,
     requireLogin: false,
     safelinkUtmSource: undefined,
@@ -59,12 +46,6 @@ export default defineNuxtModule<ModuleOptions>({
     apiBase: undefined,
     protomapsApikey: undefined,
     nearmapsApikey: undefined,
-    auth0ClientId: undefined,
-    auth0Domain: undefined,
-    auth0Audience: undefined,
-    auth0Scope: undefined,
-    auth0RedirectUri: undefined,
-    auth0LogoutUri: undefined,
     transferAnalystReadOnlyFeedSelector: false,
     transferAnalystGtfsRealtimeStopObservations: true
   },
@@ -72,8 +53,6 @@ export default defineNuxtModule<ModuleOptions>({
     // Create resolver to resolve relative paths
     const resolver = createResolver(import.meta.url)
     const resolveRuntimeModule = (path: string) => resolver.resolve('./runtime', path)
-
-    const useProxy = !!options.useProxy
 
     // Private runtime options (server-side only)
     // Nuxt 4 recommended pattern: merge at the nested key level
@@ -92,7 +71,6 @@ export default defineNuxtModule<ModuleOptions>({
     // Nuxt 4 recommended pattern: merge at the nested key level
     Object.assign(nuxt.options.runtimeConfig.public, defu(nuxt.options.runtimeConfig.public, {
       tlv2: {
-        useProxy: useProxy,
         safelinkUtmSource: options.safelinkUtmSource,
         apiBase: {
           default: options.apiBase,
@@ -105,12 +83,6 @@ export default defineNuxtModule<ModuleOptions>({
         loginGate: options.loginGate,
         requireLogin: options.requireLogin,
         routes: options.routes,
-        auth0Domain: options.auth0Domain,
-        auth0ClientId: options.auth0ClientId,
-        auth0RedirectUri: options.auth0RedirectUri,
-        auth0LogoutUri: options.auth0LogoutUri,
-        auth0Audience: options.auth0Audience,
-        auth0Scope: options.auth0Scope,
         transferAnalystReadOnlyFeedSelector: options.transferAnalystReadOnlyFeedSelector,
         transferAnalystGtfsRealtimeStopObservations: options.transferAnalystGtfsRealtimeStopObservations,
       }
@@ -124,16 +96,20 @@ export default defineNuxtModule<ModuleOptions>({
     // Setup plugins (run in order added)
     addPlugin(resolveRuntimeModule('plugins/apollo'))
     addPlugin(resolveRuntimeModule('plugins/mixpanel.client'))
-    addPlugin(resolveRuntimeModule('plugins/auth.client'))
+    addPlugin(resolveRuntimeModule('plugins/auth-enrich.client'))
     addImportsDir(resolveRuntimeModule('composables'))
 
-    // Proxy options
-    if (useProxy) {
-      addServerHandler({
-        route: '/api/v2/**',
-        handler: resolveRuntimeModule('plugins/proxy')
-      })
-    }
+    // Server middleware for auth protection on API routes
+    addServerHandler({
+      middleware: true,
+      handler: resolveRuntimeModule('server/middleware/auth')
+    })
+
+    // Proxy — all authenticated API calls go through the server proxy
+    addServerHandler({
+      route: '/api/v2/**',
+      handler: resolveRuntimeModule('plugins/proxy')
+    })
 
     // Add assets
     nuxt.hook('nitro:config', (nitroConfig) => {

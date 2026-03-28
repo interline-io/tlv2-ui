@@ -10,17 +10,11 @@ declare module 'nuxt/schema' {
         stationEditor: string
         feedManagement: string
       }
-      apiBase: {
-        default?: string
-        stationEditor: string
-        feedManagement: string
-      }
     }
   }
 
   interface PublicRuntimeConfig {
     tlv2: {
-      useProxy: boolean
       safelinkUtmSource?: string
       apiBase: {
         default?: string
@@ -34,25 +28,10 @@ declare module 'nuxt/schema' {
       loginGate?: boolean
       requireLogin?: boolean
       editorRoutePrefix: string
-      auth0Domain?: string
-      auth0ClientId?: string
-      auth0RedirectUri?: string
-      auth0LogoutUri?: string
-      auth0Audience?: string
-      auth0Scope?: string
       transferAnalystReadOnlyFeedSelector?: boolean
       transferAnalystGtfsRealtimeStopObservations?: boolean
     }
   }
-}
-
-// Add type declarations for nuxt-csurf composables
-declare module '#imports' {
-  export function useCsrf (): {
-    csrf: string
-    headerName: string
-  }
-  export function useAuthHeaders (): Promise<Record<string, string>>
 }
 
 // Add type declarations for Vue Apollo
