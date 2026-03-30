@@ -1,7 +1,7 @@
 import 'dotenv/config'
 
 export default defineNuxtConfig({
-  modules: [['../src/module', { authMode: 'server' }]],
+  modules: [['../src/module', {}]],
 
   ssr: false,
 

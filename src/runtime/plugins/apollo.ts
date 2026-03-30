@@ -8,14 +8,11 @@ import { setContext } from '@apollo/client/link/context'
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
 
 import { useApiEndpoint } from '../composables/useApiEndpoint'
-import { useAuthHeaders } from '../composables/useAuthHeaders'
-import type { AuthMode } from '../../module'
 
 // Apollo client factory
 function initApolloClient (
   nuxtApp: any,
   endpoint: string,
-  authMode: AuthMode,
   graphqlApikey: string
 ) {
   const httpLink = createUploadLink({
@@ -34,22 +31,8 @@ function initApolloClient (
       }
     }))
     link = apikeyLink.concat(httpLink)
-  } else if (import.meta.client && authMode === 'spa') {
-    // SPA mode client-side: inject Bearer token + CSRF headers
-    const authLink = setContext(async (_, { headers }) => {
-      const authHeaders = await nuxtApp.runWithContext(async () => {
-        return await useAuthHeaders()
-      })
-      return {
-        headers: {
-          ...(headers || {}),
-          ...(authHeaders || {}),
-        },
-      }
-    })
-    link = authLink.concat(httpLink)
   }
-  // Server mode client-side: no auth link needed — proxy handles auth via session cookie
+  // Client-side: no auth link needed — proxy handles auth via session cookie
 
   return new ApolloClient({
     link,
@@ -62,14 +45,13 @@ function initApolloClient (
 // Nuxt plugin
 export default defineNuxtPlugin((nuxtApp) => {
   const config = useRuntimeConfig()
-  const authMode = (config.public.tlv2?.authMode || 'server') as AuthMode
   const graphqlApikey = (import.meta.server ? config.tlv2?.graphqlApikey : '') || ''
 
-  const defaultClient = initApolloClient(nuxtApp, useApiEndpoint('/query', 'default'), authMode, graphqlApikey)
+  const defaultClient = initApolloClient(nuxtApp, useApiEndpoint('/query', 'default'), graphqlApikey)
   const apolloClients = {
     default: defaultClient,
-    stationEditor: initApolloClient(nuxtApp, useApiEndpoint('/query', 'stationEditor'), authMode, graphqlApikey),
-    feedManagement: initApolloClient(nuxtApp, useApiEndpoint('/query', 'feedManagement'), authMode, graphqlApikey),
+    stationEditor: initApolloClient(nuxtApp, useApiEndpoint('/query', 'stationEditor'), graphqlApikey),
+    feedManagement: initApolloClient(nuxtApp, useApiEndpoint('/query', 'feedManagement'), graphqlApikey),
   }
 
   // Restore cache on client
