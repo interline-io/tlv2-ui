@@ -22,17 +22,33 @@ function initApolloClient (
 
   let link: ApolloLink = httpLink
 
-  if (import.meta.server && graphqlApikey) {
-    // Server-side: inject apikey header for direct backend access
-    const apikeyLink = setContext((_, { headers }) => ({
-      headers: {
+  if (import.meta.server) {
+    // Server-side: inject apikey and user's JWT from auth0-nuxt session
+    const ssrAuthLink = setContext(async (_, { headers }) => {
+      const authHeaders: Record<string, string> = {
         ...(headers || {}),
-        apikey: graphqlApikey
       }
-    }))
-    link = apikeyLink.concat(httpLink)
+      if (graphqlApikey) {
+        authHeaders.apikey = graphqlApikey
+      }
+      try {
+        const event = nuxtApp.ssrContext?.event
+        if (event) {
+          // @ts-expect-error — type available at runtime via Nitro auto-imports
+          const auth0 = useAuth0(event)
+          const tokenSet = await auth0.getAccessToken()
+          if (tokenSet.accessToken) {
+            authHeaders.Authorization = `Bearer ${tokenSet.accessToken}`
+          }
+        }
+      } catch {
+        // No valid session — continue without user auth
+      }
+      return { headers: authHeaders }
+    })
+    link = ssrAuthLink.concat(httpLink)
   }
-  // Client-side: no auth link needed — proxy handles auth via session cookie
+  // Client-side: CSRF injected globally by csrf.client plugin, auth via session cookie + proxy
 
   return new ApolloClient({
     link,

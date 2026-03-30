@@ -98,7 +98,8 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.css.push('@mdi/font/css/materialdesignicons.css')
     nuxt.options.css.push('maplibre-gl/dist/maplibre-gl.css')
 
-    // Setup plugins (run in order added — CSRF must be before Apollo)
+    // Setup plugins (run in order added — auth/CSRF must be before Apollo)
+    addPlugin(resolveRuntimeModule('plugins/auth.server'))
     addPlugin(resolveRuntimeModule('plugins/csrf.client'))
     addPlugin(resolveRuntimeModule('plugins/apollo'))
     addPlugin(resolveRuntimeModule('plugins/mixpanel.client'))
