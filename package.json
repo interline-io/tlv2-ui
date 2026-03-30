@@ -33,17 +33,9 @@
       "types": "./dist/runtime/lib/config/index.d.ts",
       "import": "./dist/runtime/lib/config/index.js"
     },
-    "./lib/geom": {
-      "types": "./dist/runtime/lib/geom/index.d.ts",
-      "import": "./dist/runtime/lib/geom/index.js"
-    },
     "./lib/gtfs": {
       "types": "./dist/runtime/lib/gtfs/index.d.ts",
       "import": "./dist/runtime/lib/gtfs/index.js"
-    },
-    "./lib/pathways": {
-      "types": "./dist/runtime/lib/pathways/index.d.ts",
-      "import": "./dist/runtime/lib/pathways/index.js"
     },
     "./lib/testutil": {
       "types": "./dist/runtime/lib/testutil/index.d.ts",
