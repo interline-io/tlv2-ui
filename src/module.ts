@@ -107,12 +107,6 @@ export default defineNuxtModule<ModuleOptions>({
     // Auth plugin (enriches user with roles from GraphQL)
     addPlugin(resolveRuntimeModule('auth/server/plugin.client'))
 
-    // Server middleware for auth protection on API routes
-    addServerHandler({
-      middleware: true,
-      handler: resolveRuntimeModule('server/middleware/auth')
-    })
-
     addImportsDir(resolveRuntimeModule('composables'))
 
     // Proxy — all authenticated API calls go through the server proxy
