@@ -37,6 +37,10 @@
       "types": "./dist/runtime/lib/testutil/index.d.ts",
       "import": "./dist/runtime/lib/testutil/index.js"
     },
+    "./lib/gtfs": {
+      "types": "./dist/runtime/lib/gtfs/index.d.ts",
+      "import": "./dist/runtime/lib/gtfs/index.js"
+    },
     "./lib/util": {
       "types": "./dist/runtime/lib/util/index.d.ts",
       "import": "./dist/runtime/lib/util/index.js"
