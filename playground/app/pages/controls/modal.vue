@@ -136,6 +136,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useToastNotification } from '#imports'
 import TDemoBox from '../../components/t-demo-box.vue'
 
 const { showToast } = useToastNotification()
