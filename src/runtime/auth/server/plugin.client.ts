@@ -9,22 +9,19 @@ export default defineNuxtPlugin(() => {
   addRouteMiddleware('auth-enrich', async () => {
     const auth0User = useState<Record<string, any> | undefined>('auth0_user')
 
-    // If auth0_user is not populated (e.g., ssr: false) or missing roles,
-    // fetch from server endpoint to get enriched session data
-    if (!auth0User.value?.tlv2_roles) {
-      const now = Date.now()
-      if (lastChecked && (now - lastChecked) < RECHECK_INTERVAL) {
-        return
-      }
-      try {
-        logAuthDebug('auth-enrich: fetching session from /api/auth/session')
-        const session = await $fetch('/api/auth/session')
-        if (session) {
-          auth0User.value = session
-        }
-      } catch (e) {
-        console.warn('[tlv2-auth] Failed to fetch session:', e)
-      }
+    // Check freshness — skip if recently checked
+    const now = Date.now()
+    if (lastChecked && (now - lastChecked) < RECHECK_INTERVAL) {
+      return
+    }
+
+    // Fetch enriched session data from server
+    try {
+      logAuthDebug('auth-enrich: fetching session from /api/auth/session')
+      const session = await $fetch('/api/auth/session')
+      auth0User.value = session || undefined
+    } catch (e) {
+      console.warn('[tlv2-auth] Failed to fetch session:', e)
     }
 
     if (!auth0User.value) {
