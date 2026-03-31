@@ -27,7 +27,7 @@ export default defineNuxtConfig({
     public: {
       tlv2: {
         loginGate: true,
-        requireLogin: true,
+        requireLogin: false,
         routes: {
           'apps-admin-groups': 'admin-groups',
           'apps-admin-groups-groupKey': 'admin-groups-groupKey',
