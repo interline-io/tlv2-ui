@@ -1,5 +1,6 @@
 import { defineEventHandler, createError } from 'h3'
 import { proxyHandler } from '../lib/util/proxy'
+import { parseProxyRoute, resolveProxyBase } from '../lib/util/proxy-route'
 
 export default defineEventHandler(async (event) => {
   // Dynamic import of #imports to access Nitro auto-imports (including useAuth0)
@@ -8,22 +9,16 @@ export default defineEventHandler(async (event) => {
   const { useRuntimeConfig, useAuth0 } = await import('#imports') as any
   const config = useRuntimeConfig(event)
 
-  // Extract backend name from path: /api/proxy/{backend}/...
-  const path = event.path || ''
-  const match = path.match(/^\/api\/proxy\/([^/]+)/)
-  const backendName = match?.[1] || 'default'
+  const { backendName, strippedPath } = parseProxyRoute(event.path || '')
 
   const proxyBases: Record<string, string> = config.tlv2?.proxyBase || {}
-  const proxyBase = proxyBases[backendName]
+  const proxyBase = resolveProxyBase(backendName, proxyBases)
   if (!proxyBase) {
     throw createError({
       statusCode: 404,
       message: `[tlv2-proxy] Unknown backend: ${backendName}`
     })
   }
-
-  // Strip /api/proxy/{backend} prefix from path before forwarding
-  const strippedPath = path.replace(/^\/api\/proxy\/[^/]+/, '') || '/'
 
   let accessToken = ''
   try {
@@ -36,7 +31,7 @@ export default defineEventHandler(async (event) => {
 
   return proxyHandler(
     event,
-    String(proxyBase),
+    proxyBase,
     String(config.tlv2.graphqlApikey),
     accessToken,
     strippedPath
