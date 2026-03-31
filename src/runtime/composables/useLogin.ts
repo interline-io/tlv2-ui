@@ -1,1 +1,1 @@
-export { useLogin } from '../auth/server/useLogin'
+export { useLogin } from '../auth/useLogin'

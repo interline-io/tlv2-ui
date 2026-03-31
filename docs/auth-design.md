@@ -41,7 +41,7 @@ Both plugins wrap `globalThis.$fetch` (ofetch) and `globalThis.fetch` (native), 
 
 The `/api/auth/session` endpoint returns the auth0-nuxt session claims enriched with roles and identity from the GraphQL `me` endpoint (if a backend is configured). This is a single server-side request that combines auth0 identity with application-level data.
 
-`auth/server/plugin.client` is a global route middleware that:
+`auth/plugin.client` is a global route middleware that:
 1. Checks if `useState('auth0_user')` is populated (it will be during SSR via auth0-nuxt's server middleware)
 2. If not (e.g., `ssr: false`), fetches `/api/auth/session` to populate it
 3. Reads `tlv2_roles` and `tlv2_id` from the session response and stores them in `useState`
@@ -74,11 +74,11 @@ Authentication is handled entirely by `@auth0/auth0-nuxt`, which manages server-
 | `src/runtime/plugins/proxy.ts` | `/api/proxy/{backend}/**` handler, routes to configured proxyBase |
 | `src/runtime/lib/util/proxy.ts` | Proxy implementation, forwards to backend with auth headers |
 | `src/runtime/server/api/auth/session.get.ts` | Session endpoint, returns auth0 claims + enriched roles |
-| `src/runtime/auth/server/plugin.client.ts` | Route middleware that populates user state from session endpoint |
-| `src/runtime/auth/server/useUser.ts` | `useUser` composable (reads session + enriched roles) |
-| `src/runtime/auth/server/useLogin.ts` | `useLogin` composable (redirects to `/auth/login`) |
-| `src/runtime/auth/server/useLogout.ts` | `useLogout` composable (redirects to `/auth/logout`) |
-| `src/runtime/auth/shared/types.ts` | `TlUser` interface |
+| `src/runtime/auth/plugin.client.ts` | Route middleware that populates user state from session endpoint |
+| `src/runtime/auth/useUser.ts` | `useUser` composable (reads session + enriched roles) |
+| `src/runtime/auth/useLogin.ts` | `useLogin` composable (redirects to `/auth/login`) |
+| `src/runtime/auth/useLogout.ts` | `useLogout` composable (redirects to `/auth/logout`) |
+| `src/runtime/auth/types.ts` | `TlUser` interface |
 
 ## Migration Guide for Existing Consumers
 

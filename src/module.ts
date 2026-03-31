@@ -98,7 +98,7 @@ export default defineNuxtModule<ModuleOptions>({
     addPlugin(resolveRuntimeModule('plugins/mixpanel.client'))
 
     // Auth plugin (enriches user with roles from GraphQL)
-    addPlugin(resolveRuntimeModule('auth/server/plugin.client'))
+    addPlugin(resolveRuntimeModule('auth/plugin.client'))
 
     addImportsDir(resolveRuntimeModule('composables'))
 
