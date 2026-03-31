@@ -1,7 +1,7 @@
 import { defineNuxtPlugin, addRouteMiddleware, useState, useRuntimeConfig } from '#imports'
 import { useUserRoles, useUserGraphqlId } from './useUser'
 import { useLogin } from './useLogin'
-import { logAuthDebug } from '../../lib/util/log'
+import { logAuthDebug } from '../lib/util/log'
 
 const RECHECK_INTERVAL = 600_000
 let lastChecked = 0

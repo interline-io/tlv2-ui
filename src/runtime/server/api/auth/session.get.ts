@@ -1,6 +1,7 @@
 import { defineEventHandler } from 'h3'
 // @ts-expect-error useAuth0 is added to #imports by @auth0/auth0-nuxt via addServerImportsDir
 import { useAuth0, useRuntimeConfig } from '#imports'
+import { enrichUserClaims } from '../../../auth/enrich'
 
 // Returns the current user's session claims enriched with roles from the
 // GraphQL `me` endpoint (if a backend is configured). Returns null if not
@@ -42,13 +43,7 @@ export default defineEventHandler(async (event) => {
         const meJson = await meResponse.json()
         const meData = meJson?.data?.me
         if (meData) {
-          return {
-            ...user,
-            tlv2_id: meData.id || '',
-            tlv2_name: meData.name || '',
-            tlv2_email: meData.email || '',
-            tlv2_roles: meData.roles || []
-          }
+          return enrichUserClaims(user, meData)
         }
       } catch (e) {
         console.warn('[tlv2-auth] /api/auth/session: GraphQL me query failed:', e)

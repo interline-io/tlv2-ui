@@ -1,6 +1,6 @@
 import { useState } from '#imports'
 import type { Ref } from 'vue'
-import type { TlUser } from '../shared/types'
+import type { TlUser } from './types'
 
 // auth0-nuxt populates useState('auth0_user') with OIDC claims
 const useAuth0User = () => useState<Record<string, any> | undefined>('auth0_user')
