@@ -12,7 +12,6 @@ export interface ModuleOptions {
   routes?: Partial<Record<Tlv2RouteKey, string>>
   // Proxy options
   proxyBase?: string
-  apiBase?: string
   // Login gate
   loginGate?: boolean
   requireLogin?: boolean
@@ -40,7 +39,6 @@ export default defineNuxtModule<ModuleOptions>({
     requireLogin: false,
     safelinkUtmSource: undefined,
     proxyBase: undefined,
-    apiBase: undefined,
     protomapsApikey: undefined,
     nearmapsApikey: undefined,
     transferAnalystReadOnlyFeedSelector: false,
@@ -74,11 +72,6 @@ export default defineNuxtModule<ModuleOptions>({
     // Nuxt 4 recommended pattern: merge at the nested key level
     const publicConfig: Record<string, any> = {
       safelinkUtmSource: options.safelinkUtmSource,
-      apiBase: {
-        default: options.apiBase,
-        stationEditor: '',
-        feedManagement: '',
-      },
       protomapsApikey: options.protomapsApikey,
       nearmapsApikey: options.nearmapsApikey,
       mixpanelApikey: options.mixpanelApikey,

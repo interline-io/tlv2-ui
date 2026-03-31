@@ -26,13 +26,10 @@ export default defineNuxtPlugin((nuxtApp) => {
     })
     .filter(Boolean)
 
-  function isBackendRequest (url: string | URL | Request | RequestInfo): boolean {
+  function isBackendRequest (url: string): boolean {
     try {
-      const resolved = typeof url === 'string' ? url : (url instanceof Request ? url.url : url.toString())
-      const origin = new URL(resolved).origin
-      return allowedOrigins.includes(origin)
-    } catch (e) {
-      console.warn('[tlv2-auth] Failed to parse request URL:', url, e)
+      return allowedOrigins.includes(new URL(url).origin)
+    } catch {
       return false
     }
   }
@@ -75,7 +72,8 @@ export default defineNuxtPlugin((nuxtApp) => {
   // Wrap globalThis.fetch — covers Apollo's createUploadLink
   const originalFetch = globalThis.fetch
   globalThis.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
-    if (!isBackendRequest(input)) {
+    const url = input instanceof Request ? input.url : String(input)
+    if (!isBackendRequest(url)) {
       return originalFetch(input, init)
     }
     const authHeaders = await getAuthHeaders()

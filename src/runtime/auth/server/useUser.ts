@@ -31,10 +31,3 @@ export const useUser = (): TlUser => {
     }
   }
 }
-
-export function clearUser () {
-  const roles = useUserRoles()
-  const graphqlId = useUserGraphqlId()
-  roles.value = []
-  graphqlId.value = ''
-}

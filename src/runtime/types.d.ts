@@ -16,11 +16,6 @@ declare module 'nuxt/schema' {
   interface PublicRuntimeConfig {
     tlv2: {
       safelinkUtmSource?: string
-      apiBase: {
-        default?: string
-        stationEditor: string
-        feedManagement: string
-      }
       routes?: Partial<Record<Tlv2RouteKey, string>>
       protomapsApikey?: string
       nearmapsApikey?: string

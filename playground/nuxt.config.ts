@@ -26,10 +26,6 @@ export default defineNuxtConfig({
     },
     public: {
       tlv2: {
-        apiBase: {
-          default: '',
-          feedManagement: '',
-        },
         loginGate: true,
         requireLogin: true,
         routes: {
