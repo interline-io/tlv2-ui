@@ -1,15 +1,20 @@
 import { defineEventHandler, createError } from 'h3'
+// @ts-expect-error useAuth0 is added to #imports by @auth0/auth0-nuxt via addServerImportsDir
+import { useRuntimeConfig, useAuth0 } from '#imports'
 import { proxyHandler } from '../lib/util/proxy'
 import { parseProxyRoute, resolveProxyBase } from '../lib/util/proxy-route'
 
 export default defineEventHandler(async (event) => {
-  // Dynamic import of #imports to access Nitro auto-imports (including useAuth0)
-  // at runtime rather than at module parse time. This ensures the auto-imports
-  // are available even when the file is registered via addServerHandler from a module.
-  const { useRuntimeConfig, useAuth0 } = await import('#imports') as any
   const config = useRuntimeConfig(event)
 
-  const { backendName, strippedPath } = parseProxyRoute(event.path || '')
+  const parsed = parseProxyRoute(event.path || '')
+  if (!parsed) {
+    throw createError({
+      statusCode: 400,
+      message: '[tlv2-proxy] Invalid proxy path'
+    })
+  }
+  const { backendName, strippedPath } = parsed
 
   const proxyBases: Record<string, string> = config.tlv2?.proxyBase || {}
   const proxyBase = resolveProxyBase(backendName, proxyBases)

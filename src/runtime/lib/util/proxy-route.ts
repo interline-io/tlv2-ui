@@ -1,9 +1,13 @@
 // Pure functions for proxy route parsing — no framework dependencies.
 
 // Extract backend name from proxy path: /api/proxy/{backend}/...
-export function parseProxyRoute (path: string): { backendName: string, strippedPath: string } {
+// Returns null if the path doesn't match the expected pattern.
+export function parseProxyRoute (path: string): { backendName: string, strippedPath: string } | null {
   const match = path.match(/^\/api\/proxy\/([^/]+)/)
-  const backendName = match?.[1] || 'default'
+  if (!match) {
+    return null
+  }
+  const backendName = match[1]!
   const strippedPath = path.replace(/^\/api\/proxy\/[^/]+/, '') || '/'
   return { backendName, strippedPath }
 }

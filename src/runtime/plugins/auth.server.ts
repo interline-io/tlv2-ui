@@ -1,4 +1,5 @@
-import { defineNuxtPlugin, useRuntimeConfig } from '#imports'
+// @ts-expect-error useAuth0 is added to #imports by @auth0/auth0-nuxt via addServerImportsDir
+import { defineNuxtPlugin, useRuntimeConfig, useAuth0 } from '#imports'
 
 // Server-side auth header injection for SSR requests.
 // Overrides globalThis.$fetch and globalThis.fetch to inject the user's JWT
@@ -43,7 +44,6 @@ export default defineNuxtPlugin((nuxtApp) => {
     try {
       const event = nuxtApp.ssrContext?.event
       if (event) {
-        const { useAuth0 } = await import('#imports') as any
         const auth0 = useAuth0(event)
         const tokenSet = await auth0.getAccessToken()
         if (tokenSet.accessToken) {

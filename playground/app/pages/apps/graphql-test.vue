@@ -12,14 +12,17 @@
         Not logged in. Sign in to test authenticated requests.
       </t-notification>
 
-      <div class="block">
-        <button class="button is-primary" :class="{ 'is-loading': loading }" @click="runQuery">
+      <div class="block buttons">
+        <button class="button is-primary" :class="{ 'is-loading': meLoading }" @click="runMeQuery">
           Query me { }
+        </button>
+        <button class="button is-info" :class="{ 'is-loading': feedsLoading }" @click="runFeedsQuery">
+          Query feeds { }
         </button>
       </div>
 
-      <t-notification v-if="errorMsg" variant="danger">
-        {{ errorMsg }}
+      <t-notification v-if="meErrorMsg" variant="danger">
+        me: {{ meErrorMsg }}
       </t-notification>
 
       <div v-if="meData" class="block">
@@ -44,6 +47,27 @@
           </tbody>
         </table>
       </div>
+
+      <t-notification v-if="feedsErrorMsg" variant="danger">
+        feeds: {{ feedsErrorMsg }}
+      </t-notification>
+
+      <div v-if="feedsData && feedsData.length" class="block">
+        <table class="table is-fullwidth">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>onestop_id</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="feed in feedsData" :key="feed.id">
+              <td>{{ feed.id }}</td>
+              <td>{{ feed.onestop_id }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </section>
   </div>
 </template>
@@ -55,7 +79,8 @@ import { useQuery } from '@vue/apollo-composable'
 import { useUser } from '../../../../src/runtime/composables/useUser'
 
 const user = useUser()
-const enabled = ref(false)
+const meEnabled = ref(false)
+const feedsEnabled = ref(false)
 
 const meQuery = gql`
   query {
@@ -68,18 +93,42 @@ const meQuery = gql`
   }
 `
 
-const { result, loading, error, refetch } = useQuery(meQuery, null, () => ({
-  enabled: enabled.value,
+const feedsQuery = gql`
+  query {
+    feeds {
+      id
+      onestop_id
+    }
+  }
+`
+
+const { result: meResult, loading: meLoading, error: meError, refetch: meRefetch } = useQuery(meQuery, null, () => ({
+  enabled: meEnabled.value,
   fetchPolicy: 'no-cache'
 }))
-const meData = computed(() => result.value?.me || null)
-const errorMsg = computed(() => error.value?.message || '')
+const meData = computed(() => meResult.value?.me || null)
+const meErrorMsg = computed(() => meError.value?.message || '')
 
-function runQuery () {
-  if (enabled.value) {
-    refetch()
+const { result: feedsResult, loading: feedsLoading, error: feedsError, refetch: feedsRefetch } = useQuery(feedsQuery, null, () => ({
+  enabled: feedsEnabled.value,
+  fetchPolicy: 'no-cache'
+}))
+const feedsData = computed(() => feedsResult.value?.feeds || null)
+const feedsErrorMsg = computed(() => feedsError.value?.message || '')
+
+function runMeQuery () {
+  if (meEnabled.value) {
+    meRefetch()
   } else {
-    enabled.value = true
+    meEnabled.value = true
+  }
+}
+
+function runFeedsQuery () {
+  if (feedsEnabled.value) {
+    feedsRefetch()
+  } else {
+    feedsEnabled.value = true
   }
 }
 </script>

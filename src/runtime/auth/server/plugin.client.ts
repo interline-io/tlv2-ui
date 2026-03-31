@@ -1,5 +1,6 @@
-import { defineNuxtPlugin, addRouteMiddleware, useState } from '#imports'
+import { defineNuxtPlugin, addRouteMiddleware, useState, useRuntimeConfig } from '#imports'
 import { useUserRoles, useUserGraphqlId } from './useUser'
+import { useLogin } from './useLogin'
 import { logAuthDebug } from '../../lib/util/log'
 
 const RECHECK_INTERVAL = 600_000
@@ -15,13 +16,19 @@ export default defineNuxtPlugin(() => {
       return
     }
 
-    // Fetch enriched session data from server
-    try {
-      logAuthDebug('auth-enrich: fetching session from /api/auth/session')
-      const session = await $fetch('/api/auth/session')
-      auth0User.value = session || undefined
-    } catch (e) {
-      console.warn('[tlv2-auth] Failed to fetch session:', e)
+    // On first client-side run, if auth0-nuxt already populated auth0_user
+    // during SSR but without roles, we still need to fetch the session
+    // endpoint to get roles. However, if auth0_user already has tlv2_roles
+    // (e.g. from a prior enrichment that survived hydration), skip the fetch.
+    const needsFetch = !auth0User.value || !auth0User.value.tlv2_roles
+    if (needsFetch) {
+      try {
+        logAuthDebug('auth-enrich: fetching session from /api/auth/session')
+        const session = await $fetch('/api/auth/session')
+        auth0User.value = session || undefined
+      } catch (e) {
+        console.warn('[tlv2-auth] Failed to fetch session:', e)
+      }
     }
 
     if (!auth0User.value) {
@@ -31,6 +38,13 @@ export default defineNuxtPlugin(() => {
       roles.value = []
       graphqlId.value = ''
       lastChecked = 0
+
+      // Redirect to login if requireLogin is set
+      const config = useRuntimeConfig()
+      if (config.public.tlv2?.requireLogin) {
+        logAuthDebug('auth-enrich: requireLogin — redirecting to login')
+        return useLogin(null)
+      }
       return
     }
 

@@ -23,12 +23,8 @@ describe('parseProxyRoute', () => {
     })
   })
 
-  it('passes through unmatched paths', () => {
-    // No backend segment — regex doesn't match, path passes through
-    expect(parseProxyRoute('/api/proxy/')).toEqual({
-      backendName: 'default',
-      strippedPath: '/api/proxy/'
-    })
+  it('returns null for path without backend segment', () => {
+    expect(parseProxyRoute('/api/proxy/')).toBeNull()
   })
 
   it('defaults to "/" when no trailing path', () => {
@@ -38,11 +34,8 @@ describe('parseProxyRoute', () => {
     })
   })
 
-  it('handles empty path', () => {
-    expect(parseProxyRoute('')).toEqual({
-      backendName: 'default',
-      strippedPath: '/'
-    })
+  it('returns null for empty path', () => {
+    expect(parseProxyRoute('')).toBeNull()
   })
 })
 

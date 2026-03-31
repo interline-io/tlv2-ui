@@ -1,4 +1,6 @@
 import { defineEventHandler } from 'h3'
+// @ts-expect-error useAuth0 is added to #imports by @auth0/auth0-nuxt via addServerImportsDir
+import { useAuth0, useRuntimeConfig } from '#imports'
 
 // Returns the current user's session claims enriched with roles from the
 // GraphQL `me` endpoint (if a backend is configured). Returns null if not
@@ -6,7 +8,6 @@ import { defineEventHandler } from 'h3'
 // especially when SSR is disabled (ssr: false).
 export default defineEventHandler(async (event) => {
   try {
-    const { useAuth0, useRuntimeConfig } = await import('#imports') as any
     const auth0 = useAuth0(event)
     const session = await auth0.getSession()
     const user = session?.user
