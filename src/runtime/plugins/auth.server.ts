@@ -42,7 +42,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     try {
       const event = nuxtApp.ssrContext?.event
       if (event) {
-        // @ts-expect-error — type available at runtime via Nitro auto-imports
+        const { useAuth0 } = await import('#imports') as any
         const auth0 = useAuth0(event)
         const tokenSet = await auth0.getAccessToken()
         if (tokenSet.accessToken) {

@@ -27,12 +27,15 @@ export default defineEventHandler(async (event) => {
         if (config.tlv2?.graphqlApikey) {
           headers.apikey = config.tlv2.graphqlApikey
         }
-        const meResponse = await $fetch(`${proxyBase}/query`, {
+        // Use fetch directly (not $fetch) to avoid the auth.server interceptor
+        // which would inject duplicate auth headers
+        const meResponse = await fetch(`${proxyBase}/query`, {
           method: 'POST',
-          headers,
-          body: { query: '{ me { id name email roles } }' }
+          headers: { ...headers, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: '{ me { id name email roles } }' })
         })
-        const meData = (meResponse as any)?.data?.me
+        const meJson = await meResponse.json()
+        const meData = meJson?.data?.me
         if (meData) {
           return {
             ...user,

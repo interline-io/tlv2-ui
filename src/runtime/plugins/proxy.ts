@@ -1,4 +1,4 @@
-import { defineEventHandler } from 'h3'
+import { defineEventHandler, createError } from 'h3'
 import { proxyHandler } from '../lib/util/proxy'
 
 export default defineEventHandler(async (event) => {
@@ -14,7 +14,13 @@ export default defineEventHandler(async (event) => {
   const backendName = match?.[1] || 'default'
 
   const proxyBases: Record<string, string> = config.tlv2?.proxyBase || {}
-  const proxyBase = proxyBases[backendName] || proxyBases.default
+  const proxyBase = proxyBases[backendName]
+  if (!proxyBase) {
+    throw createError({
+      statusCode: 404,
+      message: `[tlv2-proxy] Unknown backend: ${backendName}`
+    })
+  }
 
   // Strip /api/proxy/{backend} prefix from path before forwarding
   const strippedPath = path.replace(/^\/api\/proxy\/[^/]+/, '') || '/'
