@@ -22,9 +22,9 @@ export const useUser = (): TlUser => {
   const loggedIn = !!auth0User.value
   return {
     loggedIn,
-    id: graphqlId.value || auth0User.value?.sub || '',
-    name: auth0User.value?.name || '',
-    email: auth0User.value?.email || '',
+    id: graphqlId.value || auth0User.value?.tlv2_id || auth0User.value?.sub || '',
+    name: auth0User.value?.name || auth0User.value?.tlv2_name || '',
+    email: auth0User.value?.email || auth0User.value?.tlv2_email || '',
     roles: roles.value,
     hasRole (v: string): boolean {
       return roles.value.includes(v)

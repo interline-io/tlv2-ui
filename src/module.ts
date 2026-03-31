@@ -109,6 +109,13 @@ export default defineNuxtModule<ModuleOptions>({
 
     addImportsDir(resolveRuntimeModule('composables'))
 
+    // Session endpoint for ssr:false apps to fetch user claims client-side
+    addServerHandler({
+      route: '/api/auth/session',
+      method: 'get',
+      handler: resolveRuntimeModule('server/api/auth/session.get')
+    })
+
     // Proxy — all authenticated API calls go through the server proxy
     addServerHandler({
       route: '/api/v2/**',

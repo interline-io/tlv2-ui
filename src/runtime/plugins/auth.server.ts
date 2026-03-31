@@ -17,7 +17,12 @@ export default defineNuxtPlugin((nuxtApp) => {
   const allowedOrigins = Object.values(proxyBases)
     .filter(Boolean)
     .map((base) => {
-      try { return new URL(String(base)).origin } catch { return '' }
+      try {
+        return new URL(String(base)).origin
+      } catch (e) {
+        console.warn('[tlv2-auth] Invalid proxyBase URL:', base, e)
+        return ''
+      }
     })
     .filter(Boolean)
 
@@ -26,7 +31,8 @@ export default defineNuxtPlugin((nuxtApp) => {
       const resolved = typeof url === 'string' ? url : (url instanceof Request ? url.url : url.toString())
       const origin = new URL(resolved).origin
       return allowedOrigins.includes(origin)
-    } catch {
+    } catch (e) {
+      console.warn('[tlv2-auth] Failed to parse request URL:', url, e)
       return false
     }
   }
@@ -46,8 +52,8 @@ export default defineNuxtPlugin((nuxtApp) => {
           headers.Authorization = `Bearer ${tokenSet.accessToken}`
         }
       }
-    } catch {
-      // No valid session — continue without user auth
+    } catch (e) {
+      console.warn('[tlv2-auth] getAccessToken failed:', e)
     }
     return headers
   }

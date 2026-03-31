@@ -124,7 +124,6 @@
   "dependencies": {
     "@apollo/client": "3.13.4",
     "@auth0/auth0-nuxt": "^1.0.1",
-    "@auth0/auth0-spa-js": "^2.18.2",
     "@mapbox/mapbox-gl-draw": "1.4.3",
     "@maplibre/maplibre-gl-geocoder": "1.9.0",
     "@mdi/font": "7.4.47",

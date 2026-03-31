@@ -71,3 +71,8 @@ Authentication is handled entirely by `@auth0/auth0-nuxt`, which manages server-
 | `src/runtime/auth/server/useLogin.ts` | `useLogin` composable (redirects to `/auth/login`) |
 | `src/runtime/auth/server/useLogout.ts` | `useLogout` composable (redirects to `/auth/logout`) |
 | `src/runtime/auth/shared/types.ts` | `TlUser` interface |
+
+## Future Work
+
+- **Server-side role caching.** Cache the GraphQL `me` response in a KV store so roles are available during SSR without a round-trip on every request.
+- **Per-backend proxy routing.** Currently the proxy has a single route (`/api/v2/**`) that always forwards to `proxyBase.default`. The three Apollo clients (default, stationEditor, feedManagement) can only reach their respective backends during SSR. Route by backend name (e.g., `/api/default/v2/query`, `/api/feedManagement/v2/query`) so client-side requests can target the correct backend through the proxy.
