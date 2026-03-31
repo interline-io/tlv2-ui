@@ -28,8 +28,8 @@ Both plugins wrap `globalThis.$fetch` (ofetch) and `globalThis.fetch` (native), 
 
 1. `auth.server` plugin injects JWT + API key into both `$fetch` and `fetch`
 2. Requests go directly to backend (via `proxyBase` URL), bypassing the proxy
-4. If logged in: JWT from the original request's session
-5. If anonymous: API key only
+3. If logged in: JWT from the original request's session
+4. If anonymous: API key only
 
 ## Composables
 

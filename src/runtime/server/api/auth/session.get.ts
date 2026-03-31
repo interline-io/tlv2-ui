@@ -34,6 +34,10 @@ export default defineEventHandler(async (event) => {
           headers: { ...headers, 'Content-Type': 'application/json' },
           body: JSON.stringify({ query: '{ me { id name email roles } }' })
         })
+        if (!meResponse.ok) {
+          console.warn('[tlv2-auth] /api/auth/session: GraphQL me query returned', meResponse.status)
+          return user
+        }
         const meJson = await meResponse.json()
         const meData = meJson?.data?.me
         if (meData) {

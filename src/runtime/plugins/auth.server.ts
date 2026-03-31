@@ -29,7 +29,8 @@ export default defineNuxtPlugin((nuxtApp) => {
   function isBackendRequest (url: string): boolean {
     try {
       return allowedOrigins.includes(new URL(url).origin)
-    } catch {
+    } catch (e) {
+      console.warn('[tlv2-auth] Failed to parse request URL:', url, e)
       return false
     }
   }
