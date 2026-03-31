@@ -1,32 +1,84 @@
 import { defineNuxtPlugin, useRuntimeConfig } from '#imports'
 
 // Server-side auth header injection for SSR requests.
-// Overrides globalThis.$fetch to inject the user's JWT and API key
-// so that SSR data fetching has the same auth context as the original request.
+// Overrides globalThis.$fetch and globalThis.fetch to inject the user's JWT
+// and API key so that SSR data fetching has the same auth context as the
+// original request. This covers both ofetch ($fetch/useFetch) and native
+// fetch (used by Apollo's createUploadLink).
+//
+// Only injects headers on requests to configured proxyBase origins to avoid
+// leaking credentials to third-party services.
 export default defineNuxtPlugin((nuxtApp) => {
   const config = useRuntimeConfig()
   const graphqlApikey = config.tlv2?.graphqlApikey || ''
 
-  globalThis.$fetch = globalThis.$fetch.create({
-    async onRequest ({ options }) {
-      const headers = new Headers(options.headers || {})
-      if (graphqlApikey) {
-        headers.append('apikey', graphqlApikey)
-      }
-      try {
-        const event = nuxtApp.ssrContext?.event
-        if (event) {
-          // @ts-expect-error — type available at runtime via Nitro auto-imports
-          const auth0 = useAuth0(event)
-          const tokenSet = await auth0.getAccessToken()
-          if (tokenSet.accessToken) {
-            headers.append('Authorization', `Bearer ${tokenSet.accessToken}`)
-          }
+  // Collect all configured backend origins
+  const proxyBases: Record<string, string> = config.tlv2?.proxyBase || {}
+  const allowedOrigins = Object.values(proxyBases)
+    .filter(Boolean)
+    .map((base) => {
+      try { return new URL(String(base)).origin } catch { return '' }
+    })
+    .filter(Boolean)
+
+  function isBackendRequest (url: string | URL | Request | RequestInfo): boolean {
+    try {
+      const resolved = typeof url === 'string' ? url : (url instanceof Request ? url.url : url.toString())
+      const origin = new URL(resolved).origin
+      return allowedOrigins.includes(origin)
+    } catch {
+      return false
+    }
+  }
+
+  async function getAuthHeaders (): Promise<Record<string, string>> {
+    const headers: Record<string, string> = {}
+    if (graphqlApikey) {
+      headers.apikey = graphqlApikey
+    }
+    try {
+      const event = nuxtApp.ssrContext?.event
+      if (event) {
+        // @ts-expect-error — type available at runtime via Nitro auto-imports
+        const auth0 = useAuth0(event)
+        const tokenSet = await auth0.getAccessToken()
+        if (tokenSet.accessToken) {
+          headers.Authorization = `Bearer ${tokenSet.accessToken}`
         }
-      } catch {
-        // No valid session — continue without user auth
+      }
+    } catch {
+      // No valid session — continue without user auth
+    }
+    return headers
+  }
+
+  // Override $fetch (ofetch) — covers useFetch, $fetch, fetchAdmin, etc.
+  globalThis.$fetch = globalThis.$fetch.create({
+    async onRequest ({ request, options }) {
+      const url = typeof request === 'string' ? request : (request as Request).url || ''
+      if (!isBackendRequest(url)) { return }
+      const authHeaders = await getAuthHeaders()
+      const headers = new Headers(options.headers || {})
+      for (const [key, value] of Object.entries(authHeaders)) {
+        headers.append(key, value)
       }
       options.headers = headers
     }
   })
+
+  // Wrap globalThis.fetch — covers Apollo's createUploadLink
+  const originalFetch = globalThis.fetch
+  globalThis.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+    if (!isBackendRequest(input)) {
+      return originalFetch(input, init)
+    }
+    const authHeaders = await getAuthHeaders()
+    init = init || {}
+    const headers = new Headers(init.headers || {})
+    for (const [key, value] of Object.entries(authHeaders)) {
+      headers.append(key, value)
+    }
+    init.headers = headers
+    return originalFetch(input, init)
+  }
 })
