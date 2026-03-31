@@ -7,7 +7,8 @@ export async function proxyHandler (
   event: H3Event,
   proxyBase: string,
   graphqlApikey: string,
-  accessToken?: string
+  accessToken?: string,
+  pathOverride?: string
 ) {
   // Check user provided apikey
   const query = getQuery(event)
@@ -30,7 +31,7 @@ export async function proxyHandler (
   }
   const proxyBaseUrl = new URL(proxyBase)
   const proxyBasePathname = proxyBaseUrl.pathname === '/' ? '' : proxyBaseUrl.pathname
-  const newPath = proxyBasePathname + event.path.replace('/api/v2', '')
+  const newPath = proxyBasePathname + (pathOverride ?? event.path)
   const target = new URL(
     newPath,
     proxyBaseUrl.toString()

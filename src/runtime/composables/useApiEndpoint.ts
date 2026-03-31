@@ -10,8 +10,8 @@ export const useApiEndpoint = (path?: string, clientName?: string) => {
     base = (proxyBases[clientName] || '')
   }
   if (typeof window !== 'undefined') {
-    // Client-side: always go through the local proxy
-    base = window.location.origin + '/api/v2'
+    // Client-side: route through the per-backend proxy
+    base = window.location.origin + '/api/proxy/' + clientName
   }
   return base + (path || '')
 }

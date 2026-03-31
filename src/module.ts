@@ -109,9 +109,9 @@ export default defineNuxtModule<ModuleOptions>({
       handler: resolveRuntimeModule('server/api/auth/session.get')
     })
 
-    // Proxy — all authenticated API calls go through the server proxy
+    // Proxy — routes /api/proxy/{backend}/... to the configured proxyBase for that backend
     addServerHandler({
-      route: '/api/v2/**',
+      route: '/api/proxy/**',
       handler: resolveRuntimeModule('plugins/proxy')
     })
 
