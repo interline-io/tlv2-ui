@@ -56,7 +56,7 @@ export default defineNuxtModule<ModuleOptions>({
     // Only installed when clientId is configured — auth0-nuxt hard fails without it.
     // When installed, a server middleware populates event.context.auth0Session
     // so that useAuth0Session() can read it without importing auth0 directly.
-    const auth0ClientId = nuxt.options.runtimeConfig.auth0?.clientId
+    const auth0ClientId = process.env.NUXT_AUTH0_CLIENT_ID || nuxt.options.runtimeConfig.auth0?.clientId
     if (auth0ClientId) {
       await installModule('@auth0/auth0-nuxt', {})
       addServerHandler({
