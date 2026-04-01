@@ -1,5 +1,5 @@
-// @ts-expect-error useAuth0 is added to #imports by @auth0/auth0-nuxt via addServerImportsDir
-import { defineNuxtPlugin, useRuntimeConfig, useAuth0 } from '#imports'
+import { defineNuxtPlugin, useRuntimeConfig } from '#imports'
+import { useAuth0Session } from '../server/useSession'
 
 // Server-side auth header injection for SSR requests.
 // Overrides globalThis.$fetch and globalThis.fetch to inject the user's JWT
@@ -18,22 +18,15 @@ export default defineNuxtPlugin((nuxtApp) => {
   const allowedOrigins = Object.values(proxyBases)
     .filter(Boolean)
     .map((base) => {
-      try {
-        return new URL(String(base)).origin
-      } catch (e) {
-        console.warn('[tlv2-auth] Invalid proxyBase URL:', base, e)
-        return ''
-      }
+      const s = String(base)
+      if (!s.startsWith('http://') && !s.startsWith('https://')) { return '' }
+      return new URL(s).origin
     })
     .filter(Boolean)
 
   function isBackendRequest (url: string): boolean {
-    try {
-      return allowedOrigins.includes(new URL(url).origin)
-    } catch (e) {
-      console.warn('[tlv2-auth] Failed to parse request URL:', url, e)
-      return false
-    }
+    if (!url.startsWith('http://') && !url.startsWith('https://')) { return false }
+    return allowedOrigins.includes(new URL(url).origin)
   }
 
   async function getAuthHeaders (): Promise<Record<string, string>> {
@@ -41,17 +34,12 @@ export default defineNuxtPlugin((nuxtApp) => {
     if (graphqlApikey) {
       headers.apikey = graphqlApikey
     }
-    try {
-      const event = nuxtApp.ssrContext?.event
-      if (event) {
-        const auth0 = useAuth0(event)
-        const tokenSet = await auth0.getAccessToken()
-        if (tokenSet.accessToken) {
-          headers.Authorization = `Bearer ${tokenSet.accessToken}`
-        }
+    const event = nuxtApp.ssrContext?.event
+    if (event) {
+      const auth = await useAuth0Session(event)
+      if (auth.accessToken) {
+        headers.Authorization = `Bearer ${auth.accessToken}`
       }
-    } catch (e) {
-      console.warn('[tlv2-auth] getAccessToken failed:', e)
     }
     return headers
   }

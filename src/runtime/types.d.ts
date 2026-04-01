@@ -3,6 +3,14 @@ import type { Tlv2RouteKey } from './route-keys'
 
 declare module 'nuxt/schema' {
   interface RuntimeConfig {
+    auth0?: {
+      domain?: string
+      clientId?: string
+      clientSecret?: string
+      sessionSecret?: string
+      appBaseUrl?: string
+      audience?: string
+    }
     tlv2: {
       graphqlApikey: string
       proxyBase: {

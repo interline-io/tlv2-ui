@@ -1,7 +1,7 @@
 import { defineEventHandler } from 'h3'
-// @ts-expect-error useAuth0 is added to #imports by @auth0/auth0-nuxt via addServerImportsDir
-import { useAuth0, useRuntimeConfig } from '#imports'
+import { useRuntimeConfig } from '#imports'
 import { enrichUserClaims } from '../../../auth/enrich'
+import { useAuth0Session } from '../../useSession'
 
 // Fetch roles from the GraphQL `me` endpoint. Returns null if the backend
 // is unreachable or returns an error — enrichment is best-effort since the
@@ -27,10 +27,8 @@ async function fetchMeData (proxyBase: string, headers: Record<string, string>) 
 // logged in. Used by the client-side auth plugin to populate user state,
 // especially when SSR is disabled (ssr: false).
 export default defineEventHandler(async (event) => {
-  const auth0 = useAuth0(event)
-  const session = await auth0.getSession()
-  const user = session?.user
-  if (!user) {
+  const auth = await useAuth0Session(event)
+  if (!auth.loggedIn || !auth.user) {
     return null
   }
 
@@ -38,18 +36,17 @@ export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig(event)
   const proxyBase = config.tlv2?.proxyBase?.default
   if (!proxyBase) {
-    return user
+    return auth.user
   }
 
-  const tokenSet = await auth0.getAccessToken()
   const headers: Record<string, string> = {}
-  if (tokenSet.accessToken) {
-    headers.Authorization = `Bearer ${tokenSet.accessToken}`
+  if (auth.accessToken) {
+    headers.Authorization = `Bearer ${auth.accessToken}`
   }
   if (config.tlv2?.graphqlApikey) {
     headers.apikey = config.tlv2.graphqlApikey
   }
 
   const meData = await fetchMeData(proxyBase, headers)
-  return enrichUserClaims(user, meData)
+  return enrichUserClaims(auth.user, meData)
 })

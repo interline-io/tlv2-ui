@@ -4,7 +4,7 @@ function isSameOrigin (url: string | URL | Request): boolean {
   const target = url instanceof Request ? url.url : String(url)
   // Only absolute http(s) URLs can be cross-origin;
   // relative paths, protocol-relative, and everything else stay same-origin.
-  if (!target.startsWith('http://') && !target.startsWith('https://')) return true
+  if (!target.startsWith('http://') && !target.startsWith('https://')) { return true }
   return new URL(target).origin === window.location.origin
 }
 

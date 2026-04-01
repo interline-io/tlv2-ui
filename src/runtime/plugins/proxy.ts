@@ -1,8 +1,8 @@
 import { defineEventHandler, createError } from 'h3'
-// @ts-expect-error useAuth0 is added to #imports by @auth0/auth0-nuxt via addServerImportsDir
-import { useRuntimeConfig, useAuth0 } from '#imports'
+import { useRuntimeConfig } from '#imports'
 import { proxyHandler } from '../lib/util/proxy'
 import { parseProxyRoute, resolveProxyBase } from '../lib/util/proxy-route'
+import { useAuth0Session } from '../server/useSession'
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig(event)
@@ -25,19 +25,13 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const auth0 = useAuth0(event)
-  const session = await auth0.getSession()
-  let accessToken = ''
-  if (session) {
-    const tokenSet = await auth0.getAccessToken()
-    accessToken = tokenSet.accessToken
-  }
+  const auth = await useAuth0Session(event)
 
   return proxyHandler(
     event,
     proxyBase,
     String(config.tlv2.graphqlApikey),
-    accessToken,
+    auth.accessToken,
     strippedPath
   )
 })
