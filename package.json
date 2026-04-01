@@ -55,6 +55,8 @@
     "access": "restricted"
   },
   "peerDependencies": {
+    "defu": ">=6.0.0",
+    "h3": ">=1.0.0",
     "nuxt": "^4.0.0"
   },
   "devDependencies": {
