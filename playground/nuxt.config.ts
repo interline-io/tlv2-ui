@@ -1,13 +1,22 @@
 import 'dotenv/config'
 
 export default defineNuxtConfig({
-  modules: [['../src/module', { useProxy: true }]],
+  modules: [['../src/module', {}]],
 
   ssr: false,
 
   devtools: { enabled: true },
 
   runtimeConfig: {
+    // Auth0 server-side config (use NUXT_AUTH0_* env vars)
+    auth0: {
+      domain: '',
+      clientId: '',
+      clientSecret: '',
+      sessionSecret: '',
+      appBaseUrl: '',
+      audience: '',
+    },
     tlv2: {
       graphqlApikey: '',
       proxyBase: {
@@ -17,18 +26,8 @@ export default defineNuxtConfig({
     },
     public: {
       tlv2: {
-        useProxy: true,
-        apiBase: {
-          default: '',
-          feedManagement: '',
-        },
-        auth0Domain: '',
-        auth0ClientId: '',
-        auth0Audience: '',
-        auth0Scope: 'profile email openid',
-        auth0RedirectUri: '',
         loginGate: true,
-        requireLogin: true,
+        requireLogin: false,
         routes: {
           'apps-admin-groups': 'admin-groups',
           'apps-admin-groups-groupKey': 'admin-groups-groupKey',

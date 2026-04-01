@@ -1,44 +1,24 @@
-import type { NuxtApp } from 'nuxt/app'
 import { defineNuxtPlugin } from 'nuxt/app'
 import { destr } from 'destr'
 import { ApolloClients, provideApolloClients } from '@vue/apollo-composable'
 import type { NormalizedCacheObject } from '@apollo/client/core/index.js'
 import { ApolloClient, InMemoryCache } from '@apollo/client/core/index.js'
-import { setContext } from '@apollo/client/link/context'
 // @ts-expect-error - apollo-upload-client does not provide TypeScript definitions
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
 
-// Our composables
 import { useApiEndpoint } from '../composables/useApiEndpoint'
-import { useAuthHeaders } from '../composables/useAuthHeaders'
-import { logAuthDebug } from '../lib/util'
 
 // Apollo client factory
-function initApolloClient (nuxtApp: NuxtApp, endpoint: string) {
-  const httpLink = createUploadLink({
+// Auth headers are injected globally by auth.server (SSR) and csrf.client (browser) plugins
+// via globalThis.fetch, so no auth link is needed here.
+function initApolloClient (endpoint: string) {
+  const link = createUploadLink({
     uri: endpoint,
-    credentials: 'same-origin', // or 'include' if hitting another origin
-  })
-
-  // Will be run before *every* operation
-  const authLink = setContext(async (_, { headers }) => {
-    // Wrap composable call so Nuxt context is available here
-    const authHeaders = await nuxtApp.runWithContext(async () => {
-      const headers = await useAuthHeaders()
-      logAuthDebug('apollo: authLink: refreshed headers')
-      return headers
-    })
-
-    return {
-      headers: {
-        ...(headers || {}),
-        ...(authHeaders || {}),
-      },
-    }
+    credentials: 'same-origin',
   })
 
   return new ApolloClient({
-    link: authLink.concat(httpLink),
+    link,
     cache: new InMemoryCache(),
     ssrMode: import.meta.server,
     connectToDevTools: import.meta.client,
@@ -47,12 +27,11 @@ function initApolloClient (nuxtApp: NuxtApp, endpoint: string) {
 
 // Nuxt plugin
 export default defineNuxtPlugin((nuxtApp) => {
-  const app = nuxtApp as NuxtApp
-  const defaultClient = initApolloClient(app, useApiEndpoint('/query', 'default'),)
+  const defaultClient = initApolloClient(useApiEndpoint('/query', 'default'))
   const apolloClients = {
     default: defaultClient,
-    stationEditor: initApolloClient(app, useApiEndpoint('/query', 'stationEditor')),
-    feedManagement: initApolloClient(app, useApiEndpoint('/query', 'feedManagement')),
+    stationEditor: initApolloClient(useApiEndpoint('/query', 'stationEditor')),
+    feedManagement: initApolloClient(useApiEndpoint('/query', 'feedManagement')),
   }
 
   // Restore cache on client
