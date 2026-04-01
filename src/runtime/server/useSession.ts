@@ -16,7 +16,9 @@ function anonymousSession (): SessionContext {
 //
 // Reads from event.context.auth0Session, which is populated by the
 // auth0 server middleware (only registered when clientId is configured).
-export function useAuth0Session (event: H3Event): SessionContext {
+// The access token is fetched lazily to avoid calling getAccessToken()
+// on routes that don't need it (e.g., auth0-nuxt's /auth/* handlers).
+export async function useAuth0Session (event: H3Event): Promise<SessionContext> {
   const session = event.context.auth0Session
   if (!session) {
     return anonymousSession()
@@ -24,6 +26,6 @@ export function useAuth0Session (event: H3Event): SessionContext {
   return {
     loggedIn: true,
     user: session.user,
-    accessToken: session.accessToken || ''
+    accessToken: await session.getAccessToken()
   }
 }

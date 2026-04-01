@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const auth = useAuth0Session(event)
+  const auth = await useAuth0Session(event)
 
   return proxyHandler(
     event,

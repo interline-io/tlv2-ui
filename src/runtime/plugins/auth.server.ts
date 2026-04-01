@@ -29,14 +29,14 @@ export default defineNuxtPlugin((nuxtApp) => {
     return allowedOrigins.includes(new URL(url).origin)
   }
 
-  function getAuthHeaders (): Record<string, string> {
+  async function getAuthHeaders (): Promise<Record<string, string>> {
     const headers: Record<string, string> = {}
     if (graphqlApikey) {
       headers.apikey = graphqlApikey
     }
     const event = nuxtApp.ssrContext?.event
     if (event) {
-      const auth = useAuth0Session(event)
+      const auth = await useAuth0Session(event)
       if (auth.accessToken) {
         headers.Authorization = `Bearer ${auth.accessToken}`
       }
@@ -46,10 +46,10 @@ export default defineNuxtPlugin((nuxtApp) => {
 
   // Override $fetch (ofetch) — covers useFetch, $fetch, fetchAdmin, etc.
   globalThis.$fetch = globalThis.$fetch.create({
-    onRequest ({ request, options }) {
+    async onRequest ({ request, options }) {
       const url = typeof request === 'string' ? request : (request as Request).url || ''
       if (!isBackendRequest(url)) { return }
-      const authHeaders = getAuthHeaders()
+      const authHeaders = await getAuthHeaders()
       const headers = new Headers(options.headers || {})
       for (const [key, value] of Object.entries(authHeaders)) {
         headers.append(key, value)

@@ -8,7 +8,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
 
   runtimeConfig: {
-    // Auth0 server-side config (use NUXT_AUTH0_* env vars) — only for authMode: 'server'
+    // Auth0 server-side config (use NUXT_AUTH0_* env vars)
     auth0: {
       domain: '',
       clientId: '',

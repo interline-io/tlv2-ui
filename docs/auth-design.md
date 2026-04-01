@@ -156,7 +156,7 @@ proxyBase.stationEditor = https://station-api.example.com
 - Server-side (SSR): returns the direct `proxyBase` URL
 - Client-side: returns `/api/proxy/{clientName}` to route through the proxy
 
-If a backend name is not found in the config, it falls back to `proxyBase.default`.
+If a backend name is not found in the config, the proxy responds with a 404.
 
 ## Future Work
 
