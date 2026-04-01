@@ -3,14 +3,17 @@ import type { Tlv2RouteKey } from './route-keys'
 
 declare module 'nuxt/schema' {
   interface RuntimeConfig {
+    auth0?: {
+      domain?: string
+      clientId?: string
+      clientSecret?: string
+      sessionSecret?: string
+      appBaseUrl?: string
+      audience?: string
+    }
     tlv2: {
       graphqlApikey: string
       proxyBase: {
-        default?: string
-        stationEditor: string
-        feedManagement: string
-      }
-      apiBase: {
         default?: string
         stationEditor: string
         feedManagement: string
@@ -20,13 +23,7 @@ declare module 'nuxt/schema' {
 
   interface PublicRuntimeConfig {
     tlv2: {
-      useProxy: boolean
       safelinkUtmSource?: string
-      apiBase: {
-        default?: string
-        stationEditor: string
-        feedManagement: string
-      }
       routes?: Partial<Record<Tlv2RouteKey, string>>
       protomapsApikey?: string
       nearmapsApikey?: string
@@ -34,12 +31,6 @@ declare module 'nuxt/schema' {
       loginGate?: boolean
       requireLogin?: boolean
       editorRoutePrefix: string
-      auth0Domain?: string
-      auth0ClientId?: string
-      auth0RedirectUri?: string
-      auth0LogoutUri?: string
-      auth0Audience?: string
-      auth0Scope?: string
       transferAnalystReadOnlyFeedSelector?: boolean
       transferAnalystGtfsRealtimeStopObservations?: boolean
     }
@@ -52,7 +43,6 @@ declare module '#imports' {
     csrf: string
     headerName: string
   }
-  export function useAuthHeaders (): Promise<Record<string, string>>
 }
 
 // Add type declarations for Vue Apollo

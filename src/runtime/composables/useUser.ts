@@ -1,1 +1,1 @@
-export { useUser } from '../lib/auth'
+export { useUser } from '../auth/useUser'

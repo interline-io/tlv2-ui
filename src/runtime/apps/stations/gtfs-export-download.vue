@@ -108,7 +108,6 @@
 import { ref, computed, watch } from 'vue'
 import { useRouter } from '#app'
 import { useApiEndpoint } from '../../composables/useApiEndpoint'
-import { useAuthHeaders } from '../../composables/useAuthHeaders'
 import { useRouteResolver } from '../../composables/useRouteResolver'
 import { useToastNotification } from '../../composables/useToastNotification'
 
@@ -255,10 +254,10 @@ const downloadGtfs = async () => {
     }
 
     // Make the request
+    // CSRF header injected globally by csrf.client plugin
     const response = await fetch(url, {
       method: 'POST',
       headers: {
-        ...(await useAuthHeaders()),
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(requestBody)
