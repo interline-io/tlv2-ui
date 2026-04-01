@@ -18,8 +18,8 @@ export default defineNuxtPlugin(() => {
 
   // Override $fetch (ofetch) — covers useFetch, $fetch, fetchAdmin, etc.
   globalThis.$fetch = globalThis.$fetch.create({
-    onRequest ({ options }) {
-      if (!options.baseURL && isSameOrigin(options.url || '/')) {
+    onRequest ({ request, options }) {
+      if (!options.baseURL && isSameOrigin(request || '/')) {
         options.headers = new Headers(options.headers || {})
         options.headers.append(headerName, csrf)
       }
