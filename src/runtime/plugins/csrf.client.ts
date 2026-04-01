@@ -12,7 +12,7 @@ function isSameOrigin (url: string | URL | Request): boolean {
 // Custom headers on cross-origin requests trigger CORS preflights, which
 // breaks external resources like map tiles.
 // Overrides globalThis.$fetch so useFetch/$fetch get CSRF automatically.
-// Exports a wrapped globalThis.fetch for Apollo's createUploadLink.
+// Wraps globalThis.fetch for Apollo's createUploadLink.
 export default defineNuxtPlugin(() => {
   const { csrf, headerName } = useCsrf()
 

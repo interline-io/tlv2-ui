@@ -25,13 +25,12 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  const auth0 = useAuth0(event)
+  const session = await auth0.getSession()
   let accessToken = ''
-  try {
-    const auth0 = useAuth0(event)
+  if (session) {
     const tokenSet = await auth0.getAccessToken()
     accessToken = tokenSet.accessToken
-  } catch (e) {
-    console.warn('[tlv2-proxy] getAccessToken failed:', e)
   }
 
   return proxyHandler(
