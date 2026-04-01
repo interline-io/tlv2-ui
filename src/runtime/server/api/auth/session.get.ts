@@ -13,9 +13,14 @@ async function fetchMeData (proxyBase: string, headers: Record<string, string>) 
     method: 'POST',
     headers: { ...headers, 'Content-Type': 'application/json' },
     body: JSON.stringify({ query: '{ me { id name email roles } }' })
-  }).catch(() => null)
+  }).catch((e: Error) => {
+    console.warn('[tlv2-auth] /api/auth/session: GraphQL me query network error:', e.message)
+    return null
+  })
   if (!response || !response.ok) {
-    console.warn('[tlv2-auth] /api/auth/session: GraphQL me query failed', response?.status ?? 'network error')
+    if (response) {
+      console.warn('[tlv2-auth] /api/auth/session: GraphQL me query returned', response.status)
+    }
     return null
   }
   const json = await response.json()

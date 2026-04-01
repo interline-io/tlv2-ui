@@ -8,7 +8,9 @@ export interface SessionContext {
   accessToken: string
 }
 
-const anonymous: SessionContext = { loggedIn: false, user: null, accessToken: '' }
+function anonymousSession (): SessionContext {
+  return { loggedIn: false, user: null, accessToken: '' }
+}
 
 // Returns the current user's session and access token.
 // loggedIn is false when auth0 is not configured or the user is anonymous.
@@ -17,12 +19,12 @@ const anonymous: SessionContext = { loggedIn: false, user: null, accessToken: ''
 export async function useAuth0Session (event: H3Event): Promise<SessionContext> {
   const config = useRuntimeConfig(event)
   if (!config.auth0?.clientId) {
-    return anonymous
+    return anonymousSession()
   }
   const auth0 = useAuth0(event)
   const session = await auth0.getSession()
   if (!session?.user) {
-    return anonymous
+    return anonymousSession()
   }
   const tokenSet = await auth0.getAccessToken()
   return {

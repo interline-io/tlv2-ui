@@ -6,8 +6,8 @@ Two plugins handle all auth/CSRF injection globally — no per-callsite wiring n
 
 | Plugin | Runs on | Does what |
 |---|---|---|
-| `csrf.client` | Browser | Wraps `$fetch` and `fetch` to add CSRF header to every request |
-| `auth.server` | SSR | Wraps `$fetch` and `fetch` to add JWT + API key to every request |
+| `csrf.client` | Browser | Wraps `$fetch` and `fetch` to add CSRF header to same-origin requests |
+| `auth.server` | SSR | Wraps `$fetch` and `fetch` to add JWT + API key to backend requests |
 
 Both plugins wrap `globalThis.$fetch` (ofetch) and `globalThis.fetch` (native), so all request mechanisms — `useFetch`, `$fetch`, and Apollo's `createUploadLink` — get headers injected automatically.
 
@@ -20,7 +20,7 @@ Both plugins wrap `globalThis.$fetch` (ofetch) and `globalThis.fetch` (native), 
 3. Request hits `/api/proxy/{backend}/...` on the same origin (e.g., `/api/proxy/default/query`)
 4. `nuxt-csurf` validates the CSRF token
 5. Proxy extracts backend name from path, looks up `proxyBase` config
-6. Proxy extracts JWT from session cookie via `auth0.getAccessToken()`
+6. Proxy extracts JWT from session cookie via `useAuth0Session(event)`
 7. If logged in: forwards JWT + API key to backend
 8. If anonymous: forwards API key only
 
@@ -53,7 +53,7 @@ During SSR, roles are not yet available — only identity (name, email, sub) fro
 
 CSRF protection is provided by `nuxt-csurf` and applies to all requests, including anonymous ones. The CSRF token prevents other websites from using the proxy as an open relay — either with a logged-in user's session cookie (classic CSRF) or with the module's API key (anonymous abuse).
 
-The `csrf.client` plugin wraps both `globalThis.$fetch` (ofetch) and `globalThis.fetch` (native) so that all client-side requests automatically include the CSRF header. No per-callsite injection is needed.
+The `csrf.client` plugin wraps both `globalThis.$fetch` (ofetch) and `globalThis.fetch` (native) so that same-origin client-side requests automatically include the CSRF header. Cross-origin requests (e.g., map tiles) are excluded to avoid triggering CORS preflights. No per-callsite injection is needed.
 
 ## Anonymous Access
 
@@ -79,6 +79,7 @@ Authentication is handled entirely by `@auth0/auth0-nuxt`, which manages server-
 | `src/runtime/auth/useLogin.ts` | `useLogin` composable (redirects to `/auth/login`) |
 | `src/runtime/auth/useLogout.ts` | `useLogout` composable (redirects to `/auth/logout`) |
 | `src/runtime/auth/types.ts` | `TlUser` interface |
+| `src/runtime/server/useSession.ts` | `useAuth0Session` — single entry point for all server-side auth0 calls |
 
 ## Migration Guide for Existing Consumers
 

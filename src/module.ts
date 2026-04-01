@@ -56,7 +56,6 @@ export default defineNuxtModule<ModuleOptions>({
     // Always installed — it's inert without NUXT_AUTH0_* env vars.
     // Runtime plugins guard on config.auth0.clientId to skip auth when unconfigured.
     await installModule('@auth0/auth0-nuxt', {})
-    const auth0ClientId = nuxt.options.runtimeConfig.auth0?.clientId
 
     // Private runtime options (server-side only)
     // Nuxt 4 recommended pattern: merge at the nested key level
@@ -101,20 +100,16 @@ export default defineNuxtModule<ModuleOptions>({
     addPlugin(resolveRuntimeModule('plugins/mixpanel.client'))
 
     // Auth plugin (enriches user with roles from GraphQL)
-    if (auth0ClientId) {
-      addPlugin(resolveRuntimeModule('auth/plugin.client'))
-    }
+    addPlugin(resolveRuntimeModule('auth/plugin.client'))
 
     addImportsDir(resolveRuntimeModule('composables'))
 
     // Session endpoint for ssr:false apps to fetch user claims client-side
-    if (auth0ClientId) {
-      addServerHandler({
-        route: '/api/auth/session',
-        method: 'get',
-        handler: resolveRuntimeModule('server/api/auth/session.get')
-      })
-    }
+    addServerHandler({
+      route: '/api/auth/session',
+      method: 'get',
+      handler: resolveRuntimeModule('server/api/auth/session.get')
+    })
 
     // Proxy — routes /api/proxy/{backend}/... to the configured proxyBase for that backend
     addServerHandler({
