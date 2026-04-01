@@ -54,9 +54,15 @@ export default defineNuxtModule<ModuleOptions>({
 
     // Auth via auth0-nuxt (server-side sessions with HTTP-only cookies).
     // Only installed when clientId is configured — auth0-nuxt hard fails without it.
+    // When installed, a server middleware populates event.context.auth0Session
+    // so that useAuth0Session() can read it without importing auth0 directly.
     const auth0ClientId = nuxt.options.runtimeConfig.auth0?.clientId
     if (auth0ClientId) {
       await installModule('@auth0/auth0-nuxt', {})
+      addServerHandler({
+        middleware: true,
+        handler: resolveRuntimeModule('server/middleware/auth0')
+      })
     }
 
     // Private runtime options (server-side only)

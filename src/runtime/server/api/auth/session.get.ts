@@ -32,7 +32,7 @@ async function fetchMeData (proxyBase: string, headers: Record<string, string>) 
 // logged in. Used by the client-side auth plugin to populate user state,
 // especially when SSR is disabled (ssr: false).
 export default defineEventHandler(async (event) => {
-  const auth = await useAuth0Session(event)
+  const auth = useAuth0Session(event)
   if (!auth.loggedIn || !auth.user) {
     return null
   }
