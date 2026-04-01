@@ -53,9 +53,11 @@ export default defineNuxtModule<ModuleOptions>({
     await installModule('nuxt-csurf', { addCsrfTokenToEventCtx: true })
 
     // Auth via auth0-nuxt (server-side sessions with HTTP-only cookies).
-    // Always installed — it's inert without NUXT_AUTH0_* env vars.
-    // Runtime plugins guard on config.auth0.clientId to skip auth when unconfigured.
-    await installModule('@auth0/auth0-nuxt', {})
+    // Only installed when clientId is configured — auth0-nuxt hard fails without it.
+    const auth0ClientId = nuxt.options.runtimeConfig.auth0?.clientId
+    if (auth0ClientId) {
+      await installModule('@auth0/auth0-nuxt', {})
+    }
 
     // Private runtime options (server-side only)
     // Nuxt 4 recommended pattern: merge at the nested key level
