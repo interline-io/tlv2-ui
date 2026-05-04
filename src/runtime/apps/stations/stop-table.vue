@@ -13,6 +13,7 @@
               <th>Stop name</th>
               <th>GTFS ID</th>
               <th>Served by routes</th>
+              <th>Imported or edited</th>
             </tr>
           </thead>
           <tbody>
@@ -24,6 +25,9 @@
               </td>
               <td><tl-safelink :text="stop.stop_id" max-width="100px" /></td>
               <td>{{ servedByRoutes(stop) }}</td>
+              <td :title="absoluteTime(stop.updated_at)">
+                {{ relativeTime(stop.updated_at) }}
+              </td>
             </tr>
           </tbody>
         </table>
@@ -36,6 +40,10 @@
 import { computed, ref } from 'vue'
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
+import dayjs from 'dayjs'
+import relativeTimePlugin from 'dayjs/plugin/relativeTime'
+
+dayjs.extend(relativeTimePlugin)
 
 // Types
 interface FeedVersionResponse {
@@ -43,6 +51,7 @@ interface FeedVersionResponse {
     id: number
     stop_id: string
     stop_name: string
+    updated_at?: string | null
     children?: {
       id: number
       route_stops: {
@@ -106,6 +115,7 @@ const STOPS_QUERY = gql`
         id
         stop_id
         stop_name
+        updated_at
         children {
           id
           route_stops {
@@ -169,6 +179,16 @@ const routeName = (route: Route): string => {
     return route.route_long_name
   }
   return ''
+}
+
+const relativeTime = (value?: string | null): string => {
+  if (!value) return ''
+  return dayjs(value).fromNow()
+}
+
+const absoluteTime = (value?: string | null): string => {
+  if (!value) return ''
+  return dayjs(value).format('YYYY-MM-DD HH:mm:ss')
 }
 
 const servedByRoutes = (stop: Stop): string => {
