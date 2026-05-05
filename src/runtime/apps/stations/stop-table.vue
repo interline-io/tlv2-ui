@@ -25,8 +25,8 @@
               </td>
               <td><tl-safelink :text="stop.stop_id" max-width="100px" /></td>
               <td>{{ servedByRoutes(stop) }}</td>
-              <td :title="absoluteTime(stop.updated_at)">
-                {{ relativeTime(stop.updated_at) }}
+              <td :title="absoluteTime(latestUpdatedAt(stop))">
+                {{ relativeTime(latestUpdatedAt(stop)) }}
               </td>
             </tr>
           </tbody>
@@ -46,14 +46,25 @@ import relativeTimePlugin from 'dayjs/plugin/relativeTime'
 dayjs.extend(relativeTimePlugin)
 
 // Types
+interface TimestampedRef {
+  id: number
+  updated_at?: string | null
+}
+
 interface FeedVersionResponse {
   stops: {
     id: number
     stop_id: string
     stop_name: string
     updated_at?: string | null
+    pathways_from_stop?: TimestampedRef[]
+    pathways_to_stop?: TimestampedRef[]
+    child_levels?: TimestampedRef[]
     children?: {
       id: number
+      updated_at?: string | null
+      pathways_from_stop?: TimestampedRef[]
+      pathways_to_stop?: TimestampedRef[]
       route_stops: {
         route: {
           id: number
@@ -116,8 +127,14 @@ const STOPS_QUERY = gql`
         stop_id
         stop_name
         updated_at
+        pathways_from_stop { id updated_at }
+        pathways_to_stop { id updated_at }
+        child_levels { id updated_at }
         children {
           id
+          updated_at
+          pathways_from_stop { id updated_at }
+          pathways_to_stop { id updated_at }
           route_stops {
             route {
               id
@@ -189,6 +206,26 @@ const relativeTime = (value?: string | null): string => {
 const absoluteTime = (value?: string | null): string => {
   if (!value) return ''
   return dayjs(value).format('YYYY-MM-DD HH:mm:ss')
+}
+
+// Roll up updated_at across the station and its constituent records
+// (child platforms, pathways from/to either, levels) so the column
+// reflects the most recent edit to anything in the station.
+const latestUpdatedAt = (stop: Stop): string | null => {
+  let max: string | null = null
+  const consider = (v?: string | null) => {
+    if (v && (!max || v > max)) max = v
+  }
+  consider(stop.updated_at)
+  for (const p of stop.pathways_from_stop || []) consider(p.updated_at)
+  for (const p of stop.pathways_to_stop || []) consider(p.updated_at)
+  for (const l of stop.child_levels || []) consider(l.updated_at)
+  for (const c of stop.children || []) {
+    consider(c.updated_at)
+    for (const p of c.pathways_from_stop || []) consider(p.updated_at)
+    for (const p of c.pathways_to_stop || []) consider(p.updated_at)
+  }
+  return max
 }
 
 const servedByRoutes = (stop: Stop): string => {
