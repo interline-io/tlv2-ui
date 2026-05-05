@@ -31,6 +31,13 @@ export interface ModuleOptions {
   // Transfer Analyst options
   transferAnalystReadOnlyFeedSelector?: boolean
   transferAnalystGtfsRealtimeStopObservations?: boolean
+  // Per-app component registration (default true). Set false to let a consumer
+  // register the app's components from a separate package (e.g. @interline-io/station-editor).
+  apps?: {
+    stations?: boolean
+    transfers?: boolean
+    admin?: boolean
+  }
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -158,10 +165,15 @@ export default defineNuxtModule<ModuleOptions>({
     })
 
     // Add apps (TlApps* components)
+    const appsIgnore: string[] = []
+    if (options.apps?.stations === false) appsIgnore.push('stations/**')
+    if (options.apps?.transfers === false) appsIgnore.push('transfers/**')
+    if (options.apps?.admin === false) appsIgnore.push('admin/**')
     addComponentsDir({
       path: resolveRuntimeModule('apps'),
       pathPrefix: true,
-      prefix: 'TlApps'
+      prefix: 'TlApps',
+      ignore: appsIgnore
     })
 
     // Nuxt 4: Transpile packages for SSR compatibility
