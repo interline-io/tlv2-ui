@@ -10,7 +10,7 @@ export interface NavGroup {
   items: NavItem[]
 }
 
-export const navigationGroups: NavGroup[] = [
+export const controlsGroups: NavGroup[] = [
   {
     title: 'Form Controls',
     variant: 'primary',
@@ -59,6 +59,26 @@ export const navigationGroups: NavGroup[] = [
       { name: 'Tooltip', path: '/controls/tooltip', icon: 'tooltip' },
       { name: 'Search Bar', path: '/controls/search-bar', icon: 'magnify' },
       { name: 'Theme Toggle', path: '/controls/theme-toggle', icon: 'theme-light-dark' }
+    ]
+  }
+]
+
+export const appsGroups: NavGroup[] = [
+  {
+    title: 'Tools',
+    variant: 'warning',
+    items: [
+      { name: 'GraphQL Test', path: '/apps/graphql-test', icon: 'api' }
+    ]
+  },
+  {
+    title: 'Admin',
+    variant: 'info',
+    items: [
+      { name: 'Admin Home', path: '/admin', icon: 'shield-account' },
+      { name: 'Groups', path: '/admin/groups', icon: 'account-group' },
+      { name: 'Tenants', path: '/admin/tenants', icon: 'domain' },
+      { name: 'Feeds', path: '/admin/feeds', icon: 'rss' }
     ]
   }
 ]

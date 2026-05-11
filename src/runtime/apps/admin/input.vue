@@ -1,17 +1,14 @@
 <template>
-  <t-field grouped>
-    <!-- These are arranged in this specific way to get correct widths and 'addon' rounding -->
-
-    <!-- Text or edit -->
-    <t-field addons class="is-fullwidth">
-      <!-- Editable field -->
-      <template v-if="currentlyEditing">
+  <div class="admin-input">
+    <!-- Edit mode -->
+    <div v-if="currentlyEditing" class="field has-addons">
+      <div class="control is-expanded">
         <t-input
           v-model="valueShadow"
           size="small"
-          expanded
         />
-        <!-- Editing buttons -->
+      </div>
+      <div class="control">
         <t-button
           variant="danger"
           size="small"
@@ -19,41 +16,34 @@
         >
           Cancel
         </t-button>
+      </div>
+      <div class="control">
         <t-button
           variant="primary"
           size="small"
           @click="save"
         >
-          <t-icon icon="pencil" />
+          <t-icon icon="pencil" size="small" />
           <span>Save</span>
         </t-button>
-      </template>
-
-      <div v-else class="is-fullwidth">
-        {{ value }}
       </div>
+    </div>
 
-      <!-- Show edit button? -->
-      <t-field v-if="canEdit && !currentlyEditing">
-        <t-button
-          size="small"
-          variant="primary"
-          @click="currentlyEditing = true"
-        >
-          <t-icon icon="pencil" />
-          <span>Edit</span>
-        </t-button>
-      </t-field>
-    </t-field>
-
-    <!-- Show links -->
-    <t-field
-      v-if="link"
-      grouped
-    >
+    <!-- Display mode -->
+    <div v-else class="is-flex is-align-items-center" style="gap: 0.5em;">
+      <span>{{ value }}</span>
+      <t-button
+        v-if="canEdit"
+        size="small"
+        variant="primary"
+        @click="currentlyEditing = true"
+      >
+        <t-icon icon="pencil" size="small" />
+        <span>Edit</span>
+      </t-button>
       <slot name="link" />
-    </t-field>
-  </t-field>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -62,11 +52,9 @@ import { ref } from 'vue'
 const props = withDefaults(defineProps<{
   value?: string
   canEdit?: boolean
-  link?: boolean
 }>(), {
   value: '',
-  canEdit: false,
-  link: false
+  canEdit: false
 })
 
 const emit = defineEmits<{
@@ -86,9 +74,3 @@ const save = () => {
   currentlyEditing.value = false
 }
 </script>
-
-<style scoped>
-.is-fullwidth {
-  width:100%;
-}
-</style>

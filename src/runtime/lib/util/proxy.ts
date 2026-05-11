@@ -21,6 +21,9 @@ export function proxyHandler (
   }
 
   // Proxy request
+  if (!proxyBase || proxyBase === 'undefined') {
+    throw new Error(`[tlv2-ui] Proxy base URL is not configured. Set the NUXT_TLV2_PROXY_BASE_DEFAULT (or client-specific) environment variable, or configure runtimeConfig.tlv2.proxyBase in nuxt.config.ts.`)
+  }
   const proxyBaseUrl = new URL(proxyBase)
   const proxyBasePathname = proxyBaseUrl.pathname === '/' ? '' : proxyBaseUrl.pathname
   const newPath = proxyBasePathname + event.path.replace('/api/v2', '')

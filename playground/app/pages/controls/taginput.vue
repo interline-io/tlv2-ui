@@ -127,6 +127,20 @@
         </p>
       </t-demo-box>
 
+      <!-- Allow New (Free-form) -->
+      <t-demo-box label="Allow New Tags">
+        <t-taginput
+          v-model="allowNewSelected"
+          :options="fruitOptions"
+          placeholder="Type and press Enter or comma..."
+          allow-new
+          open-on-focus
+        />
+        <p class="has-text-grey mt-3">
+          Type any text and press Enter or comma to add a custom tag. Selected: {{ allowNewSelected }}
+        </p>
+      </t-demo-box>
+
       <!-- Not Closable -->
       <t-demo-box label="Non-closable Tags">
         <t-taginput
@@ -303,6 +317,7 @@ const readonlySelected = ref<string[]>(['apple', 'cherry', 'grape'])
 const maxTagsSelected = ref<string[]>(['apple'])
 const notClosableSelected = ref<string[]>(['apple'])
 const customSelected = ref<number[]>([1, 3])
+const allowNewSelected = ref<string[]>([])
 const searchSelected = ref<string[]>([])
 const searchText = ref('')
 

@@ -46,6 +46,7 @@ declare module 'vue' {
     TTextarea: typeof import('./controls/textarea.vue')['default']
     TThemeToggle: typeof import('./controls/theme-toggle.vue')['default']
     TTooltip: typeof import('./controls/tooltip.vue')['default']
+    TlAppsAdminEntityList: typeof import('./apps/admin/entity-list.vue')['default']
     TlAppsAdminEntrelList: typeof import('./apps/admin/entrel-list.vue')['default']
     TlAppsAdminEntrelSearch: typeof import('./apps/admin/entrel-search.vue')['default']
     TlAppsAdminFeedItem: typeof import('./apps/admin/feed-item.vue')['default']
