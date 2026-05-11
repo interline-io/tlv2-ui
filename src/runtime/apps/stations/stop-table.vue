@@ -13,17 +13,23 @@
               <th>Stop name</th>
               <th>GTFS ID</th>
               <th>Served by routes</th>
+              <th>Imported or edited</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="stop of stops" :key="stop.id">
+            <tr v-for="row of displayStops" :key="row.stop.id">
               <td>
-                <slot name="stopName" :stop="stop">
-                  {{ stop.stop_name }}
+                <slot name="stopName" :stop="row.stop">
+                  {{ row.stop.stop_name }}
                 </slot>
               </td>
-              <td><tl-safelink :text="stop.stop_id" max-width="100px" /></td>
-              <td>{{ servedByRoutes(stop) }}</td>
+              <td><tl-safelink :text="row.stop.stop_id" max-width="100px" /></td>
+              <td>{{ servedByRoutes(row.stop) }}</td>
+              <td>
+                <abbr v-if="row.absolute" class="abbr" :title="row.absolute">
+                  {{ row.relative }}
+                </abbr>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -36,15 +42,29 @@
 import { computed, ref } from 'vue'
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
+import { format, parseISO } from 'date-fns'
+import { fromNow } from '../../lib/util/filters'
 
 // Types
+interface TimestampedRef {
+  id: number
+  updated_at?: string | null
+}
+
 interface FeedVersionResponse {
   stops: {
     id: number
     stop_id: string
     stop_name: string
+    updated_at?: string | null
+    pathways_from_stop?: TimestampedRef[]
+    pathways_to_stop?: TimestampedRef[]
+    child_levels?: TimestampedRef[]
     children?: {
       id: number
+      updated_at?: string | null
+      pathways_from_stop?: TimestampedRef[]
+      pathways_to_stop?: TimestampedRef[]
       route_stops: {
         route: {
           id: number
@@ -106,8 +126,15 @@ const STOPS_QUERY = gql`
         id
         stop_id
         stop_name
+        updated_at
+        pathways_from_stop { id updated_at }
+        pathways_to_stop { id updated_at }
+        child_levels { id updated_at }
         children {
           id
+          updated_at
+          pathways_from_stop { id updated_at }
+          pathways_to_stop { id updated_at }
           route_stops {
             route {
               id
@@ -171,6 +198,37 @@ const routeName = (route: Route): string => {
   return ''
 }
 
+// Roll up updated_at across the station and its constituent records
+// (child platforms, pathways from/to either, levels) so the column
+// reflects the most recent edit to anything in the station. The API
+// returns naive timestamps treated as UTC (matches lib/util/filters
+// fromNow convention).
+const latestUpdatedAt = (stop: Stop): string | null => {
+  let maxStr: string | null = null
+  let maxMs = Number.NEGATIVE_INFINITY
+  const consider = (v?: string | null) => {
+    if (!v) return
+    const ms = parseISO(v + 'Z').getTime()
+    if (Number.isFinite(ms) && ms > maxMs) {
+      maxMs = ms
+      maxStr = v
+    }
+  }
+  consider(stop.updated_at)
+  for (const p of stop.pathways_from_stop || []) consider(p.updated_at)
+  for (const p of stop.pathways_to_stop || []) consider(p.updated_at)
+  for (const l of stop.child_levels || []) consider(l.updated_at)
+  for (const c of stop.children || []) {
+    consider(c.updated_at)
+    for (const p of c.pathways_from_stop || []) consider(p.updated_at)
+    for (const p of c.pathways_to_stop || []) consider(p.updated_at)
+  }
+  return maxStr
+}
+
+const absoluteTime = (value: string): string =>
+  format(parseISO(value + 'Z'), 'yyyy-MM-dd HH:mm:ss')
+
 const servedByRoutes = (stop: Stop): string => {
   const routeNames = new Set<string>()
 
@@ -199,4 +257,21 @@ const stops = computed<Stop[]>(() => {
   }
   return allStops
 })
+
+interface DisplayStop {
+  stop: Stop
+  relative: string
+  absolute: string
+}
+
+const displayStops = computed<DisplayStop[]>(() =>
+  stops.value.map((stop) => {
+    const latest = latestUpdatedAt(stop)
+    return {
+      stop,
+      relative: latest ? fromNow(latest) : '',
+      absolute: latest ? absoluteTime(latest) : ''
+    }
+  })
+)
 </script>
