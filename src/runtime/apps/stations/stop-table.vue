@@ -25,8 +25,10 @@
               </td>
               <td><tl-safelink :text="stop.stop_id" max-width="100px" /></td>
               <td>{{ servedByRoutes(stop) }}</td>
-              <td :title="absoluteTime(latestUpdatedAt(stop))">
-                {{ relativeTime(latestUpdatedAt(stop)) }}
+              <td>
+                <abbr class="abbr" :title="absoluteTime(latestUpdatedAt(stop))">
+                  {{ relativeTime(latestUpdatedAt(stop)) }}
+                </abbr>
               </td>
             </tr>
           </tbody>
