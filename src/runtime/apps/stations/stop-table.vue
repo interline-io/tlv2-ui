@@ -40,8 +40,8 @@
 import { computed, ref } from 'vue'
 import { gql } from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
-import dayjs from 'dayjs'
-import relativeTimePlugin from 'dayjs/plugin/relativeTime'
+import dayjs from 'dayjs/esm'
+import relativeTimePlugin from 'dayjs/esm/plugin/relativeTime'
 
 dayjs.extend(relativeTimePlugin)
 
